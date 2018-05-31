@@ -1,31 +1,18 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Field, ID, ObjectType} from 'type-graphql';
-import {Product} from './Product';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from './Product';
 
-@ObjectType()
 @Entity()
 export class ProductVariant {
-    @PrimaryGeneratedColumn()
-    @Field(() => ID)
-    id: number;
+    @PrimaryGeneratedColumn() id: number;
 
-    @Column()
-    @Field()
-    sku: string;
+    @Column() sku: string;
 
-    @Column()
-    @Field()
-    name: string;
+    @Column() name: string;
 
-    @Column()
-    @Field()
-    image: string;
+    @Column() image: string;
 
-    @Column()
-    @Field()
-    price: string;
+    @Column() price: string;
 
-    @Field(type => [Product])
     @ManyToOne(type => Product, product => product.variants)
-    product: Product[]
+    product: Product[];
 }

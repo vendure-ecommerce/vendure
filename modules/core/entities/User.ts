@@ -1,39 +1,22 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
-import {Field, ID, ObjectType} from 'type-graphql';
-import {Address} from './Address';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Address } from './Address';
 
-@ObjectType()
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    @Field(() => ID)
-    id: number;
+    @PrimaryGeneratedColumn() id: number;
 
-    @Column()
-    @Field()
-    firstName: string;
+    @Column() firstName: string;
 
-    @Column()
-    @Field()
-    lastName: string;
+    @Column() lastName: string;
 
-    @Column()
-    @Field()
-    phoneNumber: string;
+    @Column() phoneNumber: string;
 
-    @Column()
-    @Field()
-    emailAddress: string;
+    @Column() emailAddress: string;
 
-    @Field(type => [Address])
     @OneToMany(type => Address, address => address.user)
-    addresses: Address[]
+    addresses: Address[];
 
-    @CreateDateColumn()
-    @Field()
-    createdAt: string;
+    @CreateDateColumn() createdAt: string;
 
-    @UpdateDateColumn()
-    @Field()
-    updatedAt: string;
+    @UpdateDateColumn() updatedAt: string;
 }

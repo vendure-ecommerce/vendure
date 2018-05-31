@@ -1,67 +1,36 @@
-import {Field, ObjectType, ID} from 'type-graphql';
 import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
 import {User} from './User';
 
-@ObjectType()
 @Entity()
 export class Address {
-    @PrimaryGeneratedColumn()
-    @Field(() => ID)
-    id: number;
+    @PrimaryGeneratedColumn() id: number;
 
-    @Field(type => User)
     @ManyToOne(type => User, user => user.addresses)
-    user: User
+    user: User;
 
-    @Column()
-    @Field()
-    fullName: string;
+    @Column() fullName: string;
 
-    @Column()
-    @Field({ nullable: true })
-    company: string;
+    @Column() company: string;
 
-    @Column()
-    @Field()
-    streetLine1: string;
+    @Column() streetLine1: string;
 
-    @Column()
-    @Field({ nullable: true })
-    streetLine2: string;
+    @Column() streetLine2: string;
 
-    @Column()
-    @Field()
-    city: string;
+    @Column() city: string;
 
-    @Column()
-    @Field({ nullable: true })
-    province: string;
+    @Column() province: string;
 
-    @Column()
-    @Field({ nullable: true })
-    postalCode: string;
+    @Column() postalCode: string;
 
-    @Column()
-    @Field()
-    country: string;
+    @Column() country: string;
 
-    @Column()
-    @Field({ nullable: true })
-    phoneNumber: string;
+    @Column() phoneNumber: string;
 
-    @Column()
-    @Field()
-    defaultShippingAddress: boolean;
+    @Column() defaultShippingAddress: boolean;
 
-    @Column()
-    @Field()
-    defaultBillingAddress: boolean;
+    @Column() defaultBillingAddress: boolean;
 
-    @CreateDateColumn()
-    @Field()
-    createdAt: string;
+    @CreateDateColumn() createdAt: string;
 
-    @UpdateDateColumn()
-    @Field()
-    updatedAt: string;
+    @UpdateDateColumn() updatedAt: string;
 }
