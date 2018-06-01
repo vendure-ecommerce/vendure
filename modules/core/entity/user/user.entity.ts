@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
 import { User } from './user.interface';
-import { Role } from "../../auth/roles";
+import { Role } from "../../auth/role";
 
 @Entity('user')
 export class UserEntity implements User {

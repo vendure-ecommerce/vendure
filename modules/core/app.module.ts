@@ -10,6 +10,9 @@ import { ProductService } from './api/product/product.service';
 import { ProductResolver } from './api/product/product.resolver';
 import { LocaleService } from './locale/locale.service';
 import { PasswordService } from "./auth/password.service";
+import { AuthService } from "./auth/auth.service";
+import { AuthController } from "./api/auth/auth.controller";
+import { JwtStrategy } from "./auth/jwt.strategy";
 
 @Module({
     imports: [
@@ -26,8 +29,14 @@ import { PasswordService } from "./auth/password.service";
             database: 'test',
         }),
     ],
-    controllers: [CustomerController],
+    controllers: [
+        AuthController,
+        CustomerController
+    ],
     providers: [
+        AuthService,
+        JwtStrategy,
+        PasswordService,
         CustomerService,
         CustomerResolver,
         ProductService,

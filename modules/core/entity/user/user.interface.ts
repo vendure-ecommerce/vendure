@@ -1,5 +1,5 @@
 import { Address } from '../address/address.interface';
-import { Role } from "../../auth/roles";
+import { Role } from "../../auth/role";
 
 /**
  * A registered user of the system, either a Customer or Administrator. The User interface / entity is responsible

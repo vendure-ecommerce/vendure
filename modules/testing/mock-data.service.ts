@@ -5,7 +5,7 @@ import { ProductVariantEntity } from "../core/entity/product-variant/product-var
 import { ProductEntity } from "../core/entity/product/product.entity";
 import { ProductVariantTranslationEntity } from "../core/entity/product-variant/product-variant-translation.entity";
 import { AddressEntity } from "../core/entity/address/address.entity";
-import { Role } from "../core/auth/roles";
+import { Role } from "../core/auth/role";
 import { ProductTranslationEntity } from "../core/entity/product/product-translation.entity";
 import { PasswordService } from "../core/auth/password.service";
 import { UserEntity } from "../core/entity/user/user.entity";
