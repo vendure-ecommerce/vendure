@@ -2,24 +2,3 @@ type Query {
   products(lang: String): [Product]
   product(id: Int!, lang: String): Product
 }
-
-type Product {
-    id: Int
-    name: String
-    slug: String
-    description: String
-    image: String
-    variants: [ProductVariant]
-    createdAt: String
-    updatedAt: String
-}
-
-type ProductVariant {
-    id: Int
-    sku: String
-    name: String
-    image: String
-    price: Int
-    createdAt: String
-    updatedAt: String
-}

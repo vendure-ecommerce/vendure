@@ -1,0 +1,4 @@
+type Query {
+  customers: [Customer]
+  customer(id: Int!): Customer
+}

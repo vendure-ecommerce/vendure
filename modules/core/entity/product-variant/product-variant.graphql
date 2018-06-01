@@ -1,0 +1,9 @@
+type ProductVariant {
+    id: Int
+    sku: String
+    name: String
+    image: String
+    price: Int
+    createdAt: String
+    updatedAt: String
+}

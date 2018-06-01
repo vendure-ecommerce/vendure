@@ -1,12 +1,16 @@
 import { Address } from '../address/address.interface';
+import { Role } from "../../auth/roles";
 
+/**
+ * A registered user of the system, either a Customer or Administrator. The User interface / entity is responsible
+ * for the identity of the user for the purposes of authentication & authorization.
+ */
 export class User {
     id: number;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    emailAddress: string;
-    addresses: Address[];
+    identifier: string;
+    passwordHash: string;
+    roles: Role[];
+    lastLogin: string;
     createdAt: string;
     updatedAt: string;
 }

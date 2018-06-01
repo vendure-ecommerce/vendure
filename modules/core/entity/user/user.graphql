@@ -1,0 +1,9 @@
+type User {
+    id: Int
+    identifier: String
+    passwordHash: String
+    roles: [String]
+    lastLogin: String
+    createdAt: String
+    updatedAt: String
+}

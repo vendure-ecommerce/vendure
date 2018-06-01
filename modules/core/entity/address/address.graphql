@@ -1,22 +1,5 @@
-type Query {
-  users: [User]
-  user(id: Int!): User
-}
-
-type User {
-  id: Int
-  firstName: String
-  lastName: String
-  phoneNumber: String
-  emailAddress: String
-  addresses: [Address]
-  createdAt: String
-  updatedAt: String
-}
-
 type Address {
   id: Int
-  user: User
   fullName: String
   company: String
   streetLine1: String

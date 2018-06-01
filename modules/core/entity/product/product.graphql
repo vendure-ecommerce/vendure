@@ -1,0 +1,10 @@
+type Product {
+    id: Int
+    name: String
+    slug: String
+    description: String
+    image: String
+    variants: [ProductVariant]
+    createdAt: String
+    updatedAt: String
+}

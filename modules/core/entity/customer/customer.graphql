@@ -1,0 +1,11 @@
+type Customer {
+  id: Int
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  emailAddress: String
+  addresses: [Address]
+  user: User
+  createdAt: String
+  updatedAt: String
+}
