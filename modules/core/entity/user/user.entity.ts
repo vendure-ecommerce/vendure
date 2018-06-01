@@ -1,8 +1,9 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Address } from './Address';
+import { AddressEntity } from '../address/address.entity';
+import { User } from './user.interface';
 
-@Entity()
-export class User {
+@Entity('user')
+export class UserEntity implements User {
     @PrimaryGeneratedColumn() id: number;
 
     @Column() firstName: string;
@@ -13,8 +14,8 @@ export class User {
 
     @Column() emailAddress: string;
 
-    @OneToMany(type => Address, address => address.user)
-    addresses: Address[];
+    @OneToMany(type => AddressEntity, address => address.user)
+    addresses: AddressEntity[];
 
     @CreateDateColumn() createdAt: string;
 

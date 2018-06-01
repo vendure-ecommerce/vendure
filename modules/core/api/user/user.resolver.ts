@@ -1,8 +1,8 @@
-import { Resolver, Query, ResolveProperty } from '@nestjs/graphql';
-import { Connection, EntityManager, Repository } from 'typeorm';
-import { User } from '../entities/User';
-import { Address } from '../entities/Address';
+import { Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { UserEntity } from '../../entity/user/user.entity';
 import { UserService } from './user.service';
+import { Address } from '../../entity/address/address.interface';
+import { User } from '../../entity/user/user.interface';
 
 @Resolver('User')
 export class UserResolver {
@@ -19,7 +19,7 @@ export class UserResolver {
     }
 
     @ResolveProperty('addresses')
-    addresses(user: User): Promise<Address[]> {
+    addresses(user: UserEntity): Promise<Address[]> {
         return this.userService.findAddressesByUserId(user.id);
     }
 }

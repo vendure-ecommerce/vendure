@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"modules/**/*.ts\"",
+    "populate": "ts-node -r tsconfig-paths/register modules/testing/populate.ts",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",

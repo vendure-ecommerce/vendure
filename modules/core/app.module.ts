@@ -3,16 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { GraphQLFactory } from '@nestjs/graphql';
-import { UserService } from './users/user.service';
-import { UserController } from './users/user.controller';
-import { UserResolver } from './users/user.resolver';
+import { UserService } from './api/user/user.service';
+import { UserController } from './api/user/user.controller';
+import { UserResolver } from './api/user/user.resolver';
+import { ProductService } from './api/product/product.service';
+import { ProductResolver } from './api/product/product.resolver';
+import { LocaleService } from './locale/locale.service';
 
 @Module({
     imports: [
         GraphQLModule,
         TypeOrmModule.forRoot({
             type: 'mysql',
-            entities: ['./**/entities/*.ts'],
+            entities: ['./**/entity/**/*.entity.ts'],
             synchronize: true,
             logging: true,
             host: '192.168.99.100',
@@ -23,7 +26,7 @@ import { UserResolver } from './users/user.resolver';
         }),
     ],
     controllers: [UserController],
-    providers: [UserService, UserResolver],
+    providers: [UserService, UserResolver, ProductService, ProductResolver, LocaleService],
 })
 export class AppModule implements NestModule {
     constructor(private readonly graphQLFactory: GraphQLFactory) {}

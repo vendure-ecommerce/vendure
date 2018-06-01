@@ -1,12 +1,13 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
-import {User} from './User';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
+import { Address } from './address.interface';
 
-@Entity()
-export class Address {
+@Entity('address')
+export class AddressEntity implements Address {
     @PrimaryGeneratedColumn() id: number;
 
-    @ManyToOne(type => User, user => user.addresses)
-    user: User;
+    @ManyToOne(type => UserEntity, user => user.addresses)
+    user: UserEntity;
 
     @Column() fullName: string;
 
