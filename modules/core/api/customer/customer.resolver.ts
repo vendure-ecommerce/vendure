@@ -1,10 +1,10 @@
 import { Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { AuthGuard } from '@nestjs/passport';
 import { CustomerService } from './customer.service';
 import { Address } from '../../entity/address/address.interface';
 import { CustomerEntity } from "../../entity/customer/customer.entity";
 import { Customer } from "../../entity/customer/customer.interface";
-import { UseGuards } from "@nestjs/common";
+import { RolesGuard } from "../../auth/roles-guard";
+import { Role } from "../../auth/role";
 
 @Resolver('Customer')
 export class CustomerResolver {
@@ -15,7 +15,6 @@ export class CustomerResolver {
         return this.customerService.findAll();
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Query('customer')
     customer(obj, args): Promise<Customer> {
         return this.customerService.findOne(args.id);
