@@ -3,8 +3,6 @@ import { CustomerService } from './customer.service';
 import { Address } from '../../entity/address/address.interface';
 import { CustomerEntity } from "../../entity/customer/customer.entity";
 import { Customer } from "../../entity/customer/customer.interface";
-import { RolesGuard } from "../../auth/roles-guard";
-import { Role } from "../../auth/role";
 
 @Resolver('Customer')
 export class CustomerResolver {

@@ -7,6 +7,7 @@ import { Connection } from "typeorm";
 import { InjectConnection } from "@nestjs/typeorm";
 import { UserEntity } from "../entity/user/user.entity";
 
+// TODO: make this configurable e.g. from environment
 export const JWT_SECRET = 'some_secret';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class AuthService {
     constructor(private passwordService: PasswordService,
                 @InjectConnection() private connection: Connection) {}
 
-    async createToken(identifier: string, password: string): Promise<string> {
+    async createToken(identifier: string, password: string): Promise<{ user: UserEntity; token: string; }> {
         const user = await this.connection.getRepository(UserEntity)
             .findOne({
                 where: {
@@ -33,7 +34,9 @@ export class AuthService {
             throw new UnauthorizedException();
         }
         const payload: JwtPayload = { identifier , roles: user.roles };
-        return jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 });
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 });
+
+        return { user, token };
     }
 
     async validateUser(payload: JwtPayload): Promise<any> {

@@ -18,7 +18,17 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  * ```
  */
 export function RolesGuard(roles: Role[]) {
-    return UseGuards(AuthGuard('jwt'), forRoles(roles));
+    const guards: CanActivate[] = [AuthGuard('jwt')];
+
+    if (roles.length && !authenticatedOnly(roles)) {
+        guards.push(forRoles(roles));
+    }
+
+    return UseGuards(...guards);
+}
+
+function authenticatedOnly(roles: Role[]): boolean {
+    return roles.length === 1 && roles[0] === Role.Authenticated;
 }
 
 /**
