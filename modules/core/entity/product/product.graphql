@@ -5,6 +5,7 @@ type Product {
     description: String
     image: String
     variants: [ProductVariant]
+    optionGroups: [ProductOptionGroup]
     createdAt: String
     updatedAt: String
 }

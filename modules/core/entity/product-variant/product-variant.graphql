@@ -4,6 +4,7 @@ type ProductVariant {
     name: String
     image: String
     price: Int
+    options: [ProductOption]
     createdAt: String
     updatedAt: String
 }

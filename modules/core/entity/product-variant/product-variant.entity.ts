@@ -4,6 +4,8 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -11,6 +13,7 @@ import {
 } from 'typeorm';
 import { ProductEntity } from '../product/product.entity';
 import { ProductVariantTranslationEntity } from './product-variant-translation.entity';
+import { ProductOptionEntity } from '../product-option/product-option.entity';
 
 @Entity('product_variant')
 export class ProductVariantEntity implements Translatable<ProductVariant> {
@@ -31,4 +34,8 @@ export class ProductVariantEntity implements Translatable<ProductVariant> {
 
     @ManyToOne(type => ProductEntity, product => product.variants)
     product: ProductEntity[];
+
+    @ManyToMany(type => ProductOptionEntity)
+    @JoinTable()
+    options: ProductOptionEntity[];
 }

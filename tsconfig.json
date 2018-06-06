@@ -5,6 +5,7 @@
     "noImplicitAny": false,
     "removeComments": true,
     "noLib": false,
+    "skipLibCheck": true,
     "lib": ["es2017"],
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
