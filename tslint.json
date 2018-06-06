@@ -17,8 +17,12 @@
             false
         ],
         "ordered-imports": [
-            false
+            true,
+            {
+                "grouped-imports": true
+            }
         ],
+        "import-spacing": true,
         "max-line-length": [
             true,
             150
