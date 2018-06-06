@@ -6,12 +6,11 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.int
 import { ProductEntity } from '../../entity/product/product.entity';
 import { Product } from '../../entity/product/product.interface';
 import { Translatable, Translation } from '../../locale/locale-types';
-import { LocaleService } from '../../locale/locale.service';
 import { ProductRepository } from '../../repository/product-repository';
 
 @Injectable()
 export class ProductService {
-    constructor(@InjectConnection() private connection: Connection, private localeService: LocaleService) {}
+    constructor(@InjectConnection() private connection: Connection) {}
 
     findAll(lang?: string): Promise<Product[]> {
         return this.connection.getCustomRepository(ProductRepository).localeFind(lang);

@@ -4,7 +4,8 @@ import { ProductOption } from '../entity/product-option/product-option.interface
 import { ProductVariant } from '../entity/product-variant/product-variant.interface';
 import { ProductEntity } from '../entity/product/product.entity';
 import { Product } from '../entity/product/product.interface';
-import { translate } from '../locale/locale.service';
+import { Translatable, TranslatableKeys, TranslatedEntity } from '../locale/locale-types';
+import { translateDeep } from '../locale/translate-entity';
 
 @EntityRepository(ProductEntity)
 export class ProductRepository extends Repository<ProductEntity> {
@@ -15,7 +16,7 @@ export class ProductRepository extends Repository<ProductEntity> {
     localeFind(languageCode: string): Promise<Product[]> {
         return this.getProductQueryBuilder(languageCode)
             .getMany()
-            .then(result => this.translateProductAndVariants(result));
+            .then(result => result.map(res => translateDeep(res, ['variants', 'optionGroups']) as any));
     }
 
     /**
@@ -25,9 +26,8 @@ export class ProductRepository extends Repository<ProductEntity> {
     localeFindOne(id: number, languageCode: string): Promise<Product> {
         return this.getProductQueryBuilder(languageCode)
             .andWhere('product.id = :id', { id })
-            .getMany()
-            .then(result => this.translateProductAndVariants(result))
-            .then(res => res[0]);
+            .getOne()
+            .then(result => translateDeep(result, ['variants', 'optionGroups', ['variants', 'options']]) as any);
     }
 
     private getProductQueryBuilder(languageCode: string): SelectQueryBuilder<ProductEntity> {
@@ -59,18 +59,5 @@ export class ProductRepository extends Repository<ProductEntity> {
                 'variant_options_translation.languageCode = :code',
             )
             .setParameters({ code });
-    }
-
-    private translateProductAndVariants(result: ProductEntity[]): Product[] {
-        return result.map(productEntity => {
-            const product = translate<Product>(productEntity);
-            product.variants = product.variants.map(variant => {
-                const v = translate<ProductVariant>(variant as any);
-                v.options = v.options.map(vop => translate<ProductOption>(vop as any));
-                return v;
-            });
-            product.optionGroups = product.optionGroups.map(group => translate<ProductOptionGroup>(group as any));
-            return product;
-        });
     }
 }

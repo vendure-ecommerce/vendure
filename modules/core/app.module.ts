@@ -12,7 +12,6 @@ import { ProductService } from './api/product/product.service';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
-import { LocaleService } from './locale/locale.service';
 
 @Module({
     imports: [
@@ -38,7 +37,6 @@ import { LocaleService } from './locale/locale.service';
         CustomerResolver,
         ProductService,
         ProductResolver,
-        LocaleService,
         PasswordService,
     ],
 })

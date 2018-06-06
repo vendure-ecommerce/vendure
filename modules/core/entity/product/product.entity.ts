@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Translatable } from '../../locale/locale-types';
+import { Translatable, Translation } from '../../locale/locale-types';
 import { ProductOptionGroupEntity } from '../product-option-group/product-option-group.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.interface';
 import { ProductOptionEntity } from '../product-option/product-option.entity';
@@ -29,7 +29,7 @@ export class ProductEntity implements Translatable<Product> {
     @UpdateDateColumn() updatedAt: string;
 
     @OneToMany(type => ProductTranslationEntity, translation => translation.base)
-    translations: ProductTranslationEntity[];
+    translations: Translation<Product>[];
 
     @OneToMany(type => ProductVariantEntity, variant => variant.product)
     variants: ProductVariantEntity[];
