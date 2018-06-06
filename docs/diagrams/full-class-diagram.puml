@@ -1,0 +1,76 @@
+@startuml
+title Vendure Class Diagram
+
+class User {
+    identifier: string
+    passwordHash: string
+    roles: Role[]
+}
+class Customer {
+    user: User
+    addresses: Address[]
+    orders: Order[]
+}
+class Administrator {
+    user: User
+}
+enum Role {
+    Authenticated
+    Customer
+    Administrator
+    ...etc
+}
+class Address {
+}
+class Product {
+    variants: ProductVariant[]
+}
+class ProductOptionGroup
+class ProductOption {
+    group: ProductOptionGroup
+}
+class ProductVariant {
+    sku: string
+    price: number
+}
+class Order
+class OrderItem {
+    order: Order
+    productVariant: ProductVariant
+}
+class OrderItemUnit {
+    orderItem: OrderItem
+}
+class Adjustment {
+    orderItemUnit?: OrderItemUnit
+    orderItem?: OrderItem
+    order?: Order
+}
+enum AdjustmentType {
+    Tax
+    Shipping
+    Promotion
+}
+class AdjustmentSource {
+    type: AdjustmentType
+}
+
+Customer o-- User
+Administrator o-- User
+User o-- Role
+Customer o-- Address
+Product o-- ProductVariant
+ProductOptionGroup o-- ProductOption
+Product o-- ProductOptionGroup
+ProductVariant o-- ProductOption
+Customer o-- Order
+OrderItem - ProductVariant
+Order o-- OrderItem
+OrderItem o-- OrderItemUnit
+OrderItemUnit o-- Adjustment
+OrderItem o-- Adjustment
+Order o-- Adjustment
+Adjustment - AdjustmentType
+AdjustmentSource - AdjustmentType
+
+@enduml
