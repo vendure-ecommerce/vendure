@@ -1,18 +1,18 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
-import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { GraphQLFactory } from '@nestjs/graphql';
-import { CustomerService } from './api/customer/customer.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
+import { AuthController } from './api/auth/auth.controller';
 import { CustomerController } from './api/customer/customer.controller';
 import { CustomerResolver } from './api/customer/customer.resolver';
-import { ProductService } from './api/product/product.service';
+import { CustomerService } from './api/customer/customer.service';
 import { ProductResolver } from './api/product/product.resolver';
+import { ProductService } from './api/product/product.service';
+import { AuthService } from './auth/auth.service';
+import { JwtStrategy } from './auth/jwt.strategy';
+import { PasswordService } from './auth/password.service';
 import { LocaleService } from './locale/locale.service';
-import { PasswordService } from "./auth/password.service";
-import { AuthService } from "./auth/auth.service";
-import { AuthController } from "./api/auth/auth.controller";
-import { JwtStrategy } from "./auth/jwt.strategy";
 
 @Module({
     imports: [
@@ -29,10 +29,7 @@ import { JwtStrategy } from "./auth/jwt.strategy";
             database: 'test',
         }),
     ],
-    controllers: [
-        AuthController,
-        CustomerController
-    ],
+    controllers: [AuthController, CustomerController],
     providers: [
         AuthService,
         JwtStrategy,
@@ -42,7 +39,7 @@ import { JwtStrategy } from "./auth/jwt.strategy";
         ProductService,
         ProductResolver,
         LocaleService,
-        PasswordService
+        PasswordService,
     ],
 })
 export class AppModule implements NestModule {

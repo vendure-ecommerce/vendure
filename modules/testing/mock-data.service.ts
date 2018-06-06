@@ -1,20 +1,21 @@
 import * as faker from 'faker/locale/en_GB';
 import { Connection, createConnection } from 'typeorm';
-import { CustomerEntity } from '../core/entity/customer/customer.entity';
-import { ProductVariantEntity } from '../core/entity/product-variant/product-variant.entity';
-import { ProductEntity } from '../core/entity/product/product.entity';
-import { ProductVariantTranslationEntity } from '../core/entity/product-variant/product-variant-translation.entity';
-import { AddressEntity } from '../core/entity/address/address.entity';
-import { Role } from '../core/auth/role';
-import { ProductTranslationEntity } from '../core/entity/product/product-translation.entity';
 import { PasswordService } from '../core/auth/password.service';
-import { UserEntity } from '../core/entity/user/user.entity';
+import { Role } from '../core/auth/role';
+import { AddressEntity } from '../core/entity/address/address.entity';
 import { AdministratorEntity } from '../core/entity/administrator/administrator.entity';
-import { ProductOptionGroupEntity } from '../core/entity/product-option-group/product-option-group.entity';
+import { CustomerEntity } from '../core/entity/customer/customer.entity';
 import { ProductOptionGroupTranslationEntity } from '../core/entity/product-option-group/product-option-group-translation.entity';
-import { ProductOptionEntity } from '../core/entity/product-option/product-option.entity';
+import { ProductOptionGroupEntity } from '../core/entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslationEntity } from '../core/entity/product-option/product-option-translation.entity';
+import { ProductOptionEntity } from '../core/entity/product-option/product-option.entity';
+import { ProductVariantTranslationEntity } from '../core/entity/product-variant/product-variant-translation.entity';
+import { ProductVariantEntity } from '../core/entity/product-variant/product-variant.entity';
+import { ProductTranslationEntity } from '../core/entity/product/product-translation.entity';
+import { ProductEntity } from '../core/entity/product/product.entity';
+import { UserEntity } from '../core/entity/user/user.entity';
 
+// tslint:disable:no-console
 /**
  * A Class used for generating mock data.
  */
@@ -128,7 +129,7 @@ export class MockDataService {
 
             // 1 - 4 variants
             const variantCount = Math.floor(Math.random() * 4) + 1;
-            let variants = [];
+            const variants = [];
             for (let j = 0; j < variantCount; j++) {
                 const variant = new ProductVariantEntity();
                 const variantName = `${name} variant ${j + 1}`;

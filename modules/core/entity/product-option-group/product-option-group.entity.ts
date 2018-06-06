@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Translatable } from '../../locale/locale-types';
-import { ProductOptionGroup } from './product-option-group.interface';
-import { ProductOptionGroupTranslationEntity } from './product-option-group-translation.entity';
 import { ProductOptionEntity } from '../product-option/product-option.entity';
+import { ProductOptionGroupTranslationEntity } from './product-option-group-translation.entity';
+import { ProductOptionGroup } from './product-option-group.interface';
 
 @Entity('product_option_group')
 export class ProductOptionGroupEntity implements Translatable<ProductOptionGroup> {

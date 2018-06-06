@@ -1,8 +1,8 @@
 import { Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { CustomerService } from './customer.service';
 import { Address } from '../../entity/address/address.interface';
-import { CustomerEntity } from "../../entity/customer/customer.entity";
-import { Customer } from "../../entity/customer/customer.interface";
+import { CustomerEntity } from '../../entity/customer/customer.entity';
+import { Customer } from '../../entity/customer/customer.interface';
+import { CustomerService } from './customer.service';
 
 @Resolver('Customer')
 export class CustomerResolver {

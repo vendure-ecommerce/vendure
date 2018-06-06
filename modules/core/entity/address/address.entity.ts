@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { CustomerEntity } from '../customer/customer.entity';
 import { UserEntity } from '../user/user.entity';
 import { Address } from './address.interface';
-import { CustomerEntity } from "../customer/customer.entity";
 
 @Entity('address')
 export class AddressEntity implements Address {

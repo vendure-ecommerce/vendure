@@ -3,8 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { AddressEntity } from '../../entity/address/address.entity';
 import { Address } from '../../entity/address/address.interface';
-import { CustomerEntity } from "../../entity/customer/customer.entity";
-import { Customer } from "../../entity/customer/customer.interface";
+import { CustomerEntity } from '../../entity/customer/customer.entity';
+import { Customer } from '../../entity/customer/customer.interface';
 
 @Injectable()
 export class CustomerService {

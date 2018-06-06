@@ -1,5 +1,5 @@
-import { Address } from "../address/address.interface";
-import { User } from "../user/user.interface";
+import { Address } from '../address/address.interface';
+import { User } from '../user/user.interface';
 
 /**
  * A customer, i.e. a user who has trasacted with the shop in some way. A Customer may also be associated with

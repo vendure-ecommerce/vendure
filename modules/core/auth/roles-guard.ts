@@ -1,8 +1,8 @@
-import { CanActivate, ExecutionContext, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { Role } from "./role";
-import { UserEntity } from "../entity/user/user.entity";
+import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UserEntity } from '../entity/user/user.entity';
+import { Role } from './role';
 
 /**
  * A guard which combines the JWT passport auth method with restrictions based on
@@ -43,7 +43,7 @@ function forRoles(roles: Role[]) {
                 return false;
             }
             return arraysIntersect(roles, user.roles);
-        }
+        },
     } as CanActivate;
 }
 

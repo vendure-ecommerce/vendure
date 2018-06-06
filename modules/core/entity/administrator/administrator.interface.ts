@@ -1,4 +1,4 @@
-import { User } from "../user/user.interface";
+import { User } from '../user/user.interface';
 
 /**
  * An administrator of the system.

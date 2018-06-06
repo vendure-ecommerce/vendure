@@ -1,5 +1,5 @@
-import { ProductOptionGroup } from '../product-option-group/product-option-group.interface';
 import { LocaleString } from '../../locale/locale-types';
+import { ProductOptionGroup } from '../product-option-group/product-option-group.interface';
 
 export interface ProductOption {
     id: number;

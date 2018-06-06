@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Translation } from '../../locale/locale-types';
-import { ProductVariant } from './product-variant.interface';
 import { ProductVariantEntity } from './product-variant.entity';
+import { ProductVariant } from './product-variant.interface';
 
 @Entity('product_variant_translation')
 export class ProductVariantTranslationEntity implements Translation<ProductVariant> {

@@ -3,7 +3,6 @@ import { Translatable } from './locale-types';
 
 @Injectable()
 export class LocaleService {
-
     translate<T>(translatable: Translatable<T>): T {
         return translate(translatable);
     }

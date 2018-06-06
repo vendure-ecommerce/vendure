@@ -1,10 +1,10 @@
 import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.interface';
+import { ProductOption } from '../entity/product-option/product-option.interface';
+import { ProductVariant } from '../entity/product-variant/product-variant.interface';
 import { ProductEntity } from '../entity/product/product.entity';
 import { Product } from '../entity/product/product.interface';
 import { translate } from '../locale/locale.service';
-import { ProductVariant } from '../entity/product-variant/product-variant.interface';
-import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.interface';
-import { ProductOption } from '../entity/product-option/product-option.interface';
 
 @EntityRepository(ProductEntity)
 export class ProductRepository extends Repository<ProductEntity> {

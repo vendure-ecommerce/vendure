@@ -1,13 +1,12 @@
-import { Body, Controller, Get, Post, Req } from "@nestjs/common";
-import { LoginDto } from "./login.dto";
-import { AuthService } from "../../auth/auth.service";
-import { RolesGuard } from "../../auth/roles-guard";
-import { Role } from "../../auth/role";
-import { UserEntity } from "../../entity/user/user.entity";
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { AuthService } from '../../auth/auth.service';
+import { Role } from '../../auth/role';
+import { RolesGuard } from '../../auth/roles-guard';
+import { UserEntity } from '../../entity/user/user.entity';
+import { LoginDto } from './login.dto';
 
 @Controller('auth')
 export class AuthController {
-
     constructor(private authService: AuthService) {}
 
     /**
@@ -21,7 +20,7 @@ export class AuthController {
         if (token) {
             return {
                 token,
-                user: this.publiclyAccessibleUser(user)
+                user: this.publiclyAccessibleUser(user),
             };
         }
     }
@@ -43,7 +42,7 @@ export class AuthController {
         return {
             id: user.id,
             identifier: user.identifier,
-            roles: user.roles
+            roles: user.roles,
         };
     }
 }

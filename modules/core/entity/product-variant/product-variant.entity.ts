@@ -1,5 +1,3 @@
-import { Translatable } from '../../locale/locale-types';
-import { ProductVariant } from './product-variant.interface';
 import {
     Column,
     CreateDateColumn,
@@ -11,9 +9,11 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { Translatable } from '../../locale/locale-types';
+import { ProductOptionEntity } from '../product-option/product-option.entity';
 import { ProductEntity } from '../product/product.entity';
 import { ProductVariantTranslationEntity } from './product-variant-translation.entity';
-import { ProductOptionEntity } from '../product-option/product-option.entity';
+import { ProductVariant } from './product-variant.interface';
 
 @Entity('product_variant')
 export class ProductVariantEntity implements Translatable<ProductVariant> {

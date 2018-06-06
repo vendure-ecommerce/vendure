@@ -5,11 +5,11 @@ import {
     JoinColumn,
     OneToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from 'typeorm';
-import { Administrator } from "./administrator.interface";
-import { UserEntity } from "../user/user.entity";
-import { User } from "../user/user.interface";
+import { UserEntity } from '../user/user.entity';
+import { User } from '../user/user.interface';
+import { Administrator } from './administrator.interface';
 
 @Entity('administrator')
 export class AdministratorEntity implements Administrator {

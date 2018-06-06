@@ -1,16 +1,17 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn,
+    Entity,
+    JoinColumn,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from 'typeorm';
 import { AddressEntity } from '../address/address.entity';
-import { Customer } from "./customer.interface";
-import { UserEntity } from "../user/user.entity";
-import { User } from "../user/user.interface";
+import { UserEntity } from '../user/user.entity';
+import { User } from '../user/user.interface';
+import { Customer } from './customer.interface';
 
 @Entity('customer')
 export class CustomerEntity implements Customer {
