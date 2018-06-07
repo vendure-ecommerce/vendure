@@ -16,7 +16,7 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
  */
 export type Translatable<T> =
     // Translatable must include all non-translatable keys of the interface
-    { [K in NonTranslateableKeys<T>]: T[K] extends Array<any> ? Array<Translatable<T[K][number]>> : T[K] } &
+    { [K in NonTranslateableKeys<T>]: T[K] extends Array<any> ? Array<Translatable<T[K][number]>> : T[K] | Translatable<T[K]> } &
     // Translatable must not include any translatable keys (these are instead handled by the Translation)
     { [K in TranslatableKeys<T>]?: never } &
     // Translatable must include a reference to all translations of the translatable keys

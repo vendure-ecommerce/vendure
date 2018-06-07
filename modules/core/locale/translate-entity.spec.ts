@@ -1,11 +1,12 @@
-import { Entity } from 'typeorm';
 import { ProductOptionTranslationEntity } from '../entity/product-option/product-option-translation.entity';
 import { ProductOptionEntity } from '../entity/product-option/product-option.entity';
+import { ProductOption } from '../entity/product-option/product-option.interface';
 import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariantEntity } from '../entity/product-variant/product-variant.entity';
+import { ProductVariant } from '../entity/product-variant/product-variant.interface';
 import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
 import { ProductEntity } from '../entity/product/product.entity';
-import { LocaleString, Translatable, Translation } from './locale-types';
+import { Translatable, Translation } from './locale-types';
 import { translateDeep, translateEntity } from './translate-entity';
 
 const LANGUAGE_CODE = 'en';
@@ -60,6 +61,30 @@ describe('translateEntity()', () => {
 });
 
 describe('translateDeep()', () => {
+    interface TestProduct {
+        singleTestVariant: TestVariant;
+        singleRealVariant: ProductVariant;
+    }
+
+    class TestProductEntity implements Translatable<TestProduct> {
+        id: number;
+        singleTestVariant: TestVariantEntity;
+        singleRealVariant: ProductVariantEntity;
+        translations: Translation<TestProduct>[];
+    }
+
+    interface TestVariant {
+        singleOption: ProductOption;
+    }
+
+    class TestVariantEntity implements Translatable<TestVariant> {
+        id: number;
+        singleOption: ProductOptionEntity;
+        translations: Translation<TestVariant>[];
+    }
+
+    let testProduct: TestProductEntity;
+    let testVariant: TestVariantEntity;
     let product: ProductEntity;
     let productTranslation: ProductTranslationEntity;
     let productVariant: ProductVariantEntity;
@@ -96,6 +121,13 @@ describe('translateDeep()', () => {
         product.id = 1;
         product.translations = [productTranslation];
         product.variants = [productVariant];
+
+        testVariant = new TestVariantEntity();
+        testVariant.singleOption = productOption;
+
+        testProduct = new TestProductEntity();
+        testProduct.singleTestVariant = testVariant;
+        testProduct.singleRealVariant = productVariant;
     });
 
     it('should translate the root entity', () => {
@@ -104,14 +136,36 @@ describe('translateDeep()', () => {
         expect(result).toHaveProperty('name', PRODUCT_NAME);
     });
 
-    it('should translate a first-level nested entity', () => {
+    it('should not throw if root entity has no translations', () => {
+        expect(() => translateDeep(testProduct)).not.toThrow();
+    });
+
+    it('should translate a first-level nested non-array entity', () => {
+        const result = translateDeep(testProduct, ['singleRealVariant']);
+
+        expect(result.singleRealVariant).toHaveProperty('name', VARIANT_NAME);
+    });
+
+    it('should translate a first-level nested entity array', () => {
         const result = translateDeep(product, ['variants']);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME);
         expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME);
     });
 
-    it('should translate a second-level nested entity', () => {
+    it('should translate a second-level nested non-array entity', () => {
+        const result = translateDeep(testProduct, [['singleTestVariant', 'singleOption']]);
+
+        expect(result.singleTestVariant.singleOption).toHaveProperty('name', OPTION_NAME);
+    });
+
+    it('should translate a second-level nested entity array (first-level is not array)', () => {
+        const result = translateDeep(testProduct, [['singleRealVariant', 'options']]);
+
+        expect(result.singleRealVariant.options[0]).toHaveProperty('name', OPTION_NAME);
+    });
+
+    it('should translate a second-level nested entity array', () => {
         const result = translateDeep(product, ['variants', ['variants', 'options']]);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME);
