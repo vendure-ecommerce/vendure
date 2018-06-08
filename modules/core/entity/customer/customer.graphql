@@ -6,6 +6,4 @@ type Customer {
   emailAddress: String
   addresses: [Address]
   user: User
-  createdAt: String
-  updatedAt: String
 }

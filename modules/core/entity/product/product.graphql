@@ -6,6 +6,18 @@ type Product {
     image: String
     variants: [ProductVariant]
     optionGroups: [ProductOptionGroup]
-    createdAt: String
-    updatedAt: String
+}
+
+input CreateProductTranslation {
+    languageCode: LanguageCode!
+    name: String!
+    slug: String
+    description: String
+}
+
+input CreateProductInput {
+    translations: [CreateProductTranslation]!
+    image: String
+    variants: [CreateProductVariantInput]
+    optionGroupCodes: [String]
 }

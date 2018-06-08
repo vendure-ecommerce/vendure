@@ -5,6 +5,17 @@ type ProductVariant {
     image: String
     price: Int
     options: [ProductOption]
-    createdAt: String
-    updatedAt: String
+}
+
+input CreateProductVariantTranslation {
+    languageCode: LanguageCode!
+    name: String!
+}
+
+input CreateProductVariantInput {
+    translations: [CreateProductVariantTranslation]!
+    sku: String!
+    image: String
+    price: Int!
+    optionCodes: [String]
 }
