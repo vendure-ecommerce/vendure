@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { AddressEntity } from '../../entity/address/address.entity';
-import { Address } from '../../entity/address/address.interface';
-import { CustomerEntity } from '../../entity/customer/customer.entity';
-import { Customer } from '../../entity/customer/customer.interface';
+import { AddressEntity } from '../entity/address/address.entity';
+import { Address } from '../entity/address/address.interface';
+import { CustomerEntity } from '../entity/customer/customer.entity';
+import { Customer } from '../entity/customer/customer.interface';
 
 @Injectable()
 export class CustomerService {
@@ -14,7 +14,7 @@ export class CustomerService {
         return this.connection.manager.find(CustomerEntity);
     }
 
-    findOne(userId: number): Promise<Customer> {
+    findOne(userId: number): Promise<Customer | undefined> {
         return this.connection.manager.findOne(CustomerEntity, userId);
     }
 

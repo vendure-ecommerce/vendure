@@ -6,7 +6,7 @@ export class ProductVariant {
     sku: string;
     name: LocaleString;
     image: string;
-    price: string;
+    price: number;
     options: ProductOption[];
     createdAt: string;
     updatedAt: string;

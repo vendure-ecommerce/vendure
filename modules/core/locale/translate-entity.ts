@@ -25,13 +25,19 @@ export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<T>[k
 
 export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>>;
 
+export class NotTranslatedError extends Error {}
+
 /**
  * Converts a Translatable entity into the public-facing entity by unwrapping
  * the translated strings from the first of the Translation entities.
  */
 export function translateEntity<T>(translatable: Translatable<T>): TranslatedEntity<T> {
     if (!translatable.translations || translatable.translations.length === 0) {
-        throw new Error(`Translatable entity "${translatable.constructor.name}" has no translations`);
+        throw new NotTranslatedError(
+            `Translatable entity "${
+                translatable.constructor.name
+            }" has not been translated into the requested language`,
+        );
     }
     const translation = translatable.translations[0];
 
@@ -52,7 +58,7 @@ export function translateEntity<T>(translatable: Translatable<T>): TranslatedEnt
 export function translateDeep<T>(
     translatable: Translatable<T>,
     translatableRelations: DeepTranslatableRelations<T> = [],
-): TranslatedEntity<T> {
+): T {
     let translatedEntity: TranslatedEntity<T>;
     try {
         translatedEntity = translateEntity(translatable);
@@ -85,7 +91,9 @@ export function translateDeep<T>(
             property = path as any;
             value = translateLeaf(object, property);
         }
-        object[property] = value;
+        if (object && property!) {
+            object[property] = value;
+        }
     }
 
     return translatedEntity as any;
@@ -94,7 +102,9 @@ export function translateDeep<T>(
 function translateLeaf(object: any, property: string): any {
     if (Array.isArray(object[property])) {
         return object[property].map(nested2 => translateEntity(nested2));
-    } else {
+    } else if (object[property]) {
         return translateEntity(object[property]);
+    } else {
+        return undefined;
     }
 }

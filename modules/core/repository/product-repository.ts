@@ -1,38 +1,43 @@
-import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm';
-import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.interface';
-import { ProductOption } from '../entity/product-option/product-option.interface';
-import { ProductVariant } from '../entity/product-variant/product-variant.interface';
+import { AbstractRepository, EntityRepository, SelectQueryBuilder } from 'typeorm';
+import { CreateProductDto } from '../entity/product/create-product.dto';
+import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
 import { ProductEntity } from '../entity/product/product.entity';
 import { Product } from '../entity/product/product.interface';
-import { Translatable, TranslatableKeys, TranslatedEntity } from '../locale/locale-types';
+import { LanguageCode } from '../locale/language-code';
 import { translateDeep } from '../locale/translate-entity';
 
 @EntityRepository(ProductEntity)
-export class ProductRepository extends Repository<ProductEntity> {
+export class ProductRepository extends AbstractRepository<ProductEntity> {
     /**
      * Returns an array of Products including ProductVariants, translated into the
      * specified language.
      */
-    localeFind(languageCode: string): Promise<Product[]> {
-        return this.getProductQueryBuilder(languageCode)
-            .getMany()
-            .then(result => result.map(res => translateDeep(res, ['variants', 'optionGroups']) as any));
+    find(languageCode: LanguageCode): Promise<ProductEntity[]> {
+        return this.getProductQueryBuilder(languageCode).getMany();
     }
 
     /**
      * Returns single Product including ProductVariants, translated into the
      * specified language.
      */
-    localeFindOne(id: number, languageCode: string): Promise<Product> {
+    findOne(id: number, languageCode: LanguageCode): Promise<ProductEntity | undefined> {
         return this.getProductQueryBuilder(languageCode)
             .andWhere('product.id = :id', { id })
-            .getOne()
-            .then(result => translateDeep(result, ['variants', 'optionGroups', ['variants', 'options']]) as any);
+            .getOne();
     }
 
-    private getProductQueryBuilder(languageCode: string): SelectQueryBuilder<ProductEntity> {
-        const code = languageCode || 'en';
+    /**
+     * Creates a new Product with one or more ProductTranslations.
+     */
+    async create(productEntity: ProductEntity, translations: ProductTranslationEntity[]): Promise<ProductEntity> {
+        for (const translation of translations) {
+            await this.manager.save(translation);
+        }
+        productEntity.translations = translations;
+        return this.manager.save(productEntity);
+    }
 
+    private getProductQueryBuilder(languageCode: LanguageCode): SelectQueryBuilder<ProductEntity> {
         return this.manager
             .createQueryBuilder(ProductEntity, 'product')
             .leftJoinAndSelect('product.variants', 'variant')
@@ -58,6 +63,6 @@ export class ProductRepository extends Repository<ProductEntity> {
                 'variant_options_translation',
                 'variant_options_translation.languageCode = :code',
             )
-            .setParameters({ code });
+            .setParameters({ code: languageCode });
     }
 }

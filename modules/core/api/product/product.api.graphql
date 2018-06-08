@@ -1,0 +1,9 @@
+type Query {
+  products(lang: LanguageCode): [Product]
+  product(id: Int!, lang: LanguageCode): Product
+}
+
+type Mutation {
+  "Create a new Product"
+  createProduct(input: CreateProductInput): Product
+}

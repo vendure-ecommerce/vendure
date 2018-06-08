@@ -56,7 +56,9 @@ describe('translateEntity()', () => {
     it('throw if there are no translations available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product)).toThrow('Translatable entity "ProductEntity" has no translations');
+        expect(() => translateEntity(product)).toThrow(
+            'Translatable entity "ProductEntity" has not been translated into the requested language',
+        );
     });
 });
 
@@ -138,6 +140,16 @@ describe('translateDeep()', () => {
 
     it('should not throw if root entity has no translations', () => {
         expect(() => translateDeep(testProduct)).not.toThrow();
+    });
+
+    it('should not throw if first-level nested entity is not defined', () => {
+        testProduct.singleRealVariant = undefined as any;
+        expect(() => translateDeep(testProduct, ['singleRealVariant'])).not.toThrow();
+    });
+
+    it('should not throw if second-level nested entity is not defined', () => {
+        testProduct.singleRealVariant.options = undefined as any;
+        expect(() => translateDeep(testProduct, [['singleRealVariant', 'options']])).not.toThrow();
     });
 
     it('should translate a first-level nested non-array entity', () => {

@@ -1,9 +1,9 @@
+import { LanguageCode } from './language-code';
+
 /**
  * This type should be used in any interfaces where the value is to be
  * localized into different languages.
  */
-import { Product } from '../entity/product/product.interface';
-
 export type LocaleString = string & { _opaqueType: 'LocaleString' };
 
 export type TranslatableKeys<T> = { [K in keyof T]: T[K] extends LocaleString ? K : never }[keyof T];
@@ -33,7 +33,18 @@ export type Translation<T> =
     { [K in TranslatableKeys<T>]: string } &
     { [key: string]: any };
 
+// prettier-ignore
 export type TranslatedEntity<T> =
     // Translatable must include all non-translatable keys of the interface
     { [K in NonTranslateableKeys<T>]: T[K] extends Array<any> ? Array<Translatable<T[K][number]>> : T[K] } &
-        { [K in TranslatableKeys<T>]: string };
+    { [K in TranslatableKeys<T>]: string };
+
+export type LocalizedInput<T> = { [K in TranslatableKeys<T>]: string } & { languageCode: LanguageCode };
+
+/**
+ * This interface defines the shape of a DTO used to create / update an entity which has one or more LocaleString
+ * properties.
+ */
+export interface TranslatedInput<T> {
+    translations: Array<LocalizedInput<T>>;
+}

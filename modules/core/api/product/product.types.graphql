@@ -1,4 +1,0 @@
-type Query {
-  products(lang: String): [Product]
-  product(id: Int!, lang: String): Product
-}

@@ -9,7 +9,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Translatable } from '../../locale/locale-types';
+import { Translatable, Translation } from '../../locale/locale-types';
 import { ProductOptionEntity } from '../product-option/product-option.entity';
 import { ProductEntity } from '../product/product.entity';
 import { ProductVariantTranslationEntity } from './product-variant-translation.entity';
@@ -23,17 +23,17 @@ export class ProductVariantEntity implements Translatable<ProductVariant> {
 
     @Column() image: string;
 
-    @Column() price: string;
+    @Column() price: number;
 
     @CreateDateColumn() createdAt: string;
 
     @UpdateDateColumn() updatedAt: string;
 
     @OneToMany(type => ProductVariantTranslationEntity, translation => translation.base)
-    translations: ProductVariantTranslationEntity[];
+    translations: Translation<ProductVariant>[];
 
     @ManyToOne(type => ProductEntity, product => product.variants)
-    product: ProductEntity[];
+    product: ProductEntity;
 
     @ManyToMany(type => ProductOptionEntity)
     @JoinTable()
