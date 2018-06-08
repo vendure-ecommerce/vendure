@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { Customer } from '../../entity/customer/customer.interface';
-import { CustomerService } from './customer.service';
+import { CustomerService } from '../../service/customer.service';
 
 @Controller('customers')
 export class CustomerController {
@@ -12,7 +12,7 @@ export class CustomerController {
     }
 
     @Get(':id')
-    findOne(@Param() params): Promise<Customer> {
+    findOne(@Param() params): Promise<Customer | undefined> {
         return this.userService.findOne(params.id);
     }
 }
