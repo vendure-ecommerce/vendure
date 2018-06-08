@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"modules/**/*.ts\"",
-    "populate": "ts-node -r tsconfig-paths/register modules/testing/populate.ts",
+    "populate": "ts-node -r tsconfig-paths/register modules/mock-data/populate.ts",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
@@ -59,6 +59,7 @@
     "@types/node": "^9.3.0",
     "@types/supertest": "^2.0.4",
     "faker": "^4.1.0",
+    "graphql-request": "^1.6.0",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
     "lint-staged": "^7.1.3",

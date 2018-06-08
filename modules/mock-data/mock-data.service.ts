@@ -17,13 +17,23 @@ import { UserEntity } from '../core/entity/user/user.entity';
 
 // tslint:disable:no-console
 /**
- * A Class used for generating mock data.
+ * A Class used for generating mock data directly into the database via TypeORM.
  */
 export class MockDataService {
     connection: Connection;
 
-    populate(): Promise<any> {
-        return createConnection({
+    async populate(): Promise<any> {
+        this.connection = await this.connect();
+        await this.clearAllTables();
+        await this.populateCustomersAndAddresses();
+        await this.populateAdministrators();
+
+        const sizeOptionGroup = await this.populateOptions();
+        await this.populateProducts(sizeOptionGroup);
+    }
+
+    async connect(): Promise<Connection> {
+        this.connection = await createConnection({
             type: 'mysql',
             entities: ['./**/entity/**/*.entity.ts'],
             synchronize: true,
@@ -33,16 +43,9 @@ export class MockDataService {
             username: 'root',
             password: '',
             database: 'test',
-        }).then(async connection => {
-            this.connection = connection;
-
-            await this.clearAllTables();
-            await this.populateCustomersAndAddresses();
-            await this.populateAdministrators();
-
-            const sizeOptionGroup = await this.populateOptions();
-            await this.populateProducts(sizeOptionGroup);
         });
+
+        return this.connection;
     }
 
     async clearAllTables() {
@@ -129,12 +132,12 @@ export class MockDataService {
 
             // 1 - 4 variants
             const variantCount = Math.floor(Math.random() * 4) + 1;
-            const variants = [];
+            const variants: ProductVariantEntity[] = [];
             for (let j = 0; j < variantCount; j++) {
                 const variant = new ProductVariantEntity();
                 const variantName = `${name} variant ${j + 1}`;
                 variant.image = faker.image.imageUrl();
-                variant.price = faker.commerce.price(100, 12000, 0);
+                variant.price = faker.random.number({ min: 100, max: 12000 });
 
                 const variantTranslation1 = this.makeProductVariantTranslation('en', variantName);
                 const variantTranslation2 = this.makeProductVariantTranslation('de', variantName);

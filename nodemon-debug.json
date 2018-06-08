@@ -1,6 +1,6 @@
 {
   "watch": ["modules"],
   "ext": "ts",
-  "ignore": ["src/**/*.spec.ts"],
+  "ignore": ["modules/**/*.spec.ts", "modules/mock-data/**/*"],
   "exec": "node --inspect=5858 -r ts-node/register modules/core/main.ts"
 }
