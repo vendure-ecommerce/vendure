@@ -8,13 +8,11 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { AddressEntity } from '../address/address.entity';
-import { UserEntity } from '../user/user.entity';
-import { User } from '../user/user.interface';
-import { Customer } from './customer.interface';
+import { Address } from '../address/address.entity';
+import { User } from '../user/user.entity';
 
 @Entity('customer')
-export class CustomerEntity implements Customer {
+export class Customer {
     @PrimaryGeneratedColumn() id: number;
 
     @Column() firstName: string;
@@ -25,10 +23,10 @@ export class CustomerEntity implements Customer {
 
     @Column() emailAddress: string;
 
-    @OneToMany(type => AddressEntity, address => address.customer)
-    addresses: AddressEntity[];
+    @OneToMany(type => Address, address => address.customer)
+    addresses: Address[];
 
-    @OneToOne(type => UserEntity, { eager: true })
+    @OneToOne(type => User, { eager: true })
     @JoinColumn()
     user?: User;
 

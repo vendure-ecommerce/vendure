@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { Role } from '../../auth/role';
 import { RolesGuard } from '../../auth/roles-guard';
-import { UserEntity } from '../../entity/user/user.entity';
+import { User } from '../../entity/user/user.entity';
 import { LoginDto } from './login.dto';
 
 @Controller('auth')
@@ -31,14 +31,14 @@ export class AuthController {
     @RolesGuard([Role.Authenticated])
     @Get('me')
     async me(@Req() request) {
-        const user = request.user as UserEntity;
+        const user = request.user as User;
         return this.publiclyAccessibleUser(user);
     }
 
     /**
-     * Exposes a subset of the UserEntity properties which we want to expose to the public API.
+     * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    private publiclyAccessibleUser(user: UserEntity): Pick<UserEntity, 'id' | 'identifier' | 'roles'> {
+    private publiclyAccessibleUser(user: User): Pick<User, 'id' | 'identifier' | 'roles'> {
         return {
             id: user.id,
             identifier: user.identifier,

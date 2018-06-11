@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { ProductOptionGroupEntity } from '../entity/product-option-group/product-option-group.entity';
+import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { CreateProductDto } from '../entity/product/create-product.dto';
-import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
-import { ProductEntity } from '../entity/product/product.entity';
-import { Product } from '../entity/product/product.interface';
+import { ProductTranslation } from '../entity/product/product-translation.entity';
+import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
 import { translateDeep } from '../locale/translate-entity';
 import { ProductRepository } from '../repository/product-repository';
@@ -30,18 +29,18 @@ export class ProductService {
 
     async create(createProductDto: CreateProductDto): Promise<Product> {
         const { variants, optionGroupCodes, image, translations } = createProductDto;
-        const productEntity = new ProductEntity();
-        const productTranslations: ProductTranslationEntity[] = [];
+        const productEntity = new Product();
+        const productTranslations: ProductTranslation[] = [];
 
         if (optionGroupCodes && optionGroupCodes.length) {
-            const optionGroups = await this.connection.getRepository(ProductOptionGroupEntity).find();
+            const optionGroups = await this.connection.getRepository(ProductOptionGroup).find();
             const selectedOptionGroups = optionGroups.filter(og => optionGroupCodes.includes(og.code));
             productEntity.optionGroups = selectedOptionGroups;
         }
 
         for (const input of createProductDto.translations) {
             const { languageCode, name, description, slug } = input;
-            const translation = new ProductTranslationEntity();
+            const translation = new ProductTranslation();
             translation.languageCode = languageCode;
             translation.name = name;
             translation.slug = slug;
@@ -55,7 +54,7 @@ export class ProductService {
             .then(product => translateDeep(product));
     }
 
-    private translateProductEntity(product: ProductEntity): Product {
+    private translateProductEntity(product: Product): Product {
         return translateDeep(product, ['optionGroups', 'variants', ['variants', 'options']]);
     }
 }

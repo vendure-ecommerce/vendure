@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserEntity } from '../entity/user/user.entity';
+import { User } from '../entity/user/user.entity';
 import { Role } from './role';
 
 /**
@@ -38,7 +38,7 @@ function authenticatedOnly(roles: Role[]): boolean {
 function forRoles(roles: Role[]) {
     return {
         canActivate(context: ExecutionContext) {
-            const user: UserEntity = context.switchToHttp().getRequest().user;
+            const user: User = context.switchToHttp().getRequest().user;
             if (!user) {
                 return false;
             }

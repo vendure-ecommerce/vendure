@@ -8,19 +8,20 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Translatable, Translation } from '../../locale/locale-types';
-import { ProductOptionGroupEntity } from '../product-option-group/product-option-group.entity';
-import { ProductOptionGroup } from '../product-option-group/product-option-group.interface';
-import { ProductOptionEntity } from '../product-option/product-option.entity';
-import { ProductOption } from '../product-option/product-option.interface';
-import { ProductVariantEntity } from '../product-variant/product-variant.entity';
-import { ProductVariant } from '../product-variant/product-variant.interface';
-import { ProductTranslationEntity } from './product-translation.entity';
-import { Product } from './product.interface';
+import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
+import { ProductVariant } from '../product-variant/product-variant.entity';
+import { ProductTranslation } from './product-translation.entity';
 
 @Entity('product')
-export class ProductEntity implements Translatable<Product> {
+export class Product implements Translatable {
     @PrimaryGeneratedColumn() id: number;
+
+    name: LocaleString;
+
+    slug: LocaleString;
+
+    description: LocaleString;
 
     @Column() image: string;
 
@@ -28,13 +29,13 @@ export class ProductEntity implements Translatable<Product> {
 
     @UpdateDateColumn() updatedAt: string;
 
-    @OneToMany(type => ProductTranslationEntity, translation => translation.base)
+    @OneToMany(type => ProductTranslation, translation => translation.base)
     translations: Translation<Product>[];
 
-    @OneToMany(type => ProductVariantEntity, variant => variant.product)
-    variants: ProductVariantEntity[];
+    @OneToMany(type => ProductVariant, variant => variant.product)
+    variants: ProductVariant[];
 
-    @ManyToMany(type => ProductOptionGroupEntity)
+    @ManyToMany(type => ProductOptionGroup)
     @JoinTable()
-    optionGroups: ProductOptionGroupEntity[];
+    optionGroups: ProductOptionGroup[];
 }

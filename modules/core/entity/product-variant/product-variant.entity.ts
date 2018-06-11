@@ -9,15 +9,16 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Translatable, Translation } from '../../locale/locale-types';
-import { ProductOptionEntity } from '../product-option/product-option.entity';
-import { ProductEntity } from '../product/product.entity';
+import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { ProductOption } from '../product-option/product-option.entity';
+import { Product } from '../product/product.entity';
 import { ProductVariantTranslationEntity } from './product-variant-translation.entity';
-import { ProductVariant } from './product-variant.interface';
 
 @Entity('product_variant')
-export class ProductVariantEntity implements Translatable<ProductVariant> {
+export class ProductVariant implements Translatable {
     @PrimaryGeneratedColumn() id: number;
+
+    name: LocaleString;
 
     @Column() sku: string;
 
@@ -32,10 +33,10 @@ export class ProductVariantEntity implements Translatable<ProductVariant> {
     @OneToMany(type => ProductVariantTranslationEntity, translation => translation.base)
     translations: Translation<ProductVariant>[];
 
-    @ManyToOne(type => ProductEntity, product => product.variants)
-    product: ProductEntity;
+    @ManyToOne(type => Product, product => product.variants)
+    product: Product;
 
-    @ManyToMany(type => ProductOptionEntity)
+    @ManyToMany(type => ProductOption)
     @JoinTable()
-    options: ProductOptionEntity[];
+    options: ProductOption[];
 }

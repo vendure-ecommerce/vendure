@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { Connection } from 'typeorm';
-import { ProductOptionGroupEntity } from '../entity/product-option-group/product-option-group.entity';
-import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
-import { ProductEntity } from '../entity/product/product.entity';
+import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
+import { ProductTranslation } from '../entity/product/product-translation.entity';
+import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
 import { ProductRepository } from '../repository/product-repository';
 import { MockConnection } from '../repository/repository.mock';
@@ -41,14 +41,14 @@ describe('ProductService', () => {
             });
 
             const [arg1, arg2] = connection.getCustomRepository(ProductRepository).create.mock.calls[0];
-            expect(arg1 instanceof ProductEntity).toBe(true);
+            expect(arg1 instanceof Product).toBe(true);
             expect(Array.isArray(arg2)).toBe(true);
             expect(arg2.length).toBe(2);
-            expect(arg2[0] instanceof ProductTranslationEntity).toBe(true);
+            expect(arg2[0] instanceof ProductTranslation).toBe(true);
         });
 
         it('adds OptionGroups to the product when specified', async () => {
-            const productOptionGroupRepository = connection.registerMockRepository(ProductOptionGroupEntity);
+            const productOptionGroupRepository = connection.registerMockRepository(ProductOptionGroup);
             const productRepository = connection.getCustomRepository(ProductRepository);
             const mockOptionGroups = [{ code: 'optionGroup1' }, { code: 'optionGroup2' }, { code: 'optionGroup3' }];
             productOptionGroupRepository.find.mockReturnValue(mockOptionGroups);

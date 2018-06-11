@@ -1,9 +1,9 @@
 import { Test } from '@nestjs/testing';
 import { Connection } from 'typeorm';
-import { ProductOptionEntity } from '../entity/product-option/product-option.entity';
+import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
-import { ProductVariantEntity } from '../entity/product-variant/product-variant.entity';
-import { ProductEntity } from '../entity/product/product.entity';
+import { ProductVariant } from '../entity/product-variant/product-variant.entity';
+import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
 import { ProductVariantRepository } from '../repository/product-variant-repository';
 import { MockConnection } from '../repository/repository.mock';
@@ -24,7 +24,7 @@ describe('ProductVariantService', () => {
 
     describe('create()', () => {
         it('calls ProductVariantRepository.create with product and translation entities', () => {
-            const productEntity = new ProductEntity();
+            const productEntity = new Product();
             productVariantService.create(productEntity, {
                 sku: '123456',
                 price: 123,
@@ -42,15 +42,15 @@ describe('ProductVariantService', () => {
 
             const [arg1, arg2, arg3] = connection.getCustomRepository(ProductVariantRepository).create.mock.calls[0];
             expect(arg1).toBe(productEntity);
-            expect(arg2 instanceof ProductVariantEntity).toBe(true);
+            expect(arg2 instanceof ProductVariant).toBe(true);
             expect(Array.isArray(arg3)).toBe(true);
             expect(arg3.length).toBe(2);
             expect(arg3[0] instanceof ProductVariantTranslationEntity).toBe(true);
         });
 
         it('adds Options to the productVariant when specified', async () => {
-            const productEntity = new ProductEntity();
-            const productOptionRepository = connection.registerMockRepository(ProductOptionEntity);
+            const productEntity = new Product();
+            const productOptionRepository = connection.registerMockRepository(ProductOption);
             const mockOptions = [{ code: 'option1' }, { code: 'option2' }, { code: 'option3' }];
             productOptionRepository.find.mockReturnValue(mockOptions);
 

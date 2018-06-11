@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { Customer } from '../../entity/customer/customer.interface';
+import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
 
 @Controller('customers')

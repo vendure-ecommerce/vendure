@@ -1,4 +1,4 @@
-import { Translatable, TranslatedEntity } from './locale-types';
+import { Translatable } from './locale-types';
 
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
@@ -31,7 +31,7 @@ export class NotTranslatedError extends Error {}
  * Converts a Translatable entity into the public-facing entity by unwrapping
  * the translated strings from the first of the Translation entities.
  */
-export function translateEntity<T>(translatable: Translatable<T>): TranslatedEntity<T> {
+export function translateEntity<T extends Translatable>(translatable: T): T {
     if (!translatable.translations || translatable.translations.length === 0) {
         throw new NotTranslatedError(
             `Translatable entity "${
@@ -42,7 +42,7 @@ export function translateEntity<T>(translatable: Translatable<T>): TranslatedEnt
     const translation = translatable.translations[0];
 
     const translated = { ...(translatable as any) };
-    delete translated.translations;
+    // delete translated.translations;
 
     for (const [key, value] of Object.entries(translation)) {
         if (key !== 'languageCode' && key !== 'id') {
@@ -55,11 +55,11 @@ export function translateEntity<T>(translatable: Translatable<T>): TranslatedEnt
 /**
  * Translates an entity and its deeply-nested translatable properties. Supports up to 2 levels of nesting.
  */
-export function translateDeep<T>(
-    translatable: Translatable<T>,
+export function translateDeep<T extends Translatable>(
+    translatable: T,
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): T {
-    let translatedEntity: TranslatedEntity<T>;
+    let translatedEntity: T;
     try {
         translatedEntity = translateEntity(translatable);
     } catch (e) {
@@ -96,7 +96,7 @@ export function translateDeep<T>(
         }
     }
 
-    return translatedEntity as any;
+    return translatedEntity;
 }
 
 function translateLeaf(object: any, property: string): any {

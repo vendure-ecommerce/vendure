@@ -14,13 +14,7 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
 /**
  * Entities which have localizable string properties should implement this type.
  */
-export type Translatable<T> =
-    // Translatable must include all non-translatable keys of the interface
-    { [K in NonTranslateableKeys<T>]: T[K] extends Array<any> ? Array<Translatable<T[K][number]>> : T[K] | Translatable<T[K]> } &
-    // Translatable must not include any translatable keys (these are instead handled by the Translation)
-    { [K in TranslatableKeys<T>]?: never } &
-    // Translatable must include a reference to all translations of the translatable keys
-    { translations: Translation<T>[] };
+export interface Translatable { translations: Translation<any>[]; }
 
 // prettier-ignore
 /**
@@ -28,16 +22,9 @@ export type Translatable<T> =
  */
 export type Translation<T> =
     // Translation must include the languageCode and a reference to the base Translatable entity it is associated with
-    { languageCode: string; base: Translatable<T>; } &
+    { languageCode: LanguageCode; base: T; } &
     // Translation must include all translatable keys as a string type
-    { [K in TranslatableKeys<T>]: string } &
-    { [key: string]: any };
-
-// prettier-ignore
-export type TranslatedEntity<T> =
-    // Translatable must include all non-translatable keys of the interface
-    { [K in NonTranslateableKeys<T>]: T[K] extends Array<any> ? Array<Translatable<T[K][number]>> : T[K] } &
-    { [K in TranslatableKeys<T>]: string };
+    { [K in TranslatableKeys<T>]: string; };
 
 export type LocalizedInput<T> = { [K in TranslatableKeys<T>]: string } & { languageCode: LanguageCode };
 

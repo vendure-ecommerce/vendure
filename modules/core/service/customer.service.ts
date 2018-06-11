@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { AddressEntity } from '../entity/address/address.entity';
-import { Address } from '../entity/address/address.interface';
-import { CustomerEntity } from '../entity/customer/customer.entity';
-import { Customer } from '../entity/customer/customer.interface';
+import { Address } from '../entity/address/address.entity';
+import { Customer } from '../entity/customer/customer.entity';
 
 @Injectable()
 export class CustomerService {
     constructor(@InjectConnection() private connection: Connection) {}
 
     findAll(): Promise<Customer[]> {
-        return this.connection.manager.find(CustomerEntity);
+        return this.connection.manager.find(Customer);
     }
 
     findOne(userId: number): Promise<Customer | undefined> {
-        return this.connection.manager.findOne(CustomerEntity, userId);
+        return this.connection.manager.findOne(Customer, userId);
     }
 
     findAddressesByCustomerId(customerId: number): Promise<Address[]> {
         return this.connection
-            .getRepository(AddressEntity)
+            .getRepository(Address)
             .createQueryBuilder('address')
             .where('address.customerId = :id', { id: customerId })
             .getMany();

@@ -1,20 +1,18 @@
 import { AbstractRepository, EntityRepository, SelectQueryBuilder } from 'typeorm';
 import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
-import { ProductVariantEntity } from '../entity/product-variant/product-variant.entity';
-import { ProductVariant } from '../entity/product-variant/product-variant.interface';
-import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
-import { ProductEntity } from '../entity/product/product.entity';
-import { Product } from '../entity/product/product.interface';
+import { ProductVariant } from '../entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../entity/product/product-translation.entity';
+import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
 import { translateDeep } from '../locale/translate-entity';
 
-@EntityRepository(ProductEntity)
-export class ProductVariantRepository extends AbstractRepository<ProductVariantEntity> {
+@EntityRepository(Product)
+export class ProductVariantRepository extends AbstractRepository<ProductVariant> {
     /**
      * Returns an array of Products including ProductVariants, translated into the
      * specified language.
      */
-    localeFindByProductId(productId: number, languageCode: LanguageCode): Promise<ProductVariantEntity[]> {
+    localeFindByProductId(productId: number, languageCode: LanguageCode): Promise<ProductVariant[]> {
         return this.getProductVariantQueryBuilder(productId, languageCode).getMany();
     }
 
@@ -22,10 +20,10 @@ export class ProductVariantRepository extends AbstractRepository<ProductVariantE
      * Creates a new Product with one or more ProductTranslations.
      */
     async create(
-        product: ProductEntity | Product,
-        productVariantEntity: ProductVariantEntity,
+        product: Product,
+        productVariantEntity: ProductVariant,
         translations: ProductVariantTranslationEntity[],
-    ): Promise<ProductVariantEntity> {
+    ): Promise<ProductVariant> {
         for (const translation of translations) {
             await this.manager.save(translation);
         }
@@ -37,11 +35,11 @@ export class ProductVariantRepository extends AbstractRepository<ProductVariantE
     private getProductVariantQueryBuilder(
         productId: number,
         languageCode: LanguageCode,
-    ): SelectQueryBuilder<ProductVariantEntity> {
+    ): SelectQueryBuilder<ProductVariant> {
         const code = languageCode || LanguageCode.EN;
 
         return this.manager
-            .createQueryBuilder(ProductVariantEntity, 'variant')
+            .createQueryBuilder(ProductVariant, 'variant')
             .leftJoinAndSelect('product_variant.options', 'option')
             .leftJoinAndSelect(
                 'variant.translations',

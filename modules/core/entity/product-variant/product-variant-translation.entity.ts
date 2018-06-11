@@ -1,16 +1,16 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { LanguageCode } from '../../locale/language-code';
 import { Translation } from '../../locale/locale-types';
-import { ProductVariantEntity } from './product-variant.entity';
-import { ProductVariant } from './product-variant.interface';
+import { ProductVariant } from './product-variant.entity';
 
 @Entity('product_variant_translation')
 export class ProductVariantTranslationEntity implements Translation<ProductVariant> {
     @PrimaryGeneratedColumn() id: number;
 
-    @Column() languageCode: string;
+    @Column() languageCode: LanguageCode;
 
     @Column() name: string;
 
-    @ManyToOne(type => ProductVariantEntity, base => base.translations)
-    base: ProductVariantEntity;
+    @ManyToOne(type => ProductVariant, base => base.translations)
+    base: ProductVariant;
 }

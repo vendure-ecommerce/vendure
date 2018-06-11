@@ -1,10 +1,9 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Role } from '../../auth/role';
-import { AddressEntity } from '../address/address.entity';
-import { User } from './user.interface';
+import { Address } from '../address/address.entity';
 
 @Entity('user')
-export class UserEntity implements User {
+export class User {
     @PrimaryGeneratedColumn() id: number;
 
     @Column() identifier: string;

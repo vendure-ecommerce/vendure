@@ -1,30 +1,29 @@
-import { ProductOptionTranslationEntity } from '../entity/product-option/product-option-translation.entity';
-import { ProductOptionEntity } from '../entity/product-option/product-option.entity';
-import { ProductOption } from '../entity/product-option/product-option.interface';
+import { ProductOptionTranslation } from '../entity/product-option/product-option-translation.entity';
+import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
-import { ProductVariantEntity } from '../entity/product-variant/product-variant.entity';
-import { ProductVariant } from '../entity/product-variant/product-variant.interface';
-import { ProductTranslationEntity } from '../entity/product/product-translation.entity';
-import { ProductEntity } from '../entity/product/product.entity';
+import { ProductVariant } from '../entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../entity/product/product-translation.entity';
+import { Product } from '../entity/product/product.entity';
+import { LanguageCode } from './language-code';
 import { Translatable, Translation } from './locale-types';
 import { translateDeep, translateEntity } from './translate-entity';
 
-const LANGUAGE_CODE = 'en';
+const LANGUAGE_CODE = LanguageCode.EN;
 const PRODUCT_NAME = 'English Name';
 const VARIANT_NAME = 'English Variant';
 const OPTION_NAME = 'English Option';
 
 describe('translateEntity()', () => {
-    let product: ProductEntity;
-    let productTranslation: ProductTranslationEntity;
+    let product: Product;
+    let productTranslation: ProductTranslation;
 
     beforeEach(() => {
-        productTranslation = new ProductTranslationEntity();
+        productTranslation = new ProductTranslation();
         productTranslation.id = 2;
         productTranslation.languageCode = LANGUAGE_CODE;
         productTranslation.name = PRODUCT_NAME;
 
-        product = new ProductEntity();
+        product = new Product();
         product.id = 1;
         product.translations = [productTranslation];
     });
@@ -47,17 +46,11 @@ describe('translateEntity()', () => {
         expect(result).not.toHaveProperty('languageCode');
     });
 
-    it('should remove the translations property from the translatable', () => {
-        const result = translateEntity(product);
-
-        expect(result).not.toHaveProperty('translations');
-    });
-
     it('throw if there are no translations available', () => {
         product.translations = [];
 
         expect(() => translateEntity(product)).toThrow(
-            'Translatable entity "ProductEntity" has not been translated into the requested language',
+            'Translatable entity "Product" has not been translated into the requested language',
         );
     });
 });
@@ -68,10 +61,10 @@ describe('translateDeep()', () => {
         singleRealVariant: ProductVariant;
     }
 
-    class TestProductEntity implements Translatable<TestProduct> {
+    class TestProductEntity implements Translatable {
         id: number;
         singleTestVariant: TestVariantEntity;
-        singleRealVariant: ProductVariantEntity;
+        singleRealVariant: ProductVariant;
         translations: Translation<TestProduct>[];
     }
 
@@ -79,33 +72,33 @@ describe('translateDeep()', () => {
         singleOption: ProductOption;
     }
 
-    class TestVariantEntity implements Translatable<TestVariant> {
+    class TestVariantEntity implements Translatable {
         id: number;
-        singleOption: ProductOptionEntity;
+        singleOption: ProductOption;
         translations: Translation<TestVariant>[];
     }
 
     let testProduct: TestProductEntity;
     let testVariant: TestVariantEntity;
-    let product: ProductEntity;
-    let productTranslation: ProductTranslationEntity;
-    let productVariant: ProductVariantEntity;
+    let product: Product;
+    let productTranslation: ProductTranslation;
+    let productVariant: ProductVariant;
     let productVariantTranslation: ProductVariantTranslationEntity;
-    let productOption: ProductOptionEntity;
-    let productOptionTranslation: ProductOptionTranslationEntity;
+    let productOption: ProductOption;
+    let productOptionTranslation: ProductOptionTranslation;
 
     beforeEach(() => {
-        productTranslation = new ProductTranslationEntity();
+        productTranslation = new ProductTranslation();
         productTranslation.id = 2;
         productTranslation.languageCode = LANGUAGE_CODE;
         productTranslation.name = PRODUCT_NAME;
 
-        productOptionTranslation = new ProductOptionTranslationEntity();
+        productOptionTranslation = new ProductOptionTranslation();
         productOptionTranslation.id = 31;
         productOptionTranslation.languageCode = LANGUAGE_CODE;
         productOptionTranslation.name = OPTION_NAME;
 
-        productOption = new ProductOptionEntity();
+        productOption = new ProductOption();
         productOption.id = 3;
         productOption.translations = [productOptionTranslation];
 
@@ -114,12 +107,12 @@ describe('translateDeep()', () => {
         productVariantTranslation.languageCode = LANGUAGE_CODE;
         productVariantTranslation.name = VARIANT_NAME;
 
-        productVariant = new ProductVariantEntity();
+        productVariant = new ProductVariant();
         productVariant.id = 3;
         productVariant.translations = [productVariantTranslation];
         productVariant.options = [productOption];
 
-        product = new ProductEntity();
+        product = new Product();
         product.id = 1;
         product.translations = [productTranslation];
         product.variants = [productVariant];

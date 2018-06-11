@@ -1,9 +1,11 @@
 type Query {
-  products(lang: LanguageCode): [Product]
-  product(id: Int!, lang: LanguageCode): Product
+    products(lang: LanguageCode): [Product]
+    product(id: Int!, lang: LanguageCode): Product
 }
 
 type Mutation {
-  "Create a new Product"
-  createProduct(input: CreateProductInput): Product
+    "Create a new Product"
+    createProduct(input: CreateProductInput): Product
+    "Update an existing Product"
+    updateProduct(productId: Int, input: UpdateProductInput): Product
 }

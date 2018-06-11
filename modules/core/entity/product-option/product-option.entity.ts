@@ -7,14 +7,15 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Translatable } from '../../locale/locale-types';
-import { ProductOptionGroupEntity } from '../product-option-group/product-option-group.entity';
-import { ProductOptionTranslationEntity } from './product-option-translation.entity';
-import { ProductOption } from './product-option.interface';
+import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
+import { ProductOptionTranslation } from './product-option-translation.entity';
 
 @Entity('product_option')
-export class ProductOptionEntity implements Translatable<ProductOption> {
+export class ProductOption implements Translatable {
     @PrimaryGeneratedColumn() id: number;
+
+    name: LocaleString;
 
     @Column() code: string;
 
@@ -22,9 +23,9 @@ export class ProductOptionEntity implements Translatable<ProductOption> {
 
     @UpdateDateColumn() updatedAt: string;
 
-    @OneToMany(type => ProductOptionTranslationEntity, translation => translation.base)
-    translations: ProductOptionTranslationEntity[];
+    @OneToMany(type => ProductOptionTranslation, translation => translation.base)
+    translations: Translation<ProductOption>[];
 
-    @ManyToOne(type => ProductOptionGroupEntity)
-    group: ProductOptionGroupEntity;
+    @ManyToOne(type => ProductOptionGroup)
+    group: ProductOptionGroup;
 }

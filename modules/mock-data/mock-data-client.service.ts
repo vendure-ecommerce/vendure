@@ -2,7 +2,7 @@ import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
 import { CreateProductVariantDto } from '../core/entity/product-variant/create-product-variant.dto';
 import { CreateProductDto } from '../core/entity/product/create-product.dto';
-import { Product } from '../core/entity/product/product.interface';
+import { Product } from '../core/entity/product/product.entity';
 import { LanguageCode } from '../core/locale/language-code';
 import { LocalizedInput } from '../core/locale/locale-types';
 

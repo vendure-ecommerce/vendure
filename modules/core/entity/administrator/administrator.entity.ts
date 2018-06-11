@@ -7,12 +7,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from '../user/user.entity';
-import { User } from '../user/user.interface';
-import { Administrator } from './administrator.interface';
+import { User } from '../user/user.entity';
 
 @Entity('administrator')
-export class AdministratorEntity implements Administrator {
+export class Administrator {
     @PrimaryGeneratedColumn() id: number;
 
     @Column() firstName: string;
@@ -21,7 +19,7 @@ export class AdministratorEntity implements Administrator {
 
     @Column() emailAddress: string;
 
-    @OneToOne(type => UserEntity)
+    @OneToOne(type => User)
     @JoinColumn()
     user: User;
 

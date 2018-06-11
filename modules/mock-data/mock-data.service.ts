@@ -2,18 +2,19 @@ import * as faker from 'faker/locale/en_GB';
 import { Connection, createConnection } from 'typeorm';
 import { PasswordService } from '../core/auth/password.service';
 import { Role } from '../core/auth/role';
-import { AddressEntity } from '../core/entity/address/address.entity';
-import { AdministratorEntity } from '../core/entity/administrator/administrator.entity';
-import { CustomerEntity } from '../core/entity/customer/customer.entity';
-import { ProductOptionGroupTranslationEntity } from '../core/entity/product-option-group/product-option-group-translation.entity';
-import { ProductOptionGroupEntity } from '../core/entity/product-option-group/product-option-group.entity';
-import { ProductOptionTranslationEntity } from '../core/entity/product-option/product-option-translation.entity';
-import { ProductOptionEntity } from '../core/entity/product-option/product-option.entity';
+import { Address } from '../core/entity/address/address.entity';
+import { Administrator } from '../core/entity/administrator/administrator.entity';
+import { Customer } from '../core/entity/customer/customer.entity';
+import { ProductOptionGroupTranslation } from '../core/entity/product-option-group/product-option-group-translation.entity';
+import { ProductOptionGroup } from '../core/entity/product-option-group/product-option-group.entity';
+import { ProductOptionTranslation } from '../core/entity/product-option/product-option-translation.entity';
+import { ProductOption } from '../core/entity/product-option/product-option.entity';
 import { ProductVariantTranslationEntity } from '../core/entity/product-variant/product-variant-translation.entity';
-import { ProductVariantEntity } from '../core/entity/product-variant/product-variant.entity';
-import { ProductTranslationEntity } from '../core/entity/product/product-translation.entity';
-import { ProductEntity } from '../core/entity/product/product.entity';
-import { UserEntity } from '../core/entity/user/user.entity';
+import { ProductVariant } from '../core/entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../core/entity/product/product-translation.entity';
+import { Product } from '../core/entity/product/product.entity';
+import { User } from '../core/entity/user/user.entity';
+import { LanguageCode } from '../core/locale/language-code';
 
 // tslint:disable:no-console
 /**
@@ -53,17 +54,17 @@ export class MockDataService {
         console.log('Cleared all tables');
     }
 
-    async populateOptions(): Promise<ProductOptionGroupEntity> {
-        const sizeGroup = new ProductOptionGroupEntity();
+    async populateOptions(): Promise<ProductOptionGroup> {
+        const sizeGroup = new ProductOptionGroup();
         sizeGroup.code = 'size';
 
-        const sizeGroupEN = new ProductOptionGroupTranslationEntity();
-        sizeGroupEN.languageCode = 'en';
+        const sizeGroupEN = new ProductOptionGroupTranslation();
+        sizeGroupEN.languageCode = LanguageCode.EN;
         sizeGroupEN.name = 'Size';
         await this.connection.manager.save(sizeGroupEN);
-        const sizeGroupDE = new ProductOptionGroupTranslationEntity();
+        const sizeGroupDE = new ProductOptionGroupTranslation();
 
-        sizeGroupDE.languageCode = 'de';
+        sizeGroupDE.languageCode = LanguageCode.DE;
         sizeGroupDE.name = 'Größe';
         await this.connection.manager.save(sizeGroupDE);
 
@@ -76,17 +77,17 @@ export class MockDataService {
         return sizeGroup;
     }
 
-    private async populateSizeOptions(sizeGroup: ProductOptionGroupEntity) {
-        const sizeSmall = new ProductOptionEntity();
+    private async populateSizeOptions(sizeGroup: ProductOptionGroup) {
+        const sizeSmall = new ProductOption();
         sizeSmall.code = 'small';
 
-        const sizeSmallEN = new ProductOptionTranslationEntity();
-        sizeSmallEN.languageCode = 'en';
+        const sizeSmallEN = new ProductOptionTranslation();
+        sizeSmallEN.languageCode = LanguageCode.EN;
         sizeSmallEN.name = 'Small';
         await this.connection.manager.save(sizeSmallEN);
 
-        const sizeSmallDE = new ProductOptionTranslationEntity();
-        sizeSmallDE.languageCode = 'de';
+        const sizeSmallDE = new ProductOptionTranslation();
+        sizeSmallDE.languageCode = LanguageCode.DE;
         sizeSmallDE.name = 'Klein';
         await this.connection.manager.save(sizeSmallDE);
 
@@ -94,16 +95,16 @@ export class MockDataService {
         sizeSmall.group = sizeGroup;
         await this.connection.manager.save(sizeSmall);
 
-        const sizeLarge = new ProductOptionEntity();
+        const sizeLarge = new ProductOption();
         sizeLarge.code = 'large';
 
-        const sizeLargeEN = new ProductOptionTranslationEntity();
-        sizeLargeEN.languageCode = 'en';
+        const sizeLargeEN = new ProductOptionTranslation();
+        sizeLargeEN.languageCode = LanguageCode.EN;
         sizeLargeEN.name = 'Large';
         await this.connection.manager.save(sizeLargeEN);
 
-        const sizeLargeDE = new ProductOptionTranslationEntity();
-        sizeLargeDE.languageCode = 'de';
+        const sizeLargeDE = new ProductOptionTranslation();
+        sizeLargeDE.languageCode = LanguageCode.DE;
         sizeLargeDE.name = 'Groß';
         await this.connection.manager.save(sizeLargeDE);
 
@@ -114,33 +115,33 @@ export class MockDataService {
         sizeGroup.options = [sizeSmall, sizeLarge];
     }
 
-    async populateProducts(optionGroup: ProductOptionGroupEntity) {
+    async populateProducts(optionGroup: ProductOptionGroup) {
         for (let i = 0; i < 5; i++) {
             const addOption = i === 2 || i === 4;
 
-            const product = new ProductEntity();
+            const product = new Product();
             product.image = faker.image.imageUrl();
 
             const name = faker.commerce.productName();
             const slug = name.toLowerCase().replace(/\s+/g, '-');
             const description = faker.lorem.sentence();
 
-            const translation1 = this.makeProductTranslation('en', name, slug, description);
-            const translation2 = this.makeProductTranslation('de', name, slug, description);
+            const translation1 = this.makeProductTranslation(LanguageCode.EN, name, slug, description);
+            const translation2 = this.makeProductTranslation(LanguageCode.DE, name, slug, description);
             await this.connection.manager.save(translation1);
             await this.connection.manager.save(translation2);
 
             // 1 - 4 variants
             const variantCount = Math.floor(Math.random() * 4) + 1;
-            const variants: ProductVariantEntity[] = [];
+            const variants: ProductVariant[] = [];
             for (let j = 0; j < variantCount; j++) {
-                const variant = new ProductVariantEntity();
+                const variant = new ProductVariant();
                 const variantName = `${name} variant ${j + 1}`;
                 variant.image = faker.image.imageUrl();
                 variant.price = faker.random.number({ min: 100, max: 12000 });
 
-                const variantTranslation1 = this.makeProductVariantTranslation('en', variantName);
-                const variantTranslation2 = this.makeProductVariantTranslation('de', variantName);
+                const variantTranslation1 = this.makeProductVariantTranslation(LanguageCode.EN, variantName);
+                const variantTranslation2 = this.makeProductVariantTranslation(LanguageCode.DE, variantName);
                 await this.connection.manager.save(variantTranslation1);
                 await this.connection.manager.save(variantTranslation2);
 
@@ -169,20 +170,20 @@ export class MockDataService {
         const passwordService = new PasswordService();
 
         for (let i = 0; i < 5; i++) {
-            const customer = new CustomerEntity();
+            const customer = new Customer();
             customer.firstName = faker.name.firstName();
             customer.lastName = faker.name.lastName();
             customer.emailAddress = faker.internet.email(customer.firstName, customer.lastName);
             customer.phoneNumber = faker.phone.phoneNumber();
 
-            const user = new UserEntity();
+            const user = new User();
             user.passwordHash = await passwordService.hash('test');
             user.identifier = customer.emailAddress;
             user.roles = [Role.Customer];
 
             await this.connection.manager.save(user);
 
-            const address = new AddressEntity();
+            const address = new Address();
             address.fullName = `${customer.firstName} ${customer.lastName}`;
             address.streetLine1 = faker.address.streetAddress();
             address.city = faker.address.city();
@@ -202,14 +203,14 @@ export class MockDataService {
     async populateAdministrators() {
         const passwordService = new PasswordService();
 
-        const user = new UserEntity();
+        const user = new User();
         user.passwordHash = await passwordService.hash('admin');
         user.identifier = 'admin';
         user.roles = [Role.Superadmin];
 
         await this.connection.manager.save(user);
 
-        const administrator = new AdministratorEntity();
+        const administrator = new Administrator();
         administrator.emailAddress = 'admin@test.com';
         administrator.firstName = 'Super';
         administrator.lastName = 'Admin';
@@ -219,12 +220,12 @@ export class MockDataService {
     }
 
     private makeProductTranslation(
-        langCode: string,
+        langCode: LanguageCode,
         name: string,
         slug: string,
         description: string,
-    ): ProductTranslationEntity {
-        const productTranslation = new ProductTranslationEntity();
+    ): ProductTranslation {
+        const productTranslation = new ProductTranslation();
         productTranslation.languageCode = langCode;
         productTranslation.name = `${langCode} ${name}`;
         productTranslation.slug = `${langCode} ${slug}`;
@@ -232,7 +233,7 @@ export class MockDataService {
         return productTranslation;
     }
 
-    private makeProductVariantTranslation(langCode: string, name: string): ProductVariantTranslationEntity {
+    private makeProductVariantTranslation(langCode: LanguageCode, name: string): ProductVariantTranslationEntity {
         const productVariantTranslation = new ProductVariantTranslationEntity();
         productVariantTranslation.languageCode = langCode;
         productVariantTranslation.name = `${langCode} ${name}`;

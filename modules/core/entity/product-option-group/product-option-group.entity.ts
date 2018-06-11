@@ -1,12 +1,13 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Translatable } from '../../locale/locale-types';
-import { ProductOptionEntity } from '../product-option/product-option.entity';
-import { ProductOptionGroupTranslationEntity } from './product-option-group-translation.entity';
-import { ProductOptionGroup } from './product-option-group.interface';
+import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { ProductOption } from '../product-option/product-option.entity';
+import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 
 @Entity('product_option_group')
-export class ProductOptionGroupEntity implements Translatable<ProductOptionGroup> {
+export class ProductOptionGroup implements Translatable {
     @PrimaryGeneratedColumn() id: number;
+
+    name: LocaleString;
 
     @Column() code: string;
 
@@ -14,9 +15,9 @@ export class ProductOptionGroupEntity implements Translatable<ProductOptionGroup
 
     @UpdateDateColumn() updatedAt: string;
 
-    @OneToMany(type => ProductOptionGroupTranslationEntity, translation => translation.base)
-    translations: ProductOptionGroupTranslationEntity[];
+    @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base)
+    translations: Translation<ProductOptionGroup>[];
 
-    @OneToMany(type => ProductOptionEntity, product => product)
-    options: ProductOptionEntity[];
+    @OneToMany(type => ProductOption, product => product)
+    options: ProductOption[];
 }

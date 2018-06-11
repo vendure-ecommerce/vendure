@@ -1,14 +1,23 @@
 type Product {
-    id: Int
+    id: Int!
     name: String
     slug: String
     description: String
     image: String
     variants: [ProductVariant]
     optionGroups: [ProductOptionGroup]
+    translations: [ProductTranslation]
 }
 
-input CreateProductTranslation {
+type ProductTranslation {
+    id: Int!
+    languageCode: LanguageCode!
+    name: String!
+    slug: String!
+    description: String
+}
+
+input ProductTranslationInput {
     languageCode: LanguageCode!
     name: String!
     slug: String
@@ -16,8 +25,14 @@ input CreateProductTranslation {
 }
 
 input CreateProductInput {
-    translations: [CreateProductTranslation]!
+    translations: [ProductTranslationInput]!
     image: String
     variants: [CreateProductVariantInput]
+    optionGroupCodes: [String]
+}
+
+input UpdateProductInput {
+    translations: [ProductTranslationInput]!
+    image: String
     optionGroupCodes: [String]
 }

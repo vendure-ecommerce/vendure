@@ -1,7 +1,6 @@
 import { Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Address } from '../../entity/address/address.interface';
-import { CustomerEntity } from '../../entity/customer/customer.entity';
-import { Customer } from '../../entity/customer/customer.interface';
+import { Address } from '../../entity/address/address.entity';
+import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
 
 @Resolver('Customer')
@@ -19,7 +18,7 @@ export class CustomerResolver {
     }
 
     @ResolveProperty('addresses')
-    addresses(customer: CustomerEntity): Promise<Address[]> {
+    addresses(customer: Customer): Promise<Address[]> {
         return this.customerService.findAddressesByCustomerId(customer.id);
     }
 }

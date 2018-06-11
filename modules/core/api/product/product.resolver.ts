@@ -1,6 +1,6 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateProductDto } from '../../entity/product/create-product.dto';
-import { Product } from '../../entity/product/product.interface';
+import { Product } from '../../entity/product/product.entity';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
 
@@ -19,17 +19,24 @@ export class ProductResolver {
     }
 
     @Mutation()
-    async createProduct(_, args: MutationInput<CreateProductDto>): Promise<Product> {
-        const product = await this.productService.create(args.input);
+    async createProduct(_, args): Promise<Product> {
+        const { input } = args;
+        const product = await this.productService.create(input);
 
-        if (args.input.variants && args.input.variants.length) {
-            for (const variant of args.input.variants) {
+        if (input.variants && input.variants.length) {
+            for (const variant of input.variants) {
                 await this.productVariantService.create(product, variant);
             }
         }
 
         return product;
     }
+    /*
+    @Mutation()
+    updateProduct(_, args): Promise<Product> {
+        const { productId, input } = args;
+
+    }*/
 }
 
 export interface MutationInput<T> {

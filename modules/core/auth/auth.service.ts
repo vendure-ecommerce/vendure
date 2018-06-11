@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import { Connection } from 'typeorm';
-import { UserEntity } from '../entity/user/user.entity';
+import { User } from '../entity/user/user.entity';
 import { JwtPayload } from './auth-types';
 import { PasswordService } from './password.service';
 import { Role } from './role';
@@ -14,8 +14,8 @@ export const JWT_SECRET = 'some_secret';
 export class AuthService {
     constructor(private passwordService: PasswordService, @InjectConnection() private connection: Connection) {}
 
-    async createToken(identifier: string, password: string): Promise<{ user: UserEntity; token: string }> {
-        const user = await this.connection.getRepository(UserEntity).findOne({
+    async createToken(identifier: string, password: string): Promise<{ user: User; token: string }> {
+        const user = await this.connection.getRepository(User).findOne({
             where: {
                 identifier,
             },
@@ -37,7 +37,7 @@ export class AuthService {
     }
 
     async validateUser(payload: JwtPayload): Promise<any> {
-        return await this.connection.getRepository(UserEntity).findOne({
+        return await this.connection.getRepository(User).findOne({
             where: {
                 identifier: payload.identifier,
             },
