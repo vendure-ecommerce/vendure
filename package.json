@@ -1,8 +1,9 @@
 {
   "name": "vendure",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A modern, headless ecommerce framework",
-  "license": "MIT",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "format": "prettier --write \"modules/**/*.ts\"",
     "populate": "ts-node -r tsconfig-paths/register modules/mock-data/populate.ts",
