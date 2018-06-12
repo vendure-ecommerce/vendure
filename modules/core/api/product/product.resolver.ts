@@ -33,7 +33,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    updateProduct(_, args): Promise<Product> {
+    updateProduct(_, args): Promise<Product | undefined> {
         const { productId, input } = args;
         return this.productService.update(input);
     }

@@ -37,12 +37,18 @@ export class ProductRepository extends AbstractRepository<Product> {
         return this.manager.save(productEntity);
     }
 
+    /**
+     * Updates an existing Product and manages its ProductTranslations.
+     */
     async update(
-        product: UpdateProductDto,
+        productDto: UpdateProductDto,
         translationsToUpdate: ProductTranslation[],
         translationsToAdd: ProductTranslation[],
         translationsToDelete: ProductTranslation[],
-    ): Promise<any> {
+    ): Promise<Product> {
+        const product = new Product(productDto);
+        product.translations = [];
+
         if (translationsToUpdate.length) {
             for (const toUpdate of translationsToUpdate) {
                 await this.manager
@@ -52,32 +58,28 @@ export class ProductRepository extends AbstractRepository<Product> {
                     .where('id = :id', { id: toUpdate.id })
                     .execute();
             }
+            product.translations = product.translations.concat(translationsToUpdate);
         }
 
         if (translationsToAdd.length) {
             for (const toAdd of translationsToAdd) {
                 const translation = new ProductTranslation(toAdd);
-                translation.base = product as Product;
-                await this.manager.getRepository(ProductTranslation).save(translation);
-                product.translations.push(translation);
+                translation.base = product;
+                const newTranslation = await this.manager.getRepository(ProductTranslation).save(translation);
+                product.translations.push(newTranslation);
             }
         }
 
         if (translationsToDelete.length) {
             const toDeleteEntities = translationsToDelete.map(toDelete => {
                 const translation = new ProductTranslation(toDelete);
-                translation.base = product as Product;
+                translation.base = product;
                 return translation;
             });
             await this.manager.getRepository(ProductTranslation).remove(toDeleteEntities);
         }
 
-        await this.manager
-            .createQueryBuilder()
-            .update(Product)
-            .set(product)
-            .where('id = :id', { id: product.id })
-            .execute();
+        return this.manager.save(product);
     }
 
     private getProductQueryBuilder(languageCode: LanguageCode): SelectQueryBuilder<Product> {

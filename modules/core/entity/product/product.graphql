@@ -1,5 +1,6 @@
 type Product {
     id: Int!
+    languageCode: LanguageCode
     name: String
     slug: String
     description: String

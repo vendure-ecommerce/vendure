@@ -1,19 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { DeepPartial } from '../../common/common-types';
 import { LanguageCode } from '../../locale/language-code';
 import { Translation, TranslationInput } from '../../locale/locale-types';
 import { Product } from './product.entity';
 
 @Entity('product_translation')
 export class ProductTranslation implements Translation<Product> {
-    constructor(input?: TranslationInput<Product>) {
+    constructor(input?: DeepPartial<TranslationInput<Product>>) {
         if (input) {
-            if (input.id !== undefined) {
-                this.id = input.id;
-            }
-            this.languageCode = input.languageCode;
-            this.name = input.name;
-            this.slug = input.slug;
-            this.description = input.description;
+            Object.assign(this, input);
         }
     }
 
