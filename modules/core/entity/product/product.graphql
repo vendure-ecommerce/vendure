@@ -18,6 +18,7 @@ type ProductTranslation {
 }
 
 input ProductTranslationInput {
+    id: Int
     languageCode: LanguageCode!
     name: String!
     slug: String
@@ -25,14 +26,15 @@ input ProductTranslationInput {
 }
 
 input CreateProductInput {
-    translations: [ProductTranslationInput]!
     image: String
+    translations: [ProductTranslationInput]!
     variants: [CreateProductVariantInput]
     optionGroupCodes: [String]
 }
 
 input UpdateProductInput {
-    translations: [ProductTranslationInput]!
+    id: Int!
     image: String
+    translations: [ProductTranslationInput]!
     optionGroupCodes: [String]
 }

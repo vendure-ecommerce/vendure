@@ -7,5 +7,5 @@ type Mutation {
     "Create a new Product"
     createProduct(input: CreateProductInput): Product
     "Update an existing Product"
-    updateProduct(productId: Int, input: UpdateProductInput): Product
+    updateProduct(input: UpdateProductInput): Product
 }

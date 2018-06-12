@@ -1,5 +1,5 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateProductDto } from '../../entity/product/create-product.dto';
+import { CreateProductDto } from '../../entity/product/product.dto';
 import { Product } from '../../entity/product/product.entity';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
@@ -31,12 +31,12 @@ export class ProductResolver {
 
         return product;
     }
-    /*
+
     @Mutation()
     updateProduct(_, args): Promise<Product> {
         const { productId, input } = args;
-
-    }*/
+        return this.productService.update(input);
+    }
 }
 
 export interface MutationInput<T> {

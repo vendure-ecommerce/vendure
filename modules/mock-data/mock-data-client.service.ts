@@ -1,10 +1,10 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
 import { CreateProductVariantDto } from '../core/entity/product-variant/create-product-variant.dto';
-import { CreateProductDto } from '../core/entity/product/create-product.dto';
+import { CreateProductDto } from '../core/entity/product/product.dto';
 import { Product } from '../core/entity/product/product.entity';
 import { LanguageCode } from '../core/locale/language-code';
-import { LocalizedInput } from '../core/locale/locale-types';
+import { TranslationInput } from '../core/locale/locale-types';
 
 // tslint:disable:no-console
 /**
@@ -45,7 +45,7 @@ export class MockDataClientService {
         name: string,
         slug: string,
         description: string,
-    ): LocalizedInput<Product> {
+    ): TranslationInput<Product> {
         return {
             languageCode,
             name: `${languageCode} ${name}`,

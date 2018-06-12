@@ -26,12 +26,15 @@ export type Translation<T> =
     // Translation must include all translatable keys as a string type
     { [K in TranslatableKeys<T>]: string; };
 
-export type LocalizedInput<T> = { [K in TranslatableKeys<T>]: string } & { languageCode: LanguageCode };
+/**
+ * This is the type of a translation object when provided as input to a create or update operation.
+ */
+export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & { id?: number; languageCode: LanguageCode };
 
 /**
  * This interface defines the shape of a DTO used to create / update an entity which has one or more LocaleString
  * properties.
  */
 export interface TranslatedInput<T> {
-    translations: Array<LocalizedInput<T>>;
+    translations: Array<TranslationInput<T>>;
 }

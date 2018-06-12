@@ -7,3 +7,9 @@ export interface CreateProductDto extends TranslatedInput<Product> {
     optionGroupCodes?: [string];
     variants?: CreateProductVariantDto[];
 }
+
+export interface UpdateProductDto extends TranslatedInput<Product> {
+    id: number;
+    image?: string;
+    optionGroupCodes?: [string];
+}

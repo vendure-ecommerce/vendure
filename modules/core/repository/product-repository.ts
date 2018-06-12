@@ -1,8 +1,9 @@
 import { AbstractRepository, EntityRepository, SelectQueryBuilder } from 'typeorm';
-import { CreateProductDto } from '../entity/product/create-product.dto';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
+import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
+import { TranslationInput } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 
 @EntityRepository(Product)
@@ -34,6 +35,49 @@ export class ProductRepository extends AbstractRepository<Product> {
         }
         productEntity.translations = translations;
         return this.manager.save(productEntity);
+    }
+
+    async update(
+        product: UpdateProductDto,
+        translationsToUpdate: ProductTranslation[],
+        translationsToAdd: ProductTranslation[],
+        translationsToDelete: ProductTranslation[],
+    ): Promise<any> {
+        if (translationsToUpdate.length) {
+            for (const toUpdate of translationsToUpdate) {
+                await this.manager
+                    .createQueryBuilder()
+                    .update(ProductTranslation)
+                    .set(toUpdate)
+                    .where('id = :id', { id: toUpdate.id })
+                    .execute();
+            }
+        }
+
+        if (translationsToAdd.length) {
+            for (const toAdd of translationsToAdd) {
+                const translation = new ProductTranslation(toAdd);
+                translation.base = product as Product;
+                await this.manager.getRepository(ProductTranslation).save(translation);
+                product.translations.push(translation);
+            }
+        }
+
+        if (translationsToDelete.length) {
+            const toDeleteEntities = translationsToDelete.map(toDelete => {
+                const translation = new ProductTranslation(toDelete);
+                translation.base = product as Product;
+                return translation;
+            });
+            await this.manager.getRepository(ProductTranslation).remove(toDeleteEntities);
+        }
+
+        await this.manager
+            .createQueryBuilder()
+            .update(Product)
+            .set(product)
+            .where('id = :id', { id: product.id })
+            .execute();
     }
 
     private getProductQueryBuilder(languageCode: LanguageCode): SelectQueryBuilder<Product> {

@@ -56,6 +56,7 @@ export class MockProductRepository implements MockClass<ProductRepository> {
     find = stubReturningPromise();
     findOne = stubReturningPromise();
     create = stubReturningPromise();
+    update = stubReturningPromise();
 }
 
 export class MockProductVariantRepository implements MockClass<ProductVariantRepository> {
