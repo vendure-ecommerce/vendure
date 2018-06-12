@@ -3,6 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
+import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
 import { Customer } from '../entity/customer/customer.entity';
@@ -41,5 +42,22 @@ export class CustomerService {
         }
 
         return this.connection.getRepository(Customer).save(customer);
+    }
+
+    async createAddress(customerId: number, createAddressDto: CreateAddressDto): Promise<Address> {
+        const customer = await this.connection.manager.findOne(Customer, customerId, { relations: ['addresses'] });
+
+        if (!customer) {
+            throw new Error(`No customer with the id "${customerId}" was found`);
+        }
+
+        const address = new Address(createAddressDto);
+
+        const createdAddress = await this.connection.manager.getRepository(Address).save(address);
+
+        customer.addresses.push(createdAddress);
+        await this.connection.manager.save(customer);
+
+        return createdAddress;
     }
 }

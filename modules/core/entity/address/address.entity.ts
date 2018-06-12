@@ -1,9 +1,15 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { DeepPartial } from '../../common/common-types';
 import { Customer } from '../customer/customer.entity';
-import { User } from '../user/user.entity';
 
 @Entity('address')
 export class Address {
+    constructor(input?: DeepPartial<Address>) {
+        if (input) {
+            Object.assign(this, input);
+        }
+    }
+
     @PrimaryGeneratedColumn() id: number;
 
     @ManyToOne(type => Customer, customer => customer.addresses)

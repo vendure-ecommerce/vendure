@@ -28,4 +28,10 @@ export class CustomerResolver {
         const { input, password } = args;
         return this.customerService.create(input, password);
     }
+
+    @Mutation()
+    createCustomerAddress(_, args): Promise<Address> {
+        const { customerId, input } = args;
+        return this.customerService.createAddress(customerId, input);
+    }
 }
