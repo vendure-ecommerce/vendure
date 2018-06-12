@@ -8,11 +8,18 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { DeepPartial } from '../../common/common-types';
 import { Address } from '../address/address.entity';
 import { User } from '../user/user.entity';
 
 @Entity('customer')
 export class Customer {
+    constructor(input?: DeepPartial<Customer>) {
+        if (input) {
+            Object.assign(this, input);
+        }
+    }
+
     @PrimaryGeneratedColumn() id: number;
 
     @Column() firstName: string;
@@ -21,7 +28,8 @@ export class Customer {
 
     @Column() phoneNumber: string;
 
-    @Column() emailAddress: string;
+    @Column({ unique: true })
+    emailAddress: string;
 
     @OneToMany(type => Address, address => address.customer)
     addresses: Address[];

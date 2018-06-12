@@ -9,7 +9,8 @@ export class ProductOptionGroup implements Translatable {
 
     name: LocaleString;
 
-    @Column() code: string;
+    @Column({ unique: true })
+    code: string;
 
     @CreateDateColumn() createdAt: string;
 

@@ -6,7 +6,8 @@ import { Address } from '../address/address.entity';
 export class User {
     @PrimaryGeneratedColumn() id: number;
 
-    @Column() identifier: string;
+    @Column({ unique: true })
+    identifier: string;
 
     @Column() passwordHash: string;
 

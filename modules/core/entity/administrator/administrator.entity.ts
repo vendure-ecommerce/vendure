@@ -17,7 +17,8 @@ export class Administrator {
 
     @Column() lastName: string;
 
-    @Column() emailAddress: string;
+    @Column({ unique: true })
+    emailAddress: string;
 
     @OneToOne(type => User)
     @JoinColumn()
