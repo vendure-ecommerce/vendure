@@ -1,0 +1,9 @@
+type Query {
+  administrators: [Administrator]
+  administrator(id: Int!): Administrator
+}
+
+type Mutation {
+  "Create a new Administrator"
+  createAdministrator(input: CreateAdministratorInput!): Administrator
+}

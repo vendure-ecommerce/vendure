@@ -4,6 +4,11 @@ type Administrator {
     lastName: String
     emailAddress: String
     user: User
-    createdAt: String
-    updatedAt: String
+}
+
+input CreateAdministratorInput {
+    firstName: String
+    lastName: String
+    emailAddress: String!
+    password: String!
 }
