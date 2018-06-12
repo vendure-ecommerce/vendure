@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
 import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
@@ -39,6 +40,6 @@ export class ProductVariantService {
         return this.connection
             .getCustomRepository(ProductVariantRepository)
             .create(product, productVariant, variantTranslations)
-            .then(variant => translateDeep(variant));
+            .then(variant => translateDeep(variant, DEFAULT_LANGUAGE_CODE));
     }
 }

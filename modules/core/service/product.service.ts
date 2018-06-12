@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { foundIn, not } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
@@ -19,14 +20,21 @@ export class ProductService {
         return this.connection
             .getCustomRepository(ProductRepository)
             .find(lang)
-            .then(products => products.map(product => this.translateProductEntity(product)));
+            .then(products =>
+                products.map(product =>
+                    translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
+                ),
+            );
     }
 
     findOne(productId: number, lang: LanguageCode): Promise<Product | undefined> {
         return this.connection
             .getCustomRepository(ProductRepository)
             .findOne(productId, lang)
-            .then(product => product && this.translateProductEntity(product));
+            .then(
+                product =>
+                    product && translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
+            );
     }
 
     async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -47,18 +55,16 @@ export class ProductService {
         return this.connection
             .getCustomRepository(ProductRepository)
             .create(product, productTranslations)
-            .then(createdProduct => translateDeep(createdProduct));
+            .then(createdProduct => translateDeep(createdProduct, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateProductDto: UpdateProductDto): Promise<Product> {
+    async update(updateProductDto: UpdateProductDto): Promise<Product | undefined> {
         const { optionGroupCodes, image, translations } = updateProductDto;
         const productTranslations: ProductTranslation[] = [];
 
         // get current translations
         const existingTranslations = await this.connection.getRepository(ProductTranslation).find({
-            where: {
-                base: updateProductDto.id,
-            },
+            where: { base: updateProductDto.id },
             relations: ['base'],
         });
 
@@ -68,10 +74,11 @@ export class ProductService {
         const toAdd = translationEntities.filter(not(foundIn(existingTranslations, 'languageCode')));
         const toUpdate = translationEntities.filter(foundIn(existingTranslations, 'languageCode'));
 
-        return this.connection
+        await this.connection
             .getCustomRepository(ProductRepository)
-            .update(updateProductDto, toUpdate, toAdd, toDelete)
-            .then(createdProduct => translateDeep(createdProduct));
+            .update(updateProductDto, toUpdate, toAdd, toDelete);
+
+        return this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE);
     }
 
     private translationInputsToEntities(
@@ -87,9 +94,5 @@ export class ProductService {
             }
             return entity;
         });
-    }
-
-    private translateProductEntity(product: Product): Product {
-        return translateDeep(product, ['optionGroups', 'variants', ['variants', 'options']]);
     }
 }

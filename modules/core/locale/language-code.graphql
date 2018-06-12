@@ -1,371 +1,371 @@
 "ISO 639-1 language code"
 enum LanguageCode {
     "Afar"
-    AA
+    aa
     "Abkhazian"
-    AB
+    ab
     "Afrikaans"
-    AF
+    af
     "Akan"
-    AK
+    ak
     "Albanian"
-    SQ
+    sq
     "Amharic"
-    AM
+    am
     "Arabic"
-    AR
+    ar
     "Aragonese"
-    AN
+    an
     "Armenian"
-    HY
+    hy
     "Assamese"
-    AS
+    as
     "Avaric"
-    AV
+    av
     "Avestan"
-    AE
+    ae
     "Aymara"
-    AY
+    ay
     "Azerbaijani"
-    AZ
+    az
     "Bashkir"
-    BA
+    ba
     "Bambara"
-    BM
+    bm
     "Basque"
-    EU
+    eu
     "Belarusian"
-    BE
+    be
     "Bengali"
-    BN
+    bn
     "Bihari languages"
-    BH
+    bh
     "Bislama"
-    BI
+    bi
     "Bosnian"
-    BS
+    bs
     "Breton"
-    BR
+    br
     "Bulgarian"
-    BG
+    bg
     "Burmese"
-    MY
+    my
     "Catalan; Valencian"
-    CA
+    ca
     "Chamorro"
-    CH
+    ch
     "Chechen"
-    CE
+    ce
     "Chinese"
-    ZH
+    zh
     "Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic"
-    CU
+    cu
     "Chuvash"
-    CV
+    cv
     "Cornish"
-    KW
+    kw
     "Corsican"
-    CO
+    co
     "Cree"
-    CR
+    cr
     "Czech"
-    CS
+    cs
     "Danish"
-    DA
+    da
     "Divehi; Dhivehi; Maldivian"
-    DV
+    dv
     "Dutch; Flemish"
-    NL
+    nl
     "Dzongkha"
-    DZ
+    dz
     "English"
-    EN
+    en
     "Esperanto"
-    EO
+    eo
     "Estonian"
-    ET
+    et
     "Ewe"
-    EE
+    ee
     "Faroese"
-    FO
+    fo
     "Fijian"
-    FJ
+    fj
     "Finnish"
-    FI
+    fi
     "French"
-    FR
+    fr
     "Western Frisian"
-    FY
+    fy
     "Fulah"
-    FF
+    ff
     "Georgian"
-    KA
+    ka
     "German"
-    DE
+    de
     "Gaelic; Scottish Gaelic"
-    GD
+    gd
     "Irish"
-    GA
+    ga
     "Galician"
-    GL
+    gl
     "Manx"
-    GV
+    gv
     "Greek, Modern (1453-)"
-    EL
+    el
     "Guarani"
-    GN
+    gn
     "Gujarati"
-    GU
+    gu
     "Haitian; Haitian Creole"
-    HT
+    ht
     "Hausa"
-    HA
+    ha
     "Hebrew"
-    HE
+    he
     "Herero"
-    HZ
+    hz
     "Hindi"
-    HI
+    hi
     "Hiri Motu"
-    HO
+    ho
     "Croatian"
-    HR
+    hr
     "Hungarian"
-    HU
+    hu
     "Igbo"
-    IG
+    ig
     "Icelandic"
-    IS
+    is
     "Ido"
-    IO
+    io
     "Sichuan Yi; Nuosu"
-    II
+    ii
     "Inuktitut"
-    IU
+    iu
     "Interlingue; Occidental"
-    IE
+    ie
     "Interlingua (International Auxiliary Language Association)"
-    IA
+    ia
     "Indonesian"
-    ID
+    id
     "Inupiaq"
-    IK
+    ik
     "Italian"
-    IT
+    it
     "Javanese"
-    JV
+    jv
     "Japanese"
-    JA
+    ja
     "Kalaallisut; Greenlandic"
-    KL
+    kl
     "Kannada"
-    KN
+    kn
     "Kashmiri"
-    KS
+    ks
     "Kanuri"
-    KR
+    kr
     "Kazakh"
-    KK
+    kk
     "Central Khmer"
-    KM
+    km
     "Kikuyu; Gikuyu"
-    KI
+    ki
     "Kinyarwanda"
-    RW
+    rw
     "Kirghiz; Kyrgyz"
-    KY
+    ky
     "Komi"
-    KV
+    kv
     "Kongo"
-    KG
+    kg
     "Korean"
-    KO
+    ko
     "Kuanyama; Kwanyama"
-    KJ
+    kj
     "Kurdish"
-    KU
+    ku
     "Lao"
-    LO
+    lo
     "Latin"
-    LA
+    la
     "Latvian"
-    LV
+    lv
     "Limburgan; Limburger; Limburgish"
-    LI
+    li
     "Lingala"
-    LN
+    ln
     "Lithuanian"
-    LT
+    lt
     "Luxembourgish; Letzeburgesch"
-    LB
+    lb
     "Luba-Katanga"
-    LU
+    lu
     "Ganda"
-    LG
+    lg
     "Macedonian"
-    MK
+    mk
     "Marshallese"
-    MH
+    mh
     "Malayalam"
-    ML
+    ml
     "Maori"
-    MI
+    mi
     "Marathi"
-    MR
+    mr
     "Malay"
-    MS
+    ms
     "Malagasy"
-    MG
+    mg
     "Maltese"
-    MT
+    mt
     "Mongolian"
-    MN
+    mn
     "Nauru"
-    NA
+    na
     "Navajo; Navaho"
-    NV
+    nv
     "Ndebele, South; South Ndebele"
-    NR
+    nr
     "Ndebele, North; North Ndebele"
-    ND
+    nd
     "Ndonga"
-    NG
+    ng
     "Nepali"
-    NE
+    ne
     "Norwegian Nynorsk; Nynorsk, Norwegian"
-    NN
+    nn
     "Bokmål, Norwegian; Norwegian Bokmål"
-    NB
+    nb
     "Norwegian"
-    NO
+    no
     "Chichewa; Chewa; Nyanja"
-    NY
+    ny
     "Occitan (post 1500); Provençal"
-    OC
+    oc
     "Ojibwa"
-    OJ
+    oj
     "Oriya"
-    OR
+    or
     "Oromo"
-    OM
+    om
     "Ossetian; Ossetic"
-    OS
+    os
     "Panjabi; Punjabi"
-    PA
+    pa
     "Persian"
-    FA
+    fa
     "Pali"
-    PI
+    pi
     "Polish"
-    PL
+    pl
     "Portuguese"
-    PT
+    pt
     "Pushto; Pashto"
-    PS
+    ps
     "Quechua"
-    QU
+    qu
     "Romansh"
-    RM
+    rm
     "Romanian; Moldavian; Moldovan"
-    RO
+    ro
     "Rundi"
-    RN
+    rn
     "Russian"
-    RU
+    ru
     "Sango"
-    SG
+    sg
     "Sanskrit"
-    SA
+    sa
     "Sinhala; Sinhalese"
-    SI
+    si
     "Slovak"
-    SK
+    sk
     "Slovenian"
-    SL
+    sl
     "Northern Sami"
-    SE
+    se
     "Samoan"
-    SM
+    sm
     "Shona"
-    SN
+    sn
     "Sindhi"
-    SD
+    sd
     "Somali"
-    SO
+    so
     "Sotho, Southern"
-    ST
+    st
     "Spanish; Castilian"
-    ES
+    es
     "Sardinian"
-    SC
+    sc
     "Serbian"
-    SR
+    sr
     "Swati"
-    SS
+    ss
     "Sundanese"
-    SU
+    su
     "Swahili"
-    SW
+    sw
     "Swedish"
-    SV
+    sv
     "Tahitian"
-    TY
+    ty
     "Tamil"
-    TA
+    ta
     "Tatar"
-    TT
+    tt
     "Telugu"
-    TE
+    te
     "Tajik"
-    TG
+    tg
     "Tagalog"
-    TL
+    tl
     "Thai"
-    TH
+    th
     "Tibetan"
-    BO
+    bo
     "Tigrinya"
-    TI
+    ti
     "Tonga (Tonga Islands)"
-    TO
+    to
     "Tswana"
-    TN
+    tn
     "Tsonga"
-    TS
+    ts
     "Turkmen"
-    TK
+    tk
     "Turkish"
-    TR
+    tr
     "Twi"
-    TW
+    tw
     "Uighur; Uyghur"
-    UG
+    ug
     "Ukrainian"
-    UK
+    uk
     "Urdu"
-    UR
+    ur
     "Uzbek"
-    UZ
+    uz
     "Venda"
-    VE
+    ve
     "Vietnamese"
-    VI
+    vi
     "Volapük"
-    VO
+    vo
     "Welsh"
-    CY
+    cy
     "Walloon"
-    WA
+    wa
     "Wolof"
-    WO
+    wo
     "Xhosa"
-    XH
+    xh
     "Yiddish"
-    YI
+    yi
     "Yoruba"
-    YO
+    yo
     "Zhuang; Chuang"
-    ZA
+    za
     "Zulu"
-    ZU
+    zu
 }

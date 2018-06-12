@@ -9,48 +9,79 @@ import { Translatable, Translation } from './locale-types';
 import { translateDeep, translateEntity } from './translate-entity';
 
 const LANGUAGE_CODE = LanguageCode.EN;
-const PRODUCT_NAME = 'English Name';
-const VARIANT_NAME = 'English Variant';
-const OPTION_NAME = 'English Option';
+const PRODUCT_NAME_EN = 'English Name';
+const VARIANT_NAME_EN = 'English Variant';
+const OPTION_NAME_EN = 'English Option';
+const PRODUCT_NAME_DE = 'German Name';
+const VARIANT_NAME_DE = 'German Variant';
+const OPTION_NAME_DE = 'German Option';
 
 describe('translateEntity()', () => {
     let product: Product;
-    let productTranslation: ProductTranslation;
+    let productTranslationEN: ProductTranslation;
+    let productTranslationDE: ProductTranslation;
 
     beforeEach(() => {
-        productTranslation = new ProductTranslation();
-        productTranslation.id = 2;
-        productTranslation.languageCode = LANGUAGE_CODE;
-        productTranslation.name = PRODUCT_NAME;
+        productTranslationEN = new ProductTranslation({
+            id: 2,
+            languageCode: LanguageCode.EN,
+            name: PRODUCT_NAME_EN,
+            slug: '',
+            description: '',
+        });
+        productTranslationEN.base = { id: 1 } as any;
+
+        productTranslationDE = new ProductTranslation({
+            id: 3,
+            languageCode: LanguageCode.DE,
+            name: PRODUCT_NAME_DE,
+            slug: '',
+            description: '',
+        });
+        productTranslationDE.base = { id: 1 } as any;
 
         product = new Product();
         product.id = 1;
-        product.translations = [productTranslation];
+        product.translations = [productTranslationEN, productTranslationDE];
     });
 
-    it('should unwrap the first translation', () => {
-        const result = translateEntity(product);
+    it('should unwrap the matching translation', () => {
+        const result = translateEntity(product, LanguageCode.EN);
 
-        expect(result).toHaveProperty('name', PRODUCT_NAME);
+        expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
     });
 
     it('should not overwrite translatable id with translation id', () => {
-        const result = translateEntity(product);
+        const result = translateEntity(product, LanguageCode.EN);
 
         expect(result).toHaveProperty('id', 1);
     });
 
-    it('should not transfer the languageCode from the translation', () => {
-        const result = translateEntity(product);
+    it('should note transfer the base from the selected translation', () => {
+        const result = translateEntity(product, LanguageCode.EN);
 
-        expect(result).not.toHaveProperty('languageCode');
+        expect(result).not.toHaveProperty('base');
+    });
+
+    it('should transfer the languageCode from the selected translation', () => {
+        const result = translateEntity(product, LanguageCode.EN);
+
+        expect(result).toHaveProperty('languageCode', 'en');
     });
 
     it('throw if there are no translations available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product)).toThrow(
-            'Translatable entity "Product" has not been translated into the requested language',
+        expect(() => translateEntity(product, LanguageCode.EN)).toThrow(
+            'Translatable entity "Product" has not been translated into the requested language (en)',
+        );
+    });
+
+    it('throw if the desired translation is not available', () => {
+        product.translations = [];
+
+        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow(
+            'Translatable entity "Product" has not been translated into the requested language (zu)',
         );
     });
 });
@@ -91,12 +122,12 @@ describe('translateDeep()', () => {
         productTranslation = new ProductTranslation();
         productTranslation.id = 2;
         productTranslation.languageCode = LANGUAGE_CODE;
-        productTranslation.name = PRODUCT_NAME;
+        productTranslation.name = PRODUCT_NAME_EN;
 
         productOptionTranslation = new ProductOptionTranslation();
         productOptionTranslation.id = 31;
         productOptionTranslation.languageCode = LANGUAGE_CODE;
-        productOptionTranslation.name = OPTION_NAME;
+        productOptionTranslation.name = OPTION_NAME_EN;
 
         productOption = new ProductOption();
         productOption.id = 3;
@@ -105,7 +136,7 @@ describe('translateDeep()', () => {
         productVariantTranslation = new ProductVariantTranslationEntity();
         productVariantTranslation.id = 41;
         productVariantTranslation.languageCode = LANGUAGE_CODE;
-        productVariantTranslation.name = VARIANT_NAME;
+        productVariantTranslation.name = VARIANT_NAME_EN;
 
         productVariant = new ProductVariant();
         productVariant.id = 3;
@@ -126,55 +157,55 @@ describe('translateDeep()', () => {
     });
 
     it('should translate the root entity', () => {
-        const result = translateDeep(product);
+        const result = translateDeep(product, LanguageCode.EN);
 
-        expect(result).toHaveProperty('name', PRODUCT_NAME);
+        expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
     });
 
     it('should not throw if root entity has no translations', () => {
-        expect(() => translateDeep(testProduct)).not.toThrow();
+        expect(() => translateDeep(testProduct, LanguageCode.EN)).not.toThrow();
     });
 
     it('should not throw if first-level nested entity is not defined', () => {
         testProduct.singleRealVariant = undefined as any;
-        expect(() => translateDeep(testProduct, ['singleRealVariant'])).not.toThrow();
+        expect(() => translateDeep(testProduct, LanguageCode.EN, ['singleRealVariant'])).not.toThrow();
     });
 
     it('should not throw if second-level nested entity is not defined', () => {
         testProduct.singleRealVariant.options = undefined as any;
-        expect(() => translateDeep(testProduct, [['singleRealVariant', 'options']])).not.toThrow();
+        expect(() => translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']])).not.toThrow();
     });
 
     it('should translate a first-level nested non-array entity', () => {
-        const result = translateDeep(testProduct, ['singleRealVariant']);
+        const result = translateDeep(testProduct, LanguageCode.EN, ['singleRealVariant']);
 
-        expect(result.singleRealVariant).toHaveProperty('name', VARIANT_NAME);
+        expect(result.singleRealVariant).toHaveProperty('name', VARIANT_NAME_EN);
     });
 
     it('should translate a first-level nested entity array', () => {
-        const result = translateDeep(product, ['variants']);
+        const result = translateDeep(product, LanguageCode.EN, ['variants']);
 
-        expect(result).toHaveProperty('name', PRODUCT_NAME);
-        expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME);
+        expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
+        expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME_EN);
     });
 
     it('should translate a second-level nested non-array entity', () => {
-        const result = translateDeep(testProduct, [['singleTestVariant', 'singleOption']]);
+        const result = translateDeep(testProduct, LanguageCode.EN, [['singleTestVariant', 'singleOption']]);
 
-        expect(result.singleTestVariant.singleOption).toHaveProperty('name', OPTION_NAME);
+        expect(result.singleTestVariant.singleOption).toHaveProperty('name', OPTION_NAME_EN);
     });
 
     it('should translate a second-level nested entity array (first-level is not array)', () => {
-        const result = translateDeep(testProduct, [['singleRealVariant', 'options']]);
+        const result = translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']]);
 
-        expect(result.singleRealVariant.options[0]).toHaveProperty('name', OPTION_NAME);
+        expect(result.singleRealVariant.options[0]).toHaveProperty('name', OPTION_NAME_EN);
     });
 
     it('should translate a second-level nested entity array', () => {
-        const result = translateDeep(product, ['variants', ['variants', 'options']]);
+        const result = translateDeep(product, LanguageCode.EN, ['variants', ['variants', 'options']]);
 
-        expect(result).toHaveProperty('name', PRODUCT_NAME);
-        expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME);
-        expect(result.variants[0].options[0]).toHaveProperty('name', OPTION_NAME);
+        expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
+        expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME_EN);
+        expect(result.variants[0].options[0]).toHaveProperty('name', OPTION_NAME_EN);
     });
 });

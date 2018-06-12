@@ -1,3 +1,4 @@
+import { LanguageCode } from './language-code';
 import { Translatable } from './locale-types';
 
 // prettier-ignore
@@ -29,23 +30,24 @@ export class NotTranslatedError extends Error {}
 
 /**
  * Converts a Translatable entity into the public-facing entity by unwrapping
- * the translated strings from the first of the Translation entities.
+ * the translated strings from the matching Translation entity.
  */
-export function translateEntity<T extends Translatable>(translatable: T): T {
-    if (!translatable.translations || translatable.translations.length === 0) {
+export function translateEntity<T extends Translatable>(translatable: T, languageCode: LanguageCode): T {
+    const translation =
+        translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
+
+    if (!translation) {
         throw new NotTranslatedError(
             `Translatable entity "${
                 translatable.constructor.name
-            }" has not been translated into the requested language`,
+            }" has not been translated into the requested language (${languageCode})`,
         );
     }
-    const translation = translatable.translations[0];
 
     const translated = { ...(translatable as any) };
-    // delete translated.translations;
 
     for (const [key, value] of Object.entries(translation)) {
-        if (key !== 'languageCode' && key !== 'id') {
+        if (key !== 'base' && key !== 'id') {
             translated[key] = value;
         }
     }
@@ -57,11 +59,12 @@ export function translateEntity<T extends Translatable>(translatable: T): T {
  */
 export function translateDeep<T extends Translatable>(
     translatable: T,
+    languageCode: LanguageCode,
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): T {
     let translatedEntity: T;
     try {
-        translatedEntity = translateEntity(translatable);
+        translatedEntity = translateEntity(translatable, languageCode);
     } catch (e) {
         translatedEntity = translatable as any;
     }
@@ -79,17 +82,17 @@ export function translateDeep<T extends Translatable>(
                 valueLevel0.forEach((nested1, index) => {
                     object = translatedEntity[path0][index];
                     property = path1;
-                    value = translateLeaf(object, property);
+                    value = translateLeaf(object, property, languageCode);
                 });
             } else {
                 object = translatedEntity[path0];
                 property = path1;
-                value = translateLeaf(object, property);
+                value = translateLeaf(object, property, languageCode);
             }
         } else {
             object = translatedEntity;
             property = path as any;
-            value = translateLeaf(object, property);
+            value = translateLeaf(object, property, languageCode);
         }
         if (object && property!) {
             object[property] = value;
@@ -99,11 +102,11 @@ export function translateDeep<T extends Translatable>(
     return translatedEntity;
 }
 
-function translateLeaf(object: any, property: string): any {
+function translateLeaf(object: any, property: string, languageCode: LanguageCode): any {
     if (Array.isArray(object[property])) {
-        return object[property].map(nested2 => translateEntity(nested2));
+        return object[property].map(nested2 => translateEntity(nested2, languageCode));
     } else if (object[property]) {
-        return translateEntity(object[property]);
+        return translateEntity(object[property], languageCode);
     } else {
         return undefined;
     }
