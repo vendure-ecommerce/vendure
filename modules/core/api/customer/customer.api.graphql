@@ -2,3 +2,8 @@ type Query {
   customers: [Customer]
   customer(id: Int!): Customer
 }
+
+type Mutation {
+  "Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer."
+  createCustomer(input: CreateCustomerInput!, password: String): Customer
+}

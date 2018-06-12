@@ -1,5 +1,6 @@
-import { Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import { Address } from '../../entity/address/address.entity';
+import { CreateCustomerDto } from '../../entity/customer/customer.dto';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
 
@@ -20,5 +21,11 @@ export class CustomerResolver {
     @ResolveProperty('addresses')
     addresses(customer: Customer): Promise<Address[]> {
         return this.customerService.findAddressesByCustomerId(customer.id);
+    }
+
+    @Mutation()
+    createCustomer(_, args): Promise<Customer> {
+        const { input, password } = args;
+        return this.customerService.create(input, password);
     }
 }
