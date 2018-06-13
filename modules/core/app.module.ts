@@ -13,6 +13,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
 import { AdministratorService } from './service/administrator.service';
 import { CustomerService } from './service/customer.service';
+import { ProductOptionGroupService } from './service/product-option-group.service';
 import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
 import { ProductService } from './service/product.service';
@@ -44,6 +45,7 @@ import { ProductService } from './service/product.service';
         ProductService,
         ProductOptionResolver,
         ProductOptionService,
+        ProductOptionGroupService,
         ProductVariantService,
         ProductResolver,
         PasswordService,

@@ -2,3 +2,10 @@ type Query {
     productOptionGroups(languageCode: LanguageCode): [ProductOptionGroup]
     productOptionGroup(id: Int!, languageCode: LanguageCode): ProductOptionGroup
 }
+
+type Mutation {
+    "Create a new ProductOptionGroup"
+    createProductOptionGroup(input: CreateProductOptionGroupInput): ProductOptionGroup
+    #"Update an existing ProductOptionGroup"
+    #updateProductOptionGroup(input: UpdateProductOptionGroupInput): Product
+}

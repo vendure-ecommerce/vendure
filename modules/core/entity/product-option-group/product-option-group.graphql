@@ -1,5 +1,6 @@
 type ProductOptionGroup {
     id: Int
+    languageCode: LanguageCode
     code: String
     name: String
     options: [ProductOption]
@@ -10,4 +11,16 @@ type ProductOptionGroupTranslation {
     id: Int!
     languageCode: LanguageCode!
     name: String!
+}
+
+input ProductOptionGroupTranslationInput {
+    id: Int
+    languageCode: LanguageCode!
+    name: String!
+}
+
+input CreateProductOptionGroupInput {
+    code: String!
+    translations: [ProductOptionGroupTranslationInput]!
+    options: [CreateProductOptionInput]
 }

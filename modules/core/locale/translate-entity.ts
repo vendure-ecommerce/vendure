@@ -82,8 +82,9 @@ export function translateDeep<T extends Translatable>(
                 valueLevel0.forEach((nested1, index) => {
                     object = translatedEntity[path0][index];
                     property = path1;
-                    value = translateLeaf(object, property, languageCode);
+                    object[property] = translateLeaf(object, property, languageCode);
                 });
+                object = null;
             } else {
                 object = translatedEntity[path0];
                 property = path1;
@@ -102,12 +103,12 @@ export function translateDeep<T extends Translatable>(
     return translatedEntity;
 }
 
-function translateLeaf(object: any, property: string, languageCode: LanguageCode): any {
-    if (Array.isArray(object[property])) {
-        return object[property].map(nested2 => translateEntity(nested2, languageCode));
-    } else if (object[property]) {
-        return translateEntity(object[property], languageCode);
-    } else {
-        return undefined;
+function translateLeaf(object: object | undefined, property: string, languageCode: LanguageCode): any {
+    if (object && object[property]) {
+        if (Array.isArray(object[property])) {
+            return object[property].map(nested2 => translateEntity(nested2, languageCode));
+        } else if (object[property]) {
+            return translateEntity(object[property], languageCode);
+        }
     }
 }
