@@ -41,7 +41,7 @@
         "no-empty": false,
         "arrow-parens": false,
         "object-literal-sort-keys": false,
-        "no-unused-expression": false,
+        "no-unused-expression": true,
         "max-classes-per-file": [
             false
         ],
@@ -53,7 +53,8 @@
         ],
         "one-variable-per-declaration": [
             false
-        ]
+        ],
+        "no-floating-promises": true
     },
     "rulesDirectory": []
 }

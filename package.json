@@ -13,7 +13,7 @@
     "prestart:prod": "rimraf dist && tsc",
     "start:prod": "node dist/main.js",
     "start:hmr": "node dist/server",
-    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "lint": "tslint --type-check --project tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -73,6 +73,7 @@
     "ts-node": "^6.0.0",
     "tsconfig-paths": "^3.3.1",
     "tslint": "5.3.2",
+    "tslint-language-service": "^0.9.9",
     "webpack": "^4.2.0",
     "webpack-cli": "^2.0.13",
     "webpack-node-externals": "^1.6.0"

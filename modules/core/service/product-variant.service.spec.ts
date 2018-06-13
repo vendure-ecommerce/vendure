@@ -23,9 +23,9 @@ describe('ProductVariantService', () => {
     });
 
     describe('create()', () => {
-        it('calls ProductVariantRepository.create with product and translation entities', () => {
+        it('calls ProductVariantRepository.create with product and translation entities', async () => {
             const productEntity = new Product();
-            productVariantService.create(productEntity, {
+            await productVariantService.create(productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [

@@ -24,8 +24,8 @@ describe('ProductService', () => {
     });
 
     describe('create()', () => {
-        it('calls ProductRepository.create with product and translation entities', () => {
-            productService.create({
+        it('calls ProductRepository.create with product and translation entities', async () => {
+            await productService.create({
                 translations: [
                     {
                         languageCode: LanguageCode.EN,
