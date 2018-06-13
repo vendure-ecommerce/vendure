@@ -1,6 +1,6 @@
 type Query {
-    products(lang: LanguageCode): [Product]
-    product(id: Int!, lang: LanguageCode): Product
+    products(languageCode: LanguageCode): [Product]
+    product(id: Int!, languageCode: LanguageCode): Product
 }
 
 type Mutation {

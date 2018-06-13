@@ -10,12 +10,12 @@ export class ProductResolver {
 
     @Query('products')
     products(obj, args): Promise<Product[]> {
-        return this.productService.findAll(args.lang);
+        return this.productService.findAll(args.languageCode);
     }
 
     @Query('product')
     product(obj, args): Promise<Product | undefined> {
-        return this.productService.findOne(args.id, args.lang);
+        return this.productService.findOne(args.id, args.languageCode);
     }
 
     @Mutation()
@@ -37,8 +37,4 @@ export class ProductResolver {
         const { input } = args;
         return this.productService.update(input);
     }
-}
-
-export interface MutationInput<T> {
-    input: T;
 }

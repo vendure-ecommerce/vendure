@@ -6,12 +6,14 @@ import { AdministratorResolver } from './api/administrator/administrator.resolve
 import { AuthController } from './api/auth/auth.controller';
 import { CustomerController } from './api/customer/customer.controller';
 import { CustomerResolver } from './api/customer/customer.resolver';
+import { ProductOptionResolver } from './api/product-option/product-option.resolver';
 import { ProductResolver } from './api/product/product.resolver';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
 import { AdministratorService } from './service/administrator.service';
 import { CustomerService } from './service/customer.service';
+import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
 import { ProductService } from './service/product.service';
 
@@ -40,6 +42,8 @@ import { ProductService } from './service/product.service';
         CustomerService,
         CustomerResolver,
         ProductService,
+        ProductOptionResolver,
+        ProductOptionService,
         ProductVariantService,
         ProductResolver,
         PasswordService,
