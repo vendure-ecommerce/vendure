@@ -23,7 +23,7 @@ export class ProductOption implements Translatable {
 
     @UpdateDateColumn() updatedAt: string;
 
-    @OneToMany(type => ProductOptionTranslation, translation => translation.base)
+    @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true })
     translations: Translation<ProductOption>[];
 
     @ManyToOne(type => ProductOptionGroup)

@@ -13,7 +13,9 @@ export class ProductRepository extends AbstractRepository<Product> {
      * specified language.
      */
     find(languageCode: LanguageCode): Promise<Product[]> {
-        return this.getProductQueryBuilder(languageCode).getMany();
+        return this.manager.find(Product, {
+            relations: ['variants', 'optionGroups', 'variants.options'],
+        });
     }
 
     /**
@@ -21,9 +23,9 @@ export class ProductRepository extends AbstractRepository<Product> {
      * specified language.
      */
     findOne(id: number, languageCode: LanguageCode): Promise<Product | undefined> {
-        return this.getProductQueryBuilder(languageCode)
-            .andWhere('product.id = :id', { id })
-            .getOne();
+        return this.manager.findOne(Product, id, {
+            relations: ['variants', 'optionGroups', 'variants.options'],
+        });
     }
 
     /**
@@ -80,34 +82,5 @@ export class ProductRepository extends AbstractRepository<Product> {
         }
 
         return this.manager.save(product);
-    }
-
-    private getProductQueryBuilder(languageCode: LanguageCode): SelectQueryBuilder<Product> {
-        return this.manager
-            .createQueryBuilder(Product, 'product')
-            .leftJoinAndSelect('product.variants', 'variant')
-            .leftJoinAndSelect('product.optionGroups', 'option_group')
-            .leftJoinAndSelect(
-                'product.translations',
-                'product_translation',
-                // 'product_translation.languageCode = :code',
-            )
-            .leftJoinAndSelect(
-                'variant.translations',
-                'product_variant_translation',
-                // 'product_variant_translation.languageCode = :code',
-            )
-            .leftJoinAndSelect(
-                'option_group.translations',
-                'option_group_translation',
-                // 'option_group_translation.languageCode = :code',
-            )
-            .leftJoinAndSelect('variant.options', 'variant_options')
-            .leftJoinAndSelect(
-                'variant_options.translations',
-                'variant_options_translation',
-                // 'variant_options_translation.languageCode = :code',
-            )
-            .setParameters({ code: languageCode });
     }
 }
