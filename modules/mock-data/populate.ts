@@ -7,10 +7,11 @@ async function populate() {
 
     await mockDataService.connect();
     await mockDataService.clearAllTables();
-    await mockDataService.populateCustomersAndAddresses();
-    await mockDataService.populateAdministrators();
-    await mockDataService.populateOptions();
+    await mockDataClientService.populateOptions();
     await mockDataClientService.populateProducts();
+    await mockDataClientService.populateCustomers();
+    await mockDataClientService.populateAdmins();
 }
 
+// tslint:disable:no-floating-promises
 populate().then(() => process.exit(0));
