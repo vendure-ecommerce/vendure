@@ -5,6 +5,13 @@ type ProductVariant {
     image: String
     price: Int
     options: [ProductOption]
+    translations: [ProductVariantTranslation]
+}
+
+type ProductVariantTranslation {
+    id: Int!
+    languageCode: LanguageCode!
+    name: String!
 }
 
 input CreateProductVariantTranslation {

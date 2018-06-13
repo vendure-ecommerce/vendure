@@ -2,4 +2,12 @@ type ProductOptionGroup {
     id: Int
     code: String
     name: String
+    options: [ProductOption]
+    translations: [ProductOptionGroupTranslation]
+}
+
+type ProductOptionGroupTranslation {
+    id: Int!
+    languageCode: LanguageCode!
+    name: String!
 }

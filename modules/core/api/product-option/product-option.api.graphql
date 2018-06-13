@@ -1,0 +1,4 @@
+type Query {
+    productOptionGroups(languageCode: LanguageCode): [ProductOptionGroup]
+    productOptionGroup(id: Int!, languageCode: LanguageCode): ProductOptionGroup
+}

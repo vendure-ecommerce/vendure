@@ -19,6 +19,6 @@ export class ProductOptionGroup implements Translatable {
     @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
     translations: Translation<ProductOptionGroup>[];
 
-    @OneToMany(type => ProductOption, product => product)
+    @OneToMany(type => ProductOption, option => option.group)
     options: ProductOption[];
 }

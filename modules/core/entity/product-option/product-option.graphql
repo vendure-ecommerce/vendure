@@ -2,4 +2,11 @@ type ProductOption {
     id: Int
     code: String
     name: String
+    translations: [ProductOptionTranslation]
+}
+
+type ProductOptionTranslation {
+    id: Int!
+    languageCode: LanguageCode!
+    name: String!
 }
