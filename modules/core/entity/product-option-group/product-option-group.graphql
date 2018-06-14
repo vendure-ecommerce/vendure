@@ -24,3 +24,9 @@ input CreateProductOptionGroupInput {
     translations: [ProductOptionGroupTranslationInput]!
     options: [CreateProductOptionInput]
 }
+
+input UpdateProductOptionGroupInput {
+    id: Int!
+    code: String!
+    translations: [ProductOptionGroupTranslationInput]!
+}

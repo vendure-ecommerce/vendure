@@ -36,4 +36,10 @@ export class ProductOptionResolver {
 
         return group;
     }
+
+    @Mutation()
+    async updateProductOptionGroup(_, args): Promise<ProductOptionGroup> {
+        const { input } = args;
+        return this.productOptionGroupService.update(args.input);
+    }
 }
