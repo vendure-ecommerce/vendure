@@ -1,20 +1,20 @@
 import * as faker from 'faker/locale/en_GB';
 import { Connection, createConnection } from 'typeorm';
-import { PasswordService } from '../core/auth/password.service';
-import { Role } from '../core/auth/role';
-import { Address } from '../core/entity/address/address.entity';
-import { Administrator } from '../core/entity/administrator/administrator.entity';
-import { Customer } from '../core/entity/customer/customer.entity';
-import { ProductOptionGroupTranslation } from '../core/entity/product-option-group/product-option-group-translation.entity';
-import { ProductOptionGroup } from '../core/entity/product-option-group/product-option-group.entity';
-import { ProductOptionTranslation } from '../core/entity/product-option/product-option-translation.entity';
-import { ProductOption } from '../core/entity/product-option/product-option.entity';
-import { ProductVariantTranslation } from '../core/entity/product-variant/product-variant-translation.entity';
-import { ProductVariant } from '../core/entity/product-variant/product-variant.entity';
-import { ProductTranslation } from '../core/entity/product/product-translation.entity';
-import { Product } from '../core/entity/product/product.entity';
-import { User } from '../core/entity/user/user.entity';
-import { LanguageCode } from '../core/locale/language-code';
+import { PasswordService } from '../src/auth/password.service';
+import { Role } from '../src/auth/role';
+import { Address } from '../src/entity/address/address.entity';
+import { Administrator } from '../src/entity/administrator/administrator.entity';
+import { Customer } from '../src/entity/customer/customer.entity';
+import { ProductOptionGroupTranslation } from '../src/entity/product-option-group/product-option-group-translation.entity';
+import { ProductOptionGroup } from '../src/entity/product-option-group/product-option-group.entity';
+import { ProductOptionTranslation } from '../src/entity/product-option/product-option-translation.entity';
+import { ProductOption } from '../src/entity/product-option/product-option.entity';
+import { ProductVariantTranslation } from '../src/entity/product-variant/product-variant-translation.entity';
+import { ProductVariant } from '../src/entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../src/entity/product/product-translation.entity';
+import { Product } from '../src/entity/product/product.entity';
+import { User } from '../src/entity/user/user.entity';
+import { LanguageCode } from '../src/locale/language-code';
 
 // tslint:disable:no-console
 /**

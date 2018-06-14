@@ -1,16 +1,16 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
-import { PasswordService } from '../core/auth/password.service';
-import { CreateAddressDto } from '../core/entity/address/address.dto';
-import { CreateAdministratorDto } from '../core/entity/administrator/administrator.dto';
-import { CreateCustomerDto } from '../core/entity/customer/customer.dto';
-import { Customer } from '../core/entity/customer/customer.entity';
-import { CreateProductOptionGroupDto } from '../core/entity/product-option-group/product-option-group.dto';
-import { CreateProductVariantDto } from '../core/entity/product-variant/create-product-variant.dto';
-import { CreateProductDto } from '../core/entity/product/product.dto';
-import { Product } from '../core/entity/product/product.entity';
-import { LanguageCode } from '../core/locale/language-code';
-import { TranslationInput } from '../core/locale/locale-types';
+import { PasswordService } from '../src/auth/password.service';
+import { CreateAddressDto } from '../src/entity/address/address.dto';
+import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
+import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
+import { Customer } from '../src/entity/customer/customer.entity';
+import { CreateProductOptionGroupDto } from '../src/entity/product-option-group/product-option-group.dto';
+import { CreateProductVariantDto } from '../src/entity/product-variant/create-product-variant.dto';
+import { CreateProductDto } from '../src/entity/product/product.dto';
+import { Product } from '../src/entity/product/product.entity';
+import { LanguageCode } from '../src/locale/language-code';
+import { TranslationInput } from '../src/locale/locale-types';
 
 // tslint:disable:no-console
 /**
