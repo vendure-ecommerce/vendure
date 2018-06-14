@@ -38,7 +38,7 @@ export class ProductVariant implements Translatable {
     @UpdateDateColumn() updatedAt: string;
 
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
-    translations: Translation<ProductVariant>[];
+    translations: Array<Translation<ProductVariant>>;
 
     @ManyToOne(type => Product, product => product.variants)
     product: Product;

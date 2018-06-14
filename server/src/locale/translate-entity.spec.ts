@@ -96,7 +96,7 @@ describe('translateDeep()', () => {
         id: number;
         singleTestVariant: TestVariantEntity;
         singleRealVariant: ProductVariant;
-        translations: Translation<TestProduct>[];
+        translations: Array<Translation<TestProduct>>;
     }
 
     interface TestVariant {
@@ -106,7 +106,7 @@ describe('translateDeep()', () => {
     class TestVariantEntity implements Translatable {
         id: number;
         singleOption: ProductOption;
-        translations: Translation<TestVariant>[];
+        translations: Array<Translation<TestVariant>>;
     }
 
     let testProduct: TestProductEntity;

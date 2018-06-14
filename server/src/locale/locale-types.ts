@@ -14,7 +14,7 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
 /**
  * Entities which have localizable string properties should implement this type.
  */
-export interface Translatable { translations: Translation<any>[]; }
+export interface Translatable { translations: Array<Translation<any>>; }
 
 // prettier-ignore
 /**

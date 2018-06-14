@@ -7,17 +7,17 @@ export type TranslatableRelationsKeys<T> = {
     T[K] extends number ? never :
     T[K] extends boolean ? never :
     T[K] extends undefined ? never :
-    T[K] extends Array<string> ? never :
-    T[K] extends Array<number> ? never :
-    T[K] extends Array<boolean> ? never :
+    T[K] extends string[] ? never :
+    T[K] extends number[] ? never :
+    T[K] extends boolean[] ? never :
     K extends 'translations' ? never : K
 }[keyof T];
 
-export type UnwrappedArray<T extends Array<any>> = T[number];
+export type UnwrappedArray<T extends any[]> = T[number];
 
 // prettier-ignore
 export type NestedTranslatableRelations<T> = {
-    [K in TranslatableRelationsKeys<T>]: T[K] extends Array<any> ?
+    [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ?
         [K, TranslatableRelationsKeys<UnwrappedArray<T[K]>>]:
         [K, TranslatableRelationsKeys<T[K]>]
 };
@@ -84,6 +84,7 @@ export function translateDeep<T extends Translatable>(
                     property = path1;
                     object[property] = translateLeaf(object, property, languageCode);
                 });
+                property = '';
                 object = null;
             } else {
                 object = translatedEntity[path0];
@@ -95,7 +96,8 @@ export function translateDeep<T extends Translatable>(
             property = path as any;
             value = translateLeaf(object, property, languageCode);
         }
-        if (object && property!) {
+
+        if (object && property) {
             object[property] = value;
         }
     }

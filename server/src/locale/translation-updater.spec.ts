@@ -79,7 +79,7 @@ describe('TranslationUpdater', () => {
         });
 
         it('correctly marks languages for update, addition and deletion', async () => {
-            const updated: TranslationInput<Product>[] = [
+            const updated: Array<TranslationInput<Product>> = [
                 {
                     languageCode: LanguageCode.EN,
                     name: '',

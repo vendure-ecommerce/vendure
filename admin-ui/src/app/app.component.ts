@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 @Component({
   selector: 'vdr-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   title = 'Vendure';
@@ -23,10 +23,10 @@ export class AppComponent {
             description
           }
         }
-      `
+      `,
     })
     .subscribe(result => {
       this.products = result.data.products;
-    })
+    });
   }
 }
