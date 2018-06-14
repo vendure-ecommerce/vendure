@@ -189,6 +189,10 @@
   version "0.11.21"
   resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-0.11.21.tgz#768b7d5afedce0b29195306debce9378501f73ee"
 
+"@ngrx/store@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@ngrx/store/-/store-6.0.1.tgz#02c806ce20c698b997e81f5671e0edc07d32cf86"
+
 "@ngtools/webpack@6.0.8":
   version "6.0.8"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-6.0.8.tgz#a05bce526aee9da62bb230a95fba83fee99d0bca"
@@ -510,6 +514,13 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
+apollo-angular-cache-ngrx@^1.0.0-beta.0:
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/apollo-angular-cache-ngrx/-/apollo-angular-cache-ngrx-1.0.0-beta.0.tgz#e09197a1dbb3be17adfee4cc283f9009020691ab"
+  dependencies:
+    apollo-cache "^1.1.0"
+    apollo-cache-inmemory "^1.1.5"
+
 apollo-angular-link-http-common@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/apollo-angular-link-http-common/-/apollo-angular-link-http-common-1.1.0.tgz#e91194d21a724b2dabafcf990cf5049df57b1b31"
@@ -524,7 +535,7 @@ apollo-angular@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/apollo-angular/-/apollo-angular-1.1.1.tgz#037fb798e2c925e8e270b9640fd6cbea961022df"
 
-apollo-cache-inmemory@^1.2.4:
+apollo-cache-inmemory@^1.1.5, apollo-cache-inmemory@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/apollo-cache-inmemory/-/apollo-cache-inmemory-1.2.4.tgz#452e731a6777756d744d493a3223cf04f8e50c9b"
   dependencies:
@@ -532,7 +543,7 @@ apollo-cache-inmemory@^1.2.4:
     apollo-utilities "^1.0.15"
     graphql-anywhere "^4.1.13"
 
-apollo-cache@^1.1.11:
+apollo-cache@^1.1.0, apollo-cache@^1.1.11:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/apollo-cache/-/apollo-cache-1.1.11.tgz#998e31a4b278e2fbbbf36fef8fce39c08adc35ca"
   dependencies:

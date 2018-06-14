@@ -7,28 +7,17 @@ import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { AppComponent } from './app.component';
+import { CoreModule } from './core/core.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
-  imports: [
-    BrowserModule,
-    ClarityModule,
-    HttpClientModule,
-    ApolloModule,
-    HttpLinkModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent],
+    declarations: [
+        AppComponent,
+    ],
+    imports: [
+        BrowserModule,
+        CoreModule,
+    ],
+    providers: [],
+    bootstrap: [AppComponent],
 })
-export class AppModule {
-
-  constructor(apollo: Apollo, httpLink: HttpLink) {
-    apollo.create({
-      link: httpLink.create({uri: 'http://localhost:3000/graphql'}),
-      cache: new InMemoryCache(),
-    });
-  }
-
-}
+export class AppModule {}
