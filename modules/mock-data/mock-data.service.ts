@@ -9,7 +9,7 @@ import { ProductOptionGroupTranslation } from '../core/entity/product-option-gro
 import { ProductOptionGroup } from '../core/entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../core/entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../core/entity/product-option/product-option.entity';
-import { ProductVariantTranslationEntity } from '../core/entity/product-variant/product-variant-translation.entity';
+import { ProductVariantTranslation } from '../core/entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../core/entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../core/entity/product/product-translation.entity';
 import { Product } from '../core/entity/product/product.entity';
@@ -233,8 +233,8 @@ export class MockDataService {
         return productTranslation;
     }
 
-    private makeProductVariantTranslation(langCode: LanguageCode, name: string): ProductVariantTranslationEntity {
-        const productVariantTranslation = new ProductVariantTranslationEntity();
+    private makeProductVariantTranslation(langCode: LanguageCode, name: string): ProductVariantTranslation {
+        const productVariantTranslation = new ProductVariantTranslation();
         productVariantTranslation.languageCode = langCode;
         productVariantTranslation.name = `${langCode} ${name}`;
         return productVariantTranslation;

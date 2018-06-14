@@ -1,45 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
-import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
+import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
-import { translateDeep } from '../locale/translate-entity';
-import { ProductVariantRepository } from '../repository/product-variant-repository';
+import { TranslationUpdaterService } from '../locale/translation-updater.service';
 
 @Injectable()
 export class ProductVariantService {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private translationUpdaterService: TranslationUpdaterService,
+    ) {}
 
     async create(product: Product, createProductVariantDto: CreateProductVariantDto): Promise<ProductVariant> {
-        const { sku, price, image, optionCodes, translations } = createProductVariantDto;
-        const productVariant = new ProductVariant();
-        productVariant.sku = sku;
-        productVariant.price = price;
-        productVariant.image = image!;
+        const { optionCodes, translations } = createProductVariantDto;
+        const variant = new ProductVariant(createProductVariantDto);
+        const variantTranslations: ProductVariantTranslation[] = [];
 
         if (optionCodes && optionCodes.length) {
             const options = await this.connection.getRepository(ProductOption).find();
-            const selectedOptions = options.filter(o => optionCodes.includes(o.code));
-            productVariant.options = selectedOptions;
+            const selectedOptions = options.filter(og => optionCodes.includes(og.code));
+            variant.options = selectedOptions;
         }
-
-        const variantTranslations: ProductVariantTranslationEntity[] = [];
 
         for (const input of translations) {
-            const { languageCode, name } = input;
-            const translation = new ProductVariantTranslationEntity();
-            translation.languageCode = languageCode;
-            translation.name = name;
+            const translation = new ProductVariantTranslation(input);
             variantTranslations.push(translation);
+            await this.connection.manager.save(translation);
         }
 
-        return this.connection
-            .getCustomRepository(ProductVariantRepository)
-            .create(product, productVariant, variantTranslations)
-            .then(variant => translateDeep(variant, DEFAULT_LANGUAGE_CODE));
+        variant.product = product;
+        variant.translations = variantTranslations;
+        const createdVariant = await this.connection.manager.save(variant);
+
+        return createdVariant;
     }
 }

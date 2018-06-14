@@ -9,13 +9,20 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { DeepPartial } from '../../common/common-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
-import { ProductVariantTranslationEntity } from './product-variant-translation.entity';
+import { ProductVariantTranslation } from './product-variant-translation.entity';
 
 @Entity('product_variant')
 export class ProductVariant implements Translatable {
+    constructor(input?: DeepPartial<ProductVariant>) {
+        if (input) {
+            Object.assign(this, input);
+        }
+    }
+
     @PrimaryGeneratedColumn() id: number;
 
     name: LocaleString;
@@ -30,7 +37,7 @@ export class ProductVariant implements Translatable {
 
     @UpdateDateColumn() updatedAt: string;
 
-    @OneToMany(type => ProductVariantTranslationEntity, translation => translation.base, { eager: true })
+    @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Translation<ProductVariant>[];
 
     @ManyToOne(type => Product, product => product.variants)

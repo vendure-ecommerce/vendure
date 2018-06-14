@@ -11,6 +11,7 @@ import { ProductResolver } from './api/product/product.resolver';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
+import { TranslationUpdaterService } from './locale/translation-updater.service';
 import { AdministratorService } from './service/administrator.service';
 import { CustomerService } from './service/customer.service';
 import { ProductOptionGroupService } from './service/product-option-group.service';
@@ -49,6 +50,7 @@ import { ProductService } from './service/product.service';
         ProductVariantService,
         ProductResolver,
         PasswordService,
+        TranslationUpdaterService,
     ],
 })
 export class AppModule implements NestModule {

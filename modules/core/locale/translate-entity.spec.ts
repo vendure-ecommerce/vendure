@@ -1,6 +1,6 @@
 import { ProductOptionTranslation } from '../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
-import { ProductVariantTranslationEntity } from '../entity/product-variant/product-variant-translation.entity';
+import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
@@ -114,7 +114,7 @@ describe('translateDeep()', () => {
     let product: Product;
     let productTranslation: ProductTranslation;
     let productVariant: ProductVariant;
-    let productVariantTranslation: ProductVariantTranslationEntity;
+    let productVariantTranslation: ProductVariantTranslation;
     let productOption: ProductOption;
     let productOptionTranslation: ProductOptionTranslation;
 
@@ -133,7 +133,7 @@ describe('translateDeep()', () => {
         productOption.id = 3;
         productOption.translations = [productOptionTranslation];
 
-        productVariantTranslation = new ProductVariantTranslationEntity();
+        productVariantTranslation = new ProductVariantTranslation();
         productVariantTranslation.id = 41;
         productVariantTranslation.languageCode = LANGUAGE_CODE;
         productVariantTranslation.name = VARIANT_NAME_EN;

@@ -22,7 +22,11 @@ export interface Translatable { translations: Translation<any>[]; }
  */
 export type Translation<T> =
     // Translation must include the languageCode and a reference to the base Translatable entity it is associated with
-    { languageCode: LanguageCode; base: T; } &
+    {
+        id: number;
+        languageCode: LanguageCode;
+        base: T;
+    } &
     // Translation must include all translatable keys as a string type
     { [K in TranslatableKeys<T>]: string; };
 
