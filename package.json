@@ -8,7 +8,6 @@
     "format": "prettier --write \"modules/**/*.ts\"",
     "populate": "ts-node -r tsconfig-paths/register modules/mock-data/populate.ts",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
-    "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
     "prestart:prod": "rimraf dist && tsc",
     "start:prod": "node dist/main.js",

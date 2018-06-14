@@ -19,7 +19,8 @@
     "plugins": [
       {
         "name": "tslint-language-service",
-        "ignoreDefinitionFiles": true
+        "ignoreDefinitionFiles": true,
+        "supressWhileTypeErrorsPresent": true
       }
     ]
   }
