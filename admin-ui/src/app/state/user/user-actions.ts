@@ -54,6 +54,7 @@ export class UserActions {
     }
 
     logOut(): void {
+        this.localStorageService.remove('authToken');
         this.store.dispatch(new Actions.Logout());
     }
 

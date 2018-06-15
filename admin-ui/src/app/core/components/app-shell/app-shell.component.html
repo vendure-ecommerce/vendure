@@ -13,14 +13,11 @@
             <a href="javascript://" class="nav-link nav-text">Users</a>
         </div>
         <div class="header-actions">
-            <a href="javascript://" class="nav-link nav-icon">
-                <clr-icon shape="cog"></clr-icon>
-            </a>
+            <vdr-user-menu [userName]="userName$ | async"
+                           (logOut)="logOut()"></vdr-user-menu>
         </div>
     </header>
-    <nav class="subnav">
 
-    </nav>
     <div class="content-container">
         <router-outlet></router-outlet>
     </div>
