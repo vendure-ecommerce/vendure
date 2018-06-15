@@ -17,13 +17,6 @@
             "es2017",
             "dom",
             "esnext.asynciterable"
-        ],
-        "plugins": [
-            {
-                "name": "tslint-language-service",
-                "ignoreDefinitionFiles": true,
-                "supressWhileTypeErrorsPresent": true
-            }
         ]
     }
 }

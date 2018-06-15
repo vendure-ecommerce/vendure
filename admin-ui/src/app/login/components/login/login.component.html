@@ -1,0 +1,32 @@
+<div class="login-wrapper">
+    <form class="login">
+        <label class="title">
+            <h3 class="welcome">Welcome to</h3>
+            Vendure
+        </label>
+        <div class="login-group">
+            <input class="username"
+                   type="text"
+                   name="username"
+                   id="login_username"
+                   [(ngModel)]="username"
+                   placeholder="Username">
+            <input class="password"
+                   name="password"
+                   type="password"
+                   id="login_password"
+                   [(ngModel)]="password"
+                   placeholder="Password">
+            <div class="checkbox">
+                <input type="checkbox" id="rememberme">
+                <label for="rememberme">
+                    Remember me
+                </label>
+            </div>
+            <div class="error active" *ngIf="lastError">
+                {{ lastError }}
+            </div>
+            <button type="submit" class="btn btn-primary" (click)="logIn()">NEXT</button>
+        </div>
+    </form>
+</div>

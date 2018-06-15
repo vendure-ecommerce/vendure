@@ -3,15 +3,14 @@ import { Store, StoreModule } from '@ngrx/store';
 import { apolloReducer, NgrxCache, NgrxCacheModule } from 'apollo-angular-cache-ngrx';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
+import { StateStore } from './state-store.service';
+import { UserActions } from './user/user-actions';
+import { user } from './user/user-reducer';
+
 export const APOLLO_NGRX_CACHE = new InjectionToken<InMemoryCache>('APOLLO_NGRX_CACHE');
 
 export function createApolloNgrxCache(ngrxCache: NgrxCache, store: Store<any>): InMemoryCache {
-    const cache = ngrxCache.create();
-    (window as any).getState = () => {
-        // tslint:disable-next-line
-        store.select(state => state).subscribe(state => console.log(state));
-    };
-    return cache;
+    return ngrxCache.create();
 }
 
 @NgModule({
@@ -19,6 +18,7 @@ export function createApolloNgrxCache(ngrxCache: NgrxCache, store: Store<any>): 
         NgrxCacheModule,
         StoreModule.forRoot({
             entities: apolloReducer,
+            user,
         }),
         NgrxCacheModule.forRoot('entities'),
     ],
@@ -28,6 +28,8 @@ export function createApolloNgrxCache(ngrxCache: NgrxCache, store: Store<any>): 
             useFactory: createApolloNgrxCache,
             deps: [NgrxCache, Store],
         },
+        UserActions,
+        StateStore,
     ],
 })
 export class StateModule {}

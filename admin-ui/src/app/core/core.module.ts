@@ -6,10 +6,16 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { SharedModule } from '../shared/shared.module';
 import { APOLLO_NGRX_CACHE, StateModule } from '../state/state.module';
+import { AppShellComponent } from './components/app-shell/app-shell.component';
+import { BaseDataService } from './providers/data/base-data.service';
+import { API_URL } from '../app.config';
+import { LocalStorageService } from './providers/local-storage/local-storage.service';
+import { DataService } from './providers/data/data.service';
+import { AuthGuard } from './providers/guard/auth.guard';
 
 export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
   return {
-    link: httpLink.create({uri: 'http://localhost:3000/graphql'}),
+    link: httpLink.create({ uri: `${API_URL}/graphql` }),
     cache: ngrxCache,
   };
 }
@@ -31,6 +37,11 @@ export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
             useFactory: createApollo,
             deps: [HttpLink, APOLLO_NGRX_CACHE],
         },
+        BaseDataService,
+        LocalStorageService,
+        DataService,
+        AuthGuard,
     ],
+    declarations: [AppShellComponent],
 })
 export class CoreModule {}

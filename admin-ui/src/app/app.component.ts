@@ -1,37 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
+import { UserActions } from './state/user/user-actions';
 
 @Component({
     selector: 'vdr-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     title = 'Vendure';
     products: any[] = [];
 
-    constructor(apollo: Apollo) {
-        apollo.query<any>({
-            query: gql`
-                {
-                    products(languageCode: en) {
-                        id
-                        languageCode
-                        name
-                        slug
-                        description
-                        translations {
-                            id
-                            languageCode
-                            name
-                        }
-                    }
-                }
-            `,
-        })
-        .subscribe(result => {
-            this.products = result.data.products;
-        });
+    constructor() {
+    }
+
+    ngOnInit() {
+
     }
 }
