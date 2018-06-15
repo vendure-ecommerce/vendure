@@ -15,13 +15,6 @@
     "strictPropertyInitialization": false,
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./src",
-    "plugins": [
-      {
-        "name": "tslint-language-service",
-        "ignoreDefinitionFiles": true,
-        "supressWhileTypeErrorsPresent": true
-      }
-    ]
+    "baseUrl": "./src"
   }
 }
