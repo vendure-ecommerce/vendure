@@ -1,0 +1,8 @@
+interface PaginatedList {
+    items: [Node!]!
+    totalItems: Int!
+}
+
+interface Node {
+    id: Int!
+}

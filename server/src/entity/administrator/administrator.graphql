@@ -1,5 +1,5 @@
-type Administrator {
-    id: Int
+type Administrator implements Node {
+    id: Int!
     firstName: String
     lastName: String
     emailAddress: String

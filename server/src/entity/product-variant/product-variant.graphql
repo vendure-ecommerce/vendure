@@ -1,5 +1,5 @@
-type ProductVariant {
-    id: Int
+type ProductVariant implements Node {
+    id: Int!
     sku: String
     name: String
     image: String

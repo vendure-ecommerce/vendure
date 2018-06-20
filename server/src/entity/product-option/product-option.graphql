@@ -1,5 +1,5 @@
-type ProductOption {
-    id: Int
+type ProductOption implements Node {
+    id: Int!
     languageCode: LanguageCode
     code: String
     name: String

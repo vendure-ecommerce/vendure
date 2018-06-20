@@ -1,5 +1,5 @@
-type Address {
-  id: Int
+type Address implements Node {
+  id: Int!
   fullName: String
   company: String
   streetLine1: String
