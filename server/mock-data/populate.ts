@@ -8,8 +8,8 @@ async function populate() {
     await mockDataService.connect();
     await mockDataService.clearAllTables();
     await mockDataClientService.populateOptions();
-    await mockDataClientService.populateProducts();
-    await mockDataClientService.populateCustomers();
+    await mockDataClientService.populateProducts(200);
+    await mockDataClientService.populateCustomers(100);
     await mockDataClientService.populateAdmins();
 }
 

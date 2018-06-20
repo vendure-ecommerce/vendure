@@ -67,10 +67,10 @@ export class MockDataClientService {
         );
     }
 
-    async populateCustomers(): Promise<any> {
+    async populateCustomers(count: number = 5): Promise<any> {
         const passwordService = new PasswordService();
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < count; i++) {
             const firstName = faker.name.firstName();
             const lastName = faker.name.lastName();
 
@@ -127,8 +127,8 @@ export class MockDataClientService {
         }
     }
 
-    async populateProducts(): Promise<any> {
-        for (let i = 0; i < 5; i++) {
+    async populateProducts(count: number = 5): Promise<any> {
+        for (let i = 0; i < count; i++) {
             const query = `mutation CreateProduct($input: CreateProductInput) {
                             createProduct(input: $input) { id, name }
                            }`;
