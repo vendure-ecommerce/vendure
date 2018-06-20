@@ -12,7 +12,7 @@ export class ProductVariantTranslation implements Translation<ProductVariant> {
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     @Column() languageCode: LanguageCode;
 

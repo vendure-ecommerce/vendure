@@ -23,7 +23,7 @@ export class ProductVariant implements Translatable {
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     name: LocaleString;
 

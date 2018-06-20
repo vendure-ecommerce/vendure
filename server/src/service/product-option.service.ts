@@ -21,7 +21,7 @@ export class ProductOptionService {
             .then(groups => groups.map(group => translateDeep(group, lang)));
     }
 
-    findOne(id: number, lang: LanguageCode): Promise<ProductOption | undefined> {
+    findOne(id: string, lang: LanguageCode): Promise<ProductOption | undefined> {
         return this.connection.manager
             .findOne(ProductOption, id, {
                 relations: ['group'],

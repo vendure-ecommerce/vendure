@@ -39,7 +39,7 @@ export class ProductService {
             });
     }
 
-    findOne(productId: number, lang: LanguageCode): Promise<Product | undefined> {
+    findOne(productId: string, lang: LanguageCode): Promise<Product | undefined> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
         return this.connection.manager

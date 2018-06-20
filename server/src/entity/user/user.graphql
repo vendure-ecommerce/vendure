@@ -1,5 +1,5 @@
 type User implements Node {
-    id: Int!
+    id: String!
     identifier: String
     passwordHash: String
     roles: [String]

@@ -18,7 +18,7 @@ export class Administrator {
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     @Column() firstName: string;
 

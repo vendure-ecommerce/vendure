@@ -9,20 +9,20 @@ describe('TranslationUpdater', () => {
     describe('diff()', () => {
         const existing: ProductTranslation[] = [
             {
-                id: 10,
+                id: '10',
                 languageCode: LanguageCode.EN,
                 name: '',
                 slug: '',
                 description: '',
-                base: 1 as any,
+                base: '1' as any,
             },
             {
-                id: 11,
+                id: '11',
                 languageCode: LanguageCode.DE,
                 name: '',
                 slug: '',
                 description: '',
-                base: 1 as any,
+                base: '1' as any,
             },
         ];
 

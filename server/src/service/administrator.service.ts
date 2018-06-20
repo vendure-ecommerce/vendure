@@ -15,7 +15,7 @@ export class AdministratorService {
         return this.connection.manager.find(Administrator);
     }
 
-    findOne(administratorId: number): Promise<Administrator | undefined> {
+    findOne(administratorId: string): Promise<Administrator | undefined> {
         return this.connection.manager.findOne(Administrator, administratorId);
     }
 

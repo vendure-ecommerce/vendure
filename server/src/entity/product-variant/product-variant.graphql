@@ -1,5 +1,5 @@
 type ProductVariant implements Node {
-    id: Int!
+    id: String!
     sku: String
     name: String
     image: String
@@ -9,7 +9,7 @@ type ProductVariant implements Node {
 }
 
 type ProductVariantTranslation {
-    id: Int!
+    id: String!
     languageCode: LanguageCode!
     name: String!
 }

@@ -24,11 +24,11 @@ export class CustomerService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(userId: number): Promise<Customer | undefined> {
+    findOne(userId: string): Promise<Customer | undefined> {
         return this.connection.manager.findOne(Customer, userId);
     }
 
-    findAddressesByCustomerId(customerId: number): Promise<Address[]> {
+    findAddressesByCustomerId(customerId: string): Promise<Address[]> {
         return this.connection
             .getRepository(Address)
             .createQueryBuilder('address')
@@ -51,7 +51,7 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
-    async createAddress(customerId: number, createAddressDto: CreateAddressDto): Promise<Address> {
+    async createAddress(customerId: string, createAddressDto: CreateAddressDto): Promise<Address> {
         const customer = await this.connection.manager.findOne(Customer, customerId, { relations: ['addresses'] });
 
         if (!customer) {

@@ -20,7 +20,7 @@ export class Customer {
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     @Column() firstName: string;
 

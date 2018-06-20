@@ -23,7 +23,7 @@ describe('translateEntity()', () => {
 
     beforeEach(() => {
         productTranslationEN = new ProductTranslation({
-            id: 2,
+            id: '2',
             languageCode: LanguageCode.EN,
             name: PRODUCT_NAME_EN,
             slug: '',
@@ -32,7 +32,7 @@ describe('translateEntity()', () => {
         productTranslationEN.base = { id: 1 } as any;
 
         productTranslationDE = new ProductTranslation({
-            id: 3,
+            id: '3',
             languageCode: LanguageCode.DE,
             name: PRODUCT_NAME_DE,
             slug: '',
@@ -41,7 +41,7 @@ describe('translateEntity()', () => {
         productTranslationDE.base = { id: 1 } as any;
 
         product = new Product();
-        product.id = 1;
+        product.id = '1';
         product.translations = [productTranslationEN, productTranslationDE];
     });
 
@@ -54,7 +54,7 @@ describe('translateEntity()', () => {
     it('should not overwrite translatable id with translation id', () => {
         const result = translateEntity(product, LanguageCode.EN);
 
-        expect(result).toHaveProperty('id', 1);
+        expect(result).toHaveProperty('id', '1');
     });
 
     it('should note transfer the base from the selected translation', () => {
@@ -93,7 +93,7 @@ describe('translateDeep()', () => {
     }
 
     class TestProductEntity implements Translatable {
-        id: number;
+        id: string;
         singleTestVariant: TestVariantEntity;
         singleRealVariant: ProductVariant;
         translations: Array<Translation<TestProduct>>;
@@ -104,7 +104,7 @@ describe('translateDeep()', () => {
     }
 
     class TestVariantEntity implements Translatable {
-        id: number;
+        id: string;
         singleOption: ProductOption;
         translations: Array<Translation<TestVariant>>;
     }
@@ -120,31 +120,31 @@ describe('translateDeep()', () => {
 
     beforeEach(() => {
         productTranslation = new ProductTranslation();
-        productTranslation.id = 2;
+        productTranslation.id = '2';
         productTranslation.languageCode = LANGUAGE_CODE;
         productTranslation.name = PRODUCT_NAME_EN;
 
         productOptionTranslation = new ProductOptionTranslation();
-        productOptionTranslation.id = 31;
+        productOptionTranslation.id = '31';
         productOptionTranslation.languageCode = LANGUAGE_CODE;
         productOptionTranslation.name = OPTION_NAME_EN;
 
         productOption = new ProductOption();
-        productOption.id = 3;
+        productOption.id = '3';
         productOption.translations = [productOptionTranslation];
 
         productVariantTranslation = new ProductVariantTranslation();
-        productVariantTranslation.id = 41;
+        productVariantTranslation.id = '41';
         productVariantTranslation.languageCode = LANGUAGE_CODE;
         productVariantTranslation.name = VARIANT_NAME_EN;
 
         productVariant = new ProductVariant();
-        productVariant.id = 3;
+        productVariant.id = '3';
         productVariant.translations = [productVariantTranslation];
         productVariant.options = [productOption];
 
         product = new Product();
-        product.id = 1;
+        product.id = '1';
         product.translations = [productTranslation];
         product.variants = [productVariant];
 

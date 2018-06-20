@@ -1,6 +1,6 @@
 type Query {
     products(languageCode: LanguageCode, take: Int, skip: Int): ProductList
-    product(id: Int!, languageCode: LanguageCode): Product
+    product(id: String!, languageCode: LanguageCode): Product
 }
 
 type Mutation {

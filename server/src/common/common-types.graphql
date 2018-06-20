@@ -4,5 +4,5 @@ interface PaginatedList {
 }
 
 interface Node {
-    id: Int!
+    id: String!
 }

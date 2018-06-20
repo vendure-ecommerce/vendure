@@ -12,7 +12,7 @@ export class ProductOptionGroupTranslation implements Translation<ProductOptionG
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     @Column() languageCode: LanguageCode;
 

@@ -1,5 +1,5 @@
 type ProductOptionGroup implements Node {
-    id: Int!
+    id: String!
     languageCode: LanguageCode
     code: String
     name: String
@@ -8,13 +8,13 @@ type ProductOptionGroup implements Node {
 }
 
 type ProductOptionGroupTranslation {
-    id: Int!
+    id: String!
     languageCode: LanguageCode!
     name: String!
 }
 
 input ProductOptionGroupTranslationInput {
-    id: Int
+    id: String
     languageCode: LanguageCode!
     name: String!
 }
@@ -26,7 +26,7 @@ input CreateProductOptionGroupInput {
 }
 
 input UpdateProductOptionGroupInput {
-    id: Int!
+    id: String!
     code: String!
     translations: [ProductOptionGroupTranslationInput]!
 }

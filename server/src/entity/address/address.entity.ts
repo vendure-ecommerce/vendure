@@ -10,7 +10,7 @@ export class Address {
         }
     }
 
-    @PrimaryGeneratedColumn() id: number;
+    @PrimaryGeneratedColumn('uuid') id: string;
 
     @ManyToOne(type => Customer, customer => customer.addresses)
     customer: Customer;
