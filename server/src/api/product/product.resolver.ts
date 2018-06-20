@@ -1,5 +1,5 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateProductDto } from '../../entity/product/product.dto';
+import { PaginatedList } from '../../common/common-types';
 import { Product } from '../../entity/product/product.entity';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
@@ -9,8 +9,8 @@ export class ProductResolver {
     constructor(private productService: ProductService, private productVariantService: ProductVariantService) {}
 
     @Query('products')
-    products(obj, args): Promise<Product[]> {
-        return this.productService.findAll(args.languageCode);
+    products(obj, args): Promise<PaginatedList<Product>> {
+        return this.productService.findAll(args.languageCode, args.take, args.skip);
     }
 
     @Query('product')

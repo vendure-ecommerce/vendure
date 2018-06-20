@@ -1,5 +1,5 @@
 type Query {
-  customers: [Customer]
+  customers(take: Int, skip: Int): CustomerList
   customer(id: Int!): Customer
 }
 
@@ -8,4 +8,9 @@ type Mutation {
   createCustomer(input: CreateCustomerInput!, password: String): Customer
   "Create a new Address and associate it with the Customer specified by customerId"
   createCustomerAddress(customerId: Int, input: CreateAddressInput): Address
+}
+
+type CustomerList implements PaginatedList {
+    items: [Customer!]!
+    totalItems: Int!
 }

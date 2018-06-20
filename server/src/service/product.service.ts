@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { PaginatedList } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
@@ -18,16 +19,24 @@ export class ProductService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode): Promise<Product[]> {
+    findAll(lang: LanguageCode, take?: number, skip?: number): Promise<PaginatedList<Product>> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
+        if (skip !== undefined && take === undefined) {
+            take = Number.MAX_SAFE_INTEGER;
+        }
+
         return this.connection.manager
-            .find(Product, { relations })
-            .then(products =>
-                products.map(product =>
+            .findAndCount(Product, { relations, take, skip })
+            .then(([products, totalItems]) => {
+                const items = products.map(product =>
                     translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
-                ),
-            );
+                );
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
     findOne(productId: number, lang: LanguageCode): Promise<Product | undefined> {

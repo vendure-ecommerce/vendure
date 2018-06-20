@@ -10,3 +10,11 @@ export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
 export type Type<T> = {
     new (): T;
 } & Function;
+
+/**
+ * A type describing the shape of a paginated list response
+ */
+export type PaginatedList<T> = {
+    items: T[];
+    totalItems: number;
+};

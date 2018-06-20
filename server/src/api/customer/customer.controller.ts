@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { PaginatedList } from '../../common/common-types';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
 
@@ -7,7 +8,7 @@ export class CustomerController {
     constructor(private userService: CustomerService) {}
 
     @Get()
-    findAll(): Promise<Customer[]> {
+    findAll(): Promise<PaginatedList<Customer>> {
         return this.userService.findAll();
     }
 

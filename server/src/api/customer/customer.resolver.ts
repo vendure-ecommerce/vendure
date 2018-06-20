@@ -1,4 +1,5 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { PaginatedList } from '../../common/common-types';
 import { Address } from '../../entity/address/address.entity';
 import { CreateCustomerDto } from '../../entity/customer/customer.dto';
 import { Customer } from '../../entity/customer/customer.entity';
@@ -9,8 +10,8 @@ export class CustomerResolver {
     constructor(private customerService: CustomerService) {}
 
     @Query('customers')
-    customers(): Promise<Customer[]> {
-        return this.customerService.findAll();
+    customers(obj, args): Promise<PaginatedList<Customer>> {
+        return this.customerService.findAll(args.take, args.skip);
     }
 
     @Query('customer')

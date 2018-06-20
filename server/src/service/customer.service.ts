@@ -3,6 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
+import { PaginatedList } from '../common/common-types';
 import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
@@ -13,8 +14,14 @@ import { User } from '../entity/user/user.entity';
 export class CustomerService {
     constructor(@InjectConnection() private connection: Connection, private passwordService: PasswordService) {}
 
-    findAll(): Promise<Customer[]> {
-        return this.connection.manager.find(Customer);
+    findAll(take?: number, skip?: number): Promise<PaginatedList<Customer>> {
+        if (skip !== undefined && take === undefined) {
+            take = Number.MAX_SAFE_INTEGER;
+        }
+
+        return this.connection.manager
+            .findAndCount(Customer, { skip, take })
+            .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
     findOne(userId: number): Promise<Customer | undefined> {
