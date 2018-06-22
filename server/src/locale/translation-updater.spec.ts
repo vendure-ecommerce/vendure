@@ -8,22 +8,20 @@ import { TranslationUpdater } from './translation-updater';
 describe('TranslationUpdater', () => {
     describe('diff()', () => {
         const existing: ProductTranslation[] = [
-            {
+            new ProductTranslation({
                 id: '10',
                 languageCode: LanguageCode.EN,
                 name: '',
                 slug: '',
                 description: '',
-                base: '1' as any,
-            },
-            {
+            }),
+            new ProductTranslation({
                 id: '11',
                 languageCode: LanguageCode.DE,
                 name: '',
                 slug: '',
                 description: '',
-                base: '1' as any,
-            },
+            }),
         ];
 
         let entityManager: any;
