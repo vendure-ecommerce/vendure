@@ -2,7 +2,7 @@
 
 ![logo](admin-ui/src/assets/cube-logo-300px.png)
 
-A headless ecommerce framework built on TypeScript, Node & GraphQL.
+A headless [GraphQL](https://graphql.org/) ecommerce framework built on [NestJS](https://nestjs.com/) with [TypeScript](http://www.typescriptlang.org/).
 
 ### Status
 
@@ -20,13 +20,21 @@ as inventory, order and customer management. The code for this is located in the
 
 ### Server
 
+The server requires an SQL database to be available. I am currently using [bitnami-docker-phpmyadmin](https://github.com/bitnami/bitnami-docker-phpmyadmin) Docker image,
+which is MariaDB including phpMyAdmin.
+
+Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database which works with TypeORM.
+
+* Configure the [dev config](./server/dev-config.ts)
 * `cd server && yarn`
 * `yarn start:dev`
+* Populate mock data with `yarn populate`
 
 ### Admin UI
 
 * `cd admin-ui && yarn`
 * `yarn start`
+* Go to http://localhost:4200 and log in with "admin@test.com", "test"
 
 ## License
 
