@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "A modern, headless ecommerce framework",
   "private": true,
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "scripts": {
     "format": "prettier --write \"modules/**/*.ts\"",
     "populate": "ts-node -r tsconfig-paths/register mock-data/populate.ts",
