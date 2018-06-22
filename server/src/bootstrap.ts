@@ -12,6 +12,7 @@ export async function bootstrap(userConfig?: Partial<VendureConfig>) {
     // Entities *must* be loaded after the user config is set in order for the
     // base VendureEntity to be correctly configured with the primary key type
     // specified in the EntityIdStrategy.
+    // tslint:disable-next-line:whitespace
     const entities = await import('./entity/entities');
     setConfig({
         dbConnectionOptions: {
@@ -21,6 +22,7 @@ export async function bootstrap(userConfig?: Partial<VendureConfig>) {
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
+    // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     const config = getConfig();
 
