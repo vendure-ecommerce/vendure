@@ -1,5 +1,5 @@
 type Administrator implements Node {
-    id: String!
+    id: ID!
     firstName: String
     lastName: String
     emailAddress: String

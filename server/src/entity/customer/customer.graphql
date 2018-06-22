@@ -1,5 +1,5 @@
 type Customer implements Node {
-  id: String!
+  id: ID!
   firstName: String
   lastName: String
   phoneNumber: String

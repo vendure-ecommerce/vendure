@@ -3,7 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
-import { PaginatedList } from '../common/common-types';
+import { ID, PaginatedList } from '../common/common-types';
 import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
@@ -28,7 +28,7 @@ export class CustomerService {
         return this.connection.manager.findOne(Customer, userId);
     }
 
-    findAddressesByCustomerId(customerId: string): Promise<Address[]> {
+    findAddressesByCustomerId(customerId: ID): Promise<Address[]> {
         return this.connection
             .getRepository(Address)
             .createQueryBuilder('address')

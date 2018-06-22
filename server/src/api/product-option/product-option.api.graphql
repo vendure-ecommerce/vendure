@@ -1,6 +1,6 @@
 type Query {
     productOptionGroups(languageCode: LanguageCode): [ProductOptionGroup]
-    productOptionGroup(id: String!, languageCode: LanguageCode): ProductOptionGroup
+    productOptionGroup(id: ID!, languageCode: LanguageCode): ProductOptionGroup
 }
 
 type Mutation {

@@ -1,5 +1,5 @@
 type Address implements Node {
-  id: String!
+  id: ID!
   fullName: String
   company: String
   streetLine1: String

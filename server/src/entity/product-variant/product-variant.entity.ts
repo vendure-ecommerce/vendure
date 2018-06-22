@@ -1,29 +1,16 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinTable,
-    ManyToMany,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { VendureEntity } from '../base/base.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
 
-@Entity('product_variant')
-export class ProductVariant implements Translatable {
+@Entity()
+export class ProductVariant extends VendureEntity implements Translatable {
     constructor(input?: DeepPartial<ProductVariant>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn('uuid') id: string;
 
     name: LocaleString;
 
@@ -32,10 +19,6 @@ export class ProductVariant implements Translatable {
     @Column() image: string;
 
     @Column() price: number;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;

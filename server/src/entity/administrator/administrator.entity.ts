@@ -1,24 +1,13 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    OneToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
+import { VendureEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 
-@Entity('administrator')
-export class Administrator {
+@Entity()
+export class Administrator extends VendureEntity {
     constructor(input?: DeepPartial<Administrator>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn('uuid') id: string;
 
     @Column() firstName: string;
 
@@ -30,8 +19,4 @@ export class Administrator {
     @OneToOne(type => User, { eager: true })
     @JoinColumn()
     user: User;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 }

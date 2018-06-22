@@ -1,3 +1,5 @@
+import { ID } from '../common/common-types';
+import { VendureEntity } from '../entity/base/base.entity';
 import { LanguageCode } from './language-code';
 
 /**
@@ -23,7 +25,7 @@ export interface Translatable { translations: Array<Translation<any>>; }
 export type Translation<T> =
     // Translation must include the languageCode and a reference to the base Translatable entity it is associated with
     {
-        id: string;
+        id: ID;
         languageCode: LanguageCode;
         base: T;
     } &
@@ -33,7 +35,7 @@ export type Translation<T> =
 /**
  * This is the type of a translation object when provided as input to a create or update operation.
  */
-export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & { id?: string; languageCode: LanguageCode };
+export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & { id?: ID; languageCode: LanguageCode };
 
 /**
  * This interface defines the shape of a DTO used to create / update an entity which has one or more LocaleString

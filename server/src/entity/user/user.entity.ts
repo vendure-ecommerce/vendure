@@ -1,10 +1,13 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { Role } from '../../auth/role';
-import { Address } from '../address/address.entity';
+import { DeepPartial } from '../../common/common-types';
+import { VendureEntity } from '../base/base.entity';
 
-@Entity('user')
-export class User {
-    @PrimaryGeneratedColumn('uuid') id: string;
+@Entity()
+export class User extends VendureEntity {
+    constructor(input?: DeepPartial<User>) {
+        super(input);
+    }
 
     @Column({ unique: true })
     identifier: string;
@@ -14,8 +17,4 @@ export class User {
     @Column('simple-array') roles: Role[];
 
     @Column() lastLogin: string;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 }
