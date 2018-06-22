@@ -24,6 +24,14 @@ export interface VendureConfig {
      */
     port: number;
     /**
+     * The secret used for signing each JWT used in authenticating users.
+     * In production applications, this should not be stored as a string in
+     * source control for security reasons, but may be loaded from an external
+     * file not under source control, or from an environment variable, for example.
+     * See https://stackoverflow.com/a/30090120/772859
+     */
+    jwtSecret: string;
+    /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
      * entities via the API. The default uses a simple auto-increment integer
@@ -40,6 +48,7 @@ const defaultConfig: VendureConfig = {
     defaultLanguageCode: LanguageCode.EN,
     port: 3000,
     cors: false,
+    jwtSecret: 'secret',
     apiPath: '/api',
     entityIdStrategy: new AutoIncrementIdStrategy(),
     dbConnectionOptions: {

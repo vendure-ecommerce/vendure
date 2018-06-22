@@ -7,6 +7,7 @@ import { IntegerIdStrategy, StringIdStrategy } from './src/config/entity-id-stra
 bootstrap({
     port: 3000,
     cors: true,
+    jwtSecret: 'some-secret',
     dbConnectionOptions: {
         type: 'mysql',
         entities: ['./src/**/entity/**/*.entity.ts'],

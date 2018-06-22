@@ -23,6 +23,10 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.cors;
     }
 
+    get jwtSecret(): string {
+        return this.activeConfig.jwtSecret;
+    }
+
     get entityIdStrategy(): EntityIdStrategy {
         return this.activeConfig.entityIdStrategy;
     }

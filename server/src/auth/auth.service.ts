@@ -3,16 +3,18 @@ import { InjectConnection } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import { Connection } from 'typeorm';
 import { User } from '../entity/user/user.entity';
+import { ConfigService } from '../service/config.service';
 import { JwtPayload } from './auth-types';
 import { PasswordService } from './password.service';
 import { Role } from './role';
 
-// TODO: make this configurable e.g. from environment
-export const JWT_SECRET = 'some_secret';
-
 @Injectable()
 export class AuthService {
-    constructor(private passwordService: PasswordService, @InjectConnection() private connection: Connection) {}
+    constructor(
+        private passwordService: PasswordService,
+        @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
+    ) {}
 
     async createToken(identifier: string, password: string): Promise<{ user: User; token: string }> {
         const user = await this.connection.getRepository(User).findOne({
@@ -31,7 +33,7 @@ export class AuthService {
             throw new UnauthorizedException();
         }
         const payload: JwtPayload = { identifier, roles: user.roles };
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 });
+        const token = jwt.sign(payload, this.configService.jwtSecret, { expiresIn: 3600 });
 
         return { user, token };
     }

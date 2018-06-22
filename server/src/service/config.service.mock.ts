@@ -7,6 +7,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     apiPath = 'api';
     port = 3000;
     cors = false;
+    jwtSecret = 'secret';
     defaultLanguageCode: jest.Mock<any>;
     entityIdStrategy = new MockIdStrategy();
     dbConnectionOptions = {};
