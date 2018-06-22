@@ -1,12 +1,11 @@
+import { devConfig } from '../dev-config';
+import { clearAllTables } from './clear-all-tables';
 import { MockDataClientService } from './mock-data-client.service';
-import { MockDataService } from './mock-data.service';
 
 async function populate() {
-    const mockDataService = new MockDataService();
-    const mockDataClientService = new MockDataClientService();
+    await clearAllTables(devConfig.dbConnectionOptions);
 
-    await mockDataService.connect();
-    await mockDataService.clearAllTables();
+    const mockDataClientService = new MockDataClientService(devConfig);
     await mockDataClientService.populateOptions();
     await mockDataClientService.populateProducts(200);
     await mockDataClientService.populateCustomers(100);

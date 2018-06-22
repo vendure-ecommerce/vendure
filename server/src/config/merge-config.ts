@@ -18,7 +18,7 @@ function isClassInstance(item: any): boolean {
  * but modified so that it does not overwrite fields of class instances, rather it overwrites
  * the entire instance.
  */
-export function mergeConfig(target: VendureConfig, source: DeepPartial<VendureConfig>) {
+export function mergeConfig<T extends VendureConfig>(target: T, source: DeepPartial<VendureConfig>): T {
     if (!source) {
         return target;
     }

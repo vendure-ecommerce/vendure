@@ -1,6 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConnectionOptions } from 'typeorm';
-import { DeepPartial } from '../common/common-types';
+import { DeepPartial, ReadOnlyRequired } from '../common/common-types';
 import { LanguageCode } from '../locale/language-code';
 import { AutoIncrementIdStrategy } from './auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy';
@@ -10,15 +10,15 @@ export interface VendureConfig {
     /**
      * The default languageCode of the app.
      */
-    defaultLanguageCode: LanguageCode;
+    defaultLanguageCode?: LanguageCode;
     /**
      * The path to the GraphQL API.
      */
-    apiPath: string;
+    apiPath?: string;
     /**
      * Set the CORS handling for the server.
      */
-    cors: boolean | CorsOptions;
+    cors?: boolean | CorsOptions;
     /**
      * Which port the Vendure server should listen on.
      */
@@ -37,14 +37,14 @@ export interface VendureConfig {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      */
-    entityIdStrategy: EntityIdStrategy<any>;
+    entityIdStrategy?: EntityIdStrategy<any>;
     /**
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
 }
 
-const defaultConfig: VendureConfig = {
+const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     defaultLanguageCode: LanguageCode.EN,
     port: 3000,
     cors: false,
@@ -71,6 +71,6 @@ export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
  * used before bootstrapping the app. In all other contexts, the {@link ConfigService}
  * should be used to access config settings.
  */
-export function getConfig(): VendureConfig {
+export function getConfig(): ReadOnlyRequired<VendureConfig> {
     return activeConfig;
 }

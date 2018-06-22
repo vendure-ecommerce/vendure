@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConnectionOptions } from 'typeorm';
+import { ReadOnlyRequired } from '../common/common-types';
 import { EntityIdStrategy } from '../config/entity-id-strategy';
 import { getConfig, VendureConfig } from '../config/vendure-config';
 import { LanguageCode } from '../locale/language-code';
@@ -35,7 +36,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.dbConnectionOptions;
     }
 
-    private activeConfig: VendureConfig;
+    private activeConfig: ReadOnlyRequired<VendureConfig>;
 
     constructor() {
         this.activeConfig = getConfig();

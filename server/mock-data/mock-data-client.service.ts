@@ -1,6 +1,7 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
 import { PasswordService } from '../src/auth/password.service';
+import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
@@ -17,6 +18,12 @@ import { TranslationInput } from '../src/locale/locale-types';
  * A service for creating mock data via the GraphQL API.
  */
 export class MockDataClientService {
+    apiUrl: string;
+
+    constructor(config: VendureConfig) {
+        this.apiUrl = `http://localhost:${config.port}/${config.apiPath}`;
+    }
+
     async populateOptions(): Promise<any> {
         const query = `mutation($input: CreateProductOptionGroupInput) {
                             createProductOptionGroup(input: $input) { id }
@@ -39,7 +46,7 @@ export class MockDataClientService {
             } as CreateProductOptionGroupDto,
         };
 
-        await request('http://localhost:3000/graphql', query, variables).then(
+        await request(this.apiUrl, query, variables).then(
             data => console.log('Created Administrator:', data),
             err => console.log(err),
         );
@@ -61,7 +68,7 @@ export class MockDataClientService {
             } as CreateAdministratorDto,
         };
 
-        await request('http://localhost:3000/graphql', query, variables).then(
+        await request(this.apiUrl, query, variables).then(
             data => console.log('Created Administrator:', data),
             err => console.log(err),
         );
@@ -88,7 +95,7 @@ export class MockDataClientService {
                 password: 'test',
             };
 
-            const customer: Customer | void = await request('http://localhost:3000/graphql', query1, variables1).then(
+            const customer: Customer | void = await request(this.apiUrl, query1, variables1).then(
                 (data: any) => {
                     console.log('Created Customer:', data);
                     return data.createCustomer as Customer;
@@ -97,7 +104,7 @@ export class MockDataClientService {
             );
 
             if (customer) {
-                const query2 = `mutation($customerId: String!, $input: CreateAddressInput) {
+                const query2 = `mutation($customerId: ID!, $input: CreateAddressInput) {
                                 createCustomerAddress(customerId: $customerId, input: $input) {
                                     id
                                     streetLine1
@@ -116,7 +123,7 @@ export class MockDataClientService {
                     customerId: customer.id,
                 };
 
-                await request('http://localhost:3000/graphql', query2, variables2).then(
+                await request(this.apiUrl, query2, variables2).then(
                     data => {
                         console.log('Created Customer:', data);
                         return data as Customer;
@@ -150,7 +157,7 @@ export class MockDataClientService {
                 } as CreateProductDto,
             };
 
-            await request('http://localhost:3000/graphql', query, variables).then(
+            await request(this.apiUrl, query, variables).then(
                 data => console.log('Created Product:', data),
                 err => console.log(err),
             );
