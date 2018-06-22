@@ -11,35 +11,29 @@ import { ProductResolver } from './api/product/product.resolver';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
+import { getConfig } from './config/vendure-config';
 import { TranslationUpdaterService } from './locale/translation-updater.service';
 import { AdministratorService } from './service/administrator.service';
+import { ConfigService } from './service/config.service';
 import { CustomerService } from './service/customer.service';
+import { IdCodecService } from './service/id-codec.service';
 import { ProductOptionGroupService } from './service/product-option-group.service';
 import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
 import { ProductService } from './service/product.service';
 
+const connectionOptions = getConfig().connectionOptions;
+
 @Module({
-    imports: [
-        GraphQLModule,
-        TypeOrmModule.forRoot({
-            type: 'mysql',
-            entities: ['./**/entity/**/*.entity.ts'],
-            synchronize: true,
-            logging: true,
-            host: '192.168.99.100',
-            port: 3306,
-            username: 'root',
-            password: '',
-            database: 'test',
-        }),
-    ],
+    imports: [GraphQLModule, TypeOrmModule.forRoot(connectionOptions)],
     controllers: [AuthController, CustomerController],
     providers: [
         AdministratorResolver,
         AdministratorService,
         AuthService,
+        ConfigService,
         JwtStrategy,
+        IdCodecService,
         PasswordService,
         CustomerService,
         CustomerResolver,
