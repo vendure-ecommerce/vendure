@@ -1,5 +1,6 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { DeepPartial, ID } from '../../common/common-types';
+import { getEntityIdStrategy } from '../../config/vendure-config';
 
 /**
  * This is the base class from which all entities inherit.
@@ -13,7 +14,8 @@ export abstract class VendureEntity {
         }
     }
 
-    @PrimaryGeneratedColumn('increment') id: ID;
+    @PrimaryGeneratedColumn(getEntityIdStrategy().primaryKeyType as any)
+    id: ID;
 
     @CreateDateColumn() createdAt: string;
 

@@ -1,11 +1,11 @@
 import { IntegerIdStrategy } from './entity-id-strategy';
 
 /**
- * An id strategy which simply uses auto-increment integers as primary keys
+ * An id strategy which uses auto-increment integers as primary keys
  * for all entities.
  */
 export class AutoIncrementIdStrategy implements IntegerIdStrategy {
-    primaryKeyType: 'increment';
+    readonly primaryKeyType = 'increment';
     decodeId(id: string): number {
         return +id;
     }
