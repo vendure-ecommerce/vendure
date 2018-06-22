@@ -4,9 +4,12 @@ import { MockClass } from '../testing/testing-types';
 import { ConfigService } from './config.service';
 
 export class MockConfigService implements MockClass<ConfigService> {
+    apiPath = 'api';
+    port = 3000;
+    cors = false;
     defaultLanguageCode: jest.Mock<any>;
     entityIdStrategy = new MockIdStrategy();
-    connectionOptions = {};
+    dbConnectionOptions = {};
 }
 
 export const ENCODED = 'encoded';

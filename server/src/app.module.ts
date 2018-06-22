@@ -22,7 +22,7 @@ import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
 import { ProductService } from './service/product.service';
 
-const connectionOptions = getConfig().connectionOptions;
+const connectionOptions = getConfig().dbConnectionOptions;
 
 @Module({
     imports: [GraphQLModule, TypeOrmModule.forRoot(connectionOptions)],
@@ -48,7 +48,7 @@ const connectionOptions = getConfig().connectionOptions;
     ],
 })
 export class AppModule implements NestModule {
-    constructor(private readonly graphQLFactory: GraphQLFactory) {}
+    constructor(private readonly graphQLFactory: GraphQLFactory, private configService: ConfigService) {}
 
     configure(consumer: MiddlewareConsumer) {
         const schema = this.createSchema();
@@ -56,17 +56,22 @@ export class AppModule implements NestModule {
         consumer
             .apply(
                 graphiqlExpress({
-                    endpointURL: '/graphql',
+                    endpointURL: this.configService.apiPath,
                     subscriptionsEndpoint: `ws://localhost:3001/subscriptions`,
                 }),
             )
             .forRoutes('/graphiql')
             .apply(graphqlExpress(req => ({ schema, rootValue: req })))
-            .forRoutes('/graphql');
+            .forRoutes(this.configService.apiPath);
     }
 
     createSchema() {
-        const typeDefs = this.graphQLFactory.mergeTypesByPaths('./**/*.graphql');
-        return this.graphQLFactory.createSchema({ typeDefs });
+        const typeDefs = this.graphQLFactory.mergeTypesByPaths(__dirname + '/**/*.graphql');
+        return this.graphQLFactory.createSchema({
+            typeDefs,
+            resolverValidationOptions: {
+                requireResolversForResolveType: false,
+            },
+        });
     }
 }
