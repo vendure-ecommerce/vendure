@@ -7,7 +7,8 @@ import { IntegerIdStrategy } from './entity-id-strategy';
 export class AutoIncrementIdStrategy implements IntegerIdStrategy {
     readonly primaryKeyType = 'increment';
     decodeId(id: string): number {
-        return +id;
+        const asNumber = +id;
+        return Number.isNaN(asNumber) ? -1 : asNumber;
     }
     encodeId(primaryKey: number): string {
         return primaryKey.toString();
