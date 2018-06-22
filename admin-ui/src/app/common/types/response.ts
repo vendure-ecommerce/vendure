@@ -1,5 +1,5 @@
 export interface UserResponse {
-    id: number;
+    id: string | number;
     identifier: string;
     roles: string[];
 }

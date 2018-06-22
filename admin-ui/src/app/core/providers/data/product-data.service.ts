@@ -7,24 +7,27 @@ export class ProductDataService {
 
     constructor(private baseDataService: BaseDataService) {}
 
-    getProducts(): Observable<any[]> {
+    getProducts(take: number = 10, skip: number = 0): Observable<any> {
         const query = gql`
-            {
-                products(languageCode: en) {
-                    id
-                    languageCode
-                    name
-                    slug
-                    description
-                    translations {
+            query($take: Int, $skip: Int){
+                products(languageCode: en, take: $take, skip: $skip) {
+                    items {
                         id
                         languageCode
                         name
+                        slug
+                        description
+                        translations {
+                            id
+                            languageCode
+                            name
+                        }
                     }
+                    totalItems
                 }
             }
         `;
-        return this.baseDataService.query<any>(query).pipe(
+        return this.baseDataService.query<any>(query, { take, skip }).pipe(
             map(data => data.products),
         );
     }

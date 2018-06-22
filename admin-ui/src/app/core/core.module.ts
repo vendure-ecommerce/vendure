@@ -16,7 +16,7 @@ import { UserMenuComponent } from './components/user-menu/user-menu.component';
 
 export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
   return {
-    link: httpLink.create({ uri: `${API_URL}/graphql` }),
+    link: httpLink.create({ uri: `${API_URL}/api` }),
     cache: ngrxCache,
   };
 }
