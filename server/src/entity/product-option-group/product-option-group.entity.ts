@@ -1,27 +1,20 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
+import { VendureEntity } from '../base/base.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 
-@Entity('product_option_group')
-export class ProductOptionGroup implements Translatable {
+@Entity()
+export class ProductOptionGroup extends VendureEntity implements Translatable {
     constructor(input?: DeepPartial<ProductOptionGroup>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn() id: number;
 
     name: LocaleString;
 
     @Column({ unique: true })
     code: string;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 
     @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOptionGroup>>;

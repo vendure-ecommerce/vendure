@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { ID } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOptionGroupTranslation } from '../entity/product-option-group/product-option-group-translation.entity';
 import {
@@ -27,7 +28,7 @@ export class ProductOptionGroupService {
             .then(groups => groups.map(group => translateDeep(group, lang, ['options'])));
     }
 
-    findOne(id: number, lang: LanguageCode): Promise<ProductOptionGroup | undefined> {
+    findOne(id: ID, lang: LanguageCode): Promise<ProductOptionGroup | undefined> {
         return this.connection.manager
             .findOne(ProductOptionGroup, id, {
                 relations: ['options'],

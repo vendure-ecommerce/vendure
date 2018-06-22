@@ -1,16 +1,13 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
+import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 
-@Entity('address')
-export class Address {
+@Entity()
+export class Address extends VendureEntity {
     constructor(input?: DeepPartial<Address>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn() id: number;
 
     @ManyToOne(type => Customer, customer => customer.addresses)
     customer: Customer;
@@ -36,8 +33,4 @@ export class Address {
     @Column() defaultShippingAddress: boolean;
 
     @Column() defaultBillingAddress: boolean;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 }

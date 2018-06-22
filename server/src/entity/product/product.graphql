@@ -1,5 +1,5 @@
 type Product implements Node {
-    id: Int!
+    id: ID!
     languageCode: LanguageCode
     name: String
     slug: String
@@ -11,7 +11,7 @@ type Product implements Node {
 }
 
 type ProductTranslation {
-    id: Int!
+    id: ID!
     languageCode: LanguageCode!
     name: String!
     slug: String!
@@ -19,7 +19,7 @@ type ProductTranslation {
 }
 
 input ProductTranslationInput {
-    id: Int
+    id: ID
     languageCode: LanguageCode!
     name: String!
     slug: String
@@ -34,7 +34,7 @@ input CreateProductInput {
 }
 
 input UpdateProductInput {
-    id: Int!
+    id: ID!
     image: String
     translations: [ProductTranslationInput]!
     optionGroupCodes: [String]

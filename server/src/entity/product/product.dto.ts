@@ -9,7 +9,7 @@ export interface CreateProductDto extends TranslatedInput<Product> {
 }
 
 export interface UpdateProductDto extends TranslatedInput<Product> {
-    id: number;
+    id: string;
     image?: string;
     optionGroupCodes?: [string];
 }

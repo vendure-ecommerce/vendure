@@ -1,26 +1,14 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    OneToMany,
-    OneToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
 import { Address } from '../address/address.entity';
+import { VendureEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 
-@Entity('customer')
-export class Customer {
+@Entity()
+export class Customer extends VendureEntity {
     constructor(input?: DeepPartial<Customer>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn() id: number;
 
     @Column() firstName: string;
 
@@ -37,8 +25,4 @@ export class Customer {
     @OneToOne(type => User, { eager: true })
     @JoinColumn()
     user?: User;
-
-    @CreateDateColumn() createdAt: string;
-
-    @UpdateDateColumn() updatedAt: string;
 }

@@ -97,7 +97,7 @@ export class MockDataClientService {
             );
 
             if (customer) {
-                const query2 = `mutation($customerId: Int!, $input: CreateAddressInput) {
+                const query2 = `mutation($customerId: String!, $input: CreateAddressInput) {
                                 createCustomerAddress(customerId: $customerId, input: $input) {
                                     id
                                     streetLine1

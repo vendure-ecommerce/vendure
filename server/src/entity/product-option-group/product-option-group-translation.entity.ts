@@ -1,18 +1,15 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { DeepPartial } from '../../common/common-types';
 import { LanguageCode } from '../../locale/language-code';
 import { Translation } from '../../locale/locale-types';
+import { VendureEntity } from '../base/base.entity';
 import { ProductOptionGroup } from './product-option-group.entity';
 
-@Entity('product_option_group_translation')
-export class ProductOptionGroupTranslation implements Translation<ProductOptionGroup> {
+@Entity()
+export class ProductOptionGroupTranslation extends VendureEntity implements Translation<ProductOptionGroup> {
     constructor(input?: DeepPartial<Translation<ProductOptionGroup>>) {
-        if (input) {
-            Object.assign(this, input);
-        }
+        super(input);
     }
-
-    @PrimaryGeneratedColumn() id: number;
 
     @Column() languageCode: LanguageCode;
 

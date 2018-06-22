@@ -1,21 +1,30 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PaginatedList } from '../../common/common-types';
 import { Product } from '../../entity/product/product.entity';
+import { IdCodecService } from '../../service/id-codec.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
 
 @Resolver('Product')
 export class ProductResolver {
-    constructor(private productService: ProductService, private productVariantService: ProductVariantService) {}
+    constructor(
+        private productService: ProductService,
+        private idCodecService: IdCodecService,
+        private productVariantService: ProductVariantService,
+    ) {}
 
     @Query('products')
-    products(obj, args): Promise<PaginatedList<Product>> {
-        return this.productService.findAll(args.languageCode, args.take, args.skip);
+    async products(obj, args): Promise<PaginatedList<Product>> {
+        return this.productService
+            .findAll(args.languageCode, args.take, args.skip)
+            .then(list => this.idCodecService.encode(list));
     }
 
     @Query('product')
-    product(obj, args): Promise<Product | undefined> {
-        return this.productService.findOne(args.id, args.languageCode);
+    async product(obj, args): Promise<Product | undefined> {
+        return this.productService
+            .findOne(this.idCodecService.decode(args).id, args.languageCode)
+            .then(p => this.idCodecService.encode(p));
     }
 
     @Mutation()
@@ -29,12 +38,13 @@ export class ProductResolver {
             }
         }
 
-        return product;
+        return this.idCodecService.encode(product);
     }
 
     @Mutation()
-    updateProduct(_, args): Promise<Product | undefined> {
+    async updateProduct(_, args): Promise<Product | undefined> {
         const { input } = args;
-        return this.productService.update(input);
+        const product = await this.productService.update(this.idCodecService.decode(input));
+        return this.idCodecService.decode(product);
     }
 }

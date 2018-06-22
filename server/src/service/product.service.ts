@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { PaginatedList } from '../common/common-types';
+import { ID, PaginatedList } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
@@ -9,7 +9,6 @@ import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dt
 import { Product } from '../entity/product/product.entity';
 import { LanguageCode } from '../locale/language-code';
 import { translateDeep } from '../locale/translate-entity';
-import { TranslationUpdater } from '../locale/translation-updater';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 
 @Injectable()
@@ -39,7 +38,7 @@ export class ProductService {
             });
     }
 
-    findOne(productId: number, lang: LanguageCode): Promise<Product | undefined> {
+    findOne(productId: ID, lang: LanguageCode): Promise<Product | undefined> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
         return this.connection.manager

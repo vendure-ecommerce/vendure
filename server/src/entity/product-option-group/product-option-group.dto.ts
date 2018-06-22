@@ -8,6 +8,6 @@ export interface CreateProductOptionGroupDto extends TranslatedInput<ProductOpti
 }
 
 export interface UpdateProductOptionGroupDto extends TranslatedInput<ProductOptionGroup> {
-    id: number;
+    id: string;
     code: string;
 }

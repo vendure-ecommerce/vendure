@@ -1,5 +1,5 @@
 type ProductOption implements Node {
-    id: Int!
+    id: ID!
     languageCode: LanguageCode
     code: String
     name: String
@@ -7,13 +7,13 @@ type ProductOption implements Node {
 }
 
 type ProductOptionTranslation {
-    id: Int!
+    id: ID!
     languageCode: LanguageCode!
     name: String!
 }
 
 input ProductOptionTranslationInput {
-    id: Int
+    id: ID
     languageCode: LanguageCode!
     name: String!
 }

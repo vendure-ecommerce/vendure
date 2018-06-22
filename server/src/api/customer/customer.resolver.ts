@@ -4,35 +4,41 @@ import { Address } from '../../entity/address/address.entity';
 import { CreateCustomerDto } from '../../entity/customer/customer.dto';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
+import { IdCodecService } from '../../service/id-codec.service';
 
 @Resolver('Customer')
 export class CustomerResolver {
-    constructor(private customerService: CustomerService) {}
+    constructor(private customerService: CustomerService, private idCodecService: IdCodecService) {}
 
     @Query('customers')
-    customers(obj, args): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.take, args.skip);
+    async customers(obj, args): Promise<PaginatedList<Customer>> {
+        return this.customerService.findAll(args.take, args.skip).then(list => this.idCodecService.encode(list));
     }
 
     @Query('customer')
-    customer(obj, args): Promise<Customer | undefined> {
-        return this.customerService.findOne(args.id);
+    async customer(obj, args): Promise<Customer | undefined> {
+        return this.customerService
+            .findOne(this.idCodecService.decode(args).id)
+            .then(c => this.idCodecService.encode(c));
     }
 
     @ResolveProperty('addresses')
-    addresses(customer: Customer): Promise<Address[]> {
-        return this.customerService.findAddressesByCustomerId(customer.id);
+    async addresses(customer: Customer): Promise<Address[]> {
+        const address = await this.customerService.findAddressesByCustomerId(this.idCodecService.decode(customer).id);
+        return this.idCodecService.encode(address);
     }
 
     @Mutation()
-    createCustomer(_, args): Promise<Customer> {
+    async createCustomer(_, args): Promise<Customer> {
         const { input, password } = args;
-        return this.customerService.create(input, password);
+        const customer = await this.customerService.create(input, password);
+        return this.idCodecService.encode(customer);
     }
 
     @Mutation()
-    createCustomerAddress(_, args): Promise<Address> {
+    async createCustomerAddress(_, args): Promise<Address> {
         const { customerId, input } = args;
-        return this.customerService.createAddress(customerId, input);
+        const address = await this.customerService.createAddress(this.idCodecService.decode(customerId), input);
+        return this.idCodecService.encode(address);
     }
 }

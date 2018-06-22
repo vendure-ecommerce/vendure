@@ -113,7 +113,7 @@ describe('ProductService', () => {
             translationUpdater.applyDiff.mockReturnValue(Promise.resolve(productFromApplyDiffCall));
 
             const dto: UpdateProductDto = {
-                id: 1,
+                id: '1',
                 image: 'some-image',
                 translations: [],
             };

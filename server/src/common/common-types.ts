@@ -18,3 +18,8 @@ export type PaginatedList<T> = {
     items: T[];
     totalItems: number;
 };
+
+/**
+ * An entity ID
+ */
+export type ID = string | number;

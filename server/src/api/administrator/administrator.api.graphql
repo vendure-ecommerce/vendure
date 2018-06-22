@@ -1,6 +1,6 @@
 type Query {
   administrators: [Administrator]
-  administrator(id: Int!): Administrator
+  administrator(id: ID!): Administrator
 }
 
 type Mutation {
