@@ -29,6 +29,9 @@ export class IdCodecService {
     }
 
     private transformRecursive<T>(target: T, transformFn: (input: any) => ID): T {
+        if (target == null) {
+            return target;
+        }
         if (typeof target === 'string' || typeof target === 'number') {
             return transformFn(target as any) as any;
         }

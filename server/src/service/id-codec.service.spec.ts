@@ -31,6 +31,11 @@ describe('IdCodecService', () => {
             expect(result).toEqual(ENCODED);
         });
 
+        it('passes through null or undefined without throwing', () => {
+            expect(idCodecService.encode(null as any)).toBeNull();
+            expect(idCodecService.encode(undefined as any)).toBeUndefined();
+        });
+
         it('works with simple entity', () => {
             const input = { id: 'id', name: 'foo' };
 
