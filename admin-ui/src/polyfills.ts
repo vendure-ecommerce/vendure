@@ -76,4 +76,6 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  */
 
 import '@clr/icons';
+import '@clr/icons/shapes/commerce-shapes';
+import '@clr/icons/shapes/essential-shapes';
 import '@webcomponents/custom-elements/custom-elements.min.js';

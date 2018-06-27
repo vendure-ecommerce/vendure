@@ -13,6 +13,7 @@ import { LocalStorageService } from './providers/local-storage/local-storage.ser
 import { DataService } from './providers/data/data.service';
 import { AuthGuard } from './providers/guard/auth.guard';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
+import { MainNavComponent } from './components/main-nav/main-nav.component';
 
 export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
   return {
@@ -43,6 +44,6 @@ export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
         DataService,
         AuthGuard,
     ],
-    declarations: [AppShellComponent, UserMenuComponent],
+    declarations: [AppShellComponent, UserMenuComponent, MainNavComponent],
 })
 export class CoreModule {}

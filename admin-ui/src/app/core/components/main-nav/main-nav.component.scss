@@ -1,0 +1,15 @@
+@import "variables";
+
+:host {
+    flex: 0 0 auto;
+    order: -1;
+    background-color: $grey-2;
+}
+
+nav.sidenav {
+    height: 100%;
+}
+
+.nav-list clr-icon {
+    margin-right: 12px;
+}
