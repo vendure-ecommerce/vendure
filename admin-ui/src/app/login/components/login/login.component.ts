@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserActions } from '../../../state/user/user-actions';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { API_URL } from '../../../app.config';
 
 @Component({
     selector: 'vdr-login',
@@ -20,14 +22,18 @@ export class LoginComponent {
         this.userActions.logIn(this.username, this.password)
             .subscribe(
                 () => {
-                    console.log('logged in!');
                     this.router.navigate(['/']);
                 },
-                (err) => {
-                    if (err.status === 401) {
-                        this.lastError = 'Invalid username or password';
-                    } else {
-                        this.lastError = err.error;
+                (err: HttpErrorResponse) => {
+                    switch (err.status) {
+                        case 401:
+                            this.lastError = 'Invalid username or password';
+                            break;
+                        case 0:
+                            this.lastError = `Could not connect to the Vendure server at ${API_URL}`;
+                            break;
+                        default:
+                            this.lastError = err.message;
                     }
                 });
     }
