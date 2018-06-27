@@ -9,7 +9,7 @@ export class ProductDataService {
 
     getProducts(take: number = 10, skip: number = 0): Observable<any> {
         const query = gql`
-            query($take: Int, $skip: Int){
+            query ($take: Int, $skip: Int){
                 products(languageCode: en, take: $take, skip: $skip) {
                     items {
                         id
@@ -17,11 +17,6 @@ export class ProductDataService {
                         name
                         slug
                         description
-                        translations {
-                            id
-                            languageCode
-                            name
-                        }
                     }
                     totalItems
                 }

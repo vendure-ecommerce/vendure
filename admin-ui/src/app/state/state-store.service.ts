@@ -4,8 +4,6 @@ import { Action, Store } from '@ngrx/store';
 import { AppState } from './app-state';
 import { distinctUntilChanged, take } from 'rxjs/operators';
 
-console.log('foo');
-
 /**
  * Wrapper class which wraps the @ngrx/store Store object, and also provides additional
  * convenience methods for accessing data.

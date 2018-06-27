@@ -14,6 +14,10 @@ export const routes: Route[] = [
                 pathMatch: 'full',
                 loadChildren: './dashboard/dashboard.module#DashboardModule',
             },
+            {
+                path: 'catalog',
+                loadChildren: './catalog/catalog.module#CatalogModule',
+            },
         ],
     },
 ];

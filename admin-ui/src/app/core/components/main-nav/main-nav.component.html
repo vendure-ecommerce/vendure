@@ -4,17 +4,34 @@
             <input id="tabexample2" type="checkbox">
             <label for="tabexample2">Catalog</label>
             <ul class="nav-list">
-                <li><a class="nav-link"><clr-icon shape="library" size="20"></clr-icon>Products</a></li>
-                <li><a class="nav-link"><clr-icon shape="tag" size="20"></clr-icon>Facets</a></li>
-                <li><a class="nav-link"><clr-icon shape="folder-open" size="20"></clr-icon>Categories</a></li>
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/catalog', 'products']"
+                       routerLinkActive="active">
+                        <clr-icon shape="library" size="20"></clr-icon>Products
+                    </a>
+                </li>
+                <li><a class="nav-link">
+                    <clr-icon shape="tag" size="20"></clr-icon>Facets
+                </a>
+                </li>
+                <li>
+                    <a class="nav-link">
+                        <clr-icon shape="folder-open" size="20"></clr-icon>Categories
+                    </a>
+                </li>
             </ul>
         </section>
         <section class="nav-group">
-                    <input id="tabexample2" type="checkbox">
-                    <label for="tabexample2">Sales</label>
-                    <ul class="nav-list">
-                        <li><a class="nav-link"><clr-icon shape="shopping-cart" size="20"></clr-icon>Orders</a></li>
-                    </ul>
-                </section>
+            <input id="tabexample2" type="checkbox">
+            <label for="tabexample2">Sales</label>
+            <ul class="nav-list">
+                <li>
+                    <a class="nav-link">
+                        <clr-icon shape="shopping-cart" size="20"></clr-icon>Orders
+                    </a>
+                </li>
+            </ul>
+        </section>
     </section>
 </nav>

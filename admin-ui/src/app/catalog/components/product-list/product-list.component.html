@@ -1,0 +1,38 @@
+<clr-datagrid>
+    <clr-dg-column>Product ID</clr-dg-column>
+    <clr-dg-column>Name</clr-dg-column>
+    <clr-dg-column>Slug</clr-dg-column>
+    <clr-dg-column>Description</clr-dg-column>
+
+    <clr-dg-row *ngFor="let product of products$ | async">
+        <clr-dg-cell>{{ product.id }}</clr-dg-cell>
+        <clr-dg-cell>{{ product.name }}</clr-dg-cell>
+        <clr-dg-cell>{{ product.slug }}</clr-dg-cell>
+        <clr-dg-cell>{{ product.description }}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+        <clr-dg-pagination #pagination
+                           (clrDgPageChange)="getPage($event)"
+                           [(clrDgPage)]="currentPage"
+                           [clrDgPageSize]="itemsPerPage"
+                           [clrDgTotalItems]="totalItems">
+            <div>
+                <div class="form-group">
+                    <div class="select">
+                        <select [(ngModel)]="itemsPerPage" (change)="getPage(currentPage)">
+                            <option [value]="10">10 per page</option>
+                            <option [value]="25">25 per page</option>
+                            <option [value]="50">50 per page</option>
+                            <option [value]="100">100 per page</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+                    of {{pagination.totalItems}} products
+                </div>
+            </div>
+        </clr-dg-pagination>
+    </clr-dg-footer>
+</clr-datagrid>

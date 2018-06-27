@@ -1,12 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
-import { ApolloQueryResult } from 'apollo-client/core/types';
-import { HttpClient } from '@angular/common/http';
-import { API_URL } from '../../../app.config';
 import { map } from 'rxjs/operators';
-import { StateStore } from '../../../state/state-store.service';
+import { API_URL } from '../../../app.config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
 @Injectable()
@@ -20,7 +18,7 @@ export class BaseDataService {
      * Performs a GraphQL query
      */
     query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): Observable<T> {
-        return this.apollo.query<T, V>({
+        return this.apollo.watchQuery<T, V>({
             query,
             variables,
             context: {
@@ -28,11 +26,13 @@ export class BaseDataService {
                     Authorization: this.getAuthHeader(),
                 },
             },
-        }).pipe(map(result => result.data));
+        }).valueChanges.pipe(
+            map(result => result.data),
+        );
     }
 
     /**
-     * Perform REST POST
+     * Perform REST-like POST
      */
     post(path: string, payload: Record<string, any>): Observable<any> {
         return this.httpClient.post(`${API_URL}/${path}`, payload, {
@@ -43,7 +43,7 @@ export class BaseDataService {
     }
 
     /**
-     * Perform REST GET
+     * Perform REST-like GET
      */
     get(path: string): Observable<any> {
         return this.httpClient.get(`${API_URL}/${path}`, {
