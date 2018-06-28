@@ -8,6 +8,9 @@ export const routes: Route[] = [
         path: '',
         canActivate: [AuthGuard],
         component: AppShellComponent,
+        data: {
+            breadcrumb: 'Dashboard',
+        },
         children: [
             {
                 path: '',

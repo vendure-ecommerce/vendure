@@ -1,0 +1,20 @@
+@import "variables";
+
+:host {
+    display: block;
+    height: 45px;
+}
+.breadcrumbs {
+    list-style-type: none;
+    li {
+        font-size: 16px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    li:not(:last-child)::after {
+        content: '›';
+        top: 0;
+        color: #7e7e7e;
+        margin-left: 10px;
+    }
+}
