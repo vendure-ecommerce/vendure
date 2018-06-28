@@ -1,29 +1,26 @@
-import {user} from './user-reducer';
-import {Actions, UserState} from './user-state';
+import { user } from './user-reducer';
+import { Actions, UserState } from './user-state';
 
 describe('user reducer', () => {
 
     it('should handle LOGIN', () => {
-        const state = {
-            error: 'last error message'
-        } as UserState;
+        const state = {} as UserState;
         const action = new Actions.Login();
         const newState = user(state, action);
 
         expect(newState).toEqual({
             loggingIn: true,
-            error: ''
         } as any);
     });
 
     it('should handle LOGIN_SUCCESS', () => {
         const state = {
             loggingIn: true,
-            loginTime: -1
+            loginTime: -1,
         } as UserState;
         const action = new Actions.LoginSuccess({
             username: 'test',
-            loginTime: 12345
+            loginTime: 12345,
         });
         const newState = user(state, action);
 
@@ -31,13 +28,13 @@ describe('user reducer', () => {
             username: 'test',
             loggingIn: false,
             isLoggedIn: true,
-            loginTime: 12345
+            loginTime: 12345,
         } as any);
     });
 
     it('should handle LOGIN_ERROR', () => {
         const state = {
-            loggingIn: true
+            loggingIn: true,
         } as UserState;
         const action = new Actions.LoginError({ message: 'an error message' });
         const newState = user(state, action);
@@ -45,7 +42,6 @@ describe('user reducer', () => {
         expect(newState).toEqual({
             loggingIn: false,
             isLoggedIn: false,
-            error: 'an error message'
         } as any);
     });
 
@@ -53,15 +49,16 @@ describe('user reducer', () => {
         const state = {
             username: 'test',
             isLoggedIn: true,
-            loginTime: 12345
+            loginTime: 12345,
         } as UserState;
         const action = new Actions.Logout();
         const newState = user(state, action);
 
         expect(newState).toEqual({
             username: '',
+            loggingIn: false,
             isLoggedIn: false,
-            loginTime: -1
+            loginTime: -1,
         } as any);
     });
 

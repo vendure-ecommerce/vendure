@@ -23,14 +23,14 @@ export function user(state: UserState = initialUserState, action: Actions): User
                 return;
 
             case ActionType.LOGIN_ERROR:
-                draft.loggingIn = true;
+                draft.loggingIn = false;
                 draft.isLoggedIn = false;
                 return;
 
             case ActionType.LOGOUT:
                 draft.username = '';
                 draft.loggingIn = false;
-                draft.isLoggedIn = true;
+                draft.isLoggedIn = false;
                 draft.loginTime = -1;
                 return;
 
