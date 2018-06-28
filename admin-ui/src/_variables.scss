@@ -1,9 +1,19 @@
+@import "~@clr/ui/src/color/utils/colors.clarity";
+@import "~@clr/ui/src/color/utils/contrast-cache.clarity";
+@import "~@clr/ui/src/color/utils/helpers.clarity";
+@import "~@clr/ui/src/color/variables.color";
+
 // colors
 $color-brand: #13b7f3;
-$grey-1: #FAFAFA;
-$grey-2: #EEEEEE;
-$grey-3: #CCCCCC;
-$grey-4: #9A9A9A;
-$grey-5: #565656;
-$grey-6: #313131;
-$grey-7: #111111;
+$color-success: $clr-green-accessible;
+$color-error: $clr-red;
+$color-info: $clr-action-blue;
+$color-warning: $clr-yellow-light-midtone;
+$color-grey-1: #FAFAFA;
+$color-grey-2: #EEEEEE;
+$color-grey-3: #CCCCCC;
+$color-grey-4: #9A9A9A;
+$color-grey-5: #565656;
+$color-grey-6: #313131;
+$color-grey-7: #111111;
+

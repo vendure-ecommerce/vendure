@@ -3,12 +3,6 @@
  */
 export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
 
-/**
- * Creates a type based on T, but with all properties non-optional
- * and readonly.
- */
-export type ReadOnlyRequired<T> = { +readonly [K in keyof T]-?: T[K] };
-
 // tslint:disable:ban-types
 /**
  * A type representing the type rather than instance of a class.

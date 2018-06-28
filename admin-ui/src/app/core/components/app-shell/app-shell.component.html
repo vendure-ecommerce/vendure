@@ -1,5 +1,5 @@
 <clr-main-container>
-    <!--<div class="alert alert-app-level">
+    <!--<div class="error error-app-level">
         ALERT
     </div>-->
     <clr-header>
@@ -19,8 +19,10 @@
 
     <div class="content-container">
         <div class="content-area">
+            <vdr-breadcrumb></vdr-breadcrumb>
             <router-outlet></router-outlet>
         </div>
         <vdr-main-nav></vdr-main-nav>
     </div>
 </clr-main-container>
+<vdr-overlay-host></vdr-overlay-host>
