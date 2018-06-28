@@ -15,11 +15,11 @@ export class StateStore {
 
     constructor(public _internalStore: Store<AppState>) {
         // expose the AppStore on the window for debug purposes
-        Object.defineProperty(window, 'vnd_app_state', {
+        Object.defineProperty(window, 'vdr_app_state', {
             get: () => this.getState(),
         });
         // allow observing of particular state for debug purposes
-        Object.defineProperty(window, 'vnd_observe_state', {
+        Object.defineProperty(window, 'vdr_observe_state', {
             get: () => this.observeState.bind(this),
         });
     }
