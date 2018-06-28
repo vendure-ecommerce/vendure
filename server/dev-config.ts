@@ -1,11 +1,12 @@
+import { API_PATH, API_PORT } from '../shared/shared-constants';
 import { VendureConfig } from './src/config/vendure-config';
 
 /**
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
-    port: 3000,
-    apiPath: 'api',
+    port: API_PORT,
+    apiPath: API_PATH,
     cors: true,
     jwtSecret: 'some-secret',
     dbConnectionOptions: {
