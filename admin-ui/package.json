@@ -7,7 +7,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint vendure-admin --fix",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "apollo-codegen": "apollo-codegen",
+    "generate-gql-types": "ts-node generate-graphql-types.ts"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +48,7 @@
     "@types/jasmine": "~2.8.6",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
+    "apollo-codegen": "^0.20.1",
     "codelyzer": "~4.2.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
@@ -55,6 +58,7 @@
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.3.0",
+    "rimraf": "^2.6.2",
     "ts-node": "~5.0.1",
     "tslint": "~5.9.1",
     "typescript": "~2.7.2"
