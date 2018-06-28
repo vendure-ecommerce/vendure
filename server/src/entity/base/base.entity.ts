@@ -1,5 +1,5 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { DeepPartial, ID } from '../../common/common-types';
+import { DeepPartial, ID } from '../../../../shared/shared-types';
 import { getConfig } from '../../config/vendure-config';
 
 const primaryKeyType = getConfig().entityIdStrategy.primaryKeyType as any;

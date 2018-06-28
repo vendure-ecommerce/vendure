@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { DeepPartial } from '../../common/common-types';
+import { DeepPartial } from '../../../../shared/shared-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';

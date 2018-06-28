@@ -1,6 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConnectionOptions } from 'typeorm';
-import { DeepPartial, ReadOnlyRequired } from '../common/common-types';
+import { DeepPartial, ReadOnlyRequired } from '../../../shared/shared-types';
 import { LanguageCode } from '../locale/language-code';
 import { AutoIncrementIdStrategy } from './auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy';

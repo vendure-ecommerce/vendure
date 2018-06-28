@@ -1,5 +1,5 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { PaginatedList } from '../../common/common-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Address } from '../../entity/address/address.entity';
 import { CreateCustomerDto } from '../../entity/customer/customer.dto';
 import { Customer } from '../../entity/customer/customer.entity';

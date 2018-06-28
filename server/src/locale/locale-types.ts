@@ -1,4 +1,4 @@
-import { ID } from '../common/common-types';
+import { ID } from '../../../shared/shared-types';
 import { VendureEntity } from '../entity/base/base.entity';
 import { LanguageCode } from './language-code';
 

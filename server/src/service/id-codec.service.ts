@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID, PaginatedList } from '../common/common-types';
+import { ID, PaginatedList } from '../../../shared/shared-types';
 import { VendureEntity } from '../entity/base/base.entity';
 import { ConfigService } from './config.service';
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { ID, PaginatedList } from '../../../shared/shared-types';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
-import { ID, PaginatedList } from '../common/common-types';
 import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';

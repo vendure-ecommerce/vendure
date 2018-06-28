@@ -1,4 +1,4 @@
-import { ID } from '../common/common-types';
+import { ID } from '../../../shared/shared-types';
 
 export type PrimaryKeyType = 'increment' | 'uuid';
 
