@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from '../../../core/providers/data/data.service';
+import { QueryRef } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+
+import { GetProductListQuery, GetProductListQueryVariables } from '../../../common/types/gql-generated-types';
+import { DataService } from '../../../core/providers/data/data.service';
 
 @Component({
     selector: 'vdr-products-list',
     templateUrl: './product-list.component.html',
-    styleUrls: ['./product-list.component.scss']
+    styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit {
 
@@ -14,19 +17,21 @@ export class ProductListComponent implements OnInit {
     totalItems: number;
     itemsPerPage = 25;
     currentPage = 1;
+    private productsQuery: QueryRef<GetProductListQuery, GetProductListQueryVariables>;
 
     constructor(private dataService: DataService) { }
 
     ngOnInit() {
-        this.getPage(1);
+        this.productsQuery = this.dataService.product.getProducts(this.itemsPerPage, 0);
+        this.products$ = this.productsQuery.valueChanges.pipe(
+            tap(val => { this.totalItems = val.data.products.totalItems; }),
+            map(val => val.data.products.items),
+        );
     }
 
     getPage(pageNumber: number): void {
         const take = this.itemsPerPage;
         const skip = (pageNumber - 1) * this.itemsPerPage;
-        this.products$ = this.dataService.product.getProducts(take, skip).pipe(
-            tap(val => { this.totalItems = val.totalItems; }),
-            map(val => val.items),
-        );
+        this.productsQuery.refetch({ skip, take });
     }
 }

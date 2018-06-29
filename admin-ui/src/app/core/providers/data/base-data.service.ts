@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
+import { Apollo, QueryRef } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { API_URL } from '../../../app.config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
@@ -17,7 +18,7 @@ export class BaseDataService {
     /**
      * Performs a GraphQL query
      */
-    query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): Observable<T> {
+    query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): QueryRef<T> {
         return this.apollo.watchQuery<T, V>({
             query,
             variables,
@@ -26,9 +27,7 @@ export class BaseDataService {
                     Authorization: this.getAuthHeader(),
                 },
             },
-        }).valueChanges.pipe(
-            map(result => result.data),
-        );
+        });
     }
 
     /**
@@ -39,7 +38,10 @@ export class BaseDataService {
             headers: {
                 Authorization: this.getAuthHeader(),
             },
-        });
+            observe: 'response',
+        }).pipe(
+            map(response => response.body),
+        );
     }
 
     /**
@@ -50,7 +52,10 @@ export class BaseDataService {
             headers: {
                 Authorization: this.getAuthHeader(),
             },
-        });
+            observe: 'response',
+        }).pipe(
+            map(response => response.body),
+        );
     }
 
     private getAuthHeader(): string {
