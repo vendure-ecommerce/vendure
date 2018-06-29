@@ -54,6 +54,13 @@ enum AdjustmentType {
 class AdjustmentSource {
     type: AdjustmentType
 }
+class Facet {
+    values: FacetValue[]
+}
+class FacetValue {
+}
+class Category {
+}
 
 Customer o-- User
 Administrator o-- User
@@ -63,6 +70,9 @@ Product o-- ProductVariant
 ProductOptionGroup o-- ProductOption
 Product o-- ProductOptionGroup
 ProductVariant o-- ProductOption
+ProductVariant --- FacetValue
+Facet o-- FacetValue
+Category o-- FacetValue
 Customer o-- Order
 OrderItem - ProductVariant
 Order o-- OrderItem
