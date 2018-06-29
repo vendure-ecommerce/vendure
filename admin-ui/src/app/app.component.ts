@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
+import { DataService } from './data/providers/data.service';
 import { StateStore } from './state/state-store.service';
 
 @Component({
@@ -12,11 +13,12 @@ import { StateStore } from './state/state-store.service';
 export class AppComponent implements OnInit {
     loading$: Observable<boolean>;
 
-    constructor(private store: StateStore) {
+    constructor(private dataService: DataService) {
     }
 
     ngOnInit() {
-        this.loading$ = this.store.select(state => state.api.inFlightRequests).pipe(
+        this.loading$ = this.dataService.local.inFlightRequests().pipe(
+            tap(val => console.log('inFlightRequests:', val)),
             map(count => 0 < count),
         );
     }

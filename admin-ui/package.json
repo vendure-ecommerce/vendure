@@ -32,6 +32,8 @@
     "apollo-angular-link-http": "^1.1.0",
     "apollo-cache-inmemory": "^1.2.4",
     "apollo-client": "^2.3.4",
+    "apollo-link": "^1.2.2",
+    "apollo-link-state": "^0.4.1",
     "core-js": "^2.5.4",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",

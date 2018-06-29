@@ -36,6 +36,7 @@ export class LoginComponent {
                         default:
                             this.lastError = err.message;
                     }
+                    console.log(err);
                 });
     }
 

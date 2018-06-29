@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { GetProductListQuery, GetProductListQueryVariables } from '../../../common/types/gql-generated-types';
-import { DataService } from '../../../core/providers/data/data.service';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-products-list',

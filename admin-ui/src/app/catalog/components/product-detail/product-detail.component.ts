@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { DataService } from '../../../core/providers/data/data.service';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-product-detail',

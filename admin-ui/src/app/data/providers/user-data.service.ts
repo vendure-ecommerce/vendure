@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-import { LoginResponse, UserResponse } from '../../../common/types/response';
+import { LoginResponse, UserResponse } from '../../common/types/response';
 
 import { BaseDataService } from './base-data.service';
 

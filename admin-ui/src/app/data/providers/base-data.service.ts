@@ -5,8 +5,9 @@ import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { API_URL } from '../../../app.config';
-import { LocalStorageService } from '../local-storage/local-storage.service';
+import { API_URL } from '../../app.config';
+import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
+import { FetchResult } from 'apollo-link';
 
 @Injectable()
 export class BaseDataService {
@@ -28,6 +29,10 @@ export class BaseDataService {
                 },
             },
         });
+    }
+
+    mutate(mutation: DocumentNode): Observable<FetchResult> {
+        return this.apollo.mutate({ mutation });
     }
 
     /**

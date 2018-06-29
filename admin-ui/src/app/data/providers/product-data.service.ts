@@ -1,15 +1,15 @@
 import { QueryRef } from 'apollo-angular';
 
-import { ID } from '../../../../../../shared/shared-types';
-import { getProductById } from '../../../common/queries/get-product-by-id';
-import { getProductList } from '../../../common/queries/get-product-list';
+import { ID } from '../../../../../shared/shared-types';
+import { getProductById } from '../../common/queries/get-product-by-id';
+import { getProductList } from '../../common/queries/get-product-list';
 import {
     GetProductByIdQuery,
     GetProductByIdQueryVariables,
     GetProductListQuery,
     GetProductListQueryVariables,
     LanguageCode,
-} from '../../../common/types/gql-generated-types';
+} from '../../common/types/gql-generated-types';
 
 import { BaseDataService } from './base-data.service';
 
