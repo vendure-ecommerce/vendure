@@ -3,10 +3,13 @@ import { Store, StoreModule } from '@ngrx/store';
 import { apolloReducer, NgrxCache, NgrxCacheModule } from 'apollo-angular-cache-ngrx';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
+import { environment } from '../../environments/environment';
+
+import { actionLogger } from './action-logger';
+import { ApiActions } from './api/api-actions';
+import { api } from './api/api-reducer';
 import { StateStore } from './state-store.service';
 import { UserActions } from './user/user-actions';
-import { environment } from '../../environments/environment';
-import { actionLogger } from './action-logger';
 import { user } from './user/user-reducer';
 
 export const APOLLO_NGRX_CACHE = new InjectionToken<InMemoryCache>('APOLLO_NGRX_CACHE');
@@ -22,6 +25,7 @@ export const metaReducers = environment.production ? [] : [actionLogger];
         NgrxCacheModule,
         StoreModule.forRoot({
             entities: apolloReducer,
+            api,
             user,
         }, { metaReducers }),
         NgrxCacheModule.forRoot('entities'),
@@ -34,6 +38,7 @@ export const metaReducers = environment.production ? [] : [actionLogger];
         },
         UserActions,
         StateStore,
+        ApiActions,
     ],
 })
 export class StateModule {}
