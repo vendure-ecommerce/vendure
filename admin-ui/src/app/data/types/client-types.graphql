@@ -1,0 +1,12 @@
+type Query {
+    network: Network
+}
+
+type Mutation {
+    requestStarted: Network
+    requestCompleted: Network
+}
+
+type Network {
+    inFlightRequests: Int!
+}

@@ -12,6 +12,7 @@ import { API_URL } from '../app.config';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
 import { DefaultInterceptor } from './providers/interceptor';
+import { GET_IN_FLIGHT_REQUESTS } from './queries/local-queries';
 
 // This is the same cache you pass into new ApolloClient
 const apolloCache = new InMemoryCache();
@@ -23,14 +24,7 @@ const stateLink = withClientState({
     resolvers: {
         Mutation: {
             requestStarted: (_, __, { cache }) => {
-                const query = gql`
-                    query GetInFlightRequests {
-                        network @client {
-                            inFlightRequests
-                        }
-                    }
-                `;
-                const previous = cache.readQuery({ query });
+                const previous = cache.readQuery({ query: GET_IN_FLIGHT_REQUESTS });
                 const data = {
                     network: {
                         __typename: 'Network',
@@ -41,14 +35,7 @@ const stateLink = withClientState({
                 return null;
             },
             requestCompleted: (_, __, { cache }) => {
-                const query = gql`
-                    query GetInFlightRequests {
-                        network @client {
-                            inFlightRequests
-                        }
-                    }
-                `;
-                const previous = cache.readQuery({ query });
+                const previous = cache.readQuery({ query: GET_IN_FLIGHT_REQUESTS });
                 const data = {
                     network: {
                         __typename: 'Network',

@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import { map } from 'rxjs/operators';
 import { BaseDataService } from './base-data.service';
 
-export class LocalDataService {
+export class ClientDataService {
 
     constructor(private baseDataService: BaseDataService) {}
 

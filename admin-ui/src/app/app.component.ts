@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.loading$ = this.dataService.local.inFlightRequests().pipe(
+        this.loading$ = this.dataService.client.inFlightRequests().pipe(
             tap(val => console.log('inFlightRequests:', val)),
             map(count => 0 < count),
         );

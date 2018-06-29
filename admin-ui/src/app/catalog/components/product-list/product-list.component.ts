@@ -3,7 +3,7 @@ import { QueryRef } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { GetProductListQuery, GetProductListQueryVariables } from '../../../common/types/gql-generated-types';
+import { GetProductList, GetProductListVariables } from '../../../data/types/gql-generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class ProductListComponent implements OnInit {
     totalItems: number;
     itemsPerPage = 25;
     currentPage = 1;
-    private productsQuery: QueryRef<GetProductListQuery, GetProductListQueryVariables>;
+    private productsQuery: QueryRef<GetProductList, GetProductListVariables>;
 
     constructor(private dataService: DataService) { }
 

@@ -22,20 +22,20 @@ export class DefaultInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler):
         Observable<HttpEvent<any>> {
         this.apiActions.startRequest();
-        this.dataService.local.startRequest().subscribe();
+        this.dataService.client.startRequest().subscribe();
         return next.handle(req).pipe(
             tap(event => {
                     if (event instanceof HttpResponse) {
                         this.notifyOnGraphQLErrors(event);
                         this.apiActions.requestCompleted();
-                        this.dataService.local.completeRequest().subscribe();
+                        this.dataService.client.completeRequest().subscribe();
                     }
                 },
                 err => {
                     if (err instanceof HttpErrorResponse) {
                         this.notification.error(err.message);
                         this.apiActions.requestCompleted();
-                        this.dataService.local.completeRequest().subscribe();
+                        this.dataService.client.completeRequest().subscribe();
                     }
                 }),
         );
