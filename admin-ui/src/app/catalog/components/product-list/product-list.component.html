@@ -4,7 +4,7 @@
     <clr-dg-column>Slug</clr-dg-column>
     <clr-dg-column>Description</clr-dg-column>
 
-    <clr-dg-row *ngFor="let product of products$ | async">
+    <clr-dg-row *ngFor="let product of products$ | async" [routerLink]="['./', product.id]">
         <clr-dg-cell>{{ product.id }}</clr-dg-cell>
         <clr-dg-cell>{{ product.name }}</clr-dg-cell>
         <clr-dg-cell>{{ product.slug }}</clr-dg-cell>
