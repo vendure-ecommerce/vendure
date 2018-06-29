@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { Apollo, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
@@ -14,6 +14,7 @@ import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { BaseDataService } from './providers/data/base-data.service';
 import { DataService } from './providers/data/data.service';
+import { DefaultInterceptor } from './providers/data/interceptor';
 import { AuthGuard } from './providers/guard/auth.guard';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
 import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
@@ -38,6 +39,7 @@ export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
     ],
     exports: [
         SharedModule,
+        OverlayHostComponent,
     ],
     providers: [
         {
@@ -45,6 +47,7 @@ export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
             useFactory: createApollo,
             deps: [HttpLink, APOLLO_NGRX_CACHE],
         },
+        { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
         BaseDataService,
         LocalStorageService,
         DataService,
