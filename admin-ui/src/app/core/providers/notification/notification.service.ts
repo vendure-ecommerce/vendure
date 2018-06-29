@@ -21,7 +21,7 @@ const TOAST_DURATION = 3000;
 export class NotificationService {
 
     private hostView: ViewContainerRef;
-    private openToastRefs: { ref: ComponentRef<NotificationComponent>, timerId: any }[] = [];
+    private openToastRefs: Array<{ ref: ComponentRef<NotificationComponent>, timerId: any }> = [];
 
     constructor(private resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) {
         overlayHostService.getHostView().then(view => {

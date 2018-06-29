@@ -1,6 +1,7 @@
 import { ActionReducer } from '@ngrx/store';
-import { AppState } from './app-state';
 import { storeLogger } from 'ngrx-store-logger';
+
+import { AppState } from './app-state';
 
 /**
  * A meta reducer which logs actions to the console for debugging purposes.

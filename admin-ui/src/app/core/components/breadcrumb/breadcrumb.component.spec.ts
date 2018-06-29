@@ -7,6 +7,7 @@ import { Observable, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { StateStore } from '../../../state/state-store.service';
+
 import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {

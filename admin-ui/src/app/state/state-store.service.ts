@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
-import { AppState } from './app-state';
+import { Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, take } from 'rxjs/operators';
+
+import { AppState } from './app-state';
 
 /**
  * Wrapper class which wraps the @ngrx/store Store object, and also provides additional
@@ -68,7 +69,7 @@ export class StateStore {
                 err => {
                     console.log(`%c "${selector.toString()}" is an invalid selector function:`, 'color: #f00', err.message);
                     hasError = true;
-                }
+                },
             );
         // tslint:enable:no-console
 

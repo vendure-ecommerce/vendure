@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
+import { DataService } from '../../core/providers/data/data.service';
+import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
+import { handleError } from '../handle-error';
 import { StateStore } from '../state-store.service';
 
 import {Actions} from './user-state';
-import { DataService } from '../../core/providers/data/data.service';
-import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
-import { handleError } from '../handle-error';
 
 @Injectable()
 export class UserActions {

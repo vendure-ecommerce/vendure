@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { StateStore } from '../../../state/state-store.service';
-import { Observable } from 'rxjs';
-import { UserActions } from '../../../state/user/user-actions';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+
+import { StateStore } from '../../../state/state-store.service';
+import { UserActions } from '../../../state/user/user-actions';
 
 @Component({
     selector: 'vdr-app-shell',
     templateUrl: './app-shell.component.html',
-    styleUrls: ['./app-shell.component.scss']
+    styleUrls: ['./app-shell.component.scss'],
 })
 export class AppShellComponent implements OnInit {
 

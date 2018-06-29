@@ -3,6 +3,7 @@ import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } f
 import { flatten } from 'lodash';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
+
 import { StateStore } from '../../../state/state-store.service';
 
 export type BreadcrumbString = string;

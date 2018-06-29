@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UserActions } from '../../../state/user/user-actions';
-import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { API_URL } from '../../../app.config';
+import { UserActions } from '../../../state/user/user-actions';
 
 @Component({
     selector: 'vdr-login',

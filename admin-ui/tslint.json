@@ -1,32 +1,33 @@
 {
-    "extends": [
-        "../tslint.json"
+  "extends": [
+    "../tslint.json"
+  ],
+  "rulesDirectory": [
+    "node_modules/codelyzer"
+  ],
+  "rules": {
+    "deprecation": {
+      "severity": "warn"
+    },
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
     ],
-    "rulesDirectory": [
-        "node_modules/codelyzer"
+    "indent": [
+      true,
+      "spaces"
     ],
-    "rules": {
-        "deprecation": {
-            "severity": "warn"
-        },
-        "import-blacklist": [
-            true,
-            "rxjs/Rx"
-        ],
-        "indent": [
-            true,
-            "spaces"
-        ],
-        "no-string-literal": false,
-        "no-output-on-prefix": true,
-        "use-input-property-decorator": true,
-        "use-output-property-decorator": true,
-        "use-host-property-decorator": true,
-        "no-input-rename": true,
-        "no-output-rename": true,
-        "use-life-cycle-interface": true,
-        "use-pipe-transform-interface": true,
-        "component-class-suffix": true,
-        "directive-class-suffix": true
-    }
+    "no-string-literal": false,
+    "no-output-on-prefix": true,
+    "use-input-property-decorator": true,
+    "use-output-property-decorator": true,
+    "use-host-property-decorator": true,
+    "no-input-rename": true,
+    "no-output-rename": true,
+    "use-life-cycle-interface": true,
+    "use-pipe-transform-interface": true,
+    "component-class-suffix": true,
+    "directive-class-suffix": true,
+    "no-floating-promises": false
+  }
 }

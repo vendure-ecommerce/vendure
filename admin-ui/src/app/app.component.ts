@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-import { UserActions } from './state/user/user-actions';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { StateStore } from './state/state-store.service';
 
 @Component({
     selector: 'vdr-root',
@@ -9,13 +10,14 @@ import { UserActions } from './state/user/user-actions';
     styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-    title = 'Vendure';
-    products: any[] = [];
+    loading$: Observable<boolean>;
 
-    constructor() {
+    constructor(private store: StateStore) {
     }
 
     ngOnInit() {
-
+        this.loading$ = this.store.select(state => state.api.inFlightRequests).pipe(
+            map(count => 0 < count),
+        );
     }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
-import { StateStore } from '../../../state/state-store.service';
-import { flatMap, mergeMap, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { flatMap, mergeMap, tap } from 'rxjs/operators';
+
+import { StateStore } from '../../../state/state-store.service';
 import { UserActions } from '../../../state/user/user-actions';
 
 @Injectable()

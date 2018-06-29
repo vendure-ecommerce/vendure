@@ -1,6 +1,8 @@
-import { BaseDataService } from './base-data.service';
 import { Observable } from 'rxjs';
+
 import { LoginResponse, UserResponse } from '../../../common/types/response';
+
+import { BaseDataService } from './base-data.service';
 
 export class UserDataService {
 
@@ -18,4 +20,3 @@ export class UserDataService {
     }
 
 }
-

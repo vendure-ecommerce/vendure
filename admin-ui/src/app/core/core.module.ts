@@ -8,19 +8,20 @@ import { API_PATH } from '../../../../shared/shared-constants';
 import { API_URL } from '../app.config';
 import { SharedModule } from '../shared/shared.module';
 import { APOLLO_NGRX_CACHE, StateModule } from '../state/state.module';
+
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
+import { NotificationComponent } from './components/notification/notification.component';
+import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { BaseDataService } from './providers/data/base-data.service';
 import { DataService } from './providers/data/data.service';
 import { DefaultInterceptor } from './providers/data/interceptor';
 import { AuthGuard } from './providers/guard/auth.guard';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
-import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
-import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 import { NotificationService } from './providers/notification/notification.service';
-import { NotificationComponent } from './components/notification/notification.component';
+import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 
 export function createApollo(httpLink: HttpLink, ngrxCache: InMemoryCache) {
   return {
