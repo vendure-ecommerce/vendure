@@ -31,7 +31,14 @@ export class LocalStorageService {
     public get(key: LocalStorageKey): any {
         const keyName = this.keyName(key);
         const item = sessionStorage.getItem(keyName) || localStorage.getItem(keyName);
-        return JSON.parse(item || 'null');
+        let result: any;
+        try {
+            result = JSON.parse(item || 'null');
+        } catch (e) {
+            // tslint:disable-next-line:no-console
+            console.error(`Could not parse the localStorage value for "${key}" (${item})`);
+        }
+        return result;
     }
 
     public remove(key: LocalStorageKey): void {
