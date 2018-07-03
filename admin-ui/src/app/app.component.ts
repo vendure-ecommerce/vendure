@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-
+import { map } from 'rxjs/operators';
 import { DataService } from './data/providers/data.service';
-import { StateStore } from './state/state-store.service';
 
 @Component({
     selector: 'vdr-root',
@@ -17,9 +15,8 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.loading$ = this.dataService.client.inFlightRequests().pipe(
-            tap(val => console.log('inFlightRequests:', val)),
-            map(count => 0 < count),
+        this.loading$ = this.dataService.client.getNetworkStatus().stream$.pipe(
+            map(data => 0 < data.networkStatus.inFlightRequests),
         );
     }
 }

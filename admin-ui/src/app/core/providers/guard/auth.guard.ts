@@ -1,28 +1,22 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { flatMap, mergeMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
 
-import { StateStore } from '../../../state/state-store.service';
-import { UserActions } from '../../../state/user/user-actions';
-
+/**
+ * This guard prevents unauthorized users from accessing any routes which require
+ * authorization.
+ */
 @Injectable()
 export class AuthGuard implements CanActivate {
 
     constructor(private router: Router,
-                private userActions: UserActions,
-                private store: StateStore) {}
+                private authService: AuthService) {}
 
     canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
 
-        return this.store.select(state => state.user.isLoggedIn).pipe(
-            mergeMap(loggedIn => {
-                if (!loggedIn) {
-                    return this.userActions.checkAuth();
-                } else {
-                    return of(true);
-                }
-            }),
+        return this.authService.checkAuthenticatedStatus().pipe(
             tap(authenticated => {
                 if (authenticated) {
                     return true;

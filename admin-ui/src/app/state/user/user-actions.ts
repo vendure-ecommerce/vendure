@@ -38,7 +38,7 @@ export class UserActions {
     logIn(username: string, password: string): Observable<any> {
         this.store.dispatch(new Actions.Login());
 
-        return this.dataService.user.logIn(username, password).pipe(
+        return this.dataService.user.attemptLogin(username, password).pipe(
             map(result => {
                 this.store.dispatch(new Actions.LoginSuccess({
                     username,

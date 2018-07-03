@@ -1,58 +1,30 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
-
-import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { withClientState } from 'apollo-link-state';
-import gql from 'graphql-tag';
 import { API_PATH } from '../../../../shared/shared-constants';
+import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
+import { clientDefaults } from './client-state/client-defaults';
+import { clientResolvers } from './client-state/client-resolvers';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
 import { DefaultInterceptor } from './providers/interceptor';
-import { GET_IN_FLIGHT_REQUESTS } from './queries/local-queries';
 
-// This is the same cache you pass into new ApolloClient
 const apolloCache = new InMemoryCache();
 
-(window as any)['apolloCache'] = apolloCache;
+if (!environment.production) {
+    // make the Apollo Cache inspectable in the console for debug purposes
+    (window as any)['apolloCache'] = apolloCache;
+}
 
 const stateLink = withClientState({
     cache: apolloCache,
-    resolvers: {
-        Mutation: {
-            requestStarted: (_, __, { cache }) => {
-                const previous = cache.readQuery({ query: GET_IN_FLIGHT_REQUESTS });
-                const data = {
-                    network: {
-                        __typename: 'Network',
-                        inFlightRequests: previous.network.inFlightRequests + 1,
-                    },
-                };
-                cache.writeData({ data });
-                return null;
-            },
-            requestCompleted: (_, __, { cache }) => {
-                const previous = cache.readQuery({ query: GET_IN_FLIGHT_REQUESTS });
-                const data = {
-                    network: {
-                        __typename: 'Network',
-                        inFlightRequests: previous.network.inFlightRequests - 1,
-                    },
-                };
-                cache.writeData({ data });
-                return null;
-            },
-        },
-    },
-    defaults: {
-        network: {
-            inFlightRequests: 0,
-            __typename: 'Network',
-        },
-    },
+    resolvers: clientResolvers,
+    defaults: clientDefaults,
 });
 
 export function createApollo(httpLink: HttpLink) {
@@ -62,6 +34,10 @@ export function createApollo(httpLink: HttpLink) {
     };
 }
 
+/**
+ * The DataModule is responsible for all API calls *and* serves as the source of truth for global app
+ * state via the apollo-link-state package.
+ */
 @NgModule({
     imports: [
         ApolloModule,

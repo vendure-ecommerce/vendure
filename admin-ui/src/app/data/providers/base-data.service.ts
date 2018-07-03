@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Apollo, QueryRef } from 'apollo-angular';
+import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
 import { API_URL } from '../../app.config';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
-import { FetchResult } from 'apollo-link';
+import { QueryResult } from '../types/query-result';
 
 @Injectable()
 export class BaseDataService {
@@ -17,10 +16,10 @@ export class BaseDataService {
                 private localStorageService: LocalStorageService) {}
 
     /**
-     * Performs a GraphQL query
+     * Performs a GraphQL watch query
      */
-    query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): QueryRef<T> {
-        return this.apollo.watchQuery<T, V>({
+    query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): QueryResult<T, V> {
+        const queryRef = this.apollo.watchQuery<T, V>({
             query,
             variables,
             context: {
@@ -29,10 +28,15 @@ export class BaseDataService {
                 },
             },
         });
+        return new QueryResult<T, any>(queryRef);
     }
 
-    mutate(mutation: DocumentNode): Observable<FetchResult> {
-        return this.apollo.mutate({ mutation });
+    /**
+     * Performs a GraphQL mutation
+     */
+    mutate<T, V = Record<string, any>>(mutation: DocumentNode, variables?: V): Observable<T> {
+        return this.apollo.mutate<T, V>({ mutation, variables }).pipe(
+            map(result => result.data as T));
     }
 
     /**

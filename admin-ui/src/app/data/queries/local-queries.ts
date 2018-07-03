@@ -1,9 +1,19 @@
 import gql from 'graphql-tag';
 
-export const GET_IN_FLIGHT_REQUESTS = gql`
-    query GetInFlightRequests {
-        network @client {
+export const GET_NEWTORK_STATUS = gql`
+    query GetNetworkStatus {
+        networkStatus @client {
             inFlightRequests
+        }
+    }
+`;
+
+export const GET_USER_STATUS = gql`
+    query GetUserStatus {
+        userStatus @client {
+            username
+            isLoggedIn
+            loginTime
         }
     }
 `;

@@ -4,16 +4,66 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetInFlightRequests
+// GraphQL mutation operation: RequestStarted
 // ====================================================
 
-export interface GetInFlightRequests_network {
-  __typename: "Network";
-  inFlightRequests: number;
+export interface RequestStarted {
+  requestStarted: number;
 }
 
-export interface GetInFlightRequests {
-  network: GetInFlightRequests_network | null;
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: RequestCompleted
+// ====================================================
+
+export interface RequestCompleted {
+  requestCompleted: number;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: LogIn
+// ====================================================
+
+export interface LogIn_logIn {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
+export interface LogIn {
+  logIn: LogIn_logIn | null;
+}
+
+export interface LogInVariables {
+  username: string;
+  loginTime: string;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: LogOut
+// ====================================================
+
+export interface LogOut_logOut {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
+export interface LogOut {
+  logOut: LogOut_logOut | null;
 }
 
 
@@ -82,6 +132,42 @@ export interface GetProductListVariables {
   take?: number | null;
   skip?: number | null;
   languageCode?: LanguageCode | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetNetworkStatus
+// ====================================================
+
+export interface GetNetworkStatus_networkStatus {
+  __typename: "NetworkStatus";
+  inFlightRequests: number;
+}
+
+export interface GetNetworkStatus {
+  networkStatus: GetNetworkStatus_networkStatus;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUserStatus
+// ====================================================
+
+export interface GetUserStatus_userStatus {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
+export interface GetUserStatus {
+  userStatus: GetUserStatus_userStatus;
 }
 
 /* tslint:disable */

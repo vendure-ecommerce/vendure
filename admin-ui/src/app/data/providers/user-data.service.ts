@@ -12,7 +12,7 @@ export class UserDataService {
         return this.baseDataService.get('auth/me');
     }
 
-    logIn(username: string, password: string): Observable<LoginResponse> {
+    attemptLogin(username: string, password: string): Observable<LoginResponse> {
         return this.baseDataService.post('auth/login', {
             username,
             password,

@@ -1,9 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { API_URL } from '../../../app.config';
-import { UserActions } from '../../../state/user/user-actions';
+import { AuthService } from '../../../core/providers/auth/auth.service';
 
 @Component({
     selector: 'vdr-login',
@@ -16,15 +15,13 @@ export class LoginComponent {
     password = '';
     lastError = '';
 
-    constructor(private userActions: UserActions,
+    constructor(private authService: AuthService,
                 private router: Router) { }
 
     logIn(): void {
-        this.userActions.logIn(this.username, this.password)
+        this.authService.logIn(this.username, this.password)
             .subscribe(
-                () => {
-                    this.router.navigate(['/']);
-                },
+                () => this.router.navigate(['/']),
                 (err: HttpErrorResponse) => {
                     switch (err.status) {
                         case 401:
@@ -36,7 +33,6 @@ export class LoginComponent {
                         default:
                             this.lastError = err.message;
                     }
-                    console.log(err);
                 });
     }
 

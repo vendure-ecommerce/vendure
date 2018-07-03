@@ -1,12 +1,21 @@
 type Query {
-    network: Network
+    networkStatus: NetworkStatus!
+    userStatus: UserStatus!
 }
 
 type Mutation {
-    requestStarted: Network
-    requestCompleted: Network
+    requestStarted: Int!
+    requestCompleted: Int!
+    logIn(username: String!, loginTime: String!): UserStatus
+    logOut: UserStatus
 }
 
-type Network {
+type NetworkStatus {
     inFlightRequests: Int!
+}
+
+type UserStatus {
+    username: String!
+    isLoggedIn: Boolean!
+    loginTime: String!
 }
