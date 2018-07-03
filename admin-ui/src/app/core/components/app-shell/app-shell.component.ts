@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { StateStore } from '../../../state/state-store.service';
+import { map } from 'rxjs/operators';
+import { DataService } from '../../../data/providers/data.service';
 import { AuthService } from '../../providers/auth/auth.service';
 
 @Component({
@@ -13,12 +14,14 @@ export class AppShellComponent implements OnInit {
 
     userName$: Observable<string>;
 
-    constructor(private store: StateStore,
-                private authService: AuthService,
+    constructor(private authService: AuthService,
+                private dataService: DataService,
                 private router: Router) { }
 
     ngOnInit() {
-        this.userName$ = this.store.select(state => state.user.username);
+        this.userName$ = this.dataService.client.userStatus().single$.pipe(
+            map(data => data.userStatus.username),
+        );
     }
 
     logOut() {

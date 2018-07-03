@@ -3,8 +3,7 @@ import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } f
 import { flatten } from 'lodash';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
-
-import { StateStore } from '../../../state/state-store.service';
+import { DataService } from '../../../data/providers/data.service';
 
 export type BreadcrumbString = string;
 export interface BreadcrumbLabelLinkPair {
@@ -12,7 +11,7 @@ export interface BreadcrumbLabelLinkPair {
     link: any[];
 }
 export type BreadcrumbValue = BreadcrumbString | BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[];
-export type BreadcrumbFunction = (data: Data, params: Params, store: StateStore) => BreadcrumbValue | Observable<BreadcrumbValue>;
+export type BreadcrumbFunction = (data: Data, params: Params, dataService: DataService) => BreadcrumbValue | Observable<BreadcrumbValue>;
 export type BreadcrumbDefinition = BreadcrumbValue | BreadcrumbFunction | Observable<BreadcrumbValue>;
 
 /**
@@ -36,7 +35,7 @@ export class BreadcrumbComponent implements OnDestroy {
 
     constructor(private router: Router,
                 private route: ActivatedRoute,
-                private store: StateStore) {
+                private dataService: DataService) {
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
             takeUntil(this.destroy$))
@@ -99,7 +98,7 @@ export class BreadcrumbComponent implements OnDestroy {
 
                     if (breadcrumbDef) {
                         if (isBreadcrumbFunction(breadcrumbDef)) {
-                            breadcrumbDef = breadcrumbDef(routeSnapshot.data, routeSnapshot.params, this.store);
+                            breadcrumbDef = breadcrumbDef(routeSnapshot.data, routeSnapshot.params, this.dataService);
                         }
                         const observableValue = isObservable(breadcrumbDef) ? breadcrumbDef : observableOf(breadcrumbDef);
                         breadcrumbParts.push({ value$: observableValue, path: segmentPaths.slice() });

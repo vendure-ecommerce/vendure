@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { DataModule } from '../data/data.module';
 import { SharedModule } from '../shared/shared.module';
-import { StateModule } from '../state/state.module';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
@@ -18,7 +17,6 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
     imports: [
         DataModule,
         SharedModule,
-        StateModule,
     ],
     exports: [
         SharedModule,
