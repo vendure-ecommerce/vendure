@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } from '@angular/router';
 import { flatten } from 'lodash';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { DataService } from '../../../data/providers/data.service';
 
 export type BreadcrumbString = string;
@@ -36,12 +36,12 @@ export class BreadcrumbComponent implements OnDestroy {
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private dataService: DataService) {
-        this.router.events.pipe(
+        this.breadcrumbs$ = this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
-            takeUntil(this.destroy$))
-            .subscribe(event => {
-                this.breadcrumbs$ = this.generateBreadcrumbs(this.route.root);
-            });
+            takeUntil(this.destroy$),
+            startWith(true),
+            switchMap(() => this.generateBreadcrumbs(this.route.root)),
+        );
     }
 
     ngOnDestroy(): void {
