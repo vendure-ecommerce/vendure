@@ -5,9 +5,7 @@ import { Resolve, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-import { StateStore } from '../../../state/state-store.service';
-
+import { DataService } from '../../../data/providers/data.service';
 import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {
@@ -234,7 +232,7 @@ describe('BeadcrumbsComponent', () => {
             ],
             providers: [
                 FooResolver,
-                { provide: StateStore, useClass: class {} },
+                { provide: DataService, useClass: class {} },
             ],
         }).compileComponents();
 
