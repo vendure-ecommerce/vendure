@@ -1,13 +1,13 @@
 type Query {
-    products(languageCode: LanguageCode, take: Int, skip: Int): ProductList
-    product(id: ID!, languageCode: LanguageCode): Product
+    products(languageCode: LanguageCode, take: Int, skip: Int): ProductList!
+    product(id: ID!, languageCode: LanguageCode): Product!
 }
 
 type Mutation {
     "Create a new Product"
-    createProduct(input: CreateProductInput): Product
+    createProduct(input: CreateProductInput): Product!
     "Update an existing Product"
-    updateProduct(input: UpdateProductInput): Product
+    updateProduct(input: UpdateProductInput): Product!
 }
 
 type ProductList implements PaginatedList {

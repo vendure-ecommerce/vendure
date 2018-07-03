@@ -71,74 +71,6 @@ export interface LogOut {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetProductById
-// ====================================================
-
-export interface GetProductById_product_translations {
-  __typename: "ProductTranslation";
-  languageCode: LanguageCode;
-  name: string;
-  slug: string;
-  description: string | null;
-}
-
-export interface GetProductById_product {
-  __typename: "Product";
-  id: string;
-  languageCode: LanguageCode | null;
-  name: string | null;
-  slug: string | null;
-  description: string | null;
-  translations: (GetProductById_product_translations | null)[] | null;
-}
-
-export interface GetProductById {
-  product: GetProductById_product | null;
-}
-
-export interface GetProductByIdVariables {
-  id: string;
-  languageCode?: LanguageCode | null;
-}
-
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetProductList
-// ====================================================
-
-export interface GetProductList_products_items {
-  __typename: "Product";
-  id: string;
-  languageCode: LanguageCode | null;
-  name: string | null;
-  slug: string | null;
-  description: string | null;
-}
-
-export interface GetProductList_products {
-  __typename: "ProductList";
-  items: GetProductList_products_items[];
-  totalItems: number;
-}
-
-export interface GetProductList {
-  products: GetProductList_products | null;
-}
-
-export interface GetProductListVariables {
-  take?: number | null;
-  skip?: number | null;
-  languageCode?: LanguageCode | null;
-}
-
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GetNetworkStatus
 // ====================================================
 
@@ -168,6 +100,74 @@ export interface GetUserStatus_userStatus {
 
 export interface GetUserStatus {
   userStatus: GetUserStatus_userStatus;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetProductById
+// ====================================================
+
+export interface GetProductById_product_translations {
+  __typename: "ProductTranslation";
+  languageCode: LanguageCode;
+  name: string;
+  slug: string;
+  description: string | null;
+}
+
+export interface GetProductById_product {
+  __typename: "Product";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  translations: (GetProductById_product_translations | null)[] | null;
+}
+
+export interface GetProductById {
+  product: GetProductById_product;
+}
+
+export interface GetProductByIdVariables {
+  id: string;
+  languageCode?: LanguageCode | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetProductList
+// ====================================================
+
+export interface GetProductList_products_items {
+  __typename: "Product";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+}
+
+export interface GetProductList_products {
+  __typename: "ProductList";
+  items: GetProductList_products_items[];
+  totalItems: number;
+}
+
+export interface GetProductList {
+  products: GetProductList_products;
+}
+
+export interface GetProductListVariables {
+  take?: number | null;
+  skip?: number | null;
+  languageCode?: LanguageCode | null;
 }
 
 /* tslint:disable */

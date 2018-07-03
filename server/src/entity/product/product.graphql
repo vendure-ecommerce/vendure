@@ -1,6 +1,6 @@
 type Product implements Node {
     id: ID!
-    languageCode: LanguageCode
+    languageCode: LanguageCode!
     name: String
     slug: String
     description: String

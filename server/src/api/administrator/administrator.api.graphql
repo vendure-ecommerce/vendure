@@ -1,9 +1,9 @@
 type Query {
-  administrators: [Administrator]
-  administrator(id: ID!): Administrator
+  administrators: [Administrator!]!
+  administrator(id: ID!): Administrator!
 }
 
 type Mutation {
   "Create a new Administrator"
-  createAdministrator(input: CreateAdministratorInput!): Administrator
+  createAdministrator(input: CreateAdministratorInput!): Administrator!
 }
