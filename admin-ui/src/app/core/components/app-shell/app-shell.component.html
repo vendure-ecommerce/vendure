@@ -16,10 +16,12 @@
                            (logOut)="logOut()"></vdr-user-menu>
         </div>
     </clr-header>
+    <nav class="subnav">
+        <vdr-breadcrumb></vdr-breadcrumb>
+    </nav>
 
     <div class="content-container">
         <div class="content-area">
-            <vdr-breadcrumb></vdr-breadcrumb>
             <router-outlet></router-outlet>
         </div>
         <vdr-main-nav></vdr-main-nav>
