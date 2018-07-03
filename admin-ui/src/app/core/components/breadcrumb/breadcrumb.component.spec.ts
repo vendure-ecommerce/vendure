@@ -5,6 +5,7 @@ import { Resolve, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { DataService } from '../../../data/providers/data.service';
 import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
 
@@ -52,7 +53,7 @@ describe('BeadcrumbsComponent', () => {
                         path: 'resolved-function-child',
                         component: TestParentComponent,
                         data: {
-                            breadcrumb: data => data.foo,
+                            breadcrumb: (data: any) => data.foo,
                         },
                         resolve: { foo: FooResolver },
                         children: [leafRoute],
@@ -61,7 +62,7 @@ describe('BeadcrumbsComponent', () => {
                         path: 'params-child/:name',
                         component: TestParentComponent,
                         data: {
-                            breadcrumb: (data, params) => params['name'],
+                            breadcrumb: (data: any, params: any) => params['name'],
                         },
                         children: [leafRoute],
                     },
@@ -397,8 +398,9 @@ function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[]
 function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] {
     return getBreadcrumbListItems(fixture)
         .map(el => el.querySelector('a'))
-        .filter(el => !!el)
-        .map(a => a.getAttribute('href'));
+        .filter(notNullOrUndefined)
+        .map(a => a.getAttribute('href'))
+        .filter(notNullOrUndefined);
 }
 
 // tslint:disable component-selector

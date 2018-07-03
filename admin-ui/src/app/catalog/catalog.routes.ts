@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
-
+import { BreadcrumbFunction } from '../core/components/breadcrumb/breadcrumb.component';
+import { DataService } from '../data/providers/data.service';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 
@@ -20,7 +21,7 @@ export const catalogRoutes: Route[] = [
     },
 ];
 
-export function productBreadcrumb(data, params, store) {
+export function productBreadcrumb(data: any, params: any, dataService: DataService) {
     return [
         {
             label: 'Products',

@@ -13,7 +13,7 @@ export class ProductDataService {
             .query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, { take, skip, languageCode: LanguageCode.en });
     }
 
-    getProduct(id: ID): QueryResult<GetProductById> {
+    getProduct(id: ID): QueryResult<GetProductById, GetProductByIdVariables> {
         const stringId = id.toString();
         return this.baseDataService.query<GetProductById, GetProductByIdVariables>(GET_PRODUCT_BY_ID, {
             id: stringId,

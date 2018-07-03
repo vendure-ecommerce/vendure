@@ -17,7 +17,7 @@ export type ResolverContext = {
 
 export type ResolverDefinition = {
     Mutation: {
-        [name: string]: GraphQLFieldResolver<any, ResolverContext>;
+        [name: string]: GraphQLFieldResolver<any, ResolverContext, any>;
     },
 };
 
