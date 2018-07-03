@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { BreadcrumbFunction } from '../core/components/breadcrumb/breadcrumb.component';
 import { DataService } from '../data/providers/data.service';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
@@ -22,14 +23,18 @@ export const catalogRoutes: Route[] = [
 ];
 
 export function productBreadcrumb(data: any, params: any, dataService: DataService) {
-    return [
-        {
-            label: 'Products',
-            link: ['../', 'products'],
-        },
-        {
-            label: params.id,
-            link: [params.id],
-        },
-    ];
+    return dataService.product.getProduct(params.id).single$.pipe(
+        map(productData => {
+            return [
+                   {
+                       label: 'Products',
+                       link: ['../', 'products'],
+                   },
+                   {
+                       label: productData.product.name,
+                       link: [params.id],
+                   },
+               ];
+        }),
+    );
 }
