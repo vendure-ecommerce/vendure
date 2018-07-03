@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-
-import { StateStore } from '../../../state/state-store.service';
-import { UserActions } from '../../../state/user/user-actions';
+import { map } from 'rxjs/operators';
+import { DataService } from '../../../data/providers/data.service';
+import { AuthService } from '../../providers/auth/auth.service';
 
 @Component({
     selector: 'vdr-app-shell',
@@ -14,16 +14,18 @@ export class AppShellComponent implements OnInit {
 
     userName$: Observable<string>;
 
-    constructor(private store: StateStore,
-                private userActions: UserActions,
+    constructor(private authService: AuthService,
+                private dataService: DataService,
                 private router: Router) { }
 
     ngOnInit() {
-        this.userName$ = this.store.select(state => state.user.username);
+        this.userName$ = this.dataService.client.userStatus().single$.pipe(
+            map(data => data.userStatus.username),
+        );
     }
 
     logOut() {
-        this.userActions.logOut();
+        this.authService.logOut();
         this.router.navigate(['/login']);
     }
 

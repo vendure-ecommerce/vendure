@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { StateStore } from './state/state-store.service';
+import { DataService } from './data/providers/data.service';
 
 @Component({
     selector: 'vdr-root',
@@ -12,12 +11,12 @@ import { StateStore } from './state/state-store.service';
 export class AppComponent implements OnInit {
     loading$: Observable<boolean>;
 
-    constructor(private store: StateStore) {
+    constructor(private dataService: DataService) {
     }
 
     ngOnInit() {
-        this.loading$ = this.store.select(state => state.api.inFlightRequests).pipe(
-            map(count => 0 < count),
+        this.loading$ = this.dataService.client.getNetworkStatus().stream$.pipe(
+            map(data => 0 < data.networkStatus.inFlightRequests),
         );
     }
 }

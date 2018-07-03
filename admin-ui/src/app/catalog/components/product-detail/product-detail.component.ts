@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { DataService } from '../../../core/providers/data/data.service';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-product-detail',
@@ -17,7 +17,7 @@ export class ProductDetailComponent implements OnInit {
                 private route: ActivatedRoute) { }
 
     ngOnInit() {
-        this.product$ = this.dataService.product.getProduct(this.route.snapshot.paramMap.get('id'));
+        this.product$ = this.dataService.product.getProduct(this.route.snapshot.paramMap.get('id')).single$;
     }
 
 }

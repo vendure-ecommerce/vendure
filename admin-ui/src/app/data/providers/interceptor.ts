@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-import { ApiActions } from '../../../state/api/api-actions';
-import { NotificationService } from '../notification/notification.service';
+import { NotificationService } from '../../core/providers/notification/notification.service';
+import { DataService } from './data.service';
 
 /**
  * The default interceptor examines all HTTP requests & responses and automatically updates the requesting state
@@ -14,23 +14,23 @@ import { NotificationService } from '../notification/notification.service';
 @Injectable()
 export class DefaultInterceptor implements HttpInterceptor {
 
-    constructor(private apiActions: ApiActions,
+    constructor(private dataService: DataService,
                 private notification: NotificationService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler):
         Observable<HttpEvent<any>> {
-        this.apiActions.startRequest();
+        this.dataService.client.startRequest().subscribe();
         return next.handle(req).pipe(
             tap(event => {
                     if (event instanceof HttpResponse) {
                         this.notifyOnGraphQLErrors(event);
-                        this.apiActions.requestCompleted();
+                        this.dataService.client.completeRequest().subscribe();
                     }
                 },
                 err => {
                     if (err instanceof HttpErrorResponse) {
                         this.notification.error(err.message);
-                        this.apiActions.requestCompleted();
+                        this.dataService.client.completeRequest().subscribe();
                     }
                 }),
         );
