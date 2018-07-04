@@ -1,9 +1,9 @@
 <vdr-data-table [items]="products$ | async"
-                [itemsPerPage]="itemsPerPage"
-                [totalItems]="totalItems"
-                [currentPage]="currentPage"
-                (pageChange)="getPage($event)"
-                (itemsPerPageChange)="itemsPerPageChange($event)">
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
     <vdr-dt-column>ID</vdr-dt-column>
     <vdr-dt-column>Name</vdr-dt-column>
     <vdr-dt-column>Slug</vdr-dt-column>

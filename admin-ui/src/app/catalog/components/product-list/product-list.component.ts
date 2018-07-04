@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { DataService } from '../../../data/providers/data.service';
-import { GetProductList, GetProductListVariables } from '../../../data/types/gql-generated-types';
-import { QueryResult } from '../../../data/types/query-result';
 
 @Component({
     selector: 'vdr-products-list',
@@ -13,21 +12,38 @@ import { QueryResult } from '../../../data/types/query-result';
 export class ProductListComponent implements OnInit, OnDestroy {
 
     products$: Observable<any[]>;
-    totalItems: number;
-    itemsPerPage = 10;
-    currentPage = 1;
-    private productsQuery: QueryResult<GetProductList, GetProductListVariables>;
+    totalItems$: Observable<number>;
+    itemsPerPage$: Observable<number>;
+    currentPage$: Observable<number>;
     private destroy$ = new Subject<void>();
 
-    constructor(private dataService: DataService) { }
+    constructor(private dataService: DataService,
+                private router: Router,
+                private route: ActivatedRoute) { }
 
     ngOnInit() {
-        this.productsQuery = this.dataService.product.getProducts(this.itemsPerPage, 0);
-        this.products$ = this.productsQuery.stream$.pipe(
-            takeUntil(this.destroy$),
-            tap(val => { this.totalItems = val.products.totalItems; }),
-            map(val => val.products.items),
+        const productsQuery = this.dataService.product.getProducts(10, 0);
+
+        const fetchPage = ([currentPage, itemsPerPage]: [number, number]) => {
+            const take = itemsPerPage;
+            const skip = (currentPage - 1) * itemsPerPage;
+            productsQuery.ref.refetch({ skip, take });
+        };
+
+        this.products$ = productsQuery.stream$.pipe(map(data => data.products.items));
+        this.totalItems$ = productsQuery.stream$.pipe(map(data => data.products.totalItems));
+        this.currentPage$ = this.route.queryParamMap.pipe(
+            map(qpm => qpm.get('page')),
+            map(page => !page ? 1 : +page),
         );
+        this.itemsPerPage$ = this.route.queryParamMap.pipe(
+            map(qpm => qpm.get('perPage')),
+            map(perPage => !perPage ? 10 : +perPage),
+        );
+
+        combineLatest(this.currentPage$, this.itemsPerPage$)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(fetchPage);
     }
 
     ngOnDestroy() {
@@ -35,15 +51,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    async getPage(pageNumber: number) {
-        const take = this.itemsPerPage;
-        const skip = (pageNumber - 1) * this.itemsPerPage;
-        await this.productsQuery.ref.refetch({ skip, take });
-        this.currentPage = pageNumber;
+    setPageNumber(page: number) {
+        this.setQueryParam('page', page);
     }
 
-    itemsPerPageChange(itemsPerPage: number) {
-        this.itemsPerPage = itemsPerPage;
-        this.getPage(this.currentPage);
+    setItemsPerPage(perPage: number) {
+        this.setQueryParam('perPage', perPage);
+    }
+
+    private setQueryParam(key: string, value: any) {
+        this.router.navigate(['./'], { queryParams: { [key]: value }, relativeTo: this.route, queryParamsHandling: 'merge' });
     }
 }
