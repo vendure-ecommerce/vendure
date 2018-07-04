@@ -1,5 +1,6 @@
 type ProductVariant implements Node {
     id: ID!
+    languageCode: LanguageCode!
     sku: String
     name: String
     image: String
