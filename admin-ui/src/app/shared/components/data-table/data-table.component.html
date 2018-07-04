@@ -1,0 +1,33 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th *ngFor="let header of columns?.toArray()" class="left">
+            <ng-container *ngTemplateOutlet="header.template"></ng-container>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of items | paginate:{ itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }">
+        <ng-container *ngTemplateOutlet="rowTemplate; context: { item: item }"></ng-container>
+    </tr>
+    </tbody>
+</table>
+<div class="table-footer">
+
+    <div class="form-group">
+        <div class="select">
+            <select [value]="itemsPerPage" (change)="itemsPerPageChange.emit($event.target.value)">
+                <option [value]="10">10 per page</option>
+                <option [value]="25">25 per page</option>
+                <option [value]="50">50 per page</option>
+                <option [value]="100">100 per page</option>
+            </select>
+        </div>
+    </div>
+
+    <vdr-pagination-controls [currentPage]="currentPage"
+                             [itemsPerPage]="itemsPerPage"
+                             [totalItems]="totalItems"
+                             (pageChange)="pageChange.emit($event)"></vdr-pagination-controls>
+
+</div>

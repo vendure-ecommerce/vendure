@@ -1,0 +1,14 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+    selector: 'vdr-pagination-controls',
+    templateUrl: './pagination-controls.component.html',
+    styleUrls: ['./pagination-controls.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class PaginationControlsComponent {
+    @Input() currentPage: number;
+    @Input() itemsPerPage: number;
+    @Input() totalItems: number;
+    @Output() pageChange = new EventEmitter<number>();
+}

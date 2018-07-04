@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
-import { ApolloModule } from 'apollo-angular';
-import { HttpLinkModule } from 'apollo-angular-link-http';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
+import { DataTableComponent } from './components/data-table/data-table.component';
+import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -13,11 +14,18 @@ const IMPORTS = [
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    NgxPaginationModule,
+];
+
+const DECLARATIONS = [
+    DataTableComponent, DataTableColumnComponent, PaginationControlsComponent,
 ];
 
 @NgModule({
     imports: IMPORTS,
-    exports: IMPORTS,
+    exports: [...IMPORTS, ...DECLARATIONS],
+    declarations: DECLARATIONS,
+    entryComponents: [],
 })
 export class SharedModule {
 

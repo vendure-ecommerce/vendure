@@ -1,0 +1,35 @@
+<pagination-template #p="paginationApi"
+                     (pageChange)="pageChange.emit($event)">
+    <ul>
+        <li class="pagination-previous">
+
+            <a *ngIf="!p.isFirstPage()"
+               (click)="p.previous()"
+               (keyup.enter)="p.previous()"
+               tabindex="0"> « </a>
+            <div *ngIf="p.isFirstPage()"> « </div>
+        </li>
+
+        <li *ngFor="let page of p.pages">
+            <a (click)="p.setCurrent(page.value)"
+               (keyup.enter)="p.setCurrent(page.value)"
+               *ngIf="p.getCurrent() !== page.value"
+               tabindex="0">
+                {{ page.label }}
+            </a>
+
+            <div class="current" *ngIf="p.getCurrent() === page.value">
+                {{ page.label }}
+            </div>
+        </li>
+
+        <li class="pagination-next">
+            <a *ngIf="!p.isLastPage()"
+               (click)="p.next()"
+               (keyup.enter)="p.next()"
+               tabindex="0"> » </a>
+            <div *ngIf="p.isLastPage()"> » </div>
+        </li>
+
+    </ul>
+</pagination-template>
