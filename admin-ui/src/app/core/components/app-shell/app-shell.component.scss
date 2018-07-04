@@ -1,3 +1,5 @@
+@import "variables";
+
 .branding {
     min-width: 0;
 }
@@ -5,5 +7,7 @@
     width: 60px;
 }
 vdr-breadcrumb {
-    margin-left: 9rem;
+    @media screen and (min-width: $breakpoint-small){
+        margin-left: 9rem;
+    }
 }
