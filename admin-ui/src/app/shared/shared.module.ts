@@ -7,6 +7,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -18,7 +19,7 @@ const IMPORTS = [
 ];
 
 const DECLARATIONS = [
-    DataTableComponent, DataTableColumnComponent, PaginationControlsComponent,
+    DataTableComponent, DataTableColumnComponent, PaginationControlsComponent, TableRowActionComponent,
 ];
 
 @NgModule({

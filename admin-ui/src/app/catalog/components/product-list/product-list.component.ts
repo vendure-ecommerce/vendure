@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { QueryRef } from 'apollo-angular';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil, tap } from 'rxjs/operators';
 import { DataService } from '../../../data/providers/data.service';
@@ -15,7 +14,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
     products$: Observable<any[]>;
     totalItems: number;
-    itemsPerPage = 25;
+    itemsPerPage = 10;
     currentPage = 1;
     private productsQuery: QueryResult<GetProductList, GetProductListVariables>;
     private destroy$ = new Subject<void>();
@@ -36,9 +35,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    getPage(pageNumber: number): void {
+    async getPage(pageNumber: number) {
         const take = this.itemsPerPage;
         const skip = (pageNumber - 1) * this.itemsPerPage;
-        this.productsQuery.ref.refetch({ skip, take });
+        await this.productsQuery.ref.refetch({ skip, take });
+        this.currentPage = pageNumber;
+    }
+
+    itemsPerPageChange(itemsPerPage: number) {
+        this.itemsPerPage = itemsPerPage;
+        this.getPage(this.currentPage);
     }
 }
