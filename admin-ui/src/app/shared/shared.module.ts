@@ -6,6 +6,8 @@ import { ClarityModule } from '@clr/angular';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
+import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
+import { FormFieldComponent } from './components/form-field/form-field.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 
@@ -19,7 +21,12 @@ const IMPORTS = [
 ];
 
 const DECLARATIONS = [
-    DataTableComponent, DataTableColumnComponent, PaginationControlsComponent, TableRowActionComponent,
+    DataTableComponent,
+    DataTableColumnComponent,
+    PaginationControlsComponent,
+    TableRowActionComponent,
+    FormFieldComponent,
+    FormFieldControlDirective,
 ];
 
 @NgModule({

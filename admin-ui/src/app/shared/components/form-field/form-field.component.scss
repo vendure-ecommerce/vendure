@@ -1,0 +1,14 @@
+:host {
+    display: block;
+    .form-group > label:nth-of-type(2) {
+        flex: 1;
+        max-width: 20rem;
+
+        ::ng-deep > *:not(.tooltip-content) {
+            width: 100%;
+        }
+    }
+    .form-group .tooltip-validation {
+        height: initial;
+    }
+}
