@@ -5,9 +5,9 @@ type Product implements Node {
     slug: String
     description: String
     image: String
-    variants: [ProductVariant]
-    optionGroups: [ProductOptionGroup]
-    translations: [ProductTranslation]
+    variants: [ProductVariant!]!
+    optionGroups: [ProductOptionGroup!]!
+    translations: [ProductTranslation!]!
 }
 
 type ProductTranslation {

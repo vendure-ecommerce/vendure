@@ -3,7 +3,7 @@ type ProductOption implements Node {
     languageCode: LanguageCode
     code: String
     name: String
-    translations: [ProductOptionTranslation]
+    translations: [ProductOptionTranslation!]!
 }
 
 type ProductOptionTranslation {

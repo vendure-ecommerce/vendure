@@ -5,8 +5,8 @@ type ProductVariant implements Node {
     name: String
     image: String
     price: Int
-    options: [ProductOption]
-    translations: [ProductVariantTranslation]
+    options: [ProductOption!]!
+    translations: [ProductVariantTranslation!]!
 }
 
 type ProductVariantTranslation {
