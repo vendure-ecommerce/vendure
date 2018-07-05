@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
+import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
@@ -18,6 +19,7 @@ const IMPORTS = [
     ReactiveFormsModule,
     RouterModule,
     NgxPaginationModule,
+    TranslateModule,
 ];
 
 const DECLARATIONS = [
