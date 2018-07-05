@@ -10,6 +10,7 @@ import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
 import { clientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
+import { OmitTypenameLink } from './omit-typename-link';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
 import { DefaultInterceptor } from './providers/interceptor';
@@ -29,7 +30,7 @@ const stateLink = withClientState({
 
 export function createApollo(httpLink: HttpLink) {
     return {
-        link:  ApolloLink.from([stateLink, httpLink.create({ uri: `${API_URL}/${API_PATH}` })]),
+        link:  ApolloLink.from([stateLink, new OmitTypenameLink(), httpLink.create({ uri: `${API_URL}/${API_PATH}` })]),
         cache: apolloCache,
     };
 }
