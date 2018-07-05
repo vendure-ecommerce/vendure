@@ -9,6 +9,7 @@ import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
 import { Customer } from '../entity/customer/customer.entity';
 import { User } from '../entity/user/user.entity';
+import { I18nError } from '../i18n/i18n-error';
 
 @Injectable()
 export class CustomerService {
@@ -55,7 +56,7 @@ export class CustomerService {
         const customer = await this.connection.manager.findOne(Customer, customerId, { relations: ['addresses'] });
 
         if (!customer) {
-            throw new Error(`No customer with the id "${customerId}" was found`);
+            throw new I18nError(`No customer with the id {{ customerId }} was found`, { customerId });
         }
 
         const address = new Address(createAddressDto);

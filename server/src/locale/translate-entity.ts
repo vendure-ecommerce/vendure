@@ -1,3 +1,4 @@
+import { I18nError } from '../i18n/i18n-error';
 import { LanguageCode } from './language-code';
 import { Translatable } from './locale-types';
 
@@ -26,8 +27,6 @@ export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<T>[k
 
 export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>>;
 
-export class NotTranslatedError extends Error {}
-
 /**
  * Converts a Translatable entity into the public-facing entity by unwrapping
  * the translated strings from the matching Translation entity.
@@ -37,10 +36,9 @@ export function translateEntity<T extends Translatable>(translatable: T, languag
         translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
 
     if (!translation) {
-        throw new NotTranslatedError(
-            `Translatable entity "${
-                translatable.constructor.name
-            }" has not been translated into the requested language (${languageCode})`,
+        throw new I18nError(
+            `Translatable entity '{{ entityName }}' has not been translated into the requested language ({{ languageCode }})`,
+            { entityName: translatable.constructor.name, languageCode },
         );
     }
 

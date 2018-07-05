@@ -12,6 +12,7 @@ import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
 import { getConfig } from './config/vendure-config';
+import { I18nRequest, I18nService } from './i18n/i18n.service';
 import { TranslationUpdaterService } from './locale/translation-updater.service';
 import { AdministratorService } from './service/administrator.service';
 import { ConfigService } from './service/config.service';
@@ -33,6 +34,7 @@ const connectionOptions = getConfig().dbConnectionOptions;
         AuthService,
         ConfigService,
         JwtStrategy,
+        I18nService,
         IdCodecService,
         PasswordService,
         CustomerService,
@@ -48,7 +50,11 @@ const connectionOptions = getConfig().dbConnectionOptions;
     ],
 })
 export class AppModule implements NestModule {
-    constructor(private readonly graphQLFactory: GraphQLFactory, private configService: ConfigService) {}
+    constructor(
+        private readonly graphQLFactory: GraphQLFactory,
+        private configService: ConfigService,
+        private i18nService: I18nService,
+    ) {}
 
     configure(consumer: MiddlewareConsumer) {
         const schema = this.createSchema();
@@ -61,7 +67,14 @@ export class AppModule implements NestModule {
                 }),
             )
             .forRoutes('/graphiql')
-            .apply(graphqlExpress(req => ({ schema, rootValue: req })))
+            .apply([
+                this.i18nService.handle(),
+                graphqlExpress(req => ({
+                    schema,
+                    context: req,
+                    formatError: this.i18nService.translateError(req),
+                })),
+            ])
             .forRoutes(this.configService.apiPath);
     }
 
