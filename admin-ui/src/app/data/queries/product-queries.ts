@@ -1,21 +1,13 @@
 import gql from 'graphql-tag';
+import { PRODUCT_WITH_VARIANTS_FRAGMENT } from '../fragments/product-fragments';
 
-export const GET_PRODUCT_BY_ID = gql`
-    query GetProductById($id: ID!, $languageCode: LanguageCode){
+export const GET_PRODUCT_WITH_VARIANTS = gql`
+    query GetProductWithVariants($id: ID!, $languageCode: LanguageCode){
         product(languageCode: $languageCode, id: $id) {
-            id
-            languageCode
-            name
-            slug
-            description
-            translations {
-                languageCode
-                name
-                slug
-                description
-            }
+            ...ProductWithVariants
         }
     }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
 export const GET_PRODUCT_LIST = gql`

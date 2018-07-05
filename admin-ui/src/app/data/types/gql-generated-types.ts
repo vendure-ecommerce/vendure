@@ -71,6 +71,69 @@ export interface LogOut {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UpdateProduct
+// ====================================================
+
+export interface UpdateProduct_updateProduct_translations {
+  __typename: "ProductTranslation";
+  languageCode: LanguageCode;
+  name: string;
+  slug: string;
+  description: string | null;
+}
+
+export interface UpdateProduct_updateProduct_variants_options {
+  __typename: "ProductOption";
+  id: string;
+  code: string | null;
+  languageCode: LanguageCode | null;
+  name: string | null;
+}
+
+export interface UpdateProduct_updateProduct_variants_translations {
+  __typename: "ProductVariantTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface UpdateProduct_updateProduct_variants {
+  __typename: "ProductVariant";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  price: number | null;
+  sku: string | null;
+  image: string | null;
+  options: UpdateProduct_updateProduct_variants_options[];
+  translations: UpdateProduct_updateProduct_variants_translations[];
+}
+
+export interface UpdateProduct_updateProduct {
+  __typename: "Product";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  slug: string | null;
+  image: string | null;
+  description: string | null;
+  translations: UpdateProduct_updateProduct_translations[];
+  variants: UpdateProduct_updateProduct_variants[];
+}
+
+export interface UpdateProduct {
+  updateProduct: UpdateProduct_updateProduct;  // Update an existing Product
+}
+
+export interface UpdateProductVariables {
+  input?: UpdateProductInput | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetNetworkStatus
 // ====================================================
 
@@ -107,10 +170,10 @@ export interface GetUserStatus {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetProductById
+// GraphQL query operation: GetProductWithVariants
 // ====================================================
 
-export interface GetProductById_product_translations {
+export interface GetProductWithVariants_product_translations {
   __typename: "ProductTranslation";
   languageCode: LanguageCode;
   name: string;
@@ -118,21 +181,50 @@ export interface GetProductById_product_translations {
   description: string | null;
 }
 
-export interface GetProductById_product {
+export interface GetProductWithVariants_product_variants_options {
+  __typename: "ProductOption";
+  id: string;
+  code: string | null;
+  languageCode: LanguageCode | null;
+  name: string | null;
+}
+
+export interface GetProductWithVariants_product_variants_translations {
+  __typename: "ProductVariantTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetProductWithVariants_product_variants {
+  __typename: "ProductVariant";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  price: number | null;
+  sku: string | null;
+  image: string | null;
+  options: GetProductWithVariants_product_variants_options[];
+  translations: GetProductWithVariants_product_variants_translations[];
+}
+
+export interface GetProductWithVariants_product {
   __typename: "Product";
   id: string;
   languageCode: LanguageCode;
   name: string | null;
   slug: string | null;
+  image: string | null;
   description: string | null;
-  translations: (GetProductById_product_translations | null)[] | null;
+  translations: GetProductWithVariants_product_translations[];
+  variants: GetProductWithVariants_product_variants[];
 }
 
-export interface GetProductById {
-  product: GetProductById_product;
+export interface GetProductWithVariants {
+  product: GetProductWithVariants_product;
 }
 
-export interface GetProductByIdVariables {
+export interface GetProductWithVariantsVariables {
   id: string;
   languageCode?: LanguageCode | null;
 }
@@ -168,6 +260,61 @@ export interface GetProductListVariables {
   take?: number | null;
   skip?: number | null;
   languageCode?: LanguageCode | null;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: ProductWithVariants
+// ====================================================
+
+export interface ProductWithVariants_translations {
+  __typename: "ProductTranslation";
+  languageCode: LanguageCode;
+  name: string;
+  slug: string;
+  description: string | null;
+}
+
+export interface ProductWithVariants_variants_options {
+  __typename: "ProductOption";
+  id: string;
+  code: string | null;
+  languageCode: LanguageCode | null;
+  name: string | null;
+}
+
+export interface ProductWithVariants_variants_translations {
+  __typename: "ProductVariantTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface ProductWithVariants_variants {
+  __typename: "ProductVariant";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  price: number | null;
+  sku: string | null;
+  image: string | null;
+  options: ProductWithVariants_variants_options[];
+  translations: ProductWithVariants_variants_translations[];
+}
+
+export interface ProductWithVariants {
+  __typename: "Product";
+  id: string;
+  languageCode: LanguageCode;
+  name: string | null;
+  slug: string | null;
+  image: string | null;
+  description: string | null;
+  translations: ProductWithVariants_translations[];
+  variants: ProductWithVariants_variants[];
 }
 
 /* tslint:disable */
@@ -363,6 +510,23 @@ export enum LanguageCode {
   za = "za",
   zh = "zh",
   zu = "zu",
+}
+
+// 
+export interface UpdateProductInput {
+  id: string;
+  image?: string | null;
+  translations: (ProductTranslationInput | null)[];
+  optionGroupCodes?: (string | null)[] | null;
+}
+
+// 
+export interface ProductTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  slug?: string | null;
+  description?: string | null;
 }
 
 //==============================================================

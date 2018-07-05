@@ -32,4 +32,22 @@ export class QueryResult<T, V = Record<string, any>> {
         return this.queryRef;
     }
 
+    /**
+     * Returns a single-result Observable after applying the map function.
+     */
+    mapSingle<R>(mapFn: (item: T) => R): Observable<R> {
+        return this.single$.pipe(
+            map(mapFn),
+        );
+    }
+
+    /**
+     * Returns a multiple-result Observable after applying the map function.
+     */
+    mapStream<R>(mapFn: (item: T) => R): Observable<R> {
+        return this.stream$.pipe(
+            map(mapFn),
+        );
+    }
+
 }

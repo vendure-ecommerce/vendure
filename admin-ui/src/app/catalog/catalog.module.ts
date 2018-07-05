@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 import { catalogRoutes } from './catalog.routes';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductResolver } from './providers/routing/product-resolver';
 
 @NgModule({
     imports: [
@@ -14,7 +15,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
     ],
     exports: [],
     declarations: [ProductListComponent, ProductDetailComponent],
-    providers: [],
+    providers: [ProductResolver],
 })
 export class CatalogModule {
 }

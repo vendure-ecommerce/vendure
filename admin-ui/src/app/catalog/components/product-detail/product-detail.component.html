@@ -1,5 +1,37 @@
-<h1>Product Detail</h1>
+<clr-dropdown>
+    <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+        <clr-icon shape="world"></clr-icon>
+        Language: {{ languageCode$ | async | uppercase }}
+        <clr-icon shape="caret down"></clr-icon>
+    </button>
+    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+        <button type="button"
+                *ngFor="let code of availableLanguages$ | async"
+                (click)="setLanguage(code)"
+                clrDropdownItem>{{ code }}</button>
+    </clr-dropdown-menu>
+</clr-dropdown>
 
-<pre>
-    {{ product$ | async | json }}
-</pre>
+<form class="form" [formGroup]="productForm" (ngSubmit)="save()">
+    <button class="btn btn-primary"
+            type="submit"
+            [disabled]="productForm.invalid || productForm.pristine">Update</button>
+
+    <section class="form-block">
+        <label>Product</label>
+        <vdr-form-field label="Product name" for="name">
+            <input id="name" type="text" formControlName="name">
+        </vdr-form-field>
+        <vdr-form-field label="Slug" for="slug">
+            <input id="slug" type="text" formControlName="slug">
+        </vdr-form-field>
+        <vdr-form-field label="Description" for="description">
+            <textarea id="description" formControlName="description"></textarea>
+        </vdr-form-field>
+    </section>
+
+    <section class="form-block">
+        <label>Product Variants</label>
+    </section>
+
+</form>

@@ -10,7 +10,7 @@ import { API_PATH, API_PORT } from '../shared/shared-constants';
 const API_URL = `http://localhost:${API_PORT}/${API_PATH}`;
 const SCHEMA_JSON_FILE = '../schema.json';
 const CLIENT_SCHEMA_FILES = './src/app/data/types/**/*.graphql';
-const CLIENT_QUERY_FILES = '"./src/app/data/(queries|mutations)/**/*.ts"';
+const CLIENT_QUERY_FILES = '"./src/app/data/(queries|mutations|fragments)/**/*.ts"';
 const TYPESCRIPT_DEFINITIONS_FILE = './src/app/data/types/gql-generated-types.ts';
 
 main().catch(e => {
