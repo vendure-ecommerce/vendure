@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateMessageFormatDebugCompiler } from 'ngx-translate-messageformat-compiler';
+import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { CoreModule } from './core/core.module';
@@ -28,7 +28,7 @@ export function HttpLoaderFactory(http: HttpClient) {
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient],
             },
-            compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatDebugCompiler },
+            compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatCompiler },
         }),
         CoreModule,
     ],

@@ -11,7 +11,7 @@ export const catalogRoutes: Route[] = [
         path: 'products',
         component: ProductListComponent,
         data: {
-            breadcrumb: 'Products',
+            breadcrumb: _('breadcrumb.products'),
         },
     },
     {
