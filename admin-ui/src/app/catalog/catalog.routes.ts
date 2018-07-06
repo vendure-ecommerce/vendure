@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { DataService } from '../data/providers/data.service';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
@@ -30,7 +31,7 @@ export function productBreadcrumb(data: any, params: any, dataService: DataServi
         map(productData => {
             return [
                    {
-                       label: 'Products',
+                       label: _('breadcrumb.products'),
                        link: ['../', 'products'],
                    },
                    {

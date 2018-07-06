@@ -4,10 +4,10 @@
                 [currentPage]="currentPage$ | async"
                 (pageChange)="setPageNumber($event)"
                 (itemsPerPageChange)="setItemsPerPage($event)">
-    <vdr-dt-column>ID</vdr-dt-column>
-    <vdr-dt-column>Name</vdr-dt-column>
-    <vdr-dt-column>Slug</vdr-dt-column>
-    <vdr-dt-column>Description</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.slug' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.description' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-product="item">
         <td class="left">{{ product.id }}</td>
@@ -16,6 +16,7 @@
         <td class="left">{{ product.description }}</td>
         <td class="right">
             <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
                                   [linkTo]="['./', product.id]">
             </vdr-table-row-action>
         </td>

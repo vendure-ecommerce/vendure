@@ -71,6 +71,22 @@ export interface LogOut {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: SetUiLanguage
+// ====================================================
+
+export interface SetUiLanguage {
+  setUiLanguage: LanguageCode | null;
+}
+
+export interface SetUiLanguageVariables {
+  languageCode: LanguageCode;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UpdateProduct
 // ====================================================
 
@@ -163,6 +179,23 @@ export interface GetUserStatus_userStatus {
 
 export interface GetUserStatus {
   userStatus: GetUserStatus_userStatus;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUiState
+// ====================================================
+
+export interface GetUiState_uiState {
+  __typename: "UiState";
+  language: LanguageCode;
+}
+
+export interface GetUiState {
+  uiState: GetUiState_uiState;
 }
 
 

@@ -1,6 +1,7 @@
 type Query {
     networkStatus: NetworkStatus!
     userStatus: UserStatus!
+    uiState: UiState!
 }
 
 type Mutation {
@@ -8,6 +9,7 @@ type Mutation {
     requestCompleted: Int!
     logIn(username: String!, loginTime: String!): UserStatus
     logOut: UserStatus
+    setUiLanguage(languageCode: LanguageCode): LanguageCode
 }
 
 type NetworkStatus {
@@ -18,4 +20,8 @@ type UserStatus {
     username: String!
     isLoggedIn: Boolean!
     loginTime: String!
+}
+
+type UiState {
+    language: LanguageCode!
 }

@@ -2,8 +2,6 @@
     <form class="login">
         <label class="title">
             <img src="/assets/cube-logo-300px.png">
-            <h3 class="welcome">Welcome to</h3>
-            vendure
         </label>
         <div class="login-group">
             <input class="username"
@@ -11,23 +9,23 @@
                    name="username"
                    id="login_username"
                    [(ngModel)]="username"
-                   placeholder="Username">
+                   [placeholder]="'common.username' | translate">
             <input class="password"
                    name="password"
                    type="password"
                    id="login_password"
                    [(ngModel)]="password"
-                   placeholder="Password">
+                   [placeholder]="'common.password' | translate">
             <div class="checkbox">
                 <input type="checkbox" id="rememberme">
                 <label for="rememberme">
-                    Remember me
+                    {{ 'common.remember-me' | translate }}
                 </label>
             </div>
             <div class="error active" *ngIf="lastError">
                 {{ lastError }}
             </div>
-            <button type="submit" class="btn btn-primary" (click)="logIn()">NEXT</button>
+            <button type="submit" class="btn btn-primary" (click)="logIn()">{{ 'common.login' | translate }}</button>
         </div>
     </form>
 </div>

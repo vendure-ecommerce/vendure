@@ -9,7 +9,8 @@
     "lint": "ng lint vendure-admin --fix",
     "e2e": "ng e2e",
     "apollo": "apollo",
-    "generate-gql-types": "ts-node generate-graphql-types.ts"
+    "generate-gql-types": "ts-node generate-graphql-types.ts",
+    "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +27,7 @@
     "@clr/icons": "^0.11.21",
     "@clr/ui": "^0.11.21",
     "@ngx-translate/core": "^10.0.2",
+    "@ngx-translate/http-loader": "^3.0.1",
     "@webcomponents/custom-elements": "1.0.0",
     "apollo-angular": "^1.1.1",
     "apollo-angular-cache-ngrx": "^1.0.0-beta.0",
@@ -49,6 +51,7 @@
     "@angular/cli": "~6.0.7",
     "@angular/compiler-cli": "^6.0.3",
     "@angular/language-service": "^6.0.3",
+    "@biesbjerg/ngx-translate-extract": "^2.3.4",
     "@types/jasmine": "~2.8.6",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",

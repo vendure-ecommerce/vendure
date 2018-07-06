@@ -10,5 +10,6 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class TableRowActionComponent {
     @Input() linkTo: any[];
+    @Input() label: string;
     @Input() iconShape: string;
 }

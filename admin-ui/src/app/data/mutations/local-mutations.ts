@@ -31,3 +31,9 @@ export const LOG_OUT = gql`
         }
     }
 `;
+
+export const SET_UI_LANGUAGE = gql`
+    mutation SetUiLanguage($languageCode: LanguageCode!) {
+        setUiLanguage(languageCode: $languageCode) @client
+    }
+`;

@@ -1,0 +1,32 @@
+{
+  "breadcrumb": {
+    "dashboard": "",
+    "products": ""
+  },
+  "catalog": {
+    "ID": "",
+    "description": "",
+    "name": "",
+    "product": "",
+    "product-name": "",
+    "product-variants": "",
+    "slug": ""
+  },
+  "common": {
+    "edit": "",
+    "log-out": "",
+    "login": "",
+    "password": "",
+    "remember-me": "",
+    "update": "",
+    "username": ""
+  },
+  "nav": {
+    "catalog": "",
+    "categories": "",
+    "facets": "",
+    "orders": "",
+    "products": "",
+    "sales": ""
+  }
+}

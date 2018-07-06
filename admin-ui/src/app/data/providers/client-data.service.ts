@@ -1,7 +1,19 @@
 import { Observable } from 'rxjs';
-import { LOG_IN, LOG_OUT, REQUEST_COMPLETED, REQUEST_STARTED } from '../mutations/local-mutations';
-import { GET_NEWTORK_STATUS, GET_USER_STATUS } from '../queries/local-queries';
-import { GetNetworkStatus, GetUserStatus, LogIn, LogInVariables, LogOut, RequestCompleted, RequestStarted } from '../types/gql-generated-types';
+import { LOG_IN, LOG_OUT, REQUEST_COMPLETED, REQUEST_STARTED, SET_UI_LANGUAGE } from '../mutations/local-mutations';
+import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../queries/local-queries';
+import {
+    GetNetworkStatus,
+    GetUiState,
+    GetUserStatus,
+    LanguageCode,
+    LogIn,
+    LogInVariables,
+    LogOut,
+    RequestCompleted,
+    RequestStarted,
+    SetUiLanguage,
+    SetUiLanguageVariables,
+} from '../types/gql-generated-types';
 import { QueryResult } from '../types/query-result';
 import { BaseDataService } from './base-data.service';
 
@@ -36,4 +48,11 @@ export class ClientDataService {
         return this.baseDataService.query<GetUserStatus>(GET_USER_STATUS);
     }
 
+    uiState(): QueryResult<GetUiState> {
+        return this.baseDataService.query<GetUiState>(GET_UI_STATE);
+    }
+
+    setUiLanguage(languageCode: LanguageCode): Observable<SetUiLanguage> {
+        return this.baseDataService.mutate<SetUiLanguage, SetUiLanguageVariables>(SET_UI_LANGUAGE, { languageCode });
+    }
 }

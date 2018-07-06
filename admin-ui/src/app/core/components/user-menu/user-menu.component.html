@@ -5,6 +5,6 @@
         <clr-icon shape="caret down"></clr-icon>
     </span>
     <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-        <button type="button" clrDropdownItem (click)="logOut.emit()">Log out</button>
+        <button type="button" clrDropdownItem (click)="logOut.emit()">{{ 'common.log-out' | translate }}</button>
     </clr-dropdown-menu>
 </clr-dropdown>

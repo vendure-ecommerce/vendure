@@ -3,10 +3,11 @@ import { GraphQLFieldResolver } from 'graphql';
 import { GET_NEWTORK_STATUS } from '../queries/local-queries';
 import {
     GetNetworkStatus,
+    GetUiState,
     GetUserStatus,
-    GetUserStatus_userStatus,
+    GetUserStatus_userStatus, LanguageCode,
     LogInVariables,
-    RequestStarted,
+    SetUiLanguageVariables,
 } from '../types/gql-generated-types';
 
 export type ResolverContext = {
@@ -53,6 +54,16 @@ export const clientResolvers: ResolverDefinition = {
             };
             cache.writeData({ data });
             return data.userStatus;
+        },
+        setUiLanguage: (_, args: SetUiLanguageVariables, { cache }): LanguageCode => {
+            const data: GetUiState = {
+                uiState: {
+                    __typename: 'UiState',
+                    language: args.languageCode,
+                },
+            };
+            cache.writeData({ data });
+            return args.languageCode;
         },
     },
 };

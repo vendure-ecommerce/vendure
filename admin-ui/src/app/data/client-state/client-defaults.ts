@@ -1,6 +1,6 @@
-import { GetNetworkStatus, GetUserStatus } from '../types/gql-generated-types';
+import { GetNetworkStatus, GetUiState, GetUserStatus, LanguageCode } from '../types/gql-generated-types';
 
-export const clientDefaults: GetNetworkStatus & GetUserStatus = {
+export const clientDefaults: GetNetworkStatus & GetUserStatus & GetUiState = {
     networkStatus: {
         inFlightRequests: 0,
         __typename: 'NetworkStatus',
@@ -10,5 +10,9 @@ export const clientDefaults: GetNetworkStatus & GetUserStatus = {
         isLoggedIn: false,
         loginTime: '',
         __typename: 'UserStatus',
+    },
+    uiState: {
+        language: LanguageCode.en,
+        __typename: 'UiState',
     },
 };

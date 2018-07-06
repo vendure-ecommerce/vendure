@@ -17,3 +17,11 @@ export const GET_USER_STATUS = gql`
         }
     }
 `;
+
+export const GET_UI_STATE = gql`
+    query GetUiState {
+        uiState @client {
+            language
+        }
+    }
+`;

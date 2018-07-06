@@ -2,33 +2,33 @@
     <section class="sidenav-content">
         <section class="nav-group">
             <input id="tabexample2" type="checkbox">
-            <label for="tabexample2">Catalog</label>
+            <label for="tabexample2">{{ 'nav.catalog' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link"
                        [routerLink]="['/catalog', 'products']"
                        routerLinkActive="active">
-                        <clr-icon shape="library" size="20"></clr-icon>Products
+                        <clr-icon shape="library" size="20"></clr-icon>{{ 'nav.products' | translate }}
                     </a>
                 </li>
                 <li><a class="nav-link">
-                    <clr-icon shape="tag" size="20"></clr-icon>Facets
+                    <clr-icon shape="tag" size="20"></clr-icon>{{ 'nav.facets' | translate }}
                 </a>
                 </li>
                 <li>
                     <a class="nav-link">
-                        <clr-icon shape="folder-open" size="20"></clr-icon>Categories
+                        <clr-icon shape="folder-open" size="20"></clr-icon>{{ 'nav.categories' | translate }}
                     </a>
                 </li>
             </ul>
         </section>
         <section class="nav-group">
             <input id="tabexample2" type="checkbox">
-            <label for="tabexample2">Sales</label>
+            <label for="tabexample2">{{ 'nav.sales' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link">
-                        <clr-icon shape="shopping-cart" size="20"></clr-icon>Orders
+                        <clr-icon shape="shopping-cart" size="20"></clr-icon>{{ 'nav.orders' | translate }}
                     </a>
                 </li>
             </ul>
