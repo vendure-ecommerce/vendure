@@ -1,7 +1,7 @@
 <clr-dropdown>
     <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         <clr-icon shape="world"></clr-icon>
-        {{ 'common.language' }}: {{ languageCode$ | async | uppercase }}
+        {{ 'common.language' | translate }}: {{ languageCode$ | async | uppercase }}
         <clr-icon shape="caret down"></clr-icon>
     </button>
     <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>

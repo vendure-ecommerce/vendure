@@ -1,32 +1,33 @@
 {
   "breadcrumb": {
-    "dashboard": "",
-    "products": ""
+    "dashboard": "Dashboard",
+    "products": "Products"
   },
   "catalog": {
-    "ID": "",
-    "description": "",
-    "name": "",
-    "product": "",
-    "product-name": "",
-    "product-variants": "",
-    "slug": ""
+    "ID": "ID",
+    "description": "Description",
+    "name": "Name",
+    "product": "Product",
+    "product-name": "Product name",
+    "product-variants": "Product variants",
+    "slug": "Slug"
   },
   "common": {
-    "edit": "",
-    "log-out": "",
-    "login": "",
-    "password": "",
-    "remember-me": "",
-    "update": "",
-    "username": ""
+    "edit": "Edit",
+    "language": "Language",
+    "log-out": "Log out",
+    "login": "Log in",
+    "password": "Password",
+    "remember-me": "Remember me",
+    "update": "Update",
+    "username": "Username"
   },
   "nav": {
-    "catalog": "",
-    "categories": "",
-    "facets": "",
-    "orders": "",
-    "products": "",
-    "sales": ""
+    "catalog": "Catalog",
+    "categories": "Categories",
+    "facets": "Facets",
+    "orders": "Orders",
+    "products": "Products",
+    "sales": "Sales"
   }
 }
