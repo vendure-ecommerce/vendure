@@ -1,0 +1,5 @@
+{
+  "error": {
+    "customer-with-id-not-found": "No customer with the id { customerId } was found"
+  }
+}

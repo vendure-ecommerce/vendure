@@ -56,7 +56,7 @@ export class CustomerService {
         const customer = await this.connection.manager.findOne(Customer, customerId, { relations: ['addresses'] });
 
         if (!customer) {
-            throw new I18nError(`No customer with the id {{ customerId }} was found`, { customerId });
+            throw new I18nError('error.customer-with-id-not-found', { customerId });
         }
 
         const address = new Address(createAddressDto);
