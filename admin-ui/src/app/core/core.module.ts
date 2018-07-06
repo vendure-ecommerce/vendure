@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataModule } from '../data/data.module';
 import { SharedModule } from '../shared/shared.module';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
@@ -19,6 +20,7 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
     imports: [
         DataModule,
         SharedModule,
+        BrowserAnimationsModule,
     ],
     exports: [
         SharedModule,
