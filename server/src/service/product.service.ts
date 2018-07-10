@@ -7,6 +7,7 @@ import { ProductOptionGroup } from '../entity/product-option-group/product-optio
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
+import { I18nError } from '../i18n/i18n-error';
 import { LanguageCode } from '../locale/language-code';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
@@ -85,5 +86,28 @@ export class ProductService {
         await this.connection.manager.save(product);
 
         return this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE);
+    }
+
+    async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Product | undefined> {
+        const product = await this.connection
+            .getRepository(Product)
+            .findOne(productId, { relations: ['optionGroups'] });
+        if (!product) {
+            throw new I18nError(`error.product-with-id-not-found`, { productId });
+        }
+        const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
+        if (!optionGroup) {
+            throw new I18nError(`error.option-group-with-id-not-found`, { optionGroupId });
+        }
+
+        if (Array.isArray(product.optionGroups)) {
+            product.optionGroups.push(optionGroup);
+        } else {
+            product.optionGroups = [optionGroup];
+        }
+
+        await this.connection.manager.save(product);
+
+        return this.findOne(productId, DEFAULT_LANGUAGE_CODE);
     }
 }

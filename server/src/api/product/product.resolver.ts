@@ -47,4 +47,11 @@ export class ProductResolver {
         const product = await this.productService.update(this.idCodecService.decode(input));
         return this.idCodecService.decode(product);
     }
+
+    @Mutation()
+    async addOptionGroupToProduct(_, args): Promise<Product | undefined> {
+        const { productId, optionGroupId } = args;
+        const product = await this.productService.addOptionGroupToProduct(productId, optionGroupId);
+        return this.idCodecService.decode(product);
+    }
 }

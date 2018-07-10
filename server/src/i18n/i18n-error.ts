@@ -11,7 +11,7 @@
  * ```
  */
 export class I18nError extends Error {
-    constructor(public message: string, public variables: { [key: string]: string } = {}) {
+    constructor(public message: string, public variables: { [key: string]: string | number } = {}) {
         super(message);
     }
 }
