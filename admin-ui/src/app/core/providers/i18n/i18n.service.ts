@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { LanguageCode } from '../../../data/types/gql-generated-types';
 
 @Injectable()
 export class I18nService {
     constructor(private ngxTranslate: TranslateService) {
-        ngxTranslate.setDefaultLang(LanguageCode.en);
+        ngxTranslate.setDefaultLang(getDefaultLanguage());
     }
 
     /**

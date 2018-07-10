@@ -1,6 +1,8 @@
 import { Observable } from 'rxjs';
-import { DeepPartial, ID } from '../../../../../shared/shared-types';
-import { UPDATE_PRODUCT } from '../mutations/product-mutations';
+
+import { ID } from '../../../../../shared/shared-types';
+import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { CREATE_PRODUCT_OPTION_GROUP, UPDATE_PRODUCT } from '../mutations/product-mutations';
 import { GET_PRODUCT_LIST, GET_PRODUCT_WITH_VARIANTS } from '../queries/product-queries';
 import {
     GetProductList,
@@ -29,7 +31,7 @@ export class ProductDataService {
         const stringId = id.toString();
         return this.baseDataService.query<GetProductWithVariants, GetProductWithVariantsVariables>(GET_PRODUCT_WITH_VARIANTS, {
             id: stringId,
-            languageCode: LanguageCode.en,
+            languageCode: getDefaultLanguage(),
         });
     }
 

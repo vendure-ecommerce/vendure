@@ -1,3 +1,4 @@
+import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import { GetNetworkStatus, GetUiState, GetUserStatus, LanguageCode } from '../types/gql-generated-types';
 
 export const clientDefaults: GetNetworkStatus & GetUserStatus & GetUiState = {
@@ -12,7 +13,7 @@ export const clientDefaults: GetNetworkStatus & GetUserStatus & GetUiState = {
         __typename: 'UserStatus',
     },
     uiState: {
-        language: LanguageCode.en,
+        language: getDefaultLanguage(),
         __typename: 'UiState',
     },
 };

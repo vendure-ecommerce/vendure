@@ -6,10 +6,10 @@ import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-transl
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
+import { getDefaultLanguage } from './common/utilities/get-default-language';
 import { CoreModule } from './core/core.module';
 import { CustomHttpTranslationLoader } from './core/providers/i18n/custom-http-loader';
 import { DataService } from './data/providers/data.service';
-import { LanguageCode } from './data/types/gql-generated-types';
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new CustomHttpTranslationLoader(http, '/i18n-messages/');
@@ -38,6 +38,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 export class AppModule {
 
     constructor(private dataService: DataService) {
-        this.dataService.client.setUiLanguage(LanguageCode.en);
+        this.dataService.client.setUiLanguage(getDefaultLanguage());
     }
 }

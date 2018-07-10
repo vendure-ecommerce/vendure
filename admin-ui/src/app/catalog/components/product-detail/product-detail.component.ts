@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, take, takeUntil, tap } from 'rxjs/operators';
+
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 import { GetProductWithVariants_product, LanguageCode } from '../../../data/types/gql-generated-types';
 
@@ -32,7 +34,7 @@ export class ProductDetailComponent {
 
         this.languageCode$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('lang')),
-            map(lang => !lang ? LanguageCode.en : lang as LanguageCode),
+            map(lang => !lang ? getDefaultLanguage() : lang as LanguageCode),
         );
 
         this.availableLanguages$ = this.product$.pipe(
