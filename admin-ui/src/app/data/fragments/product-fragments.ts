@@ -14,6 +14,12 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             slug
             description
         },
+        optionGroups {
+            id
+            languageCode
+            code
+            name
+        }
         variants {
             id
             languageCode
@@ -30,6 +36,26 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             translations {
                 id
                 languageCode
+                name
+            }
+        }
+    }
+`;
+
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        languageCode
+        code
+        name
+        translations {
+            name
+        }
+        options {
+            id
+            languageCode
+            code
+            translations {
                 name
             }
         }

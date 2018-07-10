@@ -98,6 +98,14 @@ export interface UpdateProduct_updateProduct_translations {
   description: string | null;
 }
 
+export interface UpdateProduct_updateProduct_optionGroups {
+  __typename: "ProductOptionGroup";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  name: string | null;
+}
+
 export interface UpdateProduct_updateProduct_variants_options {
   __typename: "ProductOption";
   id: string;
@@ -134,6 +142,7 @@ export interface UpdateProduct_updateProduct {
   image: string | null;
   description: string | null;
   translations: UpdateProduct_updateProduct_translations[];
+  optionGroups: UpdateProduct_updateProduct_optionGroups[];
   variants: UpdateProduct_updateProduct_variants[];
 }
 
@@ -142,7 +151,87 @@ export interface UpdateProduct {
 }
 
 export interface UpdateProductVariables {
-  input?: UpdateProductInput | null;
+  input: UpdateProductInput;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateProductOptionGroup
+// ====================================================
+
+export interface CreateProductOptionGroup_createProductOptionGroup_translations {
+  __typename: "ProductOptionGroupTranslation";
+  name: string;
+}
+
+export interface CreateProductOptionGroup_createProductOptionGroup_options_translations {
+  __typename: "ProductOptionTranslation";
+  name: string;
+}
+
+export interface CreateProductOptionGroup_createProductOptionGroup_options {
+  __typename: "ProductOption";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  translations: CreateProductOptionGroup_createProductOptionGroup_options_translations[];
+}
+
+export interface CreateProductOptionGroup_createProductOptionGroup {
+  __typename: "ProductOptionGroup";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  name: string | null;
+  translations: (CreateProductOptionGroup_createProductOptionGroup_translations | null)[] | null;
+  options: (CreateProductOptionGroup_createProductOptionGroup_options | null)[] | null;
+}
+
+export interface CreateProductOptionGroup {
+  createProductOptionGroup: CreateProductOptionGroup_createProductOptionGroup | null;  // Create a new ProductOptionGroup
+}
+
+export interface CreateProductOptionGroupVariables {
+  input: CreateProductOptionGroupInput;
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: AddOptionGroupToProduct
+// ====================================================
+
+export interface AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups_options {
+  __typename: "ProductOption";
+  id: string;
+  code: string | null;
+}
+
+export interface AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups {
+  __typename: "ProductOptionGroup";
+  id: string;
+  code: string | null;
+  options: (AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups_options | null)[] | null;
+}
+
+export interface AddOptionGroupToProduct_addOptionGroupToProduct {
+  __typename: "Product";
+  id: string;
+  optionGroups: AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups[];
+}
+
+export interface AddOptionGroupToProduct {
+  addOptionGroupToProduct: AddOptionGroupToProduct_addOptionGroupToProduct;  // Add an OptionGroup to a Product
+}
+
+export interface AddOptionGroupToProductVariables {
+  productId: string;
+  optionGroupId: string;
 }
 
 
@@ -214,6 +303,14 @@ export interface GetProductWithVariants_product_translations {
   description: string | null;
 }
 
+export interface GetProductWithVariants_product_optionGroups {
+  __typename: "ProductOptionGroup";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  name: string | null;
+}
+
 export interface GetProductWithVariants_product_variants_options {
   __typename: "ProductOption";
   id: string;
@@ -250,6 +347,7 @@ export interface GetProductWithVariants_product {
   image: string | null;
   description: string | null;
   translations: GetProductWithVariants_product_translations[];
+  optionGroups: GetProductWithVariants_product_optionGroups[];
   variants: GetProductWithVariants_product_variants[];
 }
 
@@ -311,6 +409,14 @@ export interface ProductWithVariants_translations {
   description: string | null;
 }
 
+export interface ProductWithVariants_optionGroups {
+  __typename: "ProductOptionGroup";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  name: string | null;
+}
+
 export interface ProductWithVariants_variants_options {
   __typename: "ProductOption";
   id: string;
@@ -347,7 +453,44 @@ export interface ProductWithVariants {
   image: string | null;
   description: string | null;
   translations: ProductWithVariants_translations[];
+  optionGroups: ProductWithVariants_optionGroups[];
   variants: ProductWithVariants_variants[];
+}
+
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: ProductOptionGroup
+// ====================================================
+
+export interface ProductOptionGroup_translations {
+  __typename: "ProductOptionGroupTranslation";
+  name: string;
+}
+
+export interface ProductOptionGroup_options_translations {
+  __typename: "ProductOptionTranslation";
+  name: string;
+}
+
+export interface ProductOptionGroup_options {
+  __typename: "ProductOption";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  translations: ProductOptionGroup_options_translations[];
+}
+
+export interface ProductOptionGroup {
+  __typename: "ProductOptionGroup";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string | null;
+  name: string | null;
+  translations: (ProductOptionGroup_translations | null)[] | null;
+  options: (ProductOptionGroup_options | null)[] | null;
 }
 
 /* tslint:disable */
@@ -560,6 +703,26 @@ export interface ProductTranslationInput {
   name: string;
   slug?: string | null;
   description?: string | null;
+}
+
+// 
+export interface CreateProductOptionGroupInput {
+  code: string;
+  translations: (ProductOptionGroupTranslationInput | null)[];
+  options?: (CreateProductOptionInput | null)[] | null;
+}
+
+// 
+export interface ProductOptionGroupTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+// 
+export interface CreateProductOptionInput {
+  code: string;
+  translations: (ProductOptionGroupTranslationInput | null)[];
 }
 
 //==============================================================

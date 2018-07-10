@@ -1,0 +1,36 @@
+<ng-template vdrDialogTitle>{{ 'catalog.create-new-option-group' | translate }}</ng-template>
+
+<form class="form" [formGroup]="optionGroupForm">
+    <section class="form-block">
+        <vdr-form-field [label]="'catalog.option-group-name' | translate" for="name">
+            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)">
+        </vdr-form-field>
+        <vdr-form-field [label]="'catalog.option-group-code' | translate" for="code">
+            <div class="code-input">
+                <input id="code" type="text" formControlName="code" [readonly]="!editCode">
+                <button type="button" class="btn btn-icon btn-sm"
+                        (click)="editCode = true">
+                    <clr-icon shape="edit"></clr-icon>
+                </button>
+            </div>
+        </vdr-form-field>
+        <vdr-form-field [label]="'catalog.option-group-options-label' | translate"
+                        [tooltip]="'catalog.option-group-options-tooltip' | translate: { defaultLanguage: defaultLanguage }"
+                        for="options">
+            <textarea id="options" type="text" formControlName="options" rows="10"></textarea>
+        </vdr-form-field>
+    </section>
+</form>
+
+<ng-template vdrDialogButtons>
+    <button type="button"
+            class="btn"
+            (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button type="submit"
+            (click)="createOptionGroup()"
+            class="btn btn-primary"
+            [disabled]="optionGroupForm.invalid || optionGroupForm.pristine">
+        {{ 'catalog.create-group' | translate }}
+    </button>
+</ng-template>
+

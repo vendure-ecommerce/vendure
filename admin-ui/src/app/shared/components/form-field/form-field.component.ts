@@ -13,5 +13,6 @@ import { FormFieldControlDirective } from './form-field-control.directive';
 export class FormFieldComponent {
     @Input() label: string;
     @Input() for: string;
+    @Input() tooltip: string;
     @ContentChild(FormFieldControlDirective) formFieldControl: FormFieldControlDirective;
 }

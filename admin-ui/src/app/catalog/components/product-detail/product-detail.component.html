@@ -28,6 +28,25 @@
         <vdr-form-field [label]="'catalog.description' | translate" for="description">
             <textarea id="description" formControlName="description"></textarea>
         </vdr-form-field>
+        <vdr-form-item [label]="'catalog.product-option-groups' | translate">
+            <div class="option-groups-list">
+                <div *ngFor="let optionGroup of (product$ | async)?.optionGroups"
+                     class="option-group">{{ optionGroup.name }}</div>
+                <clr-dropdown>
+                    <button type="button" class="btn btn-outline-primary btn-sm" clrDropdownTrigger>
+                        <clr-icon shape="add"></clr-icon>
+                        {{ 'catalog.add-option-group' | translate }}
+                        <clr-icon shape="caret down"></clr-icon>
+                    </button>
+                    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+                        <button type="button" clrDropdownItem>{{ 'catalog.add-existing-option-group' | translate }}</button>
+                        <button type="button"
+                                clrDropdownItem
+                                (click)="createNewOptionGroup()">{{ 'catalog.create-new-option-group' | translate }}</button>
+                    </clr-dropdown-menu>
+                </clr-dropdown>
+            </div>
+        </vdr-form-item>
     </section>
 
     <section class="form-block">

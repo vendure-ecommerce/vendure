@@ -1,0 +1,14 @@
+@import "variables";
+
+.code-input {
+    display: flex;
+    input {
+        flex: 1;
+        &[readonly] {
+            background-color: $color-grey-1;
+        }
+    }
+    button {
+        margin: 0;
+    }
+}
