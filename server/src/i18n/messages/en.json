@@ -1,5 +1,6 @@
 {
   "error": {
-    "customer-with-id-not-found": "No customer with the id { customerId } was found"
+    "customer-with-id-not-found": "No customer with the id { customerId } was found",
+    "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })"
   }
 }

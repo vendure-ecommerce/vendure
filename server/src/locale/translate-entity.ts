@@ -36,10 +36,10 @@ export function translateEntity<T extends Translatable>(translatable: T, languag
         translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
 
     if (!translation) {
-        throw new I18nError(
-            `Translatable entity '{{ entityName }}' has not been translated into the requested language ({{ languageCode }})`,
-            { entityName: translatable.constructor.name, languageCode },
-        );
+        throw new I18nError(`error.entity-has-no-translation-in-language`, {
+            entityName: translatable.constructor.name,
+            languageCode,
+        });
     }
 
     const translated = { ...(translatable as any) };

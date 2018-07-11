@@ -72,17 +72,13 @@ describe('translateEntity()', () => {
     it('throw if there are no translations available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.EN)).toThrow(
-            'Translatable entity "Product" has not been translated into the requested language (en)',
-        );
+        expect(() => translateEntity(product, LanguageCode.EN)).toThrow('error.entity-has-no-translation-in-language');
     });
 
     it('throw if the desired translation is not available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow(
-            'Translatable entity "Product" has not been translated into the requested language (zu)',
-        );
+        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow('error.entity-has-no-translation-in-language');
     });
 });
 
