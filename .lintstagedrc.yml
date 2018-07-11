@@ -1,0 +1,9 @@
+linters:
+  admin-ui/**/*.ts:
+    - yarn lint:admin-ui
+    - yarn format
+    - git add
+  server/**/*.ts:
+    - yarn lint:server
+    - yarn format
+    - git add
