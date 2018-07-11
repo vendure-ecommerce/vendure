@@ -2,6 +2,8 @@
   "name": "vendure",
   "version": "0.1.0",
   "scripts": {
+    "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
+    "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test",
     "format": "prettier --write",
     "lint:server": "cd server && yarn lint --fix",
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
