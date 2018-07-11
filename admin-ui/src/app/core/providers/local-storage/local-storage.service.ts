@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 export type LocalStorageKey = 'authToken';
 const PREFIX = 'vnd_';
@@ -8,7 +8,6 @@ const PREFIX = 'vnd_';
  */
 @Injectable()
 export class LocalStorageService {
-
     /**
      * Set a key-value pair in the browser's LocalStorage
      */

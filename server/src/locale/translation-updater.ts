@@ -1,6 +1,8 @@
 import { EntityManager } from 'typeorm';
+
 import { DeepPartial, Type } from '../../../shared/shared-types';
 import { foundIn, not } from '../common/utils';
+
 import { Translatable, Translation, TranslationInput } from './locale-types';
 
 export interface TranslationContructor<T> {
@@ -23,7 +25,10 @@ export class TranslationUpdater<Entity extends Translatable> {
      * Compares the existing translations with the updated translations and produces a diff of
      * added, removed and updated translations.
      */
-    diff(existing: Array<Translation<Entity>>, updated: Array<TranslationInput<Entity>>): TranslationDiff<Entity> {
+    diff(
+        existing: Array<Translation<Entity>>,
+        updated: Array<TranslationInput<Entity>>,
+    ): TranslationDiff<Entity> {
         const translationEntities = this.translationInputsToEntities(updated, existing);
 
         const toDelete = existing.filter(not(foundIn(translationEntities, 'languageCode')));
@@ -51,7 +56,9 @@ export class TranslationUpdater<Entity extends Translatable> {
         if (toAdd.length) {
             for (const translation of toAdd) {
                 translation.base = entity;
-                const newTranslation = await this.manager.getRepository(this.translationCtor).save(translation as any);
+                const newTranslation = await this.manager
+                    .getRepository(this.translationCtor)
+                    .save(translation as any);
                 entity.translations.push(newTranslation);
             }
         }

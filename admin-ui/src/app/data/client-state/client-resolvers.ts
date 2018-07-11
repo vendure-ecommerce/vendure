@@ -1,11 +1,13 @@
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { GraphQLFieldResolver } from 'graphql';
+
 import { GET_NEWTORK_STATUS } from '../queries/local-queries';
 import {
     GetNetworkStatus,
     GetUiState,
     GetUserStatus,
-    GetUserStatus_userStatus, LanguageCode,
+    GetUserStatus_userStatus,
+    LanguageCode,
     LogInVariables,
     SetUiLanguageVariables,
 } from '../types/gql-generated-types';
@@ -19,7 +21,7 @@ export type ResolverContext = {
 export type ResolverDefinition = {
     Mutation: {
         [name: string]: GraphQLFieldResolver<any, ResolverContext, any>;
-    },
+    };
 };
 
 export const clientResolvers: ResolverDefinition = {

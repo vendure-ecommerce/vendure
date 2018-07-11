@@ -1,4 +1,4 @@
-import {Injectable, ViewContainerRef} from '@angular/core';
+import { Injectable, ViewContainerRef } from '@angular/core';
 
 /**
  * The OverlayHostService is used to get a reference to the ViewConainerRef of the
@@ -7,7 +7,6 @@ import {Injectable, ViewContainerRef} from '@angular/core';
  */
 @Injectable()
 export class OverlayHostService {
-
     private hostView: ViewContainerRef;
     private promiseResolveFns: Array<(result: any) => void> = [];
 

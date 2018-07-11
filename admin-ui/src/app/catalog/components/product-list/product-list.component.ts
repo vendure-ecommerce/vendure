@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({
@@ -10,16 +11,13 @@ import { DataService } from '../../../data/providers/data.service';
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit, OnDestroy {
-
     products$: Observable<any[]>;
     totalItems$: Observable<number>;
     itemsPerPage$: Observable<number>;
     currentPage$: Observable<number>;
     private destroy$ = new Subject<void>();
 
-    constructor(private dataService: DataService,
-                private router: Router,
-                private route: ActivatedRoute) { }
+    constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit() {
         const productsQuery = this.dataService.product.getProducts(10, 0);
@@ -34,11 +32,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.totalItems$ = productsQuery.stream$.pipe(map(data => data.products.totalItems));
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
-            map(page => !page ? 1 : +page),
+            map(page => (!page ? 1 : +page)),
         );
         this.itemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('perPage')),
-            map(perPage => !perPage ? 10 : +perPage),
+            map(perPage => (!perPage ? 10 : +perPage)),
         );
 
         combineLatest(this.currentPage$, this.itemsPerPage$)
@@ -60,6 +58,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
 
     private setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], { queryParams: { [key]: value }, relativeTo: this.route, queryParamsHandling: 'merge' });
+        this.router.navigate(['./'], {
+            queryParams: { [key]: value },
+            relativeTo: this.route,
+            queryParamsHandling: 'merge',
+        });
     }
 }

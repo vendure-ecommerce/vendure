@@ -3,6 +3,7 @@ import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } f
 import { flatten } from 'lodash';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
 import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+
 import { DataService } from '../../../data/providers/data.service';
 
 export type BreadcrumbString = string;
@@ -11,7 +12,11 @@ export interface BreadcrumbLabelLinkPair {
     link: any[];
 }
 export type BreadcrumbValue = BreadcrumbString | BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[];
-export type BreadcrumbFunction = (data: Data, params: Params, dataService: DataService) => BreadcrumbValue | Observable<BreadcrumbValue>;
+export type BreadcrumbFunction = (
+    data: Data,
+    params: Params,
+    dataService: DataService,
+) => BreadcrumbValue | Observable<BreadcrumbValue>;
 export type BreadcrumbDefinition = BreadcrumbValue | BreadcrumbFunction | Observable<BreadcrumbValue>;
 
 /**
@@ -29,13 +34,10 @@ export type BreadcrumbDefinition = BreadcrumbValue | BreadcrumbFunction | Observ
     styleUrls: ['./breadcrumb.component.scss'],
 })
 export class BreadcrumbComponent implements OnDestroy {
-
-    breadcrumbs$: Observable<Array<{ link: string | any[]; label: string; }>>;
+    breadcrumbs$: Observable<Array<{ link: string | any[]; label: string }>>;
     private destroy$ = new Subject<void>();
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
-                private dataService: DataService) {
+    constructor(private router: Router, private route: ActivatedRoute, private dataService: DataService) {
         this.breadcrumbs$ = this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
             takeUntil(this.destroy$),
@@ -49,31 +51,32 @@ export class BreadcrumbComponent implements OnDestroy {
         this.destroy$.complete();
     }
 
-    private generateBreadcrumbs(rootRoute: ActivatedRoute): Observable<Array<{ link: Array<string | any>; label: string; }>> {
+    private generateBreadcrumbs(
+        rootRoute: ActivatedRoute,
+    ): Observable<Array<{ link: Array<string | any>; label: string }>> {
         const breadcrumbParts = this.assembleBreadcrumbParts(rootRoute);
-        const breadcrumbObservables$ = breadcrumbParts
-            .map(({ value$, path }) => {
-                return value$.pipe(
-                    map(value => {
-                        if (isBreadcrumbLabelLinkPair(value)) {
-                            return {
-                                label: value.label,
-                                link: this.normalizeRelativeLinks(value.link, path),
-                            };
-                        } else if (isBreadcrumbPairArray(value)) {
-                            return value.map(val => ({
-                                label: val.label,
-                                link: this.normalizeRelativeLinks(val.link, path),
-                            }));
-                        } else {
-                            return {
-                                label: value,
-                                link: '/' + path.join('/'),
-                            };
-                        }
-                    }),
-                ) as Observable<BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[]>;
-            });
+        const breadcrumbObservables$ = breadcrumbParts.map(({ value$, path }) => {
+            return value$.pipe(
+                map(value => {
+                    if (isBreadcrumbLabelLinkPair(value)) {
+                        return {
+                            label: value.label,
+                            link: this.normalizeRelativeLinks(value.link, path),
+                        };
+                    } else if (isBreadcrumbPairArray(value)) {
+                        return value.map(val => ({
+                            label: val.label,
+                            link: this.normalizeRelativeLinks(val.link, path),
+                        }));
+                    } else {
+                        return {
+                            label: value,
+                            link: '/' + path.join('/'),
+                        };
+                    }
+                }),
+            ) as Observable<BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[]>;
+        });
 
         return observableCombineLatest(breadcrumbObservables$).pipe(map(links => flatten(links)));
     }
@@ -81,7 +84,9 @@ export class BreadcrumbComponent implements OnDestroy {
     /**
      * Walks the route definition tree to assemble an array from which the breadcrumbs can be derived.
      */
-    private assembleBreadcrumbParts(rootRoute: ActivatedRoute): Array<{ value$: Observable<BreadcrumbValue>; path: string[] }> {
+    private assembleBreadcrumbParts(
+        rootRoute: ActivatedRoute,
+    ): Array<{ value$: Observable<BreadcrumbValue>; path: string[] }> {
         const breadcrumbParts: Array<{ value$: Observable<BreadcrumbValue>; path: string[] }> = [];
         const inferredUrl = '';
         const segmentPaths: string[] = [];
@@ -98,9 +103,15 @@ export class BreadcrumbComponent implements OnDestroy {
 
                     if (breadcrumbDef) {
                         if (isBreadcrumbFunction(breadcrumbDef)) {
-                            breadcrumbDef = breadcrumbDef(routeSnapshot.data, routeSnapshot.params, this.dataService);
+                            breadcrumbDef = breadcrumbDef(
+                                routeSnapshot.data,
+                                routeSnapshot.params,
+                                this.dataService,
+                            );
                         }
-                        const observableValue = isObservable(breadcrumbDef) ? breadcrumbDef : observableOf(breadcrumbDef);
+                        const observableValue = isObservable(breadcrumbDef)
+                            ? breadcrumbDef
+                            : observableOf(breadcrumbDef);
                         breadcrumbParts.push({ value$: observableValue, path: segmentPaths.slice() });
                     }
                     currentRoute = route;

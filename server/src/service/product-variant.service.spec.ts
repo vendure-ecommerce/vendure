@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { Connection } from 'typeorm';
+
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
@@ -8,6 +9,7 @@ import { LanguageCode } from '../locale/language-code';
 import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
+
 import { ProductVariantService } from './product-variant.service';
 
 describe('ProductVariantService', () => {

@@ -1,7 +1,9 @@
 import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import { User } from '../entity/user/user.entity';
+
 import { Role } from './role';
 
 /**
@@ -18,7 +20,8 @@ import { Role } from './role';
  * ```
  */
 export function RolesGuard(roles: Role[]) {
-    const guards: CanActivate[] = [AuthGuard('jwt')];
+    // tslint:disable-next-line:ban-types
+    const guards: Array<CanActivate | Function> = [AuthGuard('jwt')];
 
     if (roles.length && !authenticatedOnly(roles)) {
         guards.push(forRoles(roles));

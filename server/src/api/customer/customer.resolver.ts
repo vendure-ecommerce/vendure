@@ -1,4 +1,5 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Address } from '../../entity/address/address.entity';
 import { CreateCustomerDto } from '../../entity/customer/customer.dto';
@@ -12,7 +13,9 @@ export class CustomerResolver {
 
     @Query('customers')
     async customers(obj, args): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.take, args.skip).then(list => this.idCodecService.encode(list));
+        return this.customerService
+            .findAll(args.take, args.skip)
+            .then(list => this.idCodecService.encode(list));
     }
 
     @Query('customer')
@@ -24,7 +27,9 @@ export class CustomerResolver {
 
     @ResolveProperty('addresses')
     async addresses(customer: Customer): Promise<Address[]> {
-        const address = await this.customerService.findAddressesByCustomerId(this.idCodecService.decode(customer).id);
+        const address = await this.customerService.findAddressesByCustomerId(
+            this.idCodecService.decode(customer).id,
+        );
         return this.idCodecService.encode(address);
     }
 
@@ -38,7 +43,10 @@ export class CustomerResolver {
     @Mutation()
     async createCustomerAddress(_, args): Promise<Address> {
         const { customerId, input } = args;
-        const address = await this.customerService.createAddress(this.idCodecService.decode(customerId), input);
+        const address = await this.customerService.createAddress(
+            this.idCodecService.decode(customerId),
+            input,
+        );
         return this.idCodecService.encode(address);
     }
 }

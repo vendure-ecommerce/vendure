@@ -1,5 +1,6 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
+
 import { PasswordService } from '../src/auth/password.service';
 import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
@@ -36,11 +37,17 @@ export class MockDataClientService {
                 options: [
                     {
                         code: 'small',
-                        translations: [{ languageCode: 'en', name: 'Small' }, { languageCode: 'de', name: 'Klein' }],
+                        translations: [
+                            { languageCode: 'en', name: 'Small' },
+                            { languageCode: 'de', name: 'Klein' },
+                        ],
                     },
                     {
                         code: 'large',
-                        translations: [{ languageCode: 'en', name: 'Large' }, { languageCode: 'de', name: 'Groß' }],
+                        translations: [
+                            { languageCode: 'en', name: 'Large' },
+                            { languageCode: 'de', name: 'Groß' },
+                        ],
                     },
                 ],
             } as CreateProductOptionGroupDto,
@@ -149,7 +156,9 @@ export class MockDataClientService {
                 input: {
                     image: faker.image.imageUrl(),
                     optionGroupCodes: ['size'],
-                    translations: languageCodes.map(code => this.makeProductTranslation(code, name, slug, description)),
+                    translations: languageCodes.map(code =>
+                        this.makeProductTranslation(code, name, slug, description),
+                    ),
                     variants: [
                         this.makeProductVariant(`${name} Variant 1`, languageCodes),
                         this.makeProductVariant(`${name} Variant 2`, languageCodes),

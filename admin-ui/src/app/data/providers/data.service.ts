@@ -16,5 +16,4 @@ export class DataService {
         this.product = new ProductDataService(baseDataService);
         this.client = new ClientDataService(baseDataService);
     }
-
 }

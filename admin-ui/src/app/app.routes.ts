@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+
 import { AppShellComponent } from './core/components/app-shell/app-shell.component';
 import { AuthGuard } from './core/providers/guard/auth.guard';
 import { _ } from './core/providers/i18n/mark-for-extraction';

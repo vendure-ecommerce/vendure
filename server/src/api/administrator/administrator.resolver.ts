@@ -1,4 +1,5 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { AdministratorService } from '../../service/administrator.service';
 

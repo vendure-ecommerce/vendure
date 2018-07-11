@@ -1,10 +1,18 @@
 /** Pass untouched request through to the next request handler. */
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+    HttpErrorResponse,
+    HttpEvent,
+    HttpHandler,
+    HttpInterceptor,
+    HttpRequest,
+    HttpResponse,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { NotificationService } from '../../core/providers/notification/notification.service';
+
 import { DataService } from './data.service';
 
 /**
@@ -13,15 +21,13 @@ import { DataService } from './data.service';
  */
 @Injectable()
 export class DefaultInterceptor implements HttpInterceptor {
+    constructor(private dataService: DataService, private notification: NotificationService) {}
 
-    constructor(private dataService: DataService,
-                private notification: NotificationService) {}
-
-    intercept(req: HttpRequest<any>, next: HttpHandler):
-        Observable<HttpEvent<any>> {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.dataService.client.startRequest().subscribe();
         return next.handle(req).pipe(
-            tap(event => {
+            tap(
+                event => {
                     if (event instanceof HttpResponse) {
                         this.notifyOnGraphQLErrors(event);
                         this.dataService.client.completeRequest().subscribe();
@@ -32,7 +38,8 @@ export class DefaultInterceptor implements HttpInterceptor {
                         this.notification.error(err.message);
                         this.dataService.client.completeRequest().subscribe();
                     }
-                }),
+                },
+            ),
         );
     }
 

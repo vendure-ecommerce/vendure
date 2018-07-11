@@ -1,5 +1,12 @@
 import { Observable } from 'rxjs';
-import { LOG_IN, LOG_OUT, REQUEST_COMPLETED, REQUEST_STARTED, SET_UI_LANGUAGE } from '../mutations/local-mutations';
+
+import {
+    LOG_IN,
+    LOG_OUT,
+    REQUEST_COMPLETED,
+    REQUEST_STARTED,
+    SET_UI_LANGUAGE,
+} from '../mutations/local-mutations';
 import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../queries/local-queries';
 import {
     GetNetworkStatus,
@@ -15,10 +22,10 @@ import {
     SetUiLanguageVariables,
 } from '../types/gql-generated-types';
 import { QueryResult } from '../types/query-result';
+
 import { BaseDataService } from './base-data.service';
 
 export class ClientDataService {
-
     constructor(private baseDataService: BaseDataService) {}
 
     startRequest(): Observable<RequestStarted> {
@@ -53,6 +60,8 @@ export class ClientDataService {
     }
 
     setUiLanguage(languageCode: LanguageCode): Observable<SetUiLanguage> {
-        return this.baseDataService.mutate<SetUiLanguage, SetUiLanguageVariables>(SET_UI_LANGUAGE, { languageCode });
+        return this.baseDataService.mutate<SetUiLanguage, SetUiLanguageVariables>(SET_UI_LANGUAGE, {
+            languageCode,
+        });
     }
 }

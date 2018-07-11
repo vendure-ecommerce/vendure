@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
+
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
@@ -55,6 +56,4 @@ const DECLARATIONS = [
     ],
     entryComponents: [ModalDialogComponent],
 })
-export class SharedModule {
-
-}
+export class SharedModule {}

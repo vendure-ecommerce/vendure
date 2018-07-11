@@ -1,4 +1,5 @@
 import { Column, Entity } from 'typeorm';
+
 import { DeepPartial } from '../../../../shared/shared-types';
 import { Role } from '../../auth/role';
 import { VendureEntity } from '../base/base.entity';

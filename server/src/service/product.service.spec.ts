@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { Connection } from 'typeorm';
+
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { UpdateProductDto } from '../entity/product/product.dto';
@@ -8,6 +9,7 @@ import { LanguageCode } from '../locale/language-code';
 import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
+
 import { ProductService } from './product.service';
 
 describe('ProductService', () => {
@@ -84,7 +86,11 @@ describe('ProductService', () => {
         });
 
         it('adds OptionGroups to the product when specified', async () => {
-            const mockOptionGroups = [{ code: 'optionGroup1' }, { code: 'optionGroup2' }, { code: 'optionGroup3' }];
+            const mockOptionGroups = [
+                { code: 'optionGroup1' },
+                { code: 'optionGroup2' },
+                { code: 'optionGroup3' },
+            ];
             connection.registerMockRepository(ProductOptionGroup).find.mockReturnValue(mockOptionGroups);
 
             await productService.create({

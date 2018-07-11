@@ -1,4 +1,5 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
 import { DeepPartial, ID } from '../../../../shared/shared-types';
 import { getConfig } from '../../config/vendure-config';
 

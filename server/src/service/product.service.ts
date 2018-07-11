@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { ID, PaginatedList } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
@@ -46,7 +47,8 @@ export class ProductService {
             .findOne(Product, productId, { relations })
             .then(
                 product =>
-                    product && translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
+                    product &&
+                    translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
             );
     }
 

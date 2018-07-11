@@ -5,7 +5,6 @@ import { LoginResponse, UserResponse } from '../types/response';
 import { BaseDataService } from './base-data.service';
 
 export class UserDataService {
-
     constructor(private baseDataService: BaseDataService) {}
 
     checkLoggedIn(): Observable<UserResponse> {
@@ -18,5 +17,4 @@ export class UserDataService {
             password,
         });
     }
-
 }

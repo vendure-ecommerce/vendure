@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLFactory, GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
+
 import { AdministratorResolver } from './api/administrator/administrator.resolver';
 import { AuthController } from './api/auth/auth.controller';
 import { CustomerController } from './api/customer/customer.controller';
@@ -74,7 +75,7 @@ export class AppModule implements NestModule {
                     context: req,
                     formatError: this.i18nService.translateError(req),
                 })),
-            ])
+            ] as any)
             .forRoutes(this.configService.apiPath);
     }
 

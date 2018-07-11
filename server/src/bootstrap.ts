@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+
 import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 
 /**
@@ -16,7 +17,7 @@ export async function bootstrap(userConfig?: Partial<VendureConfig>) {
     const entities = await import('./entity/entities');
     setConfig({
         dbConnectionOptions: {
-            entities: entities.coreEntities,
+            entities: entities.coreEntities as any,
         },
     });
 

@@ -1,6 +1,17 @@
-import { Component, ContentChild, ContentChildren, QueryList, TemplateRef, Type, ViewChild, ViewChildren } from '@angular/core';
+import {
+    Component,
+    ContentChild,
+    ContentChildren,
+    QueryList,
+    TemplateRef,
+    Type,
+    ViewChild,
+    ViewChildren,
+} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+
 import { Dialog, ModalOptions } from '../../providers/modal/modal.service';
+
 import { DialogButtonsDirective } from './dialog-buttons.directive';
 
 /**
@@ -8,9 +19,9 @@ import { DialogButtonsDirective } from './dialog-buttons.directive';
  * directly in templates. See {@link ModalService.fromComponent} method for more detail.
  */
 @Component({
-  selector: 'vdr-modal-dialog',
-  templateUrl: './modal-dialog.component.html',
-  styleUrls: ['./modal-dialog.component.scss'],
+    selector: 'vdr-modal-dialog',
+    templateUrl: './modal-dialog.component.html',
+    styleUrls: ['./modal-dialog.component.scss'],
 })
 export class ModalDialogComponent<T extends Dialog> {
     childComponentType: Type<T>;

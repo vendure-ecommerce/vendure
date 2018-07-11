@@ -1,6 +1,7 @@
 import { ComponentFactoryResolver, Injectable, ViewContainerRef } from '@angular/core';
 import { Type } from '@angular/core/src/type';
 import { Observable, of } from 'rxjs';
+
 import { OverlayHostService } from '../../../core/providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../components/modal-dialog/modal-dialog.component';
 
@@ -40,11 +41,12 @@ export interface ModalOptions<T> {
  */
 @Injectable()
 export class ModalService {
-
     hostView: ViewContainerRef;
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver,
-                overlayHostService: OverlayHostService) {
+    constructor(
+        private componentFactoryResolver: ComponentFactoryResolver,
+        overlayHostService: OverlayHostService,
+    ) {
         overlayHostService.getHostView().then(view => {
             this.hostView = view;
         });

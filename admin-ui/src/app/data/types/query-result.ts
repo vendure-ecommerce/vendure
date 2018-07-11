@@ -23,9 +23,7 @@ export class QueryResult<T, V = Record<string, any>> {
      * Returns an Observable which emits until unsubscribed.
      */
     get stream$(): Observable<T> {
-        return this.queryRef.valueChanges.pipe(
-            map(result => result.data),
-        );
+        return this.queryRef.valueChanges.pipe(map(result => result.data));
     }
 
     get ref(): QueryRef<T, V> {
@@ -36,18 +34,13 @@ export class QueryResult<T, V = Record<string, any>> {
      * Returns a single-result Observable after applying the map function.
      */
     mapSingle<R>(mapFn: (item: T) => R): Observable<R> {
-        return this.single$.pipe(
-            map(mapFn),
-        );
+        return this.single$.pipe(map(mapFn));
     }
 
     /**
      * Returns a multiple-result Observable after applying the map function.
      */
     mapStream<R>(mapFn: (item: T) => R): Observable<R> {
-        return this.stream$.pipe(
-            map(mapFn),
-        );
+        return this.stream$.pipe(map(mapFn));
     }
-
 }

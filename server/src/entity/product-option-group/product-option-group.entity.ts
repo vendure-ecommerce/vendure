@@ -1,8 +1,10 @@
 import { Column, Entity, OneToMany } from 'typeorm';
+
 import { DeepPartial } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { ProductOption } from '../product-option/product-option.entity';
+
 import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 
 @Entity()

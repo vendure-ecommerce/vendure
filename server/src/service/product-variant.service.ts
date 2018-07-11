@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
@@ -15,7 +16,10 @@ export class ProductVariantService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    async create(product: Product, createProductVariantDto: CreateProductVariantDto): Promise<ProductVariant> {
+    async create(
+        product: Product,
+        createProductVariantDto: CreateProductVariantDto,
+    ): Promise<ProductVariant> {
         const { optionCodes, translations } = createProductVariantDto;
         const variant = new ProductVariant(createProductVariantDto);
         const variantTranslations: ProductVariantTranslation[] = [];

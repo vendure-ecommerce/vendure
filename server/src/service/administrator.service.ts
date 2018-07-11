@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
 import { CreateAdministratorDto } from '../entity/administrator/administrator.dto';
@@ -9,7 +10,10 @@ import { User } from '../entity/user/user.entity';
 
 @Injectable()
 export class AdministratorService {
-    constructor(@InjectConnection() private connection: Connection, private passwordService: PasswordService) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private passwordService: PasswordService,
+    ) {}
 
     findAll(): Promise<Administrator[]> {
         return this.connection.manager.find(Administrator);

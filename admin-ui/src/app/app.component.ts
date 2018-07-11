@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { DataService } from './data/providers/data.service';
 
 @Component({
@@ -11,12 +12,11 @@ import { DataService } from './data/providers/data.service';
 export class AppComponent implements OnInit {
     loading$: Observable<boolean>;
 
-    constructor(private dataService: DataService) {
-    }
+    constructor(private dataService: DataService) {}
 
     ngOnInit() {
-        this.loading$ = this.dataService.client.getNetworkStatus().stream$.pipe(
-            map(data => 0 < data.networkStatus.inFlightRequests),
-        );
+        this.loading$ = this.dataService.client
+            .getNetworkStatus()
+            .stream$.pipe(map(data => 0 < data.networkStatus.inFlightRequests));
     }
 }

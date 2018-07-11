@@ -1,8 +1,8 @@
-import {ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef} from '@angular/core';
+import { ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
 
-import {OverlayHostService} from '../overlay-host/overlay-host.service';
+import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
-import {NotificationComponent} from '../../components/notification/notification.component';
+import { NotificationComponent } from '../../components/notification/notification.component';
 
 export type NotificationType = 'info' | 'success' | 'error' | 'warning';
 export interface ToastConfig {
@@ -19,9 +19,8 @@ const TOAST_DURATION = 3000;
  */
 @Injectable()
 export class NotificationService {
-
     private hostView: ViewContainerRef;
-    private openToastRefs: Array<{ ref: ComponentRef<NotificationComponent>, timerId: any }> = [];
+    private openToastRefs: Array<{ ref: ComponentRef<NotificationComponent>; timerId: any }> = [];
 
     constructor(private resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) {
         overlayHostService.getHostView().then(view => {
@@ -111,12 +110,11 @@ export class NotificationService {
                 clearTimeout(this.openToastRefs[index].timerId);
             }
 
-            toast.fadeOut()
-                .then(() => {
-                    ref.destroy();
-                    this.openToastRefs.splice(index, 1);
-                    this.calculatePositions();
-                });
+            toast.fadeOut().then(() => {
+                ref.destroy();
+                this.openToastRefs.splice(index, 1);
+                this.calculatePositions();
+            });
         };
     }
 

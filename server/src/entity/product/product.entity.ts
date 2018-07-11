@@ -1,9 +1,11 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+
 import { DeepPartial } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+
 import { ProductTranslation } from './product-translation.entity';
 
 @Entity()

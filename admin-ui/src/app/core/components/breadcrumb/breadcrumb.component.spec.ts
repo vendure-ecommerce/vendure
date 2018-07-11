@@ -5,13 +5,14 @@ import { Resolve, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { MockTranslatePipe } from '../../../../testing/translate.pipe.mock';
 import { DataService } from '../../../data/providers/data.service';
+
 import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {
-
     let baseRouteConfig: Routes;
     let router: Router;
     let breadcrumbSubject: BehaviorSubject<string>;
@@ -99,16 +100,17 @@ describe('BeadcrumbsComponent', () => {
                         path: 'pair-function-child',
                         component: TestParentComponent,
                         data: {
-                            breadcrumb: () => [
-                                {
-                                    label: 'PairA',
-                                    link: ['foo', 'bar'],
-                                },
-                                {
-                                    label: 'PairB',
-                                    link: ['baz', 'quux'],
-                                },
-                            ] as BreadcrumbLabelLinkPair[],
+                            breadcrumb: () =>
+                                [
+                                    {
+                                        label: 'PairA',
+                                        link: ['foo', 'bar'],
+                                    },
+                                    {
+                                        label: 'PairB',
+                                        link: ['baz', 'quux'],
+                                    },
+                                ] as BreadcrumbLabelLinkPair[],
                         },
                         children: [leafRoute],
                     },
@@ -152,20 +154,21 @@ describe('BeadcrumbsComponent', () => {
                                 path: 'deep-pair-child-2',
                                 component: TestParentComponent,
                                 data: {
-                                    breadcrumb: () => [
-                                        {
-                                            label: 'PairA',
-                                            link: ['./', 'child', 'path'],
-                                        },
-                                        {
-                                            label: 'PairB',
-                                            link: ['../', 'sibling', 'path'],
-                                        },
-                                        {
-                                            label: 'PairC',
-                                            link: ['absolute', 'path'],
-                                        },
-                                    ] as BreadcrumbLabelLinkPair[],
+                                    breadcrumb: () =>
+                                        [
+                                            {
+                                                label: 'PairA',
+                                                link: ['./', 'child', 'path'],
+                                            },
+                                            {
+                                                label: 'PairB',
+                                                link: ['../', 'sibling', 'path'],
+                                            },
+                                            {
+                                                label: 'PairC',
+                                                link: ['absolute', 'path'],
+                                            },
+                                        ] as BreadcrumbLabelLinkPair[],
                                 },
                                 children: [leafRoute],
                             },
@@ -224,19 +227,9 @@ describe('BeadcrumbsComponent', () => {
         ];
 
         TestBed.configureTestingModule({
-            imports: [
-                RouterTestingModule.withRoutes(baseRouteConfig),
-            ],
-            declarations: [
-                BreadcrumbComponent,
-                TestParentComponent,
-                TestChildComponent,
-                MockTranslatePipe,
-            ],
-            providers: [
-                FooResolver,
-                { provide: DataService, useClass: class {} },
-            ],
+            imports: [RouterTestingModule.withRoutes(baseRouteConfig)],
+            declarations: [BreadcrumbComponent, TestParentComponent, TestChildComponent, MockTranslatePipe],
+            providers: [FooResolver, { provide: DataService, useClass: class {} }],
         }).compileComponents();
 
         router = TestBed.get(Router);
@@ -245,7 +238,10 @@ describe('BeadcrumbsComponent', () => {
     /**
      * Navigates to the provided route and returns the fixture for the TestChildComponent at that route.
      */
-    function getFixtureForRoute(route: string[], testFn: (fixture: ComponentFixture<TestComponent>) => void): () => void {
+    function getFixtureForRoute(
+        route: string[],
+        testFn: (fixture: ComponentFixture<TestComponent>) => void,
+    ): () => void {
         return fakeAsync(() => {
             const fixture = TestBed.createComponent(TestChildComponent);
             router.navigate(route);
@@ -256,83 +252,106 @@ describe('BeadcrumbsComponent', () => {
         });
     }
 
-    it('shows correct labels for string breadcrumbs',
+    it(
+        'shows correct labels for string breadcrumbs',
         getFixtureForRoute(['', 'string-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             expect(labels).toEqual(['Root', 'Child', 'Grandchild']);
-        }));
+        }),
+    );
 
-    it('links have correct href',
+    it(
+        'links have correct href',
         getFixtureForRoute(['', 'string-child', 'string-grandchild'], fixture => {
             const links = getBreadcrumbLinks(fixture);
             expect(links).toEqual(['/', '/string-child']);
-        }));
+        }),
+    );
 
-    it('skips a route with no breadcrumbs configured',
+    it(
+        'skips a route with no breadcrumbs configured',
         getFixtureForRoute(['', 'no-breadcrumb-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             expect(labels).toEqual(['Root', 'Grandchild']);
-        }));
+        }),
+    );
 
-    it('shows correct label for function breadcrumb',
+    it(
+        'shows correct label for function breadcrumb',
         getFixtureForRoute(['', 'simple-function-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             expect(labels).toEqual(['Root', 'String From Function', 'Grandchild']);
-        }));
+        }),
+    );
 
-    it('works with resolved data',
+    it(
+        'works with resolved data',
         getFixtureForRoute(['', 'resolved-function-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             expect(labels).toEqual(['Root', 'Foo', 'Grandchild']);
-        }));
+        }),
+    );
 
-    it('works with data from parameters',
+    it(
+        'works with data from parameters',
         getFixtureForRoute(['', 'params-child', 'Bar', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             expect(labels).toEqual(['Root', 'Bar', 'Grandchild']);
-        }));
+        }),
+    );
 
-    it('works with a BreadcrumbLabelLinkPair',
+    it(
+        'works with a BreadcrumbLabelLinkPair',
         getFixtureForRoute(['', 'single-pair-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Pair', 'Grandchild']);
             expect(links).toEqual(['/', '/foo/bar;p=1']);
-        }));
+        }),
+    );
 
-    it('works with array of BreadcrumbLabelLinkPairs',
+    it(
+        'works with array of BreadcrumbLabelLinkPairs',
         getFixtureForRoute(['', 'array-pair-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'PairA', 'PairB', 'Grandchild']);
             expect(links).toEqual(['/', '/foo/bar', '/baz/quux']);
-        }));
+        }),
+    );
 
-    it('works with function returning BreadcrumbLabelLinkPairs',
+    it(
+        'works with function returning BreadcrumbLabelLinkPairs',
         getFixtureForRoute(['', 'pair-function-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'PairA', 'PairB', 'Grandchild']);
             expect(links).toEqual(['/', '/foo/bar', '/baz/quux']);
-        }));
+        }),
+    );
 
-    it('works with relative child paths in a BreadcrumbLabelLinkPair',
+    it(
+        'works with relative child paths in a BreadcrumbLabelLinkPair',
         getFixtureForRoute(['', 'relative-parent', 'relative-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Parent', 'Child', 'Grandchild']);
             expect(links).toEqual(['/', '/relative-parent', '/relative-parent/relative-child/foo;p=1']);
-        }));
+        }),
+    );
 
-    it('works with relative sibling paths in a BreadcrumbLabelLinkPair',
+    it(
+        'works with relative sibling paths in a BreadcrumbLabelLinkPair',
         getFixtureForRoute(['', 'relative-parent', 'relative-sibling', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Parent', 'Sibling', 'Grandchild']);
             expect(links).toEqual(['/', '/relative-parent', '/relative-parent/foo;p=1']);
-        }));
+        }),
+    );
 
-    it('array of BreadcrumbLabelLinkPairs paths compose correctly',
+    it(
+        'array of BreadcrumbLabelLinkPairs paths compose correctly',
         getFixtureForRoute(['', 'deep-pair-child-1', 'deep-pair-child-2', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
@@ -344,44 +363,55 @@ describe('BeadcrumbsComponent', () => {
                 '/deep-pair-child-1/sibling/path',
                 '/absolute/path',
             ]);
-        }));
+        }),
+    );
 
-    it('shows correct labels for observable of string',
+    it(
+        'shows correct labels for observable of string',
         getFixtureForRoute(['', 'observable-string'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Observable String']);
-        }));
+        }),
+    );
 
-    it('shows correct labels for observable of BreadcrumbLabelLinkPair',
+    it(
+        'shows correct labels for observable of BreadcrumbLabelLinkPair',
         getFixtureForRoute(['', 'observable-pair'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Observable Pair']);
-        }));
+        }),
+    );
 
-    it('shows correct labels for observable of BreadcrumbLabelLinkPair array',
+    it(
+        'shows correct labels for observable of BreadcrumbLabelLinkPair array',
         getFixtureForRoute(['', 'observable-array-pair'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Observable PairA', 'Observable PairB']);
             expect(links).toEqual(['/', '/foo/bar']);
-        }));
+        }),
+    );
 
-    it('shows correct labels for function returning observable string',
+    it(
+        'shows correct labels for function returning observable string',
         getFixtureForRoute(['', 'function-observable'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
             expect(labels).toEqual(['Root', 'Observable String From Function']);
-        }));
+        }),
+    );
 
-    it('labels update when observables emit new values',
+    it(
+        'labels update when observables emit new values',
         getFixtureForRoute(['', 'observable-string-subject', 'string-grandchild'], fixture => {
             expect(getBreadcrumbLabels(fixture)).toEqual(['Root', 'Initial Value', 'Grandchild']);
             breadcrumbSubject.next('New Value');
             fixture.detectChanges();
             expect(getBreadcrumbLabels(fixture)).toEqual(['Root', 'New Value', 'Grandchild']);
-        }));
+        }),
+    );
 });
 
 function getBreadcrumbsElement(fixture: ComponentFixture<TestComponent>): DebugElement {
@@ -389,8 +419,7 @@ function getBreadcrumbsElement(fixture: ComponentFixture<TestComponent>): DebugE
 }
 
 function getBreadcrumbListItems(fixture: ComponentFixture<TestComponent>): HTMLLIElement[] {
-    return fixture.debugElement.queryAll(By.css('.breadcrumbs li'))
-        .map(de => de.nativeElement);
+    return fixture.debugElement.queryAll(By.css('.breadcrumbs li')).map(de => de.nativeElement);
 }
 
 function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[] {

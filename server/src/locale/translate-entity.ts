@@ -1,4 +1,5 @@
 import { I18nError } from '../i18n/i18n-error';
+
 import { LanguageCode } from './language-code';
 import { Translatable } from './locale-types';
 
@@ -23,9 +24,13 @@ export type NestedTranslatableRelations<T> = {
         [K, TranslatableRelationsKeys<T[K]>]
 };
 
-export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<T>[keyof NestedTranslatableRelations<T>];
+export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<
+    T
+>[keyof NestedTranslatableRelations<T>];
 
-export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>>;
+export type DeepTranslatableRelations<T> = Array<
+    TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>
+>;
 
 /**
  * Converts a Translatable entity into the public-facing entity by unwrapping

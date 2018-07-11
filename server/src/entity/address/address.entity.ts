@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { DeepPartial } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';

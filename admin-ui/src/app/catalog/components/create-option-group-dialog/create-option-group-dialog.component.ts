@@ -1,12 +1,16 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
 import { mergeMap } from 'rxjs/operators';
+
 import { ID } from '../../../../../../shared/shared-types';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { DataService } from '../../../data/providers/data.service';
-import { CreateProductOptionGroupInput, CreateProductOptionInput, LanguageCode } from '../../../data/types/gql-generated-types';
+import {
+    CreateProductOptionGroupInput,
+    CreateProductOptionInput,
+    LanguageCode,
+} from '../../../data/types/gql-generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({
@@ -15,7 +19,7 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./create-option-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateOptionGroupDialogComponent implements Dialog {
+export class CreateOptionGroupDialogComponent implements Dialog, OnInit {
     resolveWith: (result?: any) => void;
     optionGroupForm: FormGroup;
     productName = '';
@@ -23,8 +27,7 @@ export class CreateOptionGroupDialogComponent implements Dialog {
     editCode = false;
     readonly defaultLanguage = getDefaultLanguage();
 
-    constructor(private formBuilder: FormBuilder,
-                private dataService: DataService) {}
+    constructor(private formBuilder: FormBuilder, private dataService: DataService) {}
 
     ngOnInit() {
         this.optionGroupForm = this.formBuilder.group({
@@ -42,18 +45,20 @@ export class CreateOptionGroupDialogComponent implements Dialog {
     }
 
     createOptionGroup() {
-        this.dataService.product.createProductOptionGroups(this.createGroupFromForm()).pipe(
-            mergeMap(data => {
-                const optionGroup = data.createProductOptionGroup;
-                if (optionGroup) {
-                    return this.dataService.product.addOptionGroupToProduct({
-                        productId: this.productId,
-                        optionGroupId: optionGroup.id,
-                    });
-                }
-                return [];
-            }),
-        )
+        this.dataService.product
+            .createProductOptionGroups(this.createGroupFromForm())
+            .pipe(
+                mergeMap(data => {
+                    const optionGroup = data.createProductOptionGroup;
+                    if (optionGroup) {
+                        return this.dataService.product.addOptionGroupToProduct({
+                            productId: this.productId,
+                            optionGroupId: optionGroup.id,
+                        });
+                    }
+                    return [];
+                }),
+            )
             .subscribe(product => this.resolveWith(product));
     }
 
@@ -78,7 +83,8 @@ export class CreateOptionGroupDialogComponent implements Dialog {
     }
 
     private createGroupOptions(rawOptions: string): CreateProductOptionInput[] {
-        return rawOptions.split('\n')
+        return rawOptions
+            .split('\n')
             .map(line => line.trim())
             .map(name => {
                 return {

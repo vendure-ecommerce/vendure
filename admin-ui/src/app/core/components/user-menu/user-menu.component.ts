@@ -6,10 +6,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
     styleUrls: ['./user-menu.component.scss'],
 })
 export class UserMenuComponent {
+    @Input() userName = '';
 
-    @Input()
-    userName = '';
-
-    @Output()
-    logOut = new EventEmitter<void>();
+    @Output() logOut = new EventEmitter<void>();
 }

@@ -8,13 +8,14 @@ import { NotificationType } from '../../providers/notification/notification.serv
     styleUrls: ['./notification.component.scss'],
 })
 export class NotificationComponent {
-
     @ViewChild('wrapper') wrapper: ElementRef;
     offsetTop = 0;
     message = '';
     type: NotificationType = 'info';
     isVisible = true;
-    private onClickFn: () => void = () => { /* */ };
+    private onClickFn: () => void = () => {
+        /* */
+    };
 
     registerOnClickFn(fn: () => void): void {
         this.onClickFn = fn;

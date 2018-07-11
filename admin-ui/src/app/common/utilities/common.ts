@@ -1,4 +1,3 @@
-
 /**
  * Like assertNever, but at runtime this will be reached due to the way that all actions
  * are dispatched and piped through all reducers. So this just provides a compile-time

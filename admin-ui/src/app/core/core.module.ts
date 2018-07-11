@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { DataModule } from '../data/data.module';
 import { SharedModule } from '../shared/shared.module';
+
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
@@ -17,15 +19,8 @@ import { NotificationService } from './providers/notification/notification.servi
 import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 
 @NgModule({
-    imports: [
-        DataModule,
-        SharedModule,
-        BrowserAnimationsModule,
-    ],
-    exports: [
-        SharedModule,
-        OverlayHostComponent,
-    ],
+    imports: [DataModule, SharedModule, BrowserAnimationsModule],
+    exports: [SharedModule, OverlayHostComponent],
     providers: [
         LocalStorageService,
         AuthGuard,

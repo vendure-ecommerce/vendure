@@ -1,4 +1,5 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Product } from '../../entity/product/product.entity';
 import { IdCodecService } from '../../service/id-codec.service';

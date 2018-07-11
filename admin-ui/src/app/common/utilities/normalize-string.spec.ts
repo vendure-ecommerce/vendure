@@ -1,7 +1,6 @@
 import { normalizeString } from './normalize-string';
 
 describe('normalizeString()', () => {
-
     it('lowercases the string', () => {
         expect(normalizeString('FOO')).toBe('foo');
         expect(normalizeString('Foo Bar')).toBe('foo bar');

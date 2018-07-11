@@ -5,9 +5,11 @@ import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
 import { withClientState } from 'apollo-link-state';
+
 import { API_PATH } from '../../../../shared/shared-constants';
 import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
+
 import { clientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
 import { OmitTypenameLink } from './omit-typename-link';
@@ -30,7 +32,11 @@ const stateLink = withClientState({
 
 export function createApollo(httpLink: HttpLink) {
     return {
-        link:  ApolloLink.from([stateLink, new OmitTypenameLink(), httpLink.create({ uri: `${API_URL}/${API_PATH}` })]),
+        link: ApolloLink.from([
+            stateLink,
+            new OmitTypenameLink(),
+            httpLink.create({ uri: `${API_URL}/${API_PATH}` }),
+        ]),
         cache: apolloCache,
     };
 }
@@ -40,11 +46,7 @@ export function createApollo(httpLink: HttpLink) {
  * state via the apollo-link-state package.
  */
 @NgModule({
-    imports: [
-        ApolloModule,
-        HttpLinkModule,
-        HttpClientModule,
-    ],
+    imports: [ApolloModule, HttpLinkModule, HttpClientModule],
     exports: [],
     declarations: [],
     providers: [
@@ -58,5 +60,4 @@ export function createApollo(httpLink: HttpLink) {
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
     ],
 })
-export class DataModule {
-}
+export class DataModule {}

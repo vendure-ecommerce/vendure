@@ -10,14 +10,10 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductResolver } from './providers/routing/product-resolver';
 
 @NgModule({
-    imports: [
-        SharedModule,
-        RouterModule.forChild(catalogRoutes),
-    ],
+    imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
     exports: [],
     declarations: [ProductListComponent, ProductDetailComponent, CreateOptionGroupDialogComponent],
     entryComponents: [CreateOptionGroupDialogComponent],
     providers: [ProductResolver],
 })
-export class CatalogModule {
-}
+export class CatalogModule {}

@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';

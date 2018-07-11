@@ -1,5 +1,7 @@
 import { AbstractRepository, EntityManager, Repository } from 'typeorm';
+
 import { Type } from '../../../shared/shared-types';
+
 import { MockClass } from './testing-types';
 
 /**
@@ -26,7 +28,9 @@ export class MockConnection {
         if (repository) {
             return repository;
         } else {
-            throw new Error(`No mock repository registered for "${entity.name}". Use registerRepository() first.`);
+            throw new Error(
+                `No mock repository registered for "${entity.name}". Use registerRepository() first.`,
+            );
         }
     }
 }

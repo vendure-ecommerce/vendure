@@ -1,4 +1,5 @@
 import { LanguageCode } from '../locale/language-code';
+
 import { mergeConfig } from './merge-config';
 import { VendureConfig } from './vendure-config';
 

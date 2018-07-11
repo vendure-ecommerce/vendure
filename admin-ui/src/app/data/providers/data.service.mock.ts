@@ -1,3 +1,1 @@
-export class MockDataService {
-
-}
+export class MockDataService {}

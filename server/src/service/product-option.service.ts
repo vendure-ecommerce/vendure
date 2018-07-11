@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
@@ -30,7 +31,10 @@ export class ProductOptionService {
             .then(group => group && translateDeep(group, lang));
     }
 
-    async create(group: ProductOptionGroup, createProductOptionDto: CreateProductOptionDto): Promise<ProductOption> {
+    async create(
+        group: ProductOptionGroup,
+        createProductOptionDto: CreateProductOptionDto,
+    ): Promise<ProductOption> {
         const option = new ProductOption(createProductOptionDto);
         const translations: ProductOptionTranslation[] = [];
 

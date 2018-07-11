@@ -1,4 +1,5 @@
 import { DeepPartial } from '../../../shared/shared-types';
+
 import { VendureConfig } from './vendure-config';
 
 /**

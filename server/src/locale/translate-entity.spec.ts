@@ -4,6 +4,7 @@ import { ProductVariantTranslation } from '../entity/product-variant/product-var
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
+
 import { LanguageCode } from './language-code';
 import { Translatable, Translation } from './locale-types';
 import { translateDeep, translateEntity } from './translate-entity';
@@ -72,13 +73,17 @@ describe('translateEntity()', () => {
     it('throw if there are no translations available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.EN)).toThrow('error.entity-has-no-translation-in-language');
+        expect(() => translateEntity(product, LanguageCode.EN)).toThrow(
+            'error.entity-has-no-translation-in-language',
+        );
     });
 
     it('throw if the desired translation is not available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow('error.entity-has-no-translation-in-language');
+        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow(
+            'error.entity-has-no-translation-in-language',
+        );
     });
 });
 
@@ -169,7 +174,9 @@ describe('translateDeep()', () => {
 
     it('should not throw if second-level nested entity is not defined', () => {
         testProduct.singleRealVariant.options = undefined as any;
-        expect(() => translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']])).not.toThrow();
+        expect(() =>
+            translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']]),
+        ).not.toThrow();
     });
 
     it('should translate a first-level nested non-array entity', () => {

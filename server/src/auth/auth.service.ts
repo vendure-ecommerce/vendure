@@ -2,8 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import { Connection } from 'typeorm';
+
 import { User } from '../entity/user/user.entity';
 import { ConfigService } from '../service/config.service';
+
 import { JwtPayload } from './auth-types';
 import { PasswordService } from './password.service';
 import { Role } from './role';

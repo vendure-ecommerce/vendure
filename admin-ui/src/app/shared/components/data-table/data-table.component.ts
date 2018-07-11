@@ -10,6 +10,7 @@ import {
     TemplateRef,
 } from '@angular/core';
 import { PaginationService } from 'ngx-pagination';
+
 import { DataTableColumnComponent } from './data-table-column.component';
 
 @Component({
@@ -20,7 +21,6 @@ import { DataTableColumnComponent } from './data-table-column.component';
     providers: [PaginationService],
 })
 export class DataTableComponent {
-
     @Input() items: any[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;

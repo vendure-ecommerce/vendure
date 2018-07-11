@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
+
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { getDefaultLanguage } from './common/utilities/get-default-language';
@@ -16,9 +17,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 @NgModule({
-    declarations: [
-        AppComponent,
-    ],
+    declarations: [AppComponent],
     imports: [
         BrowserModule,
         RouterModule.forRoot(routes, { useHash: false }),
@@ -36,7 +35,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     bootstrap: [AppComponent],
 })
 export class AppModule {
-
     constructor(private dataService: DataService) {
         this.dataService.client.setUiLanguage(getDefaultLanguage());
     }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 import { ID, PaginatedList } from '../../../shared/shared-types';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
@@ -13,7 +14,10 @@ import { I18nError } from '../i18n/i18n-error';
 
 @Injectable()
 export class CustomerService {
-    constructor(@InjectConnection() private connection: Connection, private passwordService: PasswordService) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private passwordService: PasswordService,
+    ) {}
 
     findAll(take?: number, skip?: number): Promise<PaginatedList<Customer>> {
         if (skip !== undefined && take === undefined) {
@@ -53,7 +57,9 @@ export class CustomerService {
     }
 
     async createAddress(customerId: string, createAddressDto: CreateAddressDto): Promise<Address> {
-        const customer = await this.connection.manager.findOne(Customer, customerId, { relations: ['addresses'] });
+        const customer = await this.connection.manager.findOne(Customer, customerId, {
+            relations: ['addresses'],
+        });
 
         if (!customer) {
             throw new I18nError('error.customer-with-id-not-found', { customerId });

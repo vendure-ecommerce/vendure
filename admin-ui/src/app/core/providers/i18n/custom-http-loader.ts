@@ -15,12 +15,16 @@ export type Dictionary = {
  * Orignally from https://github.com/ngx-translate/core/issues/662#issuecomment-377010232
  */
 export class CustomHttpTranslationLoader implements TranslateLoader {
-    constructor(private http: HttpClient, private prefix: string = '/assets/i18n/', private suffix: string = '.json') {
-    }
+    constructor(
+        private http: HttpClient,
+        private prefix: string = '/assets/i18n/',
+        private suffix: string = '.json',
+    ) {}
 
     public getTranslation(lang: string): Observable<any> {
-        return this.http.get(`${this.prefix}${lang}${this.suffix}`).pipe(
-            map((res: any) => this.process(res)));
+        return this.http
+            .get(`${this.prefix}${lang}${this.suffix}`)
+            .pipe(map((res: any) => this.process(res)));
     }
 
     private process(object: Dictionary): Dictionary {
@@ -31,7 +35,7 @@ export class CustomHttpTranslationLoader implements TranslateLoader {
                 const value = object[key];
                 if (typeof value !== 'string') {
                     newObject[key] = this.process(value);
-                } else if ((typeof value === 'string') && (value === '')) {
+                } else if (typeof value === 'string' && value === '') {
                     // do not copy empty strings
                 } else {
                     newObject[key] = object[key];

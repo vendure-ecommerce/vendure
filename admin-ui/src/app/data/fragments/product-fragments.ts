@@ -13,7 +13,7 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             name
             slug
             description
-        },
+        }
         optionGroups {
             id
             languageCode

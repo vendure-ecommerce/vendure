@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+
 import { ConfigService } from './config.service';
 import { DECODED, ENCODED, MockConfigService } from './config.service.mock';
 import { IdCodecService } from './id-codec.service';

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
@@ -15,19 +15,20 @@ import { CreateOptionGroupDialogComponent } from '../create-option-group-dialog/
     templateUrl: './product-detail.component.html',
     styleUrls: ['./product-detail.component.scss'],
 })
-export class ProductDetailComponent {
-
+export class ProductDetailComponent implements OnDestroy {
     product$: Observable<GetProductWithVariants_product>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
     productForm: FormGroup;
     private destroy$ = new Subject<void>();
 
-    constructor(private dataService: DataService,
-                private router: Router,
-                private route: ActivatedRoute,
-                private formBuilder: FormBuilder,
-                private modalService: ModalService) {
+    constructor(
+        private dataService: DataService,
+        private router: Router,
+        private route: ActivatedRoute,
+        private formBuilder: FormBuilder,
+        private modalService: ModalService,
+    ) {
         this.product$ = this.route.snapshot.data.product;
         this.productForm = this.formBuilder.group({
             name: ['', Validators.required],
@@ -37,16 +38,13 @@ export class ProductDetailComponent {
 
         this.languageCode$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('lang')),
-            map(lang => !lang ? getDefaultLanguage() : lang as LanguageCode),
+            map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
         );
 
-        this.availableLanguages$ = this.product$.pipe(
-            map(p => p.translations.map(t => t.languageCode)),
-        );
+        this.availableLanguages$ = this.product$.pipe(map(p => p.translations.map(t => t.languageCode)));
 
-        combineLatest(this.product$, this.languageCode$).pipe(
-            takeUntil(this.destroy$),
-        )
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(([product, languageCode]) => {
                 const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
                 if (currentTranslation) {
@@ -69,25 +67,28 @@ export class ProductDetailComponent {
     }
 
     createNewOptionGroup() {
-        this.product$.pipe(
-            take(1),
-            mergeMap(product => {
-                const nameControl = this.productForm.get('name');
-                const productName = nameControl ? nameControl.value : '';
-                return this.modalService.fromComponent(CreateOptionGroupDialogComponent, {
-                    closable: true,
-                    size: 'lg',
-                    locals: {
-                        productName,
-                        productId: product.id,
-                    },
-                });
-            }),
-        ).subscribe();
+        this.product$
+            .pipe(
+                take(1),
+                mergeMap(product => {
+                    const nameControl = this.productForm.get('name');
+                    const productName = nameControl ? nameControl.value : '';
+                    return this.modalService.fromComponent(CreateOptionGroupDialogComponent, {
+                        closable: true,
+                        size: 'lg',
+                        locals: {
+                            productName,
+                            productId: product.id,
+                        },
+                    });
+                }),
+            )
+            .subscribe();
     }
 
     save() {
-        combineLatest(this.product$, this.languageCode$).pipe(take(1))
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(take(1))
             .subscribe(([product, languageCode]) => {
                 const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
                 if (!currentTranslation) {
@@ -103,6 +104,10 @@ export class ProductDetailComponent {
     }
 
     private setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], { queryParams: { [key]: value }, relativeTo: this.route, queryParamsHandling: 'merge' });
+        this.router.navigate(['./'], {
+            queryParams: { [key]: value },
+            relativeTo: this.route,
+            queryParamsHandling: 'merge',
+        });
     }
 }
