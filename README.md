@@ -1,4 +1,4 @@
-# Vendure
+# Vendure [![Build Status](https://travis-ci.org/vendure-ecommerce/vendure.svg?branch=master)](https://travis-ci.org/vendure-ecommerce/vendure)
 
 ![logo](admin-ui/src/assets/cube-logo-300px.png)
 
