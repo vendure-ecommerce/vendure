@@ -16,4 +16,4 @@ install:
 script:
   - cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false
   - cd ../server && yarn test
-  - cd admin-ui && yarn build --prod
+  - cd ../admin-ui && yarn build --prod

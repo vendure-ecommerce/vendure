@@ -37,7 +37,7 @@ export function productBreadcrumb(data: any, params: any, dataService: DataServi
                     link: ['../', 'products'],
                 },
                 {
-                    label: `#${params.id} (${productData.product.name})`,
+                    label: `#${params.id} (${productData.product && productData.product.name})`,
                     link: [params.id],
                 },
             ];
