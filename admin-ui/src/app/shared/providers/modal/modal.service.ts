@@ -9,13 +9,13 @@ import { ModalDialogComponent } from '../../components/modal-dialog/modal-dialog
  * Any component intended to be used with the ModalService.fromComponent() method must implement
  * this interface.
  */
-export interface Dialog {
+export interface Dialog<R = any> {
     /**
      * Function to be invoked in order to close the dialog when the action is complete.
      * The Observable returned from the .fromComponent() method will emit the value passed
      * to this method and then complete.
      */
-    resolveWith: (result?: any) => void;
+    resolveWith: (result?: R) => void;
 }
 
 /**
@@ -91,10 +91,13 @@ export class ModalService {
      * </ng-template>
      * ```
      */
-    fromComponent<T extends Dialog>(component: Type<T>, options?: ModalOptions<T>): Observable<any> {
+    fromComponent<T extends Dialog<any>, R>(
+        component: Type<T> & Type<Dialog<R>>,
+        options?: ModalOptions<T>,
+    ): Observable<R> {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
         const modalComponentRef = this.hostView.createComponent(modalFactory);
-        const modalInstance = modalComponentRef.instance;
+        const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
         modalInstance.childComponentType = component;
         modalInstance.options = options;
 

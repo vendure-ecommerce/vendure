@@ -7,6 +7,7 @@ import { getDefaultLanguage } from '../../../common/utilities/get-default-langua
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { DataService } from '../../../data/providers/data.service';
 import {
+    CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     CreateProductOptionInput,
     LanguageCode,
@@ -19,8 +20,8 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./create-option-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateOptionGroupDialogComponent implements Dialog, OnInit {
-    resolveWith: (result?: any) => void;
+export class CreateOptionGroupDialogComponent implements Dialog<CreateProductOptionGroup>, OnInit {
+    resolveWith: (result?: CreateProductOptionGroup) => void;
     optionGroupForm: FormGroup;
     productName = '';
     productId: string;
@@ -47,23 +48,11 @@ export class CreateOptionGroupDialogComponent implements Dialog, OnInit {
     createOptionGroup() {
         this.dataService.product
             .createProductOptionGroups(this.createGroupFromForm())
-            .pipe(
-                mergeMap(data => {
-                    const optionGroup = data.createProductOptionGroup;
-                    if (optionGroup) {
-                        return this.dataService.product.addOptionGroupToProduct({
-                            productId: this.productId,
-                            optionGroupId: optionGroup.id,
-                        });
-                    }
-                    return [];
-                }),
-            )
-            .subscribe(product => this.resolveWith(product));
+            .subscribe(data => this.resolveWith(data));
     }
 
     cancel() {
-        this.resolveWith('cancelled!');
+        this.resolveWith();
     }
 
     private createGroupFromForm(): CreateProductOptionGroupInput {

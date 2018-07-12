@@ -2,13 +2,14 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { map, mergeMap, take, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 import { GetProductWithVariants_product, LanguageCode } from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { CreateOptionGroupDialogComponent } from '../create-option-group-dialog/create-option-group-dialog.component';
+import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/select-option-group-dialog.component';
 
 @Component({
     selector: 'vdr-product-detail',
@@ -73,14 +74,49 @@ export class ProductDetailComponent implements OnDestroy {
                 mergeMap(product => {
                     const nameControl = this.productForm.get('name');
                     const productName = nameControl ? nameControl.value : '';
-                    return this.modalService.fromComponent(CreateOptionGroupDialogComponent, {
-                        closable: true,
-                        size: 'lg',
-                        locals: {
-                            productName,
-                            productId: product.id,
-                        },
-                    });
+                    return this.modalService
+                        .fromComponent(CreateOptionGroupDialogComponent, {
+                            closable: true,
+                            size: 'lg',
+                            locals: {
+                                productName,
+                                productId: product.id,
+                            },
+                        })
+                        .pipe(
+                            mergeMap(({ createProductOptionGroup }) => {
+                                return this.dataService.product.addOptionGroupToProduct({
+                                    productId: product.id,
+                                    optionGroupId: createProductOptionGroup.id,
+                                });
+                            }),
+                        );
+                }),
+            )
+            .subscribe();
+    }
+
+    addExistingOptionGroup() {
+        this.product$
+            .pipe(
+                take(1),
+                mergeMap(product => {
+                    return this.modalService
+                        .fromComponent(SelectOptionGroupDialogComponent, {
+                            closable: true,
+                            size: 'lg',
+                            locals: {
+                                existingOptionGroupIds: product.optionGroups.map(g => g.id),
+                            },
+                        })
+                        .pipe(
+                            mergeMap(optionGroup => {
+                                return this.dataService.product.addOptionGroupToProduct({
+                                    productId: product.id,
+                                    optionGroupId: optionGroup.id,
+                                });
+                            }),
+                        );
                 }),
             )
             .subscribe();

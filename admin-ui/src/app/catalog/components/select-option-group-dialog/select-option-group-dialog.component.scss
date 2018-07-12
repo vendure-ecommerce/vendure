@@ -1,0 +1,42 @@
+@import "variables";
+
+.filter-input {
+    width: 100%;
+}
+
+.group-list {
+    margin-top: 24px;
+    height: 400px;
+    max-height: 60vh;
+    overflow: auto;
+}
+
+.group {
+    display: flex;
+    padding: 6px 12px;
+    border-bottom: 1px solid $color-grey-2;
+
+    .name-code {
+        flex: 1;
+    }
+
+    .code {
+        color: $color-grey-4;
+    }
+
+    .options {
+        text-align: right;
+    }
+
+    .option {
+        display: inline-block;
+        padding: 0 6px;
+        border: 1px solid $color-grey-3;
+        color: $color-grey-5;
+        border-radius: 3px;
+        margin-right: 3px;
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+}

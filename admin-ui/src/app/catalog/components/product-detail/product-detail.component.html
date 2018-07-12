@@ -39,7 +39,9 @@
                         <clr-icon shape="caret down"></clr-icon>
                     </button>
                     <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-                        <button type="button" clrDropdownItem>{{ 'catalog.add-existing-option-group' | translate }}</button>
+                        <button type="button"
+                                clrDropdownItem
+                                (click)="addExistingOptionGroup()">{{ 'catalog.add-existing-option-group' | translate }}</button>
                         <button type="button"
                                 clrDropdownItem
                                 (click)="createNewOptionGroup()">{{ 'catalog.create-new-option-group' | translate }}</button>

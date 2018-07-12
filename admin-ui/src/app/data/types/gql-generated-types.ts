@@ -94,9 +94,9 @@ export interface UpdateProduct_updateProduct_translations {
 export interface UpdateProduct_updateProduct_optionGroups {
     __typename: 'ProductOptionGroup';
     id: string;
-    languageCode: LanguageCode | null;
-    code: string | null;
-    name: string | null;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
 }
 
 export interface UpdateProduct_updateProduct_variants_options {
@@ -175,15 +175,15 @@ export interface CreateProductOptionGroup_createProductOptionGroup_options {
 export interface CreateProductOptionGroup_createProductOptionGroup {
     __typename: 'ProductOptionGroup';
     id: string;
-    languageCode: LanguageCode | null;
-    code: string | null;
-    name: string | null;
-    translations: (CreateProductOptionGroup_createProductOptionGroup_translations | null)[] | null;
-    options: (CreateProductOptionGroup_createProductOptionGroup_options | null)[] | null;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
+    translations: CreateProductOptionGroup_createProductOptionGroup_translations[];
+    options: CreateProductOptionGroup_createProductOptionGroup_options[];
 }
 
 export interface CreateProductOptionGroup {
-    createProductOptionGroup: CreateProductOptionGroup_createProductOptionGroup | null; // Create a new ProductOptionGroup
+    createProductOptionGroup: CreateProductOptionGroup_createProductOptionGroup; // Create a new ProductOptionGroup
 }
 
 export interface CreateProductOptionGroupVariables {
@@ -206,8 +206,8 @@ export interface AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups_op
 export interface AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups {
     __typename: 'ProductOptionGroup';
     id: string;
-    code: string | null;
-    options: (AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups_options | null)[] | null;
+    code: string;
+    options: AddOptionGroupToProduct_addOptionGroupToProduct_optionGroups_options[];
 }
 
 export interface AddOptionGroupToProduct_addOptionGroupToProduct {
@@ -293,9 +293,9 @@ export interface GetProductWithVariants_product_translations {
 export interface GetProductWithVariants_product_optionGroups {
     __typename: 'ProductOptionGroup';
     id: string;
-    languageCode: LanguageCode | null;
-    code: string | null;
-    name: string | null;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
 }
 
 export interface GetProductWithVariants_product_variants_options {
@@ -339,7 +339,7 @@ export interface GetProductWithVariants_product {
 }
 
 export interface GetProductWithVariants {
-    product: GetProductWithVariants_product;
+    product: GetProductWithVariants_product | null;
 }
 
 export interface GetProductWithVariantsVariables {
@@ -383,6 +383,39 @@ export interface GetProductListVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetProductOptionGroups
+// ====================================================
+
+export interface GetProductOptionGroups_productOptionGroups_options {
+    __typename: 'ProductOption';
+    id: string;
+    languageCode: LanguageCode | null;
+    code: string | null;
+    name: string | null;
+}
+
+export interface GetProductOptionGroups_productOptionGroups {
+    __typename: 'ProductOptionGroup';
+    id: string;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
+    options: GetProductOptionGroups_productOptionGroups_options[];
+}
+
+export interface GetProductOptionGroups {
+    productOptionGroups: GetProductOptionGroups_productOptionGroups[];
+}
+
+export interface GetProductOptionGroupsVariables {
+    filterTerm?: string | null;
+    languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: ProductWithVariants
 // ====================================================
 
@@ -397,9 +430,9 @@ export interface ProductWithVariants_translations {
 export interface ProductWithVariants_optionGroups {
     __typename: 'ProductOptionGroup';
     id: string;
-    languageCode: LanguageCode | null;
-    code: string | null;
-    name: string | null;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
 }
 
 export interface ProductWithVariants_variants_options {
@@ -470,11 +503,11 @@ export interface ProductOptionGroup_options {
 export interface ProductOptionGroup {
     __typename: 'ProductOptionGroup';
     id: string;
-    languageCode: LanguageCode | null;
-    code: string | null;
-    name: string | null;
-    translations: (ProductOptionGroup_translations | null)[] | null;
-    options: (ProductOptionGroup_options | null)[] | null;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
+    translations: ProductOptionGroup_translations[];
+    options: ProductOptionGroup_options[];
 }
 
 /* tslint:disable */
@@ -692,8 +725,8 @@ export interface ProductTranslationInput {
 //
 export interface CreateProductOptionGroupInput {
     code: string;
-    translations: (ProductOptionGroupTranslationInput | null)[];
-    options?: (CreateProductOptionInput | null)[] | null;
+    translations: ProductOptionGroupTranslationInput[];
+    options: CreateProductOptionInput[];
 }
 
 //
@@ -706,7 +739,7 @@ export interface ProductOptionGroupTranslationInput {
 //
 export interface CreateProductOptionInput {
     code: string;
-    translations: (ProductOptionGroupTranslationInput | null)[];
+    translations: ProductOptionGroupTranslationInput[];
 }
 
 //==============================================================

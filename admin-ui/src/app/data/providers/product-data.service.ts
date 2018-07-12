@@ -6,7 +6,11 @@ import {
     CREATE_PRODUCT_OPTION_GROUP,
     UPDATE_PRODUCT,
 } from '../mutations/product-mutations';
-import { GET_PRODUCT_LIST, GET_PRODUCT_WITH_VARIANTS } from '../queries/product-queries';
+import {
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_WITH_VARIANTS,
+} from '../queries/product-queries';
 import {
     AddOptionGroupToProduct,
     AddOptionGroupToProductVariables,
@@ -15,6 +19,8 @@ import {
     CreateProductOptionGroupVariables,
     GetProductList,
     GetProductListVariables,
+    GetProductOptionGroups,
+    GetProductOptionGroupsVariables,
     GetProductWithVariants,
     GetProductWithVariantsVariables,
     UpdateProduct,
@@ -75,6 +81,18 @@ export class ProductDataService {
         return this.baseDataService.mutate<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
             ADD_OPTION_GROUP_TO_PRODUCT,
             variables,
+        );
+    }
+
+    getProductOptionGroups(
+        filterTerm?: string,
+    ): QueryResult<GetProductOptionGroups, GetProductOptionGroupsVariables> {
+        return this.baseDataService.query<GetProductOptionGroups, GetProductOptionGroupsVariables>(
+            GET_PRODUCT_OPTION_GROUPS,
+            {
+                filterTerm,
+                languageCode: getDefaultLanguage(),
+            },
         );
     }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { finalize, map, take, tap } from 'rxjs/operators';
+import { filter, finalize, map, take, tap } from 'rxjs/operators';
 
+import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { DataService } from '../../../data/providers/data.service';
 import { GetProductWithVariants_product } from '../../../data/types/gql-generated-types';
 /**
@@ -20,7 +21,11 @@ export class ProductResolver implements Resolve<Observable<GetProductWithVariant
         const id = route.paramMap.get('id');
 
         if (id) {
-            const stream = this.dataService.product.getProduct(id).mapStream(data => data.product);
+            const stream = this.dataService.product
+                .getProduct(id)
+                .mapStream(data => data.product)
+                .pipe(filter(notNullOrUndefined));
+
             return stream.pipe(
                 take(1),
                 map(() => stream),

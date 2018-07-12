@@ -25,3 +25,20 @@ export const GET_PRODUCT_LIST = gql`
         }
     }
 `;
+
+export const GET_PRODUCT_OPTION_GROUPS = gql`
+    query GetProductOptionGroups($filterTerm: String, $languageCode: LanguageCode) {
+        productOptionGroups(filterTerm: $filterTerm, languageCode: $languageCode) {
+            id
+            languageCode
+            code
+            name
+            options {
+                id
+                languageCode
+                code
+                name
+            }
+        }
+    }
+`;
