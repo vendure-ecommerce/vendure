@@ -1,7 +1,9 @@
 import { ID } from '../../../shared/shared-types';
+import { UnwrappedArray } from '../common/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
 import { LanguageCode } from './language-code';
+import { TranslatableRelationsKeys } from './translate-entity';
 
 /**
  * This type should be used in any interfaces where the value is to be
@@ -48,3 +50,11 @@ export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & {
 export interface TranslatedInput<T> {
     translations: Array<TranslationInput<T>>;
 }
+
+// prettier-ignore
+/**
+ * This is the type of a Translatable entity after it has been deep-translated into a given language.
+ */
+export type Translated<T> =  T & { languageCode: LanguageCode; } & {
+    [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ? Array<Translated<UnwrappedArray<T[K]>>> : Translated<T[K]>;
+};

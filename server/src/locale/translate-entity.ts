@@ -1,7 +1,8 @@
+import { UnwrappedArray } from '../common/common-types';
 import { I18nError } from '../i18n/i18n-error';
 
 import { LanguageCode } from './language-code';
-import { Translatable } from './locale-types';
+import { Translatable, Translated } from './locale-types';
 
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
@@ -15,8 +16,6 @@ export type TranslatableRelationsKeys<T> = {
     K extends 'translations' ? never : K
 }[keyof T];
 
-export type UnwrappedArray<T extends any[]> = T[number];
-
 // prettier-ignore
 export type NestedTranslatableRelations<T> = {
     [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ?
@@ -24,19 +23,20 @@ export type NestedTranslatableRelations<T> = {
         [K, TranslatableRelationsKeys<T[K]>]
 };
 
-export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<
-    T
->[keyof NestedTranslatableRelations<T>];
+// prettier-ignore
+export type NestedTranslatableRelationKeys<T> = NestedTranslatableRelations<T>[keyof NestedTranslatableRelations<T>];
 
-export type DeepTranslatableRelations<T> = Array<
-    TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>
->;
+// prettier-ignore
+export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | NestedTranslatableRelationKeys<T>>;
 
 /**
  * Converts a Translatable entity into the public-facing entity by unwrapping
  * the translated strings from the matching Translation entity.
  */
-export function translateEntity<T extends Translatable>(translatable: T, languageCode: LanguageCode): T {
+export function translateEntity<T extends Translatable>(
+    translatable: T,
+    languageCode: LanguageCode,
+): Translated<T> {
     const translation =
         translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
 
@@ -65,8 +65,8 @@ export function translateDeep<T extends Translatable>(
     translatable: T,
     languageCode: LanguageCode,
     translatableRelations: DeepTranslatableRelations<T> = [],
-): T {
-    let translatedEntity: T;
+): Translated<T> {
+    let translatedEntity: Translated<T>;
     try {
         translatedEntity = translateEntity(translatable, languageCode);
     } catch (e) {

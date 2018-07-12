@@ -20,5 +20,5 @@ input ProductOptionTranslationInput {
 
 input CreateProductOptionInput {
     code: String!
-    translations: [ProductOptionGroupTranslationInput]!
+    translations: [ProductOptionGroupTranslationInput!]!
 }

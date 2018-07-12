@@ -1,6 +1,6 @@
 type Query {
   customers(take: Int, skip: Int): CustomerList!
-  customer(id: ID!): Customer!
+  customer(id: ID!): Customer
 }
 
 type Mutation {

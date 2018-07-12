@@ -20,17 +20,17 @@ export class ProductOptionResolver {
     ) {}
 
     @Query('productOptionGroups')
-    productOptionGroups(obj, args): Promise<ProductOptionGroup[]> {
+    productOptionGroups(obj, args): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(args.languageCode, args.filterTerm);
     }
 
     @Query('productOptionGroup')
-    productOptionGroup(obj, args): Promise<ProductOptionGroup | undefined> {
+    productOptionGroup(obj, args): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(args.id, args.languageCode);
     }
 
     @ResolveProperty('options')
-    async options(optionGroup: Translated<ProductOptionGroup>): Promise<ProductOption[]> {
+    async options(optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
             return Promise.resolve(optionGroup.options);
         }
@@ -40,7 +40,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
-    async createProductOptionGroup(_, args): Promise<ProductOptionGroup> {
+    async createProductOptionGroup(_, args): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(args.input);
 
@@ -54,7 +54,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
-    async updateProductOptionGroup(_, args): Promise<ProductOptionGroup> {
+    async updateProductOptionGroup(_, args): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(args.input);
     }

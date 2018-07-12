@@ -2,6 +2,7 @@ import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Product } from '../../entity/product/product.entity';
+import { Translated } from '../../locale/locale-types';
 import { IdCodecService } from '../../service/id-codec.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
@@ -15,21 +16,21 @@ export class ProductResolver {
     ) {}
 
     @Query('products')
-    async products(obj, args): Promise<PaginatedList<Product>> {
+    async products(obj, args): Promise<PaginatedList<Translated<Product>>> {
         return this.productService
             .findAll(args.languageCode, args.take, args.skip)
             .then(list => this.idCodecService.encode(list));
     }
 
     @Query('product')
-    async product(obj, args): Promise<Product | undefined> {
+    async product(obj, args): Promise<Translated<Product> | undefined> {
         return this.productService
             .findOne(this.idCodecService.decode(args).id, args.languageCode)
             .then(p => this.idCodecService.encode(p));
     }
 
     @Mutation()
-    async createProduct(_, args): Promise<Product> {
+    async createProduct(_, args): Promise<Translated<Product>> {
         const { input } = args;
         const product = await this.productService.create(input);
 
@@ -43,14 +44,14 @@ export class ProductResolver {
     }
 
     @Mutation()
-    async updateProduct(_, args): Promise<Product | undefined> {
+    async updateProduct(_, args): Promise<Translated<Product>> {
         const { input } = args;
         const product = await this.productService.update(this.idCodecService.decode(input));
         return this.idCodecService.decode(product);
     }
 
     @Mutation()
-    async addOptionGroupToProduct(_, args): Promise<Product | undefined> {
+    async addOptionGroupToProduct(_, args): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         const product = await this.productService.addOptionGroupToProduct(productId, optionGroupId);
         return this.idCodecService.decode(product);

@@ -4,6 +4,7 @@ import { Connection, FindManyOptions, Like } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { assertFound } from '../common/utils';
 import { ProductOptionGroupTranslation } from '../entity/product-option-group/product-option-group-translation.entity';
 import {
     CreateProductOptionGroupDto,
@@ -59,9 +60,7 @@ export class ProductOptionGroupService {
         optionGroup.translations = translations;
         const createdGroup = await this.connection.manager.save(optionGroup);
 
-        return this.findOne(createdGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<
-            Translated<ProductOptionGroup>
-        >;
+        return assertFound(this.findOne(createdGroup.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(
@@ -81,8 +80,6 @@ export class ProductOptionGroupService {
         );
         await this.connection.manager.save(productOptionGroup);
 
-        return this.findOne(productOptionGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<
-            Translated<ProductOptionGroup>
-        >;
+        return assertFound(this.findOne(productOptionGroup.id, DEFAULT_LANGUAGE_CODE));
     }
 }

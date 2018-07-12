@@ -12,3 +12,13 @@ export function not(predicate: (...args: any[]) => boolean) {
 export function foundIn<T>(set: T[], compareBy: keyof T) {
     return (item: T) => set.some(t => t[compareBy] === item[compareBy]);
 }
+
+/**
+ * Indentity function which asserts to the type system that a promise which can resolve to T or undefined
+ * does in fact resolve to T.
+ * Used when performing a "find" operation on an entity which we are sure exists, as in the case that we
+ * just successfully created or updated it.
+ */
+export function assertFound<T>(promise: Promise<T | undefined>): Promise<T> {
+    return promise as Promise<T>;
+}

@@ -4,12 +4,14 @@ import { Connection } from 'typeorm';
 
 import { ID, PaginatedList } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
 import { LanguageCode } from '../locale/language-code';
+import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 
@@ -20,7 +22,7 @@ export class ProductService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode, take?: number, skip?: number): Promise<PaginatedList<Product>> {
+    findAll(lang: LanguageCode, take?: number, skip?: number): Promise<PaginatedList<Translated<Product>>> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
         if (skip !== undefined && take === undefined) {
@@ -40,7 +42,7 @@ export class ProductService {
             });
     }
 
-    findOne(productId: ID, lang: LanguageCode): Promise<Product | undefined> {
+    findOne(productId: ID, lang: LanguageCode): Promise<Translated<Product> | undefined> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
         return this.connection.manager
@@ -52,7 +54,7 @@ export class ProductService {
             );
     }
 
-    async create(createProductDto: CreateProductDto): Promise<Product> {
+    async create(createProductDto: CreateProductDto): Promise<Translated<Product>> {
         const { variants, optionGroupCodes, image, translations } = createProductDto;
         const product = new Product(createProductDto);
         const productTranslations: ProductTranslation[] = [];
@@ -72,10 +74,10 @@ export class ProductService {
         product.translations = productTranslations;
         const createdProduct = await this.connection.manager.save(product);
 
-        return this.findOne(createdProduct.id, DEFAULT_LANGUAGE_CODE) as Promise<Product>;
+        return assertFound(this.findOne(createdProduct.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateProductDto: UpdateProductDto): Promise<Product | undefined> {
+    async update(updateProductDto: UpdateProductDto): Promise<Translated<Product>> {
         const existingTranslations = await this.connection.getRepository(ProductTranslation).find({
             where: { base: updateProductDto.id },
             relations: ['base'],
@@ -87,10 +89,10 @@ export class ProductService {
         const product = await translationUpdater.applyDiff(new Product(updateProductDto), diff);
         await this.connection.manager.save(product);
 
-        return this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE);
+        return assertFound(this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Product | undefined> {
+    async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Translated<Product>> {
         const product = await this.connection
             .getRepository(Product)
             .findOne(productId, { relations: ['optionGroups'] });
@@ -110,6 +112,6 @@ export class ProductService {
 
         await this.connection.manager.save(product);
 
-        return this.findOne(productId, DEFAULT_LANGUAGE_CODE);
+        return assertFound(this.findOne(productId, DEFAULT_LANGUAGE_CODE));
     }
 }
