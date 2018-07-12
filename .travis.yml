@@ -1,6 +1,9 @@
 dist: trusty
 sudo: false
 
+git:
+  depth: 3
+
 language: node_js
 node_js:
   - "9"
@@ -11,4 +14,6 @@ install:
   - yarn install
 
 script:
-  - yarn test
+  - cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false
+  - cd ../server && yarn test
+  - cd admin-ui && yarn build --prod

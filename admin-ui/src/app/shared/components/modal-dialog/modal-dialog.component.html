@@ -1,7 +1,7 @@
 <clr-modal [clrModalOpen]="true"
            (clrModalOpenChange)="modalOpenChange($event)"
-           [clrModalClosable]="options.closable"
-           [clrModalSize]="options.size">
+           [clrModalClosable]="options?.closable"
+           [clrModalSize]="options?.size">
     <h3 class="modal-title">
         <ng-container *ngTemplateOutlet="titleTemplateRef$ | async"></ng-container>
     </h3>

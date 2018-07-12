@@ -8,7 +8,8 @@
     "lint:server": "cd server && yarn lint --fix",
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
     "precommit": "lint-staged",
-    "postcommit": "git update-index --again"
+    "postcommit": "git update-index --again",
+    "prepush": "yarn test && cd admin-ui && yarn build --prod"
   },
   "devDependencies": {
     "husky": "^0.14.3",
