@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
+import { Connection, FindManyOptions, Like } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
@@ -11,6 +11,7 @@ import {
 } from '../entity/product-option-group/product-option-group.dto';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { LanguageCode } from '../locale/language-code';
+import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 
@@ -21,15 +22,21 @@ export class ProductOptionGroupService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode): Promise<ProductOptionGroup[]> {
+    findAll(lang: LanguageCode, filterTerm?: string): Promise<Array<Translated<ProductOptionGroup>>> {
+        const findOptions: FindManyOptions = {
+            relations: ['options'],
+        };
+        if (filterTerm) {
+            findOptions.where = {
+                code: Like(`%${filterTerm}%`),
+            };
+        }
         return this.connection.manager
-            .find(ProductOptionGroup, {
-                relations: ['options'],
-            })
+            .find(ProductOptionGroup, findOptions)
             .then(groups => groups.map(group => translateDeep(group, lang, ['options'])));
     }
 
-    findOne(id: ID, lang: LanguageCode): Promise<ProductOptionGroup | undefined> {
+    findOne(id: ID, lang: LanguageCode): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection.manager
             .findOne(ProductOptionGroup, id, {
                 relations: ['options'],
@@ -37,7 +44,9 @@ export class ProductOptionGroupService {
             .then(group => group && translateDeep(group, lang, ['options']));
     }
 
-    async create(createProductOptionGroupDto: CreateProductOptionGroupDto): Promise<ProductOptionGroup> {
+    async create(
+        createProductOptionGroupDto: CreateProductOptionGroupDto,
+    ): Promise<Translated<ProductOptionGroup>> {
         const optionGroup = new ProductOptionGroup(createProductOptionGroupDto);
         const translations: ProductOptionGroupTranslation[] = [];
 
@@ -50,10 +59,14 @@ export class ProductOptionGroupService {
         optionGroup.translations = translations;
         const createdGroup = await this.connection.manager.save(optionGroup);
 
-        return this.findOne(createdGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<ProductOptionGroup>;
+        return this.findOne(createdGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<
+            Translated<ProductOptionGroup>
+        >;
     }
 
-    async update(updateProductOptionGroupDto: UpdateProductOptionGroupDto): Promise<ProductOptionGroup> {
+    async update(
+        updateProductOptionGroupDto: UpdateProductOptionGroupDto,
+    ): Promise<Translated<ProductOptionGroup>> {
         const existingTranslations = await this.connection.getRepository(ProductOptionGroupTranslation).find({
             where: { base: updateProductOptionGroupDto.id },
             relations: ['base'],
@@ -68,6 +81,8 @@ export class ProductOptionGroupService {
         );
         await this.connection.manager.save(productOptionGroup);
 
-        return this.findOne(productOptionGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<ProductOptionGroup>;
+        return this.findOne(productOptionGroup.id, DEFAULT_LANGUAGE_CODE) as Promise<
+            Translated<ProductOptionGroup>
+        >;
     }
 }
