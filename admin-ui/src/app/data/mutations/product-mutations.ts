@@ -38,3 +38,19 @@ export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
         }
     }
 `;
+
+export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            id
+            optionGroups {
+                id
+                code
+                options {
+                    id
+                    code
+                }
+            }
+        }
+    }
+`;

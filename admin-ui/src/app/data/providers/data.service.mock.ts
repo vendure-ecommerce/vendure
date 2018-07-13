@@ -46,6 +46,7 @@ export class MockDataService implements DataServiceMock {
         updateProduct: spyObservable('updateProduct'),
         createProductOptionGroups: spyObservable('createProductOptionGroups'),
         addOptionGroupToProduct: spyObservable('addOptionGroupToProduct'),
+        removeOptionGroupFromProduct: spyObservable('removeOptionGroupFromProduct'),
         getProductOptionGroups: spyQueryResult('getProductOptionGroups'),
     };
     user = {

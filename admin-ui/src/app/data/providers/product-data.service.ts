@@ -4,6 +4,7 @@ import { getDefaultLanguage } from '../../common/utilities/get-default-language'
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
+    REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
 } from '../mutations/product-mutations';
 import {
@@ -23,6 +24,8 @@ import {
     GetProductOptionGroupsVariables,
     GetProductWithVariants,
     GetProductWithVariantsVariables,
+    RemoveOptionGroupFromProduct,
+    RemoveOptionGroupFromProductVariables,
     UpdateProduct,
     UpdateProductInput,
     UpdateProductVariables,
@@ -82,6 +85,15 @@ export class ProductDataService {
             ADD_OPTION_GROUP_TO_PRODUCT,
             variables,
         );
+    }
+
+    removeOptionGroupFromProduct(
+        variables: RemoveOptionGroupFromProductVariables,
+    ): Observable<RemoveOptionGroupFromProduct> {
+        return this.baseDataService.mutate<
+            RemoveOptionGroupFromProduct,
+            RemoveOptionGroupFromProductVariables
+        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, variables);
     }
 
     getProductOptionGroups(

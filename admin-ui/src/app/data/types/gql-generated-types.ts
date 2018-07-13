@@ -229,6 +229,41 @@ export interface AddOptionGroupToProductVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: RemoveOptionGroupFromProduct
+// ====================================================
+
+export interface RemoveOptionGroupFromProduct_removeOptionGroupFromProduct_optionGroups_options {
+    __typename: 'ProductOption';
+    id: string;
+    code: string | null;
+}
+
+export interface RemoveOptionGroupFromProduct_removeOptionGroupFromProduct_optionGroups {
+    __typename: 'ProductOptionGroup';
+    id: string;
+    code: string;
+    options: RemoveOptionGroupFromProduct_removeOptionGroupFromProduct_optionGroups_options[];
+}
+
+export interface RemoveOptionGroupFromProduct_removeOptionGroupFromProduct {
+    __typename: 'Product';
+    id: string;
+    optionGroups: RemoveOptionGroupFromProduct_removeOptionGroupFromProduct_optionGroups[];
+}
+
+export interface RemoveOptionGroupFromProduct {
+    removeOptionGroupFromProduct: RemoveOptionGroupFromProduct_removeOptionGroupFromProduct; // Remove an OptionGroup from a Product
+}
+
+export interface RemoveOptionGroupFromProductVariables {
+    productId: string;
+    optionGroupId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetNetworkStatus
 // ====================================================
 

@@ -9,4 +9,17 @@
     display: inline-block;
     padding: 0 6px;
     margin-right: 6px;
+    display: inline-flex;
+}
+.group-name {
+    padding-right: 6px;
+}
+.remove-option-group {
+    margin: 0 !important;
+    padding: 0;
+    min-width: 0;
+    height: 22px;
+    line-height: 1rem;
+    border: none;
+    color: $color-warning;
 }

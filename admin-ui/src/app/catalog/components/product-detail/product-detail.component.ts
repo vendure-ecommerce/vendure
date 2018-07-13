@@ -2,8 +2,9 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
 
+import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 import { GetProductWithVariants_product, LanguageCode } from '../../../data/types/gql-generated-types';
@@ -84,6 +85,7 @@ export class ProductDetailComponent implements OnDestroy {
                             },
                         })
                         .pipe(
+                            filter(notNullOrUndefined),
                             mergeMap(({ createProductOptionGroup }) => {
                                 return this.dataService.product.addOptionGroupToProduct({
                                     productId: product.id,
@@ -110,6 +112,7 @@ export class ProductDetailComponent implements OnDestroy {
                             },
                         })
                         .pipe(
+                            filter(notNullOrUndefined),
                             mergeMap(optionGroup => {
                                 return this.dataService.product.addOptionGroupToProduct({
                                     productId: product.id,
@@ -117,6 +120,20 @@ export class ProductDetailComponent implements OnDestroy {
                                 });
                             }),
                         );
+                }),
+            )
+            .subscribe();
+    }
+
+    removeGroup(optionGroupId: string) {
+        this.product$
+            .pipe(
+                take(1),
+                mergeMap(product => {
+                    return this.dataService.product.removeOptionGroupFromProduct({
+                        productId: product.id,
+                        optionGroupId,
+                    });
                 }),
             )
             .subscribe();

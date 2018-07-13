@@ -31,7 +31,14 @@
         <vdr-form-item [label]="'catalog.product-option-groups' | translate">
             <div class="option-groups-list">
                 <div *ngFor="let optionGroup of (product$ | async)?.optionGroups"
-                     class="option-group">{{ optionGroup.name }}</div>
+                     class="option-group">
+                    <div class="group-name">{{ optionGroup.name }}</div>
+                    <button type="button"
+                            class="btn remove-option-group"
+                            (click)="removeGroup(optionGroup.id)">
+                        <clr-icon shape="trash"></clr-icon>
+                    </button>
+                </div>
                 <clr-dropdown>
                     <button type="button" class="btn btn-outline-primary btn-sm" clrDropdownTrigger>
                         <clr-icon shape="add"></clr-icon>

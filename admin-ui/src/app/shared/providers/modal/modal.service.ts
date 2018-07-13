@@ -94,7 +94,7 @@ export class ModalService {
     fromComponent<T extends Dialog<any>, R>(
         component: Type<T> & Type<Dialog<R>>,
         options?: ModalOptions<T>,
-    ): Observable<R> {
+    ): Observable<R | undefined> {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
         const modalComponentRef = this.hostView.createComponent(modalFactory);
         const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
