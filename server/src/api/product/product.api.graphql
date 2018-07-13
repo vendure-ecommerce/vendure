@@ -10,6 +10,8 @@ type Mutation {
     updateProduct(input: UpdateProductInput): Product!
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
+    "Remove an OptionGroup from a Product"
+    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
 }
 
 type ProductList implements PaginatedList {

@@ -93,12 +93,7 @@ export class ProductService {
     }
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Translated<Product>> {
-        const product = await this.connection
-            .getRepository(Product)
-            .findOne(productId, { relations: ['optionGroups'] });
-        if (!product) {
-            throw new I18nError(`error.product-with-id-not-found`, { productId });
-        }
+        const product = await this.getProductWithOptionGroups(productId);
         const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
         if (!optionGroup) {
             throw new I18nError(`error.option-group-with-id-not-found`, { optionGroupId });
@@ -111,7 +106,24 @@ export class ProductService {
         }
 
         await this.connection.manager.save(product);
-
         return assertFound(this.findOne(productId, DEFAULT_LANGUAGE_CODE));
+    }
+
+    async removeOptionGroupFromProduct(productId: ID, optionGroupId: ID): Promise<Translated<Product>> {
+        const product = await this.getProductWithOptionGroups(productId);
+        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
+
+        await this.connection.manager.save(product);
+        return assertFound(this.findOne(productId, DEFAULT_LANGUAGE_CODE));
+    }
+
+    private async getProductWithOptionGroups(productId: ID): Promise<Product> {
+        const product = await this.connection
+            .getRepository(Product)
+            .findOne(productId, { relations: ['optionGroups'] });
+        if (!product) {
+            throw new I18nError(`error.product-with-id-not-found`, { productId });
+        }
+        return product;
     }
 }
