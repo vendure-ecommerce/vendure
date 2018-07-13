@@ -2,51 +2,43 @@ import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Address } from '../../entity/address/address.entity';
-import { CreateCustomerDto } from '../../entity/customer/customer.dto';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';
-import { IdCodecService } from '../../service/id-codec.service';
+import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 
 @Resolver('Customer')
 export class CustomerResolver {
-    constructor(private customerService: CustomerService, private idCodecService: IdCodecService) {}
+    constructor(private customerService: CustomerService) {}
 
     @Query('customers')
+    @ApplyIdCodec()
     async customers(obj, args): Promise<PaginatedList<Customer>> {
-        return this.customerService
-            .findAll(args.take, args.skip)
-            .then(list => this.idCodecService.encode(list));
+        return this.customerService.findAll(args.take, args.skip);
     }
 
     @Query('customer')
+    @ApplyIdCodec()
     async customer(obj, args): Promise<Customer | undefined> {
-        return this.customerService
-            .findOne(this.idCodecService.decode(args).id)
-            .then(c => this.idCodecService.encode(c));
+        return this.customerService.findOne(args.id);
     }
 
     @ResolveProperty('addresses')
+    @ApplyIdCodec()
     async addresses(customer: Customer): Promise<Address[]> {
-        const address = await this.customerService.findAddressesByCustomerId(
-            this.idCodecService.decode(customer).id,
-        );
-        return this.idCodecService.encode(address);
+        return this.customerService.findAddressesByCustomerId(customer.id);
     }
 
     @Mutation()
+    @ApplyIdCodec()
     async createCustomer(_, args): Promise<Customer> {
         const { input, password } = args;
-        const customer = await this.customerService.create(input, password);
-        return this.idCodecService.encode(customer);
+        return this.customerService.create(input, password);
     }
 
     @Mutation()
+    @ApplyIdCodec()
     async createCustomerAddress(_, args): Promise<Address> {
         const { customerId, input } = args;
-        const address = await this.customerService.createAddress(
-            this.idCodecService.decode(customerId),
-            input,
-        );
-        return this.idCodecService.encode(address);
+        return this.customerService.createAddress(customerId, input);
     }
 }

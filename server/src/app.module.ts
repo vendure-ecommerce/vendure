@@ -18,7 +18,6 @@ import { TranslationUpdaterService } from './locale/translation-updater.service'
 import { AdministratorService } from './service/administrator.service';
 import { ConfigService } from './service/config.service';
 import { CustomerService } from './service/customer.service';
-import { IdCodecService } from './service/id-codec.service';
 import { ProductOptionGroupService } from './service/product-option-group.service';
 import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
@@ -36,7 +35,6 @@ const connectionOptions = getConfig().dbConnectionOptions;
         ConfigService,
         JwtStrategy,
         I18nService,
-        IdCodecService,
         PasswordService,
         CustomerService,
         CustomerResolver,

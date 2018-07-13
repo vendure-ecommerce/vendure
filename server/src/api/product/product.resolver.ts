@@ -3,33 +3,31 @@ import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PaginatedList } from '../../../../shared/shared-types';
 import { Product } from '../../entity/product/product.entity';
 import { Translated } from '../../locale/locale-types';
-import { IdCodecService } from '../../service/id-codec.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
+import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 
 @Resolver('Product')
 export class ProductResolver {
     constructor(
         private productService: ProductService,
-        private idCodecService: IdCodecService,
         private productVariantService: ProductVariantService,
     ) {}
 
     @Query('products')
+    @ApplyIdCodec()
     async products(obj, args): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService
-            .findAll(args.languageCode, args.take, args.skip)
-            .then(list => this.idCodecService.encode(list));
+        return this.productService.findAll(args.languageCode, args.take, args.skip);
     }
 
     @Query('product')
+    @ApplyIdCodec()
     async product(obj, args): Promise<Translated<Product> | undefined> {
-        return this.productService
-            .findOne(this.idCodecService.decode(args).id, args.languageCode)
-            .then(p => this.idCodecService.encode(p));
+        return this.productService.findOne(args.id, args.languageCode);
     }
 
     @Mutation()
+    @ApplyIdCodec()
     async createProduct(_, args): Promise<Translated<Product>> {
         const { input } = args;
         const product = await this.productService.create(input);
@@ -40,33 +38,27 @@ export class ProductResolver {
             }
         }
 
-        return this.idCodecService.encode(product);
+        return product;
     }
 
     @Mutation()
+    @ApplyIdCodec()
     async updateProduct(_, args): Promise<Translated<Product>> {
         const { input } = args;
-        const product = await this.productService.update(this.idCodecService.decode(input));
-        return this.idCodecService.encode(product);
+        return this.productService.update(input);
     }
 
     @Mutation()
+    @ApplyIdCodec(['productId', 'optionGroupId'])
     async addOptionGroupToProduct(_, args): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
-        const product = await this.productService.addOptionGroupToProduct(
-            this.idCodecService.decode(productId),
-            this.idCodecService.decode(optionGroupId),
-        );
-        return this.idCodecService.encode(product);
+        return this.productService.addOptionGroupToProduct(productId, optionGroupId);
     }
 
     @Mutation()
+    @ApplyIdCodec(['productId', 'optionGroupId'])
     async removeOptionGroupFromProduct(_, args): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
-        const product = await this.productService.removeOptionGroupFromProduct(
-            this.idCodecService.decode(productId),
-            this.idCodecService.decode(optionGroupId),
-        );
-        return this.idCodecService.encode(product);
+        return this.productService.removeOptionGroupFromProduct(productId, optionGroupId);
     }
 }

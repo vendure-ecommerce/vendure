@@ -8,7 +8,7 @@ export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
  * A type representing the type rather than instance of a class.
  */
 export type Type<T> = {
-    new (): T;
+    new (...args: any[]): T;
 } & Function;
 
 /**

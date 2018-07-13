@@ -1,46 +1,38 @@
-import { Test } from '@nestjs/testing';
+import { DECODED, ENCODED, MockIdStrategy } from '../../service/config.service.mock';
 
-import { ConfigService } from './config.service';
-import { DECODED, ENCODED, MockConfigService } from './config.service.mock';
-import { IdCodecService } from './id-codec.service';
+import { IdCodec } from './id-codec';
 
 describe('IdCodecService', () => {
-    let idCodecService: IdCodecService;
-    let configService: MockConfigService;
+    let idCodec: IdCodec;
 
     beforeEach(async () => {
-        const module = await Test.createTestingModule({
-            providers: [IdCodecService, { provide: ConfigService, useClass: MockConfigService }],
-        }).compile();
-
-        idCodecService = module.get(IdCodecService);
-        configService = module.get(ConfigService) as any;
+        idCodec = new IdCodec(new MockIdStrategy());
     });
 
     describe('encode()', () => {
         it('works with a string', () => {
             const input = 'id';
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual(ENCODED);
         });
 
         it('works with a number', () => {
             const input = 123;
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual(ENCODED);
         });
 
         it('passes through null or undefined without throwing', () => {
-            expect(idCodecService.encode(null as any)).toBeNull();
-            expect(idCodecService.encode(undefined as any)).toBeUndefined();
+            expect(idCodec.encode(null as any)).toBeNull();
+            expect(idCodec.encode(undefined as any)).toBeUndefined();
         });
 
         it('works with simple entity', () => {
             const input = { id: 'id', name: 'foo' };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual({ id: ENCODED, name: 'foo' });
         });
 
@@ -50,7 +42,7 @@ describe('IdCodecService', () => {
                 friend: { id: 'id' },
             };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual({
                 id: ENCODED,
                 friend: { id: ENCODED },
@@ -65,7 +57,7 @@ describe('IdCodecService', () => {
                 },
             };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual({
                 id: ENCODED,
                 friend: {
@@ -77,15 +69,15 @@ describe('IdCodecService', () => {
         it('works with list of simple entities', () => {
             const input = [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }];
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual([{ id: ENCODED, name: 'foo' }, { id: ENCODED, name: 'bar' }]);
         });
 
         it('does not throw with an empty list', () => {
             const input = [];
 
-            const result = idCodecService.encode(input);
-            expect(() => idCodecService.encode(input)).not.toThrow();
+            const result = idCodec.encode(input);
+            expect(() => idCodec.encode(input)).not.toThrow();
         });
 
         it('works with nested list of simple entities', () => {
@@ -93,7 +85,7 @@ describe('IdCodecService', () => {
                 items: [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }],
             };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual({
                 items: [{ id: ENCODED, name: 'foo' }, { id: ENCODED, name: 'bar' }],
             });
@@ -110,7 +102,7 @@ describe('IdCodecService', () => {
                 })),
             };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result.items.length).toBe(length);
             expect(result.items[0].id).toBe(ENCODED);
             expect(result.items[0].friends[0].id).toBe(ENCODED);
@@ -131,7 +123,7 @@ describe('IdCodecService', () => {
                 ],
             };
 
-            const result = idCodecService.encode(input);
+            const result = idCodec.encode(input);
             expect(result).toEqual({
                 items: [
                     {
@@ -145,27 +137,34 @@ describe('IdCodecService', () => {
                 ],
             });
         });
+
+        it('transformKeys can be customized', () => {
+            const input = { id: 'id', name: 'foo' };
+
+            const result = idCodec.encode(input, ['name']);
+            expect(result).toEqual({ id: 'id', name: ENCODED });
+        });
     });
 
     describe('decode()', () => {
         it('works with a string', () => {
             const input = 'id';
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual(DECODED);
         });
 
         it('works with a number', () => {
             const input = 123;
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual(DECODED);
         });
 
         it('works with simple entity', () => {
             const input = { id: 'id', name: 'foo' };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual({ id: DECODED, name: 'foo' });
         });
 
@@ -175,7 +174,7 @@ describe('IdCodecService', () => {
                 friend: { id: 'id' },
             };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual({
                 id: DECODED,
                 friend: { id: DECODED },
@@ -190,7 +189,7 @@ describe('IdCodecService', () => {
                 },
             };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual({
                 id: DECODED,
                 friend: {
@@ -202,7 +201,7 @@ describe('IdCodecService', () => {
         it('works with list of simple entities', () => {
             const input = [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }];
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual([{ id: DECODED, name: 'foo' }, { id: DECODED, name: 'bar' }]);
         });
 
@@ -211,7 +210,7 @@ describe('IdCodecService', () => {
                 items: [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }],
             };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual({
                 items: [{ id: DECODED, name: 'foo' }, { id: DECODED, name: 'bar' }],
             });
@@ -228,7 +227,7 @@ describe('IdCodecService', () => {
                 })),
             };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result.items.length).toBe(length);
             expect(result.items[0].id).toBe(DECODED);
             expect(result.items[0].friends[0].id).toBe(DECODED);
@@ -249,7 +248,7 @@ describe('IdCodecService', () => {
                 ],
             };
 
-            const result = idCodecService.decode(input);
+            const result = idCodec.decode(input);
             expect(result).toEqual({
                 items: [
                     {
@@ -262,6 +261,13 @@ describe('IdCodecService', () => {
                     },
                 ],
             });
+        });
+
+        it('transformKeys can be customized', () => {
+            const input = { id: 'id', name: 'foo' };
+
+            const result = idCodec.decode(input, ['name']);
+            expect(result).toEqual({ id: 'id', name: DECODED });
         });
     });
 });

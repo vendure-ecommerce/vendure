@@ -1,43 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { ID } from '../../../../shared/shared-types';
+import { VendureEntity } from '../../entity/base/base.entity';
 
-import { ID, PaginatedList } from '../../../shared/shared-types';
-import { VendureEntity } from '../entity/base/base.entity';
-
-import { ConfigService } from './config.service';
+import { EntityIdStrategy } from '../../config/entity-id-strategy';
 
 /**
  * This service is responsible for encoding/decoding entity IDs according to the configured EntityIdStrategy.
  * It should only need to be used in resolvers - the design is that once a request hits the business logic layer
  * (ProductService etc) all entity IDs are in the form used as the primary key in the database.
  */
-@Injectable()
-export class IdCodecService {
-    constructor(private configService: ConfigService) {}
+export class IdCodec {
+    constructor(private entityIdStrategy: EntityIdStrategy) {}
 
     /**
      * Decode an id from the client into the format used as the database primary key.
      * Acts recursively on all objects containing an "id" property.
+     *
+     * @param target - The object to be decoded
+     * @param transformKeys - An optional array of keys of the target to be decoded. If not defined,
+     * then the default recursive behaviour will be used.
      */
-    decode<T extends string | number | object | undefined>(target: T): T {
-        return this.transformRecursive(target, input => this.configService.entityIdStrategy.decodeId(input));
+    decode<T extends string | number | object | undefined>(target: T, transformKeys?: Array<keyof T>): T {
+        return this.transformRecursive(target, input => this.entityIdStrategy.decodeId(input), transformKeys);
     }
 
     /**
      * Encode any entity ids according to the encode.
      * Acts recursively on all objects containing an "id" property.
+     *
+     * @param target - The object to be encoded
+     * @param transformKeys - An optional array of keys of the target to be encoded. If not defined,
+     * then the default recursive behaviour will be used.
      */
-    encode<T extends string | number | object | undefined>(target: T): T {
-        return this.transformRecursive(target, input => this.configService.entityIdStrategy.encodeId(input));
+    encode<T extends string | number | object | undefined>(target: T, transformKeys?: Array<keyof T>): T {
+        return this.transformRecursive(target, input => this.entityIdStrategy.encodeId(input), transformKeys);
     }
 
-    private transformRecursive<T>(target: T, transformFn: (input: any) => ID): T {
+    private transformRecursive<T>(
+        target: T,
+        transformFn: (input: any) => ID,
+        transformKeys?: Array<keyof T>,
+    ): T {
         if (target == null) {
             return target;
         }
         if (typeof target === 'string' || typeof target === 'number') {
             return transformFn(target as any) as any;
         }
-        this.transform(target, transformFn);
+        this.transform(target, transformFn, transformKeys);
+
+        if (transformKeys) {
+            return target;
+        }
 
         if (Array.isArray(target)) {
             if (target.length === 0) {
@@ -69,8 +82,12 @@ export class IdCodecService {
         return target;
     }
 
-    private transform<T>(target: T, transformFn: (input: any) => ID): T {
-        if (this.isEntity(target)) {
+    private transform<T>(target: T, transformFn: (input: any) => ID, transformKeys?: Array<keyof T>): T {
+        if (transformKeys) {
+            for (const key of transformKeys) {
+                target[key] = transformFn(target[key]) as any;
+            }
+        } else if (this.isEntity(target)) {
             target.id = transformFn(target.id);
         }
         return target;
