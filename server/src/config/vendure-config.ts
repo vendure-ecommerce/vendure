@@ -5,8 +5,8 @@ import { DeepPartial } from '../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/common-types';
 import { LanguageCode } from '../locale/language-code';
 
-import { AutoIncrementIdStrategy } from './auto-increment-id-strategy';
-import { EntityIdStrategy } from './entity-id-strategy';
+import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 
 export interface VendureConfig {

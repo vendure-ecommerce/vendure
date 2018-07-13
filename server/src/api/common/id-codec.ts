@@ -1,7 +1,7 @@
 import { ID } from '../../../../shared/shared-types';
 import { VendureEntity } from '../../entity/base/base.entity';
 
-import { EntityIdStrategy } from '../../config/entity-id-strategy';
+import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
 
 /**
  * This service is responsible for encoding/decoding entity IDs according to the configured EntityIdStrategy.

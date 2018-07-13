@@ -3,7 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/common-types';
-import { EntityIdStrategy } from '../config/entity-id-strategy';
+import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strategy';
 import { getConfig, VendureConfig } from '../config/vendure-config';
 import { LanguageCode } from '../locale/language-code';
 

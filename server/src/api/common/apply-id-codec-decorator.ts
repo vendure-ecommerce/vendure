@@ -1,4 +1,3 @@
-import { EntityIdStrategy } from '../../config/entity-id-strategy';
 import { getConfig } from '../../config/vendure-config';
 
 import { IdCodec } from './id-codec';
@@ -14,12 +13,11 @@ export type IdCodecType = { [K in keyof IdCodec]: IdCodec[K] };
  * @param customIdCodec - A custom IdCodec instance, primarily intended for testing.
  */
 export function ApplyIdCodec(transformKeys?: string[], customIdCodec?: IdCodecType) {
-    let strategy: EntityIdStrategy;
     let idCodec: IdCodecType;
 
     return (target: any, name: string | symbol, descriptor: PropertyDescriptor) => {
         if (!customIdCodec) {
-            strategy = getConfig().entityIdStrategy;
+            const strategy = getConfig().entityIdStrategy;
             idCodec = new IdCodec(strategy);
         } else {
             idCodec = customIdCodec;

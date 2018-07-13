@@ -1,4 +1,4 @@
-import { EntityIdStrategy, PrimaryKeyType } from '../config/entity-id-strategy';
+import { EntityIdStrategy, PrimaryKeyType } from '../config/entity-id-strategy/entity-id-strategy';
 import { VendureEntity } from '../entity/base/base.entity';
 import { MockClass } from '../testing/testing-types';
 
