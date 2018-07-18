@@ -118,9 +118,9 @@ export interface UpdateProduct_updateProduct_variants {
     __typename: 'ProductVariant';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    price: number | null;
-    sku: string | null;
+    name: string;
+    price: number;
+    sku: string;
     image: string | null;
     options: UpdateProduct_updateProduct_variants_options[];
     translations: UpdateProduct_updateProduct_variants_translations[];
@@ -130,10 +130,10 @@ export interface UpdateProduct_updateProduct {
     __typename: 'Product';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    slug: string | null;
-    image: string | null;
-    description: string | null;
+    name: string;
+    slug: string;
+    image: string;
+    description: string;
     translations: UpdateProduct_updateProduct_translations[];
     optionGroups: UpdateProduct_updateProduct_optionGroups[];
     variants: UpdateProduct_updateProduct_variants[];
@@ -145,6 +145,36 @@ export interface UpdateProduct {
 
 export interface UpdateProductVariables {
     input: UpdateProductInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateProductVariants
+// ====================================================
+
+export interface UpdateProductVariants_updateProductVariants_translations {
+    __typename: 'ProductVariantTranslation';
+    id: string;
+    name: string;
+}
+
+export interface UpdateProductVariants_updateProductVariants {
+    __typename: 'ProductVariant';
+    id: string;
+    name: string;
+    price: number;
+    sku: string;
+    translations: UpdateProductVariants_updateProductVariants_translations[];
+}
+
+export interface UpdateProductVariants {
+    updateProductVariants: (UpdateProductVariants_updateProductVariants | null)[]; // Update existing ProductVariants
+}
+
+export interface UpdateProductVariantsVariables {
+    input: UpdateProductVariantInput[];
 }
 
 /* tslint:disable */
@@ -352,9 +382,9 @@ export interface GetProductWithVariants_product_variants {
     __typename: 'ProductVariant';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    price: number | null;
-    sku: string | null;
+    name: string;
+    price: number;
+    sku: string;
     image: string | null;
     options: GetProductWithVariants_product_variants_options[];
     translations: GetProductWithVariants_product_variants_translations[];
@@ -364,10 +394,10 @@ export interface GetProductWithVariants_product {
     __typename: 'Product';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    slug: string | null;
-    image: string | null;
-    description: string | null;
+    name: string;
+    slug: string;
+    image: string;
+    description: string;
     translations: GetProductWithVariants_product_translations[];
     optionGroups: GetProductWithVariants_product_optionGroups[];
     variants: GetProductWithVariants_product_variants[];
@@ -393,9 +423,9 @@ export interface GetProductList_products_items {
     __typename: 'Product';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    slug: string | null;
-    description: string | null;
+    name: string;
+    slug: string;
+    description: string;
 }
 
 export interface GetProductList_products {
@@ -489,9 +519,9 @@ export interface ProductWithVariants_variants {
     __typename: 'ProductVariant';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    price: number | null;
-    sku: string | null;
+    name: string;
+    price: number;
+    sku: string;
     image: string | null;
     options: ProductWithVariants_variants_options[];
     translations: ProductWithVariants_variants_translations[];
@@ -501,10 +531,10 @@ export interface ProductWithVariants {
     __typename: 'Product';
     id: string;
     languageCode: LanguageCode;
-    name: string | null;
-    slug: string | null;
-    image: string | null;
-    description: string | null;
+    name: string;
+    slug: string;
+    image: string;
+    description: string;
     translations: ProductWithVariants_translations[];
     optionGroups: ProductWithVariants_optionGroups[];
     variants: ProductWithVariants_variants[];
@@ -755,6 +785,22 @@ export interface ProductTranslationInput {
     name: string;
     slug?: string | null;
     description?: string | null;
+}
+
+//
+export interface UpdateProductVariantInput {
+    id: string;
+    translations: ProductVariantTranslationInput[];
+    sku: string;
+    image?: string | null;
+    price: number;
+}
+
+//
+export interface ProductVariantTranslationInput {
+    id?: string | null;
+    languageCode: LanguageCode;
+    name: string;
 }
 
 //

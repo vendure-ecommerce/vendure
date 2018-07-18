@@ -17,7 +17,7 @@
             type="submit"
             [disabled]="productForm.invalid || productForm.pristine">{{ 'common.update' | translate }}</button>
 
-    <section class="form-block">
+    <section class="form-block" formGroupName="product">
         <label>{{ 'catalog.product' | translate }}</label>
         <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
             <input id="name" type="text" formControlName="name">
@@ -60,6 +60,36 @@
 
     <section class="form-block">
         <label>{{ 'catalog.product-variants' | translate }}</label>
+
+        <table class="variants-list table" formArrayName="variants">
+            <thead>
+            <tr>
+                <th>{{ 'catalog.product-variant-table-sku' | translate }}</th>
+                <th>{{ 'catalog.product-variant-table-name' | translate }}</th>
+                <th>{{ 'catalog.product-variant-table-options' | translate }}</th>
+                <th>{{ 'catalog.product-variant-table-price' | translate }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="variant"
+                *ngFor="let variant of variants$ | async; let i = index"
+                [formGroupName]="i">
+                <td>
+                    <input type="text" formControlName="sku">
+                </td>
+                <td>
+                    <input type="text" formControlName="name">
+                </td>
+                <td>
+                    <div *ngFor="let option of variant.options">{{ option.name }}</div>
+                </td>
+                <td>
+                    <input type="number" min="0" formControlName="price">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
     </section>
 
 </form>

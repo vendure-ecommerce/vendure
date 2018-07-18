@@ -1,14 +1,21 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable, Subject } from 'rxjs';
+import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
+import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
-import { GetProductWithVariants_product, LanguageCode } from '../../../data/types/gql-generated-types';
+import {
+    GetProductWithVariants_product,
+    GetProductWithVariants_product_variants,
+    LanguageCode,
+} from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ProductUpdaterService } from '../../providers/product-updater/product-updater.service';
 import { CreateOptionGroupDialogComponent } from '../create-option-group-dialog/create-option-group-dialog.component';
 import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/select-option-group-dialog.component';
 
@@ -19,6 +26,7 @@ import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/
 })
 export class ProductDetailComponent implements OnDestroy {
     product$: Observable<GetProductWithVariants_product>;
+    variants$: Observable<GetProductWithVariants_product_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
     productForm: FormGroup;
@@ -30,12 +38,18 @@ export class ProductDetailComponent implements OnDestroy {
         private route: ActivatedRoute,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
+        private notificationService: NotificationService,
+        private productUpdaterService: ProductUpdaterService,
     ) {
         this.product$ = this.route.snapshot.data.product;
+        this.variants$ = this.product$.pipe(map(product => product.variants));
         this.productForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            slug: '',
-            description: '',
+            product: this.formBuilder.group({
+                name: ['', Validators.required],
+                slug: '',
+                description: '',
+            }),
+            variants: this.formBuilder.array([]),
         });
 
         this.languageCode$ = this.route.queryParamMap.pipe(
@@ -50,10 +64,32 @@ export class ProductDetailComponent implements OnDestroy {
             .subscribe(([product, languageCode]) => {
                 const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
                 if (currentTranslation) {
-                    this.productForm.setValue({
-                        name: currentTranslation.name,
-                        slug: currentTranslation.slug,
-                        description: currentTranslation.description,
+                    this.productForm.patchValue({
+                        product: {
+                            name: currentTranslation.name,
+                            slug: currentTranslation.slug,
+                            description: currentTranslation.description,
+                        },
+                    });
+
+                    const variantsFormArray = this.productForm.get('variants') as FormArray;
+                    product.variants.forEach((variant, i) => {
+                        const variantTranslation = variant.translations.find(
+                            t => t.languageCode === languageCode,
+                        );
+
+                        const group = {
+                            sku: variant.sku,
+                            name: variantTranslation ? variantTranslation.name : '',
+                            price: variant.price,
+                        };
+
+                        const existing = variantsFormArray.at(i);
+                        if (existing) {
+                            existing.setValue(group);
+                        } else {
+                            variantsFormArray.insert(i, this.formBuilder.group(group));
+                        }
                     });
                 }
             });
@@ -141,19 +177,45 @@ export class ProductDetailComponent implements OnDestroy {
 
     save() {
         combineLatest(this.product$, this.languageCode$)
-            .pipe(take(1))
-            .subscribe(([product, languageCode]) => {
-                const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
-                if (!currentTranslation) {
-                    return;
-                }
-                const index = product.translations.indexOf(currentTranslation);
-                const newTranslation = Object.assign({}, currentTranslation, this.productForm.value);
-                const newProduct = { ...product, ...{ translations: product.translations.slice() } };
-                newProduct.translations.splice(index, 1, newTranslation);
-                this.dataService.product.updateProduct(newProduct).subscribe();
-                this.productForm.markAsPristine();
-            });
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) => {
+                    const productGroup = this.productForm.get('product');
+                    const updateOperations: Array<Observable<any>> = [];
+
+                    if (productGroup && productGroup.dirty) {
+                        const newProduct = this.productUpdaterService.getUpdatedProduct(
+                            product,
+                            productGroup.value,
+                            languageCode,
+                        );
+                        if (newProduct) {
+                            updateOperations.push(this.dataService.product.updateProduct(newProduct));
+                        }
+                    }
+                    const variantsArray = this.productForm.get('variants');
+                    if (variantsArray && variantsArray.dirty) {
+                        const newVariants = this.productUpdaterService.getUpdatedProductVariants(
+                            product.variants,
+                            variantsArray.value,
+                            languageCode,
+                        );
+                        updateOperations.push(this.dataService.product.updateProductVariants(newVariants));
+                    }
+
+                    return forkJoin(updateOperations);
+                }),
+            )
+            .subscribe(
+                () => {
+                    this.productForm.markAsPristine();
+                    this.productForm.markAsPristine();
+                    this.notificationService.success(_('catalog.notify-update-product-success'));
+                },
+                err => {
+                    this.notificationService.success(_('catalog.notify-update-product-error'));
+                },
+            );
     }
 
     private setQueryParam(key: string, value: any) {

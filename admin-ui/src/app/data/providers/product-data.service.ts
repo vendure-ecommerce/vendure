@@ -6,6 +6,7 @@ import {
     CREATE_PRODUCT_OPTION_GROUP,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
 } from '../mutations/product-mutations';
 import {
     GET_PRODUCT_LIST,
@@ -29,6 +30,9 @@ import {
     UpdateProduct,
     UpdateProductInput,
     UpdateProductVariables,
+    UpdateProductVariantInput,
+    UpdateProductVariants,
+    UpdateProductVariantsVariables,
 } from '../types/gql-generated-types';
 import { QueryResult } from '../types/query-result';
 
@@ -64,6 +68,22 @@ export class ProductDataService {
             },
         };
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
+    }
+
+    updateProductVariants(variants: UpdateProductVariantInput[]): Observable<UpdateProductVariants> {
+        const input: UpdateProductVariantsVariables = {
+            input: variants.map(v => ({
+                id: v.id,
+                translations: v.translations,
+                sku: v.sku,
+                image: v.image,
+                price: v.price,
+            })),
+        };
+        return this.baseDataService.mutate<UpdateProductVariants, UpdateProductVariantsVariables>(
+            UPDATE_PRODUCT_VARIANTS,
+            input,
+        );
     }
 
     createProductOptionGroups(

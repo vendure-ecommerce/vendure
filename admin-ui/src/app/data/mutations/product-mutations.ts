@@ -14,6 +14,21 @@ export const UPDATE_PRODUCT = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const UPDATE_PRODUCT_VARIANTS = gql`
+    mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+        updateProductVariants(input: $input) {
+            id
+            name
+            price
+            sku
+            translations {
+                id
+                name
+            }
+        }
+    }
+`;
+
 export const CREATE_PRODUCT_OPTION_GROUP = gql`
     mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
         createProductOptionGroup(input: $input) {

@@ -23,3 +23,12 @@
     border: none;
     color: $color-warning;
 }
+
+.variants-list {
+
+    .variant {
+        input {
+            width: 100%;
+        }
+    }
+}

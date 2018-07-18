@@ -8,6 +8,7 @@ import { CreateOptionGroupDialogComponent } from './components/create-option-gro
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { SelectOptionGroupDialogComponent } from './components/select-option-group-dialog/select-option-group-dialog.component';
+import { ProductUpdaterService } from './providers/product-updater/product-updater.service';
 import { ProductResolver } from './providers/routing/product-resolver';
 
 @NgModule({
@@ -20,6 +21,6 @@ import { ProductResolver } from './providers/routing/product-resolver';
         SelectOptionGroupDialogComponent,
     ],
     entryComponents: [CreateOptionGroupDialogComponent, SelectOptionGroupDialogComponent],
-    providers: [ProductResolver],
+    providers: [ProductResolver, ProductUpdaterService],
 })
 export class CatalogModule {}
