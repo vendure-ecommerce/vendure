@@ -6,6 +6,7 @@ import { ID, PaginatedList } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
+import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
@@ -90,6 +91,19 @@ export class ProductService {
         await this.connection.manager.save(product);
 
         return assertFound(this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE));
+    }
+
+    async updateProductVariants(updateProductVariants: any[]): Promise<Array<Translated<ProductVariant>>> {
+        for (const variant of updateProductVariants) {
+            await this.connection.getRepository(ProductVariant).update(variant.id, variant);
+        }
+
+        return await this.connection
+            .getRepository(ProductVariant)
+            .findByIds(updateProductVariants.map(v => v.id))
+            .then(variants => {
+                return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
+            });
     }
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Translated<Product>> {

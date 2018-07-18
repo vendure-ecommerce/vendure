@@ -12,6 +12,8 @@ type Mutation {
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
     "Remove an OptionGroup from a Product"
     removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
+    "Update existing ProductVariants"
+    updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
 }
 
 type ProductList implements PaginatedList {

@@ -1,6 +1,7 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { PaginatedList } from '../../../../shared/shared-types';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { Translated } from '../../locale/locale-types';
 import { ProductVariantService } from '../../service/product-variant.service';
@@ -60,5 +61,11 @@ export class ProductResolver {
     async removeOptionGroupFromProduct(_, args): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(productId, optionGroupId);
+    }
+
+    @Mutation()
+    @ApplyIdCodec()
+    async updateProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
+        return this.productService.updateProductVariants(args.input);
     }
 }

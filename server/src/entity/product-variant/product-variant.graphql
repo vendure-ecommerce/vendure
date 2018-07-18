@@ -1,10 +1,10 @@
 type ProductVariant implements Node {
     id: ID!
     languageCode: LanguageCode!
-    sku: String
-    name: String
+    sku: String!
+    name: String!
     image: String
-    price: Int
+    price: Int!
     options: [ProductOption!]!
     translations: [ProductVariantTranslation!]!
 }
@@ -15,15 +15,24 @@ type ProductVariantTranslation {
     name: String!
 }
 
-input CreateProductVariantTranslation {
+input ProductVariantTranslationInput {
+    id: ID
     languageCode: LanguageCode!
     name: String!
 }
 
 input CreateProductVariantInput {
-    translations: [CreateProductVariantTranslation]!
+    translations: [ProductVariantTranslationInput!]!
     sku: String!
     image: String
     price: Int!
     optionCodes: [String]
+}
+
+input UpdateProductVariantInput {
+    id: ID!
+    translations: [ProductVariantTranslationInput!]!
+    sku: String!
+    image: String
+    price: Int!
 }

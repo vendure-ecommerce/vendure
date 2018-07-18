@@ -1,10 +1,10 @@
 type Product implements Node {
     id: ID!
     languageCode: LanguageCode!
-    name: String
-    slug: String
-    description: String
-    image: String
+    name: String!
+    slug: String!
+    description: String!
+    image: String!
     variants: [ProductVariant!]!
     optionGroups: [ProductOptionGroup!]!
     translations: [ProductTranslation!]!
