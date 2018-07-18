@@ -31,15 +31,7 @@ export class ProductResolver {
     @ApplyIdCodec()
     async createProduct(_, args): Promise<Translated<Product>> {
         const { input } = args;
-        const product = await this.productService.create(input);
-
-        if (input.variants && input.variants.length) {
-            for (const variant of input.variants) {
-                await this.productVariantService.create(product, variant);
-            }
-        }
-
-        return product;
+        return this.productService.create(input);
     }
 
     @Mutation()
@@ -61,6 +53,13 @@ export class ProductResolver {
     async removeOptionGroupFromProduct(_, args): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(productId, optionGroupId);
+    }
+
+    @Mutation()
+    @ApplyIdCodec()
+    async generateVariantsForProduct(_, args): Promise<Array<Translated<ProductVariant>>> {
+        const { productId } = args;
+        return this.productVariantService.generateVariantsForProduct(productId);
     }
 
     @Mutation()

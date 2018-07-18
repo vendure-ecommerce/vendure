@@ -56,7 +56,7 @@ export class ProductService {
     }
 
     async create(createProductDto: CreateProductDto): Promise<Translated<Product>> {
-        const { variants, optionGroupCodes, image, translations } = createProductDto;
+        const { optionGroupCodes, image, translations } = createProductDto;
         const product = new Product(createProductDto);
         const productTranslations: ProductTranslation[] = [];
 

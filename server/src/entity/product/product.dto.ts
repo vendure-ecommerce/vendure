@@ -6,7 +6,6 @@ import { Product } from './product.entity';
 export interface CreateProductDto extends TranslatedInput<Product> {
     image?: string;
     optionGroupCodes?: [string];
-    variants?: CreateProductVariantDto[];
 }
 
 export interface UpdateProductDto extends TranslatedInput<Product> {

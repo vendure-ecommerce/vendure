@@ -1,6 +1,7 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
 
+import { ID } from '../../shared/shared-types';
 import { PasswordService } from '../src/auth/password.service';
 import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
@@ -159,17 +160,17 @@ export class MockDataClientService {
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
                     ),
-                    variants: [
-                        this.makeProductVariant(`${name} Variant 1`, languageCodes),
-                        this.makeProductVariant(`${name} Variant 2`, languageCodes),
-                    ],
                 } as CreateProductDto,
             };
 
-            await request(this.apiUrl, query, variables).then(
-                data => console.log('Created Product:', data),
+            const product = await request<any>(this.apiUrl, query, variables).then(
+                data => {
+                    console.log('Created Product:', data);
+                    return data;
+                },
                 err => console.log(err),
             );
+            await this.makeProductVariant(product.createProduct.id);
         }
     }
 
@@ -187,15 +188,20 @@ export class MockDataClientService {
         };
     }
 
-    private makeProductVariant(variantName: string, languageCodes: LanguageCode[]): CreateProductVariantDto {
-        return {
-            price: faker.random.number({ min: 100, max: 5000 }),
-            optionCodes: ['small'],
-            sku: faker.random.alphaNumeric(8).toUpperCase(),
-            translations: languageCodes.map(code => ({
-                languageCode: code,
-                name: `${variantName} ${code}`,
-            })),
-        };
+    private async makeProductVariant(productId: ID): Promise<any> {
+        console.log('generating variants for', productId);
+        const query = `mutation GenerateVariants($productId: ID!) {
+            generateVariantsForProduct(productId: $productId) {
+                id
+                name
+            }
+         }`;
+        await request(this.apiUrl, query, { productId }).then(
+            data => {
+                console.log('Created Variants:', data);
+                return data;
+            },
+            err => console.log(err),
+        );
     }
 }

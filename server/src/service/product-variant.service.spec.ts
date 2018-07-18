@@ -1,6 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { Connection } from 'typeorm';
 
+import { DeepPartial } from '../../../shared/shared-types';
+import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
@@ -98,6 +100,120 @@ describe('ProductVariantService', () => {
 
             const savedProductVariant = connection.manager.save.mock.calls[1][0];
             expect(savedProductVariant.options).toEqual([mockOptions[1]]);
+        });
+    });
+
+    describe('generateVariantsForProduct()', () => {
+        const mockSizeOptions: Array<DeepPartial<ProductOption>> = [
+            { code: 'small', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Small' }] },
+            { code: 'medium', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Medium' }] },
+            { code: 'large', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Large' }] },
+        ];
+
+        const mockColorOptions: Array<DeepPartial<ProductOption>> = [
+            { code: 'red', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Red' }] },
+            { code: 'green', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Green' }] },
+            { code: 'blue', translations: [{ languageCode: DEFAULT_LANGUAGE_CODE, name: 'Blue' }] },
+        ];
+
+        it('generates default variant for a product with no optionGroup', async () => {
+            const mockProduct: DeepPartial<Product> = {
+                id: 123,
+                translations: [
+                    {
+                        languageCode: DEFAULT_LANGUAGE_CODE,
+                        name: 'Mock Product',
+                    },
+                ],
+                optionGroups: [],
+            };
+            const productVariantRepository = connection
+                .registerMockRepository(Product)
+                .findOne.mockReturnValue(mockProduct);
+            const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
+            await productVariantService.generateVariantsForProduct(123);
+
+            const saveCalls = mockCreate.mock.calls;
+            expect(saveCalls.length).toBe(1);
+            expect(saveCalls[0][0]).toBe(mockProduct);
+            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product');
+            expect(saveCalls[0][1].optionCodes).toEqual([]);
+        });
+
+        it('generates variants for a product with a single optionGroup', async () => {
+            const mockProduct: DeepPartial<Product> = {
+                id: 123,
+                translations: [
+                    {
+                        languageCode: DEFAULT_LANGUAGE_CODE,
+                        name: 'Mock Product',
+                    },
+                ],
+                optionGroups: [
+                    {
+                        name: 'Size',
+                        code: 'size',
+                        options: mockSizeOptions,
+                    },
+                ],
+            };
+            const productVariantRepository = connection
+                .registerMockRepository(Product)
+                .findOne.mockReturnValue(mockProduct);
+            const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
+            await productVariantService.generateVariantsForProduct(123);
+
+            const saveCalls = mockCreate.mock.calls;
+            expect(saveCalls.length).toBe(3);
+            expect(saveCalls[0][0]).toBe(mockProduct);
+            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product Small');
+            expect(saveCalls[0][1].optionCodes).toEqual(['small']);
+            expect(saveCalls[1][1].optionCodes).toEqual(['medium']);
+            expect(saveCalls[2][1].optionCodes).toEqual(['large']);
+        });
+
+        it('generates variants for a product multiples optionGroups', async () => {
+            const mockProduct: DeepPartial<Product> = {
+                id: 123,
+                translations: [
+                    {
+                        languageCode: DEFAULT_LANGUAGE_CODE,
+                        name: 'Mock Product',
+                    },
+                ],
+                optionGroups: [
+                    {
+                        name: 'Size',
+                        code: 'size',
+                        options: mockSizeOptions,
+                    },
+                    {
+                        name: 'Color',
+                        code: 'color',
+                        options: mockColorOptions,
+                    },
+                ],
+            };
+            const productVariantRepository = connection
+                .registerMockRepository(Product)
+                .findOne.mockReturnValue(mockProduct);
+            const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
+
+            await productVariantService.generateVariantsForProduct(123);
+
+            const saveCalls = mockCreate.mock.calls;
+            expect(saveCalls.length).toBe(9);
+            expect(saveCalls[0][0]).toBe(mockProduct);
+            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product Small Red');
+            expect(saveCalls[0][1].optionCodes).toEqual(['small', 'red']);
+            expect(saveCalls[1][1].optionCodes).toEqual(['small', 'green']);
+            expect(saveCalls[2][1].optionCodes).toEqual(['small', 'blue']);
+            expect(saveCalls[3][1].optionCodes).toEqual(['medium', 'red']);
+            expect(saveCalls[4][1].optionCodes).toEqual(['medium', 'green']);
+            expect(saveCalls[5][1].optionCodes).toEqual(['medium', 'blue']);
+            expect(saveCalls[6][1].optionCodes).toEqual(['large', 'red']);
+            expect(saveCalls[7][1].optionCodes).toEqual(['large', 'green']);
+            expect(saveCalls[8][1].optionCodes).toEqual(['large', 'blue']);
         });
     });
 });

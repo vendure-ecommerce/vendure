@@ -294,56 +294,6 @@ export interface RemoveOptionGroupFromProductVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetNetworkStatus
-// ====================================================
-
-export interface GetNetworkStatus_networkStatus {
-    __typename: 'NetworkStatus';
-    inFlightRequests: number;
-}
-
-export interface GetNetworkStatus {
-    networkStatus: GetNetworkStatus_networkStatus;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUserStatus
-// ====================================================
-
-export interface GetUserStatus_userStatus {
-    __typename: 'UserStatus';
-    username: string;
-    isLoggedIn: boolean;
-    loginTime: string;
-}
-
-export interface GetUserStatus {
-    userStatus: GetUserStatus_userStatus;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUiState
-// ====================================================
-
-export interface GetUiState_uiState {
-    __typename: 'UiState';
-    language: LanguageCode;
-}
-
-export interface GetUiState {
-    uiState: GetUiState_uiState;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GetProductWithVariants
 // ====================================================
 
@@ -475,6 +425,56 @@ export interface GetProductOptionGroups {
 export interface GetProductOptionGroupsVariables {
     filterTerm?: string | null;
     languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetNetworkStatus
+// ====================================================
+
+export interface GetNetworkStatus_networkStatus {
+    __typename: 'NetworkStatus';
+    inFlightRequests: number;
+}
+
+export interface GetNetworkStatus {
+    networkStatus: GetNetworkStatus_networkStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUserStatus
+// ====================================================
+
+export interface GetUserStatus_userStatus {
+    __typename: 'UserStatus';
+    username: string;
+    isLoggedIn: boolean;
+    loginTime: string;
+}
+
+export interface GetUserStatus {
+    userStatus: GetUserStatus_userStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUiState
+// ====================================================
+
+export interface GetUiState_uiState {
+    __typename: 'UiState';
+    language: LanguageCode;
+}
+
+export interface GetUiState {
+    uiState: GetUiState_uiState;
 }
 
 /* tslint:disable */

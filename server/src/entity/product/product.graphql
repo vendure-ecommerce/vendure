@@ -29,7 +29,6 @@ input ProductTranslationInput {
 input CreateProductInput {
     image: String
     translations: [ProductTranslationInput]!
-    variants: [CreateProductVariantInput]
     optionGroupCodes: [String]
 }
 
