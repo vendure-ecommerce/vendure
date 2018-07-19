@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
@@ -10,13 +10,14 @@ import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import {
-    GetProductWithVariants_product,
     GetProductWithVariants_product_variants,
     LanguageCode,
+    ProductWithVariants,
 } from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ProductUpdaterService } from '../../providers/product-updater/product-updater.service';
 import { CreateOptionGroupDialogComponent } from '../create-option-group-dialog/create-option-group-dialog.component';
+import { ProductVariantsWizardComponent } from '../product-variants-wizard/product-variants-wizard.component';
 import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/select-option-group-dialog.component';
 
 @Component({
@@ -25,12 +26,13 @@ import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/
     styleUrls: ['./product-detail.component.scss'],
 })
 export class ProductDetailComponent implements OnDestroy {
-    product$: Observable<GetProductWithVariants_product>;
+    product$: Observable<ProductWithVariants>;
     variants$: Observable<GetProductWithVariants_product_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
     productForm: FormGroup;
+    @ViewChild('productVariantsWizard') productVariantsWizard: ProductVariantsWizardComponent;
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -110,8 +112,9 @@ export class ProductDetailComponent implements OnDestroy {
             .pipe(
                 take(1),
                 mergeMap(product => {
-                    const nameControl = this.productForm.get('name');
-                    const productName = nameControl ? nameControl.value : '';
+                    const productFormGroup = this.productForm.get('product');
+                    const productNameControl = productFormGroup && productFormGroup.get('name');
+                    const productName = productNameControl ? productNameControl.value : '';
                     return this.modalService
                         .fromComponent(CreateOptionGroupDialogComponent, {
                             closable: true,
@@ -245,6 +248,12 @@ export class ProductDetailComponent implements OnDestroy {
                     this.notificationService.error(_('catalog.notify-update-product-error'));
                 },
             );
+    }
+
+    startProductVariantsWizard() {
+        this.product$.pipe(mergeMap(product => this.productVariantsWizard.start(product))).subscribe(val => {
+            // console.log('finished', val);
+        });
     }
 
     generateProductVariants() {

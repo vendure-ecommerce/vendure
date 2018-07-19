@@ -1,0 +1,24 @@
+<input type="text"
+       class="filter-input"
+       [placeholder]="'catalog.filter-by-group-name' | translate"
+       [formControl]="filterInput">
+<div class="group-list">
+    <div class="group" *ngFor="let group of optionGroups$ | async">
+        <div class="select-button">
+            <button class="btn btn-icon btn-primary"
+                    [disabled]="!isAvailable(group)"
+                    (click)="selectGroup.emit(group)">
+                <clr-icon shape="check"></clr-icon>
+            </button>
+        </div>
+        <div class="name-code">
+            <div class="name">{{ group.name }}</div>
+            <div class="code">{{ group.code }}</div>
+        </div>
+        <div class="options">
+            <div class="option" *ngFor="let option of group.options">
+                {{ option.name }}
+            </div>
+        </div>
+    </div>
+</div>
