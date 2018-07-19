@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { filter, finalize, map, take, tap } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 import { GetProductWithVariants_product } from '../../../data/types/gql-generated-types';
+
 /**
  * Resolves the id from the path into a Customer entity.
  */
@@ -20,7 +22,22 @@ export class ProductResolver implements Resolve<Observable<GetProductWithVariant
     ): Observable<Observable<GetProductWithVariants_product>> {
         const id = route.paramMap.get('id');
 
-        if (id) {
+        if (id === 'create') {
+            return of(
+                of({
+                    __typename: 'Product' as 'Product',
+                    id: '',
+                    languageCode: getDefaultLanguage(),
+                    name: '',
+                    slug: '',
+                    image: '',
+                    description: '',
+                    translations: [],
+                    optionGroups: [],
+                    variants: [],
+                }),
+            );
+        } else if (id) {
             const stream = this.dataService.product
                 .getProduct(id)
                 .mapStream(data => data.product)

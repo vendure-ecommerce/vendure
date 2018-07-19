@@ -24,8 +24,13 @@ export class ProductUpdaterService {
         product: GetProductWithVariants_product,
         formValue: { [key: string]: any },
         languageCode: LanguageCode,
-    ): UpdateProductInput | undefined {
-        return this.createUpdatedTranslatable(product, formValue, languageCode);
+    ): UpdateProductInput {
+        return this.createUpdatedTranslatable(product, formValue, languageCode, {
+            languageCode,
+            name: product.name || '',
+            slug: product.slug || '',
+            description: product.description || '',
+        });
     }
 
     /**
@@ -51,18 +56,21 @@ export class ProductUpdaterService {
         translatable: T,
         updatedFields: { [key: string]: any },
         languageCode: LanguageCode,
-    ): T | undefined {
-        const currentTranslation = translatable.translations.find(t => t.languageCode === languageCode);
-        if (!currentTranslation) {
-            return;
-        }
+        defaultTranslation?: Partial<T['translations'][number]>,
+    ): T {
+        const currentTranslation =
+            translatable.translations.find(t => t.languageCode === languageCode) || defaultTranslation;
         const index = translatable.translations.indexOf(currentTranslation);
         const newTranslation = this.patchObject(currentTranslation, updatedFields);
         const newTranslatable = {
             ...(this.patchObject(translatable, updatedFields) as any),
             ...{ translations: translatable.translations.slice() },
         };
-        newTranslatable.translations.splice(index, 1, newTranslation);
+        if (index !== -1) {
+            newTranslatable.translations.splice(index, 1, newTranslation);
+        } else {
+            newTranslatable.translations.push(newTranslation);
+        }
         return newTranslatable;
     }
 

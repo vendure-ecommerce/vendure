@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, mergeMap, take, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
@@ -29,6 +29,7 @@ export class ProductDetailComponent implements OnDestroy {
     variants$: Observable<GetProductWithVariants_product_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
+    isNew$: Observable<boolean>;
     productForm: FormGroup;
     private destroy$ = new Subject<void>();
 
@@ -41,7 +42,7 @@ export class ProductDetailComponent implements OnDestroy {
         private notificationService: NotificationService,
         private productUpdaterService: ProductUpdaterService,
     ) {
-        this.product$ = this.route.snapshot.data.product;
+        this.product$ = this.route.data.pipe(switchMap(data => data.product));
         this.variants$ = this.product$.pipe(map(product => product.variants));
         this.productForm = this.formBuilder.group({
             product: this.formBuilder.group({
@@ -51,7 +52,7 @@ export class ProductDetailComponent implements OnDestroy {
             }),
             variants: this.formBuilder.array([]),
         });
-
+        this.isNew$ = this.product$.pipe(map(product => product.id === ''));
         this.languageCode$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('lang')),
             map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
@@ -175,6 +176,35 @@ export class ProductDetailComponent implements OnDestroy {
             .subscribe();
     }
 
+    create() {
+        const productGroup = this.productForm.get('product');
+        if (!productGroup || !productGroup.dirty) {
+            return;
+        }
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) => {
+                    const newProduct = this.productUpdaterService.getUpdatedProduct(
+                        product,
+                        productGroup.value,
+                        languageCode,
+                    );
+                    return this.dataService.product.createProduct(newProduct);
+                }),
+            )
+            .subscribe(
+                data => {
+                    this.notificationService.success(_('catalog.notify-create-product-success'));
+                    this.productForm.markAsPristine();
+                    this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
+                },
+                err => {
+                    this.notificationService.error(_('catalog.notify-create-product-error'));
+                },
+            );
+    }
+
     save() {
         combineLatest(this.product$, this.languageCode$)
             .pipe(
@@ -209,13 +239,21 @@ export class ProductDetailComponent implements OnDestroy {
             .subscribe(
                 () => {
                     this.productForm.markAsPristine();
-                    this.productForm.markAsPristine();
                     this.notificationService.success(_('catalog.notify-update-product-success'));
                 },
                 err => {
-                    this.notificationService.success(_('catalog.notify-update-product-error'));
+                    this.notificationService.error(_('catalog.notify-update-product-error'));
                 },
             );
+    }
+
+    generateProductVariants() {
+        this.product$
+            .pipe(
+                take(1),
+                mergeMap(product => this.dataService.product.generateProductVariants(product.id)),
+            )
+            .subscribe();
     }
 
     private setQueryParam(key: string, value: any) {

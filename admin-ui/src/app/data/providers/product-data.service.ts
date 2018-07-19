@@ -3,7 +3,9 @@ import { Observable } from 'rxjs';
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
+    CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
+    GENERATE_PRODUCT_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -16,9 +18,14 @@ import {
 import {
     AddOptionGroupToProduct,
     AddOptionGroupToProductVariables,
+    CreateProduct,
+    CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     CreateProductOptionGroupVariables,
+    CreateProductVariables,
+    GenerateProductVariants,
+    GenerateProductVariantsVariables,
     GetProductList,
     GetProductListVariables,
     GetProductOptionGroups,
@@ -59,6 +66,17 @@ export class ProductDataService {
         );
     }
 
+    createProduct(product: CreateProductInput): Observable<CreateProduct> {
+        const input: CreateProductVariables = {
+            input: {
+                image: product.image,
+                translations: product.translations,
+                optionGroupCodes: product.optionGroupCodes,
+            },
+        };
+        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, input);
+    }
+
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
         const input: UpdateProductVariables = {
             input: {
@@ -68,6 +86,13 @@ export class ProductDataService {
             },
         };
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
+    }
+
+    generateProductVariants(productId: string): Observable<GenerateProductVariants> {
+        return this.baseDataService.mutate<GenerateProductVariants, GenerateProductVariantsVariables>(
+            GENERATE_PRODUCT_VARIANTS,
+            { productId },
+        );
     }
 
     updateProductVariants(variants: UpdateProductVariantInput[]): Observable<UpdateProductVariants> {

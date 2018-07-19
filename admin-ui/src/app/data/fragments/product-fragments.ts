@@ -1,5 +1,27 @@
 import gql from 'graphql-tag';
 
+export const PRODUCT_VARIANT_FRAGMENT = gql`
+    fragment ProductVariant on ProductVariant {
+        id
+        languageCode
+        name
+        price
+        sku
+        image
+        options {
+            id
+            code
+            languageCode
+            name
+        }
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
 export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
     fragment ProductWithVariants on Product {
         id
@@ -21,25 +43,10 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             name
         }
         variants {
-            id
-            languageCode
-            name
-            price
-            sku
-            image
-            options {
-                id
-                code
-                languageCode
-                name
-            }
-            translations {
-                id
-                languageCode
-                name
-            }
+            ...ProductVariant
         }
     }
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`

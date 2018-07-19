@@ -151,21 +151,175 @@ export interface UpdateProductVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CreateProduct
+// ====================================================
+
+export interface CreateProduct_createProduct_translations {
+    __typename: 'ProductTranslation';
+    languageCode: LanguageCode;
+    name: string;
+    slug: string;
+    description: string | null;
+}
+
+export interface CreateProduct_createProduct_optionGroups {
+    __typename: 'ProductOptionGroup';
+    id: string;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
+}
+
+export interface CreateProduct_createProduct_variants_options {
+    __typename: 'ProductOption';
+    id: string;
+    code: string | null;
+    languageCode: LanguageCode | null;
+    name: string | null;
+}
+
+export interface CreateProduct_createProduct_variants_translations {
+    __typename: 'ProductVariantTranslation';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+}
+
+export interface CreateProduct_createProduct_variants {
+    __typename: 'ProductVariant';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+    price: number;
+    sku: string;
+    image: string | null;
+    options: CreateProduct_createProduct_variants_options[];
+    translations: CreateProduct_createProduct_variants_translations[];
+}
+
+export interface CreateProduct_createProduct {
+    __typename: 'Product';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+    slug: string;
+    image: string;
+    description: string;
+    translations: CreateProduct_createProduct_translations[];
+    optionGroups: CreateProduct_createProduct_optionGroups[];
+    variants: CreateProduct_createProduct_variants[];
+}
+
+export interface CreateProduct {
+    createProduct: CreateProduct_createProduct; // Create a new Product
+}
+
+export interface CreateProductVariables {
+    input: CreateProductInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: GenerateProductVariants
+// ====================================================
+
+export interface GenerateProductVariants_generateVariantsForProduct_translations {
+    __typename: 'ProductTranslation';
+    languageCode: LanguageCode;
+    name: string;
+    slug: string;
+    description: string | null;
+}
+
+export interface GenerateProductVariants_generateVariantsForProduct_optionGroups {
+    __typename: 'ProductOptionGroup';
+    id: string;
+    languageCode: LanguageCode;
+    code: string;
+    name: string;
+}
+
+export interface GenerateProductVariants_generateVariantsForProduct_variants_options {
+    __typename: 'ProductOption';
+    id: string;
+    code: string | null;
+    languageCode: LanguageCode | null;
+    name: string | null;
+}
+
+export interface GenerateProductVariants_generateVariantsForProduct_variants_translations {
+    __typename: 'ProductVariantTranslation';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+}
+
+export interface GenerateProductVariants_generateVariantsForProduct_variants {
+    __typename: 'ProductVariant';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+    price: number;
+    sku: string;
+    image: string | null;
+    options: GenerateProductVariants_generateVariantsForProduct_variants_options[];
+    translations: GenerateProductVariants_generateVariantsForProduct_variants_translations[];
+}
+
+export interface GenerateProductVariants_generateVariantsForProduct {
+    __typename: 'Product';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+    slug: string;
+    image: string;
+    description: string;
+    translations: GenerateProductVariants_generateVariantsForProduct_translations[];
+    optionGroups: GenerateProductVariants_generateVariantsForProduct_optionGroups[];
+    variants: GenerateProductVariants_generateVariantsForProduct_variants[];
+}
+
+export interface GenerateProductVariants {
+    generateVariantsForProduct: GenerateProductVariants_generateVariantsForProduct; // Create a set of ProductVariants based on the OptionGroups assigned to the given Product
+}
+
+export interface GenerateProductVariantsVariables {
+    productId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UpdateProductVariants
 // ====================================================
+
+export interface UpdateProductVariants_updateProductVariants_options {
+    __typename: 'ProductOption';
+    id: string;
+    code: string | null;
+    languageCode: LanguageCode | null;
+    name: string | null;
+}
 
 export interface UpdateProductVariants_updateProductVariants_translations {
     __typename: 'ProductVariantTranslation';
     id: string;
+    languageCode: LanguageCode;
     name: string;
 }
 
 export interface UpdateProductVariants_updateProductVariants {
     __typename: 'ProductVariant';
     id: string;
+    languageCode: LanguageCode;
     name: string;
     price: number;
     sku: string;
+    image: string | null;
+    options: UpdateProductVariants_updateProductVariants_options[];
     translations: UpdateProductVariants_updateProductVariants_translations[];
 }
 
@@ -288,6 +442,56 @@ export interface RemoveOptionGroupFromProduct {
 export interface RemoveOptionGroupFromProductVariables {
     productId: string;
     optionGroupId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetNetworkStatus
+// ====================================================
+
+export interface GetNetworkStatus_networkStatus {
+    __typename: 'NetworkStatus';
+    inFlightRequests: number;
+}
+
+export interface GetNetworkStatus {
+    networkStatus: GetNetworkStatus_networkStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUserStatus
+// ====================================================
+
+export interface GetUserStatus_userStatus {
+    __typename: 'UserStatus';
+    username: string;
+    isLoggedIn: boolean;
+    loginTime: string;
+}
+
+export interface GetUserStatus {
+    userStatus: GetUserStatus_userStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUiState
+// ====================================================
+
+export interface GetUiState_uiState {
+    __typename: 'UiState';
+    language: LanguageCode;
+}
+
+export interface GetUiState {
+    uiState: GetUiState_uiState;
 }
 
 /* tslint:disable */
@@ -431,50 +635,34 @@ export interface GetProductOptionGroupsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetNetworkStatus
+// GraphQL fragment: ProductVariant
 // ====================================================
 
-export interface GetNetworkStatus_networkStatus {
-    __typename: 'NetworkStatus';
-    inFlightRequests: number;
+export interface ProductVariant_options {
+    __typename: 'ProductOption';
+    id: string;
+    code: string | null;
+    languageCode: LanguageCode | null;
+    name: string | null;
 }
 
-export interface GetNetworkStatus {
-    networkStatus: GetNetworkStatus_networkStatus;
+export interface ProductVariant_translations {
+    __typename: 'ProductVariantTranslation';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
 }
 
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUserStatus
-// ====================================================
-
-export interface GetUserStatus_userStatus {
-    __typename: 'UserStatus';
-    username: string;
-    isLoggedIn: boolean;
-    loginTime: string;
-}
-
-export interface GetUserStatus {
-    userStatus: GetUserStatus_userStatus;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUiState
-// ====================================================
-
-export interface GetUiState_uiState {
-    __typename: 'UiState';
-    language: LanguageCode;
-}
-
-export interface GetUiState {
-    uiState: GetUiState_uiState;
+export interface ProductVariant {
+    __typename: 'ProductVariant';
+    id: string;
+    languageCode: LanguageCode;
+    name: string;
+    price: number;
+    sku: string;
+    image: string | null;
+    options: ProductVariant_options[];
+    translations: ProductVariant_translations[];
 }
 
 /* tslint:disable */
@@ -785,6 +973,13 @@ export interface ProductTranslationInput {
     name: string;
     slug?: string | null;
     description?: string | null;
+}
+
+//
+export interface CreateProductInput {
+    image?: string | null;
+    translations: (ProductTranslationInput | null)[];
+    optionGroupCodes?: (string | null)[] | null;
 }
 
 //

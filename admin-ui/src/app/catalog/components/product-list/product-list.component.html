@@ -1,3 +1,12 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'catalog.create-new-product' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
 <vdr-data-table [items]="products$ | async"
                 [itemsPerPage]="itemsPerPage$ | async"
                 [totalItems]="totalItems$ | async"

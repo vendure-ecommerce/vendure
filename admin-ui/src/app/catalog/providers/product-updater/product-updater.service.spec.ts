@@ -59,13 +59,18 @@ describe('ProductUpdaterService', () => {
             expect(result).not.toBe(product);
         });
 
-        it('returns undefined if the specified translation does not exist', () => {
+        it('creates new translation if the specified translation does not exist', () => {
             const formValue = {
-                name: 'New Name EN',
+                name: 'New Name AA',
             };
             const result = productUpdaterService.getUpdatedProduct(product, formValue, LanguageCode.aa);
 
-            expect(result).toBe(undefined);
+            expect(result.translations[2]).toEqual({
+                languageCode: LanguageCode.aa,
+                name: 'New Name AA',
+                description: '',
+                slug: '',
+            });
         });
 
         it('updates the non-translatable properties', () => {
