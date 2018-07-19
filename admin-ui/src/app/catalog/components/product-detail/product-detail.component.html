@@ -1,22 +1,31 @@
-<clr-dropdown>
-    <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-        <clr-icon shape="world"></clr-icon>
-        {{ 'common.language' | translate }}: {{ languageCode$ | async | uppercase }}
-        <clr-icon shape="caret down"></clr-icon>
-    </button>
-    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-        <button type="button"
-                *ngFor="let code of availableLanguages$ | async"
-                (click)="setLanguage(code)"
-                clrDropdownItem>{{ code }}</button>
-    </clr-dropdown-menu>
-</clr-dropdown>
+<vdr-action-bar>
+    <vdr-ab-left>
+        <clr-dropdown>
+            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+                <clr-icon shape="world"></clr-icon>
+                {{ 'common.language' | translate }}: {{ languageCode$ | async | uppercase }}
+                <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+                <button type="button"
+                        *ngFor="let code of availableLanguages$ | async"
+                        (click)="setLanguage(code)"
+                        clrDropdownItem>{{ code }}</button>
+            </clr-dropdown-menu>
+        </clr-dropdown>
+    </vdr-ab-left>
 
-<form class="form" [formGroup]="productForm" (ngSubmit)="save()">
-    <button class="btn btn-primary"
-            type="submit"
-            [disabled]="productForm.invalid || productForm.pristine">{{ 'common.update' | translate }}</button>
 
+    <vdr-ab-right>
+        <button class="btn btn-primary"
+                (click)="save()"
+                [disabled]="productForm.invalid || productForm.pristine">{{ 'common.update' | translate }}</button>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+
+
+<form class="form" [formGroup]="productForm" >
     <section class="form-block" formGroupName="product">
         <label>{{ 'catalog.product' | translate }}</label>
         <vdr-form-field [label]="'catalog.product-name' | translate" for="name">

@@ -6,6 +6,11 @@ import { ClarityModule } from '@clr/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 
+import {
+    ActionBarComponent,
+    ActionBarLeftComponent,
+    ActionBarRightComponent,
+} from './components/action-bar/action-bar.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
@@ -30,6 +35,9 @@ const IMPORTS = [
 ];
 
 const DECLARATIONS = [
+    ActionBarComponent,
+    ActionBarLeftComponent,
+    ActionBarRightComponent,
     DataTableComponent,
     DataTableColumnComponent,
     PaginationControlsComponent,
