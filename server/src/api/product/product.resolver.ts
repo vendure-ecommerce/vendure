@@ -1,6 +1,8 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { PaginatedList } from '../../../../shared/shared-types';
+import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { Translated } from '../../locale/locale-types';
@@ -57,9 +59,10 @@ export class ProductResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async generateVariantsForProduct(_, args): Promise<Array<Translated<ProductVariant>>> {
+    async generateVariantsForProduct(_, args): Promise<Translated<Product>> {
         const { productId } = args;
-        return this.productVariantService.generateVariantsForProduct(productId);
+        await this.productVariantService.generateVariantsForProduct(productId);
+        return assertFound(this.productService.findOne(productId, DEFAULT_LANGUAGE_CODE));
     }
 
     @Mutation()
