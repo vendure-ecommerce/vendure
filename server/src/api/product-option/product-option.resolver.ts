@@ -44,7 +44,8 @@ export class ProductOptionResolver {
 
         if (input.options && input.options.length) {
             for (const option of input.options) {
-                await this.productOptionService.create(group, option);
+                const newOption = await this.productOptionService.create(group, option);
+                group.options.push(newOption);
             }
         }
         return group;

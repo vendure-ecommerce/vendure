@@ -100,7 +100,7 @@ export class ProductService {
 
         return await this.connection
             .getRepository(ProductVariant)
-            .findByIds(updateProductVariants.map(v => v.id))
+            .findByIds(updateProductVariants.map(v => v.id), { relations: ['options'] })
             .then(variants => {
                 return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
             });
