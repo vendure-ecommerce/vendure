@@ -2,6 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
+import { TestingCommonModule } from '../../../../testing/testing-common.module';
 import { NotificationComponent } from '../../components/notification/notification.component';
 import { OverlayHostComponent } from '../../components/overlay-host/overlay-host.component';
 import { OverlayHostService } from '../overlay-host/overlay-host.service';
@@ -11,6 +12,7 @@ import { NotificationService } from './notification.service';
 describe('NotificationService:', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
+            imports: [TestingCommonModule],
             declarations: [NotificationComponent, OverlayHostComponent, TestComponent],
             providers: [NotificationService, OverlayHostService],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
