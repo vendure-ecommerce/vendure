@@ -3,6 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
+import { generateAllCombinations } from '../../../shared/shared-utils';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
@@ -60,7 +61,7 @@ export class ProductVariantService {
 
         const productName = defaultTranslation ? defaultTranslation.name : `product_${productId}`;
         const optionCombinations = product.optionGroups.length
-            ? this.optionCombinations(product.optionGroups.map(g => g.options))
+            ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
         const createVariants = optionCombinations.map(options => {
             const name = this.createVariantName(productName, options);
@@ -93,35 +94,5 @@ export class ProductVariantService {
             .join(' ');
 
         return options.length ? `${productName} ${optionsSuffix}` : productName;
-    }
-
-    /**
-     * Given an array of option arrays `[['red, 'blue'], ['small', 'large']]`, this method returns a new array
-     * containing all the combinations of those options:
-     *
-     * [
-     *  ['red', 'small'],
-     *  ['red', 'large'],
-     *  ['blue', 'small'],
-     *  ['blue', 'large'],
-     * ]
-     */
-    private optionCombinations<T>(
-        optionGroups: T[][],
-        combination: T[] = [],
-        k: number = 0,
-        output: T[][] = [],
-    ): T[][] {
-        if (k === optionGroups.length) {
-            output.push(combination);
-            return [];
-        } else {
-            // tslint:disable:prefer-for-of
-            for (let i = 0; i < optionGroups[k].length; i++) {
-                this.optionCombinations(optionGroups, combination.concat(optionGroups[k][i]), k + 1, output);
-            }
-            // tslint:enable:prefer-for-of
-            return output;
-        }
     }
 }
