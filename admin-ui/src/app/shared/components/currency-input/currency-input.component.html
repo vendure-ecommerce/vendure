@@ -1,0 +1,10 @@
+<div class="currency-symbol">
+    {{ currencySymbol }}
+</div>
+<input type="number"
+       step="0.01"
+       [value]="_decimalValue"
+       [disabled]="disabled"
+       [readonly]="readonly"
+       (input)="onInput($event.target.value)"
+       (focus)="onTouch()">

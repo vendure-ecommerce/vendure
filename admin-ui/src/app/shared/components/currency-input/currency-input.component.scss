@@ -1,0 +1,20 @@
+@import "variables";
+
+:host {
+    position: relative;
+    display: inline-block;
+}
+.currency-symbol {
+    display: flex;
+    align-items: center;
+    background-color: $color-grey-2;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    padding: 3px;
+    border-radius: 3px;
+}
+input {
+    max-width: 115px;
+    padding-left: 40px;
+}
