@@ -1,0 +1,24 @@
+@import "variables";
+
+:host {
+    display: inline-flex;
+    border: 1px solid $color-grey-4;
+    border-radius: 3px;
+}
+
+.chip-label {
+    padding: 0 6px;
+}
+
+.chip-icon {
+    border-left: 1px solid $color-grey-4;
+    padding: 0 3px;
+
+    button {
+        cursor: pointer;
+        background: none;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+}
