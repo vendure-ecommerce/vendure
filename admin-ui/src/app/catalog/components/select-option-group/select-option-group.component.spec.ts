@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ClrIconCustomTag } from '@clr/angular';
-import { TranslateModule } from '@ngx-translate/core';
 
+import { TestingCommonModule } from '../../../../testing/testing-common.module';
 import { DataService } from '../../../data/providers/data.service';
 import { MockDataService } from '../../../data/providers/data.service.mock';
+import { ChipComponent } from '../../../shared/components/chip/chip.component';
 import { SelectToggleComponent } from '../../../shared/components/select-toggle/select-toggle.component';
 
 import { SelectOptionGroupComponent } from './select-option-group.component';
@@ -15,8 +15,8 @@ describe('SelectOptionGroupComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [ReactiveFormsModule, TranslateModule.forRoot()],
-            declarations: [SelectOptionGroupComponent, SelectToggleComponent, ClrIconCustomTag],
+            imports: [ReactiveFormsModule, TestingCommonModule],
+            declarations: [SelectOptionGroupComponent, SelectToggleComponent, ChipComponent],
             providers: [{ provide: DataService, useClass: MockDataService }],
         }).compileComponents();
     }));

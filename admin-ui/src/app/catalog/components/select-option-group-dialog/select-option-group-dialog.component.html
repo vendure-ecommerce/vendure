@@ -1,6 +1,6 @@
 <ng-template vdrDialogTitle>{{ 'catalog.select-option-group' | translate }}</ng-template>
 
-<vdr-select-option-group [existingOptionGroupIds]="existingOptionGroupIds"
+<vdr-select-option-group [selectedGroups]="existingOptionGroups"
                          (selectGroup)="selectGroup($event)"></vdr-select-option-group>
 
 <ng-template vdrDialogButtons>

@@ -352,6 +352,7 @@ export interface CreateProductOptionGroup_createProductOptionGroup_options {
     __typename: 'ProductOption';
     id: string;
     languageCode: LanguageCode | null;
+    name: string | null;
     code: string | null;
     translations: CreateProductOptionGroup_createProductOptionGroup_options_translations[];
 }
@@ -749,6 +750,7 @@ export interface ProductOptionGroup_options {
     __typename: 'ProductOption';
     id: string;
     languageCode: LanguageCode | null;
+    name: string | null;
     code: string | null;
     translations: ProductOptionGroup_options_translations[];
 }

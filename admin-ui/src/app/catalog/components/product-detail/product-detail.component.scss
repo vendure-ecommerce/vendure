@@ -3,25 +3,9 @@
 .option-groups-list {
 
 }
-.option-group {
-    border: 1px solid $color-grey-4;
-    border-radius: 3px;
-    display: inline-block;
-    padding: 0 6px;
-    margin-right: 6px;
-    display: inline-flex;
-}
+
 .group-name {
     padding-right: 6px;
-}
-.remove-option-group {
-    margin: 0 !important;
-    padding: 0;
-    min-width: 0;
-    height: 22px;
-    line-height: 1rem;
-    border: none;
-    color: $color-warning;
 }
 
 .variants-list {

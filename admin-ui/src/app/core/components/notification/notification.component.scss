@@ -6,6 +6,9 @@
 }
 
 :host {
+    position: relative;
+    z-index: 1050;
+
     > .notification-wrapper {
         display: block;
         position: fixed;

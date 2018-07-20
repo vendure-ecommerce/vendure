@@ -11,6 +11,10 @@
     overflow: auto;
 }
 
+vdr-select-toggle {
+    margin-right: 12px;
+}
+
 .group {
     display: flex;
     padding: 6px 12px;
@@ -27,16 +31,12 @@
     .options {
         text-align: right;
     }
+}
 
-    .option {
-        display: inline-block;
-        padding: 0 6px;
-        border: 1px solid $color-grey-3;
-        color: $color-grey-5;
-        border-radius: 3px;
-        margin-right: 3px;
-        &:last-of-type {
-            margin-right: 0;
-        }
-    }
+.selected-groups {
+    padding: 12px;
+}
+
+.full-options-list {
+    text-align: left;
 }

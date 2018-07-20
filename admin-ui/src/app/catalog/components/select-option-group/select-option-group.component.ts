@@ -3,6 +3,7 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
@@ -11,8 +12,14 @@ import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
 
+import { DeepPartial } from '../../../../../../shared/shared-types';
 import { DataService } from '../../../data/providers/data.service';
-import { ProductOptionGroup } from '../select-option-group-dialog/select-option-group-dialog.component';
+import {
+    GetProductOptionGroups,
+    GetProductOptionGroupsVariables,
+    ProductOptionGroup,
+} from '../../../data/types/gql-generated-types';
+import { QueryResult } from '../../../data/types/query-result';
 
 @Component({
     selector: 'vdr-select-option-group',
@@ -20,18 +27,21 @@ import { ProductOptionGroup } from '../select-option-group-dialog/select-option-
     styleUrls: ['./select-option-group.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectOptionGroupComponent implements OnInit, OnDestroy {
-    @Input() existingOptionGroupIds: string[];
+export class SelectOptionGroupComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() selectedGroups: ProductOptionGroup[];
     @Output() selectGroup = new EventEmitter<ProductOptionGroup>();
-    optionGroups$: Observable<ProductOptionGroup[]>;
+    optionGroups$: Observable<Array<DeepPartial<ProductOptionGroup>>>;
     filterInput = new FormControl();
+    optionGroupsQuery: QueryResult<GetProductOptionGroups, GetProductOptionGroupsVariables>;
+    truncateOptionsTo = 4;
+    private inputChange$ = new Subject<ProductOptionGroup[]>();
     private destroy$ = new Subject<void>();
 
     constructor(private dataService: DataService) {}
 
     ngOnInit() {
-        const optionGroupsQuery = this.dataService.product.getProductOptionGroups();
-        this.optionGroups$ = optionGroupsQuery.stream$.pipe(map(data => data.productOptionGroups));
+        this.optionGroupsQuery = this.dataService.product.getProductOptionGroups();
+        this.optionGroups$ = this.optionGroupsQuery.stream$.pipe(map(data => data.productOptionGroups));
 
         this.filterInput.valueChanges
             .pipe(
@@ -39,8 +49,12 @@ export class SelectOptionGroupComponent implements OnInit, OnDestroy {
                 takeUntil(this.destroy$),
             )
             .subscribe(filterTerm => {
-                optionGroupsQuery.ref.refetch({ filterTerm });
+                this.optionGroupsQuery.ref.refetch({ filterTerm });
             });
+    }
+
+    ngOnChanges() {
+        this.inputChange$.next(this.selectedGroups);
     }
 
     ngOnDestroy() {
@@ -48,7 +62,19 @@ export class SelectOptionGroupComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    isAvailable(group: ProductOptionGroup): boolean {
-        return !this.existingOptionGroupIds.includes(group.id);
+    refresh() {
+        this.optionGroupsQuery.ref.refetch();
+    }
+
+    isSelected(group: ProductOptionGroup): boolean {
+        return this.selectedGroups && !!this.selectedGroups.find(g => g.id === group.id);
+    }
+
+    optionsTruncated(group: ProductOptionGroup): boolean {
+        return 0 < this.optionsTrucatedCount(group);
+    }
+
+    optionsTrucatedCount(group: ProductOptionGroup): number {
+        return Math.max(group.options.length - this.truncateOptionsTo, 0);
     }
 }

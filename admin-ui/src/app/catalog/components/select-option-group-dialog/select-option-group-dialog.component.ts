@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { GetProductOptionGroups_productOptionGroups } from '../../../data/types/gql-generated-types';
+import {
+    GetProductOptionGroups_productOptionGroups,
+    ProductOptionGroup,
+} from '../../../data/types/gql-generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
-
-export type ProductOptionGroup = GetProductOptionGroups_productOptionGroups;
 
 @Component({
     selector: 'vdr-select-option-group-dialog',
@@ -12,7 +13,7 @@ export type ProductOptionGroup = GetProductOptionGroups_productOptionGroups;
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectOptionGroupDialogComponent implements Dialog<ProductOptionGroup> {
-    existingOptionGroupIds: string[];
+    existingOptionGroups: Array<Partial<ProductOptionGroup>>;
     resolveWith: (result?: ProductOptionGroup) => void;
 
     selectGroup(group: ProductOptionGroup) {

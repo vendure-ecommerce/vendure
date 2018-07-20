@@ -59,11 +59,14 @@
                     <button type="button"
                             clrDropdownItem
                             (click)="generateProductVariants()">{{ 'catalog.generate-variants-default-only' | translate }}</button>
-                   <!-- <button type="button"
+                    <button type="button"
                             clrDropdownItem
-                            (click)="createNewOptionGroup()">{{ 'catalog.generate-variants-with-options' | translate }}</button>-->
+                            (click)="startProductVariantsWizard()">{{ 'catalog.generate-variants-with-options' | translate }}</button>
                 </clr-dropdown-menu>
             </clr-dropdown>
+
+            <vdr-product-variants-wizard #productVariantsWizard
+                                         [product]="product$ | async"></vdr-product-variants-wizard>
         </div>
 
         <ng-template #variants>
@@ -71,28 +74,8 @@
                 <div class="option-groups-list">
                     <div *ngFor="let optionGroup of (product$ | async)?.optionGroups"
                          class="option-group">
-                        <div class="group-name">{{ optionGroup.name }}</div>
-                        <button type="button"
-                                class="btn remove-option-group"
-                                (click)="removeGroup(optionGroup.id)">
-                            <clr-icon shape="trash"></clr-icon>
-                        </button>
+                        <vdr-chip>{{ optionGroup.name }} ({{ optionGroup.code }})</vdr-chip>
                     </div>
-                    <clr-dropdown>
-                        <button type="button" class="btn btn-outline-primary btn-sm" clrDropdownTrigger>
-                            <clr-icon shape="add"></clr-icon>
-                            {{ 'catalog.add-option-group' | translate }}
-                            <clr-icon shape="caret down"></clr-icon>
-                        </button>
-                        <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-                            <button type="button"
-                                    clrDropdownItem
-                                    (click)="addExistingOptionGroup()">{{ 'catalog.add-existing-option-group' | translate }}</button>
-                            <button type="button"
-                                    clrDropdownItem
-                                    (click)="createNewOptionGroup()">{{ 'catalog.create-new-option-group' | translate }}</button>
-                        </clr-dropdown-menu>
-                    </clr-dropdown>
                 </div>
             </vdr-form-item>
 

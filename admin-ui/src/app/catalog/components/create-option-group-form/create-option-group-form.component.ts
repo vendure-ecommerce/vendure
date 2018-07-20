@@ -33,6 +33,10 @@ export class CreateOptionGroupFormComponent implements OnInit {
         });
     }
 
+    resetForm() {
+        this.optionGroupForm.reset();
+    }
+
     updateCode(nameValue: string) {
         const codeControl = this.optionGroupForm.get('code');
         if (codeControl && codeControl.pristine) {

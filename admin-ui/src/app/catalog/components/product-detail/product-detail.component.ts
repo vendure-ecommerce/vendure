@@ -107,78 +107,6 @@ export class ProductDetailComponent implements OnDestroy {
         this.setQueryParam('lang', code);
     }
 
-    createNewOptionGroup() {
-        this.product$
-            .pipe(
-                take(1),
-                mergeMap(product => {
-                    const productFormGroup = this.productForm.get('product');
-                    const productNameControl = productFormGroup && productFormGroup.get('name');
-                    const productName = productNameControl ? productNameControl.value : '';
-                    return this.modalService
-                        .fromComponent(CreateOptionGroupDialogComponent, {
-                            closable: true,
-                            size: 'lg',
-                            locals: {
-                                productName,
-                                productId: product.id,
-                            },
-                        })
-                        .pipe(
-                            filter(notNullOrUndefined),
-                            mergeMap(({ createProductOptionGroup }) => {
-                                return this.dataService.product.addOptionGroupToProduct({
-                                    productId: product.id,
-                                    optionGroupId: createProductOptionGroup.id,
-                                });
-                            }),
-                        );
-                }),
-            )
-            .subscribe();
-    }
-
-    addExistingOptionGroup() {
-        this.product$
-            .pipe(
-                take(1),
-                mergeMap(product => {
-                    return this.modalService
-                        .fromComponent(SelectOptionGroupDialogComponent, {
-                            closable: true,
-                            size: 'lg',
-                            locals: {
-                                existingOptionGroupIds: product.optionGroups.map(g => g.id),
-                            },
-                        })
-                        .pipe(
-                            filter(notNullOrUndefined),
-                            mergeMap(optionGroup => {
-                                return this.dataService.product.addOptionGroupToProduct({
-                                    productId: product.id,
-                                    optionGroupId: optionGroup.id,
-                                });
-                            }),
-                        );
-                }),
-            )
-            .subscribe();
-    }
-
-    removeGroup(optionGroupId: string) {
-        this.product$
-            .pipe(
-                take(1),
-                mergeMap(product => {
-                    return this.dataService.product.removeOptionGroupFromProduct({
-                        productId: product.id,
-                        optionGroupId,
-                    });
-                }),
-            )
-            .subscribe();
-    }
-
     create() {
         const productGroup = this.productForm.get('product');
         if (!productGroup || !productGroup.dirty) {
@@ -251,9 +179,14 @@ export class ProductDetailComponent implements OnDestroy {
     }
 
     startProductVariantsWizard() {
-        this.product$.pipe(mergeMap(product => this.productVariantsWizard.start(product))).subscribe(val => {
-            // console.log('finished', val);
-        });
+        this.product$
+            .pipe(
+                take(1),
+                mergeMap(product => this.productVariantsWizard.start()),
+            )
+            .subscribe(() => {
+                this.generateProductVariants();
+            });
     }
 
     generateProductVariants() {

@@ -4,21 +4,34 @@
        [formControl]="filterInput">
 <div class="group-list">
     <div class="group" *ngFor="let group of optionGroups$ | async">
-        <div class="select-button">
-            <button class="btn btn-icon btn-primary"
-                    [disabled]="!isAvailable(group)"
-                    (click)="selectGroup.emit(group)">
-                <clr-icon shape="check"></clr-icon>
-            </button>
-        </div>
+        <vdr-select-toggle [selected]="isSelected(group)"
+                           (selectedChange)="selectGroup.emit(group)"></vdr-select-toggle>
         <div class="name-code">
             <div class="name">{{ group.name }}</div>
             <div class="code">{{ group.code }}</div>
         </div>
         <div class="options">
-            <div class="option" *ngFor="let option of group.options">
+            <vdr-chip class="option" *ngFor="let option of group.options | slice:0:truncateOptionsTo">
                 {{ option.name }}
+            </vdr-chip>
+            <div *ngIf="optionsTruncated(group)">
+                <clr-signpost>
+                    <a clrSignpostTrigger>
+                        (+ {{ 'catalog.truncated-options-count' | translate: { count: optionsTrucatedCount(group) } }})
+                    </a>
+                    <clr-signpost-content [clrPosition]="'bottom-middle'" *clrIfOpen>
+                        <ul class="full-options-list">
+                            <li *ngFor="let option of group.options">{{ option.name }}</li>
+                        </ul>
+                    </clr-signpost-content>
+                </clr-signpost>
             </div>
         </div>
     </div>
+</div>
+<h5>{{ 'catalog.selected-option-groups' | translate }}:</h5>
+<div class="selected-groups">
+    <vdr-chip *ngFor="let selectedGroup of selectedGroups">
+        {{ selectedGroup.code }}
+    </vdr-chip>
 </div>
