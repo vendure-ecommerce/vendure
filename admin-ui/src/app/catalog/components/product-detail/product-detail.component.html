@@ -102,7 +102,7 @@
                         <div *ngFor="let option of variant.options">{{ option.name }}</div>
                     </td>
                     <td>
-                        <input type="number" min="0" formControlName="price">
+                        <vdr-currency-input formControlName="price"></vdr-currency-input>
                     </td>
                 </tr>
                 </tbody>
