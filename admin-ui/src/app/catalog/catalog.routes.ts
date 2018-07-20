@@ -31,13 +31,19 @@ export const catalogRoutes: Route[] = [
 export function productBreadcrumb(data: any, params: any, dataService: DataService) {
     return dataService.product.getProduct(params.id).stream$.pipe(
         map(productData => {
+            let productLabel = '';
+            if (params.id === 'create') {
+                productLabel = 'common.create';
+            } else {
+                productLabel = `#${params.id} (${productData.product && productData.product.name})`;
+            }
             return [
                 {
                     label: _('breadcrumb.products'),
                     link: ['../', 'products'],
                 },
                 {
-                    label: `#${params.id} (${productData.product && productData.product.name})`,
+                    label: productLabel,
                     link: [params.id],
                 },
             ];
