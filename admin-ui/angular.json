@@ -30,11 +30,11 @@
             "styles": [
               "./node_modules/@clr/icons/clr-icons.min.css",
               "./node_modules/@clr/ui/clr-ui.min.css",
-              "src/styles.scss"
+              "src/styles/styles.scss"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src"]
+              "includePaths": ["./src/styles"]
             }
           },
           "configurations": {
@@ -82,7 +82,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.scss"
+              "src/styles/styles.scss"
             ],
             "scripts": [],
             "assets": [
@@ -90,7 +90,7 @@
               "src/assets"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src"]
+              "includePaths": ["./src/styles"]
             }
           }
         },

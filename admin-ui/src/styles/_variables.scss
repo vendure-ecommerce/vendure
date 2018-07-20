@@ -1,7 +1,7 @@
-@import "~@clr/ui/src/color/utils/colors.clarity";
-@import "~@clr/ui/src/color/utils/contrast-cache.clarity";
-@import "~@clr/ui/src/color/utils/helpers.clarity";
-@import "~@clr/ui/src/color/variables.color";
+@import "../../node_modules/@clr/ui/src/color/utils/colors.clarity";
+@import "../../node_modules/@clr/ui/src/color/utils/contrast-cache.clarity";
+@import "../../node_modules/@clr/ui/src/color/utils/helpers.clarity";
+@import "../../node_modules/@clr/ui/src/color/variables.color";
 
 // colors
 $color-brand: #13b7f3;
