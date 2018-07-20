@@ -99,7 +99,7 @@
                         <input type="text" formControlName="name">
                     </td>
                     <td>
-                        <div *ngFor="let option of variant.options">{{ option.name }}</div>
+                        <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
                     </td>
                     <td>
                         <vdr-currency-input formControlName="price"></vdr-currency-input>
