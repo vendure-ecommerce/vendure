@@ -2,10 +2,10 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
+import { normalizeString } from '../../../common/utilities/normalize-string';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -16,9 +16,7 @@ import {
 } from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ProductUpdaterService } from '../../providers/product-updater/product-updater.service';
-import { CreateOptionGroupDialogComponent } from '../create-option-group-dialog/create-option-group-dialog.component';
 import { ProductVariantsWizardComponent } from '../product-variants-wizard/product-variants-wizard.component';
-import { SelectOptionGroupDialogComponent } from '../select-option-group-dialog/select-option-group-dialog.component';
 
 @Component({
     selector: 'vdr-product-detail',
@@ -105,6 +103,21 @@ export class ProductDetailComponent implements OnDestroy {
 
     setLanguage(code: LanguageCode) {
         this.setQueryParam('lang', code);
+    }
+
+    /**
+     * If creating a new product, automatically generate the slug based on the product name.
+     */
+    updateSlug(nameValue: string) {
+        this.isNew$.pipe(take(1)).subscribe(isNew => {
+            if (isNew) {
+                const productForm = this.productForm.get('product');
+                const slugControl = productForm && productForm.get('slug');
+                if (slugControl && slugControl.pristine) {
+                    slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+                }
+            }
+        });
     }
 
     create() {

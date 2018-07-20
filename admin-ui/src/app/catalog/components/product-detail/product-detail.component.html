@@ -33,7 +33,7 @@
     <section class="form-block" formGroupName="product">
         <label>{{ 'catalog.product' | translate }}</label>
         <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
-            <input id="name" type="text" formControlName="name">
+            <input id="name" type="text" formControlName="name" (input)="updateSlug($event.target.value)">
         </vdr-form-field>
         <vdr-form-field [label]="'catalog.slug' | translate" for="slug">
             <input id="slug" type="text" formControlName="slug">
