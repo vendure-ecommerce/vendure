@@ -1,0 +1,40 @@
+@import "variables";
+@import "mixins";
+
+:host {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle {
+    @include no-select();
+    cursor: pointer;
+    background-color: $color-grey-1;
+    border: 2px solid $color-grey-4;
+    padding: 0 6px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-grey-3;
+    transition: background-color 0.2s, border 0.2s;
+
+    &:hover {
+        border-color: $color-success;
+        background-color: transparentize($color-success, 0.9);
+    }
+
+    &.selected {
+        background-color: $color-success;
+        border-color: darken($color-success, 5%);
+        color: white;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 2px 2px #6bc1e3
+    }
+}

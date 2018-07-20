@@ -21,6 +21,7 @@ import { DialogComponentOutletComponent } from './components/modal-dialog/dialog
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { ModalService } from './providers/modal/modal.service';
 
@@ -49,6 +50,7 @@ const DECLARATIONS = [
     DialogComponentOutletComponent,
     DialogButtonsDirective,
     DialogTitleDirective,
+    SelectToggleComponent,
 ];
 
 @NgModule({
