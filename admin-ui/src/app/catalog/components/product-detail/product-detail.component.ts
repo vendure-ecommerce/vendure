@@ -167,11 +167,18 @@ export class ProductDetailComponent implements OnDestroy {
                             updateOperations.push(this.dataService.product.updateProduct(newProduct));
                         }
                     }
-                    const variantsArray = this.productForm.get('variants');
+                    const variantsArray = this.productForm.get('variants') as FormArray;
                     if (variantsArray && variantsArray.dirty) {
+                        const dirtyVariants = product.variants.filter((v, i) => {
+                            const formRow = variantsArray.get(i.toString());
+                            return formRow && formRow.dirty;
+                        });
+                        const dirtyVariantValues = variantsArray.controls
+                            .filter(c => c.dirty)
+                            .map(c => c.value);
                         const newVariants = this.productUpdaterService.getUpdatedProductVariants(
-                            product.variants,
-                            variantsArray.value,
+                            dirtyVariants,
+                            dirtyVariantValues,
                             languageCode,
                         );
                         updateOperations.push(this.dataService.product.updateProductVariants(newVariants));
@@ -186,7 +193,9 @@ export class ProductDetailComponent implements OnDestroy {
                     this.notificationService.success(_('catalog.notify-update-product-success'));
                 },
                 err => {
-                    this.notificationService.error(_('catalog.notify-update-product-error'));
+                    this.notificationService.error(_('catalog.notify-update-product-error'), {
+                        error: err.message,
+                    });
                 },
             );
     }
