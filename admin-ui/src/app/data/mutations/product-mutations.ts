@@ -25,8 +25,12 @@ export const CREATE_PRODUCT = gql`
 `;
 
 export const GENERATE_PRODUCT_VARIANTS = gql`
-    mutation GenerateProductVariants($productId: ID!) {
-        generateVariantsForProduct(productId: $productId) {
+    mutation GenerateProductVariants($productId: ID!, $defaultPrice: Int, $defaultSku: String) {
+        generateVariantsForProduct(
+            productId: $productId
+            defaultPrice: $defaultPrice
+            defaultSku: $defaultSku
+        ) {
             ...ProductWithVariants
         }
     }

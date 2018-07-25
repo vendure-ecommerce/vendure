@@ -10,7 +10,7 @@
     <label [for]="for"
            aria-haspopup="true"
            role="tooltip"
-           [class.invalid]="formFieldControl.touched && !formFieldControl.valid"
+           [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
            class="tooltip tooltip-validation tooltip-sm tooltip-top-left">
         <ng-content></ng-content>
         <span class="tooltip-content">

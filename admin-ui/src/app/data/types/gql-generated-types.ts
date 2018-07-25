@@ -287,6 +287,8 @@ export interface GenerateProductVariants {
 
 export interface GenerateProductVariantsVariables {
     productId: string;
+    defaultPrice?: number | null;
+    defaultSku?: string | null;
 }
 
 /* tslint:disable */

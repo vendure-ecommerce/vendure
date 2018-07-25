@@ -23,6 +23,8 @@ export class ProductVariantsWizardComponent implements OnChanges {
     @ViewChild('selectOptionGroup') selectOptionGroup: SelectOptionGroupComponent;
     selectedOptionGroups: Array<Partial<ProductOptionGroup>> = [];
     productVariantPreviewList: string[] = [];
+    defaultPrice = 0;
+    defaultSku = '';
 
     constructor(private notificationService: NotificationService, private dataService: DataService) {}
 
@@ -35,7 +37,7 @@ export class ProductVariantsWizardComponent implements OnChanges {
     /**
      * Opens the wizard and begins the steps.
      */
-    start(): Observable<ProductWithVariants> {
+    start(): Observable<{ defaultPrice: number; defaultSku: string }> {
         this.wizard.open();
 
         return this.wizard.wizardFinished.pipe(
@@ -55,7 +57,10 @@ export class ProductVariantsWizardComponent implements OnChanges {
 
                 return forkJoin(addOptionsOperations);
             }),
-            map(() => this.product),
+            map(() => ({
+                defaultPrice: this.defaultPrice,
+                defaultSku: this.defaultSku,
+            })),
         );
     }
 

@@ -28,6 +28,12 @@
 
     <clr-wizard-page>
         <ng-template clrPageTitle>{{ 'common.confirm' | translate }}</ng-template>
+        <vdr-form-field [label]="'catalog.default-price'">
+            <vdr-currency-input [(ngModel)]="defaultPrice"></vdr-currency-input>
+        </vdr-form-field>
+        <vdr-form-field [label]="'catalog.default-sku'">
+            <input type="text" [(ngModel)]="defaultSku">
+        </vdr-form-field>
         <h4>{{ 'catalog.selected-option-groups' | translate }}:</h4>
         <vdr-chip *ngFor="let selectedGroup of selectedOptionGroups">
             {{ selectedGroup.code }}

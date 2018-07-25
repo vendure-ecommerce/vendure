@@ -20,7 +20,7 @@
     "notify-create-new-option-group": "Created new option group",
     "notify-create-product-error": "An error occured, could not create product",
     "notify-create-product-success": "Created new product",
-    "notify-update-product-error": "An error occurred, could not update product",
+    "notify-update-product-error": "An error occurred, could not update product\n\n { error }",
     "notify-update-product-success": "Updated product",
     "option-group-code": "Code",
     "option-group-name": "Option group name",

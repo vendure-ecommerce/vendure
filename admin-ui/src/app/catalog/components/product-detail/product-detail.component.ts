@@ -206,16 +206,18 @@ export class ProductDetailComponent implements OnDestroy {
                 take(1),
                 mergeMap(product => this.productVariantsWizard.start()),
             )
-            .subscribe(() => {
-                this.generateProductVariants();
+            .subscribe(({ defaultPrice, defaultSku }) => {
+                this.generateProductVariants(defaultPrice, defaultSku);
             });
     }
 
-    generateProductVariants() {
+    generateProductVariants(defaultPrice?: number, defaultSku?: string) {
         this.product$
             .pipe(
                 take(1),
-                mergeMap(product => this.dataService.product.generateProductVariants(product.id)),
+                mergeMap(product =>
+                    this.dataService.product.generateProductVariants(product.id, defaultPrice, defaultSku),
+                ),
             )
             .subscribe();
     }

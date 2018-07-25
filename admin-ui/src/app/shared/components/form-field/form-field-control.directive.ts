@@ -5,6 +5,7 @@ import {
     FormControlName,
     FormGroup,
     FormGroupDirective,
+    NgControl,
     NgForm,
 } from '@angular/forms';
 
@@ -12,7 +13,7 @@ import {
 @Directive({ selector: 'input, textarea, select' })
 export class FormFieldControlDirective {
     formControl: FormControl;
-    constructor(@Optional() private formControlName: FormControlName) {}
+    constructor(@Optional() private formControlName: NgControl) {}
 
     get valid(): boolean {
         return !!this.formControlName.valid;

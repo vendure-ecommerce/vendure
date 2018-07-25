@@ -88,10 +88,14 @@ export class ProductDataService {
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
     }
 
-    generateProductVariants(productId: string): Observable<GenerateProductVariants> {
+    generateProductVariants(
+        productId: string,
+        defaultPrice?: number,
+        defaultSku?: string,
+    ): Observable<GenerateProductVariants> {
         return this.baseDataService.mutate<GenerateProductVariants, GenerateProductVariantsVariables>(
             GENERATE_PRODUCT_VARIANTS,
-            { productId },
+            { productId, defaultPrice, defaultSku },
         );
     }
 
