@@ -102,7 +102,7 @@ export class ProductService {
             .getRepository(ProductVariant)
             .findByIds(updateProductVariants.map(v => v.id), { relations: ['options'] })
             .then(variants => {
-                return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
+                return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE, ['options']));
             });
     }
 
