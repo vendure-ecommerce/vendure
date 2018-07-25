@@ -11,6 +11,7 @@ export class NotificationComponent {
     @ViewChild('wrapper') wrapper: ElementRef;
     offsetTop = 0;
     message = '';
+    translationVars: { [key: string]: string | number } = {};
     type: NotificationType = 'info';
     isVisible = true;
     private onClickFn: () => void = () => {

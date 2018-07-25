@@ -7,7 +7,11 @@ import { LanguageCode } from '../../../data/types/gql-generated-types';
 @Injectable()
 export class I18nService {
     constructor(private ngxTranslate: TranslateService) {
-        ngxTranslate.setDefaultLang(getDefaultLanguage());
+        // For some unknown reason, calling `setDefaultLang(getDefaultLanguage())`
+        // produces a stack overflow in some cases, wheras assigning an intermediate
+        // var does not. ¯\_(ツ)_/¯
+        const defaultLang = getDefaultLanguage();
+        ngxTranslate.setDefaultLang(defaultLang);
     }
 
     /**

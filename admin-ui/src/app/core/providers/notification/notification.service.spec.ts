@@ -5,6 +5,8 @@ import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/t
 import { TestingCommonModule } from '../../../../testing/testing-common.module';
 import { NotificationComponent } from '../../components/notification/notification.component';
 import { OverlayHostComponent } from '../../components/overlay-host/overlay-host.component';
+import { I18nService } from '../i18n/i18n.service';
+import { MockI18nService } from '../i18n/i18n.service.mock';
 import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 import { NotificationService } from './notification.service';
@@ -14,7 +16,11 @@ describe('NotificationService:', () => {
         TestBed.configureTestingModule({
             imports: [TestingCommonModule],
             declarations: [NotificationComponent, OverlayHostComponent, TestComponent],
-            providers: [NotificationService, OverlayHostService],
+            providers: [
+                NotificationService,
+                OverlayHostService,
+                { provide: I18nService, useClass: MockI18nService },
+            ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
         // TODO: it looks like there will be an easier way to declare the entryComponents,

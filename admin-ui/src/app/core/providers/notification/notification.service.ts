@@ -3,10 +3,12 @@ import { ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef } 
 import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 import { NotificationComponent } from '../../components/notification/notification.component';
+import { I18nService } from '../i18n/i18n.service';
 
 export type NotificationType = 'info' | 'success' | 'error' | 'warning';
 export interface ToastConfig {
     message: string;
+    translationVars?: { [key: string]: string | number };
     type?: NotificationType;
     duration?: number;
 }
@@ -22,7 +24,11 @@ export class NotificationService {
     private hostView: ViewContainerRef;
     private openToastRefs: Array<{ ref: ComponentRef<NotificationComponent>; timerId: any }> = [];
 
-    constructor(private resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) {
+    constructor(
+        private i18nService: I18nService,
+        private resolver: ComponentFactoryResolver,
+        overlayHostService: OverlayHostService,
+    ) {
         overlayHostService.getHostView().then(view => {
             this.hostView = view;
         });
@@ -31,9 +37,10 @@ export class NotificationService {
     /**
      * Display a success toast notification
      */
-    success(message: string): void {
+    success(message: string, translationVars?: { [key: string]: string | number }): void {
         this.notify({
             message,
+            translationVars,
             type: 'success',
         });
     }
@@ -41,9 +48,10 @@ export class NotificationService {
     /**
      * Display an info toast notification
      */
-    info(message: string): void {
+    info(message: string, translationVars?: { [key: string]: string | number }): void {
         this.notify({
             message,
+            translationVars,
             type: 'info',
         });
     }
@@ -51,9 +59,10 @@ export class NotificationService {
     /**
      * Display a warning toast notification
      */
-    warning(message: string): void {
+    warning(message: string, translationVars?: { [key: string]: string | number }): void {
         this.notify({
             message,
+            translationVars,
             type: 'warning',
         });
     }
@@ -61,9 +70,10 @@ export class NotificationService {
     /**
      * Display an error toast notification
      */
-    error(message: string): void {
+    error(message: string, translationVars?: { [key: string]: string | number }): void {
         this.notify({
             message,
+            translationVars,
             type: 'error',
             duration: 20000,
         });
@@ -86,6 +96,7 @@ export class NotificationService {
         const dismissFn = this.createDismissFunction(ref);
         toast.type = config.type || 'info';
         toast.message = config.message;
+        toast.translationVars = this.translateTranslationVars(config.translationVars || {});
         toast.registerOnClickFn(dismissFn);
 
         let timerId;
@@ -129,5 +140,16 @@ export class NotificationService {
             toast.offsetTop = cumulativeHeight;
             cumulativeHeight += toast.getHeight() + 6;
         });
+    }
+
+    private translateTranslationVars(translationVars: {
+        [key: string]: string | number;
+    }): { [key: string]: string | number } {
+        for (const [key, val] of Object.entries(translationVars)) {
+            if (typeof val === 'string') {
+                translationVars[key] = this.i18nService.translate(val);
+            }
+        }
+        return translationVars;
     }
 }
