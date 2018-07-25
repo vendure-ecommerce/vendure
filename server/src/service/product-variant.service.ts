@@ -49,7 +49,11 @@ export class ProductVariantService {
         return createdVariant;
     }
 
-    async generateVariantsForProduct(productId: ID): Promise<Array<Translated<ProductVariant>>> {
+    async generateVariantsForProduct(
+        productId: ID,
+        defaultPrice?: number,
+        defaultSku?: string,
+    ): Promise<Array<Translated<ProductVariant>>> {
         const product = await this.connection.getRepository(Product).findOne(productId, {
             relations: ['optionGroups', 'optionGroups.options'],
         });
@@ -66,8 +70,8 @@ export class ProductVariantService {
         const createVariants = optionCombinations.map(options => {
             const name = this.createVariantName(productName, options);
             return this.create(product, {
-                sku: 'sku-not-set',
-                price: 0,
+                sku: defaultSku || 'sku-not-set',
+                price: defaultPrice || 0,
                 optionCodes: options.map(o => o.code),
                 translations: [
                     {

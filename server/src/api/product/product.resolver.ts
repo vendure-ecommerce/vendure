@@ -60,8 +60,8 @@ export class ProductResolver {
     @Mutation()
     @ApplyIdCodec()
     async generateVariantsForProduct(_, args): Promise<Translated<Product>> {
-        const { productId } = args;
-        await this.productVariantService.generateVariantsForProduct(productId);
+        const { productId, defaultPrice, defaultSku } = args;
+        await this.productVariantService.generateVariantsForProduct(productId, defaultPrice, defaultSku);
         return assertFound(this.productService.findOne(productId, DEFAULT_LANGUAGE_CODE));
     }
 
