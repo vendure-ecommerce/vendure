@@ -5,7 +5,7 @@ import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 /**
  * Bootstrap the Vendure server.
  */
-export async function bootstrap(userConfig?: Partial<VendureConfig>) {
+export async function bootstrap(userConfig: Partial<VendureConfig>) {
     if (userConfig) {
         setConfig(userConfig);
     }
@@ -14,10 +14,10 @@ export async function bootstrap(userConfig?: Partial<VendureConfig>) {
     // base VendureEntity to be correctly configured with the primary key type
     // specified in the EntityIdStrategy.
     // tslint:disable-next-line:whitespace
-    const entities = await import('./entity/entities');
+    const { coreEntities } = await import('./entity/entities');
     setConfig({
         dbConnectionOptions: {
-            entities: entities.coreEntities as any,
+            entities: coreEntities as any,
         },
     });
 

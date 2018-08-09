@@ -2,10 +2,12 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
+import { HasCustomFields } from '../base/has-custom-fields';
+import { CustomAddressFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 
 @Entity()
-export class Address extends VendureEntity {
+export class Address extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Address>) {
         super(input);
     }
@@ -34,4 +36,7 @@ export class Address extends VendureEntity {
     @Column() defaultShippingAddress: boolean;
 
     @Column() defaultBillingAddress: boolean;
+
+    @Column(type => CustomAddressFields)
+    customFields: CustomAddressFields;
 }

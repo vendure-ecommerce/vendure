@@ -3,12 +3,14 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
+import { HasCustomFields } from '../base/has-custom-fields';
+import { CustomProductOptionFields } from '../custom-entity-fields';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 
 import { ProductOptionTranslation } from './product-option-translation.entity';
 
 @Entity()
-export class ProductOption extends VendureEntity implements Translatable {
+export class ProductOption extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ProductOption>) {
         super(input);
     }
@@ -22,4 +24,7 @@ export class ProductOption extends VendureEntity implements Translatable {
 
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
+
+    @Column(type => CustomProductOptionFields)
+    customFields: CustomProductOptionFields;
 }

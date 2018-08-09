@@ -7,6 +7,13 @@ export function notNullOrUndefined<T>(val: T | undefined | null): val is T {
 }
 
 /**
+ * Used in exhaustiveness checks to assert a codepath should never be reached.
+ */
+export function assertNever(value: never): never {
+    throw new Error(`Expected never, got ${typeof value}`);
+}
+
+/**
  * Given an array of option arrays `[['red, 'blue'], ['small', 'large']]`, this method returns a new array
  * containing all the combinations of those options:
  *

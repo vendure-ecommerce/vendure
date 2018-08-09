@@ -3,9 +3,11 @@ import { Column, Entity } from 'typeorm';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { Role } from '../../auth/role';
 import { VendureEntity } from '../base/base.entity';
+import { HasCustomFields } from '../base/has-custom-fields';
+import { CustomUserFields } from '../custom-entity-fields';
 
 @Entity()
-export class User extends VendureEntity {
+export class User extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<User>) {
         super(input);
     }
@@ -18,4 +20,7 @@ export class User extends VendureEntity {
     @Column('simple-array') roles: Role[];
 
     @Column() lastLogin: string;
+
+    @Column(type => CustomUserFields)
+    customFields: CustomUserFields;
 }

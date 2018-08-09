@@ -9,6 +9,23 @@ import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 
+export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
+
+export interface CustomFieldConfig {
+    name: string;
+    type: CustomFieldType;
+}
+
+export interface CustomFields {
+    Address?: CustomFieldConfig[];
+    Customer?: CustomFieldConfig[];
+    Product?: CustomFieldConfig[];
+    ProductOption?: CustomFieldConfig[];
+    ProductOptionGroup?: CustomFieldConfig[];
+    ProductVariant?: CustomFieldConfig[];
+    User?: CustomFieldConfig[];
+}
+
 export interface VendureConfig {
     /**
      * The default languageCode of the app.
@@ -45,6 +62,10 @@ export interface VendureConfig {
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
+    /**
+     * Defines custom fields which can be used to extend the built-in entities.
+     */
+    customFields?: CustomFields;
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
@@ -57,6 +78,7 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     dbConnectionOptions: {
         type: 'mysql',
     },
+    customFields: {},
 };
 
 let activeConfig = defaultConfig;
