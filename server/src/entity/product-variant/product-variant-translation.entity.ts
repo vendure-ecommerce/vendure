@@ -1,21 +1,17 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
 import { LanguageCode } from '../../locale/language-code';
 import { Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
+import { HasCustomFields } from '../base/has-custom-fields';
+import { CustomProductVariantFieldsTranslation } from '../custom-entity-fields';
 
 import { ProductVariant } from './product-variant.entity';
 
 @Entity()
-export class ProductVariantTranslation extends VendureEntity implements Translation<ProductVariant> {
+export class ProductVariantTranslation extends VendureEntity
+    implements Translation<ProductVariant>, HasCustomFields {
     constructor(input?: DeepPartial<Translation<ProductVariant>>) {
         super(input);
     }
@@ -26,4 +22,7 @@ export class ProductVariantTranslation extends VendureEntity implements Translat
 
     @ManyToOne(type => ProductVariant, base => base.translations)
     base: ProductVariant;
+
+    @Column(type => CustomProductVariantFieldsTranslation)
+    customFields: CustomProductVariantFieldsTranslation;
 }

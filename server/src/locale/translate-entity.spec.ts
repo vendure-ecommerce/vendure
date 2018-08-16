@@ -31,6 +31,7 @@ describe('translateEntity()', () => {
             description: '',
         });
         productTranslationEN.base = { id: 1 } as any;
+        productTranslationEN.customFields = {};
 
         productTranslationDE = new ProductTranslation({
             id: '3',
@@ -40,10 +41,12 @@ describe('translateEntity()', () => {
             description: '',
         });
         productTranslationDE.base = { id: 1 } as any;
+        productTranslationDE.customFields = {};
 
         product = new Product();
         product.id = '1';
         product.translations = [productTranslationEN, productTranslationDE];
+        product.customFields = {};
     });
 
     it('should unwrap the matching translation', () => {
@@ -68,6 +71,45 @@ describe('translateEntity()', () => {
         const result = translateEntity(product, LanguageCode.EN);
 
         expect(result).toHaveProperty('languageCode', 'en');
+    });
+
+    describe('customFields handling', () => {
+        it('should leave customFields with no localeStrings intact', () => {
+            const customFields = {
+                aBooleanField: true,
+            };
+            product.customFields = customFields;
+            const result = translateEntity(product, LanguageCode.EN);
+
+            expect(result.customFields).toEqual(customFields);
+        });
+
+        it('should translate customFields with localeStrings', () => {
+            const translatedCustomFields = {
+                aLocaleString1: 'translated1',
+                aLocaleString2: 'translated2',
+            };
+            product.translations[0].customFields = translatedCustomFields;
+            const result = translateEntity(product, LanguageCode.EN);
+
+            expect(result.customFields).toEqual(translatedCustomFields);
+        });
+
+        it('should translate customFields with localeStrings and other types', () => {
+            const productCustomFields = {
+                aBooleanField: true,
+                aStringField: 'foo',
+            };
+            const translatedCustomFields = {
+                aLocaleString1: 'translated1',
+                aLocaleString2: 'translated2',
+            };
+            product.customFields = productCustomFields;
+            product.translations[0].customFields = translatedCustomFields;
+            const result = translateEntity(product, LanguageCode.EN);
+
+            expect(result.customFields).toEqual({ ...productCustomFields, ...translatedCustomFields });
+        });
     });
 
     it('throw if there are no translations available', () => {

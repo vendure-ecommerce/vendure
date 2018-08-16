@@ -21,6 +21,10 @@ export const devConfig: VendureConfig = {
         database: 'vendure-dev',
     },
     customFields: {
-        Product: [{ name: 'infoUrl', type: 'string' }, { name: 'color', type: 'string' }],
+        Product: [
+            { name: 'infoUrl', type: 'string' },
+            { name: 'downloadable', type: 'boolean' },
+            { name: 'nickname', type: 'localeString' },
+        ],
     },
 };

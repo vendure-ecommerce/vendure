@@ -1,6 +1,7 @@
 import { ID } from '../../../shared/shared-types';
 import { UnwrappedArray } from '../common/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
+import { CustomFieldsObject } from '../entity/base/has-custom-fields';
 
 import { LanguageCode } from './language-code';
 import { TranslatableRelationsKeys } from './translate-entity';
@@ -21,6 +22,8 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
  */
 export interface Translatable { translations: Array<Translation<any>>; }
 
+export type TranslationCustomFields<T> = { [K in keyof T]: K extends 'customFields' ? K : never }[keyof T];
+
 // prettier-ignore
 /**
  * Translations of localizable entities should implement this type.
@@ -33,7 +36,8 @@ export type Translation<T> =
         base: T;
     } &
     // Translation must include all translatable keys as a string type
-    { [K in TranslatableKeys<T>]: string; };
+    { [K in TranslatableKeys<T>]: string; } &
+    { [K in TranslationCustomFields<T>]: CustomFieldsObject; };
 
 /**
  * This is the type of a translation object when provided as input to a create or update operation.

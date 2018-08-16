@@ -3,5 +3,7 @@
  * with custom fields.
  */
 export interface HasCustomFields {
-    customFields: any;
+    customFields: CustomFieldsObject;
 }
+
+export type CustomFieldsObject = object;
