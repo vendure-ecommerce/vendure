@@ -2,9 +2,11 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLFactory, GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
+import * as GraphQLJSON from 'graphql-type-json';
 
 import { AdministratorResolver } from './api/administrator/administrator.resolver';
 import { AuthController } from './api/auth/auth.controller';
+import { ConfigResolver } from './api/config/config.resolver';
 import { CustomerController } from './api/customer/customer.controller';
 import { CustomerResolver } from './api/customer/customer.resolver';
 import { ProductOptionResolver } from './api/product-option/product-option.resolver';
@@ -33,6 +35,7 @@ const config = getConfig();
         AdministratorResolver,
         AdministratorService,
         AuthService,
+        ConfigResolver,
         ConfigService,
         JwtStrategy,
         I18nService,
@@ -85,6 +88,9 @@ export class AppModule implements NestModule {
             typeDefs: typeDefs + customFieldTypeDefs,
             resolverValidationOptions: {
                 requireResolversForResolveType: false,
+            },
+            resolvers: {
+                JSON: GraphQLJSON,
             },
         });
     }

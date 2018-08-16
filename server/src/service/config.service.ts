@@ -4,7 +4,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/common-types';
 import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strategy';
-import { getConfig, VendureConfig } from '../config/vendure-config';
+import { CustomFields, getConfig, VendureConfig } from '../config/vendure-config';
 import { LanguageCode } from '../locale/language-code';
 
 @Injectable()
@@ -35,6 +35,10 @@ export class ConfigService implements VendureConfig {
 
     get dbConnectionOptions(): ConnectionOptions {
         return this.activeConfig.dbConnectionOptions;
+    }
+
+    get customFields(): CustomFields {
+        return this.activeConfig.customFields;
     }
 
     private activeConfig: ReadOnlyRequired<VendureConfig>;
