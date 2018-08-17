@@ -11,6 +11,7 @@ export class I18nService {
         // produces a stack overflow in some cases, wheras assigning an intermediate
         // var does not. ¯\_(ツ)_/¯
         const defaultLang = getDefaultLanguage();
+        // TODO: this constructor is called many times on bootstrap. Investigate why and fix.
         ngxTranslate.setDefaultLang(defaultLang);
     }
 

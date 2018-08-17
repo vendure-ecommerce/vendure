@@ -13,6 +13,7 @@ import {
 } from './components/action-bar/action-bar.component';
 import { ChipComponent } from './components/chip/chip.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
+import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
@@ -43,6 +44,7 @@ const DECLARATIONS = [
     ActionBarRightComponent,
     ChipComponent,
     CurrencyInputComponent,
+    CustomFieldControlComponent,
     DataTableComponent,
     DataTableColumnComponent,
     PaginationControlsComponent,

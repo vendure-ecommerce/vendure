@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 
+import {
+    CustomFieldConfig,
+    CustomFieldsObject,
+    MayHaveCustomFields,
+} from '../../../../../../shared/shared-types';
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import {
@@ -23,9 +28,10 @@ export class ProductUpdaterService {
     getUpdatedProduct(
         product: GetProductWithVariants_product,
         formValue: { [key: string]: any },
+        customFieldConfig: CustomFieldConfig[],
         languageCode: LanguageCode,
     ): UpdateProductInput {
-        return this.createUpdatedTranslatable(product, formValue, languageCode, {
+        return this.createUpdatedTranslatable(product, formValue, customFieldConfig, languageCode, {
             languageCode,
             name: product.name || '',
             slug: product.slug || '',
@@ -40,6 +46,7 @@ export class ProductUpdaterService {
     getUpdatedProductVariants(
         variants: GetProductWithVariants_product_variants[],
         formValue: Array<{ [key: string]: any }>,
+        customFieldConfig: CustomFieldConfig[],
         languageCode: LanguageCode,
     ): UpdateProductVariantInput[] {
         if (variants.length !== formValue.length) {
@@ -47,14 +54,15 @@ export class ProductUpdaterService {
         }
         return variants
             .map((variant, i) => {
-                return this.createUpdatedTranslatable(variant, formValue[i], languageCode);
+                return this.createUpdatedTranslatable(variant, formValue[i], customFieldConfig, languageCode);
             })
             .filter(notNullOrUndefined);
     }
 
-    private createUpdatedTranslatable<T extends { translations: any[] }>(
+    private createUpdatedTranslatable<T extends { translations: any[] } & MayHaveCustomFields>(
         translatable: T,
         updatedFields: { [key: string]: any },
+        customFieldConfig: CustomFieldConfig[],
         languageCode: LanguageCode,
         defaultTranslation?: Partial<T['translations'][number]>,
     ): T {
@@ -62,9 +70,24 @@ export class ProductUpdaterService {
             translatable.translations.find(t => t.languageCode === languageCode) || defaultTranslation;
         const index = translatable.translations.indexOf(currentTranslation);
         const newTranslation = this.patchObject(currentTranslation, updatedFields);
+        const customFields = translatable.customFields;
+        const newCustomFields: CustomFieldsObject = {};
+        const newTranslatedCustomFields: CustomFieldsObject = {};
+        if (customFieldConfig && updatedFields.hasOwnProperty('customFields')) {
+            for (const field of customFieldConfig) {
+                const value = updatedFields.customFields[field.name];
+                if (field.type === 'localeString') {
+                    newTranslatedCustomFields[field.name] = value;
+                } else {
+                    newCustomFields[field.name] = value;
+                }
+            }
+            newTranslation.customFields = newTranslatedCustomFields;
+        }
         const newTranslatable = {
             ...(this.patchObject(translatable, updatedFields) as any),
             ...{ translations: translatable.translations.slice() },
+            customFields: newCustomFields,
         };
         if (index !== -1) {
             newTranslatable.translations.splice(index, 1, newTranslation);

@@ -4,11 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
+import { CustomFieldConfig } from '../../../../../../shared/shared-types';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { getServerConfig } from '../../../data/server-config';
 import {
     GetProductWithVariants_product_variants,
     LanguageCode,
@@ -27,6 +29,8 @@ export class ProductDetailComponent implements OnDestroy {
     product$: Observable<ProductWithVariants>;
     variants$: Observable<GetProductWithVariants_product_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
+    customFields: CustomFieldConfig[];
+    customVariantFields: CustomFieldConfig[];
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
     productForm: FormGroup;
@@ -42,6 +46,8 @@ export class ProductDetailComponent implements OnDestroy {
         private notificationService: NotificationService,
         private productUpdaterService: ProductUpdaterService,
     ) {
+        this.customFields = getServerConfig().customFields.Product || [];
+        this.customVariantFields = getServerConfig().customFields.ProductVariant || [];
         this.product$ = this.route.data.pipe(switchMap(data => data.product));
         this.variants$ = this.product$.pipe(map(product => product.variants));
         this.productForm = this.formBuilder.group({
@@ -49,6 +55,9 @@ export class ProductDetailComponent implements OnDestroy {
                 name: ['', Validators.required],
                 slug: '',
                 description: '',
+                customFields: this.formBuilder.group(
+                    this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                ),
             }),
             variants: this.formBuilder.array([]),
         });
@@ -62,38 +71,7 @@ export class ProductDetailComponent implements OnDestroy {
 
         combineLatest(this.product$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([product, languageCode]) => {
-                const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
-                if (currentTranslation) {
-                    this.productForm.patchValue({
-                        product: {
-                            name: currentTranslation.name,
-                            slug: currentTranslation.slug,
-                            description: currentTranslation.description,
-                        },
-                    });
-
-                    const variantsFormArray = this.productForm.get('variants') as FormArray;
-                    product.variants.forEach((variant, i) => {
-                        const variantTranslation = variant.translations.find(
-                            t => t.languageCode === languageCode,
-                        );
-
-                        const group = {
-                            sku: variant.sku,
-                            name: variantTranslation ? variantTranslation.name : '',
-                            price: variant.price,
-                        };
-
-                        const existing = variantsFormArray.at(i);
-                        if (existing) {
-                            existing.setValue(group);
-                        } else {
-                            variantsFormArray.insert(i, this.formBuilder.group(group));
-                        }
-                    });
-                }
-            });
+            .subscribe(([product, languageCode]) => this.setFormValues(product, languageCode));
     }
 
     ngOnDestroy() {
@@ -105,14 +83,17 @@ export class ProductDetailComponent implements OnDestroy {
         this.setQueryParam('lang', code);
     }
 
+    customFieldIsSet(name: string): boolean {
+        return !!this.productForm.get(['product', 'customFields', name]);
+    }
+
     /**
      * If creating a new product, automatically generate the slug based on the product name.
      */
     updateSlug(nameValue: string) {
         this.isNew$.pipe(take(1)).subscribe(isNew => {
             if (isNew) {
-                const productForm = this.productForm.get('product');
-                const slugControl = productForm && productForm.get('slug');
+                const slugControl = this.productForm.get(['product', 'slug']);
                 if (slugControl && slugControl.pristine) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
@@ -132,6 +113,7 @@ export class ProductDetailComponent implements OnDestroy {
                     const newProduct = this.productUpdaterService.getUpdatedProduct(
                         product,
                         productGroup.value,
+                        this.customFields,
                         languageCode,
                     );
                     return this.dataService.product.createProduct(newProduct);
@@ -161,6 +143,7 @@ export class ProductDetailComponent implements OnDestroy {
                         const newProduct = this.productUpdaterService.getUpdatedProduct(
                             product,
                             productGroup.value,
+                            this.customFields,
                             languageCode,
                         );
                         if (newProduct) {
@@ -179,6 +162,7 @@ export class ProductDetailComponent implements OnDestroy {
                         const newVariants = this.productUpdaterService.getUpdatedProductVariants(
                             dirtyVariants,
                             dirtyVariantValues,
+                            this.customVariantFields,
                             languageCode,
                         );
                         updateOperations.push(this.dataService.product.updateProductVariants(newVariants));
@@ -220,6 +204,56 @@ export class ProductDetailComponent implements OnDestroy {
                 ),
             )
             .subscribe();
+    }
+
+    /**
+     * Sets the values of the form on changes to the product or current language.
+     */
+    private setFormValues(product: ProductWithVariants, languageCode: LanguageCode) {
+        const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
+        if (currentTranslation) {
+            this.productForm.patchValue({
+                product: {
+                    name: currentTranslation.name,
+                    slug: currentTranslation.slug,
+                    description: currentTranslation.description,
+                },
+            });
+
+            if (this.customFields.length) {
+                const customFieldsGroup = this.productForm.get(['product', 'customFields']) as FormGroup;
+
+                for (const fieldDef of this.customFields) {
+                    const key = fieldDef.name;
+                    const value =
+                        fieldDef.type === 'localeString'
+                            ? (currentTranslation as any).customFields[key]
+                            : (product as any).customFields[key];
+                    const control = customFieldsGroup.get(key);
+                    if (control) {
+                        control.patchValue(value);
+                    }
+                }
+            }
+
+            const variantsFormArray = this.productForm.get('variants') as FormArray;
+            product.variants.forEach((variant, i) => {
+                const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
+
+                const group = {
+                    sku: variant.sku,
+                    name: variantTranslation ? variantTranslation.name : '',
+                    price: variant.price,
+                };
+
+                const existing = variantsFormArray.at(i);
+                if (existing) {
+                    existing.setValue(group);
+                } else {
+                    variantsFormArray.insert(i, this.formBuilder.group(group));
+                }
+            });
+        }
     }
 
     private setQueryParam(key: string, value: any) {

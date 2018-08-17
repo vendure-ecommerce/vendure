@@ -140,7 +140,10 @@ export interface UpdateProduct_updateProduct {
 }
 
 export interface UpdateProduct {
-    updateProduct: UpdateProduct_updateProduct; // Update an existing Product
+    /**
+     * Update an existing Product
+     */
+    updateProduct: UpdateProduct_updateProduct;
 }
 
 export interface UpdateProductVariables {
@@ -211,7 +214,10 @@ export interface CreateProduct_createProduct {
 }
 
 export interface CreateProduct {
-    createProduct: CreateProduct_createProduct; // Create a new Product
+    /**
+     * Create a new Product
+     */
+    createProduct: CreateProduct_createProduct;
 }
 
 export interface CreateProductVariables {
@@ -282,7 +288,10 @@ export interface GenerateProductVariants_generateVariantsForProduct {
 }
 
 export interface GenerateProductVariants {
-    generateVariantsForProduct: GenerateProductVariants_generateVariantsForProduct; // Create a set of ProductVariants based on the OptionGroups assigned to the given Product
+    /**
+     * Create a set of ProductVariants based on the OptionGroups assigned to the given Product
+     */
+    generateVariantsForProduct: GenerateProductVariants_generateVariantsForProduct;
 }
 
 export interface GenerateProductVariantsVariables {
@@ -326,7 +335,10 @@ export interface UpdateProductVariants_updateProductVariants {
 }
 
 export interface UpdateProductVariants {
-    updateProductVariants: (UpdateProductVariants_updateProductVariants | null)[]; // Update existing ProductVariants
+    /**
+     * Update existing ProductVariants
+     */
+    updateProductVariants: (UpdateProductVariants_updateProductVariants | null)[];
 }
 
 export interface UpdateProductVariantsVariables {
@@ -370,7 +382,10 @@ export interface CreateProductOptionGroup_createProductOptionGroup {
 }
 
 export interface CreateProductOptionGroup {
-    createProductOptionGroup: CreateProductOptionGroup_createProductOptionGroup; // Create a new ProductOptionGroup
+    /**
+     * Create a new ProductOptionGroup
+     */
+    createProductOptionGroup: CreateProductOptionGroup_createProductOptionGroup;
 }
 
 export interface CreateProductOptionGroupVariables {
@@ -404,7 +419,10 @@ export interface AddOptionGroupToProduct_addOptionGroupToProduct {
 }
 
 export interface AddOptionGroupToProduct {
-    addOptionGroupToProduct: AddOptionGroupToProduct_addOptionGroupToProduct; // Add an OptionGroup to a Product
+    /**
+     * Add an OptionGroup to a Product
+     */
+    addOptionGroupToProduct: AddOptionGroupToProduct_addOptionGroupToProduct;
 }
 
 export interface AddOptionGroupToProductVariables {
@@ -439,7 +457,10 @@ export interface RemoveOptionGroupFromProduct_removeOptionGroupFromProduct {
 }
 
 export interface RemoveOptionGroupFromProduct {
-    removeOptionGroupFromProduct: RemoveOptionGroupFromProduct_removeOptionGroupFromProduct; // Remove an OptionGroup from a Product
+    /**
+     * Remove an OptionGroup from a Product
+     */
+    removeOptionGroupFromProduct: RemoveOptionGroupFromProduct_removeOptionGroupFromProduct;
 }
 
 export interface RemoveOptionGroupFromProductVariables {
@@ -774,7 +795,9 @@ export interface ProductOptionGroup {
 // START Enums and Input Objects
 //==============================================================
 
-// ISO 639-1 language code
+/**
+ * ISO 639-1 language code
+ */
 export enum LanguageCode {
     aa = 'aa',
     ab = 'ab',
@@ -962,64 +985,78 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
-//
 export interface UpdateProductInput {
     id: string;
     image?: string | null;
     translations: (ProductTranslationInput | null)[];
     optionGroupCodes?: (string | null)[] | null;
+    customFields?: UpdateProductCustomFieldsInput | null;
 }
 
-//
 export interface ProductTranslationInput {
     id?: string | null;
     languageCode: LanguageCode;
     name: string;
     slug?: string | null;
     description?: string | null;
+    customFields?: ProductTranslationCustomFieldsInput | null;
 }
 
-//
+export interface ProductTranslationCustomFieldsInput {
+    nickname?: string | null;
+}
+
+export interface UpdateProductCustomFieldsInput {
+    infoUrl?: string | null;
+    downloadable?: boolean | null;
+}
+
 export interface CreateProductInput {
     image?: string | null;
     translations: (ProductTranslationInput | null)[];
     optionGroupCodes?: (string | null)[] | null;
+    customFields?: CreateProductCustomFieldsInput | null;
 }
 
-//
+export interface CreateProductCustomFieldsInput {
+    infoUrl?: string | null;
+    downloadable?: boolean | null;
+}
+
 export interface UpdateProductVariantInput {
     id: string;
     translations: ProductVariantTranslationInput[];
     sku: string;
     image?: string | null;
     price: number;
+    customFields?: any | null;
 }
 
-//
 export interface ProductVariantTranslationInput {
     id?: string | null;
     languageCode: LanguageCode;
     name: string;
+    customFields?: any | null;
 }
 
-//
 export interface CreateProductOptionGroupInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
     options: CreateProductOptionInput[];
+    customFields?: any | null;
 }
 
-//
 export interface ProductOptionGroupTranslationInput {
     id?: string | null;
     languageCode: LanguageCode;
     name: string;
+    customFields?: any | null;
 }
 
-//
 export interface CreateProductOptionInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
+    customFields?: any | null;
 }
 
 //==============================================================

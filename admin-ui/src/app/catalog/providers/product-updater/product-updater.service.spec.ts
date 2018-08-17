@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import { CustomFieldConfig } from '../../../../../../shared/shared-types';
 import { GetProductWithVariants_product, LanguageCode } from '../../../data/types/gql-generated-types';
 
 import { ProductUpdaterService } from './product-updater.service';
@@ -54,7 +55,7 @@ describe('ProductUpdaterService', () => {
     describe('getUpdatedProduct()', () => {
         it('returns a clone', () => {
             const formValue = {};
-            const result = productUpdaterService.getUpdatedProduct(product, formValue, LanguageCode.en);
+            const result = productUpdaterService.getUpdatedProduct(product, formValue, [], LanguageCode.en);
 
             expect(result).not.toBe(product);
         });
@@ -63,7 +64,7 @@ describe('ProductUpdaterService', () => {
             const formValue = {
                 name: 'New Name AA',
             };
-            const result = productUpdaterService.getUpdatedProduct(product, formValue, LanguageCode.aa);
+            const result = productUpdaterService.getUpdatedProduct(product, formValue, [], LanguageCode.aa);
 
             expect(result.translations[2]).toEqual({
                 languageCode: LanguageCode.aa,
@@ -78,7 +79,7 @@ describe('ProductUpdaterService', () => {
                 image: 'new-image.jpg',
             };
 
-            const result = productUpdaterService.getUpdatedProduct(product, formValue, LanguageCode.en);
+            const result = productUpdaterService.getUpdatedProduct(product, formValue, [], LanguageCode.en);
 
             if (!result) {
                 fail('Expected result to be truthy');
@@ -93,7 +94,7 @@ describe('ProductUpdaterService', () => {
                 name: 'New Name EN',
             };
 
-            const result = productUpdaterService.getUpdatedProduct(product, formValue, LanguageCode.en);
+            const result = productUpdaterService.getUpdatedProduct(product, formValue, [], LanguageCode.en);
 
             if (!result) {
                 fail('Expected result to be truthy');
@@ -104,6 +105,77 @@ describe('ProductUpdaterService', () => {
             expect(result.translations[0]!.name).toBe('New Name EN');
             expect(result.translations[1]!.name).toBe('Old Name DE');
         });
+
+        it('updates custom fields correctly', () => {
+            const customFieldConfig: CustomFieldConfig[] = [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ];
+            product.customFields = {
+                available: true,
+                shortName: 'foo',
+            };
+            product.translations[0].customFields = { shortName: 'foo' };
+
+            const formValue = {
+                customFields: {
+                    available: false,
+                    shortName: 'bar',
+                },
+            };
+
+            const result = productUpdaterService.getUpdatedProduct(
+                product,
+                formValue,
+                customFieldConfig,
+                LanguageCode.en,
+            );
+
+            if (!result) {
+                fail('Expected result to be truthy');
+                return;
+            }
+
+            expect((result as any).customFields).toEqual({
+                available: false,
+            });
+            expect((result.translations[0] as any).customFields).toEqual({
+                shortName: 'bar',
+            });
+        });
+
+        it('updates custom fields when none initially exists', () => {
+            const customFieldConfig: CustomFieldConfig[] = [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ];
+
+            const formValue = {
+                customFields: {
+                    available: false,
+                    shortName: 'bar',
+                },
+            };
+
+            const result = productUpdaterService.getUpdatedProduct(
+                product,
+                formValue,
+                customFieldConfig,
+                LanguageCode.en,
+            );
+
+            if (!result) {
+                fail('Expected result to be truthy');
+                return;
+            }
+
+            expect((result as any).customFields).toEqual({
+                available: false,
+            });
+            expect((result.translations[0] as any).customFields).toEqual({
+                shortName: 'bar',
+            });
+        });
     });
 
     describe('getUpdatedProductVariants()', () => {
@@ -112,6 +184,7 @@ describe('ProductUpdaterService', () => {
             const result = productUpdaterService.getUpdatedProductVariants(
                 product.variants,
                 formValue,
+                [],
                 LanguageCode.en,
             );
 
@@ -123,7 +196,12 @@ describe('ProductUpdaterService', () => {
         it('throws if the length of the formValues array does not match the number of variants', () => {
             const formValue = [{ name: 'New Variant 1 Name EN' }];
             const invoke = () =>
-                productUpdaterService.getUpdatedProductVariants(product.variants, formValue, LanguageCode.en);
+                productUpdaterService.getUpdatedProductVariants(
+                    product.variants,
+                    formValue,
+                    [],
+                    LanguageCode.en,
+                );
 
             expect(invoke).toThrowError('error.product-variant-form-values-do-not-match');
         });
@@ -134,6 +212,7 @@ describe('ProductUpdaterService', () => {
             const result = productUpdaterService.getUpdatedProductVariants(
                 product.variants,
                 formValue,
+                [],
                 LanguageCode.en,
             );
 
@@ -149,6 +228,7 @@ describe('ProductUpdaterService', () => {
             const result = productUpdaterService.getUpdatedProductVariants(
                 product.variants,
                 formValue,
+                [],
                 LanguageCode.en,
             );
 

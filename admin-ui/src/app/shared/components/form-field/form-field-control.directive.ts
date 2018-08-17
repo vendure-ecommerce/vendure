@@ -16,10 +16,10 @@ export class FormFieldControlDirective {
     constructor(@Optional() private formControlName: NgControl) {}
 
     get valid(): boolean {
-        return !!this.formControlName.valid;
+        return !!this.formControlName && !!this.formControlName.valid;
     }
 
     get touched(): boolean {
-        return !!this.formControlName.touched;
+        return !!this.formControlName && !!this.formControlName.touched;
     }
 }

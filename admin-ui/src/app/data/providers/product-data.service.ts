@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
@@ -58,7 +59,7 @@ export class ProductDataService {
 
     getProduct(id: string): QueryResult<GetProductWithVariants, GetProductWithVariantsVariables> {
         return this.baseDataService.query<GetProductWithVariants, GetProductWithVariantsVariables>(
-            GET_PRODUCT_WITH_VARIANTS,
+            addCustomFields(GET_PRODUCT_WITH_VARIANTS),
             {
                 id,
                 languageCode: getDefaultLanguage(),
@@ -72,9 +73,13 @@ export class ProductDataService {
                 image: product.image,
                 translations: product.translations,
                 optionGroupCodes: product.optionGroupCodes,
+                customFields: product.customFields,
             },
         };
-        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, input);
+        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(
+            addCustomFields(CREATE_PRODUCT),
+            input,
+        );
     }
 
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
@@ -83,9 +88,13 @@ export class ProductDataService {
                 id: product.id,
                 image: product.image,
                 translations: product.translations,
+                customFields: product.customFields,
             },
         };
-        return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
+        return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(
+            addCustomFields(UPDATE_PRODUCT),
+            input,
+        );
     }
 
     generateProductVariants(

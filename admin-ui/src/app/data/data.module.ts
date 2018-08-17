@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
-import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { Apollo, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
@@ -16,6 +16,7 @@ import { OmitTypenameLink } from './omit-typename-link';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
 import { DefaultInterceptor } from './providers/interceptor';
+import { loadServerConfigFactory } from './server-config';
 
 const apolloCache = new InMemoryCache();
 
@@ -58,6 +59,12 @@ export function createApollo(httpLink: HttpLink) {
             deps: [HttpLink],
         },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            useFactory: loadServerConfigFactory,
+            deps: [Apollo],
+        },
     ],
 })
 export class DataModule {}
