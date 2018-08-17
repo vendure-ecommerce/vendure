@@ -1,17 +1,13 @@
 import { spawn } from 'child_process';
 import * as fs from 'fs';
-import { execute, GraphQLSchema, IntrospectionQuery, IntrospectionSchema, parse } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
-import { buildClientSchema, introspectionQuery, printSchema } from 'graphql/utilities';
-import { fileLoader, mergeTypes } from 'merge-graphql-schemas';
 
 import { API_PATH, API_PORT } from '../shared/shared-constants';
 
 // tslint:disable:no-console
 const API_URL = `http://localhost:${API_PORT}/${API_PATH}`;
 const SCHEMA_JSON_FILE = '../schema.json';
-const CLIENT_SCHEMA_FILES = './src/app/data/types/**/*.graphql';
-const CLIENT_QUERY_FILES = '"./src/app/data/(queries|mutations|fragments)/**/*.ts"';
+const CLIENT_SCHEMA_FILES = './src/app/data/types/client-types.graphql';
+const CLIENT_QUERY_FILES = '"./src/app/data/{queries,mutations,fragments}/**/*.ts"';
 const TYPESCRIPT_DEFINITIONS_FILE = './src/app/data/types/gql-generated-types.ts';
 
 main().catch(e => {
@@ -25,26 +21,21 @@ main().catch(e => {
  * script "generate-gql-types".
  */
 async function main(): Promise<void> {
-    const introspectionQueryFromApi = await downloadSchemaFromApi(API_URL);
-    const combinedSchema = await combineSchemas(introspectionQueryFromApi, CLIENT_SCHEMA_FILES);
-
-    fs.writeFileSync(SCHEMA_JSON_FILE, JSON.stringify(combinedSchema));
-    console.log(`Generated schema file: ${SCHEMA_JSON_FILE}`);
-
+    await downloadSchemaFromApi(API_URL, SCHEMA_JSON_FILE);
     await generateTypeScriptTypesFromSchema(
         SCHEMA_JSON_FILE,
+        CLIENT_SCHEMA_FILES,
         CLIENT_QUERY_FILES,
         TYPESCRIPT_DEFINITIONS_FILE,
     );
-
-    console.log('Generated TypeScript definitions!');
 }
 
 /**
  * Downloads the schema from the provided GraphQL endpoint using the `apollo schema:download`
  * cli command and returns the result as an IntrospectionQuery object.
  */
-async function downloadSchemaFromApi(apiEndpoint: string): Promise<IntrospectionQuery> {
+async function downloadSchemaFromApi(apiEndpoint: string, outputFile: string): Promise<void> {
+    console.log(`Downloading schema from ${API_URL}`);
     const TEMP_API_SCHEMA = '../schema.temp.json';
     await runCommand('yarn', ['apollo', 'schema:download', TEMP_API_SCHEMA, `--endpoint=${API_URL}`]);
 
@@ -52,38 +43,13 @@ async function downloadSchemaFromApi(apiEndpoint: string): Promise<Introspection
 
     const schemaFromApi = fs.readFileSync(TEMP_API_SCHEMA, { encoding: 'utf8' });
     fs.unlinkSync(TEMP_API_SCHEMA);
-    const introspectionSchema: IntrospectionSchema = JSON.parse(schemaFromApi);
-    return {
-        __schema: introspectionSchema,
-    };
-}
-
-async function introspectionFromSchema(schema: GraphQLSchema): Promise<IntrospectionQuery> {
-    const queryAST = parse(introspectionQuery);
-    const result = await execute(schema, queryAST);
-    return result.data as IntrospectionQuery;
-}
-
-/**
- * Combines the IntrospectionQuery from the GraphQL API with any client-side schemas as defined by the
- * clientSchemaFiles glob.
- */
-async function combineSchemas(
-    introspectionQueryFromApi: IntrospectionQuery,
-    clientSchemaFiles: string,
-): Promise<IntrospectionQuery> {
-    const schemaFromApi = buildClientSchema(introspectionQueryFromApi);
-    const clientSchemas = fileLoader(clientSchemaFiles);
-    const remoteSchema = printSchema(schemaFromApi);
-    const typeDefs = mergeTypes([...clientSchemas, remoteSchema], {
-        all: true,
-    });
-    const executableSchema = makeExecutableSchema({
-        typeDefs,
-        resolverValidationOptions: { requireResolversForResolveType: false },
-    });
-    const introspection = await introspectionFromSchema(executableSchema);
-    return introspection;
+    const introspectionSchema = JSON.parse(schemaFromApi);
+    fs.writeFileSync(
+        SCHEMA_JSON_FILE,
+        JSON.stringify({
+            __schema: introspectionSchema,
+        }),
+    );
 }
 
 /**
@@ -91,6 +57,7 @@ async function combineSchemas(
  */
 async function generateTypeScriptTypesFromSchema(
     schemaFile: string,
+    clientSchemaFiles: string,
     queryFiles: string,
     outputFile: string,
 ): Promise<number> {
@@ -99,8 +66,11 @@ async function generateTypeScriptTypesFromSchema(
         'codegen:generate',
         outputFile,
         '--addTypename',
+        '--outputFlat',
+        '--target=typescript',
+        `--clientSchema=${clientSchemaFiles}`,
         `--queries=${queryFiles}`,
-        `--schema ${schemaFile}`,
+        `--schema=${schemaFile}`,
     ]);
 }
 
