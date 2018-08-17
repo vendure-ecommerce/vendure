@@ -12,6 +12,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     defaultLanguageCode: jest.Mock<any>;
     entityIdStrategy = new MockIdStrategy();
     dbConnectionOptions = {};
+    customFields = {};
 }
 
 export const ENCODED = 'encoded';

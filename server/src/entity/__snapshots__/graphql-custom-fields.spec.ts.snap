@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`addGraphQLCustomFields() extends a type 1`] = `
-"type Product {
+"scalar JSON
+
+type Product {
   id: ID
   customFields: ProductCustomFields
 }
@@ -21,6 +23,8 @@ input CreateProductInput {
   image: String
   customFields: CreateProductCustomFieldsInput
 }
+
+scalar JSON
 
 type Product {
   id: ID
@@ -43,6 +47,8 @@ input CreateProductInput {
   image: String
   customFields: CreateProductCustomFieldsInput
 }
+
+scalar JSON
 
 type Product {
   id: ID
@@ -75,7 +81,9 @@ input ProductTranslationInput {
 `;
 
 exports[`addGraphQLCustomFields() extends a type with a translation 1`] = `
-"type Product {
+"scalar JSON
+
+type Product {
   id: ID
   translations: [ProductTranslation!]!
   customFields: ProductCustomFields
@@ -98,7 +106,9 @@ type ProductTranslationCustomFields {
 `;
 
 exports[`addGraphQLCustomFields() extends a type with an Update input 1`] = `
-"type Product {
+"scalar JSON
+
+type Product {
   id: ID
   customFields: ProductCustomFields
 }
@@ -115,6 +125,16 @@ input UpdateProductCustomFieldsInput {
 input UpdateProductInput {
   image: String
   customFields: UpdateProductCustomFieldsInput
+}
+"
+`;
+
+exports[`addGraphQLCustomFields() uses JSON scalar if no custom fields defined 1`] = `
+"scalar JSON
+
+type Product {
+  id: ID
+  customFields: JSON
 }
 "
 `;

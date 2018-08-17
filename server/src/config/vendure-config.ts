@@ -61,7 +61,15 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     dbConnectionOptions: {
         type: 'mysql',
     },
-    customFields: {},
+    customFields: {
+        Address: [],
+        Customer: [],
+        Product: [],
+        ProductOption: [],
+        ProductOptionGroup: [],
+        ProductVariant: [],
+        User: [],
+    },
 };
 
 let activeConfig = defaultConfig;

@@ -49,4 +49,6 @@ export interface HasCustomFields {
     customFields: CustomFieldsObject;
 }
 
-export type CustomFieldsObject = object;
+export type MayHaveCustomFields = Partial<HasCustomFields>;
+
+export type CustomFieldsObject = { [key: string]: any; };

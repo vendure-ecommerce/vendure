@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
 import * as GraphQLJSON from 'graphql-type-json';
 
+import { CustomFields } from '../../shared/shared-types';
+
 import { AdministratorResolver } from './api/administrator/administrator.resolver';
 import { AuthController } from './api/auth/auth.controller';
 import { ConfigResolver } from './api/config/config.resolver';
@@ -26,10 +28,8 @@ import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
 import { ProductService } from './service/product.service';
 
-const config = getConfig();
-
 @Module({
-    imports: [GraphQLModule, TypeOrmModule.forRoot(config.dbConnectionOptions)],
+    imports: [GraphQLModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
     controllers: [AuthController, CustomerController],
     providers: [
         AdministratorResolver,
@@ -60,7 +60,7 @@ export class AppModule implements NestModule {
     ) {}
 
     configure(consumer: MiddlewareConsumer) {
-        const schema = this.createSchema();
+        const schema = this.createSchema(this.configService.customFields);
 
         consumer
             .apply(
@@ -81,9 +81,9 @@ export class AppModule implements NestModule {
             .forRoutes(this.configService.apiPath);
     }
 
-    createSchema() {
+    private createSchema(customFields: CustomFields) {
         const typeDefs = this.graphQLFactory.mergeTypesByPaths(__dirname + '/**/*.graphql');
-        const extendedTypeDefs = addGraphQLCustomFields(typeDefs, config.customFields);
+        const extendedTypeDefs = addGraphQLCustomFields(typeDefs, customFields);
         return this.graphQLFactory.createSchema({
             typeDefs: extendedTypeDefs,
             resolverValidationOptions: {

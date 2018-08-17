@@ -3,6 +3,19 @@ import { CustomFields } from '../../../shared/shared-types';
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 
 describe('addGraphQLCustomFields()', () => {
+    it('uses JSON scalar if no custom fields defined', () => {
+        const input = `
+            type Product {
+                id: ID
+            }
+        `;
+        const customFieldConfig: CustomFields = {
+            Product: [],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig);
+        expect(result).toMatchSnapshot();
+    });
+
     it('extends a type', () => {
         const input = `
             type Product {

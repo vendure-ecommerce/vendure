@@ -8,23 +8,25 @@ import { assertNever } from '../../../shared/shared-utils';
  * types with a customFields property for all entities, translations and inputs for which
  * custom fields are defined.
  */
-export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: CustomFields): string {
+export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: CustomFields): string {
     const schema = buildSchema(typeDefs);
-
-    if (!customFieldConfig) {
-        return typeDefs;
-    }
 
     let customFieldTypeDefs = '';
 
+    if (!schema.getType('JSON')) {
+        customFieldTypeDefs += `
+            scalar JSON
+        `;
+    }
+
     for (const entityName of Object.keys(customFieldConfig)) {
-        const customEntityFields = customFieldConfig[entityName as keyof CustomFields];
+        const customEntityFields = customFieldConfig[entityName as keyof CustomFields] || [];
 
-        if (customEntityFields) {
-            const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
-            const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
+        const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
+        const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
 
-            if (schema.getType(entityName)) {
+        if (schema.getType(entityName)) {
+            if (customEntityFields.length) {
                 customFieldTypeDefs += `
                     type ${entityName}CustomFields {
                         ${mapToFields(customEntityFields)}
@@ -34,10 +36,17 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: Cus
                         customFields: ${entityName}CustomFields
                     }
                 `;
-            }
-
-            if (localeStringFields.length && schema.getType(`${entityName}Translation`)) {
+            } else {
                 customFieldTypeDefs += `
+                    extend type ${entityName} {
+                        customFields: JSON
+                    }
+                `;
+            }
+        }
+
+        if (localeStringFields.length && schema.getType(`${entityName}Translation`)) {
+            customFieldTypeDefs += `
                     type ${entityName}TranslationCustomFields {
                          ${mapToFields(localeStringFields)}
                     }
@@ -46,9 +55,10 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: Cus
                         customFields: ${entityName}TranslationCustomFields
                     }
                 `;
-            }
+        }
 
-            if (schema.getType(`Create${entityName}Input`)) {
+        if (schema.getType(`Create${entityName}Input`)) {
+            if (nonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
                        ${mapToFields(nonLocaleStringFields)}
@@ -58,9 +68,17 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: Cus
                         customFields: Create${entityName}CustomFieldsInput
                     }
                 `;
+            } else {
+                customFieldTypeDefs += `
+                   extend input Create${entityName}Input {
+                       customFields: JSON
+                   }
+               `;
             }
+        }
 
-            if (schema.getType(`Update${entityName}Input`)) {
+        if (schema.getType(`Update${entityName}Input`)) {
+            if (nonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
                        ${mapToFields(nonLocaleStringFields)}
@@ -70,9 +88,17 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: Cus
                         customFields: Update${entityName}CustomFieldsInput
                     }
                 `;
+            } else {
+                customFieldTypeDefs += `
+                    extend input Update${entityName}Input {
+                        customFields: JSON
+                    }
+                `;
             }
+        }
 
-            if (localeStringFields && schema.getType(`${entityName}TranslationInput`)) {
+        if (localeStringFields && schema.getType(`${entityName}TranslationInput`)) {
+            if (localeStringFields.length) {
                 customFieldTypeDefs += `
                     input ${entityName}TranslationCustomFieldsInput {
                         ${mapToFields(localeStringFields)}
@@ -80,6 +106,12 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig?: Cus
 
                     extend input ${entityName}TranslationInput {
                         customFields: ${entityName}TranslationCustomFieldsInput
+                    }
+                `;
+            } else {
+                customFieldTypeDefs += `
+                    extend input ${entityName}TranslationInput {
+                        customFields: JSON
                     }
                 `;
             }
