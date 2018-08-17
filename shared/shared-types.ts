@@ -23,3 +23,30 @@ export type PaginatedList<T> = {
  * An entity ID
  */
 export type ID = string | number;
+
+export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
+
+export interface CustomFieldConfig {
+    name: string;
+    type: CustomFieldType;
+}
+
+export interface CustomFields {
+    Address?: CustomFieldConfig[];
+    Customer?: CustomFieldConfig[];
+    Product?: CustomFieldConfig[];
+    ProductOption?: CustomFieldConfig[];
+    ProductOptionGroup?: CustomFieldConfig[];
+    ProductVariant?: CustomFieldConfig[];
+    User?: CustomFieldConfig[];
+}
+
+/**
+ * This interface should be implemented by any entity which can be extended
+ * with custom fields.
+ */
+export interface HasCustomFields {
+    customFields: CustomFieldsObject;
+}
+
+export type CustomFieldsObject = object;

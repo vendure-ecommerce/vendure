@@ -15,7 +15,7 @@ import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { PasswordService } from './auth/password.service';
 import { getConfig } from './config/vendure-config';
-import { generateGraphQlCustomFieldsTypes } from './entity/graphql-custom-fields';
+import { addGraphQLCustomFields } from './entity/graphql-custom-fields';
 import { I18nService } from './i18n/i18n.service';
 import { TranslationUpdaterService } from './locale/translation-updater.service';
 import { AdministratorService } from './service/administrator.service';
@@ -83,9 +83,9 @@ export class AppModule implements NestModule {
 
     createSchema() {
         const typeDefs = this.graphQLFactory.mergeTypesByPaths(__dirname + '/**/*.graphql');
-        const customFieldTypeDefs = generateGraphQlCustomFieldsTypes(config.customFields);
+        const extendedTypeDefs = addGraphQLCustomFields(typeDefs, config.customFields);
         return this.graphQLFactory.createSchema({
-            typeDefs: typeDefs + customFieldTypeDefs,
+            typeDefs: extendedTypeDefs,
             resolverValidationOptions: {
                 requireResolversForResolveType: false,
             },

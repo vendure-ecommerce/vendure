@@ -1,0 +1,120 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`addGraphQLCustomFields() extends a type 1`] = `
+"type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+}
+"
+`;
+
+exports[`addGraphQLCustomFields() extends a type with a Create input 1`] = `
+"input CreateProductCustomFieldsInput {
+  available: Boolean
+}
+
+input CreateProductInput {
+  image: String
+  customFields: CreateProductCustomFieldsInput
+}
+
+type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+}
+"
+`;
+
+exports[`addGraphQLCustomFields() extends a type with a Create input and a translation 1`] = `
+"input CreateProductCustomFieldsInput {
+  available: Boolean
+}
+
+input CreateProductInput {
+  image: String
+  customFields: CreateProductCustomFieldsInput
+}
+
+type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+}
+
+type ProductTranslation {
+  id: ID
+  customFields: ProductTranslationCustomFields
+}
+
+type ProductTranslationCustomFields {
+  shortName: String
+}
+
+input ProductTranslationCustomFieldsInput {
+  shortName: String
+}
+
+input ProductTranslationInput {
+  id: ID
+  customFields: ProductTranslationCustomFieldsInput
+}
+"
+`;
+
+exports[`addGraphQLCustomFields() extends a type with a translation 1`] = `
+"type Product {
+  id: ID
+  translations: [ProductTranslation!]!
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+}
+
+type ProductTranslation {
+  id: ID
+  customFields: ProductTranslationCustomFields
+}
+
+type ProductTranslationCustomFields {
+  shortName: String
+}
+"
+`;
+
+exports[`addGraphQLCustomFields() extends a type with an Update input 1`] = `
+"type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+}
+
+input UpdateProductCustomFieldsInput {
+  available: Boolean
+}
+
+input UpdateProductInput {
+  image: String
+  customFields: UpdateProductCustomFieldsInput
+}
+"
+`;

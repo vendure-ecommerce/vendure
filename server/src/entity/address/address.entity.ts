@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
-import { HasCustomFields } from '../base/has-custom-fields';
 import { CustomAddressFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 

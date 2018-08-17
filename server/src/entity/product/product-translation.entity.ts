@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { LanguageCode } from '../../locale/language-code';
 import { Translation, TranslationInput } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
-import { HasCustomFields } from '../base/has-custom-fields';
 import { CustomProductFieldsTranslation } from '../custom-entity-fields';
 
 import { Product } from './product.entity';

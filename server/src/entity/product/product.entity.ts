@@ -1,9 +1,9 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
-import { HasCustomFields } from '../base/has-custom-fields';
 import { CustomProductFields } from '../custom-entity-fields';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';

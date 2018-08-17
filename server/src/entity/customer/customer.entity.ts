@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
-import { HasCustomFields } from '../base/has-custom-fields';
 import { CustomCustomerFields } from '../custom-entity-fields';
 import { User } from '../user/user.entity';
 

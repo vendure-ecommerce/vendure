@@ -1,7 +1,7 @@
 import { ID } from '../../../shared/shared-types';
+import { CustomFieldsObject } from '../../../shared/shared-types';
 import { UnwrappedArray } from '../common/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
-import { CustomFieldsObject } from '../entity/base/has-custom-fields';
 
 import { LanguageCode } from './language-code';
 import { TranslatableRelationsKeys } from './translate-entity';

@@ -1,7 +1,8 @@
 import { Column, ColumnType, Entity } from 'typeorm';
 
+import { CustomFields, CustomFieldType } from '../../../shared/shared-types';
 import { assertNever } from '../../../shared/shared-utils';
-import { CustomFields, CustomFieldType, getConfig } from '../config/vendure-config';
+import { getConfig } from '../config/vendure-config';
 
 const config = getConfig();
 
