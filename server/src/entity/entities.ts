@@ -11,7 +11,10 @@ import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
 import { User } from './user/user.entity';
 
-export const coreEntities = [
+/**
+ * A map of all the core database entities.
+ */
+export const coreEntitiesMap = {
     Address,
     Administrator,
     Customer,
@@ -24,4 +27,4 @@ export const coreEntities = [
     ProductVariant,
     ProductVariantTranslation,
     User,
-];
+};
