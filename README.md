@@ -45,6 +45,88 @@ This can be overridden by appending a `lang` query parameter to the url (e.g. `h
 
 All locales in Vendure are represented by 2-character [ISO 639-1 language codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
+### Custom Fields
+
+The developer may add custom fields to most of the entities in Vendure, which may contain any data specific to their
+business requirements. For example, attaching extra login data to a User or some boolean flag to a Product.
+
+Custom fields can currently be added to the following entities:
+
+* Address
+* Customer
+* Product
+* ProductOption
+* ProductOptionGroup
+* ProductVariant
+* User
+
+Custom fields are configured by means of a `customFields` property in the VendureConfig object passed to the `bootstrap()` function.
+
+#### Example
+
+```TypeScript
+bootstrap({
+    port: API_PORT,
+    apiPath: API_PATH,
+    cors: true,
+    jwtSecret: 'some-secret',
+    dbConnectionOptions: {
+        // ...
+    },
+    customFields: {
+        Product: [
+            { name: 'infoUrl', type: 'string' },
+            { name: 'downloadable', type: 'boolean' },
+            { name: 'shortName', type: 'localeString' },
+        ],
+        User: [
+            { name: 'socialLoginToken', type: 'string' },
+        ],
+    },
+})
+```
+
+When Vendure runs, the specified properties will be added to a `customFields` property of the Product and User entities, and
+the GraphQL schema will be updated to reflect the availability of these fields.
+
+In the admin UI, there will be form inputs which allow these fields to be updated by an administrator.
+
+#### Custom Field Types
+
+Currently the supported types are:
+
+| type          | corresponding type in DB  | corresponding GraphQL type    |
+| ----          | ------------------------  | --------------------------    |
+| string        | varchar                   | String                        |
+| localeString  | varchar                   | String                        |
+| int           | int                       | Int                           |
+| float         | double                    | Float                         |
+| boolean       | bool / tinyint            | Boolean                       | 
+| datetime      | datetime / timestamp      | String                        |
+
+Note that the "localeString" type can be localized into any languages supported by your instance.
+
+The following types are under consideration:
+
+* blob
+* text
+
+#### Planned extensions
+
+Currently a custom field configuration has only a "name" and "type". We will be adding further configuration
+options in the future as the framework matures. Currently-planned options are:
+
+* **Access control based on user permissions**. So that read / update access to a given custom field can be
+restricted e.g. only authenticated users / admins / not exposed via the GraphQL API at all (in the case where)
+the custom field will be used solely programatically by business logic contained in custom plugins).
+* **Config for the controls in the admin UI**. For example, an "int" field could have its "step", "max" and "min" values
+specified, which would add corresponding constraints in the admin UI.
+* **Validation logic**. It may be useful to allow the developer to pass a validation function for that field in the config,
+so that any specific constraints can be imposed on the inputted data in a consistent manner.
+* **Custom UI Widget**. For certain specialized custom fields, it may be desirable for the administrator to be able to use
+a custom-made form input to set the value in the admin UI. For example, a "location" field could use a visual map interface
+to set the coordiantes of a point. This would probably be a post-1.0 feature.
+
 
 ## License
 
