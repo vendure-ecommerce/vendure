@@ -43,7 +43,7 @@ export class ModalDialogComponent<T extends Dialog<any>> {
         if (this.options && this.options.locals) {
             // tslint:disable-next-line
             for (const key in this.options.locals) {
-                componentInstance[key] = this.options.locals[key] as T[keyof T];
+                componentInstance[key] = this.options.locals[key] as T[Extract<keyof T, string>];
             }
         }
     }

@@ -43,7 +43,7 @@
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.2.0",
     "typeorm": "^0.2.6",
-    "typescript": "^2.8.0"
+    "typescript": "^2.9.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^2.0.0",
