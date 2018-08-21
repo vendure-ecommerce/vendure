@@ -1,5 +1,5 @@
 type Query {
-  customers(take: Int, skip: Int): CustomerList!
+  customers(options: ListOptions): CustomerList!
   customer(id: ID!): Customer
 }
 

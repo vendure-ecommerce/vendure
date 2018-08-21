@@ -13,7 +13,7 @@ export class CustomerResolver {
     @Query('customers')
     @ApplyIdCodec()
     async customers(obj, args): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.take, args.skip);
+        return this.customerService.findAll(args.options);
     }
 
     @Query('customer')

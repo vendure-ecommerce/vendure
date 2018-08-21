@@ -20,7 +20,7 @@ export class ProductResolver {
     @Query('products')
     @ApplyIdCodec()
     async products(obj, args): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService.findAll(args.languageCode, args.take, args.skip);
+        return this.productService.findAll(args.languageCode, args.options);
     }
 
     @Query('product')

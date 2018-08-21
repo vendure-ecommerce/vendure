@@ -6,3 +6,21 @@ interface PaginatedList {
 interface Node {
     id: ID!
 }
+
+input ListOptions {
+    take: Int
+    skip: Int
+    sort: [SortParameter!]
+}
+
+enum SortOrder {
+    ASC
+    DESC
+}
+
+input SortParameter {
+    field: String!
+    order: SortOrder
+}
+
+scalar JSON

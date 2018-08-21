@@ -1,5 +1,5 @@
 type Query {
-    products(languageCode: LanguageCode, take: Int, skip: Int): ProductList!
+    products(languageCode: LanguageCode, options: ListOptions): ProductList!
     product(id: ID!, languageCode: LanguageCode): Product
 }
 

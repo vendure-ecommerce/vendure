@@ -9,7 +9,6 @@ import { CustomFields } from '../../shared/shared-types';
 import { AdministratorResolver } from './api/administrator/administrator.resolver';
 import { AuthController } from './api/auth/auth.controller';
 import { ConfigResolver } from './api/config/config.resolver';
-import { CustomerController } from './api/customer/customer.controller';
 import { CustomerResolver } from './api/customer/customer.resolver';
 import { ProductOptionResolver } from './api/product-option/product-option.resolver';
 import { ProductResolver } from './api/product/product.resolver';
@@ -31,7 +30,7 @@ import { ProductService } from './service/product.service';
 
 @Module({
     imports: [GraphQLModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
-    controllers: [AuthController, CustomerController],
+    controllers: [AuthController],
     providers: [
         AdministratorResolver,
         AdministratorService,

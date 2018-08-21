@@ -3,6 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import { ID, PaginatedList } from '../../../shared/shared-types';
+import { buildListQuery } from '../common/build-list-query';
+import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
@@ -23,15 +25,11 @@ export class ProductService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode, take?: number, skip?: number): Promise<PaginatedList<Translated<Product>>> {
+    findAll(lang: LanguageCode, options: ListQueryOptions): Promise<PaginatedList<Translated<Product>>> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
-        if (skip !== undefined && take === undefined) {
-            take = Number.MAX_SAFE_INTEGER;
-        }
-
-        return this.connection.manager
-            .findAndCount(Product, { relations, take, skip })
+        return buildListQuery(this.connection, Product, options, relations)
+            .getManyAndCount()
             .then(([products, totalItems]) => {
                 const items = products.map(product =>
                     translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
