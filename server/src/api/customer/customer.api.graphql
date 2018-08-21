@@ -1,5 +1,5 @@
 type Query {
-  customers(options: ListOptions): CustomerList!
+  customers(options: CustomerListOptions): CustomerList!
   customer(id: ID!): Customer
 }
 
@@ -13,4 +13,18 @@ type Mutation {
 type CustomerList implements PaginatedList {
     items: [Customer!]!
     totalItems: Int!
+}
+
+input CustomerListOptions {
+    take: Int
+    skip: Int
+    sort: CustomerSortParameter
+}
+
+input CustomerSortParameter {
+    id: SortOrder
+    firstName: SortOrder
+    lastName: SortOrder
+    phoneNumber: SortOrder
+    emailAddress: SortOrder
 }

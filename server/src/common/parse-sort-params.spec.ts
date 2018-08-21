@@ -14,7 +14,7 @@ describe('parseSortParams()', () => {
         const connection = new MockConnection();
         connection.setColumns(Product, [{ propertyName: 'id' }, { propertyName: 'image' }]);
 
-        const result = parseSortParams(connection as any, Product, []);
+        const result = parseSortParams(connection as any, Product, {});
         expect(result).toEqual({});
     });
 
@@ -22,24 +22,13 @@ describe('parseSortParams()', () => {
         const connection = new MockConnection();
         connection.setColumns(Product, [{ propertyName: 'id' }, { propertyName: 'image' }]);
 
-        const sortParams: SortParameter[] = [{ field: 'id', order: 'asc' }];
+        const sortParams: SortParameter<Product> = {
+            id: 'ASC',
+        };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
             'product.id': 'ASC',
-        });
-    });
-
-    it('defaults the order to "ASC', () => {
-        const connection = new MockConnection();
-        connection.setColumns(Product, [{ propertyName: 'id' }, { propertyName: 'image' }]);
-
-        const sortParams: SortParameter[] = [{ field: 'id' } as any, { field: 'image', order: 'foo' } as any];
-
-        const result = parseSortParams(connection as any, Product, sortParams);
-        expect(result).toEqual({
-            'product.id': 'ASC',
-            'product.image': 'ASC',
         });
     });
 
@@ -51,11 +40,11 @@ describe('parseSortParams()', () => {
             { propertyName: 'createdAt' },
         ]);
 
-        const sortParams: SortParameter[] = [
-            { field: 'id', order: 'asc' },
-            { field: 'createdAt', order: 'desc' },
-            { field: 'image', order: 'asc' },
-        ];
+        const sortParams: SortParameter<Product> = {
+            id: 'ASC',
+            createdAt: 'DESC',
+            image: 'ASC',
+        };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
@@ -75,7 +64,10 @@ describe('parseSortParams()', () => {
             { propertyName: 'base', relationMetadata: {} as any },
         ]);
 
-        const sortParams: SortParameter[] = [{ field: 'id', order: 'asc' }, { field: 'name', order: 'desc' }];
+        const sortParams: SortParameter<Product> = {
+            id: 'ASC',
+            name: 'DESC',
+        };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
@@ -88,7 +80,9 @@ describe('parseSortParams()', () => {
         const connection = new MockConnection();
         connection.setColumns(Product, [{ propertyName: 'id' }, { propertyName: 'infoUrl' }]);
 
-        const sortParams: SortParameter[] = [{ field: 'infoUrl', order: 'asc' }];
+        const sortParams: SortParameter<Product> = {
+            infoUrl: 'ASC',
+        };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
@@ -102,7 +96,9 @@ describe('parseSortParams()', () => {
         connection.setRelations(Product, [{ propertyName: 'translations', type: ProductTranslation }]);
         connection.setColumns(ProductTranslation, [{ propertyName: 'id' }, { propertyName: 'shortName' }]);
 
-        const sortParams: SortParameter[] = [{ field: 'shortName', order: 'asc' }];
+        const sortParams: SortParameter<Product> = {
+            shortName: 'ASC',
+        };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
@@ -120,7 +116,9 @@ describe('parseSortParams()', () => {
             { propertyName: 'base', relationMetadata: {} as any },
         ]);
 
-        const sortParams: SortParameter[] = [{ field: 'invalid', order: 'asc' }];
+        const sortParams: SortParameter<Product> = {
+            invalid: 'ASC',
+        };
 
         try {
             parseSortParams(connection as any, Product, sortParams);

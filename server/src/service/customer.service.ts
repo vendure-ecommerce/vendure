@@ -21,7 +21,7 @@ export class CustomerService {
         private passwordService: PasswordService,
     ) {}
 
-    findAll(options: ListQueryOptions): Promise<PaginatedList<Customer>> {
+    findAll(options: ListQueryOptions<Customer>): Promise<PaginatedList<Customer>> {
         return buildListQuery(this.connection, Customer, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));

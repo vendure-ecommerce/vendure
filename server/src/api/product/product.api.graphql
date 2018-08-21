@@ -1,5 +1,5 @@
 type Query {
-    products(languageCode: LanguageCode, options: ListOptions): ProductList!
+    products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
     product(id: ID!, languageCode: LanguageCode): Product
 }
 
@@ -21,4 +21,18 @@ type Mutation {
 type ProductList implements PaginatedList {
     items: [Product!]!
     totalItems: Int!
+}
+
+input ProductListOptions {
+    take: Int
+    skip: Int
+    sort: ProductSortParameter
+}
+
+input ProductSortParameter {
+    id: SortOrder
+    name: SortOrder
+    slug: SortOrder
+    description: SortOrder
+    image: SortOrder
 }

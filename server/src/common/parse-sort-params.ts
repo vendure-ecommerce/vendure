@@ -14,12 +14,12 @@ import { SortParameter } from './common-types';
  * @param entity
  * @param sortParams
  */
-export function parseSortParams(
+export function parseSortParams<T extends VendureEntity>(
     connection: Connection,
-    entity: Type<VendureEntity>,
-    sortParams: SortParameter[] | undefined,
+    entity: Type<T>,
+    sortParams: SortParameter<T> | undefined,
 ): OrderByCondition {
-    if (!sortParams || sortParams.length === 0) {
+    if (!sortParams || Object.keys(sortParams).length === 0) {
         return {};
     }
 
@@ -36,10 +36,8 @@ export function parseSortParams(
 
     const output = {};
 
-    for (const param of sortParams) {
-        const key = param.field;
+    for (const [key, order] of Object.entries(sortParams)) {
         const alias = metadata.name.toLowerCase();
-        const order = param.order && param.order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
         if (columns.find(c => c.propertyName === key)) {
             output[`${alias}.${key}`] = order;
         } else if (translationColumns.find(c => c.propertyName === key)) {

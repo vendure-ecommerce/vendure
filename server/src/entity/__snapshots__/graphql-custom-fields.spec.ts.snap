@@ -14,6 +14,32 @@ type ProductCustomFields {
 "
 `;
 
+exports[`addGraphQLCustomFields() extends a type with SortParameters 1`] = `
+"scalar JSON
+
+type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+}
+
+input ProductSortParameter {
+  id: SortOrder
+  available: SortOrder
+  shortName: SortOrder
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+"
+`;
+
 exports[`addGraphQLCustomFields() extends a type with a Create input 1`] = `
 "input CreateProductCustomFieldsInput {
   available: Boolean

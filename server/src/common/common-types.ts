@@ -1,3 +1,6 @@
+import { VendureEntity } from '../entity/base/base.entity';
+import { LocaleString } from '../locale/locale-types';
+
 /**
  * Creates a type based on T, but with all properties non-optional
  * and readonly.
@@ -12,22 +15,21 @@ export type UnwrappedArray<T extends any[]> = T[number];
 /**
  * Parameters for list queries
  */
-export interface ListQueryOptions {
+export interface ListQueryOptions<T extends VendureEntity> {
     take: number;
     skip: number;
-    sort: SortParameter[];
-    filter: FilterParameter[];
+    sort: SortParameter<T>;
 }
 
-export interface SortParameter {
-    field: string;
-    order: 'asc' | 'desc';
-}
+export type SortOrder = 'ASC' | 'DESC';
 
-export interface FilterParameter {
-    field: string;
-    operator: FilterOperator;
-    value: string | number;
-}
+export type PrimitiveFields<T extends VendureEntity> = {
+    [K in keyof T]: T[K] extends LocaleString | number | string ? K : never
+}[keyof T];
 
-export type FilterOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'contains' | 'startsWith';
+export type SortParameter<T extends VendureEntity> = { [K in PrimitiveFields<T>]?: SortOrder } &
+    CustomFieldSortParameter;
+
+export type CustomFieldSortParameter = {
+    [customField: string]: SortOrder;
+};

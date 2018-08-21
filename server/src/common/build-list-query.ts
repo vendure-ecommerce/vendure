@@ -13,7 +13,7 @@ import { parseSortParams } from './parse-sort-params';
 export function buildListQuery<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
-    options: ListQueryOptions,
+    options: ListQueryOptions<T>,
     relations?: string[],
 ): SelectQueryBuilder<T> {
     const skip = options.skip;

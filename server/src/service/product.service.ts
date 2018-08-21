@@ -25,7 +25,10 @@ export class ProductService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode, options: ListQueryOptions): Promise<PaginatedList<Translated<Product>>> {
+    findAll(
+        lang: LanguageCode,
+        options: ListQueryOptions<Product>,
+    ): Promise<PaginatedList<Translated<Product>>> {
         const relations = ['variants', 'optionGroups', 'variants.options'];
 
         return buildListQuery(this.connection, Product, options, relations)

@@ -105,4 +105,26 @@ describe('addGraphQLCustomFields()', () => {
         const result = addGraphQLCustomFields(input, customFieldConfig);
         expect(result).toMatchSnapshot();
     });
+
+    it('extends a type with SortParameters', () => {
+        const input = `
+                    type Product {
+                        id: ID
+                    }
+
+                    input ProductSortParameter {
+                        id: SortOrder
+                    }
+
+                    enum SortOrder {
+                        ASC
+                        DESC
+                    }
+                `;
+        const customFieldConfig: CustomFields = {
+            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig);
+        expect(result).toMatchSnapshot();
+    });
 });

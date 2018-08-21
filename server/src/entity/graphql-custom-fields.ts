@@ -97,6 +97,14 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
             }
         }
 
+        if (customEntityFields.length && schema.getType(`${entityName}SortParameter`)) {
+            customFieldTypeDefs += `
+                    extend input ${entityName}SortParameter {
+                         ${mapToFields(customEntityFields, () => 'SortOrder')}
+                    }
+                `;
+        }
+
         if (localeStringFields && schema.getType(`${entityName}TranslationInput`)) {
             if (localeStringFields.length) {
                 customFieldTypeDefs += `
@@ -126,8 +134,12 @@ type GraphQLFieldType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
-function mapToFields(fieldDefs: CustomFieldConfig[]): string {
-    return fieldDefs.map(field => `${field.name}: ${getGraphQlType(field.type)}`).join('\n');
+function mapToFields(
+    fieldDefs: CustomFieldConfig[],
+    typeFn?: (fieldType: CustomFieldType) => string,
+): string {
+    const getType = typeFn || getGraphQlType;
+    return fieldDefs.map(field => `${field.name}: ${getType(field.type)}`).join('\n');
 }
 
 function getGraphQlType(type: CustomFieldType): GraphQLFieldType {
