@@ -29,7 +29,7 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
             if (customEntityFields.length) {
                 customFieldTypeDefs += `
                     type ${entityName}CustomFields {
-                        ${mapToFields(customEntityFields)}
+                        ${mapToFields(customEntityFields, getGraphQlType)}
                     }
 
                     extend type ${entityName} {
@@ -48,7 +48,7 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
         if (localeStringFields.length && schema.getType(`${entityName}Translation`)) {
             customFieldTypeDefs += `
                     type ${entityName}TranslationCustomFields {
-                         ${mapToFields(localeStringFields)}
+                         ${mapToFields(localeStringFields, getGraphQlType)}
                     }
 
                     extend type ${entityName}Translation {
@@ -61,7 +61,7 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
             if (nonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
-                       ${mapToFields(nonLocaleStringFields)}
+                       ${mapToFields(nonLocaleStringFields, getGraphQlType)}
                     }
 
                     extend input Create${entityName}Input {
@@ -81,7 +81,7 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
             if (nonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
-                       ${mapToFields(nonLocaleStringFields)}
+                       ${mapToFields(nonLocaleStringFields, getGraphQlType)}
                     }
 
                     extend input Update${entityName}Input {
@@ -105,11 +105,19 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
                 `;
         }
 
+        if (customEntityFields.length && schema.getType(`${entityName}FilterParameter`)) {
+            customFieldTypeDefs += `
+                    extend input ${entityName}FilterParameter {
+                         ${mapToFields(customEntityFields, getFilterOperator)}
+                    }
+                `;
+        }
+
         if (localeStringFields && schema.getType(`${entityName}TranslationInput`)) {
             if (localeStringFields.length) {
                 customFieldTypeDefs += `
                     input ${entityName}TranslationCustomFieldsInput {
-                        ${mapToFields(localeStringFields)}
+                        ${mapToFields(localeStringFields, getGraphQlType)}
                     }
 
                     extend input ${entityName}TranslationInput {
@@ -134,12 +142,26 @@ type GraphQLFieldType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
-function mapToFields(
-    fieldDefs: CustomFieldConfig[],
-    typeFn?: (fieldType: CustomFieldType) => string,
-): string {
-    const getType = typeFn || getGraphQlType;
-    return fieldDefs.map(field => `${field.name}: ${getType(field.type)}`).join('\n');
+function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
+    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
+}
+
+function getFilterOperator(type: CustomFieldType): string {
+    switch (type) {
+        case 'datetime':
+            return 'DateOperators';
+        case 'string':
+        case 'localeString':
+            return 'StringOperators';
+        case 'boolean':
+            return 'BooleanOperators';
+        case 'int':
+        case 'float':
+            return 'NumberOperators';
+        default:
+            assertNever(type);
+    }
+    return 'String';
 }
 
 function getGraphQlType(type: CustomFieldType): GraphQLFieldType {

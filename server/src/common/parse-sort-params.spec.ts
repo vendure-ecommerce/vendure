@@ -132,11 +132,7 @@ describe('parseSortParams()', () => {
     });
 });
 
-type PropertiesMap = {
-    [name: string]: string | any;
-};
-
-class MockConnection {
+export class MockConnection {
     private columnsMap = new Map<Type<any>, Array<Partial<ColumnMetadata>>>();
     private relationsMap = new Map<Type<any>, Array<Partial<RelationMetadata>>>();
     setColumns(entity: Type<any>, value: Array<Partial<ColumnMetadata>>) {

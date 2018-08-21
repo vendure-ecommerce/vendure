@@ -127,4 +127,43 @@ describe('addGraphQLCustomFields()', () => {
         const result = addGraphQLCustomFields(input, customFieldConfig);
         expect(result).toMatchSnapshot();
     });
+
+    it('extends a type with FilterParameters', () => {
+        const input = `
+                    type Product {
+                        name: String
+                    }
+
+                    input ProductFilterParameter {
+                        id: StringOperators
+                    }
+
+                    input StringOperators {
+                        eq: String
+                    }
+
+                    input NumberOperators {
+                        eq: Float
+                    }
+
+                    input DateOperators {
+                        eq: String
+                    }
+
+                    input BooleanOperators {
+                        eq: Boolean
+                    }
+
+                `;
+        const customFieldConfig: CustomFields = {
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+                { name: 'rating', type: 'float' },
+                { name: 'published', type: 'datetime' },
+            ],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig);
+        expect(result).toMatchSnapshot();
+    });
 });

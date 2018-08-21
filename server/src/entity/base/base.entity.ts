@@ -19,7 +19,7 @@ export abstract class VendureEntity {
 
     @PrimaryGeneratedColumn(primaryKeyType) id: ID;
 
-    @CreateDateColumn() createdAt: string;
+    @CreateDateColumn() createdAt: Date;
 
-    @UpdateDateColumn() updatedAt: string;
+    @UpdateDateColumn() updatedAt: Date;
 }

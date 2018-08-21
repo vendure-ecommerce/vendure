@@ -27,6 +27,7 @@ input ProductListOptions {
     take: Int
     skip: Int
     sort: ProductSortParameter
+    filter: ProductFilterParameter
 }
 
 input ProductSortParameter {
@@ -35,4 +36,10 @@ input ProductSortParameter {
     slug: SortOrder
     description: SortOrder
     image: SortOrder
+}
+
+input ProductFilterParameter {
+    name: StringOperators
+    slug: StringOperators
+    description: StringOperators
 }

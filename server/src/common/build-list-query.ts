@@ -5,6 +5,7 @@ import { Type } from '../../../shared/shared-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
 import { ListQueryOptions } from './common-types';
+import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
 /**
@@ -21,12 +22,21 @@ export function buildListQuery<T extends VendureEntity>(
     if (options.skip !== undefined && options.take === undefined) {
         take = Number.MAX_SAFE_INTEGER;
     }
-    const order = parseSortParams(connection, entity, options.sort);
+    const sort = parseSortParams(connection, entity, options.sort);
+    const filter = parseFilterParams(connection, entity, options.filter);
 
     const qb = connection.createQueryBuilder<T>(entity, entity.name.toLowerCase());
     FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations, take, skip });
     // tslint:disable-next-line:no-non-null-assertion
     FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
-    return qb.orderBy(order);
+    filter.forEach(({ clause, parameters }, index) => {
+        if (index === 0) {
+            qb.where(clause, parameters);
+        } else {
+            qb.andWhere(clause, parameters);
+        }
+    });
+
+    return qb.orderBy(sort);
 }

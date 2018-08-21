@@ -19,6 +19,7 @@ input CustomerListOptions {
     take: Int
     skip: Int
     sort: CustomerSortParameter
+    filter: CustomerFilterParameter
 }
 
 input CustomerSortParameter {
@@ -27,4 +28,11 @@ input CustomerSortParameter {
     lastName: SortOrder
     phoneNumber: SortOrder
     emailAddress: SortOrder
+}
+
+input CustomerFilterParameter {
+    firstName: StringOperators
+    lastName: StringOperators
+    phoneNumber: StringOperators
+    emailAddress: StringOperators
 }

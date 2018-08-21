@@ -35,9 +35,9 @@ export function parseSortParams<T extends VendureEntity>(
     }
 
     const output = {};
+    const alias = metadata.name.toLowerCase();
 
     for (const [key, order] of Object.entries(sortParams)) {
-        const alias = metadata.name.toLowerCase();
         if (columns.find(c => c.propertyName === key)) {
             output[`${alias}.${key}`] = order;
         } else if (translationColumns.find(c => c.propertyName === key)) {

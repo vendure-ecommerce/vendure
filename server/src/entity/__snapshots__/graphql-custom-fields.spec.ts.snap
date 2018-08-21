@@ -14,6 +14,47 @@ type ProductCustomFields {
 "
 `;
 
+exports[`addGraphQLCustomFields() extends a type with FilterParameters 1`] = `
+"input BooleanOperators {
+  eq: Boolean
+}
+
+input DateOperators {
+  eq: String
+}
+
+scalar JSON
+
+input NumberOperators {
+  eq: Float
+}
+
+type Product {
+  name: String
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+  shortName: String
+  rating: Float
+  published: String
+}
+
+input ProductFilterParameter {
+  id: StringOperators
+  available: BooleanOperators
+  shortName: StringOperators
+  rating: NumberOperators
+  published: DateOperators
+}
+
+input StringOperators {
+  eq: String
+}
+"
+`;
+
 exports[`addGraphQLCustomFields() extends a type with SortParameters 1`] = `
 "scalar JSON
 

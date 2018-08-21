@@ -12,4 +12,39 @@ enum SortOrder {
     DESC
 }
 
+input StringOperators {
+    eq: String
+    contains: String
+}
+
+input BooleanOperators {
+    eq: Boolean
+}
+
+input NumberRange {
+    start: Float!
+    end: Float!
+}
+
+input NumberOperators {
+    eq: Float
+    lt: Float
+    lte: Float
+    gt: Float
+    gte: Float
+    between: NumberRange
+}
+
+input DateRange {
+    start: String!
+    end: String!
+}
+
+input DateOperators {
+    eq: String
+    before: String
+    after: String
+    between: DateRange
+}
+
 scalar JSON
