@@ -11,7 +11,9 @@
                         <clr-icon shape="library" size="20"></clr-icon>{{ 'nav.products' | translate }}
                     </a>
                 </li>
-                <li><a class="nav-link">
+                <li><a class="nav-link"
+                       [routerLink]="['/catalog', 'facets']"
+                       routerLinkActive="active">
                     <clr-icon shape="tag" size="20"></clr-icon>{{ 'nav.facets' | translate }}
                 </a>
                 </li>

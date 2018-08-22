@@ -4,15 +4,15 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 import { DataService } from '../../../data/providers/data.service';
-import { GetProductList_products_items } from '../../../data/types/gql-generated-types';
+import { GetFacetList_facets_items } from '../../../data/types/gql-generated-types';
 
 @Component({
-    selector: 'vdr-products-list',
-    templateUrl: './product-list.component.html',
-    styleUrls: ['./product-list.component.scss'],
+    selector: 'vdr-facet-list',
+    templateUrl: './facet-list.component.html',
+    styleUrls: ['./facet-list.component.scss'],
 })
-export class ProductListComponent implements OnInit, OnDestroy {
-    products$: Observable<GetProductList_products_items[]>;
+export class FacetListComponent implements OnInit, OnDestroy {
+    facets$: Observable<GetFacetList_facets_items[]>;
     totalItems$: Observable<number>;
     itemsPerPage$: Observable<number>;
     currentPage$: Observable<number>;
@@ -21,16 +21,16 @@ export class ProductListComponent implements OnInit, OnDestroy {
     constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
 
     ngOnInit() {
-        const productsQuery = this.dataService.product.getProducts(10, 0);
+        const facetsQuery = this.dataService.facet.getFacets(10, 0);
 
         const fetchPage = ([currentPage, itemsPerPage]: [number, number]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
-            productsQuery.ref.refetch({ options: { skip, take } });
+            facetsQuery.ref.refetch({ options: { skip, take } });
         };
 
-        this.products$ = productsQuery.stream$.pipe(map(data => data.products.items));
-        this.totalItems$ = productsQuery.stream$.pipe(map(data => data.products.totalItems));
+        this.facets$ = facetsQuery.stream$.pipe(map(data => data.facets.items));
+        this.totalItems$ = facetsQuery.stream$.pipe(map(data => data.facets.totalItems));
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
             map(page => (!page ? 1 : +page)),

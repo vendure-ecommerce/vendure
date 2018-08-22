@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { DataService } from '../data/providers/data.service';
 
+import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductResolver } from './providers/routing/product-resolver';
@@ -24,6 +25,13 @@ export const catalogRoutes: Route[] = [
         },
         data: {
             breadcrumb: productBreadcrumb,
+        },
+    },
+    {
+        path: 'facets',
+        component: FacetListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.facets'),
         },
     },
 ];

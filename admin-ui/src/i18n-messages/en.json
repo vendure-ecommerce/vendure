@@ -1,14 +1,15 @@
 {
   "breadcrumb": {
     "dashboard": "Dashboard",
+    "facets": "Facets",
     "products": "Products"
   },
   "catalog": {
     "ID": "ID",
-    "add-existing-option-group": "Add existing option group",
-    "add-option-group": "Add option group",
+    "code": "Code",
     "confirm-generate-product-variants": "Click 'Finish' to generate {count} product variants.",
     "create-group": "Create option group",
+    "create-new-facet": "Create new facet",
     "create-new-option-group": "Create new option group",
     "create-new-product": "Create new product",
     "description": "Description",

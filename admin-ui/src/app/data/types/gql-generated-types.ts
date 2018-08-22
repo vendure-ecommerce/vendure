@@ -472,6 +472,36 @@ export interface RemoveOptionGroupFromProductVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetFacetList
+// ====================================================
+
+export interface GetFacetList_facets_items {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+}
+
+export interface GetFacetList_facets {
+  __typename: "FacetList";
+  items: GetFacetList_facets_items[];
+  totalItems: number;
+}
+
+export interface GetFacetList {
+  facets: GetFacetList_facets;
+}
+
+export interface GetFacetListVariables {
+  options?: FacetListOptions | null;
+  languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetNetworkStatus
 // ====================================================
 
@@ -1063,6 +1093,45 @@ export interface CreateProductOptionInput {
   customFields?: any | null;
 }
 
+export interface FacetListOptions {
+  take?: number | null;
+  skip?: number | null;
+  sort?: FacetSortParameter | null;
+  filter?: FacetFilterParameter | null;
+}
+
+export interface FacetSortParameter {
+  id?: SortOrder | null;
+  createdAt?: SortOrder | null;
+  updatedAt?: SortOrder | null;
+  name?: SortOrder | null;
+  code?: SortOrder | null;
+}
+
+export interface FacetFilterParameter {
+  name?: StringOperators | null;
+  code?: StringOperators | null;
+  createdAt?: DateOperators | null;
+  updatedAt?: DateOperators | null;
+}
+
+export interface StringOperators {
+  eq?: string | null;
+  contains?: string | null;
+}
+
+export interface DateOperators {
+  eq?: any | null;
+  before?: any | null;
+  after?: any | null;
+  between?: DateRange | null;
+}
+
+export interface DateRange {
+  start: any;
+  end: any;
+}
+
 export interface ProductListOptions {
   take?: number | null;
   skip?: number | null;
@@ -1092,23 +1161,6 @@ export interface ProductFilterParameter {
   infoUrl?: StringOperators | null;
   downloadable?: BooleanOperators | null;
   nickname?: StringOperators | null;
-}
-
-export interface StringOperators {
-  eq?: string | null;
-  contains?: string | null;
-}
-
-export interface DateOperators {
-  eq?: any | null;
-  before?: any | null;
-  after?: any | null;
-  between?: DateRange | null;
-}
-
-export interface DateRange {
-  start: any;
-  end: any;
 }
 
 export interface BooleanOperators {

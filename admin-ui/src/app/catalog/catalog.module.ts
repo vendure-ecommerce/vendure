@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 import { catalogRoutes } from './catalog.routes';
 import { CreateOptionGroupDialogComponent } from './components/create-option-group-dialog/create-option-group-dialog.component';
 import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
+import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
@@ -25,6 +26,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         SelectOptionGroupDialogComponent,
         CreateOptionGroupFormComponent,
         SelectOptionGroupComponent,
+        FacetListComponent,
     ],
     entryComponents: [CreateOptionGroupDialogComponent, SelectOptionGroupDialogComponent],
     providers: [ProductResolver, ProductUpdaterService],
