@@ -1,0 +1,30 @@
+type Query {
+    facets(languageCode: LanguageCode, options: FacetListOptions): FacetList!
+}
+
+type FacetList implements PaginatedList {
+    items: [Facet!]!
+    totalItems: Int!
+}
+
+input FacetListOptions {
+    take: Int
+    skip: Int
+    sort: FacetSortParameter
+    filter: FacetFilterParameter
+}
+
+input FacetSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+    code: SortOrder
+}
+
+input FacetFilterParameter {
+    name: StringOperators
+    code: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}

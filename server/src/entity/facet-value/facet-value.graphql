@@ -3,7 +3,8 @@ type FacetValue implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     languageCode: LanguageCode
-    name: String
+    name: String!
+    code: String!
     translations: [FacetValueTranslation!]!
 }
 
@@ -22,5 +23,6 @@ input FacetValueTranslationInput {
 }
 
 input CreateFacetValueInput {
+    code: String!
     translations: [FacetValueTranslationInput!]!
 }

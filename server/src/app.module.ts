@@ -11,6 +11,7 @@ import { AdministratorResolver } from './api/administrator/administrator.resolve
 import { AuthController } from './api/auth/auth.controller';
 import { ConfigResolver } from './api/config/config.resolver';
 import { CustomerResolver } from './api/customer/customer.resolver';
+import { FacetResolver } from './api/facet/facet.resolver';
 import { ProductOptionResolver } from './api/product-option/product-option.resolver';
 import { ProductResolver } from './api/product/product.resolver';
 import { AuthService } from './auth/auth.service';
@@ -24,6 +25,7 @@ import { TranslationUpdaterService } from './locale/translation-updater.service'
 import { AdministratorService } from './service/administrator.service';
 import { ConfigService } from './service/config.service';
 import { CustomerService } from './service/customer.service';
+import { FacetService } from './service/facet.service';
 import { ProductOptionGroupService } from './service/product-option-group.service';
 import { ProductOptionService } from './service/product-option.service';
 import { ProductVariantService } from './service/product-variant.service';
@@ -38,6 +40,8 @@ import { ProductService } from './service/product.service';
         AuthService,
         ConfigResolver,
         ConfigService,
+        FacetResolver,
+        FacetService,
         JwtStrategy,
         I18nService,
         PasswordService,

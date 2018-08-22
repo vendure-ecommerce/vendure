@@ -4,6 +4,7 @@ type Facet implements Node {
     updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
+    code: String!
     values: [FacetValue!]!
     translations: [FacetTranslation!]!
 }
@@ -23,11 +24,13 @@ input FacetTranslationInput {
 }
 
 input CreateFacetInput {
+    code: String!
     translations: [FacetTranslationInput!]!
     options: [CreateProductOptionInput!]!
 }
 
 input UpdateFacetInput {
     id: ID!
+    code: String!
     translations: [FacetTranslationInput!]!
 }
