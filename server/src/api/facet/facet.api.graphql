@@ -1,5 +1,6 @@
 type Query {
     facets(languageCode: LanguageCode, options: FacetListOptions): FacetList!
+    facet(id: ID!, languageCode: LanguageCode): Facet
 }
 
 type FacetList implements PaginatedList {

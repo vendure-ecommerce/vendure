@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { PaginatedList } from '../../../shared/shared-types';
+import { ID, PaginatedList } from '../../../shared/shared-types';
 import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { Facet } from '../entity/facet/facet.entity';
@@ -30,5 +30,13 @@ export class FacetService {
                     totalItems,
                 };
             });
+    }
+
+    findOne(facetId: ID, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
+        const relations = ['values'];
+
+        return this.connection.manager
+            .findOne(Facet, facetId, { relations })
+            .then(product => product && translateDeep(product, lang, ['values']));
     }
 }
