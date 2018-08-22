@@ -1,10 +1,10 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { DeepPartial } from '../../../../shared/shared-types';
-import { HasCustomFields } from '../../../../shared/shared-types';
+import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
+import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
 
@@ -33,6 +33,10 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @ManyToMany(type => ProductOption)
     @JoinTable()
     options: ProductOption[];
+
+    @ManyToMany(type => FacetValue)
+    @JoinTable()
+    facetValues: FacetValue[];
 
     @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;

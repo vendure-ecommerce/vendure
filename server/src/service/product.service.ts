@@ -29,13 +29,18 @@ export class ProductService {
         lang: LanguageCode,
         options: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const relations = ['variants', 'optionGroups', 'variants.options'];
+        const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
 
         return buildListQuery(this.connection, Product, options, relations)
             .getManyAndCount()
             .then(([products, totalItems]) => {
                 const items = products.map(product =>
-                    translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
+                    translateDeep(product, lang, [
+                        'optionGroups',
+                        'variants',
+                        ['variants', 'options'],
+                        ['variants', 'facetValues'],
+                    ]),
                 );
                 return {
                     items,

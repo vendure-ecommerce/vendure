@@ -10,6 +10,14 @@ import { coreEntitiesMap } from './entities';
 @Entity()
 export class CustomAddressFields {}
 @Entity()
+export class CustomFacetFields {}
+@Entity()
+export class CustomFacetFieldsTranslation {}
+@Entity()
+export class CustomFacetValueFields {}
+@Entity()
+export class CustomFacetValueFieldsTranslation {}
+@Entity()
 export class CustomCustomerFields {}
 @Entity()
 export class CustomProductFields {}
@@ -137,6 +145,10 @@ function assertNoLocaleStringFields(entity: Type<any>, customFields: CustomField
 export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Address', CustomAddressFields);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
+    registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
+    registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
+    registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);

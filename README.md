@@ -54,6 +54,8 @@ Custom fields can currently be added to the following entities:
 
 * Address
 * Customer
+* Facet
+* FacetValue
 * Product
 * ProductOption
 * ProductOptionGroup

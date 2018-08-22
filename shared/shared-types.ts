@@ -43,6 +43,8 @@ export interface CustomFieldConfig {
 export interface CustomFields {
     Address?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
+    Facet?: CustomFieldConfig[];
+    FacetValue?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];

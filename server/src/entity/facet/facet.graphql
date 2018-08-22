@@ -1,0 +1,33 @@
+type Facet implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    values: [FacetValue!]!
+    translations: [FacetTranslation!]!
+}
+
+type FacetTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+}
+
+input FacetTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String!
+}
+
+input CreateFacetInput {
+    translations: [FacetTranslationInput!]!
+    options: [CreateProductOptionInput!]!
+}
+
+input UpdateFacetInput {
+    id: ID!
+    translations: [FacetTranslationInput!]!
+}

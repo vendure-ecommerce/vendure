@@ -8,6 +8,7 @@ type ProductVariant implements Node {
     image: String
     price: Int!
     options: [ProductOption!]!
+    facetValues: [FacetValue!]!
     translations: [ProductVariantTranslation!]!
 }
 
