@@ -1,3 +1,7 @@
+# Third-party custom scalars
+scalar JSON
+scalar DateTime
+
 interface PaginatedList {
     items: [Node!]!
     totalItems: Int!
@@ -36,15 +40,13 @@ input NumberOperators {
 }
 
 input DateRange {
-    start: String!
-    end: String!
+    start: DateTime!
+    end: DateTime!
 }
 
 input DateOperators {
-    eq: String
-    before: String
-    after: String
+    eq: DateTime
+    before: DateTime
+    after: DateTime
     between: DateRange
 }
-
-scalar JSON

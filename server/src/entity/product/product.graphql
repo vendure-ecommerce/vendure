@@ -1,5 +1,7 @@
 type Product implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
     slug: String!
@@ -12,6 +14,8 @@ type Product implements Node {
 
 type ProductTranslation {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
     slug: String!

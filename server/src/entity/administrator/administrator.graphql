@@ -1,5 +1,7 @@
 type Administrator implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     firstName: String
     lastName: String
     emailAddress: String

@@ -1072,6 +1072,8 @@ export interface ProductListOptions {
 
 export interface ProductSortParameter {
     id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
     name?: SortOrder | null;
     slug?: SortOrder | null;
     description?: SortOrder | null;
@@ -1085,6 +1087,8 @@ export interface ProductFilterParameter {
     name?: StringOperators | null;
     slug?: StringOperators | null;
     description?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
     infoUrl?: StringOperators | null;
     downloadable?: BooleanOperators | null;
     nickname?: StringOperators | null;
@@ -1093,6 +1097,18 @@ export interface ProductFilterParameter {
 export interface StringOperators {
     eq?: string | null;
     contains?: string | null;
+}
+
+export interface DateOperators {
+    eq?: any | null;
+    before?: any | null;
+    after?: any | null;
+    between?: DateRange | null;
+}
+
+export interface DateRange {
+    start: any;
+    end: any;
 }
 
 export interface BooleanOperators {

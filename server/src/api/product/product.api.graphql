@@ -32,6 +32,8 @@ input ProductListOptions {
 
 input ProductSortParameter {
     id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
     name: SortOrder
     slug: SortOrder
     description: SortOrder
@@ -42,4 +44,6 @@ input ProductFilterParameter {
     name: StringOperators
     slug: StringOperators
     description: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
 }

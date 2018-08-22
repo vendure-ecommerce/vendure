@@ -1,5 +1,7 @@
 type ProductOption implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode
     code: String
     name: String
@@ -8,6 +10,8 @@ type ProductOption implements Node {
 
 type ProductOptionTranslation {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
 }

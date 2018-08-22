@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLFactory, GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
+import { GraphQLDateTime } from 'graphql-iso-date';
 import * as GraphQLJSON from 'graphql-type-json';
 
 import { CustomFields } from '../../shared/shared-types';
@@ -92,6 +93,7 @@ export class AppModule implements NestModule {
             },
             resolvers: {
                 JSON: GraphQLJSON,
+                DateTime: GraphQLDateTime,
             },
         });
     }

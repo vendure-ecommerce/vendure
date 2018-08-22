@@ -24,6 +24,8 @@ input CustomerListOptions {
 
 input CustomerSortParameter {
     id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
     firstName: SortOrder
     lastName: SortOrder
     phoneNumber: SortOrder
@@ -35,4 +37,6 @@ input CustomerFilterParameter {
     lastName: StringOperators
     phoneNumber: StringOperators
     emailAddress: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
 }

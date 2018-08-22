@@ -1,28 +1,30 @@
 type Address implements Node {
-  id: ID!
-  fullName: String
-  company: String
-  streetLine1: String
-  streetLine2: String
-  city: String
-  province: String
-  postalCode: String
-  country: String
-  phoneNumber: String
-  defaultShippingAddress: Boolean
-  defaultBillingAddress: Boolean
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    phoneNumber: String
+    defaultShippingAddress: Boolean
+    defaultBillingAddress: Boolean
 }
 
 input CreateAddressInput {
-  fullName: String
-  company: String
-  streetLine1: String
-  streetLine2: String
-  city: String
-  province: String
-  postalCode: String
-  country: String
-  phoneNumber: String
-  defaultShippingAddress: Boolean
-  defaultBillingAddress: Boolean
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    phoneNumber: String
+    defaultShippingAddress: Boolean
+    defaultBillingAddress: Boolean
 }

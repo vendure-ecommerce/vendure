@@ -1,5 +1,7 @@
 type ProductVariant implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode!
     sku: String!
     name: String!
@@ -11,6 +13,8 @@ type ProductVariant implements Node {
 
 type ProductVariantTranslation {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
 }
