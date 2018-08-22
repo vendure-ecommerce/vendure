@@ -12,8 +12,8 @@ export const GET_PRODUCT_WITH_VARIANTS = gql`
 `;
 
 export const GET_PRODUCT_LIST = gql`
-    query GetProductList($take: Int, $skip: Int, $languageCode: LanguageCode) {
-        products(languageCode: $languageCode, take: $take, skip: $skip) {
+    query GetProductList($options: ProductListOptions, $languageCode: LanguageCode) {
+        products(languageCode: $languageCode, options: $options) {
             items {
                 id
                 languageCode

@@ -617,8 +617,7 @@ export interface GetProductList {
 }
 
 export interface GetProductListVariables {
-    take?: number | null;
-    skip?: number | null;
+    options?: ProductListOptions | null;
     languageCode?: LanguageCode | null;
 }
 
@@ -985,6 +984,11 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export enum SortOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
 export interface UpdateProductInput {
     id: string;
     image?: string | null;
@@ -1057,6 +1061,42 @@ export interface CreateProductOptionInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
     customFields?: any | null;
+}
+
+export interface ProductListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: ProductSortParameter | null;
+    filter?: ProductFilterParameter | null;
+}
+
+export interface ProductSortParameter {
+    id?: SortOrder | null;
+    name?: SortOrder | null;
+    slug?: SortOrder | null;
+    description?: SortOrder | null;
+    image?: SortOrder | null;
+    infoUrl?: SortOrder | null;
+    downloadable?: SortOrder | null;
+    nickname?: SortOrder | null;
+}
+
+export interface ProductFilterParameter {
+    name?: StringOperators | null;
+    slug?: StringOperators | null;
+    description?: StringOperators | null;
+    infoUrl?: StringOperators | null;
+    downloadable?: BooleanOperators | null;
+    nickname?: StringOperators | null;
+}
+
+export interface StringOperators {
+    eq?: string | null;
+    contains?: string | null;
+}
+
+export interface BooleanOperators {
+    eq?: boolean | null;
 }
 
 //==============================================================

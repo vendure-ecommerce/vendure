@@ -51,8 +51,10 @@ export class ProductDataService {
 
     getProducts(take: number = 10, skip: number = 0): QueryResult<GetProductList, GetProductListVariables> {
         return this.baseDataService.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
-            take,
-            skip,
+            options: {
+                take,
+                skip,
+            },
             languageCode: getDefaultLanguage(),
         });
     }

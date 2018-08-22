@@ -25,7 +25,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         const fetchPage = ([currentPage, itemsPerPage]: [number, number]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
-            productsQuery.ref.refetch({ skip, take });
+            productsQuery.ref.refetch({ options: { skip, take } });
         };
 
         this.products$ = productsQuery.stream$.pipe(map(data => data.products.items));
