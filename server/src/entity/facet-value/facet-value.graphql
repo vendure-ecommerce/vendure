@@ -23,6 +23,13 @@ input FacetValueTranslationInput {
 }
 
 input CreateFacetValueInput {
+    facetId: ID!
+    code: String!
+    translations: [FacetValueTranslationInput!]!
+}
+
+input UpdateFacetValueInput {
+    id: ID!
     code: String!
     translations: [FacetValueTranslationInput!]!
 }

@@ -15,8 +15,7 @@ export class FacetValue extends VendureEntity implements Translatable, HasCustom
     }
     name: LocaleString;
 
-    @Column({ unique: true })
-    code: string;
+    @Column() code: string;
 
     @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<FacetValue>>;
