@@ -58,5 +58,8 @@ export class MockDataService implements DataServiceMock {
     };
     facet = {
         getFacets: spyQueryResult('getFacets'),
+        getFacet: spyQueryResult('getFacet'),
+        createFacet: spyObservable('createFacet'),
+        updateFacet: spyObservable('updateFacet'),
     };
 }

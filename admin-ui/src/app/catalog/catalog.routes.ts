@@ -4,9 +4,11 @@ import { map } from 'rxjs/operators';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { DataService } from '../data/providers/data.service';
 
+import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 
 export const catalogRoutes: Route[] = [
@@ -34,6 +36,16 @@ export const catalogRoutes: Route[] = [
             breadcrumb: _('breadcrumb.facets'),
         },
     },
+    {
+        path: 'facets/:id',
+        component: FacetDetailComponent,
+        resolve: {
+            facet: FacetResolver,
+        },
+        data: {
+            breadcrumb: facetBreadcrumb,
+        },
+    },
 ];
 
 export function productBreadcrumb(data: any, params: any, dataService: DataService) {
@@ -52,6 +64,29 @@ export function productBreadcrumb(data: any, params: any, dataService: DataServi
                 },
                 {
                     label: productLabel,
+                    link: [params.id],
+                },
+            ];
+        }),
+    );
+}
+
+export function facetBreadcrumb(data: any, params: any, dataService: DataService) {
+    return dataService.facet.getFacet(params.id).stream$.pipe(
+        map(facetData => {
+            let facetLabel = '';
+            if (params.id === 'create') {
+                facetLabel = 'common.create';
+            } else {
+                facetLabel = `#${params.id} (${facetData.facet && facetData.facet.name})`;
+            }
+            return [
+                {
+                    label: _('breadcrumb.facets'),
+                    link: ['../', 'facets'],
+                },
+                {
+                    label: facetLabel,
                     link: [params.id],
                 },
             ];

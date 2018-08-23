@@ -1,0 +1,51 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <clr-dropdown>
+            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+                <clr-icon shape="world"></clr-icon>
+                {{ 'common.language' | translate }}: {{ languageCode$ | async | uppercase }}
+                <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+                <button type="button"
+                        *ngFor="let code of availableLanguages$ | async"
+                        (click)="setLanguage(code)"
+                        clrDropdownItem>{{ code }}</button>
+            </clr-dropdown-menu>
+        </clr-dropdown>
+    </vdr-ab-left>
+
+
+    <vdr-ab-right>
+        <button class="btn btn-primary"
+                *ngIf="isNew$ | async; else updateButton"
+                (click)="create()"
+                [disabled]="facetForm.invalid || facetForm.pristine">{{ 'common.create' | translate }}</button>
+        <ng-template #updateButton>
+            <button class="btn btn-primary"
+                    (click)="save()"
+                    [disabled]="facetForm.invalid || facetForm.pristine">{{ 'common.update' | translate }}</button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="facetForm" >
+    <section class="form-block" formGroupName="facet">
+        <label>{{ 'catalog.facet' | translate }}</label>
+        <vdr-form-field [label]="'catalog.code' | translate" for="code">
+            <input id="code" type="text" formControlName="code">
+        </vdr-form-field>
+        <vdr-form-field [label]="'catalog.name' | translate" for="name">
+            <input id="name" type="text" formControlName="name">
+        </vdr-form-field>
+
+        <section formGroupName="customFields" *ngIf="customFields.length">
+            <label>{{ 'catalog.custom-fields' }}</label>
+            <ng-container *ngFor="let customField of customFields">
+                <vdr-custom-field-control *ngIf="customFieldIsSet(customField.name)"
+                                          [customFieldsFormGroup]="facetForm.get(['facet', 'customFields'])"
+                                          [customField]="customField"></vdr-custom-field-control>
+            </ng-container>
+        </section>
+    </section>
+</form>

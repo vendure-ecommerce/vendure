@@ -2,6 +2,108 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CreateFacet
+// ====================================================
+
+export interface CreateFacet_createFacet_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface CreateFacet_createFacet_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface CreateFacet_createFacet_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: CreateFacet_createFacet_values_translations[];
+}
+
+export interface CreateFacet_createFacet {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: CreateFacet_createFacet_translations[];
+  values: CreateFacet_createFacet_values[];
+}
+
+export interface CreateFacet {
+  /**
+   * Create a new Facet
+   */
+  createFacet: CreateFacet_createFacet;
+}
+
+export interface CreateFacetVariables {
+  input?: CreateFacetInput | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateFacet
+// ====================================================
+
+export interface UpdateFacet_updateFacet_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface UpdateFacet_updateFacet_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface UpdateFacet_updateFacet_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: UpdateFacet_updateFacet_values_translations[];
+}
+
+export interface UpdateFacet_updateFacet {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: UpdateFacet_updateFacet_translations[];
+  values: UpdateFacet_updateFacet_values[];
+}
+
+export interface UpdateFacet {
+  /**
+   * Update an existing Facet
+   */
+  updateFacet: UpdateFacet_updateFacet;
+}
+
+export interface UpdateFacetVariables {
+  input?: UpdateFacetInput | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: RequestStarted
 // ====================================================
 
@@ -502,6 +604,55 @@ export interface GetFacetListVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetFacetWithValues
+// ====================================================
+
+export interface GetFacetWithValues_facet_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetWithValues_facet_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetWithValues_facet_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: GetFacetWithValues_facet_values_translations[];
+}
+
+export interface GetFacetWithValues_facet {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: GetFacetWithValues_facet_translations[];
+  values: GetFacetWithValues_facet_values[];
+}
+
+export interface GetFacetWithValues {
+  facet: GetFacetWithValues_facet | null;
+}
+
+export interface GetFacetWithValuesVariables {
+  id: string;
+  languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetNetworkStatus
 // ====================================================
 
@@ -682,6 +833,46 @@ export interface GetProductOptionGroups {
 export interface GetProductOptionGroupsVariables {
   filterTerm?: string | null;
   languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: FacetWithValues
+// ====================================================
+
+export interface FacetWithValues_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface FacetWithValues_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface FacetWithValues_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: FacetWithValues_values_translations[];
+}
+
+export interface FacetWithValues {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: FacetWithValues_translations[];
+  values: FacetWithValues_values[];
 }
 
 /* tslint:disable */
@@ -1019,6 +1210,46 @@ export enum SortOrder {
   DESC = "DESC",
 }
 
+export interface CreateFacetInput {
+  code: string;
+  translations: FacetTranslationInput[];
+  values?: CreateFacetValueInput[] | null;
+  customFields?: CreateFacetCustomFieldsInput | null;
+}
+
+export interface FacetTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  customFields?: any | null;
+}
+
+export interface CreateFacetValueInput {
+  code: string;
+  translations: FacetValueTranslationInput[];
+}
+
+export interface FacetValueTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface CreateFacetCustomFieldsInput {
+  searchable?: boolean | null;
+}
+
+export interface UpdateFacetInput {
+  id: string;
+  code: string;
+  translations: FacetTranslationInput[];
+  customFields?: UpdateFacetCustomFieldsInput | null;
+}
+
+export interface UpdateFacetCustomFieldsInput {
+  searchable?: boolean | null;
+}
+
 export interface UpdateProductInput {
   id: string;
   image?: string | null;
@@ -1106,6 +1337,7 @@ export interface FacetSortParameter {
   updatedAt?: SortOrder | null;
   name?: SortOrder | null;
   code?: SortOrder | null;
+  searchable?: SortOrder | null;
 }
 
 export interface FacetFilterParameter {
@@ -1113,6 +1345,7 @@ export interface FacetFilterParameter {
   code?: StringOperators | null;
   createdAt?: DateOperators | null;
   updatedAt?: DateOperators | null;
+  searchable?: BooleanOperators | null;
 }
 
 export interface StringOperators {
@@ -1130,6 +1363,10 @@ export interface DateOperators {
 export interface DateRange {
   start: any;
   end: any;
+}
+
+export interface BooleanOperators {
+  eq?: boolean | null;
 }
 
 export interface ProductListOptions {
@@ -1161,10 +1398,6 @@ export interface ProductFilterParameter {
   infoUrl?: StringOperators | null;
   downloadable?: BooleanOperators | null;
   nickname?: StringOperators | null;
-}
-
-export interface BooleanOperators {
-  eq?: boolean | null;
 }
 
 //==============================================================
