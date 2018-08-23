@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { pick } from '../../common/utilities/pick';
 import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -71,12 +72,7 @@ export class ProductDataService {
 
     createProduct(product: CreateProductInput): Observable<CreateProduct> {
         const input: CreateProductVariables = {
-            input: {
-                image: product.image,
-                translations: product.translations,
-                optionGroupCodes: product.optionGroupCodes,
-                customFields: product.customFields,
-            },
+            input: pick(product, ['image', 'translations', 'optionGroupCodes', 'customFields']),
         };
         return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(
             addCustomFields(CREATE_PRODUCT),
@@ -86,12 +82,7 @@ export class ProductDataService {
 
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
         const input: UpdateProductVariables = {
-            input: {
-                id: product.id,
-                image: product.image,
-                translations: product.translations,
-                customFields: product.customFields,
-            },
+            input: pick(product, ['id', 'image', 'translations', 'customFields']),
         };
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(
             addCustomFields(UPDATE_PRODUCT),
@@ -112,13 +103,7 @@ export class ProductDataService {
 
     updateProductVariants(variants: UpdateProductVariantInput[]): Observable<UpdateProductVariants> {
         const input: UpdateProductVariantsVariables = {
-            input: variants.map(v => ({
-                id: v.id,
-                translations: v.translations,
-                sku: v.sku,
-                image: v.image,
-                price: v.price,
-            })),
+            input: variants.map(pick(['id', 'translations', 'sku', 'image', 'price'])),
         };
         return this.baseDataService.mutate<UpdateProductVariants, UpdateProductVariantsVariables>(
             UPDATE_PRODUCT_VARIANTS,

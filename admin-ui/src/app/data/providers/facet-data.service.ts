@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { pick } from '../../common/utilities/pick';
 import { addCustomFields } from '../add-custom-fields';
 import {
     CREATE_FACET,
@@ -56,12 +57,7 @@ export class FacetDataService {
 
     createFacet(facet: CreateFacetInput): Observable<CreateFacet> {
         const input: CreateFacetVariables = {
-            input: {
-                code: facet.code,
-                translations: facet.translations,
-                values: facet.values,
-                customFields: facet.customFields,
-            },
+            input: pick(facet, ['code', 'translations', 'values', 'customFields']),
         };
         return this.baseDataService.mutate<CreateFacet, CreateFacetVariables>(
             addCustomFields(CREATE_FACET),
@@ -71,12 +67,7 @@ export class FacetDataService {
 
     updateFacet(facet: UpdateFacetInput): Observable<UpdateFacet> {
         const input: UpdateFacetVariables = {
-            input: {
-                id: facet.id,
-                code: facet.code,
-                translations: facet.translations,
-                customFields: facet.customFields,
-            },
+            input: pick(facet, ['id', 'code', 'translations', 'customFields']),
         };
         return this.baseDataService.mutate<UpdateFacet, UpdateFacetVariables>(
             addCustomFields(UPDATE_FACET),
@@ -86,11 +77,7 @@ export class FacetDataService {
 
     createFacetValues(facetValues: CreateFacetValueInput[]): Observable<CreateFacetValues> {
         const input: CreateFacetValuesVariables = {
-            input: facetValues.map(fv => ({
-                facetId: fv.facetId,
-                code: fv.code,
-                translations: fv.translations,
-            })),
+            input: facetValues.map(pick(['facetId', 'code', 'translations'])),
         };
         return this.baseDataService.mutate<CreateFacetValues, CreateFacetValuesVariables>(
             addCustomFields(CREATE_FACET_VALUES),
@@ -100,11 +87,7 @@ export class FacetDataService {
 
     updateFacetValues(facetValues: UpdateFacetValueInput[]): Observable<UpdateFacetValues> {
         const input: UpdateFacetValuesVariables = {
-            input: facetValues.map(fv => ({
-                id: fv.id,
-                code: fv.code,
-                translations: fv.translations,
-            })),
+            input: facetValues.map(pick(['id', 'code', 'translations'])),
         };
         return this.baseDataService.mutate<UpdateFacetValues, UpdateFacetValuesVariables>(
             addCustomFields(UPDATE_FACET_VALUES),
