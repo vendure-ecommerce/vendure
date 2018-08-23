@@ -112,6 +112,7 @@ describe('ProductService', () => {
 
     describe('update()', () => {
         it('uses the TranslationUpdater to diff the translations', async () => {
+            connection.manager.save.mockReturnValue({ id: 1 });
             connection.manager.findOne.mockReturnValue(Promise.resolve());
             connection.registerMockRepository(ProductTranslation).find.mockReturnValue([]);
             const productFromApplyDiffCall = {};
