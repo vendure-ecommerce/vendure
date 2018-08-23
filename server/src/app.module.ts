@@ -25,6 +25,7 @@ import { TranslationUpdaterService } from './locale/translation-updater.service'
 import { AdministratorService } from './service/administrator.service';
 import { ConfigService } from './service/config.service';
 import { CustomerService } from './service/customer.service';
+import { FacetValueService } from './service/facet-value.service';
 import { FacetService } from './service/facet.service';
 import { ProductOptionGroupService } from './service/product-option-group.service';
 import { ProductOptionService } from './service/product-option.service';
@@ -42,6 +43,7 @@ import { ProductService } from './service/product.service';
         ConfigService,
         FacetResolver,
         FacetService,
+        FacetValueService,
         JwtStrategy,
         I18nService,
         PasswordService,

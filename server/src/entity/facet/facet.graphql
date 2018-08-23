@@ -26,7 +26,7 @@ input FacetTranslationInput {
 input CreateFacetInput {
     code: String!
     translations: [FacetTranslationInput!]!
-    options: [CreateProductOptionInput!]!
+    values: [CreateFacetValueInput!]
 }
 
 input UpdateFacetInput {

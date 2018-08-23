@@ -3,6 +3,13 @@ type Query {
     facet(id: ID!, languageCode: LanguageCode): Facet
 }
 
+type Mutation {
+    "Create a new Facet"
+    createFacet(input: CreateFacetInput): Facet!
+    "Update an existing Facet"
+    updateFacet(input: UpdateFacetInput): Facet!
+}
+
 type FacetList implements PaginatedList {
     items: [Facet!]!
     totalItems: Int!

@@ -10,5 +10,5 @@ export interface CreateProductOptionGroupDto extends TranslatedInput<ProductOpti
 
 export interface UpdateProductOptionGroupDto extends TranslatedInput<ProductOptionGroup> {
     id: string;
-    code: string;
+    code?: string;
 }

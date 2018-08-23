@@ -21,6 +21,7 @@ export const devConfig: VendureConfig = {
         database: 'vendure-dev',
     },
     customFields: {
+        Facet: [{ name: 'searchable', type: 'boolean' }],
         Product: [
             { name: 'infoUrl', type: 'string' },
             { name: 'downloadable', type: 'boolean' },

@@ -22,7 +22,7 @@ export class ProductOptionService {
             .find(ProductOption, {
                 relations: ['group'],
             })
-            .then(groups => groups.map(group => translateDeep(group, lang)));
+            .then(options => options.map(option => translateDeep(option, lang)));
     }
 
     findOne(id: ID, lang: LanguageCode): Promise<Translated<ProductOption> | undefined> {
@@ -30,7 +30,7 @@ export class ProductOptionService {
             .findOne(ProductOption, id, {
                 relations: ['group'],
             })
-            .then(group => group && translateDeep(group, lang));
+            .then(option => option && translateDeep(option, lang));
     }
 
     async create(
