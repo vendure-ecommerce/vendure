@@ -118,6 +118,7 @@ The following types are under consideration:
 Currently a custom field configuration has only a "name" and "type". We will be adding further configuration
 options in the future as the framework matures. Currently-planned options are:
 
+* **Enum-like options for strings**. This would display a `<select>` control with pre-defined values.
 * **Access control based on user permissions**. So that read / update access to a given custom field can be
 restricted e.g. only authenticated users / admins / not exposed via the GraphQL API at all (in the case where)
 the custom field will be used solely programatically by business logic contained in custom plugins).
