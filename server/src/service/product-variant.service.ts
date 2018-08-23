@@ -5,6 +5,7 @@ import { Connection } from 'typeorm';
 import { ID } from '../../../shared/shared-types';
 import { generateAllCombinations } from '../../../shared/shared-utils';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { createTranslatable } from '../common/create-translatable';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
@@ -26,27 +27,16 @@ export class ProductVariantService {
         product: Product,
         createProductVariantDto: CreateProductVariantDto,
     ): Promise<ProductVariant> {
-        const { optionCodes, translations } = createProductVariantDto;
-        const variant = new ProductVariant(createProductVariantDto);
-        const variantTranslations: ProductVariantTranslation[] = [];
-
-        if (optionCodes && optionCodes.length) {
-            const options = await this.connection.getRepository(ProductOption).find();
-            const selectedOptions = options.filter(og => optionCodes.includes(og.code));
-            variant.options = selectedOptions;
-        }
-
-        for (const input of translations) {
-            const translation = new ProductVariantTranslation(input);
-            variantTranslations.push(translation);
-            await this.connection.manager.save(translation);
-        }
-
-        variant.product = product;
-        variant.translations = variantTranslations;
-        const createdVariant = await this.connection.manager.save(variant);
-
-        return createdVariant;
+        const save = createTranslatable(ProductVariant, ProductVariantTranslation, async variant => {
+            const { optionCodes } = createProductVariantDto;
+            if (optionCodes && optionCodes.length) {
+                const options = await this.connection.getRepository(ProductOption).find();
+                const selectedOptions = options.filter(og => optionCodes.includes(og.code));
+                variant.options = selectedOptions;
+            }
+            variant.product = product;
+        });
+        return save(this.connection, createProductVariantDto);
     }
 
     async generateVariantsForProduct(

@@ -12,13 +12,10 @@ export type DeepPartial<T> = {
 };
 // tslint:enable:no-shadowed-variable
 
-// tslint:disable:ban-types
 /**
  * A type representing the type rather than instance of a class.
  */
-export type Type<T> = {
-    new (...args: any[]): T;
-} & Function;
+export interface Type<T> extends Function { new (...args: any[]): T; }
 
 /**
  * A type describing the shape of a paginated list response

@@ -4,6 +4,7 @@ import { Connection, FindManyOptions, Like } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { createTranslatable } from '../common/create-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroupTranslation } from '../entity/product-option-group/product-option-group-translation.entity';
 import {
@@ -48,19 +49,9 @@ export class ProductOptionGroupService {
     async create(
         createProductOptionGroupDto: CreateProductOptionGroupDto,
     ): Promise<Translated<ProductOptionGroup>> {
-        const optionGroup = new ProductOptionGroup(createProductOptionGroupDto);
-        const translations: ProductOptionGroupTranslation[] = [];
-
-        for (const input of createProductOptionGroupDto.translations) {
-            const translation = new ProductOptionGroupTranslation(input);
-            translations.push(translation);
-            await this.connection.manager.save(translation);
-        }
-
-        optionGroup.translations = translations;
-        const createdGroup = await this.connection.manager.save(optionGroup);
-
-        return assertFound(this.findOne(createdGroup.id, DEFAULT_LANGUAGE_CODE));
+        const save = createTranslatable(ProductOptionGroup, ProductOptionGroupTranslation);
+        const group = await save(this.connection, createProductOptionGroupDto);
+        return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(

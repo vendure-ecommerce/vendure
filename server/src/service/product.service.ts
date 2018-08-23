@@ -6,6 +6,7 @@ import { ID, PaginatedList } from '../../../shared/shared-types';
 import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { createTranslatable } from '../common/create-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
@@ -62,26 +63,16 @@ export class ProductService {
     }
 
     async create(createProductDto: CreateProductDto): Promise<Translated<Product>> {
-        const { optionGroupCodes, image, translations } = createProductDto;
-        const product = new Product(createProductDto);
-        const productTranslations: ProductTranslation[] = [];
-
-        if (optionGroupCodes && optionGroupCodes.length) {
-            const optionGroups = await this.connection.getRepository(ProductOptionGroup).find();
-            const selectedOptionGroups = optionGroups.filter(og => optionGroupCodes.includes(og.code));
-            product.optionGroups = selectedOptionGroups;
-        }
-
-        for (const input of translations) {
-            const translation = new ProductTranslation(input);
-            productTranslations.push(translation);
-            await this.connection.manager.save(translation);
-        }
-
-        product.translations = productTranslations;
-        const createdProduct = await this.connection.manager.save(product);
-
-        return assertFound(this.findOne(createdProduct.id, DEFAULT_LANGUAGE_CODE));
+        const save = createTranslatable(Product, ProductTranslation, async p => {
+            const { optionGroupCodes } = createProductDto;
+            if (optionGroupCodes && optionGroupCodes.length) {
+                const optionGroups = await this.connection.getRepository(ProductOptionGroup).find();
+                const selectedOptionGroups = optionGroups.filter(og => optionGroupCodes.includes(og.code));
+                p.optionGroups = selectedOptionGroups;
+            }
+        });
+        const product = await save(this.connection, createProductDto);
+        return assertFound(this.findOne(product.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(updateProductDto: UpdateProductDto): Promise<Translated<Product>> {

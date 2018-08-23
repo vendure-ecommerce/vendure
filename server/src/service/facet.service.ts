@@ -6,6 +6,7 @@ import { ID, PaginatedList } from '../../../shared/shared-types';
 import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { createTranslatable } from '../common/create-translatable';
 import { assertFound } from '../common/utils';
 import { FacetTranslation } from '../entity/facet/facet-translation.entity';
 import { CreateFacetDto, UpdateFacetDto } from '../entity/facet/facet.dto';
@@ -45,19 +46,9 @@ export class FacetService {
     }
 
     async create(createFacetDto: CreateFacetDto): Promise<Translated<Facet>> {
-        const facet = new Facet(createFacetDto);
-        const translations: FacetTranslation[] = [];
-
-        for (const input of createFacetDto.translations) {
-            const translation = new FacetTranslation(input);
-            translations.push(translation);
-            await this.connection.manager.save(translation);
-        }
-
-        facet.translations = translations;
-        const createdFacet = await this.connection.manager.save(facet);
-
-        return assertFound(this.findOne(createdFacet.id, DEFAULT_LANGUAGE_CODE));
+        const save = createTranslatable(Facet, FacetTranslation);
+        const facet = await save(this.connection, createFacetDto);
+        return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(updateFacetDto: UpdateFacetDto): Promise<Translated<Facet>> {
