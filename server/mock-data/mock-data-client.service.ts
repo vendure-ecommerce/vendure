@@ -104,10 +104,7 @@ export class MockDataClientService {
             };
 
             const customer: Customer | void = await request(this.apiUrl, query1, variables1).then(
-                (data: any) => {
-                    console.log('Created Customer:', data);
-                    return data.createCustomer as Customer;
-                },
+                (data: any) => data.createCustomer as Customer,
                 err => console.log(err),
             );
 
@@ -133,7 +130,7 @@ export class MockDataClientService {
 
                 await request(this.apiUrl, query2, variables2).then(
                     data => {
-                        console.log('Created Customer:', data);
+                        console.log(`Created Customer ${i + 1}:`, data);
                         return data as Customer;
                     },
                     err => console.log(err),
@@ -165,7 +162,7 @@ export class MockDataClientService {
 
             const product = await request<any>(this.apiUrl, query, variables).then(
                 data => {
-                    console.log('Created Product:', data);
+                    console.log(`Created Product ${i + 1}:`, data);
                     return data;
                 },
                 err => console.log(err),
@@ -189,19 +186,12 @@ export class MockDataClientService {
     }
 
     private async makeProductVariant(productId: ID): Promise<any> {
-        console.log('generating variants for', productId);
         const query = `mutation GenerateVariants($productId: ID!) {
             generateVariantsForProduct(productId: $productId) {
                 id
                 name
             }
          }`;
-        await request(this.apiUrl, query, { productId }).then(
-            data => {
-                console.log('Created Variants:', data);
-                return data;
-            },
-            err => console.log(err),
-        );
+        await request(this.apiUrl, query, { productId }).then(data => data, err => console.log(err));
     }
 }

@@ -1,12 +1,24 @@
 import { devConfig } from '../dev-config';
-import { setConfig } from '../src/config/vendure-config';
+import { bootstrap } from '../src';
+import { setConfig, VendureConfig } from '../src/config/vendure-config';
 
 import { clearAllTables } from './clear-all-tables';
 import { MockDataClientService } from './mock-data-client.service';
 
+// tslint:disable:no-floating-promises
 async function populate() {
-    setConfig(devConfig);
-    await clearAllTables(devConfig.dbConnectionOptions);
+    const populateConfig: VendureConfig = {
+        ...devConfig,
+        customFields: {},
+    };
+    (populateConfig.dbConnectionOptions as any).logging = false;
+    setConfig(populateConfig);
+    await clearAllTables(populateConfig.dbConnectionOptions);
+
+    await bootstrap(populateConfig).catch(err => {
+        // tslint:disable-next-line
+        console.log(err);
+    });
 
     const mockDataClientService = new MockDataClientService(devConfig);
     await mockDataClientService.populateOptions();
@@ -15,5 +27,4 @@ async function populate() {
     await mockDataClientService.populateAdmins();
 }
 
-// tslint:disable:no-floating-promises
 populate().then(() => process.exit(0));
