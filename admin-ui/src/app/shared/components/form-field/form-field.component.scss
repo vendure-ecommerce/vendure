@@ -1,3 +1,5 @@
+@import "variables";
+
 :host {
     display: block;
     .form-group > label:nth-of-type(2) {
@@ -10,5 +12,17 @@
     }
     .form-group .tooltip-validation {
         height: initial;
+    }
+    .input-row {
+        display: flex;
+        ::ng-deep input {
+            flex: 1;
+            &[readonly] {
+                background-color: $color-grey-2;
+            }
+        }
+        button.edit-button {
+            margin: 0;
+        }
     }
 }

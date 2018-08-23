@@ -12,7 +12,17 @@
            role="tooltip"
            [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
            class="tooltip tooltip-validation tooltip-sm tooltip-top-left">
-        <ng-content></ng-content>
+        <div class="input-row">
+            <ng-content></ng-content>
+            <button *ngIf="readOnlyToggle"
+                    type="button"
+                    [disabled]="!isReadOnly"
+                    [title]="'common.edit-field' | translate"
+                    class="btn btn-icon btn-sm edit-button"
+                    (click)="setReadOnly(false)">
+                <clr-icon shape="edit"></clr-icon>
+            </button>
+        </div>
         <span class="tooltip-content">
             {{ label }} is required.
         </span>

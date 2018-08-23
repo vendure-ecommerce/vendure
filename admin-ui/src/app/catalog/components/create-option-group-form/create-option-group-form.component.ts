@@ -20,7 +20,6 @@ export class CreateOptionGroupFormComponent implements OnInit {
     @Input() productName = '';
     @Input() productId: string;
     optionGroupForm: FormGroup;
-    editCode = false;
     readonly defaultLanguage = getDefaultLanguage();
 
     constructor(private formBuilder: FormBuilder, private dataService: DataService) {}
