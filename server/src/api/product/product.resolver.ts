@@ -3,6 +3,7 @@ import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { assertFound } from '../../common/utils';
+import { UpdateProductVariantDto } from '../../entity/product-variant/create-product-variant.dto';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { Translated } from '../../locale/locale-types';
@@ -68,6 +69,7 @@ export class ProductResolver {
     @Mutation()
     @ApplyIdCodec()
     async updateProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
-        return this.productService.updateProductVariants(args.input);
+        const { input } = args as { input: UpdateProductVariantDto[] };
+        return Promise.all(input.map(variant => this.productVariantService.update(variant)));
     }
 }

@@ -5,6 +5,7 @@ import { Connection } from 'typeorm';
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
+import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { FacetValueTranslation } from '../entity/facet-value/facet-value-translation.entity';
 import { CreateFacetValueDto, UpdateFacetValueDto } from '../entity/facet-value/facet-value.dto';
@@ -45,17 +46,8 @@ export class FacetValueService {
     }
 
     async update(updateFacetValueDto: UpdateFacetValueDto): Promise<Translated<FacetValue>> {
-        const existingTranslations = await this.connection.getRepository(FacetValueTranslation).find({
-            where: { base: updateFacetValueDto.id },
-            relations: ['base'],
-        });
-
-        const translationUpdater = this.translationUpdaterService.create(FacetValueTranslation);
-        const diff = translationUpdater.diff(existingTranslations, updateFacetValueDto.translations);
-
-        const facetValue = await translationUpdater.applyDiff(new FacetValue(updateFacetValueDto), diff);
-        await this.connection.manager.save(facetValue);
-
+        const save = updateTranslatable(FacetValue, FacetValueTranslation, this.translationUpdaterService);
+        const facetValue = await save(this.connection, updateFacetValueDto);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 }

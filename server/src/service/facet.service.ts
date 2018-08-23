@@ -7,6 +7,7 @@ import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
+import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { FacetTranslation } from '../entity/facet/facet-translation.entity';
 import { CreateFacetDto, UpdateFacetDto } from '../entity/facet/facet.dto';
@@ -52,17 +53,8 @@ export class FacetService {
     }
 
     async update(updateFacetDto: UpdateFacetDto): Promise<Translated<Facet>> {
-        const existingTranslations = await this.connection.getRepository(FacetTranslation).find({
-            where: { base: updateFacetDto.id },
-            relations: ['base'],
-        });
-
-        const translationUpdater = this.translationUpdaterService.create(FacetTranslation);
-        const diff = translationUpdater.diff(existingTranslations, updateFacetDto.translations);
-
-        const facet = await translationUpdater.applyDiff(new Facet(updateFacetDto), diff);
-        await this.connection.manager.save(facet);
-
+        const save = updateTranslatable(Facet, FacetTranslation, this.translationUpdaterService);
+        const facet = await save(this.connection, updateFacetDto);
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 }

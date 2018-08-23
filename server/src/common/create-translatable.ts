@@ -27,6 +27,6 @@ export function createTranslatable<T extends Translatable>(
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return await connection.manager.save(entity);
+        return connection.manager.save(entity);
     };
 }

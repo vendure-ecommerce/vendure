@@ -7,9 +7,9 @@ import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
+import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
-import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
@@ -76,31 +76,9 @@ export class ProductService {
     }
 
     async update(updateProductDto: UpdateProductDto): Promise<Translated<Product>> {
-        const existingTranslations = await this.connection.getRepository(ProductTranslation).find({
-            where: { base: updateProductDto.id },
-            relations: ['base'],
-        });
-
-        const translationUpdater = this.translationUpdaterService.create(ProductTranslation);
-        const diff = translationUpdater.diff(existingTranslations, updateProductDto.translations);
-
-        const product = await translationUpdater.applyDiff(new Product(updateProductDto), diff);
-        await this.connection.manager.save(product);
-
-        return assertFound(this.findOne(updateProductDto.id, DEFAULT_LANGUAGE_CODE));
-    }
-
-    async updateProductVariants(updateProductVariants: any[]): Promise<Array<Translated<ProductVariant>>> {
-        for (const variant of updateProductVariants) {
-            await this.connection.getRepository(ProductVariant).update(variant.id, variant);
-        }
-
-        return await this.connection
-            .getRepository(ProductVariant)
-            .findByIds(updateProductVariants.map(v => v.id), { relations: ['options'] })
-            .then(variants => {
-                return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE, ['options']));
-            });
+        const save = updateTranslatable(Product, ProductTranslation, this.translationUpdaterService);
+        const product = await save(this.connection, updateProductDto);
+        return assertFound(this.findOne(product.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID): Promise<Translated<Product>> {

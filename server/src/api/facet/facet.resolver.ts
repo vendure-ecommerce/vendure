@@ -2,6 +2,7 @@ import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { CreateFacetValueDto, UpdateFacetValueDto } from '../../entity/facet-value/facet-value.dto';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { I18nError } from '../../i18n/i18n-error';
@@ -50,20 +51,20 @@ export class FacetResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async createFacetValues(_, args): Promise<Translated<FacetValue[]>> {
-        const { input } = args;
+    async createFacetValues(_, args): Promise<Array<Translated<FacetValue>>> {
+        const { input } = args as { input: CreateFacetValueDto[] };
         const facetId = input[0].facetId;
         const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
         if (!facet) {
             throw new I18nError(`error.invalid-facetId`, { facetId });
         }
-        return input.map(facetValue => this.facetValueService.create(facet, facetValue));
+        return Promise.all(input.map(facetValue => this.facetValueService.create(facet, facetValue)));
     }
 
     @Mutation()
     @ApplyIdCodec()
-    async updateFacetValues(_, args): Promise<Translated<FacetValue[]>> {
-        const { input } = args;
-        return input.map(facetValue => this.facetValueService.update(facetValue));
+    async updateFacetValues(_, args): Promise<Array<Translated<FacetValue>>> {
+        const { input } = args as { input: UpdateFacetValueDto[] };
+        return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));
     }
 }

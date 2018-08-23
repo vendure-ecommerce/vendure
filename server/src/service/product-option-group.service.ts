@@ -5,6 +5,7 @@ import { Connection, FindManyOptions, Like } from 'typeorm';
 import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
+import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroupTranslation } from '../entity/product-option-group/product-option-group-translation.entity';
 import {
@@ -57,20 +58,12 @@ export class ProductOptionGroupService {
     async update(
         updateProductOptionGroupDto: UpdateProductOptionGroupDto,
     ): Promise<Translated<ProductOptionGroup>> {
-        const existingTranslations = await this.connection.getRepository(ProductOptionGroupTranslation).find({
-            where: { base: updateProductOptionGroupDto.id },
-            relations: ['base'],
-        });
-
-        const translationUpdater = this.translationUpdaterService.create(ProductOptionGroupTranslation);
-        const diff = translationUpdater.diff(existingTranslations, updateProductOptionGroupDto.translations);
-
-        const productOptionGroup = await translationUpdater.applyDiff(
-            new ProductOptionGroup(updateProductOptionGroupDto),
-            diff,
+        const save = updateTranslatable(
+            ProductOptionGroup,
+            ProductOptionGroupTranslation,
+            this.translationUpdaterService,
         );
-        await this.connection.manager.save(productOptionGroup);
-
-        return assertFound(this.findOne(productOptionGroup.id, DEFAULT_LANGUAGE_CODE));
+        const group = await save(this.connection, updateProductOptionGroupDto);
+        return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 }

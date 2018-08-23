@@ -6,8 +6,13 @@ import { ID } from '../../../shared/shared-types';
 import { generateAllCombinations } from '../../../shared/shared-utils';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
+import { updateTranslatable } from '../common/update-translatable';
+import { assertFound } from '../common/utils';
 import { ProductOption } from '../entity/product-option/product-option.entity';
-import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
+import {
+    CreateProductVariantDto,
+    UpdateProductVariantDto,
+} from '../entity/product-variant/create-product-variant.dto';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
@@ -37,6 +42,21 @@ export class ProductVariantService {
             variant.product = product;
         });
         return save(this.connection, createProductVariantDto);
+    }
+
+    async update(updateProductVariantsDto: UpdateProductVariantDto): Promise<Translated<ProductVariant>> {
+        const save = updateTranslatable(
+            ProductVariant,
+            ProductVariantTranslation,
+            this.translationUpdaterService,
+        );
+        await save(this.connection, updateProductVariantsDto);
+        const variant = await assertFound(
+            this.connection.manager.getRepository(ProductVariant).findOne(updateProductVariantsDto.id, {
+                relations: ['options'],
+            }),
+        );
+        return translateDeep(variant, DEFAULT_LANGUAGE_CODE, ['options']);
     }
 
     async generateVariantsForProduct(
