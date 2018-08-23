@@ -2,11 +2,19 @@ import { Observable } from 'rxjs';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import { addCustomFields } from '../add-custom-fields';
-import { CREATE_FACET, UPDATE_FACET } from '../mutations/facet-mutations';
+import {
+    CREATE_FACET,
+    CREATE_FACET_VALUES,
+    UPDATE_FACET,
+    UPDATE_FACET_VALUES,
+} from '../mutations/facet-mutations';
 import { GET_FACET_LIST, GET_FACET_WITH_VALUES } from '../queries/facet-queries';
 import {
     CreateFacet,
     CreateFacetInput,
+    CreateFacetValueInput,
+    CreateFacetValues,
+    CreateFacetValuesVariables,
     CreateFacetVariables,
     GetFacetList,
     GetFacetListVariables,
@@ -14,6 +22,9 @@ import {
     GetFacetWithValuesVariables,
     UpdateFacet,
     UpdateFacetInput,
+    UpdateFacetValueInput,
+    UpdateFacetValues,
+    UpdateFacetValuesVariables,
     UpdateFacetVariables,
 } from '../types/gql-generated-types';
 import { QueryResult } from '../types/query-result';
@@ -69,6 +80,34 @@ export class FacetDataService {
         };
         return this.baseDataService.mutate<UpdateFacet, UpdateFacetVariables>(
             addCustomFields(UPDATE_FACET),
+            input,
+        );
+    }
+
+    createFacetValues(facetValues: CreateFacetValueInput[]): Observable<CreateFacetValues> {
+        const input: CreateFacetValuesVariables = {
+            input: facetValues.map(fv => ({
+                facetId: fv.facetId,
+                code: fv.code,
+                translations: fv.translations,
+            })),
+        };
+        return this.baseDataService.mutate<CreateFacetValues, CreateFacetValuesVariables>(
+            addCustomFields(CREATE_FACET_VALUES),
+            input,
+        );
+    }
+
+    updateFacetValues(facetValues: UpdateFacetValueInput[]): Observable<UpdateFacetValues> {
+        const input: UpdateFacetValuesVariables = {
+            input: facetValues.map(fv => ({
+                id: fv.id,
+                code: fv.code,
+                translations: fv.translations,
+            })),
+        };
+        return this.baseDataService.mutate<UpdateFacetValues, UpdateFacetValuesVariables>(
+            addCustomFields(UPDATE_FACET_VALUES),
             input,
         );
     }

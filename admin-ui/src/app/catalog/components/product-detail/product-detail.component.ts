@@ -14,9 +14,9 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { getServerConfig } from '../../../data/server-config';
 import {
-    GetProductWithVariants_product_variants,
     LanguageCode,
     ProductWithVariants,
+    ProductWithVariants_variants,
     UpdateProductInput,
     UpdateProductVariantInput,
 } from '../../../data/types/gql-generated-types';
@@ -30,7 +30,7 @@ import { ProductVariantsWizardComponent } from '../product-variants-wizard/produ
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants>;
-    variants$: Observable<GetProductWithVariants_product_variants[]>;
+    variants$: Observable<ProductWithVariants_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];

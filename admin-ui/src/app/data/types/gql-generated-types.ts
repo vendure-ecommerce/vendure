@@ -46,7 +46,7 @@ export interface CreateFacet {
 }
 
 export interface CreateFacetVariables {
-  input?: CreateFacetInput | null;
+  input: CreateFacetInput;
 }
 
 /* tslint:disable */
@@ -97,7 +97,75 @@ export interface UpdateFacet {
 }
 
 export interface UpdateFacetVariables {
-  input?: UpdateFacetInput | null;
+  input: UpdateFacetInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateFacetValues
+// ====================================================
+
+export interface CreateFacetValues_createFacetValues_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface CreateFacetValues_createFacetValues {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: CreateFacetValues_createFacetValues_translations[];
+}
+
+export interface CreateFacetValues {
+  /**
+   * Create one or more FacetValues
+   */
+  createFacetValues: CreateFacetValues_createFacetValues[];
+}
+
+export interface CreateFacetValuesVariables {
+  input: CreateFacetValueInput[];
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateFacetValues
+// ====================================================
+
+export interface UpdateFacetValues_updateFacetValues_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface UpdateFacetValues_updateFacetValues {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: UpdateFacetValues_updateFacetValues_translations[];
+}
+
+export interface UpdateFacetValues {
+  /**
+   * Update one or more FacetValues
+   */
+  updateFacetValues: UpdateFacetValues_updateFacetValues[];
+}
+
+export interface UpdateFacetValuesVariables {
+  input: UpdateFacetValueInput[];
 }
 
 /* tslint:disable */
@@ -879,6 +947,29 @@ export interface FacetWithValues {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL fragment: FacetValue
+// ====================================================
+
+export interface FacetValue_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface FacetValue {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: FacetValue_translations[];
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: ProductVariant
 // ====================================================
 
@@ -1225,6 +1316,7 @@ export interface FacetTranslationInput {
 }
 
 export interface CreateFacetValueInput {
+  facetId: string;
   code: string;
   translations: FacetValueTranslationInput[];
 }
@@ -1248,6 +1340,12 @@ export interface UpdateFacetInput {
 
 export interface UpdateFacetCustomFieldsInput {
   searchable?: boolean | null;
+}
+
+export interface UpdateFacetValueInput {
+  id: string;
+  code: string;
+  translations: FacetValueTranslationInput[];
 }
 
 export interface UpdateProductInput {
