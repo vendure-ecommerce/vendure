@@ -1,10 +1,12 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { CustomFieldConfig } from '../../../../../../shared/shared-types';
+import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
+import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -15,9 +17,10 @@ import {
     GetProductWithVariants_product_variants,
     LanguageCode,
     ProductWithVariants,
+    UpdateProductInput,
+    UpdateProductVariantInput,
 } from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
-import { ProductUpdaterService } from '../../providers/product-updater/product-updater.service';
 import { ProductVariantsWizardComponent } from '../product-variants-wizard/product-variants-wizard.component';
 
 @Component({
@@ -25,7 +28,7 @@ import { ProductVariantsWizardComponent } from '../product-variants-wizard/produ
     templateUrl: './product-detail.component.html',
     styleUrls: ['./product-detail.component.scss'],
 })
-export class ProductDetailComponent implements OnDestroy {
+export class ProductDetailComponent implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants>;
     variants$: Observable<GetProductWithVariants_product_variants[]>;
     availableLanguages$: Observable<LanguageCode[]>;
@@ -44,8 +47,9 @@ export class ProductDetailComponent implements OnDestroy {
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
-        private productUpdaterService: ProductUpdaterService,
-    ) {
+    ) {}
+
+    ngOnInit() {
         this.customFields = getServerConfig().customFields.Product || [];
         this.customVariantFields = getServerConfig().customFields.ProductVariant || [];
         this.product$ = this.route.data.pipe(switchMap(data => data.product));
@@ -110,10 +114,9 @@ export class ProductDetailComponent implements OnDestroy {
             .pipe(
                 take(1),
                 mergeMap(([product, languageCode]) => {
-                    const newProduct = this.productUpdaterService.getUpdatedProduct(
+                    const newProduct = this.getUpdatedProduct(
                         product,
-                        productGroup.value,
-                        this.customFields,
+                        productGroup as FormGroup,
                         languageCode,
                     );
                     return this.dataService.product.createProduct(newProduct);
@@ -140,29 +143,20 @@ export class ProductDetailComponent implements OnDestroy {
                     const updateOperations: Array<Observable<any>> = [];
 
                     if (productGroup && productGroup.dirty) {
-                        const newProduct = this.productUpdaterService.getUpdatedProduct(
+                        const newProduct = this.getUpdatedProduct(
                             product,
-                            productGroup.value,
-                            this.customFields,
+                            productGroup as FormGroup,
                             languageCode,
                         );
                         if (newProduct) {
                             updateOperations.push(this.dataService.product.updateProduct(newProduct));
                         }
                     }
-                    const variantsArray = this.productForm.get('variants') as FormArray;
+                    const variantsArray = this.productForm.get('variants');
                     if (variantsArray && variantsArray.dirty) {
-                        const dirtyVariants = product.variants.filter((v, i) => {
-                            const formRow = variantsArray.get(i.toString());
-                            return formRow && formRow.dirty;
-                        });
-                        const dirtyVariantValues = variantsArray.controls
-                            .filter(c => c.dirty)
-                            .map(c => c.value);
-                        const newVariants = this.productUpdaterService.getUpdatedProductVariants(
-                            dirtyVariants,
-                            dirtyVariantValues,
-                            this.customVariantFields,
+                        const newVariants = this.getUpdatedProductVariants(
+                            product,
+                            variantsArray as FormArray,
                             languageCode,
                         );
                         updateOperations.push(this.dataService.product.updateProductVariants(newVariants));
@@ -254,6 +248,53 @@ export class ProductDetailComponent implements OnDestroy {
                 }
             });
         }
+    }
+
+    /**
+     * Given a product and the value of the productForm, this method creates an updated copy of the product which
+     * can then be persisted to the API.
+     */
+    private getUpdatedProduct(
+        product: ProductWithVariants,
+        productFormGroup: FormGroup,
+        languageCode: LanguageCode,
+    ): UpdateProductInput {
+        return createUpdatedTranslatable(product, productFormGroup.value, this.customFields, languageCode, {
+            languageCode,
+            name: product.name || '',
+            slug: product.slug || '',
+            description: product.description || '',
+        });
+    }
+
+    /**
+     * Given an array of product variants and the values from the productForm, this method creates an new array
+     * which can be persisted to the API.
+     */
+    private getUpdatedProductVariants(
+        product: ProductWithVariants,
+        variantsFormArray: FormArray,
+        languageCode: LanguageCode,
+    ): UpdateProductVariantInput[] {
+        const dirtyVariants = product.variants.filter((v, i) => {
+            const formRow = variantsFormArray.get(i.toString());
+            return formRow && formRow.dirty;
+        });
+        const dirtyVariantValues = variantsFormArray.controls.filter(c => c.dirty).map(c => c.value);
+
+        if (dirtyVariants.length !== dirtyVariantValues.length) {
+            throw new Error(_(`error.product-variant-form-values-do-not-match`));
+        }
+        return dirtyVariants
+            .map((variant, i) => {
+                return createUpdatedTranslatable(
+                    variant,
+                    dirtyVariantValues[i],
+                    this.customVariantFields,
+                    languageCode,
+                );
+            })
+            .filter(notNullOrUndefined);
     }
 
     private setQueryParam(key: string, value: any) {
