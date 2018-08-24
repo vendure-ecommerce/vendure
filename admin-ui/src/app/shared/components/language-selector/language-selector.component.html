@@ -1,0 +1,13 @@
+<clr-dropdown>
+    <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+        <clr-icon shape="world"></clr-icon>
+        {{ 'common.language' | translate }}: {{ currentLanguageCode | uppercase }}
+        <clr-icon shape="caret down"></clr-icon>
+    </button>
+    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+        <button type="button"
+                *ngFor="let code of availableLanguageCodes"
+                (click)="languageCodeChange.emit(code)"
+                clrDropdownItem>{{ code }}</button>
+    </clr-dropdown-menu>
+</clr-dropdown>

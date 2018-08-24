@@ -1,18 +1,8 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <clr-dropdown>
-            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-                <clr-icon shape="world"></clr-icon>
-                {{ 'common.language' | translate }}: {{ languageCode$ | async | uppercase }}
-                <clr-icon shape="caret down"></clr-icon>
-            </button>
-            <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-                <button type="button"
-                        *ngFor="let code of availableLanguages$ | async"
-                        (click)="setLanguage(code)"
-                        clrDropdownItem>{{ code }}</button>
-            </clr-dropdown-menu>
-        </clr-dropdown>
+        <vdr-language-selector [availableLanguageCodes]="availableLanguages$ | async"
+                               [currentLanguageCode]="languageCode$ | async"
+                               (languageCodeChange)="setLanguage($event)"></vdr-language-selector>
     </vdr-ab-left>
 
 
