@@ -44,32 +44,14 @@
 
     <section class="form-block" *ngIf="!(isNew$ | async)">
 
-
         <label>{{ 'catalog.product-variants' | translate }}</label>
 
-        <div *ngIf="(variants$ | async)?.length === 0; else variants">
-            <clr-dropdown>
-                <button type="button" class="btn btn-primary" clrDropdownTrigger>
-                    <clr-icon shape="add"></clr-icon>
-                    {{ 'catalog.generate-product-variants' | translate }}
-                    <clr-icon shape="caret down"></clr-icon>
-                </button>
-                <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-                    <button type="button"
-                            clrDropdownItem
-                            (click)="generateProductVariants()">{{ 'catalog.generate-variants-default-only' | translate }}</button>
-                    <button type="button"
-                            clrDropdownItem
-                            (click)="startProductVariantsWizard()">{{ 'catalog.generate-variants-with-options' | translate }}</button>
-                </clr-dropdown-menu>
-            </clr-dropdown>
-
-            <vdr-product-variants-wizard #productVariantsWizard
-                                         [product]="product$ | async"></vdr-product-variants-wizard>
-        </div>
+        <vdr-generate-product-variants *ngIf="(variants$ | async)?.length === 0; else variants"
+                                       [product]="product$ | async"></vdr-generate-product-variants>
 
         <ng-template #variants>
-            <vdr-form-item [label]="'catalog.product-option-groups' | translate">
+            <vdr-form-item *ngIf="(product$ | async)?.optionGroups.length"
+                           [label]="'catalog.product-option-groups' | translate">
                 <div class="option-groups-list">
                     <div *ngFor="let optionGroup of (product$ | async)?.optionGroups"
                          class="option-group">

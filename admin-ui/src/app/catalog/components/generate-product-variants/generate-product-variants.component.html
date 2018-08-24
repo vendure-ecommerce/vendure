@@ -1,0 +1,18 @@
+<clr-dropdown>
+    <button type="button" class="btn btn-primary" clrDropdownTrigger>
+        <clr-icon shape="add"></clr-icon>
+        {{ 'catalog.generate-product-variants' | translate }}
+        <clr-icon shape="caret down"></clr-icon>
+    </button>
+    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+        <button type="button"
+                clrDropdownItem
+                (click)="generateProductVariants()">{{ 'catalog.generate-variants-default-only' | translate }}</button>
+        <button type="button"
+                clrDropdownItem
+                (click)="startProductVariantsWizard()">{{ 'catalog.generate-variants-with-options' | translate }}</button>
+    </clr-dropdown-menu>
+</clr-dropdown>
+
+<vdr-product-variants-wizard #productVariantsWizard
+                             [product]="product"></vdr-product-variants-wizard>

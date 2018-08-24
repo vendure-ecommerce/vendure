@@ -37,7 +37,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
     productForm: FormGroup;
-    @ViewChild('productVariantsWizard') productVariantsWizard: ProductVariantsWizardComponent;
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -176,28 +175,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
                     });
                 },
             );
-    }
-
-    startProductVariantsWizard() {
-        this.product$
-            .pipe(
-                take(1),
-                mergeMap(product => this.productVariantsWizard.start()),
-            )
-            .subscribe(({ defaultPrice, defaultSku }) => {
-                this.generateProductVariants(defaultPrice, defaultSku);
-            });
-    }
-
-    generateProductVariants(defaultPrice?: number, defaultSku?: string) {
-        this.product$
-            .pipe(
-                take(1),
-                mergeMap(product =>
-                    this.dataService.product.generateProductVariants(product.id, defaultPrice, defaultSku),
-                ),
-            )
-            .subscribe();
     }
 
     /**
