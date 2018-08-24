@@ -11,6 +11,7 @@ import { FacetListComponent } from './components/facet-list/facet-list.component
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
 import { SelectOptionGroupDialogComponent } from './components/select-option-group-dialog/select-option-group-dialog.component';
 import { SelectOptionGroupComponent } from './components/select-option-group/select-option-group.component';
@@ -31,6 +32,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         FacetListComponent,
         FacetDetailComponent,
         GenerateProductVariantsComponent,
+        ProductVariantsListComponent,
     ],
     entryComponents: [CreateOptionGroupDialogComponent, SelectOptionGroupDialogComponent],
     providers: [ProductResolver, FacetResolver],

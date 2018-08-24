@@ -10,6 +10,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectToggleComponent {
+    @Input() size: 'small' | 'large' = 'large';
     @Input() selected = false;
     @Output() selectedChange = new EventEmitter<boolean>();
 }

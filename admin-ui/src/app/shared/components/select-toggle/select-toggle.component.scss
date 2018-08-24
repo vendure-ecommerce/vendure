@@ -22,6 +22,11 @@
     color: $color-grey-3;
     transition: background-color 0.2s, border 0.2s;
 
+    &.small {
+        width: 24px;
+        height: 24px;
+    }
+
     &:hover {
         border-color: $color-success;
         background-color: transparentize($color-success, 0.9);

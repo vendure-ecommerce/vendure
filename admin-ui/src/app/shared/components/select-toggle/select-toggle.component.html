@@ -1,8 +1,9 @@
 <div class="toggle"
+     [class.small]="size === 'small'"
      tabindex="0"
      [class.selected]="selected"
      (keydown.enter)="selectedChange.emit(!selected)"
      (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
      (click)="selectedChange.emit(!selected)">
-    <clr-icon shape="check" size="32"></clr-icon>
+    <clr-icon shape="check" [attr.size]="size === 'small' ? 16 : 32"></clr-icon>
 </div>

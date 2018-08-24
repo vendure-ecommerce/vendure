@@ -1,0 +1,40 @@
+<div class="multi-actions" *ngIf="selectedVariantIds.length">
+    <ng-content></ng-content>
+</div>
+<table class="variants-list table">
+    <thead>
+    <tr>
+        <th>
+            <vdr-select-toggle size="small"
+                               [selected]="areAllSelected()"
+                               (selectedChange)="toggleSelectAll()"></vdr-select-toggle>
+        </th>
+        <th>{{ 'catalog.product-variant-table-sku' | translate }}</th>
+        <th>{{ 'catalog.product-variant-table-name' | translate }}</th>
+        <th>{{ 'catalog.product-variant-table-options' | translate }}</th>
+        <th>{{ 'catalog.product-variant-table-price' | translate }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="variant"
+        *ngFor="let variant of variants; let i = index">
+        <td>
+            <vdr-select-toggle size="small"
+                               [selected]="isVariantSelected(variant.id)"
+                               (selectedChange)="toggleSelectVariant(variant.id)"></vdr-select-toggle>
+        </td>
+        <td>
+            <input type="text" [formControl]="formArray.get([i, 'sku'])">
+        </td>
+        <td>
+            <input type="text" [formControl]="formArray.get([i, 'name'])">
+        </td>
+        <td>
+            <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
+        </td>
+        <td>
+            <vdr-currency-input [formControl]="formArray.get([i, 'price'])"></vdr-currency-input>
+        </td>
+    </tr>
+    </tbody>
+</table>

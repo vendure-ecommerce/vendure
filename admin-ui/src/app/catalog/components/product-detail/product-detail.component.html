@@ -60,34 +60,11 @@
                 </div>
             </vdr-form-item>
 
-            <table class="variants-list table" formArrayName="variants">
-                <thead>
-                <tr>
-                    <th>{{ 'catalog.product-variant-table-sku' | translate }}</th>
-                    <th>{{ 'catalog.product-variant-table-name' | translate }}</th>
-                    <th>{{ 'catalog.product-variant-table-options' | translate }}</th>
-                    <th>{{ 'catalog.product-variant-table-price' | translate }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="variant"
-                    *ngFor="let variant of variants$ | async; let i = index"
-                    [formGroupName]="i">
-                    <td>
-                        <input type="text" formControlName="sku">
-                    </td>
-                    <td>
-                        <input type="text" formControlName="name">
-                    </td>
-                    <td>
-                        <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
-                    </td>
-                    <td>
-                        <vdr-currency-input formControlName="price"></vdr-currency-input>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <vdr-product-variants-list [variants]="variants$ | async"
+                                       [productVariantsFormArray]="productForm.get('variants')">
+                <label>Apply to selected</label>
+
+            </vdr-product-variants-list>
         </ng-template>
 
     </section>
