@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
@@ -39,6 +39,7 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     constructor(
+        private changeDetector: ChangeDetectorRef,
         private dataService: DataService,
         private router: Router,
         private route: ActivatedRoute,
@@ -102,6 +103,10 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
         return !!this.facetForm.get(['facet', 'customFields', name]);
     }
 
+    customValueFieldIsSet(index: number, name: string): boolean {
+        return !!this.facetForm.get(['values', index, 'customFields', name]);
+    }
+
     getValuesFormArray(): FormArray {
         return this.facetForm.get('values') as FormArray;
     }
@@ -130,6 +135,7 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
                 data => {
                     this.notificationService.success(_('catalog.notify-create-facet-success'));
                     this.facetForm.markAsPristine();
+                    this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
                 },
                 err => {
@@ -180,6 +186,7 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
             .subscribe(
                 () => {
                     this.facetForm.markAsPristine();
+                    this.changeDetector.markForCheck();
                     this.notificationService.success(_('catalog.notify-update-facet-success'));
                 },
                 err => {
@@ -221,17 +228,47 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
 
             const valuesFormArray = this.facetForm.get('values') as FormArray;
             facet.values.forEach((value, i) => {
-                const variantTranslation = value.translations.find(t => t.languageCode === languageCode);
+                const valueTranslation = value.translations.find(t => t.languageCode === languageCode);
                 const group = {
                     id: value.id,
                     code: value.code,
-                    name: variantTranslation ? variantTranslation.name : '',
+                    name: valueTranslation ? valueTranslation.name : '',
                 };
                 const existing = valuesFormArray.at(i);
                 if (existing) {
-                    existing.setValue(group);
+                    existing.patchValue(group);
                 } else {
                     valuesFormArray.insert(i, this.formBuilder.group(group));
+                }
+                if (this.customValueFields.length) {
+                    let customValueFieldsGroup = this.facetForm.get([
+                        'values',
+                        i,
+                        'customFields',
+                    ]) as FormGroup;
+                    if (!customValueFieldsGroup) {
+                        customValueFieldsGroup = new FormGroup({});
+                        (this.facetForm.get(['values', i]) as FormGroup).addControl(
+                            'customFields',
+                            customValueFieldsGroup,
+                        );
+                    }
+
+                    if (customValueFieldsGroup) {
+                        for (const fieldDef of this.customValueFields) {
+                            const key = fieldDef.name;
+                            const fieldValue =
+                                fieldDef.type === 'localeString'
+                                    ? (valueTranslation as any).customFields[key]
+                                    : (value as any).customFields[key];
+                            const control = customValueFieldsGroup.get(key);
+                            if (control) {
+                                control.setValue(fieldValue);
+                            } else {
+                                customValueFieldsGroup.addControl(key, new FormControl(fieldValue));
+                            }
+                        }
+                    }
                 }
             });
         }

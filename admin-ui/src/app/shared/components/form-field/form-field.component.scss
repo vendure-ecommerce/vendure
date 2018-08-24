@@ -13,6 +13,18 @@
     .form-group .tooltip-validation {
         height: initial;
     }
+    .form-group.no-label {
+        margin: -6px 0 0 0;
+        padding: 0;
+        justify-content: center;
+        > label {
+            position: relative;
+            justify-content: center;
+        }
+        .input-row {
+            justify-content: center;
+        }
+    }
     .input-row {
         display: flex;
         ::ng-deep input {

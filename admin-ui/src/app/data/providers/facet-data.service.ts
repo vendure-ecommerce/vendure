@@ -77,7 +77,7 @@ export class FacetDataService {
 
     createFacetValues(facetValues: CreateFacetValueInput[]): Observable<CreateFacetValues> {
         const input: CreateFacetValuesVariables = {
-            input: facetValues.map(pick(['facetId', 'code', 'translations'])),
+            input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
         };
         return this.baseDataService.mutate<CreateFacetValues, CreateFacetValuesVariables>(
             addCustomFields(CREATE_FACET_VALUES),
@@ -87,7 +87,7 @@ export class FacetDataService {
 
     updateFacetValues(facetValues: UpdateFacetValueInput[]): Observable<UpdateFacetValues> {
         const input: UpdateFacetValuesVariables = {
-            input: facetValues.map(pick(['id', 'code', 'translations'])),
+            input: facetValues.map(pick(['id', 'code', 'translations', 'customFields'])),
         };
         return this.baseDataService.mutate<UpdateFacetValues, UpdateFacetValuesVariables>(
             addCustomFields(UPDATE_FACET_VALUES),

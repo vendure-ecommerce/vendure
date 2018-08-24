@@ -58,6 +58,9 @@
             <tr>
                 <th>{{ 'catalog.name' | translate }}</th>
                 <th>{{ 'catalog.code' | translate }}</th>
+                <ng-container *ngFor="let customField of customValueFields">
+                    <th>{{ customField.name }}</th>
+                </ng-container>
             </tr>
             </thead>
             <tbody>
@@ -70,6 +73,14 @@
                 <td>
                     <input type="text" formControlName="code" readonly>
                 </td>
+                <ng-container *ngFor="let customField of customValueFields">
+                    <td>
+                        <vdr-custom-field-control *ngIf="customValueFieldIsSet(i, customField.name)"
+                                                  [showLabel]="false"
+                                                  [customFieldsFormGroup]="facetForm.get(['values', i, 'customFields'])"
+                                                  [customField]="customField"></vdr-custom-field-control>
+                    </td>
+                </ng-container>
             </tr>
             </tbody>
         </table>

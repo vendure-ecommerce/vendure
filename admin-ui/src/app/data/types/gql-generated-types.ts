@@ -907,6 +907,29 @@ export interface GetProductOptionGroupsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL fragment: FacetValue
+// ====================================================
+
+export interface FacetValue_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface FacetValue {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: FacetValue_translations[];
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: FacetWithValues
 // ====================================================
 
@@ -941,29 +964,6 @@ export interface FacetWithValues {
   name: string;
   translations: FacetWithValues_translations[];
   values: FacetWithValues_values[];
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL fragment: FacetValue
-// ====================================================
-
-export interface FacetValue_translations {
-  __typename: "FacetValueTranslation";
-  id: string;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface FacetValue {
-  __typename: "FacetValue";
-  id: string;
-  languageCode: LanguageCode | null;
-  code: string;
-  name: string;
-  translations: FacetValue_translations[];
 }
 
 /* tslint:disable */
@@ -1301,6 +1301,14 @@ export enum SortOrder {
   DESC = "DESC",
 }
 
+export interface BooleanOperators {
+  eq?: boolean | null;
+}
+
+export interface CreateFacetCustomFieldsInput {
+  searchable?: boolean | null;
+}
+
 export interface CreateFacetInput {
   code: string;
   translations: FacetTranslationInput[];
@@ -1308,68 +1316,14 @@ export interface CreateFacetInput {
   customFields?: CreateFacetCustomFieldsInput | null;
 }
 
-export interface FacetTranslationInput {
-  id?: string | null;
-  languageCode: LanguageCode;
-  name: string;
-  customFields?: any | null;
-}
-
 export interface CreateFacetValueInput {
   facetId: string;
   code: string;
   translations: FacetValueTranslationInput[];
+  customFields?: any | null;
 }
 
-export interface FacetValueTranslationInput {
-  id?: string | null;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface CreateFacetCustomFieldsInput {
-  searchable?: boolean | null;
-}
-
-export interface UpdateFacetInput {
-  id: string;
-  code: string;
-  translations: FacetTranslationInput[];
-  customFields?: UpdateFacetCustomFieldsInput | null;
-}
-
-export interface UpdateFacetCustomFieldsInput {
-  searchable?: boolean | null;
-}
-
-export interface UpdateFacetValueInput {
-  id: string;
-  code: string;
-  translations: FacetValueTranslationInput[];
-}
-
-export interface UpdateProductInput {
-  id: string;
-  image?: string | null;
-  translations: (ProductTranslationInput | null)[];
-  optionGroupCodes?: (string | null)[] | null;
-  customFields?: UpdateProductCustomFieldsInput | null;
-}
-
-export interface ProductTranslationInput {
-  id?: string | null;
-  languageCode: LanguageCode;
-  name: string;
-  slug?: string | null;
-  description?: string | null;
-  customFields?: ProductTranslationCustomFieldsInput | null;
-}
-
-export interface ProductTranslationCustomFieldsInput {
-  nickname?: string | null;
-}
-
-export interface UpdateProductCustomFieldsInput {
+export interface CreateProductCustomFieldsInput {
   infoUrl?: string | null;
   downloadable?: boolean | null;
 }
@@ -1381,27 +1335,6 @@ export interface CreateProductInput {
   customFields?: CreateProductCustomFieldsInput | null;
 }
 
-export interface CreateProductCustomFieldsInput {
-  infoUrl?: string | null;
-  downloadable?: boolean | null;
-}
-
-export interface UpdateProductVariantInput {
-  id: string;
-  translations: ProductVariantTranslationInput[];
-  sku: string;
-  image?: string | null;
-  price: number;
-  customFields?: any | null;
-}
-
-export interface ProductVariantTranslationInput {
-  id?: string | null;
-  languageCode: LanguageCode;
-  name: string;
-  customFields?: any | null;
-}
-
 export interface CreateProductOptionGroupInput {
   code: string;
   translations: ProductOptionGroupTranslationInput[];
@@ -1409,17 +1342,30 @@ export interface CreateProductOptionGroupInput {
   customFields?: any | null;
 }
 
-export interface ProductOptionGroupTranslationInput {
-  id?: string | null;
-  languageCode: LanguageCode;
-  name: string;
-  customFields?: any | null;
-}
-
 export interface CreateProductOptionInput {
   code: string;
   translations: ProductOptionGroupTranslationInput[];
   customFields?: any | null;
+}
+
+export interface DateOperators {
+  eq?: any | null;
+  before?: any | null;
+  after?: any | null;
+  between?: DateRange | null;
+}
+
+export interface DateRange {
+  start: any;
+  end: any;
+}
+
+export interface FacetFilterParameter {
+  name?: StringOperators | null;
+  code?: StringOperators | null;
+  createdAt?: DateOperators | null;
+  updatedAt?: DateOperators | null;
+  searchable?: BooleanOperators | null;
 }
 
 export interface FacetListOptions {
@@ -1438,33 +1384,29 @@ export interface FacetSortParameter {
   searchable?: SortOrder | null;
 }
 
-export interface FacetFilterParameter {
+export interface FacetTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  customFields?: any | null;
+}
+
+export interface FacetValueTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  customFields?: any | null;
+}
+
+export interface ProductFilterParameter {
   name?: StringOperators | null;
-  code?: StringOperators | null;
+  slug?: StringOperators | null;
+  description?: StringOperators | null;
   createdAt?: DateOperators | null;
   updatedAt?: DateOperators | null;
-  searchable?: BooleanOperators | null;
-}
-
-export interface StringOperators {
-  eq?: string | null;
-  contains?: string | null;
-}
-
-export interface DateOperators {
-  eq?: any | null;
-  before?: any | null;
-  after?: any | null;
-  between?: DateRange | null;
-}
-
-export interface DateRange {
-  start: any;
-  end: any;
-}
-
-export interface BooleanOperators {
-  eq?: boolean | null;
+  infoUrl?: StringOperators | null;
+  downloadable?: BooleanOperators | null;
+  nickname?: StringOperators | null;
 }
 
 export interface ProductListOptions {
@@ -1472,6 +1414,13 @@ export interface ProductListOptions {
   skip?: number | null;
   sort?: ProductSortParameter | null;
   filter?: ProductFilterParameter | null;
+}
+
+export interface ProductOptionGroupTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  customFields?: any | null;
 }
 
 export interface ProductSortParameter {
@@ -1487,15 +1436,69 @@ export interface ProductSortParameter {
   nickname?: SortOrder | null;
 }
 
-export interface ProductFilterParameter {
-  name?: StringOperators | null;
-  slug?: StringOperators | null;
-  description?: StringOperators | null;
-  createdAt?: DateOperators | null;
-  updatedAt?: DateOperators | null;
-  infoUrl?: StringOperators | null;
-  downloadable?: BooleanOperators | null;
-  nickname?: StringOperators | null;
+export interface ProductTranslationCustomFieldsInput {
+  nickname?: string | null;
+}
+
+export interface ProductTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  slug?: string | null;
+  description?: string | null;
+  customFields?: ProductTranslationCustomFieldsInput | null;
+}
+
+export interface ProductVariantTranslationInput {
+  id?: string | null;
+  languageCode: LanguageCode;
+  name: string;
+  customFields?: any | null;
+}
+
+export interface StringOperators {
+  eq?: string | null;
+  contains?: string | null;
+}
+
+export interface UpdateFacetCustomFieldsInput {
+  searchable?: boolean | null;
+}
+
+export interface UpdateFacetInput {
+  id: string;
+  code: string;
+  translations: FacetTranslationInput[];
+  customFields?: UpdateFacetCustomFieldsInput | null;
+}
+
+export interface UpdateFacetValueInput {
+  id: string;
+  code: string;
+  translations: FacetValueTranslationInput[];
+  customFields?: any | null;
+}
+
+export interface UpdateProductCustomFieldsInput {
+  infoUrl?: string | null;
+  downloadable?: boolean | null;
+}
+
+export interface UpdateProductInput {
+  id: string;
+  image?: string | null;
+  translations: (ProductTranslationInput | null)[];
+  optionGroupCodes?: (string | null)[] | null;
+  customFields?: UpdateProductCustomFieldsInput | null;
+}
+
+export interface UpdateProductVariantInput {
+  id: string;
+  translations: ProductVariantTranslationInput[];
+  sku: string;
+  image?: string | null;
+  price: number;
+  customFields?: any | null;
 }
 
 //==============================================================

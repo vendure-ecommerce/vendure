@@ -12,7 +12,15 @@ import { CustomFieldConfig } from '../../../../../../shared/shared-types';
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
 })
-export class CustomFieldControlComponent {
+export class CustomFieldControlComponent implements OnInit {
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldConfig;
+    @Input() showLabel = true;
+    label: string;
+
+    ngOnInit() {
+        if (this.showLabel) {
+            this.label = this.customField.name;
+        }
+    }
 }
