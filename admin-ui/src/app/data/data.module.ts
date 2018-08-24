@@ -3,6 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Apollo, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { withClientState } from 'apollo-link-state';
 
@@ -31,7 +32,7 @@ const stateLink = withClientState({
     defaults: clientDefaults,
 });
 
-export function createApollo(httpLink: HttpLink) {
+export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     return {
         link: ApolloLink.from([
             stateLink,

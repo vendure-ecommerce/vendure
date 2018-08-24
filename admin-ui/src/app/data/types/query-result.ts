@@ -1,6 +1,7 @@
 import { QueryRef } from 'apollo-angular';
+import { NetworkStatus } from 'apollo-client';
 import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 
 /**
  * This class wraps the Apollo Angular QueryRef object and exposes some getters
@@ -14,6 +15,7 @@ export class QueryResult<T, V = Record<string, any>> {
      */
     get single$(): Observable<T> {
         return this.queryRef.valueChanges.pipe(
+            filter(result => result.networkStatus === NetworkStatus.ready),
             take(1),
             map(result => result.data),
         );
@@ -23,7 +25,10 @@ export class QueryResult<T, V = Record<string, any>> {
      * Returns an Observable which emits until unsubscribed.
      */
     get stream$(): Observable<T> {
-        return this.queryRef.valueChanges.pipe(map(result => result.data));
+        return this.queryRef.valueChanges.pipe(
+            filter(result => result.networkStatus === NetworkStatus.ready),
+            map(result => result.data),
+        );
     }
 
     get ref(): QueryRef<T, V> {
