@@ -64,12 +64,14 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     customFields: {
         Address: [],
         Customer: [],
+        Facet: [],
+        FacetValue: [],
         Product: [],
         ProductOption: [],
         ProductOptionGroup: [],
         ProductVariant: [],
         User: [],
-    },
+    } as ReadOnlyRequired<CustomFields>,
 };
 
 let activeConfig = defaultConfig;
