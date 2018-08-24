@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/architect@0.6.8":
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.6.8.tgz#977acc605aba45d21b95ca704cc99492e14299dd"
-  dependencies:
-    "@angular-devkit/core" "0.6.8"
-    rxjs "^6.0.0"
-
 "@angular-devkit/architect@0.7.4":
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.7.4.tgz#c6c65bcf88f03a44fc393db822eda7467e43a2b4"
@@ -16,32 +9,37 @@
     "@angular-devkit/core" "0.7.4"
     rxjs "^6.0.0"
 
-"@angular-devkit/build-angular@~0.6.6":
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-0.6.8.tgz#ea108509f970efc9cd9087a47894c0164dd2d0c0"
+"@angular-devkit/architect@0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.7.5.tgz#e2d856b671fe8b0615db1efc144a7f75b55fb6e1"
   dependencies:
-    "@angular-devkit/architect" "0.6.8"
-    "@angular-devkit/build-optimizer" "0.6.8"
-    "@angular-devkit/core" "0.6.8"
-    "@ngtools/webpack" "6.0.8"
+    "@angular-devkit/core" "0.7.5"
+    rxjs "^6.0.0"
+
+"@angular-devkit/build-angular@~0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-0.7.5.tgz#1ae50c1c57e10919fc631da462037e63e19ea543"
+  dependencies:
+    "@angular-devkit/architect" "0.7.5"
+    "@angular-devkit/build-optimizer" "0.7.5"
+    "@angular-devkit/build-webpack" "0.7.5"
+    "@angular-devkit/core" "0.7.5"
+    "@ngtools/webpack" "6.1.5"
     ajv "~6.4.0"
     autoprefixer "^8.4.1"
-    cache-loader "^1.2.2"
-    chalk "~2.2.2"
     circular-dependency-plugin "^5.0.2"
     clean-css "^4.1.11"
-    copy-webpack-plugin "^4.5.1"
+    copy-webpack-plugin "^4.5.2"
     file-loader "^1.1.11"
     glob "^7.0.3"
     html-webpack-plugin "^3.0.6"
     istanbul "^0.4.5"
     istanbul-instrumenter-loader "^3.0.1"
     karma-source-map-support "^1.2.0"
-    less "^3.0.4"
+    less "^3.7.1"
     less-loader "^4.1.0"
     license-webpack-plugin "^1.3.1"
-    lodash "^4.17.4"
-    memory-fs "^0.4.1"
+    loader-utils "^1.1.0"
     mini-css-extract-plugin "~0.4.0"
     minimatch "^3.0.4"
     opn "^5.1.0"
@@ -52,10 +50,10 @@
     postcss-loader "^2.1.5"
     postcss-url "^7.3.2"
     raw-loader "^0.5.1"
-    resolve "^1.5.0"
     rxjs "^6.0.0"
-    sass-loader "^7.0.1"
-    silent-error "^1.1.0"
+    sass-loader "~6.0.7"
+    semver "^5.5.0"
+    source-map-loader "^0.2.3"
     source-map-support "^0.5.0"
     stats-webpack-plugin "^0.6.2"
     style-loader "^0.21.0"
@@ -64,36 +62,44 @@
     tree-kill "^1.2.0"
     uglifyjs-webpack-plugin "^1.2.5"
     url-loader "^1.0.1"
-    webpack "~4.8.1"
+    webpack "~4.9.2"
     webpack-dev-middleware "^3.1.3"
     webpack-dev-server "^3.1.4"
     webpack-merge "^4.1.2"
     webpack-sources "^1.1.0"
     webpack-subresource-integrity "^1.1.0-rc.4"
   optionalDependencies:
-    node-sass "^4.9.0"
+    node-sass "^4.9.3"
 
-"@angular-devkit/build-optimizer@0.6.8":
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.6.8.tgz#9e18a4f447290d3a8e32df1110aac8b98b80dec2"
+"@angular-devkit/build-optimizer@0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.7.5.tgz#ded26831a68b94d3292a8d0036331331e3f27bfe"
   dependencies:
     loader-utils "^1.1.0"
     source-map "^0.5.6"
     typescript "~2.9.1"
     webpack-sources "^1.1.0"
 
-"@angular-devkit/core@0.6.8":
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.6.8.tgz#3b09d97bd2588f0091df11921f7ed772431806aa"
+"@angular-devkit/build-webpack@0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.7.5.tgz#94d34d6bfdd7082793a6abea32319684e94a7068"
+  dependencies:
+    "@angular-devkit/architect" "0.7.5"
+    "@angular-devkit/core" "0.7.5"
+    rxjs "^6.0.0"
+
+"@angular-devkit/core@0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.7.4.tgz#707ac5a8b534b5768c334ff8d35b0ec754938c58"
   dependencies:
     ajv "~6.4.0"
     chokidar "^2.0.3"
     rxjs "^6.0.0"
     source-map "^0.5.6"
 
-"@angular-devkit/core@0.7.4":
-  version "0.7.4"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.7.4.tgz#707ac5a8b534b5768c334ff8d35b0ec754938c58"
+"@angular-devkit/core@0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.7.5.tgz#49f7854ccadf3ddda8d0ea4359543a1cbdc6854d"
   dependencies:
     ajv "~6.4.0"
     chokidar "^2.0.3"
@@ -107,9 +113,9 @@
     "@angular-devkit/core" "0.7.4"
     rxjs "^6.0.0"
 
-"@angular/animations@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-6.1.3.tgz#c7b1cf407e5087a499532999cb412a546f9ba855"
+"@angular/animations@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-6.1.4.tgz#ca17acd62b9328404671a569fbf3065472527174"
   dependencies:
     tslib "^1.9.0"
 
@@ -128,64 +134,64 @@
     symbol-observable "^1.2.0"
     yargs-parser "^10.0.0"
 
-"@angular/common@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-6.1.3.tgz#ae3d45224348fd8b682c104ced6345e7bd7e2a64"
+"@angular/common@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-6.1.4.tgz#825de5b1fb98db5a1d3d2253ad7181bb25477551"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/compiler-cli@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-6.1.3.tgz#f8454d140b875454a9e58944a008ee2592638700"
+"@angular/compiler-cli@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-6.1.4.tgz#65f4c4382bb180d22905db57e28a4ca728b7bf8c"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
     tsickle "^0.32.1"
 
-"@angular/compiler@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-6.1.3.tgz#a02efd29e70bb7d1230ca877f9c720518bdf364c"
+"@angular/compiler@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-6.1.4.tgz#479e792ce012dc8481f1d87b919fcddb11c8eee0"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/core@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-6.1.3.tgz#6561ba0b40a12758e5237fc05186b56d6d0bdbc9"
+"@angular/core@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-6.1.4.tgz#2602ecc031bbb4ad968a7db78786017e92d19b98"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/forms@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-6.1.3.tgz#92ff08518bafae3c6a8019ac55dada3a9b2f0232"
+"@angular/forms@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-6.1.4.tgz#d0b83f9cd4cb35f58ee67766d17aae0cbd7de561"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-6.1.3.tgz#0012e83ff6016f01245295b3b05723be9ca43da7"
+"@angular/http@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/http/-/http-6.1.4.tgz#0ab24a51075daaba60a4241200c44dcfcd87da5e"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/language-service@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-6.1.3.tgz#d8ddf7eabfe39b2f5922893a4ae71c3b9c93b4f1"
+"@angular/language-service@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-6.1.4.tgz#946a70e1afbf83dbae4c31b64784a5a77ae07e53"
 
-"@angular/platform-browser-dynamic@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-6.1.3.tgz#108c42b7eeee57325b686008323d8ddc46addd8c"
+"@angular/platform-browser-dynamic@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-6.1.4.tgz#1af3549decadfb8e73513d917eaa5479184c39ea"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/platform-browser@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-6.1.3.tgz#b918dfd05250e47c650dfe70f65173c65caaab91"
+"@angular/platform-browser@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-6.1.4.tgz#a5763f549f2073ba30b9d8baf8512c8076e8d58b"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/router@^6.0.3":
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-6.1.3.tgz#c11d4b9a9bfaa21d11c2464c82639f6dac3e8170"
+"@angular/router@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-6.1.4.tgz#ec6d7400baea46386e3bbcf3e3acb0135f368fac"
   dependencies:
     tslib "^1.9.0"
 
@@ -222,19 +228,19 @@
     typescript "2.4.1"
     yargs "8.0.2"
 
-"@clr/angular@^0.11.21":
-  version "0.11.29"
-  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-0.11.29.tgz#52b6087db79a26bf009aebc386040f015ae67ce2"
+"@clr/angular@^0.12.10":
+  version "0.12.10"
+  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-0.12.10.tgz#aab495e6067a066d1fd7c7f8af20b8a80e558816"
   dependencies:
-    tslib "^1.7.1"
+    tslib "^1.9.0"
 
-"@clr/icons@^0.11.21":
-  version "0.11.29"
-  resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-0.11.29.tgz#ccc38f069a9dcaf9c9e567d62f880ef5ecb5f45a"
+"@clr/icons@^0.12.10":
+  version "0.12.10"
+  resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-0.12.10.tgz#10e41ab0076b508f283c82796973d5a37976e8c2"
 
-"@clr/ui@^0.11.21":
-  version "0.11.29"
-  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-0.11.29.tgz#9a0cb873c3a35803a9ed9a059220877b1df46085"
+"@clr/ui@^0.12.10":
+  version "0.12.10"
+  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-0.12.10.tgz#aba591dfe528a8db5c0ee2d4fbd936cac1c16ccf"
 
 "@heroku-cli/color@^1.1.3":
   version "1.1.10"
@@ -253,11 +259,12 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@ngtools/webpack@6.0.8":
-  version "6.0.8"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-6.0.8.tgz#a05bce526aee9da62bb230a95fba83fee99d0bca"
+"@ngtools/webpack@6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-6.1.5.tgz#134639686eb4519885ed27665babdf80ce098263"
   dependencies:
-    "@angular-devkit/core" "0.6.8"
+    "@angular-devkit/core" "0.7.5"
+    rxjs "^6.0.0"
     tree-kill "^1.0.0"
     webpack-sources "^1.1.0"
 
@@ -767,19 +774,24 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-apollo-angular-link-http-common@~1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/apollo-angular-link-http-common/-/apollo-angular-link-http-common-1.1.1.tgz#fee337e6e30c71699982097b150bfb64877d5614"
-
-apollo-angular-link-http@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/apollo-angular-link-http/-/apollo-angular-link-http-1.1.1.tgz#0b17fdd0bc5bc55d5c595d1880e2559c29b5db3f"
+apollo-angular-link-http-common@~1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/apollo-angular-link-http-common/-/apollo-angular-link-http-common-1.2.0.tgz#76be0d02478b266dc99d44b54483418e356bd410"
   dependencies:
-    apollo-angular-link-http-common "~1.1.0"
+    tslib "^1.9.0"
 
-apollo-angular@^1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/apollo-angular/-/apollo-angular-1.1.2.tgz#7aaad1c996d26b538eea043b825c0ab59fdfe8e5"
+apollo-angular-link-http@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/apollo-angular-link-http/-/apollo-angular-link-http-1.2.0.tgz#5eb243e45561032022b5bb9cb2953fc3afaa5418"
+  dependencies:
+    apollo-angular-link-http-common "~1.2.0"
+    tslib "^1.9.0"
+
+apollo-angular@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/apollo-angular/-/apollo-angular-1.2.0.tgz#0eebb785e1365f473e437c8a738c71d68a07d0f2"
+  dependencies:
+    tslib "^1.9.0"
 
 apollo-cache-inmemory@^1.2.7:
   version "1.2.8"
@@ -855,9 +867,9 @@ apollo-codegen-typescript-legacy@^0.27.0:
   dependencies:
     apollo-codegen-core "^0.27.0"
 
-apollo-codegen-typescript@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/apollo-codegen-typescript/-/apollo-codegen-typescript-0.27.0.tgz#11848852913d40c19b7fe5e815def4aacca0110c"
+apollo-codegen-typescript@^0.27.1:
+  version "0.27.1"
+  resolved "https://registry.yarnpkg.com/apollo-codegen-typescript/-/apollo-codegen-typescript-0.27.1.tgz#b1383d7098bd70d6faac1e906ec86c4a02f752fe"
   dependencies:
     "@babel/types" "7.0.0-beta.38"
     apollo-codegen-core "^0.27.0"
@@ -904,9 +916,9 @@ apollo-utilities@^1.0.0, apollo-utilities@^1.0.1, apollo-utilities@^1.0.19, apol
   dependencies:
     fast-json-stable-stringify "^2.0.0"
 
-apollo@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/apollo/-/apollo-1.7.0.tgz#5fc2c755ce03d15c6ef00e694120e42a843ae53a"
+apollo@1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/apollo/-/apollo-1.7.1.tgz#29ae6095f6a55fce18f45b0b9b77898dd03523f2"
   dependencies:
     "@oclif/command" "^1.4.21"
     "@oclif/config" "^1.6.17"
@@ -923,7 +935,7 @@ apollo@1.7.0:
     apollo-codegen-flow-legacy "^0.27.0"
     apollo-codegen-scala "^0.27.0"
     apollo-codegen-swift "^0.27.0"
-    apollo-codegen-typescript "^0.27.0"
+    apollo-codegen-typescript "^0.27.1"
     apollo-codegen-typescript-legacy "^0.27.0"
     apollo-link "^1.2.2"
     apollo-link-http "^1.5.4"
@@ -1087,7 +1099,7 @@ async@1.x, async@^1.4.0, async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
-async@^2.1.4:
+async@^2.1.4, async@^2.5.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
@@ -1511,15 +1523,6 @@ cache-base@^1.0.1:
     union-value "^1.0.0"
     unset-value "^1.0.0"
 
-cache-loader@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/cache-loader/-/cache-loader-1.2.2.tgz#6d5c38ded959a09cc5d58190ab5af6f73bd353f5"
-  dependencies:
-    loader-utils "^1.1.0"
-    mkdirp "^0.5.1"
-    neo-async "^2.5.0"
-    schema-utils "^0.4.2"
-
 cacheable-request@^2.1.1:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-2.1.4.tgz#0d808801b6342ad33c91df9d0b44dc09b91e5c3d"
@@ -1617,14 +1620,6 @@ chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.2, chalk@^2.4.1:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
-
-chalk@~2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.2.2.tgz#4403f5cf18f35c05f51fbdf152bf588f956cf7cb"
-  dependencies:
-    ansi-styles "^3.1.0"
-    escape-string-regexp "^1.0.5"
-    supports-color "^4.0.0"
 
 change-case@^3.0.1:
   version "3.0.2"
@@ -2016,7 +2011,7 @@ copy-descriptor@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
 
-copy-webpack-plugin@^4.5.1:
+copy-webpack-plugin@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-4.5.2.tgz#d53444a8fea2912d806e78937390ddd7e632ee5c"
   dependencies:
@@ -4318,7 +4313,7 @@ json-buffer@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
 
-json-parse-better-errors@^1.0.1:
+json-parse-better-errors@^1.0.1, json-parse-better-errors@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
 
@@ -4485,7 +4480,7 @@ less-loader@^4.1.0:
     loader-utils "^1.1.0"
     pify "^3.0.0"
 
-less@^3.0.4:
+less@^3.7.1:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/less/-/less-3.8.1.tgz#f31758598ef5a1930dd4caefa9e4340641e71e1d"
   dependencies:
@@ -4792,7 +4787,7 @@ mem@^1.1.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-memory-fs@^0.4.0, memory-fs@^0.4.1, memory-fs@~0.4.1:
+memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/memory-fs/-/memory-fs-0.4.1.tgz#3a9a20b8462523e447cfbc7e8bb80ed667bfc552"
   dependencies:
@@ -5169,7 +5164,7 @@ node-pre-gyp@^0.10.0:
     semver "^5.3.0"
     tar "^4"
 
-node-sass@^4.9.0:
+node-sass@^4.9.3:
   version "4.9.3"
   resolved "https://registry.yarnpkg.com/node-sass/-/node-sass-4.9.3.tgz#f407cf3d66f78308bb1e346b24fa428703196224"
   dependencies:
@@ -6313,7 +6308,7 @@ resolve@1.1.x:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
-resolve@^1.1.6, resolve@^1.1.7, resolve@^1.3.2, resolve@^1.5.0:
+resolve@^1.1.6, resolve@^1.1.7, resolve@^1.3.2:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.1.tgz#82f1ec19a423ac1fbd080b0bab06ba36e84a7a26"
   dependencies:
@@ -6402,16 +6397,15 @@ sass-graph@^2.2.4:
     scss-tokenizer "^0.2.3"
     yargs "^7.0.0"
 
-sass-loader@^7.0.1:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.1.0.tgz#16fd5138cb8b424bf8a759528a1972d72aad069d"
+sass-loader@~6.0.7:
+  version "6.0.7"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-6.0.7.tgz#dd2fdb3e7eeff4a53f35ba6ac408715488353d00"
   dependencies:
     clone-deep "^2.0.1"
     loader-utils "^1.0.1"
     lodash.tail "^4.1.1"
     neo-async "^2.5.0"
     pify "^3.0.0"
-    semver "^5.5.0"
 
 saucelabs@^1.5.0:
   version "1.5.0"
@@ -6437,7 +6431,7 @@ schema-utils@^0.3.0:
   dependencies:
     ajv "^5.0.0"
 
-schema-utils@^0.4.0, schema-utils@^0.4.2, schema-utils@^0.4.4, schema-utils@^0.4.5:
+schema-utils@^0.4.0, schema-utils@^0.4.4, schema-utils@^0.4.5:
   version "0.4.7"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-0.4.7.tgz#ba74f597d2be2ea880131746ee17d0a093c68187"
   dependencies:
@@ -6637,12 +6631,6 @@ signal-exit@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-silent-error@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/silent-error/-/silent-error-1.1.0.tgz#2209706f1c850a9f1d10d0d840918b46f26e1bc9"
-  dependencies:
-    debug "^2.2.0"
-
 slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
@@ -6763,6 +6751,13 @@ source-list-map@^2.0.0:
 source-list-map@~0.1.7:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
+
+source-map-loader@^0.2.3:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/source-map-loader/-/source-map-loader-0.2.4.tgz#c18b0dc6e23bf66f6792437557c569a11e072271"
+  dependencies:
+    async "^2.5.0"
+    loader-utils "^1.1.0"
 
 source-map-resolve@^0.5.0:
   version "0.5.2"
@@ -7265,7 +7260,7 @@ tsickle@^0.32.1:
     source-map "^0.6.0"
     source-map-support "^0.5.0"
 
-tslib@^1, tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
@@ -7693,9 +7688,9 @@ webpack-subresource-integrity@^1.1.0-rc.4:
   dependencies:
     webpack-core "^0.6.8"
 
-webpack@~4.8.1:
-  version "4.8.3"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.8.3.tgz#957c8e80000f9e5cc03d775e78b472d8954f4eeb"
+webpack@~4.9.2:
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.9.2.tgz#d347097cc87c9242527c2e8ee9cdcb90f05856c3"
   dependencies:
     "@webassemblyjs/ast" "1.4.3"
     "@webassemblyjs/wasm-edit" "1.4.3"
@@ -7707,6 +7702,7 @@ webpack@~4.8.1:
     chrome-trace-event "^0.1.1"
     enhanced-resolve "^4.0.0"
     eslint-scope "^3.7.1"
+    json-parse-better-errors "^1.0.2"
     loader-runner "^2.3.0"
     loader-utils "^1.1.0"
     memory-fs "~0.4.1"
