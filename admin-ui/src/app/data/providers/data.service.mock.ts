@@ -51,6 +51,7 @@ export class MockDataService implements DataServiceMock {
         removeOptionGroupFromProduct: spyObservable('removeOptionGroupFromProduct'),
         getProductOptionGroups: spyQueryResult('getProductOptionGroups'),
         generateProductVariants: spyObservable('generateProductVariants'),
+        applyFacetValuesToProductVariants: spyObservable('applyFacetValuesToProductVariants'),
     };
     user = {
         checkLoggedIn: spyObservable('checkLoggedIn'),

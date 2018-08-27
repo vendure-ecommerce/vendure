@@ -14,6 +14,11 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             languageCode
             name
         }
+        facetValues {
+            id
+            code
+            name
+        }
         translations {
             id
             languageCode

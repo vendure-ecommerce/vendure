@@ -7,6 +7,7 @@
   "catalog": {
     "ID": "ID",
     "add-facet-value": "Add facet value",
+    "apply-facets": "Apply facets",
     "code": "Code",
     "confirm-generate-product-variants": "Click 'Finish' to generate {count} product variants.",
     "create-group": "Create option group",
@@ -16,6 +17,7 @@
     "description": "Description",
     "facet": "Facet",
     "facet-values": "Facet values",
+    "facets": "Facets",
     "filter-by-group-name": "Filter by group name",
     "generate-product-variants": "Generate product variants",
     "generate-variants-default-only": "This product does not have options",
@@ -34,18 +36,19 @@
     "option-group-name": "Option group name",
     "option-group-options-label": "Options",
     "option-group-options-tooltip": "Enter each option on a new line in the default language ({ defaultLanguage })",
+    "options": "Options",
+    "price": "Price",
     "product": "Product",
     "product-name": "Product name",
     "product-option-groups": "Option groups",
-    "product-variant-table-name": "Variant name",
-    "product-variant-table-options": "Options",
-    "product-variant-table-price": "Price",
-    "product-variant-table-sku": "SKU",
     "product-variants": "Product variants",
     "select-option-group": "Select option group",
     "selected-option-groups": "Selected option groups",
+    "sku": "SKU",
     "slug": "Slug",
-    "truncated-options-count": "{count} further {count, plural, one {option} other {options}}"
+    "truncated-options-count": "{count} further {count, plural, one {option} other {options}}",
+    "values": "Values",
+    "with-selected": "With selected"
   },
   "common": {
     "back": "Back",
@@ -65,6 +68,7 @@
     "username": "Username"
   },
   "error": {
+    "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
   },
   "nav": {

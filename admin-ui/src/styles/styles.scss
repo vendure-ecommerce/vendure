@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import "variables";
+@import "~@ng-select/ng-select/themes/default.theme.css";
 
 a:link, a:visited {
     color: darken($color-brand, 20%);

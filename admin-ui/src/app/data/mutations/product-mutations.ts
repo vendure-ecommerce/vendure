@@ -86,3 +86,15 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
         }
     }
 `;
+
+export const APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS = gql`
+    mutation ApplyFacetValuesToProductVariants($facetValueIds: [ID!]!, $productVariantIds: [ID!]!) {
+        applyFacetValuesToProductVariants(
+            facetValueIds: $facetValueIds
+            productVariantIds: $productVariantIds
+        ) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;

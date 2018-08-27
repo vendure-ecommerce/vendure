@@ -5,6 +5,7 @@ import { pick } from '../../common/utilities/pick';
 import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
+    APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
@@ -20,6 +21,8 @@ import {
 import {
     AddOptionGroupToProduct,
     AddOptionGroupToProductVariables,
+    ApplyFacetValuesToProductVariants,
+    ApplyFacetValuesToProductVariantsVariables,
     CreateProduct,
     CreateProductInput,
     CreateProductOptionGroup,
@@ -151,5 +154,18 @@ export class ProductDataService {
                 languageCode: getDefaultLanguage(),
             },
         );
+    }
+
+    applyFacetValuesToProductVariants(
+        facetValueIds: string[],
+        productVariantIds: string[],
+    ): Observable<ApplyFacetValuesToProductVariants> {
+        return this.baseDataService.mutate<
+            ApplyFacetValuesToProductVariants,
+            ApplyFacetValuesToProductVariantsVariables
+        >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
+            facetValueIds,
+            productVariantIds,
+        });
     }
 }

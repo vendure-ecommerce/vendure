@@ -1,5 +1,7 @@
-<div class="multi-actions" *ngIf="selectedVariantIds.length">
-    <ng-content></ng-content>
+<div class="with-selected">
+    <ng-container *ngIf="selectedVariantIds.length">
+        <label>{{ 'catalog.with-selected' | translate }}:</label><ng-content></ng-content>
+    </ng-container>
 </div>
 <table class="variants-list table">
     <thead>
@@ -9,10 +11,11 @@
                                [selected]="areAllSelected()"
                                (selectedChange)="toggleSelectAll()"></vdr-select-toggle>
         </th>
-        <th>{{ 'catalog.product-variant-table-sku' | translate }}</th>
-        <th>{{ 'catalog.product-variant-table-name' | translate }}</th>
-        <th>{{ 'catalog.product-variant-table-options' | translate }}</th>
-        <th>{{ 'catalog.product-variant-table-price' | translate }}</th>
+        <th>{{ 'catalog.sku' | translate }}</th>
+        <th>{{ 'catalog.name' | translate }}</th>
+        <th>{{ 'catalog.facets' | translate }}</th>
+        <th>{{ 'catalog.options' | translate }}</th>
+        <th>{{ 'catalog.price' | translate }}</th>
     </tr>
     </thead>
     <tbody>
@@ -28,6 +31,9 @@
         </td>
         <td>
             <input type="text" [formControl]="formArray.get([i, 'name'])">
+        </td>
+        <td>
+            <vdr-chip *ngFor="let facetValue of variant.facetValues">{{ facetValue.name }}</vdr-chip>
         </td>
         <td>
             <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>

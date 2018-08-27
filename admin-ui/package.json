@@ -26,6 +26,7 @@
     "@clr/angular": "^0.12.10",
     "@clr/icons": "^0.12.10",
     "@clr/ui": "^0.12.10",
+    "@ng-select/ng-select": "^2.5.0",
     "@ngx-translate/core": "^10.0.2",
     "@ngx-translate/http-loader": "^3.0.1",
     "@webcomponents/custom-elements": "1.0.0",

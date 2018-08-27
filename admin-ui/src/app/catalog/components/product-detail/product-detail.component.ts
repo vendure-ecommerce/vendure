@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
+import { combineLatest, EMPTY, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { CustomFieldConfig } from '../../../../../../shared/shared-types';
@@ -21,6 +21,7 @@ import {
     UpdateProductVariantInput,
 } from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
 @Component({
     selector: 'vdr-product-detail',
@@ -102,6 +103,28 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
                 }
             }
         });
+    }
+
+    /**
+     * Opens a dialog to select FacetValues to apply to the select ProductVariants.
+     */
+    selectFacetValue(selectedVariantIds: string[]) {
+        this.modalService
+            .fromComponent(ApplyFacetDialogComponent, { size: 'md' })
+            .pipe(
+                map(facetValues => facetValues && facetValues.map(v => v.id)),
+                mergeMap(facetValueIds => {
+                    if (facetValueIds) {
+                        return this.dataService.product.applyFacetValuesToProductVariants(
+                            facetValueIds,
+                            selectedVariantIds,
+                        );
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+            )
+            .subscribe();
     }
 
     create() {

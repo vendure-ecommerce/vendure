@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 
@@ -35,6 +36,7 @@ const IMPORTS = [
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    NgSelectModule,
     NgxPaginationModule,
     TranslateModule,
 ];

@@ -259,6 +259,12 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
+"@ng-select/ng-select@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-2.5.0.tgz#8a8e2ce67c1c1f51bfb6c59af885b1cfafbc65aa"
+  dependencies:
+    tslib "^1.9.0"
+
 "@ngtools/webpack@6.1.5":
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-6.1.5.tgz#134639686eb4519885ed27665babdf80ce098263"

@@ -61,9 +61,11 @@
             </vdr-form-item>
 
             <vdr-product-variants-list [variants]="variants$ | async"
-                                       [productVariantsFormArray]="productForm.get('variants')">
-                <label>Apply to selected</label>
-
+                                       [productVariantsFormArray]="productForm.get('variants')"
+                                       #productVariantsList>
+                <button class="btn btn-sm btn-secondary" (click)="selectFacetValue(productVariantsList.selectedVariantIds)">
+                    {{ 'catalog.apply-facets' | translate }}
+                </button>
             </vdr-product-variants-list>
         </ng-template>
 
