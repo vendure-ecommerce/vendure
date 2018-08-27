@@ -8,6 +8,7 @@ import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
+import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import {
     CreateProductVariantDto,
@@ -95,6 +96,25 @@ export class ProductVariantService {
         return await Promise.all(createVariants).then(variants =>
             variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE)),
         );
+    }
+
+    async addFacetValues(
+        productVariantIds: ID[],
+        facetValues: FacetValue[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const variants = await this.connection.getRepository(ProductVariant).findByIds(productVariantIds, {
+            relations: ['options', 'facetValues'],
+        });
+        for (const variant of variants) {
+            for (const facetValue of facetValues) {
+                if (!variant.facetValues.map(fv => fv.id).includes(facetValue.id)) {
+                    variant.facetValues.push(facetValue);
+                }
+            }
+            await this.connection.manager.save(variant);
+        }
+
+        return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE, ['options', 'facetValues']));
     }
 
     private createVariantName(productName: string, options: ProductOption[]): string {

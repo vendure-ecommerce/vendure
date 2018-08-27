@@ -51,14 +51,19 @@ export class ProductService {
     }
 
     findOne(productId: ID, lang: LanguageCode): Promise<Translated<Product> | undefined> {
-        const relations = ['variants', 'optionGroups', 'variants.options'];
+        const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
 
         return this.connection.manager
             .findOne(Product, productId, { relations })
             .then(
                 product =>
                     product &&
-                    translateDeep(product, lang, ['optionGroups', 'variants', ['variants', 'options']]),
+                    translateDeep(product, lang, [
+                        'optionGroups',
+                        'variants',
+                        ['variants', 'options'],
+                        ['variants', 'facetValues'],
+                    ]),
             );
     }
 

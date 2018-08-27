@@ -1,7 +1,8 @@
 {
   "error": {
-    "customer-with-id-not-found": "No customer with the id { customerId } was found",
+    "customer-with-id-not-found": "No customer with the id '{ customerId }' was found",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
+    "facet-value-not-found": "A FacetValue with the id '{ facetValueId }' was not found",
     "invalid-facetId": "The facetId '{ facetId }' was not found",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }"
   }

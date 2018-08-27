@@ -1,12 +1,14 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { PaginatedList } from '../../../../shared/shared-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { assertFound } from '../../common/utils';
 import { UpdateProductVariantDto } from '../../entity/product-variant/create-product-variant.dto';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { I18nError } from '../../i18n/i18n-error';
 import { Translated } from '../../locale/locale-types';
+import { FacetValueService } from '../../service/facet-value.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
@@ -16,6 +18,7 @@ export class ProductResolver {
     constructor(
         private productService: ProductService,
         private productVariantService: ProductVariantService,
+        private facetValueService: FacetValueService,
     ) {}
 
     @Query('products')
@@ -71,5 +74,22 @@ export class ProductResolver {
     async updateProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args as { input: UpdateProductVariantDto[] };
         return Promise.all(input.map(variant => this.productVariantService.update(variant)));
+    }
+
+    @Mutation()
+    @ApplyIdCodec()
+    async applyFacetValuesToProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
+        const { facetValueIds, productVariantIds } = args;
+        const facetValues = await Promise.all(
+            (facetValueIds as ID[]).map(async facetValueId => {
+                const facetValue = await this.facetValueService.findOne(facetValueId, DEFAULT_LANGUAGE_CODE);
+                if (!facetValue) {
+                    throw new I18nError(`error.facet-value-not-found`, { facetValueId });
+                }
+                return facetValue;
+            }),
+        );
+
+        return this.productVariantService.addFacetValues(productVariantIds, facetValues);
     }
 }
