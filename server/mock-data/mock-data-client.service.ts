@@ -9,7 +9,6 @@ import { CreateAdministratorDto } from '../src/entity/administrator/administrato
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
 import { CreateProductOptionGroupDto } from '../src/entity/product-option-group/product-option-group.dto';
-import { CreateProductVariantDto } from '../src/entity/product-variant/create-product-variant.dto';
 import { CreateProductDto } from '../src/entity/product/product.dto';
 import { Product } from '../src/entity/product/product.entity';
 import { LanguageCode } from '../src/locale/language-code';
@@ -24,6 +23,8 @@ export class MockDataClientService {
 
     constructor(config: VendureConfig) {
         this.apiUrl = `http://localhost:${config.port}/${config.apiPath}`;
+        // make the generated results deterministic
+        faker.seed(1);
     }
 
     async populateOptions(): Promise<any> {
@@ -148,7 +149,7 @@ export class MockDataClientService {
             const name = faker.commerce.productName();
             const slug = name.toLowerCase().replace(/\s+/g, '-');
             const description = faker.lorem.sentence();
-            const languageCodes = [LanguageCode.EN, LanguageCode.DE, LanguageCode.ES];
+            const languageCodes = [LanguageCode.EN, LanguageCode.DE];
 
             const variables = {
                 input: {
@@ -167,7 +168,28 @@ export class MockDataClientService {
                 },
                 err => console.log(err),
             );
-            await this.makeProductVariant(product.createProduct.id);
+            const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
+            const variants = prodWithVariants.variants;
+            for (const variant of variants) {
+                const variantEN = variant.translations[0];
+                const variantDE = { ...variantEN };
+                variantDE.languageCode = LanguageCode.DE;
+                variantDE.name = variantDE.name.replace(LanguageCode.EN, LanguageCode.DE);
+                variantDE.id = undefined;
+                variant.translations.push(variantDE);
+            }
+            await request(
+                this.apiUrl,
+                `
+                 mutation UpdateVariants($input: [UpdateProductVariantInput!]!) {
+                     updateProductVariants(input: $input) {
+                        id
+                    }
+                }`,
+                {
+                    input: variants,
+                },
+            );
         }
     }
 
@@ -190,8 +212,22 @@ export class MockDataClientService {
             generateVariantsForProduct(productId: $productId) {
                 id
                 name
+                variants {
+                    id
+                    translations {
+                        id
+                        languageCode
+                        name
+                    }
+                    sku
+                    image
+                    price
+                }
             }
          }`;
-        await request(this.apiUrl, query, { productId }).then(data => data, err => console.log(err));
+        return request<any>(this.apiUrl, query, { productId }).then(
+            data => data.generateVariantsForProduct,
+            err => console.log(err),
+        );
     }
 }
