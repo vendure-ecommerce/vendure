@@ -16,8 +16,8 @@ import {
     GetProductOptionGroupsVariables,
     ProductOptionGroup,
 } from 'shared/generated-types';
+import { DeepPartial } from 'shared/shared-types';
 
-import { DeepPartial } from '../../../../../../shared/shared-types';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/types/query-result';
 

@@ -10,9 +10,9 @@ import {
     LanguageCode,
     UpdateFacetValueInput,
 } from 'shared/generated-types';
+import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
-import { CustomFieldConfig } from '../../../../../../shared/shared-types';
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';

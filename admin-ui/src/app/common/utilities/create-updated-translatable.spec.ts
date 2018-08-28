@@ -1,6 +1,6 @@
 import { LanguageCode, ProductWithVariants } from 'shared/generated-types';
 
-import { CustomFieldConfig } from '../../../../../shared/shared-types';
+import { CustomFieldConfig } from 'shared/shared-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 

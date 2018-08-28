@@ -7,7 +7,7 @@ import {
     SelectionNode,
 } from 'graphql';
 
-import { CustomFields } from '../../../../shared/shared-types';
+import { CustomFields } from 'shared/shared-types';
 
 import { getServerConfig } from './server-config';
 

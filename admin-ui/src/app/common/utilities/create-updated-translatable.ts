@@ -1,10 +1,6 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import {
-    CustomFieldConfig,
-    CustomFieldsObject,
-    MayHaveCustomFields,
-} from '../../../../../shared/shared-types';
+import { CustomFieldConfig, CustomFieldsObject, MayHaveCustomFields } from 'shared/shared-types';
 
 /**
  * When updating an entity which has translations, the value from the form will pertain to the current

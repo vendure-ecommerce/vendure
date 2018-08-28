@@ -1,7 +1,7 @@
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 
-import { CustomFields } from '../../../../shared/shared-types';
+import { CustomFields } from 'shared/shared-types';
 
 export interface ServerConfig {
     customFields: CustomFields;

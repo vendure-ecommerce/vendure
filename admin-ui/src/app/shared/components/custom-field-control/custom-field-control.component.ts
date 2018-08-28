@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { CustomFieldConfig } from '../../../../../../shared/shared-types';
+import { CustomFieldConfig } from 'shared/shared-types';
 
 /**
  * This component renders the appropriate type of form input control based

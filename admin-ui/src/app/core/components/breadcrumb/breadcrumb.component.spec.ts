@@ -5,8 +5,8 @@ import { Resolve, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of as observableOf } from 'rxjs';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { MockTranslatePipe } from '../../../../testing/translate.pipe.mock';
 import { DataService } from '../../../data/providers/data.service';
 

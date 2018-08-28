@@ -1,6 +1,6 @@
 import { DocumentNode, FieldNode, FragmentDefinitionNode } from 'graphql';
 
-import { CustomFields } from '../../../../shared/shared-types';
+import { CustomFields } from 'shared/shared-types';
 
 import { addCustomFields } from './add-custom-fields';
 

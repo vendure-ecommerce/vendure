@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { Observable, of } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { FacetWithValues } from 'shared/generated-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 
