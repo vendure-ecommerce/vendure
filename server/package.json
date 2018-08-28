@@ -1,4 +1,4 @@
- {
+{
   "name": "vendure",
   "version": "0.0.0",
   "description": "A modern, headless ecommerce framework",
@@ -65,9 +65,7 @@
     "rimraf": "^2.6.2",
     "supertest": "^3.0.0",
     "ts-jest": "^23.1.4",
-    "ts-node": "^7.0.1",
-    "tsconfig-paths": "^3.5.0",
-    "tslint": "^5.10.0"
+    "tsconfig-paths": "^3.5.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -86,6 +84,11 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "coverageDirectory": "../coverage"
+    "coverageDirectory": "../coverage",
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    }
   }
 }
