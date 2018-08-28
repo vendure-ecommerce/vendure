@@ -38,6 +38,14 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 
 ## User Guide
 
+### Code Generation
+
+[apollo-cli](https://github.com/apollographql/apollo-cli) is used to automatically create TypeScript interfaces
+for all GraphQL queries used in the admin ui. These generated interfaces are used in both the admin ui and the server.
+
+Run `yarn generate-gql-types` to generate TypeScript interfaces based on these queries. The generated
+types are located at [`./shared/generated-types.ts`](./shared/generated-types.ts).
+
 ### Localization
 
 Vendure server will detect the most suitable locale based on the `Accept-Language` header of the client.
