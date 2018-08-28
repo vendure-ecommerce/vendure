@@ -1,6 +1,13 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
+import {
+    CreateProductOptionGroup,
+    CreateProductOptionGroupInput,
+    CreateProductOptionGroupVariables,
+} from 'shared/generated-types';
+import { LanguageCode } from 'shared/generated-types';
 
+import { CREATE_PRODUCT_OPTION_GROUP } from '../../admin-ui/src/app/data/mutations/product-mutations';
 import { ID } from '../../shared/shared-types';
 import { PasswordService } from '../src/auth/password.service';
 import { VendureConfig } from '../src/config/vendure-config';
@@ -8,11 +15,11 @@ import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
-import { CreateProductOptionGroupDto } from '../src/entity/product-option-group/product-option-group.dto';
 import { CreateProductDto } from '../src/entity/product/product.dto';
 import { Product } from '../src/entity/product/product.entity';
-import { LanguageCode } from '../src/locale/language-code';
 import { TranslationInput } from '../src/locale/locale-types';
+
+import { SimpleGraphQLClient } from './gql-request';
 
 // tslint:disable:no-console
 /**
@@ -20,47 +27,48 @@ import { TranslationInput } from '../src/locale/locale-types';
  */
 export class MockDataClientService {
     apiUrl: string;
+    client: SimpleGraphQLClient;
 
     constructor(config: VendureConfig) {
-        this.apiUrl = `http://localhost:${config.port}/${config.apiPath}`;
+        this.client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
         // make the generated results deterministic
         faker.seed(1);
     }
 
     async populateOptions(): Promise<any> {
-        const query = `mutation($input: CreateProductOptionGroupInput) {
-                            createProductOptionGroup(input: $input) { id }
-                       }`;
-
-        const variables = {
-            input: {
-                code: 'size',
-                translations: [{ languageCode: 'en', name: 'Size' }, { languageCode: 'de', name: 'Größe' }],
-                options: [
-                    {
-                        code: 'small',
+        await this.client
+            .request<CreateProductOptionGroup, CreateProductOptionGroupVariables>(
+                CREATE_PRODUCT_OPTION_GROUP,
+                {
+                    input: {
+                        code: 'size',
                         translations: [
-                            { languageCode: 'en', name: 'Small' },
-                            { languageCode: 'de', name: 'Klein' },
+                            { languageCode: LanguageCode.en, name: 'Size' },
+                            { languageCode: LanguageCode.de, name: 'Größe' },
+                        ],
+                        options: [
+                            {
+                                code: 'small',
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Small' },
+                                    { languageCode: LanguageCode.de, name: 'Klein' },
+                                ],
+                            },
+                            {
+                                code: 'large',
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Large' },
+                                    { languageCode: LanguageCode.de, name: 'Groß' },
+                                ],
+                            },
                         ],
                     },
-                    {
-                        code: 'large',
-                        translations: [
-                            { languageCode: 'en', name: 'Large' },
-                            { languageCode: 'de', name: 'Groß' },
-                        ],
-                    },
-                ],
-            } as CreateProductOptionGroupDto,
-        };
-
-        await request(this.apiUrl, query, variables).then(
-            data => console.log('Created Administrator:', data),
-            err => console.log(err),
-        );
-
-        console.log('created size options');
+                },
+            )
+            .then(
+                data => console.log('Created option group:', data.createProductOptionGroup.name),
+                err => console.log(err),
+            );
     }
 
     async populateAdmins(): Promise<any> {
@@ -149,7 +157,7 @@ export class MockDataClientService {
             const name = faker.commerce.productName();
             const slug = name.toLowerCase().replace(/\s+/g, '-');
             const description = faker.lorem.sentence();
-            const languageCodes = [LanguageCode.EN, LanguageCode.DE];
+            const languageCodes = [LanguageCode.en, LanguageCode.de];
 
             const variables = {
                 input: {
@@ -173,8 +181,8 @@ export class MockDataClientService {
             for (const variant of variants) {
                 const variantEN = variant.translations[0];
                 const variantDE = { ...variantEN };
-                variantDE.languageCode = LanguageCode.DE;
-                variantDE.name = variantDE.name.replace(LanguageCode.EN, LanguageCode.DE);
+                variantDE.languageCode = LanguageCode.de;
+                variantDE.name = variantDE.name.replace(LanguageCode.en, LanguageCode.de);
                 variantDE.id = undefined;
                 variant.translations.push(variantDE);
             }

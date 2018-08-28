@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { LanguageCode } from 'shared/generated-types';
 
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
-import { LanguageCode } from '../../../data/types/gql-generated-types';
 
 @Injectable()
 export class I18nService {

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { LogIn } from 'shared/generated-types';
 
 import { DataService } from '../../../data/providers/data.service';
-import { LogIn } from '../../../data/types/gql-generated-types';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
 /**

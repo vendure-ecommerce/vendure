@@ -9,6 +9,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strict": true,
+    "noImplicitAny": false,
     "strictPropertyInitialization": false,
     "target": "es5",
     "skipLibCheck": true,
@@ -20,6 +21,9 @@
       "es2017",
       "dom",
       "esnext.asynciterable"
-    ]
+    ],
+    "paths": {
+      "shared/*": ["../shared/*"]
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { LanguageCode } from 'shared/generated-types';
 import { Connection, FindManyOptions, Like } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
@@ -13,7 +14,6 @@ import {
     UpdateProductOptionGroupDto,
 } from '../entity/product-option-group/product-option-group.dto';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';

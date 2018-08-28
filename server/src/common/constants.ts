@@ -1,3 +1,3 @@
-import { LanguageCode } from '../locale/language-code';
+import { LanguageCode } from 'shared/generated-types';
 
-export const DEFAULT_LANGUAGE_CODE = LanguageCode.EN;
+export const DEFAULT_LANGUAGE_CODE = LanguageCode.en;

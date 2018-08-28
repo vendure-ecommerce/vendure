@@ -1,23 +1,4 @@
 import { Observable } from 'rxjs';
-
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { pick } from '../../common/utilities/pick';
-import { addCustomFields } from '../add-custom-fields';
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_OPTION_GROUP,
-    GENERATE_PRODUCT_VARIANTS,
-    REMOVE_OPTION_GROUP_FROM_PRODUCT,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../mutations/product-mutations';
-import {
-    GET_PRODUCT_LIST,
-    GET_PRODUCT_OPTION_GROUPS,
-    GET_PRODUCT_WITH_VARIANTS,
-} from '../queries/product-queries';
 import {
     AddOptionGroupToProduct,
     AddOptionGroupToProductVariables,
@@ -45,7 +26,26 @@ import {
     UpdateProductVariantInput,
     UpdateProductVariants,
     UpdateProductVariantsVariables,
-} from '../types/gql-generated-types';
+} from 'shared/generated-types';
+
+import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { pick } from '../../common/utilities/pick';
+import { addCustomFields } from '../add-custom-fields';
+import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
+    APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
+    GENERATE_PRODUCT_VARIANTS,
+    REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../mutations/product-mutations';
+import {
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_WITH_VARIANTS,
+} from '../queries/product-queries';
 import { QueryResult } from '../types/query-result';
 
 import { BaseDataService } from './base-data.service';

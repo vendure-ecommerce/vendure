@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../shared/shared-types';
@@ -11,7 +12,6 @@ import { FacetValueTranslation } from '../entity/facet-value/facet-value-transla
 import { CreateFacetValueDto, UpdateFacetValueDto } from '../entity/facet-value/facet-value.dto';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { Facet } from '../entity/facet/facet.entity';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';

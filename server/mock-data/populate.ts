@@ -22,8 +22,8 @@ async function populate() {
 
     const mockDataClientService = new MockDataClientService(devConfig);
     await mockDataClientService.populateOptions();
-    await mockDataClientService.populateProducts(200);
-    await mockDataClientService.populateCustomers(100);
+    await mockDataClientService.populateProducts(5);
+    await mockDataClientService.populateCustomers(5);
     await mockDataClientService.populateAdmins();
 }
 

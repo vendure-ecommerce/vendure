@@ -1,5 +1,6 @@
+import { LanguageCode, ProductWithVariants } from 'shared/generated-types';
+
 import { CustomFieldConfig } from '../../../../../shared/shared-types';
-import { LanguageCode, ProductWithVariants } from '../../data/types/gql-generated-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 

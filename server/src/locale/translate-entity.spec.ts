@@ -1,3 +1,5 @@
+import { LanguageCode } from 'shared/generated-types';
+
 import { ProductOptionTranslation } from '../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
@@ -5,11 +7,10 @@ import { ProductVariant } from '../entity/product-variant/product-variant.entity
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
 
-import { LanguageCode } from './language-code';
 import { Translatable, Translation } from './locale-types';
 import { translateDeep, translateEntity } from './translate-entity';
 
-const LANGUAGE_CODE = LanguageCode.EN;
+const LANGUAGE_CODE = LanguageCode.en;
 const PRODUCT_NAME_EN = 'English Name';
 const VARIANT_NAME_EN = 'English Variant';
 const OPTION_NAME_EN = 'English Option';
@@ -25,7 +26,7 @@ describe('translateEntity()', () => {
     beforeEach(() => {
         productTranslationEN = new ProductTranslation({
             id: '2',
-            languageCode: LanguageCode.EN,
+            languageCode: LanguageCode.en,
             name: PRODUCT_NAME_EN,
             slug: '',
             description: '',
@@ -35,7 +36,7 @@ describe('translateEntity()', () => {
 
         productTranslationDE = new ProductTranslation({
             id: '3',
-            languageCode: LanguageCode.DE,
+            languageCode: LanguageCode.de,
             name: PRODUCT_NAME_DE,
             slug: '',
             description: '',
@@ -50,25 +51,25 @@ describe('translateEntity()', () => {
     });
 
     it('should unwrap the matching translation', () => {
-        const result = translateEntity(product, LanguageCode.EN);
+        const result = translateEntity(product, LanguageCode.en);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
     });
 
     it('should not overwrite translatable id with translation id', () => {
-        const result = translateEntity(product, LanguageCode.EN);
+        const result = translateEntity(product, LanguageCode.en);
 
         expect(result).toHaveProperty('id', '1');
     });
 
     it('should note transfer the base from the selected translation', () => {
-        const result = translateEntity(product, LanguageCode.EN);
+        const result = translateEntity(product, LanguageCode.en);
 
         expect(result).not.toHaveProperty('base');
     });
 
     it('should transfer the languageCode from the selected translation', () => {
-        const result = translateEntity(product, LanguageCode.EN);
+        const result = translateEntity(product, LanguageCode.en);
 
         expect(result).toHaveProperty('languageCode', 'en');
     });
@@ -79,7 +80,7 @@ describe('translateEntity()', () => {
                 aBooleanField: true,
             };
             product.customFields = customFields;
-            const result = translateEntity(product, LanguageCode.EN);
+            const result = translateEntity(product, LanguageCode.en);
 
             expect(result.customFields).toEqual(customFields);
         });
@@ -90,7 +91,7 @@ describe('translateEntity()', () => {
                 aLocaleString2: 'translated2',
             };
             product.translations[0].customFields = translatedCustomFields;
-            const result = translateEntity(product, LanguageCode.EN);
+            const result = translateEntity(product, LanguageCode.en);
 
             expect(result.customFields).toEqual(translatedCustomFields);
         });
@@ -106,7 +107,7 @@ describe('translateEntity()', () => {
             };
             product.customFields = productCustomFields;
             product.translations[0].customFields = translatedCustomFields;
-            const result = translateEntity(product, LanguageCode.EN);
+            const result = translateEntity(product, LanguageCode.en);
 
             expect(result.customFields).toEqual({ ...productCustomFields, ...translatedCustomFields });
         });
@@ -115,7 +116,7 @@ describe('translateEntity()', () => {
     it('throw if there are no translations available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.EN)).toThrow(
+        expect(() => translateEntity(product, LanguageCode.en)).toThrow(
             'error.entity-has-no-translation-in-language',
         );
     });
@@ -123,7 +124,7 @@ describe('translateEntity()', () => {
     it('throw if the desired translation is not available', () => {
         product.translations = [];
 
-        expect(() => translateEntity(product, LanguageCode.ZU)).toThrow(
+        expect(() => translateEntity(product, LanguageCode.zu)).toThrow(
             'error.entity-has-no-translation-in-language',
         );
     });
@@ -200,54 +201,54 @@ describe('translateDeep()', () => {
     });
 
     it('should translate the root entity', () => {
-        const result = translateDeep(product, LanguageCode.EN);
+        const result = translateDeep(product, LanguageCode.en);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
     });
 
     it('should not throw if root entity has no translations', () => {
-        expect(() => translateDeep(testProduct, LanguageCode.EN)).not.toThrow();
+        expect(() => translateDeep(testProduct, LanguageCode.en)).not.toThrow();
     });
 
     it('should not throw if first-level nested entity is not defined', () => {
         testProduct.singleRealVariant = undefined as any;
-        expect(() => translateDeep(testProduct, LanguageCode.EN, ['singleRealVariant'])).not.toThrow();
+        expect(() => translateDeep(testProduct, LanguageCode.en, ['singleRealVariant'])).not.toThrow();
     });
 
     it('should not throw if second-level nested entity is not defined', () => {
         testProduct.singleRealVariant.options = undefined as any;
         expect(() =>
-            translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']]),
+            translateDeep(testProduct, LanguageCode.en, [['singleRealVariant', 'options']]),
         ).not.toThrow();
     });
 
     it('should translate a first-level nested non-array entity', () => {
-        const result = translateDeep(testProduct, LanguageCode.EN, ['singleRealVariant']);
+        const result = translateDeep(testProduct, LanguageCode.en, ['singleRealVariant']);
 
         expect(result.singleRealVariant).toHaveProperty('name', VARIANT_NAME_EN);
     });
 
     it('should translate a first-level nested entity array', () => {
-        const result = translateDeep(product, LanguageCode.EN, ['variants']);
+        const result = translateDeep(product, LanguageCode.en, ['variants']);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
         expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME_EN);
     });
 
     it('should translate a second-level nested non-array entity', () => {
-        const result = translateDeep(testProduct, LanguageCode.EN, [['singleTestVariant', 'singleOption']]);
+        const result = translateDeep(testProduct, LanguageCode.en, [['singleTestVariant', 'singleOption']]);
 
         expect(result.singleTestVariant.singleOption).toHaveProperty('name', OPTION_NAME_EN);
     });
 
     it('should translate a second-level nested entity array (first-level is not array)', () => {
-        const result = translateDeep(testProduct, LanguageCode.EN, [['singleRealVariant', 'options']]);
+        const result = translateDeep(testProduct, LanguageCode.en, [['singleRealVariant', 'options']]);
 
         expect(result.singleRealVariant.options[0]).toHaveProperty('name', OPTION_NAME_EN);
     });
 
     it('should translate a second-level nested entity array', () => {
-        const result = translateDeep(product, LanguageCode.EN, ['variants', ['variants', 'options']]);
+        const result = translateDeep(product, LanguageCode.en, ['variants', ['variants', 'options']]);
 
         expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
         expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME_EN);

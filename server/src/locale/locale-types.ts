@@ -1,9 +1,10 @@
+import { LanguageCode } from 'shared/generated-types';
+
 import { ID } from '../../../shared/shared-types';
 import { CustomFieldsObject } from '../../../shared/shared-types';
 import { UnwrappedArray } from '../common/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
-import { LanguageCode } from './language-code';
 import { TranslatableRelationsKeys } from './translate-entity';
 
 /**

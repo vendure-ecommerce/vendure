@@ -1,4 +1,4 @@
-{
+ {
   "name": "vendure",
   "version": "0.0.0",
   "description": "A modern, headless ecommerce framework",
@@ -31,6 +31,7 @@
     "body-parser": "^1.18.3",
     "graphql": "^14.0.0-rc.2",
     "graphql-iso-date": "^3.5.0",
+    "graphql-tag": "^2.9.2",
     "graphql-tools": "^3.1.1",
     "graphql-type-json": "^0.2.1",
     "i18next": "^11.6.0",
@@ -74,6 +75,9 @@
       "json",
       "ts"
     ],
+    "moduleNameMapper": {
+      "shared/(.*)": "<rootDir>/../shared/$1.ts"
+    },
     "roots": [
       "src",
       "../shared"

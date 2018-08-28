@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { ID, PaginatedList } from '../../../shared/shared-types';
@@ -14,7 +15,6 @@ import { ProductTranslation } from '../entity/product/product-translation.entity
 import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';

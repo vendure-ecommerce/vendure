@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { DeepPartial } from '../../../shared/shared-types';
@@ -7,7 +8,6 @@ import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
-import { LanguageCode } from '../locale/language-code';
 import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
@@ -39,12 +39,12 @@ describe('ProductVariantService', () => {
                 price: 123,
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                     },
                     {
-                        languageCode: LanguageCode.DE,
-                        name: 'Test DE',
+                        languageCode: LanguageCode.de,
+                        name: 'Test de',
                     },
                 ],
             });
@@ -61,12 +61,12 @@ describe('ProductVariantService', () => {
                 price: 123,
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                     },
                     {
-                        languageCode: LanguageCode.DE,
-                        name: 'Test DE',
+                        languageCode: LanguageCode.de,
+                        name: 'Test de',
                     },
                 ],
             });
@@ -91,8 +91,8 @@ describe('ProductVariantService', () => {
                 price: 123,
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                     },
                 ],
                 optionCodes: ['option2'],

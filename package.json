@@ -2,6 +2,8 @@
   "name": "vendure",
   "version": "0.1.0",
   "scripts": {
+    "apollo": "apollo",
+    "generate-gql-types": "ts-node generate-graphql-types.ts",
     "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
     "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test",
     "format": "prettier --write",
@@ -12,8 +14,12 @@
     "prepush": "yarn test && cd admin-ui && yarn build --prod"
   },
   "devDependencies": {
+    "apollo": "^1.7.1",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.0",
-    "prettier": "^1.13.7"
+    "prettier": "^1.13.7",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "2.9.1"
   }
 }

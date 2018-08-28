@@ -1,15 +1,4 @@
 import { Observable } from 'rxjs';
-
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { pick } from '../../common/utilities/pick';
-import { addCustomFields } from '../add-custom-fields';
-import {
-    CREATE_FACET,
-    CREATE_FACET_VALUES,
-    UPDATE_FACET,
-    UPDATE_FACET_VALUES,
-} from '../mutations/facet-mutations';
-import { GET_FACET_LIST, GET_FACET_WITH_VALUES } from '../queries/facet-queries';
 import {
     CreateFacet,
     CreateFacetInput,
@@ -27,7 +16,18 @@ import {
     UpdateFacetValues,
     UpdateFacetValuesVariables,
     UpdateFacetVariables,
-} from '../types/gql-generated-types';
+} from 'shared/generated-types';
+
+import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { pick } from '../../common/utilities/pick';
+import { addCustomFields } from '../add-custom-fields';
+import {
+    CREATE_FACET,
+    CREATE_FACET_VALUES,
+    UPDATE_FACET,
+    UPDATE_FACET_VALUES,
+} from '../mutations/facet-mutations';
+import { GET_FACET_LIST, GET_FACET_WITH_VALUES } from '../queries/facet-queries';
 import { QueryResult } from '../types/query-result';
 
 import { BaseDataService } from './base-data.service';

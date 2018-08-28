@@ -3,6 +3,13 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import {
+    LanguageCode,
+    ProductWithVariants,
+    ProductWithVariants_variants,
+    UpdateProductInput,
+    UpdateProductVariantInput,
+} from 'shared/generated-types';
 
 import { CustomFieldConfig } from '../../../../../../shared/shared-types';
 import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
@@ -13,13 +20,6 @@ import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { getServerConfig } from '../../../data/server-config';
-import {
-    LanguageCode,
-    ProductWithVariants,
-    ProductWithVariants_variants,
-    UpdateProductInput,
-    UpdateProductVariantInput,
-} from '../../../data/types/gql-generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 

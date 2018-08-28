@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { ID, PaginatedList } from '../../../shared/shared-types';
@@ -12,7 +13,6 @@ import { assertFound } from '../common/utils';
 import { FacetTranslation } from '../entity/facet/facet-translation.entity';
 import { CreateFacetDto, UpdateFacetDto } from '../entity/facet/facet.dto';
 import { Facet } from '../entity/facet/facet.entity';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';

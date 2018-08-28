@@ -2,12 +2,12 @@ import { Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { ClrWizard } from '@clr/angular';
 import { forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take, takeUntil } from 'rxjs/operators';
+import { ProductOptionGroup, ProductWithVariants } from 'shared/generated-types';
 
 import { generateAllCombinations } from '../../../../../../shared/shared-utils';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
-import { ProductOptionGroup, ProductWithVariants } from '../../../data/types/gql-generated-types';
 import { CreateOptionGroupFormComponent } from '../create-option-group-form/create-option-group-form.component';
 import { SelectOptionGroupComponent } from '../select-option-group/select-option-group.component';
 
