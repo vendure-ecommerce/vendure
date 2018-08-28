@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "populate": "ts-node -r tsconfig-paths/register mock-data/populate.ts",
+    "populate": "node -r ts-node/register -r tsconfig-paths/register mock-data/populate.ts",
     "start:dev": "nodemon --config nodemon-debug.json",
     "lint": "tslint --project tsconfig.json -c tslint.json",
     "test": "jest",

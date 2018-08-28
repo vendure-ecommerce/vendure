@@ -1,22 +1,30 @@
 import * as faker from 'faker/locale/en_GB';
-import { request } from 'graphql-request';
+import gql from 'graphql-tag';
 import {
-    CreateProductInput,
+    CreateProduct,
     CreateProductOptionGroup,
     CreateProductOptionGroupVariables,
+    CreateProductVariables,
+    GenerateProductVariants,
+    GenerateProductVariantsVariables,
     LanguageCode,
+    ProductTranslationInput,
+    UpdateProductVariants,
+    UpdateProductVariantsVariables,
 } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
 
-import { CREATE_PRODUCT_OPTION_GROUP } from '../../admin-ui/src/app/data/mutations/product-mutations';
+import {
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
+    GENERATE_PRODUCT_VARIANTS,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../../admin-ui/src/app/data/mutations/product-mutations';
 import { PasswordService } from '../src/auth/password.service';
 import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
-import { Product } from '../src/entity/product/product.entity';
-import { TranslationInput } from '../src/locale/locale-types';
 
 import { SimpleGraphQLClient } from './gql-request';
 
@@ -71,9 +79,14 @@ export class MockDataClientService {
     }
 
     async populateAdmins(): Promise<any> {
-        const query = `mutation($input: CreateAdministratorInput!) {
-                            createAdministrator(input: $input) { id, emailAddress }
-                        }`;
+        const query = gql`
+            mutation($input: CreateAdministratorInput!) {
+                createAdministrator(input: $input) {
+                    id
+                    emailAddress
+                }
+            }
+        `;
 
         const variables = {
             input: {
@@ -84,10 +97,9 @@ export class MockDataClientService {
             } as CreateAdministratorDto,
         };
 
-        await request(this.apiUrl, query, variables).then(
-            data => console.log('Created Administrator:', data),
-            err => console.log(err),
-        );
+        await this.client
+            .request(query, variables)
+            .then(data => console.log('Created Administrator:', data), err => console.log(err));
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
@@ -97,9 +109,14 @@ export class MockDataClientService {
             const firstName = faker.name.firstName();
             const lastName = faker.name.lastName();
 
-            const query1 = `mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
-                            createCustomer(input: $input, password: $password) { id, emailAddress }
-                           }`;
+            const query1 = gql`
+                mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
+                    createCustomer(input: $input, password: $password) {
+                        id
+                        emailAddress
+                    }
+                }
+            `;
 
             const variables1 = {
                 input: {
@@ -111,18 +128,19 @@ export class MockDataClientService {
                 password: 'test',
             };
 
-            const customer: Customer | void = await request(this.apiUrl, query1, variables1).then(
-                (data: any) => data.createCustomer as Customer,
-                err => console.log(err),
-            );
+            const customer: Customer | void = await this.client
+                .request(query1, variables1)
+                .then((data: any) => data.createCustomer as Customer, err => console.log(err));
 
             if (customer) {
-                const query2 = `mutation($customerId: ID!, $input: CreateAddressInput) {
-                                createCustomerAddress(customerId: $customerId, input: $input) {
-                                    id
-                                    streetLine1
-                                }
-                            }`;
+                const query2 = gql`
+                    mutation($customerId: ID!, $input: CreateAddressInput) {
+                        createCustomerAddress(customerId: $customerId, input: $input) {
+                            id
+                            streetLine1
+                        }
+                    }
+                `;
 
                 const variables2 = {
                     input: {
@@ -136,7 +154,7 @@ export class MockDataClientService {
                     customerId: customer.id,
                 };
 
-                await request(this.apiUrl, query2, variables2).then(
+                await this.client.request(query2, variables2).then(
                     data => {
                         console.log(`Created Customer ${i + 1}:`, data);
                         return data as Customer;
@@ -149,9 +167,7 @@ export class MockDataClientService {
 
     async populateProducts(count: number = 5): Promise<any> {
         for (let i = 0; i < count; i++) {
-            const query = `mutation CreateProduct($input: CreateProductInput) {
-                            createProduct(input: $input) { id, name }
-                           }`;
+            const query = CREATE_PRODUCT;
 
             const name = faker.commerce.productName();
             const slug = name.toLowerCase().replace(/\s+/g, '-');
@@ -165,38 +181,41 @@ export class MockDataClientService {
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
                     ),
-                } as CreateProductInput,
+                },
             };
 
-            const product = await request<any>(this.apiUrl, query, variables).then(
-                data => {
-                    console.log(`Created Product ${i + 1}:`, data);
-                    return data;
-                },
-                err => console.log(err),
-            );
-            const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
-            const variants = prodWithVariants.variants;
-            for (const variant of variants) {
-                const variantEN = variant.translations[0];
-                const variantDE = { ...variantEN };
-                variantDE.languageCode = LanguageCode.de;
-                variantDE.name = variantDE.name.replace(LanguageCode.en, LanguageCode.de);
-                variantDE.id = undefined;
-                variant.translations.push(variantDE);
+            const product = await this.client
+                .request<CreateProduct, CreateProductVariables>(query, variables)
+                .then(
+                    data => {
+                        console.log(`Created Product ${i + 1}:`, data.createProduct.name);
+                        return data;
+                    },
+                    err => console.log(err),
+                );
+            if (product) {
+                const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
+                const variants = prodWithVariants.generateVariantsForProduct.variants;
+                for (const variant of variants) {
+                    const variantEN = variant.translations[0];
+                    const variantDE = { ...variantEN };
+                    variantDE.languageCode = LanguageCode.de;
+                    variantDE.name = variantDE.name.replace(LanguageCode.en, LanguageCode.de);
+                    delete variantDE.id;
+                    variant.translations.push(variantDE);
+                }
+                await this.client.request<UpdateProductVariants, UpdateProductVariantsVariables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: variants.map(({ id, translations, sku, price }) => ({
+                            id,
+                            translations,
+                            sku,
+                            price,
+                        })),
+                    },
+                );
             }
-            await request(
-                this.apiUrl,
-                `
-                 mutation UpdateVariants($input: [UpdateProductVariantInput!]!) {
-                     updateProductVariants(input: $input) {
-                        id
-                    }
-                }`,
-                {
-                    input: variants,
-                },
-            );
         }
     }
 
@@ -205,7 +224,7 @@ export class MockDataClientService {
         name: string,
         slug: string,
         description: string,
-    ): TranslationInput<Product> {
+    ): ProductTranslationInput {
         return {
             languageCode,
             name: `${languageCode} ${name}`,
@@ -214,27 +233,10 @@ export class MockDataClientService {
         };
     }
 
-    private async makeProductVariant(productId: ID): Promise<any> {
-        const query = `mutation GenerateVariants($productId: ID!) {
-            generateVariantsForProduct(productId: $productId) {
-                id
-                name
-                variants {
-                    id
-                    translations {
-                        id
-                        languageCode
-                        name
-                    }
-                    sku
-                    image
-                    price
-                }
-            }
-         }`;
-        return request<any>(this.apiUrl, query, { productId }).then(
-            data => data.generateVariantsForProduct,
-            err => console.log(err),
-        );
+    private async makeProductVariant(productId: string): Promise<GenerateProductVariants> {
+        const query = GENERATE_PRODUCT_VARIANTS;
+        return this.client.request<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
+            productId,
+        });
     }
 }

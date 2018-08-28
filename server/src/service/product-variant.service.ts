@@ -52,10 +52,10 @@ export class ProductVariantService {
         await save(this.connection, updateProductVariantsDto);
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(updateProductVariantsDto.id, {
-                relations: ['options'],
+                relations: ['options', 'facetValues'],
             }),
         );
-        return translateDeep(variant, DEFAULT_LANGUAGE_CODE, ['options']);
+        return translateDeep(variant, DEFAULT_LANGUAGE_CODE, ['options', 'facetValues']);
     }
 
     async generateVariantsForProduct(
