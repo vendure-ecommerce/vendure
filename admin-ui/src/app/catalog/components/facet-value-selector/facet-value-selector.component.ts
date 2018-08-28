@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
+import { FacetValue } from 'shared/generated-types';
 
 import { DataService } from '../../../data/providers/data.service';
-import { FacetValue } from '../../../data/types/gql-generated-types';
 
 export type FacetValueSeletorItem = { name: string; facetName: string; id: string; value: FacetValue };
 

@@ -1,7 +1,8 @@
+import { LanguageCode } from 'shared/generated-types';
+
 import { UnwrappedArray } from '../common/common-types';
 import { I18nError } from '../i18n/i18n-error';
 
-import { LanguageCode } from './language-code';
 import { Translatable, Translated } from './locale-types';
 
 // prettier-ignore

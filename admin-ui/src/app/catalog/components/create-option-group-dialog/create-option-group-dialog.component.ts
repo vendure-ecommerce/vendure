@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { CreateProductOptionGroup } from 'shared/generated-types';
 
-import { CreateProductOptionGroup } from '../../../data/types/gql-generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 import { CreateOptionGroupFormComponent } from '../create-option-group-form/create-option-group-form.component';
 

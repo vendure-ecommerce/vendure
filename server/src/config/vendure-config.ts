@@ -1,9 +1,9 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { LanguageCode } from 'shared/generated-types';
+import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
-import { CustomFields, DeepPartial } from '../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/common-types';
-import { LanguageCode } from '../locale/language-code';
 
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
@@ -52,7 +52,7 @@ export interface VendureConfig {
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
-    defaultLanguageCode: LanguageCode.EN,
+    defaultLanguageCode: LanguageCode.en,
     port: 3000,
     cors: false,
     jwtSecret: 'secret',

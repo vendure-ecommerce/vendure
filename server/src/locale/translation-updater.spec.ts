@@ -1,8 +1,9 @@
+import { LanguageCode } from 'shared/generated-types';
+
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
 import { MockEntityManager } from '../testing/connection.mock';
 
-import { LanguageCode } from './language-code';
 import { TranslationInput } from './locale-types';
 import { TranslationUpdater } from './translation-updater';
 
@@ -11,14 +12,14 @@ describe('TranslationUpdater', () => {
         const existing: ProductTranslation[] = [
             new ProductTranslation({
                 id: '10',
-                languageCode: LanguageCode.EN,
+                languageCode: LanguageCode.en,
                 name: '',
                 slug: '',
                 description: '',
             }),
             new ProductTranslation({
                 id: '11',
-                languageCode: LanguageCode.DE,
+                languageCode: LanguageCode.de,
                 name: '',
                 slug: '',
                 description: '',
@@ -34,65 +35,77 @@ describe('TranslationUpdater', () => {
         it('correctly marks translations for update', async () => {
             const updated: Array<TranslationInput<Product>> = [
                 {
-                    languageCode: LanguageCode.EN,
+                    languageCode: LanguageCode.en,
                     name: '',
                     slug: '',
                     description: '',
                 },
                 {
-                    languageCode: LanguageCode.DE,
+                    languageCode: LanguageCode.de,
                     name: '',
                     slug: '',
                     description: '',
                 },
             ];
 
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toUpdate).toEqual(existing);
         });
 
         it('correctly marks translations for addition', async () => {
             const updated: Array<TranslationInput<Product>> = [
                 {
-                    languageCode: LanguageCode.AA,
+                    languageCode: LanguageCode.aa,
                     name: '',
                     slug: '',
                     description: '',
                 },
                 {
-                    languageCode: LanguageCode.ZA,
+                    languageCode: LanguageCode.za,
                     name: '',
                     slug: '',
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toAdd).toEqual(updated);
         });
 
         it('correctly marks translations for removal', async () => {
             const updated = [];
 
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toRemove).toEqual(existing);
         });
 
         it('correctly marks languages for update, addition and deletion', async () => {
             const updated: Array<TranslationInput<Product>> = [
                 {
-                    languageCode: LanguageCode.EN,
+                    languageCode: LanguageCode.en,
                     name: '',
                     slug: '',
                     description: '',
                 },
                 {
-                    languageCode: LanguageCode.ZA,
+                    languageCode: LanguageCode.za,
                     name: '',
                     slug: '',
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toUpdate).toEqual([existing[0]]);
             expect(diff.toAdd).toEqual([updated[1]]);
             expect(diff.toRemove).toEqual([existing[1]]);

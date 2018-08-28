@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FacetValue, ProductOptionGroup } from 'shared/generated-types';
 
-import { FacetValue, ProductOptionGroup } from '../../../data/types/gql-generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({

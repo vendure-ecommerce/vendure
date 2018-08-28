@@ -1,11 +1,10 @@
 import { Test } from '@nestjs/testing';
+import { LanguageCode, UpdateProductInput } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
-import { UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
-import { LanguageCode } from '../locale/language-code';
 import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
@@ -41,16 +40,16 @@ describe('ProductService', () => {
             await productService.create({
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                         slug: 'test-en',
-                        description: 'Test description EN',
+                        description: 'Test description en',
                     },
                     {
-                        languageCode: LanguageCode.DE,
-                        name: 'Test DE',
+                        languageCode: LanguageCode.de,
+                        name: 'Test de',
                         slug: 'test-de',
-                        description: 'Test description DE',
+                        description: 'Test description de',
                     },
                 ],
             });
@@ -63,16 +62,16 @@ describe('ProductService', () => {
             await productService.create({
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                         slug: 'test-en',
-                        description: 'Test description EN',
+                        description: 'Test description en',
                     },
                     {
-                        languageCode: LanguageCode.DE,
-                        name: 'Test DE',
+                        languageCode: LanguageCode.de,
+                        name: 'Test de',
                         slug: 'test-de',
-                        description: 'Test description DE',
+                        description: 'Test description de',
                     },
                 ],
             });
@@ -96,10 +95,10 @@ describe('ProductService', () => {
             await productService.create({
                 translations: [
                     {
-                        languageCode: LanguageCode.EN,
-                        name: 'Test EN',
+                        languageCode: LanguageCode.en,
+                        name: 'Test en',
                         slug: 'test-en',
-                        description: 'Test description EN',
+                        description: 'Test description en',
                     },
                 ],
                 optionGroupCodes: ['optionGroup2'],
@@ -119,7 +118,7 @@ describe('ProductService', () => {
             const translationUpdater = translationUpdaterService.mockUpdater;
             translationUpdater.applyDiff.mockReturnValue(Promise.resolve(productFromApplyDiffCall));
 
-            const dto: UpdateProductDto = {
+            const dto: UpdateProductInput = {
                 id: '1',
                 image: 'some-image',
                 translations: [],

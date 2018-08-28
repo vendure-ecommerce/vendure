@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-
-import { Type } from '../../shared/shared-types';
+import { Type } from 'shared/shared-types';
 
 import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 import { VendureEntity } from './entity/base/base.entity';

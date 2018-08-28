@@ -1,9 +1,9 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CreateProductVariables, UpdateProductVariantsVariables } from 'shared/generated-types';
+import { ID, PaginatedList } from 'shared/shared-types';
 
-import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { assertFound } from '../../common/utils';
-import { UpdateProductVariantDto } from '../../entity/product-variant/create-product-variant.dto';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { I18nError } from '../../i18n/i18n-error';
@@ -35,7 +35,7 @@ export class ProductResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async createProduct(_, args): Promise<Translated<Product>> {
+    async createProduct(_, args: CreateProductVariables): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.create(input);
     }
@@ -71,8 +71,11 @@ export class ProductResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async updateProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
-        const { input } = args as { input: UpdateProductVariantDto[] };
+    async updateProductVariants(
+        _,
+        args: UpdateProductVariantsVariables,
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const { input } = args;
         return Promise.all(input.map(variant => this.productVariantService.update(variant)));
     }
 

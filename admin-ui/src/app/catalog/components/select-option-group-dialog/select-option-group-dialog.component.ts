@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { GetProductOptionGroups_productOptionGroups, ProductOptionGroup } from 'shared/generated-types';
 
-import {
-    GetProductOptionGroups_productOptionGroups,
-    ProductOptionGroup,
-} from '../../../data/types/gql-generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({

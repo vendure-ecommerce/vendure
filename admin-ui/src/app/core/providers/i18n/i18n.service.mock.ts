@@ -1,5 +1,6 @@
+import { LanguageCode } from 'shared/generated-types';
+
 import { MockOf } from '../../../../testing/testing-types';
-import { LanguageCode } from '../../../data/types/gql-generated-types';
 
 import { I18nService } from './i18n.service';
 

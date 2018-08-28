@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { LanguageCode } from '../../../data/types/gql-generated-types';
+import { LanguageCode } from 'shared/generated-types';
 
 @Component({
     selector: 'vdr-language-selector',

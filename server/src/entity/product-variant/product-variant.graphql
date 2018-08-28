@@ -31,7 +31,7 @@ input CreateProductVariantInput {
     sku: String!
     image: String
     price: Int!
-    optionCodes: [String]
+    optionCodes: [String!]
 }
 
 input UpdateProductVariantInput {

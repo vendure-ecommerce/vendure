@@ -19,26 +19,26 @@ type ProductTranslation {
     languageCode: LanguageCode!
     name: String!
     slug: String!
-    description: String
+    description: String!
 }
 
 input ProductTranslationInput {
     id: ID
     languageCode: LanguageCode!
     name: String!
-    slug: String
-    description: String
+    slug: String!
+    description: String!
 }
 
 input CreateProductInput {
     image: String
-    translations: [ProductTranslationInput]!
-    optionGroupCodes: [String]
+    translations: [ProductTranslationInput!]!
+    optionGroupCodes: [String!]
 }
 
 input UpdateProductInput {
     id: ID!
     image: String
-    translations: [ProductTranslationInput]!
-    optionGroupCodes: [String]
+    translations: [ProductTranslationInput!]!
+    optionGroupCodes: [String!]
 }

@@ -1,15 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-
-import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
-import { normalizeString } from '../../../common/utilities/normalize-string';
-import { DataService } from '../../../data/providers/data.service';
 import {
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     CreateProductOptionInput,
-} from '../../../data/types/gql-generated-types';
+} from 'shared/generated-types';
+
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
+import { normalizeString } from '../../../common/utilities/normalize-string';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-create-option-group-form',

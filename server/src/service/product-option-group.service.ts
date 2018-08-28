@@ -1,19 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateProductOptionGroupInput, LanguageCode } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
 import { Connection, FindManyOptions, Like } from 'typeorm';
 
-import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroupTranslation } from '../entity/product-option-group/product-option-group-translation.entity';
-import {
-    CreateProductOptionGroupDto,
-    UpdateProductOptionGroupDto,
-} from '../entity/product-option-group/product-option-group.dto';
+import { UpdateProductOptionGroupDto } from '../entity/product-option-group/product-option-group.dto';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
@@ -48,7 +45,7 @@ export class ProductOptionGroupService {
     }
 
     async create(
-        createProductOptionGroupDto: CreateProductOptionGroupDto,
+        createProductOptionGroupDto: CreateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
         const save = createTranslatable(ProductOptionGroup, ProductOptionGroupTranslation);
         const group = await save(this.connection, createProductOptionGroupDto);

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateFacetInput, LanguageCode, UpdateFacetInput } from 'shared/generated-types';
+import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID, PaginatedList } from '../../../shared/shared-types';
 import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
@@ -10,9 +11,7 @@ import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { FacetTranslation } from '../entity/facet/facet-translation.entity';
-import { CreateFacetDto, UpdateFacetDto } from '../entity/facet/facet.dto';
 import { Facet } from '../entity/facet/facet.entity';
-import { LanguageCode } from '../locale/language-code';
 import { Translated } from '../locale/locale-types';
 import { translateDeep } from '../locale/translate-entity';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
@@ -46,13 +45,13 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values']));
     }
 
-    async create(createFacetDto: CreateFacetDto): Promise<Translated<Facet>> {
+    async create(createFacetDto: CreateFacetInput): Promise<Translated<Facet>> {
         const save = createTranslatable(Facet, FacetTranslation);
         const facet = await save(this.connection, createFacetDto);
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateFacetDto: UpdateFacetDto): Promise<Translated<Facet>> {
+    async update(updateFacetDto: UpdateFacetInput): Promise<Translated<Facet>> {
         const save = updateTranslatable(Facet, FacetTranslation, this.translationUpdaterService);
         const facet = await save(this.connection, updateFacetDto);
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormArray } from '@angular/forms';
 
-import { ProductWithVariants_variants } from '../../../data/types/gql-generated-types';
+import { ProductWithVariants_variants } from 'shared/generated-types';
 
 @Component({
     selector: 'vdr-product-variants-list',

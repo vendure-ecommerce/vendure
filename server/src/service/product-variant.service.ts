@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { UpdateProductVariantInput } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
+import { generateAllCombinations } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
-import { ID } from '../../../shared/shared-types';
-import { generateAllCombinations } from '../../../shared/shared-utils';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
-import {
-    CreateProductVariantDto,
-    UpdateProductVariantDto,
-} from '../entity/product-variant/create-product-variant.dto';
+import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
@@ -45,7 +43,7 @@ export class ProductVariantService {
         return save(this.connection, createProductVariantDto);
     }
 
-    async update(updateProductVariantsDto: UpdateProductVariantDto): Promise<Translated<ProductVariant>> {
+    async update(updateProductVariantsDto: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
         const save = updateTranslatable(
             ProductVariant,
             ProductVariantTranslation,

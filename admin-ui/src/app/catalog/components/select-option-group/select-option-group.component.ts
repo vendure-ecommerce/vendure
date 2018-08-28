@@ -11,14 +11,14 @@ import {
 import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
-
-import { DeepPartial } from '../../../../../../shared/shared-types';
-import { DataService } from '../../../data/providers/data.service';
 import {
     GetProductOptionGroups,
     GetProductOptionGroupsVariables,
     ProductOptionGroup,
-} from '../../../data/types/gql-generated-types';
+} from 'shared/generated-types';
+import { DeepPartial } from 'shared/shared-types';
+
+import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/types/query-result';
 
 @Component({

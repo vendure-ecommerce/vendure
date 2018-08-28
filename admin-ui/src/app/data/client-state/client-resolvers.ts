@@ -1,7 +1,5 @@
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { GraphQLFieldResolver } from 'graphql';
-
-import { GET_NEWTORK_STATUS } from '../queries/local-queries';
 import {
     GetNetworkStatus,
     GetUiState,
@@ -10,7 +8,9 @@ import {
     LanguageCode,
     LogInVariables,
     SetUiLanguageVariables,
-} from '../types/gql-generated-types';
+} from 'shared/generated-types';
+
+import { GET_NEWTORK_STATUS } from '../queries/local-queries';
 
 export type ResolverContext = {
     cache: InMemoryCache;

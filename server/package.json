@@ -31,6 +31,7 @@
     "body-parser": "^1.18.3",
     "graphql": "^14.0.0-rc.2",
     "graphql-iso-date": "^3.5.0",
+    "graphql-tag": "^2.9.2",
     "graphql-tools": "^3.1.1",
     "graphql-type-json": "^0.2.1",
     "i18next": "^11.6.0",
@@ -64,9 +65,7 @@
     "rimraf": "^2.6.2",
     "supertest": "^3.0.0",
     "ts-jest": "^23.1.4",
-    "ts-node": "^7.0.1",
-    "tsconfig-paths": "^3.5.0",
-    "tslint": "^5.10.0"
+    "tsconfig-paths": "^3.5.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -74,6 +73,9 @@
       "json",
       "ts"
     ],
+    "moduleNameMapper": {
+      "shared/(.*)": "<rootDir>/../shared/$1.ts"
+    },
     "roots": [
       "src",
       "../shared"
@@ -82,6 +84,11 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "coverageDirectory": "../coverage"
+    "coverageDirectory": "../coverage",
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    }
   }
 }

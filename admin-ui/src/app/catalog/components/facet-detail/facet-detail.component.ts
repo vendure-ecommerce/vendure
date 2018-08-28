@@ -3,9 +3,16 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import {
+    CreateFacetValueInput,
+    FacetWithValues,
+    FacetWithValues_values,
+    LanguageCode,
+    UpdateFacetValueInput,
+} from 'shared/generated-types';
+import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
-import { CustomFieldConfig } from '../../../../../../shared/shared-types';
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
@@ -13,13 +20,6 @@ import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { getServerConfig } from '../../../data/server-config';
-import {
-    CreateFacetValueInput,
-    FacetWithValues,
-    FacetWithValues_values,
-    LanguageCode,
-    UpdateFacetValueInput,
-} from '../../../data/types/gql-generated-types';
 
 @Component({
     selector: 'vdr-facet-detail',

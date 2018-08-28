@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import { GetFacetList_facets_items } from 'shared/generated-types';
 
 import { DataService } from '../../../data/providers/data.service';
-import { GetFacetList_facets_items } from '../../../data/types/gql-generated-types';
 
 @Component({
     selector: 'vdr-facet-list',

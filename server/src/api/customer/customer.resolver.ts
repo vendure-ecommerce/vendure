@@ -1,6 +1,6 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { PaginatedList } from 'shared/shared-types';
 
-import { PaginatedList } from '../../../../shared/shared-types';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/customer.service';

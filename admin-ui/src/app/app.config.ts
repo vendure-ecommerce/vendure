@@ -1,6 +1,6 @@
-import { API_PORT } from '../../../shared/shared-constants';
+import { LanguageCode } from 'shared/generated-types';
 
-import { LanguageCode } from './data/types/gql-generated-types';
+import { API_PORT } from '../../../shared/shared-constants';
 
 export const API_URL = `http://localhost:${API_PORT}`;
 export const DEFAULT_LANGUAGE: LanguageCode = LanguageCode.en;

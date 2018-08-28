@@ -1,9 +1,6 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "noImplicitAny": false,
-    "removeComments": true,
+    "module": "commonjs",
     "noLib": false,
     "skipLibCheck": true,
     "lib": ["es2017"],
@@ -13,10 +10,6 @@
     "target": "es6",
     "strict": true,
     "strictPropertyInitialization": false,
-    "sourceMap": true,
-    "baseUrl": "./src",
-    "paths": {
-      "shared/*": ["../../shared/*"]
-    }
+    "sourceMap": false
   }
 }

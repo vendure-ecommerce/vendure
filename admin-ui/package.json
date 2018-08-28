@@ -8,8 +8,6 @@
     "test": "ng test",
     "lint": "tslint --fix",
     "e2e": "ng e2e",
-    "apollo": "apollo",
-    "generate-gql-types": "ts-node generate-graphql-types.ts",
     "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _"
   },
   "private": true,
@@ -68,8 +66,7 @@
     "protractor": "~5.3.0",
     "puppeteer": "^1.5.0",
     "rimraf": "^2.6.2",
-    "ts-node": "~5.0.1",
-    "tslint": "~5.10.0",
+    "tslint": "^5.11.0",
     "typescript": "~2.9.0"
   }
 }

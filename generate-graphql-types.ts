@@ -1,14 +1,14 @@
 import { spawn } from 'child_process';
 import * as fs from 'fs';
 
-import { API_PATH, API_PORT } from '../shared/shared-constants';
+import { API_PATH, API_PORT } from './shared/shared-constants';
 
 // tslint:disable:no-console
 const API_URL = `http://localhost:${API_PORT}/${API_PATH}`;
-const SCHEMA_JSON_FILE = '../schema.json';
-const CLIENT_SCHEMA_FILES = './src/app/data/types/client-types.graphql';
-const CLIENT_QUERY_FILES = '"./src/app/data/{queries,mutations,fragments}/**/*.ts"';
-const TYPESCRIPT_DEFINITIONS_FILE = './src/app/data/types/gql-generated-types.ts';
+const SCHEMA_JSON_FILE = './schema.json';
+const CLIENT_SCHEMA_FILES = './admin-ui/src/app/data/types/client-types.graphql';
+const CLIENT_QUERY_FILES = '"./admin-ui/src/app/data/{queries,mutations,fragments}/**/*.ts"';
+const TYPESCRIPT_DEFINITIONS_FILE = './shared/generated-types.ts';
 
 main().catch(e => {
     console.log('Could not generate types!', e);
@@ -21,7 +21,11 @@ main().catch(e => {
  * script "generate-gql-types".
  */
 async function main(): Promise<void> {
-    await downloadSchemaFromApi(API_URL, SCHEMA_JSON_FILE);
+    try {
+        await downloadSchemaFromApi(API_URL, SCHEMA_JSON_FILE);
+    } catch {
+        console.log('Could not connect to Vendure server. Attempting to build typed from existing schema.json');
+    }
     await generateTypeScriptTypesFromSchema(
         SCHEMA_JSON_FILE,
         CLIENT_SCHEMA_FILES,

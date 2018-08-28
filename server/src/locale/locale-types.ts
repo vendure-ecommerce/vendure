@@ -1,9 +1,10 @@
-import { ID } from '../../../shared/shared-types';
-import { CustomFieldsObject } from '../../../shared/shared-types';
+import { LanguageCode } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
+import { CustomFieldsObject } from 'shared/shared-types';
+
 import { UnwrappedArray } from '../common/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
-import { LanguageCode } from './language-code';
 import { TranslatableRelationsKeys } from './translate-entity';
 
 /**
@@ -43,7 +44,7 @@ export type Translation<T> =
  * This is the type of a translation object when provided as input to a create or update operation.
  */
 export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & {
-    id?: ID;
+    id?: ID | null;
     languageCode: LanguageCode;
 };
 

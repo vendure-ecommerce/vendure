@@ -1,8 +1,8 @@
+import { Type } from 'shared/shared-types';
+import { assertNever } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { Type } from '../../../shared/shared-types';
-import { assertNever } from '../../../shared/shared-utils';
 import { VendureEntity } from '../entity/base/base.entity';
 import { I18nError } from '../i18n/i18n-error';
 
