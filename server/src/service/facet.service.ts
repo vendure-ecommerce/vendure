@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from 'shared/generated-types';
+import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID, PaginatedList } from '../../../shared/shared-types';
 import { buildListQuery } from '../common/build-list-query';
 import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';

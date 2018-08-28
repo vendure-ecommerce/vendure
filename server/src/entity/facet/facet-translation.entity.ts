@@ -1,7 +1,7 @@
 import { LanguageCode } from 'shared/generated-types';
+import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { Translation } from '../../locale/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomFacetFieldsTranslation } from '../custom-entity-fields';

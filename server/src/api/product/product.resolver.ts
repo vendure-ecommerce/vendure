@@ -1,6 +1,6 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ID, PaginatedList } from 'shared/shared-types';
 
-import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { assertFound } from '../../common/utils';
 import { UpdateProductVariantDto } from '../../entity/product-variant/create-product-variant.dto';

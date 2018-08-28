@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID, PaginatedList } from '../../../shared/shared-types';
 import { PasswordService } from '../auth/password.service';
 import { Role } from '../auth/role';
 import { buildListQuery } from '../common/build-list-query';

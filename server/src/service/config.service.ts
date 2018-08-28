@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from 'shared/generated-types';
+import { CustomFields } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
-import { CustomFields } from '../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/common-types';
 import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strategy';
 import { getConfig, VendureConfig } from '../config/vendure-config';

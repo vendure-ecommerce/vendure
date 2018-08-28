@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';

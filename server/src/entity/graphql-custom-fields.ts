@@ -1,7 +1,7 @@
 import { buildSchema, extendSchema, parse, printSchema } from 'graphql';
 
-import { CustomFieldConfig, CustomFields, CustomFieldType } from '../../../shared/shared-types';
-import { assertNever } from '../../../shared/shared-utils';
+import { CustomFieldConfig, CustomFields, CustomFieldType } from 'shared/shared-types';
+import { assertNever } from 'shared/shared-utils';
 
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in

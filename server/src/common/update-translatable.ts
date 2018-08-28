@@ -1,6 +1,6 @@
+import { ID, Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID, Type } from '../../../shared/shared-types';
 import { Translatable, TranslatedInput, Translation } from '../locale/locale-types';
 import { TranslationUpdaterService } from '../locale/translation-updater.service';
 

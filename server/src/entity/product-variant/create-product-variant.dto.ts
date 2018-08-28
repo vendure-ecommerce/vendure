@@ -1,4 +1,5 @@
-import { ID } from '../../../../shared/shared-types';
+import { ID } from 'shared/shared-types';
+
 import { TranslatedInput } from '../../locale/locale-types';
 
 import { ProductVariant } from './product-variant.entity';

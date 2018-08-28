@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { LanguageCode } from 'shared/generated-types';
+import { DeepPartial } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { DeepPartial } from '../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';

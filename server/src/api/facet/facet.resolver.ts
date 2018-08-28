@@ -1,6 +1,6 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { PaginatedList } from 'shared/shared-types';
 
-import { PaginatedList } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { CreateFacetValueDto, UpdateFacetValueDto } from '../../entity/facet-value/facet-value.dto';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';

@@ -1,7 +1,7 @@
+import { Type } from 'shared/shared-types';
 import { Connection, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
-import { Type } from '../../../shared/shared-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
 import { ListQueryOptions } from './common-types';

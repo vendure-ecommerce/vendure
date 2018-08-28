@@ -1,7 +1,7 @@
+import { DeepPartial } from 'shared/shared-types';
+import { HasCustomFields } from 'shared/shared-types';
 import { Column, Entity } from 'typeorm';
 
-import { DeepPartial } from '../../../../shared/shared-types';
-import { HasCustomFields } from '../../../../shared/shared-types';
 import { Role } from '../../auth/role';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';

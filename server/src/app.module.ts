@@ -4,8 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import * as GraphQLJSON from 'graphql-type-json';
-
-import { CustomFields } from '../../shared/shared-types';
+import { CustomFields } from 'shared/shared-types';
 
 import { AdministratorResolver } from './api/administrator/administrator.resolver';
 import { AuthController } from './api/auth/auth.controller';

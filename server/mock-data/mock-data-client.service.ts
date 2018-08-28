@@ -6,9 +6,9 @@ import {
     CreateProductOptionGroupVariables,
 } from 'shared/generated-types';
 import { LanguageCode } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
 
 import { CREATE_PRODUCT_OPTION_GROUP } from '../../admin-ui/src/app/data/mutations/product-mutations';
-import { ID } from '../../shared/shared-types';
 import { PasswordService } from '../src/auth/password.service';
 import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
