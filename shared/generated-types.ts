@@ -258,7 +258,7 @@ export interface UpdateProduct_updateProduct_translations {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
 }
 
 export interface UpdateProduct_updateProduct_optionGroups {
@@ -340,7 +340,7 @@ export interface CreateProduct_createProduct_translations {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
 }
 
 export interface CreateProduct_createProduct_optionGroups {
@@ -422,7 +422,7 @@ export interface GenerateProductVariants_generateVariantsForProduct_translations
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
 }
 
 export interface GenerateProductVariants_generateVariantsForProduct_optionGroups {
@@ -890,7 +890,7 @@ export interface GetProductWithVariants_product_translations {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
 }
 
 export interface GetProductWithVariants_product_optionGroups {
@@ -1139,7 +1139,7 @@ export interface ProductWithVariants_translations {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  description: string | null;
+  description: string;
 }
 
 export interface ProductWithVariants_optionGroups {
@@ -1470,8 +1470,8 @@ export interface CreateProductCustomFieldsInput {
 
 export interface CreateProductInput {
   image?: string | null;
-  translations: (ProductTranslationInput | null)[];
-  optionGroupCodes?: (string | null)[] | null;
+  translations: ProductTranslationInput[];
+  optionGroupCodes?: string[] | null;
   customFields?: CreateProductCustomFieldsInput | null;
 }
 
@@ -1584,8 +1584,8 @@ export interface ProductTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
   name: string;
-  slug?: string | null;
-  description?: string | null;
+  slug: string;
+  description: string;
   customFields?: ProductTranslationCustomFieldsInput | null;
 }
 
@@ -1632,8 +1632,8 @@ export interface UpdateProductCustomFieldsInput {
 export interface UpdateProductInput {
   id: string;
   image?: string | null;
-  translations: (ProductTranslationInput | null)[];
-  optionGroupCodes?: (string | null)[] | null;
+  translations: ProductTranslationInput[];
+  optionGroupCodes?: string[] | null;
   customFields?: UpdateProductCustomFieldsInput | null;
 }
 

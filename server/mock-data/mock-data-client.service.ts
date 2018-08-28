@@ -1,11 +1,11 @@
 import * as faker from 'faker/locale/en_GB';
 import { request } from 'graphql-request';
 import {
+    CreateProductInput,
     CreateProductOptionGroup,
-    CreateProductOptionGroupInput,
     CreateProductOptionGroupVariables,
+    LanguageCode,
 } from 'shared/generated-types';
-import { LanguageCode } from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 
 import { CREATE_PRODUCT_OPTION_GROUP } from '../../admin-ui/src/app/data/mutations/product-mutations';
@@ -15,7 +15,6 @@ import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
-import { CreateProductDto } from '../src/entity/product/product.dto';
 import { Product } from '../src/entity/product/product.entity';
 import { TranslationInput } from '../src/locale/locale-types';
 
@@ -166,7 +165,7 @@ export class MockDataClientService {
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
                     ),
-                } as CreateProductDto,
+                } as CreateProductInput,
             };
 
             const product = await request<any>(this.apiUrl, query, variables).then(

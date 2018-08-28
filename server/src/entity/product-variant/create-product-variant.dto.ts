@@ -10,11 +10,3 @@ export interface CreateProductVariantDto extends TranslatedInput<ProductVariant>
     image?: string;
     optionCodes?: string[];
 }
-
-export interface UpdateProductVariantDto extends TranslatedInput<ProductVariant> {
-    id: ID;
-    sku: string;
-    price: number;
-    image?: string;
-    optionCodes?: string[];
-}

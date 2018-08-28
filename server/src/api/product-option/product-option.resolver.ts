@@ -1,4 +1,5 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { CreateProductOptionGroupVariables } from 'shared/generated-types';
 
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
@@ -38,7 +39,10 @@ export class ProductOptionResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async createProductOptionGroup(_, args): Promise<Translated<ProductOptionGroup>> {
+    async createProductOptionGroup(
+        _,
+        args: CreateProductOptionGroupVariables,
+    ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(args.input);
 

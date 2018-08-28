@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { LanguageCode } from 'shared/generated-types';
+import { CreateFacetValueInput, LanguageCode, UpdateFacetValueInput } from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -9,7 +9,6 @@ import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { FacetValueTranslation } from '../entity/facet-value/facet-value-translation.entity';
-import { CreateFacetValueDto, UpdateFacetValueDto } from '../entity/facet-value/facet-value.dto';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { Facet } from '../entity/facet/facet.entity';
 import { Translated } from '../locale/locale-types';
@@ -39,13 +38,13 @@ export class FacetValueService {
             .then(facetValue => facetValue && translateDeep(facetValue, lang));
     }
 
-    async create(facet: Facet, createFacetValueDto: CreateFacetValueDto): Promise<Translated<FacetValue>> {
+    async create(facet: Facet, createFacetValueDto: CreateFacetValueInput): Promise<Translated<FacetValue>> {
         const save = createTranslatable(FacetValue, FacetValueTranslation, fv => (fv.facet = facet));
         const facetValue = await save(this.connection, createFacetValueDto);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateFacetValueDto: UpdateFacetValueDto): Promise<Translated<FacetValue>> {
+    async update(updateFacetValueDto: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
         const save = updateTranslatable(FacetValue, FacetValueTranslation, this.translationUpdaterService);
         const facetValue = await save(this.connection, updateFacetValueDto);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));

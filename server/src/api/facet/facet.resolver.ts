@@ -1,8 +1,13 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+    CreateFacetValuesVariables,
+    CreateFacetVariables,
+    UpdateFacetValuesVariables,
+    UpdateFacetVariables,
+} from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { CreateFacetValueDto, UpdateFacetValueDto } from '../../entity/facet-value/facet-value.dto';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { I18nError } from '../../i18n/i18n-error';
@@ -29,7 +34,7 @@ export class FacetResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async createFacet(_, args): Promise<Translated<Facet>> {
+    async createFacet(_, args: CreateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
         const facet = await this.facetService.create(args.input);
 
@@ -44,15 +49,15 @@ export class FacetResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async updateFacet(_, args): Promise<Translated<Facet>> {
+    async updateFacet(_, args: UpdateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
         return this.facetService.update(args.input);
     }
 
     @Mutation()
     @ApplyIdCodec()
-    async createFacetValues(_, args): Promise<Array<Translated<FacetValue>>> {
-        const { input } = args as { input: CreateFacetValueDto[] };
+    async createFacetValues(_, args: CreateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
+        const { input } = args;
         const facetId = input[0].facetId;
         const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
         if (!facet) {
@@ -63,8 +68,8 @@ export class FacetResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async updateFacetValues(_, args): Promise<Array<Translated<FacetValue>>> {
-        const { input } = args as { input: UpdateFacetValueDto[] };
+    async updateFacetValues(_, args: UpdateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
+        const { input } = args;
         return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));
     }
 }

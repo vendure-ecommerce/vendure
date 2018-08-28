@@ -44,7 +44,7 @@ export type Translation<T> =
  * This is the type of a translation object when provided as input to a create or update operation.
  */
 export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & {
-    id?: ID;
+    id?: ID | null;
     languageCode: LanguageCode;
 };
 

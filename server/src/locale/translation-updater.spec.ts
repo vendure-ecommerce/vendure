@@ -48,7 +48,10 @@ describe('TranslationUpdater', () => {
                 },
             ];
 
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toUpdate).toEqual(existing);
         });
 
@@ -67,14 +70,20 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toAdd).toEqual(updated);
         });
 
         it('correctly marks translations for removal', async () => {
             const updated = [];
 
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toRemove).toEqual(existing);
         });
 
@@ -93,7 +102,10 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation, entityManager).diff(existing, updated);
+            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+                existing,
+                updated,
+            );
             expect(diff.toUpdate).toEqual([existing[0]]);
             expect(diff.toAdd).toEqual([updated[1]]);
             expect(diff.toRemove).toEqual([existing[1]]);

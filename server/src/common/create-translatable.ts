@@ -1,7 +1,6 @@
 import { Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { ProductOptionTranslation } from '../entity/product-option/product-option-translation.entity';
 import { Translatable, TranslatedInput, Translation } from '../locale/locale-types';
 
 /**

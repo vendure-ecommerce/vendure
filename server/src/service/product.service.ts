@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { LanguageCode } from 'shared/generated-types';
+import { CreateProductInput, LanguageCode, UpdateProductInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -12,7 +12,6 @@ import { updateTranslatable } from '../common/update-translatable';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
-import { CreateProductDto, UpdateProductDto } from '../entity/product/product.dto';
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
 import { Translated } from '../locale/locale-types';
@@ -67,7 +66,7 @@ export class ProductService {
             );
     }
 
-    async create(createProductDto: CreateProductDto): Promise<Translated<Product>> {
+    async create(createProductDto: CreateProductInput): Promise<Translated<Product>> {
         const save = createTranslatable(Product, ProductTranslation, async p => {
             const { optionGroupCodes } = createProductDto;
             if (optionGroupCodes && optionGroupCodes.length) {
@@ -80,7 +79,7 @@ export class ProductService {
         return assertFound(this.findOne(product.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateProductDto: UpdateProductDto): Promise<Translated<Product>> {
+    async update(updateProductDto: UpdateProductInput): Promise<Translated<Product>> {
         const save = updateTranslatable(Product, ProductTranslation, this.translationUpdaterService);
         const product = await save(this.connection, updateProductDto);
         return assertFound(this.findOne(product.id, DEFAULT_LANGUAGE_CODE));
