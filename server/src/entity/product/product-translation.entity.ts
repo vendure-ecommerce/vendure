@@ -14,7 +14,7 @@ export class ProductTranslation extends VendureEntity implements Translation<Pro
         super(input);
     }
 
-    @Column() languageCode: LanguageCode;
+    @Column('varchar') languageCode: LanguageCode;
 
     @Column() name: string;
 

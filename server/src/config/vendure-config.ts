@@ -1,5 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from 'shared/generated-types';
+import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
@@ -53,10 +54,10 @@ export interface VendureConfig {
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     defaultLanguageCode: LanguageCode.en,
-    port: 3000,
+    port: API_PORT,
     cors: false,
     jwtSecret: 'secret',
-    apiPath: '/api',
+    apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),
     dbConnectionOptions: {
         type: 'mysql',

@@ -16,7 +16,7 @@ export class ProductVariantTranslation extends VendureEntity
         super(input);
     }
 
-    @Column() languageCode: LanguageCode;
+    @Column('varchar') languageCode: LanguageCode;
 
     @Column() name: string;
 

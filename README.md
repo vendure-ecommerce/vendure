@@ -27,16 +27,14 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 
 * Configure the [dev config](./server/dev-config.ts)
 * `cd server && yarn`
-* `yarn start:dev`
 * Populate mock data with `yarn populate`
+* `yarn start:dev` to start the server
 
 ### Admin UI
 
 * `cd admin-ui && yarn`
 * `yarn start`
 * Go to http://localhost:4200 and log in with "admin@test.com", "test"
-
-## User Guide
 
 ### Code Generation
 
@@ -45,6 +43,40 @@ for all GraphQL queries used in the admin ui. These generated interfaces are use
 
 Run `yarn generate-gql-types` to generate TypeScript interfaces based on these queries. The generated
 types are located at [`./shared/generated-types.ts`](./shared/generated-types.ts).
+
+### Testing
+
+#### Server Unit Tests
+
+The server has unit tests which are run with the following scripts in the `server` directory:
+
+* `yarn test` - Run unit tests once
+* `yarn test:watch` - Run unit tests in watch mode
+
+Unit tests are co-located with the files which they test, and have the suffix `.spec.ts`.
+
+#### Server e2e Tests
+
+The server has e2e tests which test the API with real http calls and against a real Sqlite database powered by [sql.js](https://github.com/kripken/sql.js/). 
+The tests are run with the following scripts in the `server` directory:
+
+* `yarn test:e2e` - Run e2e tests once
+* `yarn test:e2e:watch` - Run e2e tests in watch mode
+
+The e2e tests are located in [`/server/e2e`](./server/e2e/). Each test suite (file) has the suffix `.e2e-spec.ts`. The first time the e2e tests are run,
+sqlite files will be generated in the `__data__` directory. These files are used to speed up subsequent runs of the e2e tests. They can be freely deleted
+and will be re-created the next time the e2e tests are run.
+
+#### Admin UI Unit Tests
+
+The Admin UI has unit tests which are run with the following scripts in the `admin-ui` directory:
+
+* `yarn test --watch=false` - Run unit tests once.
+* `yarn test` - Run unit tests in watch mode.
+
+Unit tests are co-located with the files which they test, and have the suffix `.spec.ts`.
+
+## User Guide
 
 ### Localization
 

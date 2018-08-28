@@ -5,13 +5,14 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "populate": "node -r ts-node/register -r tsconfig-paths/register mock-data/populate.ts",
+    "populate": "node -r ts-node/register -r tsconfig-paths/register mock-data/populate-cli.ts",
     "start:dev": "nodemon --config nodemon-debug.json",
     "lint": "tslint --project tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./e2e/config/jest-e2e.json",
+    "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch",
     "build": "rimraf dist && tsc -p tsconfig.build.json && gulp"
   },
   "main": "dist/index.js",
@@ -63,6 +64,7 @@
     "jest": "^23.5.0",
     "nodemon": "^1.14.1",
     "rimraf": "^2.6.2",
+    "sql.js": "^0.5.0",
     "supertest": "^3.0.0",
     "ts-jest": "^23.1.4",
     "tsconfig-paths": "^3.5.0"

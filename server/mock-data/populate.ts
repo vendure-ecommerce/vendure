@@ -1,30 +1,37 @@
-import { devConfig } from '../dev-config';
-import { bootstrap } from '../src';
+import { INestApplication } from '@nestjs/common';
+
+import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig, VendureConfig } from '../src/config/vendure-config';
 
 import { clearAllTables } from './clear-all-tables';
-import { MockDataClientService } from './mock-data-client.service';
+import { MockDataService } from './mock-data.service';
+import { SimpleGraphQLClient } from './simple-graphql-client';
 
-// tslint:disable:no-floating-promises
-async function populate() {
-    const populateConfig: VendureConfig = {
-        ...devConfig,
-        customFields: {},
-    };
-    (populateConfig.dbConnectionOptions as any).logging = false;
-    setConfig(populateConfig);
-    await clearAllTables(populateConfig.dbConnectionOptions);
-
-    await bootstrap(populateConfig).catch(err => {
-        // tslint:disable-next-line
-        console.log(err);
-    });
-
-    const mockDataClientService = new MockDataClientService(devConfig);
-    await mockDataClientService.populateOptions();
-    await mockDataClientService.populateProducts(5);
-    await mockDataClientService.populateCustomers(5);
-    await mockDataClientService.populateAdmins();
+export interface PopulateOptions {
+    logging?: boolean;
+    productCount: number;
+    customerCount: number;
 }
 
-populate().then(() => process.exit(0));
+// tslint:disable:no-floating-promises
+/**
+ * Clears all tables from the database and populates with (deterministic) random data.
+ */
+export async function populate(
+    config: VendureConfig,
+    bootstrapFn: VendureBootstrapFunction,
+    options: PopulateOptions,
+): Promise<INestApplication> {
+    (config.dbConnectionOptions as any).logging = false;
+    const logging = options.logging === undefined ? true : options.logging;
+    setConfig(config);
+    await clearAllTables(config.dbConnectionOptions, logging);
+    const app = await bootstrapFn(config);
+    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    const mockDataClientService = new MockDataService(client, logging);
+    await mockDataClientService.populateOptions();
+    await mockDataClientService.populateProducts(options.productCount);
+    await mockDataClientService.populateCustomers(options.customerCount);
+    await mockDataClientService.populateAdmins();
+    return app;
+}

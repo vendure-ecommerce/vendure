@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "lib": ["es2015"],
+    "skipLibCheck": false,
+    "sourceMap": true
+  },
+  "include": ["../**/*.e2e-spec.ts", "../**/*.d.ts"]
+}

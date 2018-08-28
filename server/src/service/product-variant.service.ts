@@ -81,6 +81,7 @@ export class ProductVariantService {
             return this.create(product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
+                image: '',
                 optionCodes: options.map(o => o.code),
                 translations: [
                     {

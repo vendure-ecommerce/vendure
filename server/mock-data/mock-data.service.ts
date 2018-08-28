@@ -19,62 +19,55 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/mutations/product-mutations';
-import { PasswordService } from '../src/auth/password.service';
-import { VendureConfig } from '../src/config/vendure-config';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
 
-import { SimpleGraphQLClient } from './gql-request';
+import { GraphQlClient } from './simple-graphql-client';
 
 // tslint:disable:no-console
 /**
  * A service for creating mock data via the GraphQL API.
  */
-export class MockDataClientService {
+export class MockDataService {
     apiUrl: string;
-    client: SimpleGraphQLClient;
 
-    constructor(config: VendureConfig) {
-        this.client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    constructor(private client: GraphQlClient, private logging = true) {
         // make the generated results deterministic
         faker.seed(1);
     }
 
     async populateOptions(): Promise<any> {
         await this.client
-            .request<CreateProductOptionGroup, CreateProductOptionGroupVariables>(
-                CREATE_PRODUCT_OPTION_GROUP,
-                {
-                    input: {
-                        code: 'size',
-                        translations: [
-                            { languageCode: LanguageCode.en, name: 'Size' },
-                            { languageCode: LanguageCode.de, name: 'Größe' },
-                        ],
-                        options: [
-                            {
-                                code: 'small',
-                                translations: [
-                                    { languageCode: LanguageCode.en, name: 'Small' },
-                                    { languageCode: LanguageCode.de, name: 'Klein' },
-                                ],
-                            },
-                            {
-                                code: 'large',
-                                translations: [
-                                    { languageCode: LanguageCode.en, name: 'Large' },
-                                    { languageCode: LanguageCode.de, name: 'Groß' },
-                                ],
-                            },
-                        ],
-                    },
+            .query<CreateProductOptionGroup, CreateProductOptionGroupVariables>(CREATE_PRODUCT_OPTION_GROUP, {
+                input: {
+                    code: 'size',
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'Size' },
+                        { languageCode: LanguageCode.de, name: 'Größe' },
+                    ],
+                    options: [
+                        {
+                            code: 'small',
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'Small' },
+                                { languageCode: LanguageCode.de, name: 'Klein' },
+                            ],
+                        },
+                        {
+                            code: 'large',
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'Large' },
+                                { languageCode: LanguageCode.de, name: 'Groß' },
+                            ],
+                        },
+                    ],
                 },
-            )
+            })
             .then(
-                data => console.log('Created option group:', data.createProductOptionGroup.name),
-                err => console.log(err),
+                data => this.log('Created option group:', data.createProductOptionGroup.name),
+                err => this.log(err),
             );
     }
 
@@ -98,13 +91,11 @@ export class MockDataClientService {
         };
 
         await this.client
-            .request(query, variables)
-            .then(data => console.log('Created Administrator:', data), err => console.log(err));
+            .query(query, variables)
+            .then(data => this.log('Created Administrator:', data), err => this.log(err));
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
-        const passwordService = new PasswordService();
-
         for (let i = 0; i < count; i++) {
             const firstName = faker.name.firstName();
             const lastName = faker.name.lastName();
@@ -129,8 +120,8 @@ export class MockDataClientService {
             };
 
             const customer: Customer | void = await this.client
-                .request(query1, variables1)
-                .then((data: any) => data.createCustomer as Customer, err => console.log(err));
+                .query(query1, variables1)
+                .then((data: any) => data.createCustomer as Customer, err => this.log(err));
 
             if (customer) {
                 const query2 = gql`
@@ -154,12 +145,12 @@ export class MockDataClientService {
                     customerId: customer.id,
                 };
 
-                await this.client.request(query2, variables2).then(
+                await this.client.query(query2, variables2).then(
                     data => {
-                        console.log(`Created Customer ${i + 1}:`, data);
+                        this.log(`Created Customer ${i + 1}:`, data);
                         return data as Customer;
                     },
-                    err => console.log(err),
+                    err => this.log(err),
                 );
             }
         }
@@ -185,13 +176,13 @@ export class MockDataClientService {
             };
 
             const product = await this.client
-                .request<CreateProduct, CreateProductVariables>(query, variables)
+                .query<CreateProduct, CreateProductVariables>(query, variables)
                 .then(
                     data => {
-                        console.log(`Created Product ${i + 1}:`, data.createProduct.name);
+                        this.log(`Created Product ${i + 1}:`, data.createProduct.name);
                         return data;
                     },
-                    err => console.log(err),
+                    err => this.log(err),
                 );
             if (product) {
                 const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
@@ -204,7 +195,7 @@ export class MockDataClientService {
                     delete variantDE.id;
                     variant.translations.push(variantDE);
                 }
-                await this.client.request<UpdateProductVariants, UpdateProductVariantsVariables>(
+                await this.client.query<UpdateProductVariants, UpdateProductVariantsVariables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: variants.map(({ id, translations, sku, price }) => ({
@@ -235,8 +226,14 @@ export class MockDataClientService {
 
     private async makeProductVariant(productId: string): Promise<GenerateProductVariants> {
         const query = GENERATE_PRODUCT_VARIANTS;
-        return this.client.request<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
+        return this.client.query<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
             productId,
         });
+    }
+
+    private log(...args: any[]) {
+        if (this.logging) {
+            console.log(...args);
+        }
     }
 }

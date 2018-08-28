@@ -1,3 +1,4 @@
+import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Type } from 'shared/shared-types';
 
@@ -5,10 +6,26 @@ import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 import { VendureEntity } from './entity/base/base.entity';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
 
+export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
+
 /**
  * Bootstrap the Vendure server.
  */
-export async function bootstrap(userConfig: Partial<VendureConfig>) {
+export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+    const config = await preBootstrapConfig(userConfig);
+
+    // The AppModule *must* be loaded only after the entities have been set in the
+    // config, so that they are available when the AppModule decorator is evaluated.
+    // tslint:disable-next-line:whitespace
+    const appModule = await import('./app.module');
+    const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
+    return app.listen(config.port);
+}
+
+/**
+ * Setting the global config must be done prior to loading the AppModule.
+ */
+export async function preBootstrapConfig(userConfig: Partial<VendureConfig>): Promise<VendureConfig> {
     if (userConfig) {
         setConfig(userConfig);
     }
@@ -27,11 +44,5 @@ export async function bootstrap(userConfig: Partial<VendureConfig>) {
     const config = getConfig();
 
     registerCustomEntityFields(config);
-
-    // The AppModule *must* be loaded only after the entities have been set in the
-    // config, so that they are available when the AppModule decorator is evaluated.
-    // tslint:disable-next-line:whitespace
-    const appModule = await import('./app.module');
-    const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
-    await app.listen(config.port);
+    return config;
 }

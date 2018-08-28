@@ -5,11 +5,15 @@ import { ConnectionOptions, createConnection } from 'typeorm';
 /**
  * A Class used for generating mock data directly into the database via TypeORM.
  */
-export async function clearAllTables(connectionOptions: ConnectionOptions) {
+export async function clearAllTables(connectionOptions: ConnectionOptions, logging = true) {
     (connectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
     const connection = await createConnection({ ...connectionOptions, name: 'clearAllTables' });
-    console.log('Clearing all tables...');
+    if (logging) {
+        console.log('Clearing all tables...');
+    }
     await connection.synchronize(true);
     await connection.close();
-    console.log('Done!');
+    if (logging) {
+        console.log('Done!');
+    }
 }

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Product resolver createProduct mutation creates a new Product 1`] = `
+Object {
+  "description": "A baked potato",
+  "id": "21",
+  "image": "baked-potato",
+  "languageCode": "en",
+  "name": "en Baked Potato",
+  "optionGroups": Array [],
+  "slug": "en-baked-potato",
+  "translations": Array [
+    Object {
+      "description": "A baked potato",
+      "languageCode": "en",
+      "name": "en Baked Potato",
+      "slug": "en-baked-potato",
+    },
+    Object {
+      "description": "Eine baked Erdapfel",
+      "languageCode": "de",
+      "name": "de Baked Potato",
+      "slug": "de-baked-potato",
+    },
+  ],
+  "variants": Array [],
+}
+`;

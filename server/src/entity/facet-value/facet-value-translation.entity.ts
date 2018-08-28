@@ -14,7 +14,7 @@ export class FacetValueTranslation extends VendureEntity implements Translation<
         super(input);
     }
 
-    @Column() languageCode: LanguageCode;
+    @Column('varchar') languageCode: LanguageCode;
 
     @Column() name: string;
 

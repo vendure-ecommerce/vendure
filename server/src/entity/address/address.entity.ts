@@ -16,25 +16,31 @@ export class Address extends VendureEntity implements HasCustomFields {
 
     @Column() fullName: string;
 
-    @Column() company: string;
+    @Column({ default: '' })
+    company: string;
 
     @Column() streetLine1: string;
 
-    @Column() streetLine2: string;
+    @Column({ default: '' })
+    streetLine2: string;
 
     @Column() city: string;
 
-    @Column() province: string;
+    @Column({ default: '' })
+    province: string;
 
     @Column() postalCode: string;
 
     @Column() country: string;
 
-    @Column() phoneNumber: string;
+    @Column({ default: '' })
+    phoneNumber: string;
 
-    @Column() defaultShippingAddress: boolean;
+    @Column({ default: false })
+    defaultShippingAddress: boolean;
 
-    @Column() defaultBillingAddress: boolean;
+    @Column({ default: false })
+    defaultBillingAddress: boolean;
 
     @Column(type => CustomAddressFields)
     customFields: CustomAddressFields;

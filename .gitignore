@@ -387,3 +387,5 @@ Temporary Items
 docker-compose.yml
 .env
 dist
+server/e2e/__data__/*
+!server/e2e/__data__/.gitkeep

@@ -19,7 +19,8 @@ export class User extends VendureEntity implements HasCustomFields {
 
     @Column('simple-array') roles: Role[];
 
-    @Column() lastLogin: string;
+    @Column({ nullable: true })
+    lastLogin: string;
 
     @Column(type => CustomUserFields)
     customFields: CustomUserFields;

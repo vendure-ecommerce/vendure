@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest", "node"],
-    "lib": ["es2015"]
-  },
-  "include": ["**/*.spec.ts", "**/*.d.ts"]
-}
