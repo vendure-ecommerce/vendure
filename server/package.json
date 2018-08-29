@@ -57,7 +57,6 @@
     "@types/jest": "^23.3.1",
     "@types/jsonwebtoken": "^7.2.7",
     "@types/node": "^9.3.0",
-    "@types/supertest": "^2.0.5",
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",
     "gulp": "^4.0.0",
@@ -65,7 +64,6 @@
     "nodemon": "^1.14.1",
     "rimraf": "^2.6.2",
     "sql.js": "^0.5.0",
-    "supertest": "^3.0.0",
     "ts-jest": "^23.1.4",
     "tsconfig-paths": "^3.5.0"
   },
