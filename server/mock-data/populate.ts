@@ -32,6 +32,7 @@ export async function populate(
     await mockDataClientService.populateOptions();
     await mockDataClientService.populateProducts(options.productCount);
     await mockDataClientService.populateCustomers(options.customerCount);
+    await mockDataClientService.populateFacets();
     await mockDataClientService.populateAdmins();
     return app;
 }

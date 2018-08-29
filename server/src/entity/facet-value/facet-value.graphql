@@ -22,6 +22,11 @@ input FacetValueTranslationInput {
     name: String!
 }
 
+input CreateFacetValueWithFacetInput {
+    code: String!
+    translations: [FacetValueTranslationInput!]!
+}
+
 input CreateFacetValueInput {
     facetId: ID!
     code: String!

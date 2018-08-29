@@ -1,6 +1,10 @@
 import * as faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 import {
+    CreateFacet,
+    CreateFacetValueInput,
+    CreateFacetValueWithFacetInput,
+    CreateFacetVariables,
     CreateProduct,
     CreateProductOptionGroup,
     CreateProductOptionGroupVariables,
@@ -13,6 +17,7 @@ import {
     UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 
+import { CREATE_FACET } from '../../admin-ui/src/app/data/mutations/facet-mutations';
 import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
@@ -208,6 +213,45 @@ export class MockDataService {
                 );
             }
         }
+    }
+
+    async populateFacets() {
+        await this.client.query<CreateFacet, CreateFacetVariables>(CREATE_FACET, {
+            input: {
+                code: 'brand',
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Brand',
+                    },
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Marke',
+                    },
+                ],
+                values: this.makeFacetValues(10),
+            },
+        });
+        this.log('Created "brand" Facet');
+    }
+
+    private makeFacetValues(count: number): CreateFacetValueWithFacetInput[] {
+        return Array.from({ length: count }).map(() => {
+            const brand = faker.company.companyName();
+            return {
+                code: brand.replace(/\s/g, '_'),
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: brand,
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                        name: brand,
+                    },
+                ],
+            };
+        });
     }
 
     private makeProductTranslation(

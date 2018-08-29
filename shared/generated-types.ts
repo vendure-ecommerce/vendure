@@ -1447,7 +1447,7 @@ export interface CreateFacetCustomFieldsInput {
 export interface CreateFacetInput {
   code: string;
   translations: FacetTranslationInput[];
-  values?: CreateFacetValueInput[] | null;
+  values?: CreateFacetValueWithFacetInput[] | null;
   customFields?: CreateFacetCustomFieldsInput | null;
 }
 
@@ -1461,6 +1461,11 @@ export interface CreateFacetValueInput {
   code: string;
   translations: FacetValueTranslationInput[];
   customFields?: CreateFacetValueCustomFieldsInput | null;
+}
+
+export interface CreateFacetValueWithFacetInput {
+  code: string;
+  translations: FacetValueTranslationInput[];
 }
 
 export interface CreateProductCustomFieldsInput {

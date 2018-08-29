@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateFacetValueInput, LanguageCode, UpdateFacetValueInput } from 'shared/generated-types';
+import {
+    CreateFacetValueInput,
+    CreateFacetValueWithFacetInput,
+    LanguageCode,
+    UpdateFacetValueInput,
+} from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -38,7 +43,10 @@ export class FacetValueService {
             .then(facetValue => facetValue && translateDeep(facetValue, lang));
     }
 
-    async create(facet: Facet, createFacetValueDto: CreateFacetValueInput): Promise<Translated<FacetValue>> {
+    async create(
+        facet: Facet,
+        createFacetValueDto: CreateFacetValueInput | CreateFacetValueWithFacetInput,
+    ): Promise<Translated<FacetValue>> {
         const save = createTranslatable(FacetValue, FacetValueTranslation, fv => (fv.facet = facet));
         const facetValue = await save(this.connection, createFacetValueDto);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
