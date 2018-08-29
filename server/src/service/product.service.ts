@@ -5,7 +5,7 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { buildListQuery } from '../common/build-list-query';
-import { ListQueryOptions } from '../common/common-types';
+import { ListQueryOptions, NullOptionals } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { createTranslatable } from '../common/create-translatable';
 import { updateTranslatable } from '../common/update-translatable';
@@ -26,8 +26,8 @@ export class ProductService {
     ) {}
 
     findAll(
-        lang: LanguageCode,
-        options: ListQueryOptions<Product>,
+        lang?: LanguageCode | null,
+        options?: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
         const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
 
@@ -35,7 +35,7 @@ export class ProductService {
             .getManyAndCount()
             .then(([products, totalItems]) => {
                 const items = products.map(product =>
-                    translateDeep(product, lang, [
+                    translateDeep(product, lang || DEFAULT_LANGUAGE_CODE, [
                         'optionGroups',
                         'variants',
                         ['variants', 'options'],
@@ -49,7 +49,7 @@ export class ProductService {
             });
     }
 
-    findOne(productId: ID, lang: LanguageCode): Promise<Translated<Product> | undefined> {
+    findOne(productId: ID, lang?: LanguageCode): Promise<Translated<Product> | undefined> {
         const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
 
         return this.connection.manager
@@ -57,7 +57,7 @@ export class ProductService {
             .then(
                 product =>
                     product &&
-                    translateDeep(product, lang, [
+                    translateDeep(product, lang || DEFAULT_LANGUAGE_CODE, [
                         'optionGroups',
                         'variants',
                         ['variants', 'options'],
@@ -89,7 +89,10 @@ export class ProductService {
         const product = await this.getProductWithOptionGroups(productId);
         const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
         if (!optionGroup) {
-            throw new I18nError(`error.option-group-with-id-not-found`, { optionGroupId });
+            throw new I18nError('error.entity-with-id-not-found', {
+                entityName: 'OptionGroup',
+                id: optionGroupId,
+            });
         }
 
         if (Array.isArray(product.optionGroups)) {
@@ -115,7 +118,7 @@ export class ProductService {
             .getRepository(Product)
             .findOne(productId, { relations: ['optionGroups'] });
         if (!product) {
-            throw new I18nError(`error.product-with-id-not-found`, { productId });
+            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Product', id: productId });
         }
         return product;
     }

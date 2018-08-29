@@ -80,7 +80,7 @@ describe('parseSortParams()', () => {
         const connection = new MockConnection();
         connection.setColumns(Product, [{ propertyName: 'id' }, { propertyName: 'infoUrl' }]);
 
-        const sortParams: SortParameter<Product> = {
+        const sortParams: SortParameter<Product & { infoUrl: any }> = {
             infoUrl: 'ASC',
         };
 
@@ -96,7 +96,7 @@ describe('parseSortParams()', () => {
         connection.setRelations(Product, [{ propertyName: 'translations', type: ProductTranslation }]);
         connection.setColumns(ProductTranslation, [{ propertyName: 'id' }, { propertyName: 'shortName' }]);
 
-        const sortParams: SortParameter<Product> = {
+        const sortParams: SortParameter<Product & { shortName: any }> = {
             shortName: 'ASC',
         };
 
@@ -116,7 +116,7 @@ describe('parseSortParams()', () => {
             { propertyName: 'base', relationMetadata: {} as any },
         ]);
 
-        const sortParams: SortParameter<Product> = {
+        const sortParams: SortParameter<Product & { invalid: any }> = {
             invalid: 'ASC',
         };
 

@@ -60,7 +60,7 @@ export class CustomerService {
         });
 
         if (!customer) {
-            throw new I18nError('error.customer-with-id-not-found', { customerId });
+            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Customer', id: customerId });
         }
 
         const address = new Address(createAddressDto);

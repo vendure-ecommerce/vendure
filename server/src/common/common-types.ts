@@ -8,6 +8,11 @@ import { LocaleString } from '../locale/locale-types';
 export type ReadOnlyRequired<T> = { +readonly [K in keyof T]-?: T[K] };
 
 /**
+ * Creates a mutable version of a type with readonly properties.
+ */
+export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
+
+/**
  * Given an array type e.g. Array<string>, return the inner type e.g. string.
  */
 export type UnwrappedArray<T extends any[]> = T[number];
@@ -16,11 +21,20 @@ export type UnwrappedArray<T extends any[]> = T[number];
  * Parameters for list queries
  */
 export interface ListQueryOptions<T extends VendureEntity> {
-    take: number;
-    skip: number;
-    sort: SortParameter<T>;
-    filter: FilterParameter<T>;
+    take?: number | null;
+    skip?: number | null;
+    sort?: NullOptionals<SortParameter<T>> | null;
+    filter?: NullOptionals<FilterParameter<T>> | null;
 }
+
+/**
+ * Returns a type T where any optional fields also have the "null" type added.
+ * This is needed to provide interop with the Apollo-generated interfaces, where
+ * nullable fields have the type `field?: <type> | null`.
+ */
+export type NullOptionals<T> = {
+    [K in keyof T]: undefined extends T[K] ? NullOptionals<T[K]> | null : NullOptionals<T[K]>
+};
 
 export type SortOrder = 'ASC' | 'DESC';
 
@@ -32,7 +46,7 @@ export type PrimitiveFields<T extends VendureEntity> = {
 // prettier-ignore
 export type SortParameter<T extends VendureEntity> = {
     [K in PrimitiveFields<T>]?: SortOrder
-} & CustomFieldSortParameter;
+};
 
 // prettier-ignore
 export type CustomFieldSortParameter = {

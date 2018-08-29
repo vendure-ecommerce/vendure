@@ -61,7 +61,7 @@ export class FacetResolver {
         const facetId = input[0].facetId;
         const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
         if (!facet) {
-            throw new I18nError(`error.invalid-facetId`, { facetId });
+            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Facet', id: facetId });
         }
         return Promise.all(input.map(facetValue => this.facetValueService.create(facet, facetValue)));
     }

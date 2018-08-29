@@ -40,7 +40,7 @@ export class ProductVariantService {
             }
             variant.product = product;
         });
-        return save(this.connection, createProductVariantDto);
+        return await save(this.connection, createProductVariantDto);
     }
 
     async update(updateProductVariantsDto: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
@@ -60,15 +60,15 @@ export class ProductVariantService {
 
     async generateVariantsForProduct(
         productId: ID,
-        defaultPrice?: number,
-        defaultSku?: string,
+        defaultPrice?: number | null,
+        defaultSku?: string | null,
     ): Promise<Array<Translated<ProductVariant>>> {
         const product = await this.connection.getRepository(Product).findOne(productId, {
             relations: ['optionGroups', 'optionGroups.options'],
         });
 
         if (!product) {
-            throw new I18nError('error.product-with-id-not-found', { productId });
+            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Product', id: productId });
         }
         const defaultTranslation = product.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
 
@@ -76,9 +76,9 @@ export class ProductVariantService {
         const optionCombinations = product.optionGroups.length
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
-        const createVariants = optionCombinations.map(options => {
+        const createVariants = optionCombinations.map(async options => {
             const name = this.createVariantName(productName, options);
-            return this.create(product, {
+            return await this.create(product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
                 image: '',
@@ -104,6 +104,16 @@ export class ProductVariantService {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(productVariantIds, {
             relations: ['options', 'facetValues'],
         });
+
+        const notFoundIds = productVariantIds.filter(
+            id => !variants.find(v => v.id.toString() === id.toString()),
+        );
+        if (notFoundIds.length) {
+            throw new I18nError('error.entity-with-id-not-found', {
+                entityName: 'ProductVariant',
+                id: notFoundIds[0],
+            });
+        }
         for (const variant of variants) {
             for (const facetValue of facetValues) {
                 if (!variant.facetValues.map(fv => fv.id).includes(facetValue.id)) {

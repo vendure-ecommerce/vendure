@@ -1,7 +1,8 @@
-import { DeepPartial, Type } from 'shared/shared-types';
+import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
 import { foundIn, not } from '../common/utils';
+import { I18nError } from '../i18n/i18n-error';
 
 import { Translatable, Translation, TranslationInput } from './locale-types';
 
@@ -56,9 +57,17 @@ export class TranslationUpdater<Entity extends Translatable> {
         if (toAdd.length) {
             for (const translation of toAdd) {
                 translation.base = entity;
-                const newTranslation = await this.manager
-                    .getRepository(this.translationCtor)
-                    .save(translation as any);
+                let newTranslation: any;
+                try {
+                    newTranslation = await this.manager
+                        .getRepository(this.translationCtor)
+                        .save(translation as any);
+                } catch (err) {
+                    const entityName = entity.constructor.name;
+                    const id = (entity as any).id || 'undefined';
+                    throw new I18nError('error.entity-with-id-not-found', { entityName, id });
+                }
+
                 entity.translations.push(newTranslation);
             }
         }

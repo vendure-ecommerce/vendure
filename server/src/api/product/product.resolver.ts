@@ -1,5 +1,11 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateProductVariables, UpdateProductVariantsVariables } from 'shared/generated-types';
+import {
+    CreateProductVariables,
+    GenerateProductVariantsVariables,
+    GetProductListVariables,
+    GetProductWithVariantsVariables,
+    UpdateProductVariantsVariables,
+} from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
@@ -23,14 +29,14 @@ export class ProductResolver {
 
     @Query('products')
     @ApplyIdCodec()
-    async products(obj, args): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService.findAll(args.languageCode, args.options);
+    async products(obj, args: GetProductListVariables): Promise<PaginatedList<Translated<Product>>> {
+        return this.productService.findAll(args.languageCode, args.options || undefined);
     }
 
     @Query('product')
     @ApplyIdCodec()
-    async product(obj, args): Promise<Translated<Product> | undefined> {
-        return this.productService.findOne(args.id, args.languageCode);
+    async product(obj, args: GetProductWithVariantsVariables): Promise<Translated<Product> | undefined> {
+        return this.productService.findOne(args.id, args.languageCode || undefined);
     }
 
     @Mutation()
@@ -63,7 +69,10 @@ export class ProductResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async generateVariantsForProduct(_, args): Promise<Translated<Product>> {
+    async generateVariantsForProduct(
+        _,
+        args: GenerateProductVariantsVariables,
+    ): Promise<Translated<Product>> {
         const { productId, defaultPrice, defaultSku } = args;
         await this.productVariantService.generateVariantsForProduct(productId, defaultPrice, defaultSku);
         return assertFound(this.productService.findOne(productId, DEFAULT_LANGUAGE_CODE));
@@ -87,7 +96,10 @@ export class ProductResolver {
             (facetValueIds as ID[]).map(async facetValueId => {
                 const facetValue = await this.facetValueService.findOne(facetValueId, DEFAULT_LANGUAGE_CODE);
                 if (!facetValue) {
-                    throw new I18nError(`error.facet-value-not-found`, { facetValueId });
+                    throw new I18nError('error.entity-with-id-not-found', {
+                        entityName: 'FacetValue',
+                        id: facetValueId,
+                    });
                 }
                 return facetValue;
             }),

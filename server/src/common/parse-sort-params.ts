@@ -5,7 +5,7 @@ import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { VendureEntity } from '../entity/base/base.entity';
 import { I18nError } from '../i18n/i18n-error';
 
-import { SortParameter } from './common-types';
+import { NullOptionals, SortParameter } from './common-types';
 
 /**
  * Parses the provided SortParameter array against the metadata of the given entity, ensuring that only
@@ -17,7 +17,7 @@ import { SortParameter } from './common-types';
 export function parseSortParams<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
-    sortParams: SortParameter<T> | undefined,
+    sortParams?: NullOptionals<SortParameter<T>> | null,
 ): OrderByCondition {
     if (!sortParams || Object.keys(sortParams).length === 0) {
         return {};

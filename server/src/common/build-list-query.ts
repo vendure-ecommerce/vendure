@@ -1,5 +1,5 @@
 import { Type } from 'shared/shared-types';
-import { Connection, SelectQueryBuilder } from 'typeorm';
+import { Connection, FindManyOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { VendureEntity } from '../entity/base/base.entity';
@@ -14,7 +14,7 @@ import { parseSortParams } from './parse-sort-params';
 export function buildListQuery<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
-    options: ListQueryOptions<T>,
+    options: ListQueryOptions<T> = {},
     relations?: string[],
 ): SelectQueryBuilder<T> {
     const skip = options.skip;
@@ -26,7 +26,11 @@ export function buildListQuery<T extends VendureEntity>(
     const filter = parseFilterParams(connection, entity, options.filter);
 
     const qb = connection.createQueryBuilder<T>(entity, entity.name.toLowerCase());
-    FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations, take, skip });
+    FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+        relations,
+        take,
+        skip,
+    } as FindManyOptions<T>);
     // tslint:disable-next-line:no-non-null-assertion
     FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 

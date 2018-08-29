@@ -10,6 +10,7 @@ import {
     BooleanOperators,
     DateOperators,
     FilterParameter,
+    NullOptionals,
     NumberOperators,
     StringOperators,
 } from './common-types';
@@ -25,7 +26,7 @@ type Operator = { [K in keyof AllOperators]-?: K }[keyof AllOperators];
 export function parseFilterParams<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
-    filterParams: FilterParameter<T> | undefined,
+    filterParams?: NullOptionals<FilterParameter<T>> | null,
 ): WhereCondition[] {
     if (!filterParams) {
         return [];
