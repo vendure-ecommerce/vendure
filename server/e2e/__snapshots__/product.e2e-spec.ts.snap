@@ -77,13 +77,13 @@ Array [
     "id": "41",
     "image": "new-image",
     "languageCode": "en",
-    "name": "en Mashed Potato Small",
+    "name": "en Mashed Potato Large",
     "options": Array [
       Object {
-        "code": "small",
-        "id": "1",
+        "code": "large",
+        "id": "2",
         "languageCode": "en",
-        "name": "Small",
+        "name": "Large",
       },
     ],
     "price": 432,
@@ -92,7 +92,7 @@ Array [
       Object {
         "id": "81",
         "languageCode": "en",
-        "name": "en Mashed Potato Small",
+        "name": "en Mashed Potato Large",
       },
     ],
   },
@@ -117,13 +117,13 @@ Array [
     "id": "42",
     "image": "",
     "languageCode": "en",
-    "name": "en Mashed Potato Large",
+    "name": "en Mashed Potato Small",
     "options": Array [
       Object {
-        "code": "large",
-        "id": "2",
+        "code": "small",
+        "id": "1",
         "languageCode": "en",
-        "name": "Large",
+        "name": "Small",
       },
     ],
     "price": 123,
@@ -132,7 +132,7 @@ Array [
       Object {
         "id": "82",
         "languageCode": "en",
-        "name": "en Mashed Potato Large",
+        "name": "en Mashed Potato Small",
       },
     ],
   },
@@ -146,30 +146,6 @@ Array [
     "id": "41",
     "image": "",
     "languageCode": "en",
-    "name": "en Mashed Potato Small",
-    "options": Array [
-      Object {
-        "code": "small",
-        "id": "1",
-        "languageCode": "en",
-        "name": "Small",
-      },
-    ],
-    "price": 123,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "81",
-        "languageCode": "en",
-        "name": "en Mashed Potato Small",
-      },
-    ],
-  },
-  Object {
-    "facetValues": Array [],
-    "id": "42",
-    "image": "",
-    "languageCode": "en",
     "name": "en Mashed Potato Large",
     "options": Array [
       Object {
@@ -183,9 +159,33 @@ Array [
     "sku": "ABC",
     "translations": Array [
       Object {
-        "id": "82",
+        "id": "81",
         "languageCode": "en",
         "name": "en Mashed Potato Large",
+      },
+    ],
+  },
+  Object {
+    "facetValues": Array [],
+    "id": "42",
+    "image": "",
+    "languageCode": "en",
+    "name": "en Mashed Potato Small",
+    "options": Array [
+      Object {
+        "code": "small",
+        "id": "1",
+        "languageCode": "en",
+        "name": "Small",
+      },
+    ],
+    "price": 123,
+    "sku": "ABC",
+    "translations": Array [
+      Object {
+        "id": "82",
+        "languageCode": "en",
+        "name": "en Mashed Potato Small",
       },
     ],
   },
@@ -199,13 +199,13 @@ Array [
     "id": "41",
     "image": "new-image",
     "languageCode": "en",
-    "name": "en Mashed Potato Small",
+    "name": "en Mashed Potato Large",
     "options": Array [
       Object {
-        "code": "small",
-        "id": "1",
+        "code": "large",
+        "id": "2",
         "languageCode": "en",
-        "name": "Small",
+        "name": "Large",
       },
     ],
     "price": 432,
@@ -214,7 +214,7 @@ Array [
       Object {
         "id": "81",
         "languageCode": "en",
-        "name": "en Mashed Potato Small",
+        "name": "en Mashed Potato Large",
       },
     ],
   },

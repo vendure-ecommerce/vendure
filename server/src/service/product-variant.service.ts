@@ -76,9 +76,11 @@ export class ProductVariantService {
         const optionCombinations = product.optionGroups.length
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
-        const createVariants = optionCombinations.map(async options => {
+
+        const variants: ProductVariant[] = [];
+        for (const options of optionCombinations) {
             const name = this.createVariantName(productName, options);
-            return await this.create(product, {
+            const variant = await this.create(product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
                 image: '',
@@ -90,11 +92,10 @@ export class ProductVariantService {
                     },
                 ],
             });
-        });
+            variants.push(variant);
+        }
 
-        return await Promise.all(createVariants).then(variants =>
-            variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE)),
-        );
+        return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
     }
 
     async addFacetValues(
