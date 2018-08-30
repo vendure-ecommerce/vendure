@@ -26,6 +26,7 @@ which is MariaDB including phpMyAdmin.
 Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database which works with TypeORM.
 
 * Configure the [dev config](./server/dev-config.ts)
+* Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the config ("vendure-dev").
 * `cd server && yarn`
 * Populate mock data with `yarn populate`
 * `yarn start:dev` to start the server
