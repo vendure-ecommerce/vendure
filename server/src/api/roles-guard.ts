@@ -12,7 +12,7 @@ import { Role } from '../common/types/role';
  *
  * @example
  * ```
- *  @RolesGuard([Role.Superadmin])
+ *  @RolesGuard([Role.SuperAdmin])
  *  @Query('administrators')
  *  getAdministrators() {
  *      // ...

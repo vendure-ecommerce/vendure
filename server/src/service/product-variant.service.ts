@@ -5,12 +5,14 @@ import { ID } from 'shared/shared-types';
 import { generateAllCombinations } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
+import { ProductVariantPrice } from '../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
@@ -29,6 +31,7 @@ export class ProductVariantService {
     ) {}
 
     async create(
+        ctx: RequestContext,
         product: Product,
         createProductVariantDto: CreateProductVariantDto,
     ): Promise<ProductVariant> {
@@ -40,8 +43,9 @@ export class ProductVariantService {
                 variant.options = selectedOptions;
             }
             variant.product = product;
+            const variantPrice = new ProductVariantPrice();
         });
-        return await save(this.connection, createProductVariantDto);
+        return await save(this.connection, createProductVariantDto, { channelId: ctx.channelId });
     }
 
     async update(updateProductVariantsDto: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
@@ -60,6 +64,7 @@ export class ProductVariantService {
     }
 
     async generateVariantsForProduct(
+        ctx: RequestContext,
         productId: ID,
         defaultPrice?: number | null,
         defaultSku?: string | null,
@@ -81,14 +86,14 @@ export class ProductVariantService {
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {
             const name = this.createVariantName(productName, options);
-            const variant = await this.create(product, {
+            const variant = await this.create(ctx, product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
                 image: '',
                 optionCodes: options.map(o => o.code),
                 translations: [
                     {
-                        languageCode: DEFAULT_LANGUAGE_CODE,
+                        languageCode: ctx.languageCode,
                         name,
                     },
                 ],

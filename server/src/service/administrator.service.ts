@@ -30,7 +30,7 @@ export class AdministratorService {
         const user = new User();
         user.passwordHash = await this.passwordService.hash(createAdministratorDto.password);
         user.identifier = createAdministratorDto.emailAddress;
-        user.roles = [Role.Superadmin];
+        user.roles = [Role.SuperAdmin];
         const createdUser = await this.connection.getRepository(User).save(user);
         administrator.user = createdUser;
 

@@ -16,7 +16,6 @@ export class AppModule implements NestModule {
 
     configure(consumer: MiddlewareConsumer) {
         validateCustomFieldsConfig(this.configService.customFields);
-
         consumer.apply(this.i18nService.handle()).forRoutes(this.configService.apiPath);
     }
 }

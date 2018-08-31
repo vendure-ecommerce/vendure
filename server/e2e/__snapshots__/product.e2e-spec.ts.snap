@@ -57,166 +57,97 @@ Object {
 exports[`Product resolver product mutation variants applyFacetValuesToProductVariants adds facets to variants 1`] = `
 Array [
   Object {
-    "facetValues": Array [
-      Object {
-        "code": "Wisoky_-_Spinka",
-        "id": "1",
-        "name": "Wisoky - Spinka",
-      },
-      Object {
-        "code": "Bosco_LLC",
-        "id": "3",
-        "name": "Bosco LLC",
-      },
-      Object {
-        "code": "Hilll_-_Auer",
-        "id": "5",
-        "name": "Hilll - Auer",
-      },
-    ],
-    "id": "41",
-    "image": "new-image",
-    "languageCode": "en",
-    "name": "en Mashed Potato Large",
-    "options": Array [
-      Object {
-        "code": "large",
-        "id": "2",
-        "languageCode": "en",
-        "name": "Large",
-      },
-    ],
-    "price": 432,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "81",
-        "languageCode": "en",
-        "name": "en Mashed Potato Large",
-      },
-    ],
+    "code": "Schneider_Inc",
+    "id": "1",
+    "name": "Schneider Inc",
   },
   Object {
-    "facetValues": Array [
-      Object {
-        "code": "Wisoky_-_Spinka",
-        "id": "1",
-        "name": "Wisoky - Spinka",
-      },
-      Object {
-        "code": "Bosco_LLC",
-        "id": "3",
-        "name": "Bosco LLC",
-      },
-      Object {
-        "code": "Hilll_-_Auer",
-        "id": "5",
-        "name": "Hilll - Auer",
-      },
-    ],
-    "id": "42",
-    "image": "",
-    "languageCode": "en",
-    "name": "en Mashed Potato Small",
-    "options": Array [
-      Object {
-        "code": "small",
-        "id": "1",
-        "languageCode": "en",
-        "name": "Small",
-      },
-    ],
-    "price": 123,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "82",
-        "languageCode": "en",
-        "name": "en Mashed Potato Small",
-      },
-    ],
+    "code": "Ledner_-_Smitham",
+    "id": "3",
+    "name": "Ledner - Smitham",
+  },
+  Object {
+    "code": "Rempel_LLC",
+    "id": "5",
+    "name": "Rempel LLC",
   },
 ]
 `;
 
-exports[`Product resolver product mutation variants generateVariantsForProduct generates variants 1`] = `
+exports[`Product resolver product mutation variants applyFacetValuesToProductVariants adds facets to variants 2`] = `
 Array [
   Object {
-    "facetValues": Array [],
-    "id": "41",
-    "image": "",
-    "languageCode": "en",
-    "name": "en Mashed Potato Large",
-    "options": Array [
-      Object {
-        "code": "large",
-        "id": "2",
-        "languageCode": "en",
-        "name": "Large",
-      },
-    ],
-    "price": 123,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "81",
-        "languageCode": "en",
-        "name": "en Mashed Potato Large",
-      },
-    ],
+    "code": "Schneider_Inc",
+    "id": "1",
+    "name": "Schneider Inc",
   },
   Object {
-    "facetValues": Array [],
-    "id": "42",
-    "image": "",
-    "languageCode": "en",
-    "name": "en Mashed Potato Small",
-    "options": Array [
-      Object {
-        "code": "small",
-        "id": "1",
-        "languageCode": "en",
-        "name": "Small",
-      },
-    ],
-    "price": 123,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "82",
-        "languageCode": "en",
-        "name": "en Mashed Potato Small",
-      },
-    ],
+    "code": "Ledner_-_Smitham",
+    "id": "3",
+    "name": "Ledner - Smitham",
+  },
+  Object {
+    "code": "Rempel_LLC",
+    "id": "5",
+    "name": "Rempel LLC",
   },
 ]
 `;
 
-exports[`Product resolver product mutation variants updateProductVariants updates variants 1`] = `
+exports[`Product resolver product query returns expected properties 1`] = `
+Object {
+  "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
+  "id": "2",
+  "image": "http://lorempixel.com/640/480",
+  "languageCode": "en",
+  "name": "en Practical Plastic Chicken",
+  "optionGroups": Array [
+    Object {
+      "code": "size",
+      "id": "1",
+      "languageCode": "en",
+      "name": "Size",
+    },
+  ],
+  "slug": "en practical-plastic-chicken",
+  "translations": Array [
+    Object {
+      "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
+      "languageCode": "en",
+      "name": "en Practical Plastic Chicken",
+      "slug": "en practical-plastic-chicken",
+    },
+    Object {
+      "description": "de Sed dignissimos debitis incidunt accusantium sed libero.",
+      "languageCode": "de",
+      "name": "de Practical Plastic Chicken",
+      "slug": "de practical-plastic-chicken",
+    },
+  ],
+}
+`;
+
+exports[`Product resolver products list query sorts by name 1`] = `
 Array [
-  Object {
-    "facetValues": Array [],
-    "id": "41",
-    "image": "new-image",
-    "languageCode": "en",
-    "name": "en Mashed Potato Large",
-    "options": Array [
-      Object {
-        "code": "large",
-        "id": "2",
-        "languageCode": "en",
-        "name": "Large",
-      },
-    ],
-    "price": 432,
-    "sku": "ABC",
-    "translations": Array [
-      Object {
-        "id": "81",
-        "languageCode": "en",
-        "name": "en Mashed Potato Large",
-      },
-    ],
-  },
+  "en Awesome Granite Chair",
+  "en Fantastic Fresh Cheese",
+  "en Fantastic Rubber Sausages",
+  "en Fantastic Steel Computer",
+  "en Gorgeous Plastic Shoes",
+  "en Handcrafted Concrete Computer",
+  "en Intelligent Steel Ball",
+  "en Intelligent Wooden Car",
+  "en Licensed Frozen Chair",
+  "en Licensed Plastic Bike",
+  "en Practical Frozen Fish",
+  "en Practical Plastic Chicken",
+  "en Refined Cotton Chair",
+  "en Refined Plastic Computer",
+  "en Rustic Frozen Car",
+  "en Rustic Steel Salad",
+  "en Sleek Wooden Fish",
+  "en Unbranded Concrete Cheese",
+  "en Unbranded Concrete Salad",
+  "en Unbranded Plastic Pants",
 ]
 `;

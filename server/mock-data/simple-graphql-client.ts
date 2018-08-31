@@ -10,7 +10,7 @@ export interface GraphQlClient {
  * A minimalistic GraphQL client for populating test data.
  */
 export class SimpleGraphQLClient implements GraphQlClient {
-    constructor(private apiUrl: string) {}
+    constructor(public apiUrl: string = '') {}
 
     query<T, V = Record<string, any>>(query: DocumentNode, variables: V): Promise<T> {
         const queryString = print(query);

@@ -27,9 +27,9 @@ import {
     UpdateProductVariants,
     UpdateProductVariantsVariables,
 } from 'shared/generated-types';
+import { pick } from 'shared/pick';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { pick } from '../../common/utilities/pick';
 import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,

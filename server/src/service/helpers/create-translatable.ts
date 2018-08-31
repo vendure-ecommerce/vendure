@@ -12,7 +12,11 @@ export function createTranslatable<T extends Translatable>(
     translationType: Type<Translation<T>>,
     beforeSave?: (newEntity: T) => void,
 ) {
-    return async function saveTranslatable(connection: Connection, dto: TranslatedInput<T>): Promise<T> {
+    return async function saveTranslatable(
+        connection: Connection,
+        dto: TranslatedInput<T>,
+        data?: any,
+    ): Promise<T> {
         const entity = new entityType(dto);
         const translations: Array<Translation<T>> = [];
 
@@ -26,6 +30,6 @@ export function createTranslatable<T extends Translatable>(
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return await connection.manager.save(entity);
+        return await connection.manager.save(entity, { data });
     };
 }

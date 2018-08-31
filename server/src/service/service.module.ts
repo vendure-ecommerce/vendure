@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConfigModule } from '../config/config.module';
@@ -6,6 +6,7 @@ import { getConfig } from '../config/vendure-config';
 
 import { AdministratorService } from './administrator.service';
 import { AuthService } from './auth.service';
+import { ChannelService } from './channel.service';
 import { CustomerService } from './customer.service';
 import { FacetValueService } from './facet-value.service';
 import { FacetService } from './facet.service';
@@ -19,6 +20,7 @@ import { ProductService } from './product.service';
 const exportedProviders = [
     AdministratorService,
     AuthService,
+    ChannelService,
     CustomerService,
     FacetService,
     FacetValueService,
@@ -40,4 +42,10 @@ const exportedProviders = [
     providers: [...exportedProviders, PasswordService, TranslationUpdaterService],
     exports: exportedProviders,
 })
-export class ServiceModule {}
+export class ServiceModule implements OnModuleInit {
+    constructor(private channelService: ChannelService) {}
+
+    async onModuleInit() {
+        await this.channelService.initChannels();
+    }
+}

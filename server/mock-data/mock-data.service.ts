@@ -272,6 +272,11 @@ export class MockDataService {
         const query = GENERATE_PRODUCT_VARIANTS;
         return this.client.query<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
             productId,
+            defaultSku: faker.random.alphaNumeric(5),
+            defaultPrice: faker.random.number({
+                min: 100,
+                max: 1000,
+            }),
         });
     }
 

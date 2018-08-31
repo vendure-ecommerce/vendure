@@ -22,6 +22,7 @@ import {
     UpdateProductVariants,
     UpdateProductVariantsVariables,
 } from 'shared/generated-types';
+import { omit } from 'shared/omit';
 
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -49,6 +50,7 @@ describe('Product resolver', () => {
             productCount: 20,
             customerCount: 1,
         });
+        await client.init();
     }, 30000);
 
     afterAll(async () => {
@@ -90,8 +92,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(result.products.items.length).toBe(1);
+            expect(result.products.items.length).toBe(2);
             expect(result.products.items[0].name).toBe('en Practical Frozen Fish');
+            expect(result.products.items[1].name).toBe('en Sleek Wooden Fish');
         });
 
         it('sorts by name', async () => {
@@ -104,28 +107,7 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(result.products.items.map(p => p.name)).toEqual([
-                'en Fantastic Granite Salad',
-                'en Fantastic Rubber Sausages',
-                'en Generic Metal Keyboard',
-                'en Generic Wooden Sausages',
-                'en Handcrafted Granite Shirt',
-                'en Handcrafted Plastic Gloves',
-                'en Handmade Cotton Salad',
-                'en Incredible Metal Shirt',
-                'en Incredible Steel Cheese',
-                'en Intelligent Frozen Ball',
-                'en Intelligent Wooden Car',
-                'en Licensed Cotton Shirt',
-                'en Licensed Frozen Chair',
-                'en Practical Frozen Fish',
-                'en Refined Fresh Bacon',
-                'en Rustic Steel Salad',
-                'en Rustic Wooden Hat',
-                'en Small Granite Chicken',
-                'en Small Steel Cheese',
-                'en Tasty Soft Gloves',
-            ]);
+            expect(result.products.items.map(p => p.name)).toMatchSnapshot();
         });
     });
 
@@ -143,40 +125,8 @@ describe('Product resolver', () => {
                 fail('Product not found');
                 return;
             }
-            expect(result.product).toEqual(
-                expect.objectContaining({
-                    description: 'en Ut nulla quam ipsam nobis cupiditate sed dignissimos debitis incidunt.',
-                    id: '2',
-                    image: 'http://lorempixel.com/640/480',
-                    languageCode: 'en',
-                    name: 'en Incredible Metal Shirt',
-                    optionGroups: [
-                        {
-                            code: 'size',
-                            id: '1',
-                            languageCode: 'en',
-                            name: 'Size',
-                        },
-                    ],
-                    slug: 'en incredible-metal-shirt',
-                    translations: [
-                        {
-                            description:
-                                'en Ut nulla quam ipsam nobis cupiditate sed dignissimos debitis incidunt.',
-                            languageCode: 'en',
-                            name: 'en Incredible Metal Shirt',
-                            slug: 'en incredible-metal-shirt',
-                        },
-                        {
-                            description:
-                                'de Ut nulla quam ipsam nobis cupiditate sed dignissimos debitis incidunt.',
-                            languageCode: 'de',
-                            name: 'de Incredible Metal Shirt',
-                            slug: 'de incredible-metal-shirt',
-                        },
-                    ],
-                }),
-            );
+            expect(omit(result.product, ['variants'])).toMatchSnapshot();
+            expect(result.product.variants.length).toBe(2);
         });
 
         it('returns null when id not found', async () => {
@@ -360,7 +310,9 @@ describe('Product resolver', () => {
                     },
                 );
                 variants = result.generateVariantsForProduct.variants;
-                expect(variants).toMatchSnapshot();
+                expect(variants.length).toBe(2);
+                expect(variants[0].options.length).toBe(1);
+                expect(variants[1].options.length).toBe(1);
             });
 
             it('generateVariantsForProduct throws with an invalid productId', async () => {
@@ -395,7 +347,14 @@ describe('Product resolver', () => {
                         ],
                     },
                 );
-                expect(result.updateProductVariants).toMatchSnapshot();
+                const updatedVariant = result.updateProductVariants[0];
+                if (!updatedVariant) {
+                    fail('no updated variant returned.');
+                    return;
+                }
+                expect(updatedVariant.sku).toBe('ABC');
+                expect(updatedVariant.image).toBe('new-image');
+                expect(updatedVariant.price).toBe(432);
             });
 
             it('updateProductVariants throws with an invalid variant id', async () => {
@@ -430,7 +389,10 @@ describe('Product resolver', () => {
                     facetValueIds: ['1', '3', '5'],
                     productVariantIds: variants.map(v => v.id),
                 });
-                expect(result.applyFacetValuesToProductVariants).toMatchSnapshot();
+
+                expect(result.applyFacetValuesToProductVariants.length).toBe(2);
+                expect(result.applyFacetValuesToProductVariants[0].facetValues).toMatchSnapshot();
+                expect(result.applyFacetValuesToProductVariants[1].facetValues).toMatchSnapshot();
             });
 
             it('applyFacetValuesToProductVariants errors with invalid facet value id', async () => {

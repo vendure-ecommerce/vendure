@@ -4,6 +4,7 @@ import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig, VendureConfig } from '../src/config/vendure-config';
 
 import { clearAllTables } from './clear-all-tables';
+import { getDefaultChannelToken } from './get-default-channel-token';
 import { MockDataService } from './mock-data.service';
 import { SimpleGraphQLClient } from './simple-graphql-client';
 
@@ -27,7 +28,10 @@ export async function populate(
     setConfig(config);
     await clearAllTables(config.dbConnectionOptions, logging);
     const app = await bootstrapFn(config);
-    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    const defaultChannelToken = await getDefaultChannelToken(config.dbConnectionOptions, logging);
+    const client = new SimpleGraphQLClient(
+        `http://localhost:${config.port}/${config.apiPath}?token=${defaultChannelToken}`,
+    );
     const mockDataClientService = new MockDataService(client, logging);
     await mockDataClientService.populateOptions();
     await mockDataClientService.populateProducts(options.productCount);

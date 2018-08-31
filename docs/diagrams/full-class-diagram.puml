@@ -1,10 +1,16 @@
 @startuml
+!include theme.puml
 title Vendure Class Diagram
 
+class Channel {
+    name: string
+    defaultLanguageCode: LanguageCode
+    defaultCurrencyCode: CurrencyCode
+}
 class User {
     identifier: string
     passwordHash: string
-    roles: Role[]
+    roles: UserRole[]
 }
 class Customer {
     user: User
@@ -13,6 +19,11 @@ class Customer {
 }
 class Administrator {
     user: User
+}
+class UserRole {
+    role: Role
+    user: User
+    channel: Channel
 }
 enum Role {
     Authenticated
@@ -31,7 +42,11 @@ class ProductOption {
 }
 class ProductVariant {
     sku: string
-    price: number
+    price: ProductVariantPrice[]
+}
+class ProductVariantPrice {
+    value: number
+    currencyCode: CurrencyCode
 }
 class Order
 class OrderItem {
@@ -62,25 +77,32 @@ class FacetValue {
 class Category {
 }
 
-Customer o-- User
-Administrator o-- User
-User o-- Role
-Customer o-- Address
-Product o-- ProductVariant
-ProductOptionGroup o-- ProductOption
-Product o-- ProductOptionGroup
-ProductVariant o-- ProductOption
-ProductVariant --- FacetValue
-Facet o-- FacetValue
-Category o-- FacetValue
-Customer o-- Order
+Customer --  User
+Administrator -- User
+User o-- UserRole
+UserRole o-- "1..*" Role
+UserRole -- Channel
+Customer *-- "0..*" Address
+Product *-- "1..*" ProductVariant
+ProductOptionGroup *-- "1..*" ProductOption
+Product o-- "0..*" ProductOptionGroup
+ProductVariant o-- "0..*" ProductOption
+ProductVariant o-- "0..*" FacetValue
+Facet *-- "1..*" FacetValue
+Category o-- "1..*" FacetValue
+Customer *-- "0..*" Order
 OrderItem - ProductVariant
-Order o-- OrderItem
-OrderItem o-- OrderItemUnit
+Order *-- OrderItem
+Order -- Channel
+OrderItem *-- OrderItemUnit
 OrderItemUnit o-- Adjustment
 OrderItem o-- Adjustment
 Order o-- Adjustment
 Adjustment - AdjustmentType
 AdjustmentSource - AdjustmentType
+AdjustmentSource o-- Channel
+Product o-- Channel
+ProductVariant *-- "1..*" ProductVariantPrice
+ProductVariantPrice o-- Channel
 
 @enduml

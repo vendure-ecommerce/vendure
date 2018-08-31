@@ -3,6 +3,7 @@ import { LanguageCode } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
@@ -34,7 +35,7 @@ describe('ProductVariantService', () => {
     describe('create()', () => {
         it('saves a new ProductVariant with the correct properties', async () => {
             const productEntity = new Product();
-            await productVariantService.create(productEntity, {
+            await productVariantService.create(new RequestContext(''), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -56,7 +57,7 @@ describe('ProductVariantService', () => {
 
         it('saves each ProductVariantTranslation', async () => {
             const productEntity = new Product();
-            await productVariantService.create(productEntity, {
+            await productVariantService.create(new RequestContext(''), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -86,7 +87,7 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(ProductOption)
                 .find.mockReturnValue(mockOptions);
 
-            await productVariantService.create(productEntity, {
+            await productVariantService.create(new RequestContext(''), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -131,13 +132,13 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(Product)
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
-            await productVariantService.generateVariantsForProduct(123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(1);
-            expect(saveCalls[0][0]).toBe(mockProduct);
-            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product');
-            expect(saveCalls[0][1].optionCodes).toEqual([]);
+            expect(saveCalls[0][1]).toBe(mockProduct);
+            expect(saveCalls[0][2].translations[0].name).toBe('Mock Product');
+            expect(saveCalls[0][2].optionCodes).toEqual([]);
         });
 
         it('generates variants for a product with a single optionGroup', async () => {
@@ -161,15 +162,15 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(Product)
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
-            await productVariantService.generateVariantsForProduct(123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(3);
-            expect(saveCalls[0][0]).toBe(mockProduct);
-            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product Small');
-            expect(saveCalls[0][1].optionCodes).toEqual(['small']);
-            expect(saveCalls[1][1].optionCodes).toEqual(['medium']);
-            expect(saveCalls[2][1].optionCodes).toEqual(['large']);
+            expect(saveCalls[0][1]).toBe(mockProduct);
+            expect(saveCalls[0][2].translations[0].name).toBe('Mock Product Small');
+            expect(saveCalls[0][2].optionCodes).toEqual(['small']);
+            expect(saveCalls[1][2].optionCodes).toEqual(['medium']);
+            expect(saveCalls[2][2].optionCodes).toEqual(['large']);
         });
 
         it('generates variants for a product multiples optionGroups', async () => {
@@ -199,21 +200,21 @@ describe('ProductVariantService', () => {
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
 
-            await productVariantService.generateVariantsForProduct(123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(9);
-            expect(saveCalls[0][0]).toBe(mockProduct);
-            expect(saveCalls[0][1].translations[0].name).toBe('Mock Product Small Red');
-            expect(saveCalls[0][1].optionCodes).toEqual(['small', 'red']);
-            expect(saveCalls[1][1].optionCodes).toEqual(['small', 'green']);
-            expect(saveCalls[2][1].optionCodes).toEqual(['small', 'blue']);
-            expect(saveCalls[3][1].optionCodes).toEqual(['medium', 'red']);
-            expect(saveCalls[4][1].optionCodes).toEqual(['medium', 'green']);
-            expect(saveCalls[5][1].optionCodes).toEqual(['medium', 'blue']);
-            expect(saveCalls[6][1].optionCodes).toEqual(['large', 'red']);
-            expect(saveCalls[7][1].optionCodes).toEqual(['large', 'green']);
-            expect(saveCalls[8][1].optionCodes).toEqual(['large', 'blue']);
+            expect(saveCalls[0][1]).toBe(mockProduct);
+            expect(saveCalls[0][2].translations[0].name).toBe('Mock Product Small Red');
+            expect(saveCalls[0][2].optionCodes).toEqual(['small', 'red']);
+            expect(saveCalls[1][2].optionCodes).toEqual(['small', 'green']);
+            expect(saveCalls[2][2].optionCodes).toEqual(['small', 'blue']);
+            expect(saveCalls[3][2].optionCodes).toEqual(['medium', 'red']);
+            expect(saveCalls[4][2].optionCodes).toEqual(['medium', 'green']);
+            expect(saveCalls[5][2].optionCodes).toEqual(['medium', 'blue']);
+            expect(saveCalls[6][2].optionCodes).toEqual(['large', 'red']);
+            expect(saveCalls[7][2].optionCodes).toEqual(['large', 'green']);
+            expect(saveCalls[8][2].optionCodes).toEqual(['large', 'blue']);
         });
     });
 });
