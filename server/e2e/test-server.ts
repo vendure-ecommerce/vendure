@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { NestFactory } from '@nestjs/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
@@ -69,11 +69,7 @@ export class TestServer {
         const config = await preBootstrapConfig(userConfig);
 
         const appModule = await import('../src/app.module');
-        const moduleFixture = await Test.createTestingModule({
-            imports: [appModule.AppModule],
-        }).compile();
-
-        const app = moduleFixture.createNestApplication();
+        const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
         await app.listen(config.port);
         return app;
     }

@@ -28,8 +28,10 @@ export interface WrappedGraphQLError extends GraphQLError {
  */
 @Injectable()
 export class I18nService {
+    private i18n: i18next.i18n;
+
     constructor(private configService: ConfigService) {
-        i18next
+        this.i18n = i18next
             .use(i18nextMiddleware.LanguageDetector)
             .use(Backend)
             .use(ICU)
@@ -50,21 +52,26 @@ export class I18nService {
         return i18nextMiddleware.handle(i18next);
     }
 
-    translateError(req?: any) {
-        return (error: WrappedGraphQLError) => {
-            const originalError = error.originalError;
-            if (req && req.t && originalError instanceof I18nError) {
-                const t: TranslationFunction = req.t;
-                let translation = originalError.message;
-                try {
-                    translation = t(originalError.message, originalError.variables);
-                } catch (e) {
-                    translation += ` (Translation format error: ${e.message})`;
-                }
-                error.message = translation;
-            }
+    /**
+     * TODO: reinstate correct error translations once https://github.com/apollographql/apollo-server/issues/1343
+     * is resolved. Currently Apollo Server 2 does not give us access to the Express context, so we cannot get
+     * the "t" function to translate the error message in the language of the current request.
+     * For now we are defaulting to English.
+     */
+    translateError(error: WrappedGraphQLError) {
+        const originalError = error.originalError;
+        const t: TranslationFunction = /* req.t */ this.i18n.getFixedT('en');
 
-            return error;
-        };
+        if (t && originalError instanceof I18nError) {
+            let translation = originalError.message;
+            try {
+                translation = t(originalError.message, originalError.variables);
+            } catch (e) {
+                translation += ` (Translation format error: ${e.message})`;
+            }
+            error.message = translation;
+        }
+
+        return error;
     }
 }
