@@ -10,15 +10,16 @@ import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { createTranslatable } from '../common/create-translatable';
-import { updateTranslatable } from '../common/update-translatable';
+import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { FacetValueTranslation } from '../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { Facet } from '../entity/facet/facet.entity';
-import { Translated } from '../locale/locale-types';
-import { translateDeep } from '../locale/translate-entity';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
+
+import { createTranslatable } from './helpers/create-translatable';
+import { translateDeep } from './helpers/translate-entity';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { updateTranslatable } from './helpers/update-translatable';
 
 @Injectable()
 export class FacetValueService {

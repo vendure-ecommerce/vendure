@@ -2,11 +2,11 @@ import { Type } from 'shared/shared-types';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
-import { ProductTranslation } from '../entity/product/product-translation.entity';
-import { Product } from '../entity/product/product.entity';
-import { I18nError } from '../i18n/i18n-error';
+import { SortParameter } from '../../common/types/common-types';
+import { ProductTranslation } from '../../entity/product/product-translation.entity';
+import { Product } from '../../entity/product/product.entity';
+import { I18nError } from '../../i18n/i18n-error';
 
-import { SortParameter } from './common-types';
 import { parseSortParams } from './parse-sort-params';
 
 describe('parseSortParams()', () => {

@@ -1,5 +1,6 @@
-import { VendureEntity } from '../entity/base/base.entity';
-import { LocaleString } from '../locale/locale-types';
+import { VendureEntity } from '../../entity/base/base.entity';
+
+import { LocaleString } from './locale-types';
 
 /**
  * Creates a type based on T, but with all properties non-optional

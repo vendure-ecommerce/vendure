@@ -1,4 +1,4 @@
-import { MockClass } from '../testing/testing-types';
+import { MockClass } from '../../testing/testing-types';
 
 import { TranslationUpdater } from './translation-updater';
 import { TranslationUpdaterService } from './translation-updater.service';

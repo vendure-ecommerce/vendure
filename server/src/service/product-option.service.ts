@@ -5,13 +5,14 @@ import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { createTranslatable } from '../common/create-translatable';
+import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
-import { Translated } from '../locale/locale-types';
-import { translateDeep } from '../locale/translate-entity';
+
+import { createTranslatable } from './helpers/create-translatable';
+import { translateDeep } from './helpers/translate-entity';
 
 @Injectable()
 export class ProductOptionService {

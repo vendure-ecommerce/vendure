@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { PasswordService } from '../auth/password.service';
-import { Role } from '../auth/role';
+import { Role } from '../common/types/role';
 import { CreateAdministratorDto } from '../entity/administrator/administrator.dto';
 import { Administrator } from '../entity/administrator/administrator.entity';
 import { User } from '../entity/user/user.entity';
+
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class AdministratorService {

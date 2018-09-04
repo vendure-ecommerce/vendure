@@ -1,9 +1,9 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import { CreateProductOptionGroupVariables } from 'shared/generated-types';
 
+import { Translated } from '../../common/types/locale-types';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { Translated } from '../../locale/locale-types';
 import { ProductOptionGroupService } from '../../service/product-option-group.service';
 import { ProductOptionService } from '../../service/product-option.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';

@@ -4,19 +4,20 @@ import { CreateProductInput, LanguageCode, UpdateProductInput } from 'shared/gen
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { buildListQuery } from '../common/build-list-query';
-import { ListQueryOptions, NullOptionals } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { createTranslatable } from '../common/create-translatable';
-import { updateTranslatable } from '../common/update-translatable';
+import { ListQueryOptions, NullOptionals } from '../common/types/common-types';
+import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
-import { Translated } from '../locale/locale-types';
-import { translateDeep } from '../locale/translate-entity';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
+
+import { buildListQuery } from './helpers/build-list-query';
+import { createTranslatable } from './helpers/create-translatable';
+import { translateDeep } from './helpers/translate-entity';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { updateTranslatable } from './helpers/update-translatable';
 
 @Injectable()
 export class ProductService {

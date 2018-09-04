@@ -1,9 +1,9 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import { UnwrappedArray } from '../common/common-types';
-import { I18nError } from '../i18n/i18n-error';
+import { UnwrappedArray } from '../../common/types/common-types';
+import { I18nError } from '../../i18n/i18n-error';
 
-import { Translatable, Translated } from './locale-types';
+import { Translatable, Translated } from '../../common/types/locale-types';
 
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {

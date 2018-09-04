@@ -1,6 +1,6 @@
 import { ID } from 'shared/shared-types';
 
-import { TranslatedInput } from '../../locale/locale-types';
+import { TranslatedInput } from '../../common/types/locale-types';
 
 import { ProductVariant } from './product-variant.entity';
 

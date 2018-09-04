@@ -1,7 +1,7 @@
 import { Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { Translatable, TranslatedInput, Translation } from '../locale/locale-types';
+import { Translatable, TranslatedInput, Translation } from '../../common/types/locale-types';
 
 /**
  * Returns a "save" function which uses the provided connection and dto to

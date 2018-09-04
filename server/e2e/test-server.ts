@@ -6,7 +6,7 @@ import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOpti
 
 import { populate, PopulateOptions } from '../mock-data/populate';
 import { preBootstrapConfig } from '../src/bootstrap';
-import { Mutable } from '../src/common/common-types';
+import { Mutable } from '../src/common/types/common-types';
 import { VendureConfig } from '../src/config/vendure-config';
 
 import { testConfig } from './config/test-config';

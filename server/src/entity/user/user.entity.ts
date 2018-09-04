@@ -2,7 +2,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { HasCustomFields } from 'shared/shared-types';
 import { Column, Entity } from 'typeorm';
 
-import { Role } from '../../auth/role';
+import { Role } from '../../common/types/role';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 

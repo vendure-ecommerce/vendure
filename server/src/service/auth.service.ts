@@ -3,12 +3,12 @@ import { InjectConnection } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
 import { Connection } from 'typeorm';
 
+import { JwtPayload } from '../common/types/auth-types';
+import { Role } from '../common/types/role';
+import { ConfigService } from '../config/config.service';
 import { User } from '../entity/user/user.entity';
-import { ConfigService } from '../service/config.service';
 
-import { JwtPayload } from './auth-types';
 import { PasswordService } from './password.service';
-import { Role } from './role';
 
 @Injectable()
 export class AuthService {

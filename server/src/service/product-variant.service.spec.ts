@@ -8,10 +8,10 @@ import { ProductOption } from '../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
-import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
 
+import { MockTranslationUpdaterService } from './helpers/translation-updater.mock';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
 import { ProductVariantService } from './product-variant.service';
 
 describe('ProductVariantService', () => {

@@ -3,7 +3,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Translation } from '../../locale/locale-types';
+import { Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionGroupFieldsTranslation } from '../custom-entity-fields';
 

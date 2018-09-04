@@ -1,4 +1,4 @@
-import { TranslatedInput } from '../../locale/locale-types';
+import { TranslatedInput } from '../../common/types/locale-types';
 
 import { ProductOptionGroup } from './product-option-group.entity';
 

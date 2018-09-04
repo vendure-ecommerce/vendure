@@ -1,10 +1,10 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import { ProductTranslation } from '../entity/product/product-translation.entity';
-import { Product } from '../entity/product/product.entity';
-import { MockEntityManager } from '../testing/connection.mock';
+import { TranslationInput } from '../../common/types/locale-types';
+import { ProductTranslation } from '../../entity/product/product-translation.entity';
+import { Product } from '../../entity/product/product.entity';
+import { MockEntityManager } from '../../testing/connection.mock';
 
-import { TranslationInput } from './locale-types';
 import { TranslationUpdater } from './translation-updater';
 
 describe('TranslationUpdater', () => {

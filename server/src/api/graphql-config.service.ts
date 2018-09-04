@@ -8,9 +8,10 @@ import { flatten } from 'lodash';
 import { mergeTypes } from 'merge-graphql-schemas';
 import * as path from 'path';
 
-import { addGraphQLCustomFields } from '../entity/graphql-custom-fields';
+import { ConfigService } from '../config/config.service';
 import { I18nService } from '../i18n/i18n.service';
-import { ConfigService } from '../service/config.service';
+
+import { addGraphQLCustomFields } from './graphql-custom-fields';
 
 @Injectable()
 export class GraphqlConfigService implements GqlOptionsFactory {

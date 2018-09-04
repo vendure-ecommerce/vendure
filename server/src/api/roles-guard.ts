@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { User } from '../entity/user/user.entity';
 
-import { Role } from './role';
+import { Role } from '../common/types/role';
 
 /**
  * A guard which combines the JWT passport auth method with restrictions based on

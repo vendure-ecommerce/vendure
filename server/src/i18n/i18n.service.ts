@@ -8,7 +8,7 @@ import * as ICU from 'i18next-icu';
 import * as Backend from 'i18next-node-fs-backend';
 import * as path from 'path';
 
-import { ConfigService } from '../service/config.service';
+import { ConfigService } from '../config/config.service';
 
 import { I18nError } from './i18n-error';
 

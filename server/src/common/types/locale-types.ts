@@ -1,11 +1,9 @@
 import { LanguageCode } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
-import { CustomFieldsObject } from 'shared/shared-types';
+import { CustomFieldsObject, ID } from 'shared/shared-types';
 
-import { UnwrappedArray } from '../common/common-types';
-import { VendureEntity } from '../entity/base/base.entity';
+import { TranslatableRelationsKeys } from '../../service/helpers/translate-entity';
 
-import { TranslatableRelationsKeys } from './translate-entity';
+import { UnwrappedArray } from './common-types';
 
 /**
  * This type should be used in any interfaces where the value is to be

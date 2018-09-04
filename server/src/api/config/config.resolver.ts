@@ -1,7 +1,7 @@
 import { Query, Resolver } from '@nestjs/graphql';
 
+import { ConfigService } from '../../config/config.service';
 import { getConfig, VendureConfig } from '../../config/vendure-config';
-import { ConfigService } from '../../service/config.service';
 
 @Resolver('Config')
 export class ConfigResolver {

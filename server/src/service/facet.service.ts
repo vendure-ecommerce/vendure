@@ -4,17 +4,18 @@ import { CreateFacetInput, LanguageCode, UpdateFacetInput } from 'shared/generat
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { buildListQuery } from '../common/build-list-query';
-import { ListQueryOptions } from '../common/common-types';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { createTranslatable } from '../common/create-translatable';
-import { updateTranslatable } from '../common/update-translatable';
+import { ListQueryOptions } from '../common/types/common-types';
+import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { FacetTranslation } from '../entity/facet/facet-translation.entity';
 import { Facet } from '../entity/facet/facet.entity';
-import { Translated } from '../locale/locale-types';
-import { translateDeep } from '../locale/translate-entity';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
+
+import { buildListQuery } from './helpers/build-list-query';
+import { createTranslatable } from './helpers/create-translatable';
+import { translateDeep } from './helpers/translate-entity';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { updateTranslatable } from './helpers/update-translatable';
 
 @Injectable()
 export class FacetService {

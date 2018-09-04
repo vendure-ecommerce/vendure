@@ -1,4 +1,4 @@
-import { DECODED, ENCODED, MockIdStrategy } from '../../service/config.service.mock';
+import { DECODED, ENCODED, MockIdStrategy } from '../../config/config.service.mock';
 
 import { IdCodec } from './id-codec';
 

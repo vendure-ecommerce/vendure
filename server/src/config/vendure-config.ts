@@ -4,7 +4,7 @@ import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
-import { ReadOnlyRequired } from '../common/common-types';
+import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';

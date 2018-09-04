@@ -2,9 +2,9 @@ import { Type } from 'shared/shared-types';
 import { Connection, FindManyOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
-import { VendureEntity } from '../entity/base/base.entity';
+import { ListQueryOptions } from '../../common/types/common-types';
+import { VendureEntity } from '../../entity/base/base.entity';
 
-import { ListQueryOptions } from './common-types';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 

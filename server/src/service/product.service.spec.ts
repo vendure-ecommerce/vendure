@@ -5,10 +5,10 @@ import { Connection } from 'typeorm';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
-import { MockTranslationUpdaterService } from '../locale/translation-updater.mock';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
 import { MockConnection } from '../testing/connection.mock';
 
+import { MockTranslationUpdaterService } from './helpers/translation-updater.mock';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
 import { ProductService } from './product.service';
 
 describe('ProductService', () => {

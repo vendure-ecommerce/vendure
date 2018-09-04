@@ -4,7 +4,7 @@ import { LanguageCode } from 'shared/generated-types';
 import { CustomFields } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
-import { ReadOnlyRequired } from '../common/common-types';
+import { ReadOnlyRequired } from '../common/types/common-types';
 import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strategy';
 import { getConfig, VendureConfig } from '../config/vendure-config';
 

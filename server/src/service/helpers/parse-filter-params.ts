@@ -3,8 +3,8 @@ import { assertNever } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { VendureEntity } from '../entity/base/base.entity';
-import { I18nError } from '../i18n/i18n-error';
+import { VendureEntity } from '../../entity/base/base.entity';
+import { I18nError } from '../../i18n/i18n-error';
 
 import {
     BooleanOperators,
@@ -13,7 +13,7 @@ import {
     NullOptionals,
     NumberOperators,
     StringOperators,
-} from './common-types';
+} from '../../common/types/common-types';
 
 export interface WhereCondition {
     clause: string;

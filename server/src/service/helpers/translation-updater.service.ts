@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 
-import { Translatable } from './locale-types';
+import { Translatable } from '../../common/types/locale-types';
+
 import { TranslationContructor, TranslationUpdater } from './translation-updater';
 
 @Injectable()

@@ -6,8 +6,7 @@ import { generateAllCombinations } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { createTranslatable } from '../common/create-translatable';
-import { updateTranslatable } from '../common/update-translatable';
+import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
@@ -16,9 +15,11 @@ import { ProductVariantTranslation } from '../entity/product-variant/product-var
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
-import { Translated } from '../locale/locale-types';
-import { translateDeep } from '../locale/translate-entity';
-import { TranslationUpdaterService } from '../locale/translation-updater.service';
+
+import { createTranslatable } from './helpers/create-translatable';
+import { translateDeep } from './helpers/translate-entity';
+import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { updateTranslatable } from './helpers/update-translatable';
 
 @Injectable()
 export class ProductVariantService {

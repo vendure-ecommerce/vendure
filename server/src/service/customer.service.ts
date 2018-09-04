@@ -3,16 +3,17 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { PasswordService } from '../auth/password.service';
-import { Role } from '../auth/role';
-import { buildListQuery } from '../common/build-list-query';
-import { ListQueryOptions } from '../common/common-types';
+import { ListQueryOptions } from '../common/types/common-types';
+import { Role } from '../common/types/role';
 import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
 import { Customer } from '../entity/customer/customer.entity';
 import { User } from '../entity/user/user.entity';
 import { I18nError } from '../i18n/i18n-error';
+
+import { buildListQuery } from './helpers/build-list-query';
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class CustomerService {

@@ -9,11 +9,11 @@ import {
 import { ID, PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { Translated } from '../../locale/locale-types';
 import { FacetValueService } from '../../service/facet-value.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';

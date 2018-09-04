@@ -1,10 +1,10 @@
 import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
-import { foundIn, not } from '../common/utils';
-import { I18nError } from '../i18n/i18n-error';
+import { foundIn, not } from '../../common/utils';
+import { I18nError } from '../../i18n/i18n-error';
 
-import { Translatable, Translation, TranslationInput } from './locale-types';
+import { Translatable, Translation, TranslationInput } from '../../common/types/locale-types';
 
 export interface TranslationContructor<T> {
     new (input?: DeepPartial<TranslationInput<T>> | DeepPartial<Translation<T>>): Translation<T>;

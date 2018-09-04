@@ -8,10 +8,10 @@ import {
 import { PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { Translated } from '../../locale/locale-types';
 import { FacetValueService } from '../../service/facet-value.service';
 import { FacetService } from '../../service/facet.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
