@@ -2,6 +2,36 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: AttemptLogin
+// ====================================================
+
+export interface AttemptLogin_login_user {
+  __typename: "CurrentUser";
+  id: string;
+  identifier: string;
+  channelTokens: string[];
+  roles: string[];
+}
+
+export interface AttemptLogin_login {
+  __typename: "LoginResult";
+  user: AttemptLogin_login_user;
+  authToken: string;
+}
+
+export interface AttemptLogin {
+  login: AttemptLogin_login;
+}
+
+export interface AttemptLoginVariables {
+  username: string;
+  password: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CreateFacet
 // ====================================================
 
@@ -194,21 +224,21 @@ export interface RequestCompleted {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: LogIn
+// GraphQL mutation operation: SetAsLoggedIn
 // ====================================================
 
-export interface LogIn_logIn {
+export interface SetAsLoggedIn_setAsLoggedIn {
   __typename: "UserStatus";
   username: string;
   isLoggedIn: boolean;
   loginTime: string;
 }
 
-export interface LogIn {
-  logIn: LogIn_logIn | null;
+export interface SetAsLoggedIn {
+  setAsLoggedIn: SetAsLoggedIn_setAsLoggedIn | null;
 }
 
-export interface LogInVariables {
+export interface SetAsLoggedInVariables {
   username: string;
   loginTime: string;
 }
@@ -217,18 +247,18 @@ export interface LogInVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: LogOut
+// GraphQL mutation operation: SetAsLoggedOut
 // ====================================================
 
-export interface LogOut_logOut {
+export interface SetAsLoggedOut_setAsLoggedOut {
   __typename: "UserStatus";
   username: string;
   isLoggedIn: boolean;
   loginTime: string;
 }
 
-export interface LogOut {
-  logOut: LogOut_logOut | null;
+export interface SetAsLoggedOut {
+  setAsLoggedOut: SetAsLoggedOut_setAsLoggedOut | null;
 }
 
 /* tslint:disable */
@@ -728,6 +758,25 @@ export interface ApplyFacetValuesToProductVariantsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetCurrentUser
+// ====================================================
+
+export interface GetCurrentUser_me {
+  __typename: "CurrentUser";
+  id: string;
+  identifier: string;
+  channelTokens: string[];
+  roles: string[];
+}
+
+export interface GetCurrentUser {
+  me: GetCurrentUser_me | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GetFacetList
 // ====================================================
 
@@ -1020,6 +1069,21 @@ export interface GetProductOptionGroups {
 export interface GetProductOptionGroupsVariables {
   filterTerm?: string | null;
   languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: CurrentUser
+// ====================================================
+
+export interface CurrentUser {
+  __typename: "CurrentUser";
+  id: string;
+  identifier: string;
+  channelTokens: string[];
+  roles: string[];
 }
 
 /* tslint:disable */

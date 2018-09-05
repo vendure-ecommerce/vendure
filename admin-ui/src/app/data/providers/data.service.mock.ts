@@ -53,7 +53,7 @@ export class MockDataService implements DataServiceMock {
         generateProductVariants: spyObservable('generateProductVariants'),
         applyFacetValuesToProductVariants: spyObservable('applyFacetValuesToProductVariants'),
     };
-    user = {
+    auth = {
         checkLoggedIn: spyObservable('checkLoggedIn'),
         attemptLogin: spyObservable('attemptLogin'),
     };

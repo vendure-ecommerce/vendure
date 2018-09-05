@@ -40,11 +40,6 @@ export class BaseDataService {
         const queryRef = this.apollo.watchQuery<T, V>({
             query,
             variables,
-            context: {
-                headers: {
-                    Authorization: this.getAuthHeader(),
-                },
-            },
             fetchPolicy,
         });
         return new QueryResult<T, any>(queryRef);

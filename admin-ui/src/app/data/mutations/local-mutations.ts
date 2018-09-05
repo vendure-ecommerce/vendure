@@ -12,9 +12,9 @@ export const REQUEST_COMPLETED = gql`
     }
 `;
 
-export const LOG_IN = gql`
-    mutation LogIn($username: String!, $loginTime: String!) {
-        logIn(username: $username, loginTime: $loginTime) @client {
+export const SET_AS_LOGGED_IN = gql`
+    mutation SetAsLoggedIn($username: String!, $loginTime: String!) {
+        setAsLoggedIn(username: $username, loginTime: $loginTime) @client {
             username
             isLoggedIn
             loginTime
@@ -22,9 +22,9 @@ export const LOG_IN = gql`
     }
 `;
 
-export const LOG_OUT = gql`
-    mutation LogOut {
-        logOut @client {
+export const SET_AS_LOGGED_OUT = gql`
+    mutation SetAsLoggedOut {
+        setAsLoggedOut @client {
             username
             isLoggedIn
             loginTime
