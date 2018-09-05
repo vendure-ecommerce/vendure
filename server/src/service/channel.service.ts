@@ -4,6 +4,7 @@ import { Connection } from 'typeorm';
 
 import { DEFAULT_CHANNEL_CODE } from '../common/constants';
 import { Channel } from '../entity/channel/channel.entity';
+import { I18nError } from '../i18n/i18n-error';
 
 @Injectable()
 export class ChannelService {
@@ -25,6 +26,18 @@ export class ChannelService {
      */
     getChannelFromToken(token: string): Channel | undefined {
         return this.allChannels.find(channel => channel.token === token);
+    }
+
+    /**
+     * Returns the default Channel.
+     */
+    getDefaultChannel(): Channel {
+        const defaultChannel = this.allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
+
+        if (!defaultChannel) {
+            throw new I18nError(`error.default-channel-not-found`);
+        }
+        return defaultChannel;
     }
 
     findAll(): Promise<Channel[]> {

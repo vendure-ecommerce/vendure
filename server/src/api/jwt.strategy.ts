@@ -7,6 +7,9 @@ import { AuthService } from '../service/auth.service';
 
 import { JwtPayload } from '../common/types/auth-types';
 
+/**
+ * Currently unused - see note at {@link AuthGuard}
+ */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly authService: AuthService, private configService: ConfigService) {

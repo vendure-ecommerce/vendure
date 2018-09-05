@@ -6,7 +6,7 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdministratorResolver } from './administrator/administrator.resolver';
-import { AuthController } from './auth/auth.controller';
+import { AuthResolver } from './auth/auth.resolver';
 import { ConfigResolver } from './config/config.resolver';
 import { CustomerResolver } from './customer/customer.resolver';
 import { FacetResolver } from './facet/facet.resolver';
@@ -17,6 +17,7 @@ import { ProductResolver } from './product/product.resolver';
 
 const exportedProviders = [
     AdministratorResolver,
+    AuthResolver,
     ConfigResolver,
     FacetResolver,
     CustomerResolver,
@@ -37,7 +38,6 @@ const exportedProviders = [
             imports: [ConfigModule, I18nModule],
         }),
     ],
-    controllers: [AuthController],
     providers: [...exportedProviders, JwtStrategy],
     exports: exportedProviders,
 })

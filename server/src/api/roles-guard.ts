@@ -1,10 +1,10 @@
 import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { Role } from '../common/types/role';
 import { User } from '../entity/user/user.entity';
 
-import { Role } from '../common/types/role';
+import { AuthGuard } from './auth-guard';
 
 /**
  * A guard which combines the JWT passport auth method with restrictions based on
@@ -21,7 +21,7 @@ import { Role } from '../common/types/role';
  */
 export function RolesGuard(roles: Role[]) {
     // tslint:disable-next-line:ban-types
-    const guards: Array<CanActivate | Function> = [AuthGuard('jwt')];
+    const guards: Array<CanActivate | Function> = [AuthGuard];
 
     if (roles.length && !authenticatedOnly(roles)) {
         guards.push(forRoles(roles));
