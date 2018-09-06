@@ -15,6 +15,7 @@ import { ProductVariantTranslation } from './product-variant/product-variant-tra
 import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
+import { Role } from './role/role.entity';
 import { User } from './user/user.entity';
 
 /**
@@ -38,5 +39,6 @@ export const coreEntitiesMap = {
     ProductVariant,
     ProductVariantPrice,
     ProductVariantTranslation,
+    Role,
     User,
 };

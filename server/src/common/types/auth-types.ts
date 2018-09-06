@@ -1,6 +1,6 @@
-import { Role } from './role';
+import { Permission } from '../../entity/role/permission';
 
 export interface JwtPayload {
     identifier: string;
-    roles: Role[];
+    roles: Permission[];
 }

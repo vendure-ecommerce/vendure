@@ -20,15 +20,18 @@ class Customer {
 class Administrator {
     user: User
 }
-class UserRole {
-    role: Role
+class Role {
+    name: string
+    permissions: Permission[]
     user: User
     channel: Channel
 }
-enum Role {
-    Authenticated
-    Customer
-    Administrator
+enum Permission {
+    CreateCatalog
+    ReadCatalog
+    UpdateCatalog
+    DeleteCatalog
+    CreateUser
     ...etc
 }
 class Address {
@@ -79,9 +82,9 @@ class Category {
 
 Customer --  User
 Administrator -- User
-User o-- UserRole
-UserRole o-- "1..*" Role
-UserRole -- Channel
+User o-- Role
+Role o-- "1..*" Permission
+Role -- Channel
 Customer *-- "0..*" Address
 Product *-- "1..*" ProductVariant
 ProductOptionGroup *-- "1..*" ProductOption

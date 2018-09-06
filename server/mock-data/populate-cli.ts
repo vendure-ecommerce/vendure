@@ -16,8 +16,9 @@ if (require.main === module) {
     // tslint:disable
     populate(populateConfig, bootstrap, {
         logging: true,
-        customerCount: 100,
-        productCount: 200,
+        customerCount: 10,
+        productCount: 20,
+        channels: ['mobile-app'],
     })
         .then(app => app.close())
         .then(() => process.exit(0));

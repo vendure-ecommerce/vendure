@@ -4,7 +4,6 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ListQueryOptions } from '../common/types/common-types';
-import { Role } from '../common/types/role';
 import { CreateAddressDto } from '../entity/address/address.dto';
 import { Address } from '../entity/address/address.entity';
 import { CreateCustomerDto } from '../entity/customer/customer.dto';
@@ -14,12 +13,14 @@ import { I18nError } from '../i18n/i18n-error';
 
 import { buildListQuery } from './helpers/build-list-query';
 import { PasswordService } from './password.service';
+import { RoleService } from './role.service';
 
 @Injectable()
 export class CustomerService {
     constructor(
         @InjectConnection() private connection: Connection,
         private passwordService: PasswordService,
+        private roleService: RoleService,
     ) {}
 
     findAll(options: ListQueryOptions<Customer>): Promise<PaginatedList<Customer>> {
@@ -47,8 +48,8 @@ export class CustomerService {
             const user = new User();
             user.passwordHash = await this.passwordService.hash(password);
             user.identifier = createCustomerDto.emailAddress;
-            user.roles = [Role.Customer];
-            const createdUser = await this.connection.getRepository(User).save(user);
+            user.roles = [await this.roleService.getCustomerRole()];
+            const createdUser = await this.connection.manager.save(user);
             customer.user = createdUser;
         }
 

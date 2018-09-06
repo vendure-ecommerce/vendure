@@ -5,6 +5,7 @@ import { ConfigService } from './config.service';
 import { EntityIdStrategy, PrimaryKeyType } from './entity-id-strategy/entity-id-strategy';
 
 export class MockConfigService implements MockClass<ConfigService> {
+    disableAuth = false;
     apiPath = 'api';
     port = 3000;
     cors = false;

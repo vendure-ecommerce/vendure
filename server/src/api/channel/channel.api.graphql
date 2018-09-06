@@ -1,0 +1,3 @@
+type Mutation {
+  createChannel(code: String!): Channel!
+}

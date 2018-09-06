@@ -8,6 +8,7 @@ import { ProductTranslation } from '../entity/product/product-translation.entity
 import { Product } from '../entity/product/product.entity';
 import { MockConnection } from '../testing/connection.mock';
 
+import { ChannelService } from './channel.service';
 import { MockTranslationUpdaterService } from './helpers/translation-updater.mock';
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
 import { ProductService } from './product.service';
@@ -23,6 +24,7 @@ describe('ProductService', () => {
                 ProductService,
                 { provide: TranslationUpdaterService, useClass: MockTranslationUpdaterService },
                 { provide: Connection, useClass: MockConnection },
+                { provide: ChannelService, useClass: MockChannelService },
             ],
         }).compile();
 
@@ -38,7 +40,7 @@ describe('ProductService', () => {
         });
 
         it('saves a new Product with the correct properties', async () => {
-            await productService.create(new RequestContext(''), {
+            await productService.create(new RequestContext(), {
                 translations: [
                     {
                         languageCode: LanguageCode.en,
@@ -60,7 +62,7 @@ describe('ProductService', () => {
         });
 
         it('saves each ProductTranslation', async () => {
-            await productService.create(new RequestContext(''), {
+            await productService.create(new RequestContext(), {
                 translations: [
                     {
                         languageCode: LanguageCode.en,
@@ -93,7 +95,7 @@ describe('ProductService', () => {
             ];
             connection.registerMockRepository(ProductOptionGroup).find.mockReturnValue(mockOptionGroups);
 
-            await productService.create(new RequestContext(''), {
+            await productService.create(new RequestContext(), {
                 translations: [
                     {
                         languageCode: LanguageCode.en,
@@ -124,7 +126,7 @@ describe('ProductService', () => {
                 image: 'some-image',
                 translations: [],
             };
-            await productService.update(new RequestContext(''), dto);
+            await productService.update(new RequestContext(), dto);
             const savedProduct = connection.manager.save.mock.calls[0][0];
 
             expect(translationUpdater.diff).toHaveBeenCalledTimes(1);
@@ -133,3 +135,7 @@ describe('ProductService', () => {
         });
     });
 });
+
+class MockChannelService {
+    assignToChannels = jest.fn();
+}

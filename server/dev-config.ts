@@ -6,6 +6,7 @@ import { VendureConfig } from './src/config/vendure-config';
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
+    disableAuth: true,
     port: API_PORT,
     apiPath: API_PATH,
     cors: true,

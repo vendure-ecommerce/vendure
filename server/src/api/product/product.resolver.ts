@@ -17,6 +17,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { Permission } from '../../entity/role/permission';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/facet-value.service';
 import { ProductVariantService } from '../../service/product-variant.service';
@@ -24,6 +25,7 @@ import { ProductService } from '../../service/product.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 import { RequestContext } from '../common/request-context';
 import { RequestContextPipe } from '../common/request-context.pipe';
+import { RolesGuard } from '../roles-guard';
 
 @Resolver('Product')
 export class ProductResolver {
@@ -34,6 +36,7 @@ export class ProductResolver {
     ) {}
 
     @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     async products(
         @Context(RequestContextPipe) ctx: RequestContext,

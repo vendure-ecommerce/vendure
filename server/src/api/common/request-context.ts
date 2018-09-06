@@ -2,6 +2,7 @@ import { LanguageCode } from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { Channel } from '../../entity/channel/channel.entity';
 
 /**
  * The RequestContext is intended to hold information relevant to the current request, which may be
@@ -9,33 +10,31 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
  * exposed, as well as the active language.
  */
 export class RequestContext {
-    get channelId(): ID {
-        return this._channelId;
+    get channel(): Channel {
+        return this._channel || ({} as any);
     }
 
-    set channelId(value: ID) {
-        this._channelId = value;
+    get channelId(): ID | undefined {
+        return this._channel && this._channel.id;
     }
 
-    get token(): string {
-        return this._token;
-    }
     get languageCode(): LanguageCode {
-        return this._languageCode;
+        if (this._languageCode) {
+            return this._languageCode;
+        } else if (this._channel) {
+            return this._channel.defaultLanguageCode;
+        } else {
+            return DEFAULT_LANGUAGE_CODE;
+        }
     }
 
     private _languageCode: LanguageCode;
-    private _channelId: ID;
 
-    constructor(private _token: string) {
-        this._languageCode = DEFAULT_LANGUAGE_CODE;
-    }
+    constructor(private _channel?: Channel) {}
 
     setLanguageCode(value: LanguageCode | null | undefined) {
         if (value) {
             this._languageCode = value;
-        } else {
-            this._languageCode = DEFAULT_LANGUAGE_CODE;
         }
     }
 }

@@ -46,7 +46,9 @@ describe('Product resolver', () => {
     const server = new TestServer();
 
     beforeAll(async () => {
-        await server.init({
+        const token = await server.init({
+            logging: true,
+            disableAuth: true,
             productCount: 20,
             customerCount: 1,
         });

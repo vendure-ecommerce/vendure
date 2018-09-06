@@ -35,7 +35,7 @@ describe('ProductVariantService', () => {
     describe('create()', () => {
         it('saves a new ProductVariant with the correct properties', async () => {
             const productEntity = new Product();
-            await productVariantService.create(new RequestContext(''), productEntity, {
+            await productVariantService.create(new RequestContext(), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -57,7 +57,7 @@ describe('ProductVariantService', () => {
 
         it('saves each ProductVariantTranslation', async () => {
             const productEntity = new Product();
-            await productVariantService.create(new RequestContext(''), productEntity, {
+            await productVariantService.create(new RequestContext(), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -87,7 +87,7 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(ProductOption)
                 .find.mockReturnValue(mockOptions);
 
-            await productVariantService.create(new RequestContext(''), productEntity, {
+            await productVariantService.create(new RequestContext(), productEntity, {
                 sku: '123456',
                 price: 123,
                 translations: [
@@ -132,7 +132,7 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(Product)
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
-            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(1);
@@ -162,7 +162,7 @@ describe('ProductVariantService', () => {
                 .registerMockRepository(Product)
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
-            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(3);
@@ -200,7 +200,7 @@ describe('ProductVariantService', () => {
                 .findOne.mockReturnValue(mockProduct);
             const mockCreate = jest.spyOn(productVariantService, 'create').mockReturnValue(Promise.resolve());
 
-            await productVariantService.generateVariantsForProduct(new RequestContext(''), 123);
+            await productVariantService.generateVariantsForProduct(new RequestContext(), 123);
 
             const saveCalls = mockCreate.mock.calls;
             expect(saveCalls.length).toBe(9);

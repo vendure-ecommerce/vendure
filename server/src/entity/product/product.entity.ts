@@ -1,9 +1,10 @@
-import { DeepPartial } from 'shared/shared-types';
-import { HasCustomFields } from 'shared/shared-types';
+import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
+import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomProductFields } from '../custom-entity-fields';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -11,7 +12,7 @@ import { ProductVariant } from '../product-variant/product-variant.entity';
 import { ProductTranslation } from './product-translation.entity';
 
 @Entity()
-export class Product extends VendureEntity implements Translatable, HasCustomFields {
+export class Product extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
     constructor(input?: DeepPartial<Product>) {
         super(input);
     }
@@ -35,4 +36,8 @@ export class Product extends VendureEntity implements Translatable, HasCustomFie
 
     @Column(type => CustomProductFields)
     customFields: CustomProductFields;
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

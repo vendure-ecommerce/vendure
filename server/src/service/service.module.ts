@@ -16,6 +16,7 @@ import { ProductOptionGroupService } from './product-option-group.service';
 import { ProductOptionService } from './product-option.service';
 import { ProductVariantService } from './product-variant.service';
 import { ProductService } from './product.service';
+import { RoleService } from './role.service';
 
 const exportedProviders = [
     AdministratorService,
@@ -28,6 +29,7 @@ const exportedProviders = [
     ProductOptionGroupService,
     ProductService,
     ProductVariantService,
+    RoleService,
 ];
 
 /**
@@ -43,9 +45,10 @@ const exportedProviders = [
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {
-    constructor(private channelService: ChannelService) {}
+    constructor(private channelService: ChannelService, private roleService: RoleService) {}
 
     async onModuleInit() {
         await this.channelService.initChannels();
+        await this.roleService.initRoles();
     }
 }

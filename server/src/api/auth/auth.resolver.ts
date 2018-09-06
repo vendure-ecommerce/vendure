@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { Role } from '../../common/types/role';
+import { Permission } from '../../entity/role/permission';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/auth.service';
 import { ChannelService } from '../../service/channel.service';
@@ -29,26 +29,29 @@ export class AuthResolver {
     /**
      * Returns information about the current authenticated user.
      */
-    @RolesGuard([Role.Authenticated])
+    @RolesGuard([Permission.Authenticated])
     @Query()
-    me(@Context('req') request: any) {
-        const user = request.user as User;
+    async me(@Context('req') request: any) {
+        const user = await this.authService.validateUser(request.user.identifier);
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    private publiclyAccessibleUser(
-        user: User,
-    ): Pick<User, 'id' | 'identifier' | 'roles'> & { channelTokens: string[] } {
+    private publiclyAccessibleUser(user: User): any {
         return {
             id: user.id,
             identifier: user.identifier,
-            roles: user.roles,
-            channelTokens: user.roles.includes(Role.SuperAdmin)
-                ? [this.channelService.getDefaultChannel().token]
-                : [],
+            roles: user.roles.reduce(
+                (roleTypes, role) => [...roleTypes, ...role.permissions],
+                [] as Permission[],
+            ),
+            channelTokens: this.getAvailableChannelTokens(user),
         };
+    }
+
+    private getAvailableChannelTokens(user: User): string[] {
+        return user.roles.reduce((tokens, role) => role.channels.map(c => c.token), [] as string[]);
     }
 }

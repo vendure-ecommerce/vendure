@@ -4,8 +4,8 @@ import * as jwt from 'jsonwebtoken';
 import { Connection } from 'typeorm';
 
 import { JwtPayload } from '../common/types/auth-types';
-import { Role } from '../common/types/role';
 import { ConfigService } from '../config/config.service';
+import { Permission } from '../entity/role/permission';
 import { User } from '../entity/user/user.entity';
 
 import { PasswordService } from './password.service';
@@ -20,9 +20,8 @@ export class AuthService {
 
     async createToken(identifier: string, password: string): Promise<{ user: User; token: string }> {
         const user = await this.connection.getRepository(User).findOne({
-            where: {
-                identifier,
-            },
+            where: { identifier },
+            relations: ['roles', 'roles.channels'],
         });
 
         if (!user) {
@@ -34,17 +33,19 @@ export class AuthService {
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }
-        const payload: JwtPayload = { identifier, roles: user.roles };
+        const payload: JwtPayload = {
+            identifier,
+            roles: user.roles.reduce((roles, r) => [...roles, ...r.permissions], [] as Permission[]),
+        };
         const token = jwt.sign(payload, this.configService.jwtSecret, { expiresIn: 3600 });
 
         return { user, token };
     }
 
-    async validateUser(payload: JwtPayload): Promise<any> {
+    async validateUser(identifier: string): Promise<User | undefined> {
         return await this.connection.getRepository(User).findOne({
-            where: {
-                identifier: payload.identifier,
-            },
+            where: { identifier },
+            relations: ['roles', 'roles.channels'],
         });
     }
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductInput, LanguageCode, UpdateProductInput } from 'shared/generated-types';
+import { CreateProductInput, UpdateProductInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
-import { ListQueryOptions, NullOptionals } from '../common/types/common-types';
+import { ListQueryOptions } from '../common/types/common-types';
 import { Translated } from '../common/types/locale-types';
 import { assertFound } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
@@ -14,6 +13,7 @@ import { ProductTranslation } from '../entity/product/product-translation.entity
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
 
+import { ChannelService } from './channel.service';
 import { buildListQuery } from './helpers/build-list-query';
 import { createTranslatable } from './helpers/create-translatable';
 import { translateDeep } from './helpers/translate-entity';
@@ -25,6 +25,7 @@ export class ProductService {
     constructor(
         @InjectConnection() private connection: Connection,
         private translationUpdaterService: TranslationUpdaterService,
+        private channelService: ChannelService,
     ) {}
 
     findAll(
@@ -70,6 +71,7 @@ export class ProductService {
 
     async create(ctx: RequestContext, createProductDto: CreateProductInput): Promise<Translated<Product>> {
         const save = createTranslatable(Product, ProductTranslation, async p => {
+            this.channelService.assignToChannels(p, ctx);
             const { optionGroupCodes } = createProductDto;
             if (optionGroupCodes && optionGroupCodes.length) {
                 const optionGroups = await this.connection.getRepository(ProductOptionGroup).find();

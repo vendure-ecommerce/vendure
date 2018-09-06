@@ -1,3 +1,4 @@
+import { LanguageCode } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity } from 'typeorm';
 
@@ -15,6 +16,8 @@ export class Channel extends VendureEntity {
 
     @Column({ unique: true })
     token: string;
+
+    @Column('varchar') defaultLanguageCode: LanguageCode;
 
     private generateToken(): string {
         const randomString = () =>

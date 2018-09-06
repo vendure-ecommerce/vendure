@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 
 import { JwtPayload } from '../common/types/auth-types';
 import { ConfigService } from '../config/config.service';
+import { User } from '../entity/user/user.entity';
 import { AuthService } from '../service/auth.service';
 
 /**
@@ -23,18 +24,25 @@ export class AuthGuard implements CanActivate {
             {
                 secretOrKey: configService.jwtSecret,
                 jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+                // TODO: make this configurable. See https://github.com/vendure-ecommerce/vendure/issues/16
+                jsonWebTokenOptions: {
+                    expiresIn: '2 days',
+                },
             },
             (payload: any, done: () => void) => this.validate(payload, done),
         );
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        if (this.configService.disableAuth) {
+            return true;
+        }
         const ctx = GqlExecutionContext.create(context).getContext();
         return this.authenticate(ctx.req);
     }
 
     async validate(payload: JwtPayload, done: (err: Error | null, user: any) => void) {
-        const user = await this.authService.validateUser(payload);
+        const user = await this.authService.validateUser(payload.identifier);
         if (!user) {
             return done(new UnauthorizedException(), false);
         }

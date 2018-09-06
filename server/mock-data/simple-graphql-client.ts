@@ -3,7 +3,7 @@ import { request } from 'graphql-request';
 import { print } from 'graphql/language/printer';
 
 export interface GraphQlClient {
-    query<T, V = Record<string, any>>(query: DocumentNode, variables: V): Promise<T>;
+    query<T, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T>;
 }
 
 /**

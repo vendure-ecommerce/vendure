@@ -12,6 +12,12 @@ import { mergeConfig } from './merge-config';
 
 export interface VendureConfig {
     /**
+     * Disable authentication & permissions checks.
+     * NEVER set the to true in production. It exists
+     * only to aid the ease of development.
+     */
+    disableAuth?: boolean;
+    /**
      * The default languageCode of the app.
      */
     defaultLanguageCode?: LanguageCode;
@@ -53,6 +59,7 @@ export interface VendureConfig {
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
+    disableAuth: false,
     defaultLanguageCode: LanguageCode.en,
     port: API_PORT,
     cors: false,
