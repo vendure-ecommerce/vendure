@@ -11,28 +11,33 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { Permission } from '../../entity/role/permission';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/facet-value.service';
 import { FacetService } from '../../service/facet.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
+import { RolesGuard } from '../roles-guard';
 
 @Resolver('Facet')
 export class FacetResolver {
     constructor(private facetService: FacetService, private facetValueService: FacetValueService) {}
 
     @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     facets(obj, args): Promise<PaginatedList<Translated<Facet>>> {
         return this.facetService.findAll(args.languageCode, args.options);
     }
 
     @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     async facet(obj, args): Promise<Translated<Facet> | undefined> {
         return this.facetService.findOne(args.id, args.languageCode);
     }
 
     @Mutation()
+    @RolesGuard([Permission.CreateCatalog])
     @ApplyIdCodec()
     async createFacet(_, args: CreateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
@@ -48,6 +53,7 @@ export class FacetResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async updateFacet(_, args: UpdateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
@@ -55,6 +61,7 @@ export class FacetResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.CreateCatalog])
     @ApplyIdCodec()
     async createFacetValues(_, args: CreateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
@@ -67,6 +74,7 @@ export class FacetResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async updateFacetValues(_, args: UpdateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;

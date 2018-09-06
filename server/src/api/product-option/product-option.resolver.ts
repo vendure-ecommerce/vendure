@@ -4,9 +4,11 @@ import { CreateProductOptionGroupVariables } from 'shared/generated-types';
 import { Translated } from '../../common/types/locale-types';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
+import { Permission } from '../../entity/role/permission';
 import { ProductOptionGroupService } from '../../service/product-option-group.service';
 import { ProductOptionService } from '../../service/product-option.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
+import { RolesGuard } from '../roles-guard';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {
@@ -15,19 +17,22 @@ export class ProductOptionResolver {
         private productOptionService: ProductOptionService,
     ) {}
 
-    @Query('productOptionGroups')
+    @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     productOptionGroups(obj, args): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(args.languageCode, args.filterTerm);
     }
 
-    @Query('productOptionGroup')
+    @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     productOptionGroup(obj, args): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(args.id, args.languageCode);
     }
 
-    @ResolveProperty('options')
+    @ResolveProperty()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     async options(optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
@@ -38,6 +43,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.CreateCatalog])
     @ApplyIdCodec()
     async createProductOptionGroup(
         _,
@@ -56,6 +62,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async updateProductOptionGroup(_, args): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;

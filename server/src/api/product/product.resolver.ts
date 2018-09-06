@@ -47,6 +47,7 @@ export class ProductResolver {
     }
 
     @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
     async product(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -57,6 +58,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.CreateCatalog])
     @ApplyIdCodec()
     async createProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -67,6 +69,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async updateProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -77,6 +80,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec(['productId', 'optionGroupId'])
     async addOptionGroupToProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -87,6 +91,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec(['productId', 'optionGroupId'])
     async removeOptionGroupFromProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -97,6 +102,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.CreateCatalog])
     @ApplyIdCodec()
     async generateVariantsForProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -108,6 +114,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async updateProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -118,6 +125,7 @@ export class ProductResolver {
     }
 
     @Mutation()
+    @RolesGuard([Permission.UpdateCatalog])
     @ApplyIdCodec()
     async applyFacetValuesToProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,

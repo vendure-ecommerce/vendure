@@ -29,8 +29,8 @@ export class AuthResolver {
     /**
      * Returns information about the current authenticated user.
      */
-    @RolesGuard([Permission.Authenticated])
     @Query()
+    @RolesGuard([Permission.Authenticated])
     async me(@Context('req') request: any) {
         const user = await this.authService.validateUser(request.user.identifier);
         return user ? this.publiclyAccessibleUser(user) : null;
