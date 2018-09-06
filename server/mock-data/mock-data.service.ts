@@ -16,13 +16,13 @@ import {
     UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 
-import { CREATE_FACET } from '../../admin-ui/src/app/data/mutations/facet-mutations';
+import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/mutations/product-mutations';
+} from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { Channel } from '../src/entity/channel/channel.entity';

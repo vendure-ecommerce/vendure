@@ -29,14 +29,12 @@ import {
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_PRODUCT,
     GENERATE_PRODUCT_VARIANTS,
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/mutations/product-mutations';
-import {
-    GET_PRODUCT_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-} from '../../admin-ui/src/app/data/queries/product-queries';
+} from '../../admin-ui/src/app/data/definitions/product-definitions';
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';

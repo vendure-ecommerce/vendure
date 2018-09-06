@@ -14,14 +14,16 @@ import {
 } from 'shared/generated-types';
 
 import {
+    GET_NEWTORK_STATUS,
+    GET_UI_STATE,
+    GET_USER_STATUS,
     REQUEST_COMPLETED,
     REQUEST_STARTED,
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
-} from '../mutations/local-mutations';
-import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../queries/local-queries';
-import { QueryResult } from '../types/query-result';
+} from '../definitions/local-definitions';
+import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 

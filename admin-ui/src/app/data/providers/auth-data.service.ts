@@ -1,9 +1,8 @@
 import { Observable } from 'rxjs';
 import { AttemptLogin, AttemptLoginVariables, GetCurrentUser } from 'shared/generated-types';
 
-import { ATTEMPT_LOGIN } from '../mutations/auth-mutations';
-import { GET_CURRENT_USER } from '../queries/auth-queries';
-import { QueryResult } from '../types/query-result';
+import { ATTEMPT_LOGIN, GET_CURRENT_USER } from '../definitions/auth-definitions';
+import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 

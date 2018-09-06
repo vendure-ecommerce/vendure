@@ -1,10 +1,79 @@
 import gql from 'graphql-tag';
 
-import {
-    PRODUCT_OPTION_GROUP_FRAGMENT,
-    PRODUCT_VARIANT_FRAGMENT,
-    PRODUCT_WITH_VARIANTS_FRAGMENT,
-} from '../fragments/product-fragments';
+export const PRODUCT_VARIANT_FRAGMENT = gql`
+    fragment ProductVariant on ProductVariant {
+        id
+        languageCode
+        name
+        price
+        sku
+        image
+        options {
+            id
+            code
+            languageCode
+            name
+        }
+        facetValues {
+            id
+            code
+            name
+        }
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
+export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
+    fragment ProductWithVariants on Product {
+        id
+        languageCode
+        name
+        slug
+        image
+        description
+        translations {
+            languageCode
+            name
+            slug
+            description
+        }
+        optionGroups {
+            id
+            languageCode
+            code
+            name
+        }
+        variants {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        languageCode
+        code
+        name
+        translations {
+            name
+        }
+        options {
+            id
+            languageCode
+            name
+            code
+            translations {
+                name
+            }
+        }
+    }
+`;
 
 export const UPDATE_PRODUCT = gql`
     mutation UpdateProduct($input: UpdateProductInput!) {
@@ -97,4 +166,45 @@ export const APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS = gql`
         }
     }
     ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
+export const GET_PRODUCT_WITH_VARIANTS = gql`
+    query GetProductWithVariants($id: ID!, $languageCode: LanguageCode) {
+        product(languageCode: $languageCode, id: $id) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+export const GET_PRODUCT_LIST = gql`
+    query GetProductList($options: ProductListOptions, $languageCode: LanguageCode) {
+        products(languageCode: $languageCode, options: $options) {
+            items {
+                id
+                languageCode
+                name
+                slug
+                description
+            }
+            totalItems
+        }
+    }
+`;
+
+export const GET_PRODUCT_OPTION_GROUPS = gql`
+    query GetProductOptionGroups($filterTerm: String, $languageCode: LanguageCode) {
+        productOptionGroups(filterTerm: $filterTerm, languageCode: $languageCode) {
+            id
+            languageCode
+            code
+            name
+            options {
+                id
+                languageCode
+                code
+                name
+            }
+        }
+    }
 `;

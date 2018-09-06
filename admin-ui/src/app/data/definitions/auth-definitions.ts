@@ -1,6 +1,13 @@
 import gql from 'graphql-tag';
 
-import { CURRENT_USER_FRAGMENT } from '../fragments/auth-fragments';
+export const CURRENT_USER_FRAGMENT = gql`
+    fragment CurrentUser on CurrentUser {
+        id
+        identifier
+        channelTokens
+        roles
+    }
+`;
 
 export const ATTEMPT_LOGIN = gql`
     mutation AttemptLogin($username: String!, $password: String!) {
@@ -9,6 +16,15 @@ export const ATTEMPT_LOGIN = gql`
                 ...CurrentUser
             }
             authToken
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;
+
+export const GET_CURRENT_USER = gql`
+    query GetCurrentUser {
+        me {
+            ...CurrentUser
         }
     }
     ${CURRENT_USER_FRAGMENT}

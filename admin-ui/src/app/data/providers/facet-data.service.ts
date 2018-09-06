@@ -24,11 +24,12 @@ import { addCustomFields } from '../add-custom-fields';
 import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
+    GET_FACET_LIST,
+    GET_FACET_WITH_VALUES,
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
-} from '../mutations/facet-mutations';
-import { GET_FACET_LIST, GET_FACET_WITH_VALUES } from '../queries/facet-queries';
-import { QueryResult } from '../types/query-result';
+} from '../definitions/facet-definitions';
+import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 

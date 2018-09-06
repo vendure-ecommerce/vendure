@@ -10,7 +10,7 @@ import {
     SetUiLanguageVariables,
 } from 'shared/generated-types';
 
-import { GET_NEWTORK_STATUS } from '../queries/local-queries';
+import { GET_NEWTORK_STATUS } from '../definitions/local-definitions';
 
 export type ResolverContext = {
     cache: InMemoryCache;

@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 
-import { QueryResult } from '../types/query-result';
+import { QueryResult } from '../query-result';
 
 import { DataService } from './data.service';
 

@@ -6,8 +6,8 @@ import { API_PATH, API_PORT } from './shared/shared-constants';
 // tslint:disable:no-console
 const API_URL = `http://localhost:${API_PORT}/${API_PATH}`;
 const SCHEMA_JSON_FILE = './schema.json';
-const CLIENT_SCHEMA_FILES = './admin-ui/src/app/data/types/client-types.graphql';
-const CLIENT_QUERY_FILES = '"./admin-ui/src/app/data/{queries,mutations,fragments}/**/*.ts"';
+const CLIENT_SCHEMA_FILES = './admin-ui/src/app/data/client-state/client-types.graphql';
+const CLIENT_QUERY_FILES = '"./admin-ui/src/app/data/definitions/*.ts"';
 const TYPESCRIPT_DEFINITIONS_FILE = './shared/generated-types.ts';
 
 main().catch(e => {

@@ -19,7 +19,7 @@ import {
 import { DeepPartial } from 'shared/shared-types';
 
 import { DataService } from '../../../data/providers/data.service';
-import { QueryResult } from '../../../data/types/query-result';
+import { QueryResult } from '../../../data/query-result';
 
 @Component({
     selector: 'vdr-select-option-group',

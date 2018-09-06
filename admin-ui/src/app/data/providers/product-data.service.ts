@@ -37,16 +37,14 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
-    REMOVE_OPTION_GROUP_FROM_PRODUCT,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../mutations/product-mutations';
-import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
-} from '../queries/product-queries';
-import { QueryResult } from '../types/query-result';
+    REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../definitions/product-definitions';
+import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 

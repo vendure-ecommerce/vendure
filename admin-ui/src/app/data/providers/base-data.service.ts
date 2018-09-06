@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 
 import { API_URL } from '../../app.config';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
-import { QueryResult } from '../types/query-result';
+import { QueryResult } from '../query-result';
 
 /**
  * Make the MutationUpdaterFn type-safe until this issue is resolved: https://github.com/apollographql/apollo-link/issues/616
