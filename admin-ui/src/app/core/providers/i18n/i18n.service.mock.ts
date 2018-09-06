@@ -5,6 +5,10 @@ import { MockOf } from '../../../../testing/testing-types';
 import { I18nService } from './i18n.service';
 
 export class MockI18nService implements MockOf<I18nService> {
+    setDefaultLanguage(languageCode: LanguageCode) {
+        // blank
+    }
+
     setLanguage(language: LanguageCode) {
         // blank
     }

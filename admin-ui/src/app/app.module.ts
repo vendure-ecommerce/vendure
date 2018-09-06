@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { getDefaultLanguage } from './common/utilities/get-default-language';
 import { CoreModule } from './core/core.module';
 import { CustomHttpTranslationLoader } from './core/providers/i18n/custom-http-loader';
+import { I18nService } from './core/providers/i18n/i18n.service';
 import { DataService } from './data/providers/data.service';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -35,7 +36,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(private dataService: DataService) {
+    constructor(private dataService: DataService, private i18nService: I18nService) {
         this.dataService.client.setUiLanguage(getDefaultLanguage());
+        this.i18nService.setDefaultLanguage(getDefaultLanguage());
     }
 }

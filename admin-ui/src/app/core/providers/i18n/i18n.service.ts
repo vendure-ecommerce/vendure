@@ -6,8 +6,13 @@ import { getDefaultLanguage } from '../../../common/utilities/get-default-langua
 
 @Injectable()
 export class I18nService {
-    constructor(private ngxTranslate: TranslateService) {
-        ngxTranslate.setDefaultLang(getDefaultLanguage());
+    constructor(private ngxTranslate: TranslateService) {}
+
+    /**
+     * Set the default language
+     */
+    setDefaultLanguage(languageCode: LanguageCode) {
+        this.ngxTranslate.setDefaultLang(languageCode);
     }
 
     /**
