@@ -1,0 +1,37 @@
+@startuml
+!define BLACK   #363D5D
+!define LINE    #1a3164
+!define BACKGROUND #b9cefc
+!define BORDER  #e58e26
+
+' Base Setting
+skinparam Shadowing false
+skinparam backgroundColor #f4f3f1-#edf3ff
+skinparam ComponentStyle uml2
+skinparam Default {
+  FontName  'Impact'
+  FontColor BLACK
+  FontSize  14
+  FontStyle plain
+}
+
+skinparam Sequence {
+  ArrowThickness 2
+  ArrowColor LINE
+  ActorBorderThickness 1
+  LifeLineBorderColor GREEN
+  ParticipantBorderThickness 0
+  BorderColor BORDER
+  BackgroundColor BACKGROUND
+}
+skinparam Participant {
+  BackgroundColor BLACK
+  BorderColor BORDER
+  FontColor #FFFFFF
+}
+
+skinparam Actor {
+  BackgroundColor BLACK
+  BorderColor BLACK
+}
+@enduml

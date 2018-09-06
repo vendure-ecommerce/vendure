@@ -10,6 +10,10 @@ import { getConfig, VendureConfig } from '../config/vendure-config';
 
 @Injectable()
 export class ConfigService implements VendureConfig {
+    get disableAuth(): boolean {
+        return this.activeConfig.disableAuth;
+    }
+
     get defaultLanguageCode(): LanguageCode {
         return this.activeConfig.defaultLanguageCode;
     }
@@ -46,5 +50,11 @@ export class ConfigService implements VendureConfig {
 
     constructor() {
         this.activeConfig = getConfig();
+        if (this.activeConfig.disableAuth) {
+            // tslint:disable-next-line
+            console.warn(
+                'WARNING: auth has been disabled. This should never be the case for a production system!',
+            );
+        }
     }
 }

@@ -2,6 +2,8 @@ import { API_PATH } from 'shared/shared-constants';
 
 import { VendureConfig } from '../../src/config/vendure-config';
 
+export const TEST_CONNECTION_NAME = undefined;
+
 /**
  * Config settings used for e2e tests
  */

@@ -1,3 +1,4 @@
+import { getDefaultChannelToken } from '../mock-data/get-default-channel-token';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 
 import { testConfig } from './config/test-config';
@@ -7,6 +8,12 @@ import { testConfig } from './config/test-config';
  */
 export class TestClient extends SimpleGraphQLClient {
     constructor() {
-        super(`http://localhost:${testConfig.port}/${testConfig.apiPath}`);
+        super();
+    }
+
+    async init() {
+        const testingConfig = testConfig;
+        const token = await getDefaultChannelToken(testingConfig.dbConnectionOptions);
+        super.apiUrl = `http://localhost:${testConfig.port}/${testConfig.apiPath}?token=${token}`;
     }
 }

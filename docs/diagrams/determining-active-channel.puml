@@ -1,0 +1,25 @@
+' This diagram illustrates the logic used to determine the
+' active Channel when a request is received by the API
+@startuml
+!include theme.puml
+title Determining the active channelId for a request
+start
+:request received;
+if (token exists?) then (yes)
+    if (is token valid?) then (yes)
+        :get channelId by token lookup;
+    else (no)
+        #cc6666:return error;
+        stop
+    endif
+else (no)
+    if (is SuperAdmin?) then (yes)
+        :get active default channelId;
+    else (no)
+        #cc6666:return error;
+        stop
+    endif
+endif
+#66aa66:add channelId to request context;
+stop
+@enduml

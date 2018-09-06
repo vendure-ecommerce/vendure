@@ -1,10 +1,16 @@
 @startuml
+!include theme.puml
 title Vendure Class Diagram
 
+class Channel {
+    name: string
+    defaultLanguageCode: LanguageCode
+    defaultCurrencyCode: CurrencyCode
+}
 class User {
     identifier: string
     passwordHash: string
-    roles: Role[]
+    roles: UserRole[]
 }
 class Customer {
     user: User
@@ -14,10 +20,18 @@ class Customer {
 class Administrator {
     user: User
 }
-enum Role {
-    Authenticated
-    Customer
-    Administrator
+class Role {
+    name: string
+    permissions: Permission[]
+    user: User
+    channel: Channel
+}
+enum Permission {
+    CreateCatalog
+    ReadCatalog
+    UpdateCatalog
+    DeleteCatalog
+    CreateUser
     ...etc
 }
 class Address {
@@ -31,7 +45,11 @@ class ProductOption {
 }
 class ProductVariant {
     sku: string
-    price: number
+    price: ProductVariantPrice[]
+}
+class ProductVariantPrice {
+    value: number
+    currencyCode: CurrencyCode
 }
 class Order
 class OrderItem {
@@ -62,25 +80,32 @@ class FacetValue {
 class Category {
 }
 
-Customer o-- User
-Administrator o-- User
+Customer --  User
+Administrator -- User
 User o-- Role
-Customer o-- Address
-Product o-- ProductVariant
-ProductOptionGroup o-- ProductOption
-Product o-- ProductOptionGroup
-ProductVariant o-- ProductOption
-ProductVariant --- FacetValue
-Facet o-- FacetValue
-Category o-- FacetValue
-Customer o-- Order
+Role o-- "1..*" Permission
+Role -- Channel
+Customer *-- "0..*" Address
+Product *-- "1..*" ProductVariant
+ProductOptionGroup *-- "1..*" ProductOption
+Product o-- "0..*" ProductOptionGroup
+ProductVariant o-- "0..*" ProductOption
+ProductVariant o-- "0..*" FacetValue
+Facet *-- "1..*" FacetValue
+Category o-- "1..*" FacetValue
+Customer *-- "0..*" Order
 OrderItem - ProductVariant
-Order o-- OrderItem
-OrderItem o-- OrderItemUnit
+Order *-- OrderItem
+Order -- Channel
+OrderItem *-- OrderItemUnit
 OrderItemUnit o-- Adjustment
 OrderItem o-- Adjustment
 Order o-- Adjustment
 Adjustment - AdjustmentType
 AdjustmentSource - AdjustmentType
+AdjustmentSource o-- Channel
+Product o-- Channel
+ProductVariant *-- "1..*" ProductVariantPrice
+ProductVariantPrice o-- Channel
 
 @enduml

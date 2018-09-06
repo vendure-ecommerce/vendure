@@ -2,7 +2,6 @@ import * as faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 import {
     CreateFacet,
-    CreateFacetValueInput,
     CreateFacetValueWithFacetInput,
     CreateFacetVariables,
     CreateProduct,
@@ -26,6 +25,7 @@ import {
 } from '../../admin-ui/src/app/data/mutations/product-mutations';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
+import { Channel } from '../src/entity/channel/channel.entity';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
 
@@ -41,6 +41,24 @@ export class MockDataService {
     constructor(private client: GraphQlClient, private logging = true) {
         // make the generated results deterministic
         faker.seed(1);
+    }
+
+    async populateChannels(channelCodes: string[]): Promise<Channel[]> {
+        const channels: Channel[] = [];
+        for (const code of channelCodes) {
+            const channel = await this.client.query<any>(gql`
+                mutation {
+                    createChannel(code: "${code}") {
+                        id
+                        code
+                        token
+                    }
+                }
+            `);
+            channels.push(channel.createChannel);
+            this.log(`Created Channel: ${channel.createChannel.code}`);
+        }
+        return channels;
     }
 
     async populateOptions(): Promise<any> {
@@ -272,6 +290,11 @@ export class MockDataService {
         const query = GENERATE_PRODUCT_VARIANTS;
         return this.client.query<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
             productId,
+            defaultSku: faker.random.alphaNumeric(5),
+            defaultPrice: faker.random.number({
+                min: 100,
+                max: 1000,
+            }),
         });
     }
 

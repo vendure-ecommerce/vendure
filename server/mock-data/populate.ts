@@ -2,8 +2,10 @@ import { INestApplication } from '@nestjs/common';
 
 import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig, VendureConfig } from '../src/config/vendure-config';
+import { Channel } from '../src/entity/channel/channel.entity';
 
 import { clearAllTables } from './clear-all-tables';
+import { getDefaultChannelToken } from './get-default-channel-token';
 import { MockDataService } from './mock-data.service';
 import { SimpleGraphQLClient } from './simple-graphql-client';
 
@@ -11,6 +13,7 @@ export interface PopulateOptions {
     logging?: boolean;
     productCount: number;
     customerCount: number;
+    channels?: string[];
 }
 
 // tslint:disable:no-floating-promises
@@ -27,12 +30,19 @@ export async function populate(
     setConfig(config);
     await clearAllTables(config.dbConnectionOptions, logging);
     const app = await bootstrapFn(config);
-    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
-    const mockDataClientService = new MockDataService(client, logging);
-    await mockDataClientService.populateOptions();
-    await mockDataClientService.populateProducts(options.productCount);
-    await mockDataClientService.populateCustomers(options.customerCount);
-    await mockDataClientService.populateFacets();
-    await mockDataClientService.populateAdmins();
+    const defaultChannelToken = await getDefaultChannelToken(config.dbConnectionOptions, logging);
+    const client = new SimpleGraphQLClient(
+        `http://localhost:${config.port}/${config.apiPath}?token=${defaultChannelToken}`,
+    );
+    const mockDataService = new MockDataService(client, logging);
+    let channels: Channel[] = [];
+    if (options.channels) {
+        channels = await mockDataService.populateChannels(options.channels);
+    }
+    await mockDataService.populateOptions();
+    await mockDataService.populateProducts(options.productCount);
+    await mockDataService.populateCustomers(options.customerCount);
+    await mockDataService.populateFacets();
+    await mockDataService.populateAdmins();
     return app;
 }

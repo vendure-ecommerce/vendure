@@ -17,9 +17,9 @@ import {
     UpdateFacetValuesVariables,
     UpdateFacetVariables,
 } from 'shared/generated-types';
+import { pick } from 'shared/pick';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { pick } from '../../common/utilities/pick';
 import { addCustomFields } from '../add-custom-fields';
 import {
     CREATE_FACET,

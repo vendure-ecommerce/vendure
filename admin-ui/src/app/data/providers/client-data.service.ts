@@ -4,20 +4,20 @@ import {
     GetUiState,
     GetUserStatus,
     LanguageCode,
-    LogIn,
-    LogInVariables,
-    LogOut,
     RequestCompleted,
     RequestStarted,
+    SetAsLoggedIn,
+    SetAsLoggedInVariables,
+    SetAsLoggedOut,
     SetUiLanguage,
     SetUiLanguageVariables,
 } from 'shared/generated-types';
 
 import {
-    LOG_IN,
-    LOG_OUT,
     REQUEST_COMPLETED,
     REQUEST_STARTED,
+    SET_AS_LOGGED_IN,
+    SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
 } from '../mutations/local-mutations';
 import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../queries/local-queries';
@@ -40,15 +40,15 @@ export class ClientDataService {
         return this.baseDataService.query<GetNetworkStatus>(GET_NEWTORK_STATUS);
     }
 
-    loginSuccess(username: string): Observable<LogIn> {
-        return this.baseDataService.mutate<LogIn, LogInVariables>(LOG_IN, {
+    loginSuccess(username: string): Observable<SetAsLoggedIn> {
+        return this.baseDataService.mutate<SetAsLoggedIn, SetAsLoggedInVariables>(SET_AS_LOGGED_IN, {
             username,
             loginTime: Date.now().toString(),
         });
     }
 
-    logOut(): Observable<LogOut> {
-        return this.baseDataService.mutate(LOG_OUT);
+    logOut(): Observable<SetAsLoggedOut> {
+        return this.baseDataService.mutate(SET_AS_LOGGED_OUT);
     }
 
     userStatus(): QueryResult<GetUserStatus> {

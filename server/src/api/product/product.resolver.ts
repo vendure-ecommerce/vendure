@@ -1,9 +1,13 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    AddOptionGroupToProductVariables,
+    ApplyFacetValuesToProductVariantsVariables,
     CreateProductVariables,
     GenerateProductVariantsVariables,
     GetProductListVariables,
     GetProductWithVariantsVariables,
+    RemoveOptionGroupFromProductVariables,
+    UpdateProductVariables,
     UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
@@ -13,11 +17,15 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { Permission } from '../../entity/role/permission';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/facet-value.service';
 import { ProductVariantService } from '../../service/product-variant.service';
 import { ProductService } from '../../service/product.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
+import { RequestContext } from '../common/request-context';
+import { RequestContextPipe } from '../common/request-context.pipe';
+import { RolesGuard } from '../roles-guard';
 
 @Resolver('Product')
 export class ProductResolver {
@@ -27,62 +35,83 @@ export class ProductResolver {
         private facetValueService: FacetValueService,
     ) {}
 
-    @Query('products')
+    @Query()
+    @RolesGuard([Permission.ReadCatalog])
     @ApplyIdCodec()
-    async products(obj, args: GetProductListVariables): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService.findAll(args.languageCode, args.options || undefined);
+    async products(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: GetProductListVariables,
+    ): Promise<PaginatedList<Translated<Product>>> {
+        ctx.setLanguageCode(args.languageCode);
+        return this.productService.findAll(ctx, args.options || undefined);
     }
 
-    @Query('product')
+    @Query()
     @ApplyIdCodec()
-    async product(obj, args: GetProductWithVariantsVariables): Promise<Translated<Product> | undefined> {
-        return this.productService.findOne(args.id, args.languageCode || undefined);
+    async product(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: GetProductWithVariantsVariables,
+    ): Promise<Translated<Product> | undefined> {
+        ctx.setLanguageCode(args.languageCode);
+        return this.productService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @ApplyIdCodec()
-    async createProduct(_, args: CreateProductVariables): Promise<Translated<Product>> {
+    async createProduct(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: CreateProductVariables,
+    ): Promise<Translated<Product>> {
         const { input } = args;
-        return this.productService.create(input);
+        return this.productService.create(ctx, input);
     }
 
     @Mutation()
     @ApplyIdCodec()
-    async updateProduct(_, args): Promise<Translated<Product>> {
+    async updateProduct(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: UpdateProductVariables,
+    ): Promise<Translated<Product>> {
         const { input } = args;
-        return this.productService.update(input);
+        return this.productService.update(ctx, input);
     }
 
     @Mutation()
     @ApplyIdCodec(['productId', 'optionGroupId'])
-    async addOptionGroupToProduct(_, args): Promise<Translated<Product>> {
+    async addOptionGroupToProduct(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: AddOptionGroupToProductVariables,
+    ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
-        return this.productService.addOptionGroupToProduct(productId, optionGroupId);
+        return this.productService.addOptionGroupToProduct(ctx, productId, optionGroupId);
     }
 
     @Mutation()
     @ApplyIdCodec(['productId', 'optionGroupId'])
-    async removeOptionGroupFromProduct(_, args): Promise<Translated<Product>> {
+    async removeOptionGroupFromProduct(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: RemoveOptionGroupFromProductVariables,
+    ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
-        return this.productService.removeOptionGroupFromProduct(productId, optionGroupId);
+        return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
     }
 
     @Mutation()
     @ApplyIdCodec()
     async generateVariantsForProduct(
-        _,
-        args: GenerateProductVariantsVariables,
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: GenerateProductVariantsVariables,
     ): Promise<Translated<Product>> {
         const { productId, defaultPrice, defaultSku } = args;
-        await this.productVariantService.generateVariantsForProduct(productId, defaultPrice, defaultSku);
-        return assertFound(this.productService.findOne(productId, DEFAULT_LANGUAGE_CODE));
+        await this.productVariantService.generateVariantsForProduct(ctx, productId, defaultPrice, defaultSku);
+        return assertFound(this.productService.findOne(ctx, productId));
     }
 
     @Mutation()
     @ApplyIdCodec()
     async updateProductVariants(
-        _,
-        args: UpdateProductVariantsVariables,
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: UpdateProductVariantsVariables,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
         return Promise.all(input.map(variant => this.productVariantService.update(variant)));
@@ -90,7 +119,10 @@ export class ProductResolver {
 
     @Mutation()
     @ApplyIdCodec()
-    async applyFacetValuesToProductVariants(_, args): Promise<Array<Translated<ProductVariant>>> {
+    async applyFacetValuesToProductVariants(
+        @Context(RequestContextPipe) ctx: RequestContext,
+        @Args() args: ApplyFacetValuesToProductVariantsVariables,
+    ): Promise<Array<Translated<ProductVariant>>> {
         const { facetValueIds, productVariantIds } = args;
         const facetValues = await Promise.all(
             (facetValueIds as ID[]).map(async facetValueId => {

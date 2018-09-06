@@ -6,7 +6,7 @@ import {
     GetUserStatus,
     GetUserStatus_userStatus,
     LanguageCode,
-    LogInVariables,
+    SetAsLoggedInVariables,
     SetUiLanguageVariables,
 } from 'shared/generated-types';
 
@@ -32,7 +32,7 @@ export const clientResolvers: ResolverDefinition = {
         requestCompleted: (_, args, { cache }): number => {
             return updateRequestsInFlight(cache, -1);
         },
-        logIn: (_, args: LogInVariables, { cache }): GetUserStatus_userStatus => {
+        setAsLoggedIn: (_, args: SetAsLoggedInVariables, { cache }): GetUserStatus_userStatus => {
             const { username, loginTime } = args;
             const data: GetUserStatus = {
                 userStatus: {
@@ -45,7 +45,7 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeData({ data });
             return data.userStatus;
         },
-        logOut: (_, args, { cache }): GetUserStatus_userStatus => {
+        setAsLoggedOut: (_, args, { cache }): GetUserStatus_userStatus => {
             const data: GetUserStatus = {
                 userStatus: {
                     __typename: 'UserStatus',

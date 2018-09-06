@@ -7,8 +7,8 @@ extend type Query {
 extend type Mutation {
     requestStarted: Int!
     requestCompleted: Int!
-    logIn(username: String!, loginTime: String!): UserStatus
-    logOut: UserStatus
+    setAsLoggedIn(username: String!, loginTime: String!): UserStatus
+    setAsLoggedOut: UserStatus
     setUiLanguage(languageCode: LanguageCode): LanguageCode
 }
 

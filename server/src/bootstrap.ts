@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Type } from 'shared/shared-types';
+import { EntitySubscriberInterface } from 'typeorm';
 
 import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 import { VendureEntity } from './entity/base/base.entity';
@@ -35,9 +36,11 @@ export async function preBootstrapConfig(userConfig: Partial<VendureConfig>): Pr
     // specified in the EntityIdStrategy.
     // tslint:disable-next-line:whitespace
     const { coreEntitiesMap } = await import('./entity/entities');
+    const { coreSubscribersMap } = await import('./entity/subscribers');
     setConfig({
         dbConnectionOptions: {
             entities: Object.values(coreEntitiesMap) as Array<Type<VendureEntity>>,
+            subscribers: Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>,
         },
     });
 

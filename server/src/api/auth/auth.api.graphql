@@ -1,0 +1,19 @@
+type Query {
+    me: CurrentUser
+}
+
+type Mutation {
+    login(username: String!, password: String!): LoginResult!
+}
+
+type LoginResult {
+    authToken: String!
+    user: CurrentUser!
+}
+
+type CurrentUser {
+    id: ID!
+    identifier: String!
+    roles: [String!]!
+    channelTokens: [String!]!
+}

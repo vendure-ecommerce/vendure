@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
-import { LogIn } from 'shared/generated-types';
+import { AttemptLogin, SetAsLoggedIn } from 'shared/generated-types';
 
+import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { DataService } from '../../../data/providers/data.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
@@ -17,10 +18,14 @@ export class AuthService {
      * Attempts to log in via the REST login endpoint and updates the app
      * state on success.
      */
-    logIn(username: string, password: string): Observable<LogIn> {
-        return this.dataService.user.attemptLogin(username, password).pipe(
+    logIn(username: string, password: string): Observable<SetAsLoggedIn> {
+        return this.dataService.auth.attemptLogin(username, password).pipe(
             switchMap(response => {
-                this.localStorageService.set('authToken', response.token);
+                this.localStorageService.setForSession('authToken', response.login.authToken);
+                this.localStorageService.setForSession(
+                    'activeChannelToken',
+                    response.login.user.channelTokens[0],
+                );
                 return this.dataService.client.loginSuccess(username);
             }),
         );
@@ -59,9 +64,12 @@ export class AuthService {
             return of(false);
         }
 
-        return this.dataService.user.checkLoggedIn().pipe(
+        return this.dataService.auth.checkLoggedIn().single$.pipe(
             map(result => {
-                this.dataService.client.loginSuccess(result.identifier);
+                if (!result.me) {
+                    return false;
+                }
+                this.dataService.client.loginSuccess(result.me.identifier);
                 return true;
             }),
             catchError(err => of(false)),

@@ -5,11 +5,13 @@ import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
+import { setContext } from 'apollo-link-context';
 import { withClientState } from 'apollo-link-state';
 
 import { API_PATH } from '../../../../shared/shared-constants';
 import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
+import { LocalStorageService } from '../core/providers/local-storage/local-storage.service';
 
 import { clientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
@@ -32,11 +34,27 @@ const stateLink = withClientState({
     defaults: clientDefaults,
 });
 
-export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+export function createApollo(
+    httpLink: HttpLink,
+    localStorageService: LocalStorageService,
+): ApolloClientOptions<any> {
     return {
         link: ApolloLink.from([
             stateLink,
             new OmitTypenameLink(),
+            setContext(() => {
+                // Add JWT auth token & channel token to all requests.
+                const channelToken = localStorageService.get('activeChannelToken');
+                const authToken = localStorageService.get('authToken') || '';
+                if (!authToken) {
+                    return {};
+                } else {
+                    return {
+                        headers: { Authorization: `Bearer ${authToken}` },
+                        uri: `${API_URL}/${API_PATH}?token=${channelToken}`,
+                    };
+                }
+            }),
             httpLink.create({ uri: `${API_URL}/${API_PATH}` }),
         ]),
         cache: apolloCache,
@@ -57,7 +75,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
         {
             provide: APOLLO_OPTIONS,
             useFactory: createApollo,
-            deps: [HttpLink],
+            deps: [HttpLink, LocalStorageService],
         },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
         {

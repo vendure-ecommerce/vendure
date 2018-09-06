@@ -1,0 +1,6 @@
+type Role {
+    code: String!
+    description: String!
+    permissions: [String!]!
+    channels: [Channel!]!
+}

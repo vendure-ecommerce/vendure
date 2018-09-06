@@ -1,6 +1,14 @@
 import { VendureEntity } from '../../entity/base/base.entity';
+import { Channel } from '../../entity/channel/channel.entity';
 
 import { LocaleString } from './locale-types';
+
+/**
+ * Entities which can be assigned to Channels should implement this interface.
+ */
+export interface ChannelAware {
+    channels: Channel[];
+}
 
 /**
  * Creates a type based on T, but with all properties non-optional

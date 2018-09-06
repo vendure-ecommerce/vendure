@@ -1,4 +1,7 @@
-import { ConnectionOptions, createConnection } from 'typeorm';
+import { ConnectionOptions, createConnection, getSqljsManager } from 'typeorm';
+
+import { TEST_CONNECTION_NAME } from '../e2e/config/test-config';
+import { isTestEnvironment } from '../e2e/test-utils';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
@@ -7,12 +10,25 @@ import { ConnectionOptions, createConnection } from 'typeorm';
  */
 export async function clearAllTables(connectionOptions: ConnectionOptions, logging = true) {
     (connectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
-    const connection = await createConnection({ ...connectionOptions, name: 'clearAllTables' });
+    const name = isTestEnvironment() ? undefined : 'clearAllTables';
+    const connection = await createConnection({ ...connectionOptions, name });
     if (logging) {
         console.log('Clearing all tables...');
     }
-    await connection.synchronize(true);
-    await connection.close();
+    try {
+        await connection.synchronize(true);
+        if (connectionOptions.type === 'sqljs') {
+            console.log(
+                `tables in "${connection.options.name}": `,
+                await connection.query('SELECT * FROM sqlite_master'),
+            );
+        }
+    } catch (err) {
+        console.error('Error occurred when attempting to clear tables!');
+        console.error(err);
+    } finally {
+        await connection.close();
+    }
     if (logging) {
         console.log('Done!');
     }
