@@ -17,12 +17,6 @@ export async function clearAllTables(connectionOptions: ConnectionOptions, loggi
     }
     try {
         await connection.synchronize(true);
-        if (connectionOptions.type === 'sqljs') {
-            console.log(
-                `tables in "${connection.options.name}": `,
-                await connection.query('SELECT * FROM sqlite_master'),
-            );
-        }
     } catch (err) {
         console.error('Error occurred when attempting to clear tables!');
         console.error(err);
