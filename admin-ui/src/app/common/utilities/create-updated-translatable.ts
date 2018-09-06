@@ -1,6 +1,12 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import { CustomFieldConfig, CustomFieldsObject, MayHaveCustomFields } from 'shared/shared-types';
+import {
+    CustomFieldConfig,
+    CustomFieldsObject,
+    CustomFieldType,
+    MayHaveCustomFields,
+} from 'shared/shared-types';
+import { assertNever } from 'shared/shared-utils';
 
 /**
  * When updating an entity which has translations, the value from the form will pertain to the current
@@ -27,7 +33,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
             if (field.type === 'localeString') {
                 newTranslatedCustomFields[field.name] = value;
             } else {
-                newCustomFields[field.name] = value;
+                newCustomFields[field.name] = value === '' ? getDefaultValue(field.type) : value;
             }
         }
         newTranslation.customFields = newTranslatedCustomFields;
@@ -43,6 +49,23 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
         newTranslatable.translations.push(newTranslation);
     }
     return newTranslatable;
+}
+
+function getDefaultValue(type: CustomFieldType): any {
+    switch (type) {
+        case 'localeString':
+        case 'string':
+            return '';
+        case 'boolean':
+            return false;
+        case 'float':
+        case 'int':
+            return 0;
+        case 'datetime':
+            return new Date();
+        default:
+            assertNever(type);
+    }
 }
 
 /**

@@ -100,10 +100,10 @@ describe('createUpdatedTranslatable()', () => {
             return;
         }
 
-        expect((result as any).customFields).toEqual({
+        expect(result.customFields).toEqual({
             available: false,
         });
-        expect((result.translations[0] as any).customFields).toEqual({
+        expect(result.translations[0].customFields).toEqual({
             shortName: 'bar',
         });
     });
@@ -128,11 +128,39 @@ describe('createUpdatedTranslatable()', () => {
             return;
         }
 
-        expect((result as any).customFields).toEqual({
+        expect(result.customFields).toEqual({
             available: false,
         });
-        expect((result.translations[0] as any).customFields).toEqual({
+        expect(result.translations[0].customFields).toEqual({
             shortName: 'bar',
         });
+    });
+
+    it('coerces empty customFields to correct type', () => {
+        const customFieldConfig: CustomFieldConfig[] = [
+            { name: 'a', type: 'boolean' },
+            { name: 'b', type: 'int' },
+            { name: 'c', type: 'float' },
+            { name: 'd', type: 'datetime' },
+            { name: 'e', type: 'string' },
+        ];
+
+        const formValue = {
+            customFields: {
+                a: '',
+                b: '',
+                c: '',
+                d: '',
+                e: '',
+            },
+        };
+
+        const result = createUpdatedTranslatable(product, formValue, customFieldConfig, LanguageCode.en);
+
+        expect(result.customFields.a).toBe(false);
+        expect(result.customFields.b).toBe(0);
+        expect(result.customFields.c).toBe(0);
+        expect(result.customFields.d instanceof Date).toBe(true);
+        expect(result.customFields.e).toBe('');
     });
 });
