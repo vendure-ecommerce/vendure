@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
+import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import {
@@ -8,11 +8,13 @@ import {
     SUPER_ADMIN_ROLE_CODE,
     SUPER_ADMIN_ROLE_DESCRIPTION,
 } from '../common/constants';
+import { ListQueryOptions } from '../common/types/common-types';
 import { Permission } from '../entity/role/permission';
 import { Role } from '../entity/role/role.entity';
 import { I18nError } from '../i18n/i18n-error';
 
 import { ChannelService } from './channel.service';
+import { buildListQuery } from './helpers/build-list-query';
 import { ActiveConnection } from './helpers/connection.decorator';
 
 export interface CreateRoleDto {
@@ -28,6 +30,19 @@ export class RoleService {
     async initRoles() {
         await this.ensureSuperAdminRoleExists();
         await this.ensureCustomerRoleExists();
+    }
+
+    findAll(options: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
+        return buildListQuery(this.connection, Role, options)
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
+    }
+
+    findOne(roleId: ID): Promise<Role | undefined> {
+        return this.connection.manager.findOne(Role, roleId);
     }
 
     getSuperAdminRole(): Promise<Role> {

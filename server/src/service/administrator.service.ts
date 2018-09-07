@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { PaginatedList } from 'shared/shared-types';
+import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ListQueryOptions } from '../common/types/common-types';
@@ -23,15 +23,13 @@ export class AdministratorService {
     findAll(options: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
         return buildListQuery(this.connection, Administrator, options, ['user', 'user.roles'])
             .getManyAndCount()
-            .then(([items, totalItems]) => {
-                return {
-                    items,
-                    totalItems,
-                };
-            });
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
     }
 
-    findOne(administratorId: string): Promise<Administrator | undefined> {
+    findOne(administratorId: ID): Promise<Administrator | undefined> {
         return this.connection.manager.findOne(Administrator, administratorId);
     }
 

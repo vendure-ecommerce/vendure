@@ -16,6 +16,7 @@ import { GraphqlConfigService } from './graphql-config.service';
 import { JwtStrategy } from './jwt.strategy';
 import { ProductOptionResolver } from './product-option/product-option.resolver';
 import { ProductResolver } from './product/product.resolver';
+import { RoleResolver } from './role/role.resolver';
 
 const exportedProviders = [
     AdministratorResolver,
@@ -26,6 +27,7 @@ const exportedProviders = [
     CustomerResolver,
     ProductOptionResolver,
     ProductResolver,
+    RoleResolver,
 ];
 
 /**
