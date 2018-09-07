@@ -78,6 +78,7 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 import '@clr/icons';
 import '@clr/icons/shapes/commerce-shapes';
 import '@clr/icons/shapes/essential-shapes';
+import '@clr/icons/shapes/technology-shapes';
 import '@webcomponents/custom-elements/custom-elements.min.js';
 // TODO: remove this shim once the newer version of graphql-js is released (14.0.0)
 // and check that the codegen still works (may need to upgrade apollo package).

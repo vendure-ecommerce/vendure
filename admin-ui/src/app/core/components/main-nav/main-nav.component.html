@@ -35,5 +35,18 @@
                 </li>
             </ul>
         </section>
+        <section class="nav-group">
+            <input id="tabexample2" type="checkbox">
+            <label for="tabexample2">{{ 'nav.administrator' | translate }}</label>
+            <ul class="nav-list">
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/admin', 'administrators']"
+                       routerLinkActive="active">
+                        <clr-icon shape="administrator" size="20"></clr-icon>{{ 'nav.administrators' | translate }}
+                    </a>
+                </li>
+            </ul>
+        </section>
     </section>
 </nav>

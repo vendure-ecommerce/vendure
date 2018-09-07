@@ -2,6 +2,51 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetAdministrators
+// ====================================================
+
+export interface GetAdministrators_administrators_items_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: string[];
+}
+
+export interface GetAdministrators_administrators_items_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: GetAdministrators_administrators_items_user_roles[];
+}
+
+export interface GetAdministrators_administrators_items {
+  __typename: "Administrator";
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  emailAddress: string | null;
+  user: GetAdministrators_administrators_items_user | null;
+}
+
+export interface GetAdministrators_administrators {
+  __typename: "AdministratorList";
+  items: GetAdministrators_administrators_items[];
+  totalItems: number;
+}
+
+export interface GetAdministrators {
+  administrators: GetAdministrators_administrators;
+}
+
+export interface GetAdministratorsVariables {
+  options?: AdministratorListOptions | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: AttemptLogin
 // ====================================================
 
@@ -26,6 +71,25 @@ export interface AttemptLogin {
 export interface AttemptLoginVariables {
   username: string;
   password: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetCurrentUser
+// ====================================================
+
+export interface GetCurrentUser_me {
+  __typename: "CurrentUser";
+  id: string;
+  identifier: string;
+  channelTokens: string[];
+  roles: string[];
+}
+
+export interface GetCurrentUser {
+  me: GetCurrentUser_me | null;
 }
 
 /* tslint:disable */
@@ -202,6 +266,110 @@ export interface UpdateFacetValuesVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetFacetList
+// ====================================================
+
+export interface GetFacetList_facets_items_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetList_facets_items_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetList_facets_items_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: GetFacetList_facets_items_values_translations[];
+}
+
+export interface GetFacetList_facets_items {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: GetFacetList_facets_items_translations[];
+  values: GetFacetList_facets_items_values[];
+}
+
+export interface GetFacetList_facets {
+  __typename: "FacetList";
+  items: GetFacetList_facets_items[];
+  totalItems: number;
+}
+
+export interface GetFacetList {
+  facets: GetFacetList_facets;
+}
+
+export interface GetFacetListVariables {
+  options?: FacetListOptions | null;
+  languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetFacetWithValues
+// ====================================================
+
+export interface GetFacetWithValues_facet_translations {
+  __typename: "FacetTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetWithValues_facet_values_translations {
+  __typename: "FacetValueTranslation";
+  id: string;
+  languageCode: LanguageCode;
+  name: string;
+}
+
+export interface GetFacetWithValues_facet_values {
+  __typename: "FacetValue";
+  id: string;
+  languageCode: LanguageCode | null;
+  code: string;
+  name: string;
+  translations: GetFacetWithValues_facet_values_translations[];
+}
+
+export interface GetFacetWithValues_facet {
+  __typename: "Facet";
+  id: string;
+  languageCode: LanguageCode;
+  code: string;
+  name: string;
+  translations: GetFacetWithValues_facet_translations[];
+  values: GetFacetWithValues_facet_values[];
+}
+
+export interface GetFacetWithValues {
+  facet: GetFacetWithValues_facet | null;
+}
+
+export interface GetFacetWithValuesVariables {
+  id: string;
+  languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: RequestStarted
 // ====================================================
 
@@ -274,6 +442,56 @@ export interface SetUiLanguage {
 
 export interface SetUiLanguageVariables {
   languageCode: LanguageCode;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetNetworkStatus
+// ====================================================
+
+export interface GetNetworkStatus_networkStatus {
+  __typename: "NetworkStatus";
+  inFlightRequests: number;
+}
+
+export interface GetNetworkStatus {
+  networkStatus: GetNetworkStatus_networkStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUserStatus
+// ====================================================
+
+export interface GetUserStatus_userStatus {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
+export interface GetUserStatus {
+  userStatus: GetUserStatus_userStatus;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetUiState
+// ====================================================
+
+export interface GetUiState_uiState {
+  __typename: "UiState";
+  language: LanguageCode;
+}
+
+export interface GetUiState {
+  uiState: GetUiState_uiState;
 }
 
 /* tslint:disable */
@@ -758,179 +976,6 @@ export interface ApplyFacetValuesToProductVariantsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetCurrentUser
-// ====================================================
-
-export interface GetCurrentUser_me {
-  __typename: "CurrentUser";
-  id: string;
-  identifier: string;
-  channelTokens: string[];
-  roles: string[];
-}
-
-export interface GetCurrentUser {
-  me: GetCurrentUser_me | null;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetFacetList
-// ====================================================
-
-export interface GetFacetList_facets_items_translations {
-  __typename: "FacetTranslation";
-  id: string;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface GetFacetList_facets_items_values_translations {
-  __typename: "FacetValueTranslation";
-  id: string;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface GetFacetList_facets_items_values {
-  __typename: "FacetValue";
-  id: string;
-  languageCode: LanguageCode | null;
-  code: string;
-  name: string;
-  translations: GetFacetList_facets_items_values_translations[];
-}
-
-export interface GetFacetList_facets_items {
-  __typename: "Facet";
-  id: string;
-  languageCode: LanguageCode;
-  code: string;
-  name: string;
-  translations: GetFacetList_facets_items_translations[];
-  values: GetFacetList_facets_items_values[];
-}
-
-export interface GetFacetList_facets {
-  __typename: "FacetList";
-  items: GetFacetList_facets_items[];
-  totalItems: number;
-}
-
-export interface GetFacetList {
-  facets: GetFacetList_facets;
-}
-
-export interface GetFacetListVariables {
-  options?: FacetListOptions | null;
-  languageCode?: LanguageCode | null;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetFacetWithValues
-// ====================================================
-
-export interface GetFacetWithValues_facet_translations {
-  __typename: "FacetTranslation";
-  id: string;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface GetFacetWithValues_facet_values_translations {
-  __typename: "FacetValueTranslation";
-  id: string;
-  languageCode: LanguageCode;
-  name: string;
-}
-
-export interface GetFacetWithValues_facet_values {
-  __typename: "FacetValue";
-  id: string;
-  languageCode: LanguageCode | null;
-  code: string;
-  name: string;
-  translations: GetFacetWithValues_facet_values_translations[];
-}
-
-export interface GetFacetWithValues_facet {
-  __typename: "Facet";
-  id: string;
-  languageCode: LanguageCode;
-  code: string;
-  name: string;
-  translations: GetFacetWithValues_facet_translations[];
-  values: GetFacetWithValues_facet_values[];
-}
-
-export interface GetFacetWithValues {
-  facet: GetFacetWithValues_facet | null;
-}
-
-export interface GetFacetWithValuesVariables {
-  id: string;
-  languageCode?: LanguageCode | null;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetNetworkStatus
-// ====================================================
-
-export interface GetNetworkStatus_networkStatus {
-  __typename: "NetworkStatus";
-  inFlightRequests: number;
-}
-
-export interface GetNetworkStatus {
-  networkStatus: GetNetworkStatus_networkStatus;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUserStatus
-// ====================================================
-
-export interface GetUserStatus_userStatus {
-  __typename: "UserStatus";
-  username: string;
-  isLoggedIn: boolean;
-  loginTime: string;
-}
-
-export interface GetUserStatus {
-  userStatus: GetUserStatus_userStatus;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GetUiState
-// ====================================================
-
-export interface GetUiState_uiState {
-  __typename: "UiState";
-  language: LanguageCode;
-}
-
-export interface GetUiState {
-  uiState: GetUiState_uiState;
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GetProductWithVariants
 // ====================================================
 
@@ -1069,6 +1114,37 @@ export interface GetProductOptionGroups {
 export interface GetProductOptionGroupsVariables {
   filterTerm?: string | null;
   languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: Administrator
+// ====================================================
+
+export interface Administrator_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: string[];
+}
+
+export interface Administrator_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: Administrator_user_roles[];
+}
+
+export interface Administrator {
+  __typename: "Administrator";
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  emailAddress: string | null;
+  user: Administrator_user | null;
 }
 
 /* tslint:disable */
@@ -1498,6 +1574,30 @@ export enum LanguageCode {
 export enum SortOrder {
   ASC = "ASC",
   DESC = "DESC",
+}
+
+export interface AdministratorFilterParameter {
+  firstName?: StringOperators | null;
+  lastName?: StringOperators | null;
+  emailAddress?: StringOperators | null;
+  createdAt?: DateOperators | null;
+  updatedAt?: DateOperators | null;
+}
+
+export interface AdministratorListOptions {
+  take?: number | null;
+  skip?: number | null;
+  sort?: AdministratorSortParameter | null;
+  filter?: AdministratorFilterParameter | null;
+}
+
+export interface AdministratorSortParameter {
+  id?: SortOrder | null;
+  createdAt?: SortOrder | null;
+  updatedAt?: SortOrder | null;
+  firstName?: SortOrder | null;
+  lastName?: SortOrder | null;
+  emailAddress?: SortOrder | null;
 }
 
 export interface BooleanOperators {
