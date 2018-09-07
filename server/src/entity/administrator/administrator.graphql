@@ -2,10 +2,10 @@ type Administrator implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    firstName: String
-    lastName: String
-    emailAddress: String
-    user: User
+    firstName: String!
+    lastName: String!
+    emailAddress: String!
+    user: User!
 }
 
 input CreateAdministratorInput {

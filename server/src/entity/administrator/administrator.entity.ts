@@ -17,7 +17,7 @@ export class Administrator extends VendureEntity {
     @Column({ unique: true })
     emailAddress: string;
 
-    @OneToOne(type => User, { eager: true })
+    @OneToOne(type => User)
     @JoinColumn()
     user: User;
 }

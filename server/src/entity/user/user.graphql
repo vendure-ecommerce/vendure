@@ -2,8 +2,8 @@ type User implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    identifier: String
-    passwordHash: String
-    roles: [String]
+    identifier: String!
+    passwordHash: String!
+    roles: [Role!]!
     lastLogin: String
 }

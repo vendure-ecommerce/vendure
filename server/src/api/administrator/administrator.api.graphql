@@ -1,9 +1,39 @@
 type Query {
-  administrators: [Administrator!]!
-  administrator(id: ID!): Administrator!
+  administrators(options: AdministratorListOptions): AdministratorList!
+  administrator(id: ID!): Administrator
 }
 
 type Mutation {
   "Create a new Administrator"
   createAdministrator(input: CreateAdministratorInput!): Administrator!
 }
+
+type AdministratorList implements PaginatedList {
+    items: [Administrator!]!
+    totalItems: Int!
+}
+
+input AdministratorListOptions {
+    take: Int
+    skip: Int
+    sort: AdministratorSortParameter
+    filter: AdministratorFilterParameter
+}
+
+input AdministratorSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    firstName: SortOrder
+    lastName: SortOrder
+    emailAddress: SortOrder
+}
+
+input AdministratorFilterParameter {
+    firstName: StringOperators
+    lastName: StringOperators
+    emailAddress: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+

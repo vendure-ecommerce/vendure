@@ -1,4 +1,5 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { Permission } from '../../entity/role/permission';
@@ -13,14 +14,14 @@ export class AdministratorResolver {
     @Query()
     @RolesGuard([Permission.ReadAdministrator])
     @ApplyIdCodec()
-    administrators(): Promise<Administrator[]> {
-        return this.administratorService.findAll();
+    administrators(@Args() args: any): Promise<PaginatedList<Administrator>> {
+        return this.administratorService.findAll(args.options);
     }
 
     @Query()
     @RolesGuard([Permission.ReadAdministrator])
     @ApplyIdCodec()
-    administrator(obj, args): Promise<Administrator | undefined> {
+    administrator(@Args() args: any): Promise<Administrator | undefined> {
         return this.administratorService.findOne(args.id);
     }
 
