@@ -7,7 +7,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="administrators$ | async"
+<vdr-data-table [items]="items$ | async"
                 [itemsPerPage]="itemsPerPage$ | async"
                 [totalItems]="totalItems$ | async"
                 [currentPage]="currentPage$ | async"

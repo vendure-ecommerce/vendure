@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { GetAdministrators, GetAdministrators_administrators_items } from 'shared/generated-types';
 
+import { BaseListComponent } from '../../../common/base-list.component';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({
@@ -10,58 +10,15 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './administrator-list.component.html',
     styleUrls: ['./administrator-list.component.scss'],
 })
-export class AdministratorListComponent implements OnInit, OnDestroy {
-    administrators$: Observable<any[]>;
-    totalItems$: Observable<number>;
-    itemsPerPage$: Observable<number>;
-    currentPage$: Observable<number>;
-    private destroy$ = new Subject<void>();
-
-    constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {}
-
-    ngOnInit() {
-        const administratorsQuery = this.dataService.administrator.getAdministrators(10, 0);
-
-        const fetchPage = ([currentPage, itemsPerPage]: [number, number]) => {
-            const take = itemsPerPage;
-            const skip = (currentPage - 1) * itemsPerPage;
-            administratorsQuery.ref.refetch({ options: { skip, take } });
-        };
-
-        this.administrators$ = administratorsQuery.stream$.pipe(map(data => data.administrators.items));
-        this.totalItems$ = administratorsQuery.stream$.pipe(map(data => data.administrators.totalItems));
-        this.currentPage$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('page')),
-            map(page => (!page ? 1 : +page)),
+export class AdministratorListComponent extends BaseListComponent<
+    GetAdministrators,
+    GetAdministrators_administrators_items
+> {
+    constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
+        super(router, route);
+        super.setQueryFn(
+            (...args: any[]) => this.dataService.administrator.getAdministrators(...args),
+            data => data.administrators,
         );
-        this.itemsPerPage$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('perPage')),
-            map(perPage => (!perPage ? 10 : +perPage)),
-        );
-
-        combineLatest(this.currentPage$, this.itemsPerPage$)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(fetchPage);
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
-    setPageNumber(page: number) {
-        this.setQueryParam('page', page);
-    }
-
-    setItemsPerPage(perPage: number) {
-        this.setQueryParam('perPage', perPage);
-    }
-
-    private setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], {
-            queryParams: { [key]: value },
-            relativeTo: this.route,
-            queryParamsHandling: 'merge',
-        });
     }
 }
