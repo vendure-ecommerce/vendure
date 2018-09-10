@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CreateRoleInput, Permission, UpdateRoleInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -9,20 +10,13 @@ import {
     SUPER_ADMIN_ROLE_DESCRIPTION,
 } from '../common/constants';
 import { ListQueryOptions } from '../common/types/common-types';
-import { Permission } from '../entity/role/permission';
+import { assertFound } from '../common/utils';
 import { Role } from '../entity/role/role.entity';
 import { I18nError } from '../i18n/i18n-error';
 
 import { ChannelService } from './channel.service';
 import { buildListQuery } from './helpers/build-list-query';
 import { ActiveConnection } from './helpers/connection.decorator';
-
-// TODO: replace with generated Input interface
-export interface CreateRoleDto {
-    code: string;
-    description: string;
-    permissions: Permission[];
-}
 
 @Injectable()
 export class RoleService {
@@ -33,8 +27,8 @@ export class RoleService {
         await this.ensureCustomerRoleExists();
     }
 
-    findAll(options: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
-        return buildListQuery(this.connection, Role, options)
+    findAll(options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
+        return buildListQuery(this.connection, Role, options, ['channels'])
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -43,7 +37,9 @@ export class RoleService {
     }
 
     findOne(roleId: ID): Promise<Role | undefined> {
-        return this.connection.manager.findOne(Role, roleId);
+        return this.connection.manager.findOne(Role, roleId, {
+            relations: ['channels'],
+        });
     }
 
     getSuperAdminRole(): Promise<Role> {
@@ -64,10 +60,22 @@ export class RoleService {
         });
     }
 
-    async create(input: CreateRoleDto): Promise<Role> {
+    async create(input: CreateRoleInput): Promise<Role> {
         const role = new Role(input);
         role.channels = [this.channelService.getDefaultChannel()];
         return this.connection.manager.save(role);
+    }
+
+    async update(input: UpdateRoleInput): Promise<Role> {
+        const role = await this.findOne(input.id);
+        if (!role) {
+            throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Role', id: input.id });
+        }
+        role.code = input.code;
+        role.description = input.description;
+        role.permissions = input.permissions;
+        await this.connection.manager.save(role);
+        return assertFound(this.findOne(role.id));
     }
 
     private getRoleByCode(code: string): Promise<Role | undefined> {

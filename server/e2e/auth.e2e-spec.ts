@@ -10,6 +10,7 @@ import {
     CreateRole,
     CreateRoleVariables,
     GetProductList,
+    Permission,
     UpdateProductVariables,
 } from 'shared/generated-types';
 
@@ -25,7 +26,6 @@ import {
     UPDATE_PRODUCT,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../src/common/constants';
-import { Permission } from '../src/entity/role/permission';
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';

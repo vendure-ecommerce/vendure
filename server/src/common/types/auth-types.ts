@@ -1,4 +1,4 @@
-import { Permission } from '../../entity/role/permission';
+import { Permission } from 'shared/generated-types';
 
 export interface JwtPayload {
     identifier: string;

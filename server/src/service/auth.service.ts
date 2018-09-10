@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as jwt from 'jsonwebtoken';
+import { Permission } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
 import { JwtPayload } from '../common/types/auth-types';
 import { ConfigService } from '../config/config.service';
-import { Permission } from '../entity/role/permission';
 import { User } from '../entity/user/user.entity';
 
 import { PasswordService } from './password.service';

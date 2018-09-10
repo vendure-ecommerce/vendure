@@ -9,7 +9,7 @@ export interface GetAdministrators_administrators_items_user_roles {
   __typename: "Role";
   code: string;
   description: string;
-  permissions: string[];
+  permissions: Permission[];
 }
 
 export interface GetAdministrators_administrators_items_user {
@@ -23,10 +23,10 @@ export interface GetAdministrators_administrators_items_user {
 export interface GetAdministrators_administrators_items {
   __typename: "Administrator";
   id: string;
-  firstName: string | null;
-  lastName: string | null;
-  emailAddress: string | null;
-  user: GetAdministrators_administrators_items_user | null;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: GetAdministrators_administrators_items_user;
 }
 
 export interface GetAdministrators_administrators {
@@ -41,6 +41,227 @@ export interface GetAdministrators {
 
 export interface GetAdministratorsVariables {
   options?: AdministratorListOptions | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateAdministrator
+// ====================================================
+
+export interface CreateAdministrator_createAdministrator_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: Permission[];
+}
+
+export interface CreateAdministrator_createAdministrator_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: CreateAdministrator_createAdministrator_user_roles[];
+}
+
+export interface CreateAdministrator_createAdministrator {
+  __typename: "Administrator";
+  id: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: CreateAdministrator_createAdministrator_user;
+}
+
+export interface CreateAdministrator {
+  /**
+   * Create a new Administrator
+   */
+  createAdministrator: CreateAdministrator_createAdministrator;
+}
+
+export interface CreateAdministratorVariables {
+  input: CreateAdministratorInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetRoles
+// ====================================================
+
+export interface GetRoles_roles_items_channels {
+  __typename: "Channel";
+  id: string;
+  code: string;
+  token: string;
+}
+
+export interface GetRoles_roles_items {
+  __typename: "Role";
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
+  channels: GetRoles_roles_items_channels[];
+}
+
+export interface GetRoles_roles {
+  __typename: "RoleList";
+  items: GetRoles_roles_items[];
+  totalItems: number;
+}
+
+export interface GetRoles {
+  roles: GetRoles_roles;
+}
+
+export interface GetRolesVariables {
+  options?: RoleListOptions | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetRole
+// ====================================================
+
+export interface GetRole_role_channels {
+  __typename: "Channel";
+  id: string;
+  code: string;
+  token: string;
+}
+
+export interface GetRole_role {
+  __typename: "Role";
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
+  channels: GetRole_role_channels[];
+}
+
+export interface GetRole {
+  role: GetRole_role | null;
+}
+
+export interface GetRoleVariables {
+  id: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateRole
+// ====================================================
+
+export interface CreateRole_createRole_channels {
+  __typename: "Channel";
+  id: string;
+  code: string;
+  token: string;
+}
+
+export interface CreateRole_createRole {
+  __typename: "Role";
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
+  channels: CreateRole_createRole_channels[];
+}
+
+export interface CreateRole {
+  /**
+   * Create a new Role
+   */
+  createRole: CreateRole_createRole;
+}
+
+export interface CreateRoleVariables {
+  input: CreateRoleInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateRole
+// ====================================================
+
+export interface UpdateRole_updateRole_channels {
+  __typename: "Channel";
+  id: string;
+  code: string;
+  token: string;
+}
+
+export interface UpdateRole_updateRole {
+  __typename: "Role";
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
+  channels: UpdateRole_updateRole_channels[];
+}
+
+export interface UpdateRole {
+  /**
+   * Update an existing new Role
+   */
+  updateRole: UpdateRole_updateRole;
+}
+
+export interface UpdateRoleVariables {
+  input: UpdateRoleInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: AssignRoleToAdministrator
+// ====================================================
+
+export interface AssignRoleToAdministrator_assignRoleToAdministrator_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: Permission[];
+}
+
+export interface AssignRoleToAdministrator_assignRoleToAdministrator_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: AssignRoleToAdministrator_assignRoleToAdministrator_user_roles[];
+}
+
+export interface AssignRoleToAdministrator_assignRoleToAdministrator {
+  __typename: "Administrator";
+  id: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: AssignRoleToAdministrator_assignRoleToAdministrator_user;
+}
+
+export interface AssignRoleToAdministrator {
+  /**
+   * Assign a Role to an Administrator
+   */
+  assignRoleToAdministrator: AssignRoleToAdministrator_assignRoleToAdministrator;
+}
+
+export interface AssignRoleToAdministratorVariables {
+  administratorId: string;
+  roleId: string;
 }
 
 /* tslint:disable */
@@ -1127,7 +1348,7 @@ export interface Administrator_user_roles {
   __typename: "Role";
   code: string;
   description: string;
-  permissions: string[];
+  permissions: Permission[];
 }
 
 export interface Administrator_user {
@@ -1141,10 +1362,33 @@ export interface Administrator_user {
 export interface Administrator {
   __typename: "Administrator";
   id: string;
-  firstName: string | null;
-  lastName: string | null;
-  emailAddress: string | null;
-  user: Administrator_user | null;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: Administrator_user;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: Role
+// ====================================================
+
+export interface Role_channels {
+  __typename: "Channel";
+  id: string;
+  code: string;
+  token: string;
+}
+
+export interface Role {
+  __typename: "Role";
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
+  channels: Role_channels[];
 }
 
 /* tslint:disable */
@@ -1571,6 +1815,30 @@ export enum LanguageCode {
   zu = "zu",
 }
 
+/**
+ *  Permissions for administrators 
+ */
+export enum Permission {
+  Authenticated = "Authenticated",
+  CreateAdministrator = "CreateAdministrator",
+  CreateCatalog = "CreateCatalog",
+  CreateCustomer = "CreateCustomer",
+  CreateOrder = "CreateOrder",
+  DeleteAdministrator = "DeleteAdministrator",
+  DeleteCatalog = "DeleteCatalog",
+  DeleteCustomer = "DeleteCustomer",
+  DeleteOrder = "DeleteOrder",
+  ReadAdministrator = "ReadAdministrator",
+  ReadCatalog = "ReadCatalog",
+  ReadCustomer = "ReadCustomer",
+  ReadOrder = "ReadOrder",
+  SuperAdmin = "SuperAdmin",
+  UpdateAdministrator = "UpdateAdministrator",
+  UpdateCatalog = "UpdateCatalog",
+  UpdateCustomer = "UpdateCustomer",
+  UpdateOrder = "UpdateOrder",
+}
+
 export enum SortOrder {
   ASC = "ASC",
   DESC = "DESC",
@@ -1602,6 +1870,13 @@ export interface AdministratorSortParameter {
 
 export interface BooleanOperators {
   eq?: boolean | null;
+}
+
+export interface CreateAdministratorInput {
+  firstName?: string | null;
+  lastName?: string | null;
+  emailAddress: string;
+  password: string;
 }
 
 export interface CreateFacetCustomFieldsInput {
@@ -1655,6 +1930,12 @@ export interface CreateProductOptionInput {
   code: string;
   translations: ProductOptionGroupTranslationInput[];
   customFields?: any | null;
+}
+
+export interface CreateRoleInput {
+  code: string;
+  description: string;
+  permissions: Permission[];
 }
 
 export interface DateOperators {
@@ -1765,6 +2046,28 @@ export interface ProductVariantTranslationInput {
   customFields?: any | null;
 }
 
+export interface RoleFilterParameter {
+  code?: StringOperators | null;
+  description?: StringOperators | null;
+  createdAt?: DateOperators | null;
+  updatedAt?: DateOperators | null;
+}
+
+export interface RoleListOptions {
+  take?: number | null;
+  skip?: number | null;
+  sort?: RoleSortParameter | null;
+  filter?: RoleFilterParameter | null;
+}
+
+export interface RoleSortParameter {
+  id?: SortOrder | null;
+  createdAt?: SortOrder | null;
+  updatedAt?: SortOrder | null;
+  code?: SortOrder | null;
+  description?: SortOrder | null;
+}
+
 export interface StringOperators {
   eq?: string | null;
   contains?: string | null;
@@ -1813,6 +2116,13 @@ export interface UpdateProductVariantInput {
   image?: string | null;
   price: number;
   customFields?: any | null;
+}
+
+export interface UpdateRoleInput {
+  id: string;
+  code: string;
+  description: string;
+  permissions: Permission[];
 }
 
 //==============================================================

@@ -6,6 +6,8 @@ type Query {
 type Mutation {
   "Create a new Role"
   createRole(input: CreateRoleInput!): Role!
+  "Update an existing new Role"
+  updateRole(input: UpdateRoleInput!): Role!
 }
 
 type RoleList implements PaginatedList {

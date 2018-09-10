@@ -1,9 +1,9 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { Permission } from '../../entity/role/permission';
 import { CustomerService } from '../../service/customer.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 import { Allow } from '../roles-guard';

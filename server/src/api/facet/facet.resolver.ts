@@ -2,6 +2,7 @@ import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreateFacetValuesVariables,
     CreateFacetVariables,
+    Permission,
     UpdateFacetValuesVariables,
     UpdateFacetVariables,
 } from 'shared/generated-types';
@@ -11,7 +12,6 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { Permission } from '../../entity/role/permission';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/facet-value.service';
 import { FacetService } from '../../service/facet.service';

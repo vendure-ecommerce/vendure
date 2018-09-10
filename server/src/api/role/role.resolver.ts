@@ -1,7 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+    CreateRoleVariables,
+    GetRolesVariables,
+    GetRoleVariables,
+    Permission,
+    UpdateRoleVariables,
+} from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
-import { Permission } from '../../entity/role/permission';
 import { Role } from '../../entity/role/role.entity';
 import { RoleService } from '../../service/role.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
@@ -14,22 +20,30 @@ export class RoleResolver {
     @Query()
     @Allow(Permission.ReadAdministrator)
     @ApplyIdCodec()
-    roles(@Args() args: any): Promise<PaginatedList<Role>> {
-        return this.roleService.findAll(args.options);
+    roles(@Args() args: GetRolesVariables): Promise<PaginatedList<Role>> {
+        return this.roleService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
     @ApplyIdCodec()
-    role(@Args() args: any): Promise<Role | undefined> {
+    role(@Args() args: GetRoleVariables): Promise<Role | undefined> {
         return this.roleService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     @ApplyIdCodec()
-    createRole(_, args): Promise<Role> {
+    createRole(@Args() args: CreateRoleVariables): Promise<Role> {
         const { input } = args;
         return this.roleService.create(input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateAdministrator)
+    @ApplyIdCodec()
+    updateRole(@Args() args: UpdateRoleVariables): Promise<Role> {
+        const { input } = args;
+        return this.roleService.update(input);
     }
 }

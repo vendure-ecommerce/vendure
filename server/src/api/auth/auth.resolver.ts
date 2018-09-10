@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Permission } from 'shared/generated-types';
 
-import { Permission } from '../../entity/role/permission';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/auth.service';
 import { ChannelService } from '../../service/channel.service';

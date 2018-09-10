@@ -2,12 +2,20 @@ type Role implements Node {
     id: ID!
     code: String!
     description: String!
-    permissions: [String!]!
+    permissions: [Permission!]!
     channels: [Channel!]!
 }
 
 input CreateRoleInput {
     code: String!
     description: String!
-    permissions: [String!]!
+    permissions: [Permission!]!
+}
+
+
+input UpdateRoleInput {
+    id: ID!
+    code: String!
+    description: String!
+    permissions: [Permission!]!
 }

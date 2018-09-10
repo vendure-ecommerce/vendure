@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Permission } from 'shared/generated-types';
 
 import { Channel } from '../../entity/channel/channel.entity';
-import { Permission } from '../../entity/role/permission';
 import { ChannelService } from '../../service/channel.service';
 import { Allow } from '../roles-guard';
 

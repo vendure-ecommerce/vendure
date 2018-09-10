@@ -1,10 +1,10 @@
 import { ExecutionContext, Injectable, ReflectMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Permission } from 'shared/generated-types';
 
 import { idsAreEqual } from '../common/utils';
 import { ConfigService } from '../config/config.service';
-import { Permission } from '../entity/role/permission';
 import { User } from '../entity/user/user.entity';
 
 import { RequestContextService } from './common/request-context.service';

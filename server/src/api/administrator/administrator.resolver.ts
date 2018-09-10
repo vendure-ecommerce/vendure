@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Permission } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
-import { Permission } from '../../entity/role/permission';
 import { AdministratorService } from '../../service/administrator.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 import { Allow } from '../roles-guard';

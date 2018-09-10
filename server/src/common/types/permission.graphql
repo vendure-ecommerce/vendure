@@ -1,0 +1,27 @@
+" Permissions for administrators "
+enum Permission {
+    " The Authenticated role means simply that the user is logged in "
+    Authenticated
+    " SuperAdmin can perform the most sensitive tasks "
+    SuperAdmin
+
+    CreateCatalog
+    ReadCatalog
+    UpdateCatalog
+    DeleteCatalog
+
+    CreateCustomer
+    ReadCustomer
+    UpdateCustomer
+    DeleteCustomer
+
+    CreateAdministrator
+    ReadAdministrator
+    UpdateAdministrator
+    DeleteAdministrator
+
+    CreateOrder
+    ReadOrder
+    UpdateOrder
+    DeleteOrder
+}
