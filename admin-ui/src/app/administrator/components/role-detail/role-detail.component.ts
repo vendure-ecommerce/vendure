@@ -57,7 +57,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         }
     }
 
-    setPermission(key: Permission, value: boolean) {
+    setPermission(key: string, value: boolean) {
         this.permissions[key] = value;
         this.permissionsChanged = true;
     }
