@@ -1,8 +1,35 @@
 {
+  "admin": {
+    "ID": "ID",
+    "administrator": "Administrator",
+    "catalog": "Catalog",
+    "code": "Code",
+    "create": "Create",
+    "create-new-administrator": "Create new administrator",
+    "create-new-role": "Create new role",
+    "customer": "Read",
+    "delete": "Update",
+    "description": "Delete",
+    "email-address": "Email address",
+    "first-name": "First name",
+    "last-name": "Last name",
+    "notify-create-role-error": "An error occurred, could not create role",
+    "notify-create-role-success": "Created new role",
+    "notify-update-role-error": "An error occurred, could not create role",
+    "notify-update-role-success": "Updated role",
+    "order": "Order",
+    "permissions": "Permissions",
+    "read": "Read",
+    "role": "Role",
+    "section": "Section",
+    "update": "Update"
+  },
   "breadcrumb": {
+    "administrators": "Administrators",
     "dashboard": "Dashboard",
     "facets": "Facets",
-    "products": "Products"
+    "products": "Products",
+    "roles": "Roles"
   },
   "catalog": {
     "ID": "ID",
@@ -72,11 +99,14 @@
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
   },
   "nav": {
+    "administrator": "Admin",
+    "administrators": "Administrators",
     "catalog": "Catalog",
     "categories": "Categories",
     "facets": "Facets",
     "orders": "Orders",
     "products": "Products",
+    "roles": "Roles",
     "sales": "Sales"
   }
 }

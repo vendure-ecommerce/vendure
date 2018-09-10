@@ -24,7 +24,7 @@ export function detailBreadcrumb<T>(options: {
             }
             return [
                 {
-                    label: _('breadcrumb.products'),
+                    label: options.breadcrumbKey,
                     link: ['../', options.route],
                 },
                 {

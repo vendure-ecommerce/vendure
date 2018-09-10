@@ -32,6 +32,10 @@ export function spyObservable(name: string, returnValue: any = {}): jasmine.Spy 
 export class MockDataService implements DataServiceMock {
     administrator = {
         getAdministrators: spyQueryResult('getAdministrators'),
+        getRoles: spyQueryResult('getRoles'),
+        getRole: spyQueryResult('getRole'),
+        createRole: spyObservable('createRole'),
+        updateRole: spyObservable('updateRole'),
     };
     client = {
         startRequest: spyObservable('startRequest'),

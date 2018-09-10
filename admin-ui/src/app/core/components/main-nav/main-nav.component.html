@@ -46,6 +46,13 @@
                         <clr-icon shape="administrator" size="20"></clr-icon>{{ 'nav.administrators' | translate }}
                     </a>
                 </li>
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/admin', 'roles']"
+                       routerLinkActive="active">
+                        <clr-icon shape="users" size="20"></clr-icon>{{ 'nav.roles' | translate }}
+                    </a>
+                </li>
             </ul>
         </section>
     </section>

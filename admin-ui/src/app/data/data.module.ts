@@ -50,8 +50,10 @@ export function createApollo(
                     return {};
                 } else {
                     return {
-                        headers: { Authorization: `Bearer ${authToken}` },
-                        uri: `${API_URL}/${API_PATH}?token=${channelToken}`,
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                            'vendure-token': channelToken,
+                        },
                     };
                 }
             }),

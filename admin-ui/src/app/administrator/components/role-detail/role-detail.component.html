@@ -1,0 +1,66 @@
+<vdr-action-bar>
+    <vdr-ab-left></vdr-ab-left>
+    <vdr-ab-right>
+        <button class="btn btn-primary"
+                *ngIf="isNew$ | async; else updateButton"
+                (click)="create()"
+                [disabled]="roleForm.invalid || roleForm.pristine">{{ 'common.create' | translate }}</button>
+        <ng-template #updateButton>
+            <button class="btn btn-primary"
+                    (click)="save()"
+                    [disabled]="(roleForm.invalid || roleForm.pristine) && !permissionsChanged">{{ 'common.update' | translate }}</button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="roleForm" >
+    <section class="form-block">
+        <label>{{ 'admin.role' | translate }}</label>
+        <vdr-form-field [label]="'admin.description' | translate" for="description">
+            <input id="description" type="text" formControlName="description" (input)="updateCode($event.target.value)">
+        </vdr-form-field>
+        <vdr-form-field [label]="'admin.code' | translate" for="code" [readOnlyToggle]="true">
+            <input id="code" type="text" formControlName="code">
+        </vdr-form-field>
+    </section>
+
+    <table class="table">
+        <tr>
+            <th>{{ 'admin.section' | translate }}</th>
+            <th>{{ 'admin.create' | translate }}</th>
+            <th>{{ 'admin.read' | translate }}</th>
+            <th>{{ 'admin.update' | translate }}</th>
+            <th>{{ 'admin.delete' | translate }}</th>
+        </tr>
+        <tbody>
+        <tr>
+            <td>{{ 'admin.catalog' | translate }}</td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['CreateCatalog']" (selectedChange)="setPermission('CreateCatalog', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['ReadCatalog']" (selectedChange)="setPermission('ReadCatalog', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['UpdateCatalog']" (selectedChange)="setPermission('UpdateCatalog', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['DeleteCatalog']" (selectedChange)="setPermission('DeleteCatalog', $event)"></vdr-select-toggle></td>
+        </tr>
+        <tr>
+            <td>{{ 'admin.customer' | translate }}</td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['CreateCustomer']" (selectedChange)="setPermission('CreateCustomer', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['ReadCustomer']" (selectedChange)="setPermission('ReadCustomer', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['UpdateCustomer']" (selectedChange)="setPermission('UpdateCustomer', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['DeleteCustomer']" (selectedChange)="setPermission('DeleteCustomer', $event)"></vdr-select-toggle></td>
+        </tr>
+        <tr>
+            <td>{{ 'admin.order' | translate }}</td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['CreateOrder']" (selectedChange)="setPermission('CreateOrder', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['ReadOrder']" (selectedChange)="setPermission('ReadOrder', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['UpdateOrder']" (selectedChange)="setPermission('UpdateOrder', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['DeleteOrder']" (selectedChange)="setPermission('DeleteOrder', $event)"></vdr-select-toggle></td>
+        </tr>
+        <tr>
+            <td>{{ 'admin.administrator' | translate }}</td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['CreateAdministrator']" (selectedChange)="setPermission('CreateAdministrator', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['ReadAdministrator']" (selectedChange)="setPermission('ReadAdministrator', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['UpdateAdministrator']" (selectedChange)="setPermission('UpdateAdministrator', $event)"></vdr-select-toggle></td>
+            <td><vdr-select-toggle size="small" [selected]="permissions['DeleteAdministrator']" (selectedChange)="setPermission('DeleteAdministrator', $event)"></vdr-select-toggle></td>
+        </tr>
+        </tbody>
+    </table>
+</form>
