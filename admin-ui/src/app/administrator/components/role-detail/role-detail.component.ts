@@ -71,14 +71,17 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         };
         this.dataService.administrator.createRole(role).subscribe(
             data => {
-                this.notificationService.success(_('admin.notify-create-role-success'));
+                this.notificationService.success(_('common.notify-create-success'), { entity: 'Role' });
                 this.roleForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.permissionsChanged = false;
                 this.router.navigate(['../', data.createRole.id], { relativeTo: this.route });
             },
             err => {
-                this.notificationService.error(_('admin.notify-create-role-error'));
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'Role',
+                    error: err.message,
+                });
             },
         );
     }
@@ -100,13 +103,16 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             )
             .subscribe(
                 data => {
-                    this.notificationService.success(_('admin.notify-update-role-success'));
+                    this.notificationService.success(_('common.notify-update-success'), { entity: 'Role' });
                     this.roleForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.permissionsChanged = false;
                 },
                 err => {
-                    this.notificationService.error(_('admin.notify-update-role-error'));
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'Role',
+                        error: err.message,
+                    });
                 },
             );
     }

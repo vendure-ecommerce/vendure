@@ -13,8 +13,8 @@
                 [currentPage]="currentPage$ | async"
                 (pageChange)="setPageNumber($event)"
                 (itemsPerPageChange)="setItemsPerPage($event)">
-    <vdr-dt-column>{{ 'catalog.ID' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'catalog.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.values' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>

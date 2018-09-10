@@ -25,7 +25,7 @@
         <vdr-form-field [label]="'catalog.name' | translate" for="name">
             <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)">
         </vdr-form-field>
-        <vdr-form-field [label]="'catalog.code' | translate" for="code" [readOnlyToggle]="true">
+        <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
             <input id="code" type="text" formControlName="code">
         </vdr-form-field>
 
@@ -47,7 +47,7 @@
             <thead>
             <tr>
                 <th>{{ 'catalog.name' | translate }}</th>
-                <th>{{ 'catalog.code' | translate }}</th>
+                <th>{{ 'common.code' | translate }}</th>
                 <ng-container *ngFor="let customField of customValueFields">
                     <th>{{ customField.name }}</th>
                 </ng-container>

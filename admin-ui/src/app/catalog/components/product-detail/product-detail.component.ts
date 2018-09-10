@@ -133,12 +133,17 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             )
             .subscribe(
                 data => {
-                    this.notificationService.success(_('catalog.notify-create-product-success'));
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'Product',
+                    });
                     this.productForm.markAsPristine();
                     this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
                 },
                 err => {
-                    this.notificationService.error(_('catalog.notify-create-product-error'));
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'Product',
+                        error: err.message,
+                    });
                 },
             );
     }
@@ -177,11 +182,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .subscribe(
                 () => {
                     this.productForm.markAsPristine();
-                    this.notificationService.success(_('catalog.notify-update-product-success'));
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'Product',
+                    });
                 },
                 err => {
-                    this.notificationService.error(_('catalog.notify-update-product-error'), {
+                    this.notificationService.error(_('common.notify-update-error'), {
                         error: err.message,
+                        entity: 'Product',
                     });
                 },
             );

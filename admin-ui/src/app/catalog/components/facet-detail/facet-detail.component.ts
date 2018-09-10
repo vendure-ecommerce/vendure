@@ -118,13 +118,16 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
             )
             .subscribe(
                 data => {
-                    this.notificationService.success(_('catalog.notify-create-facet-success'));
+                    this.notificationService.success(_('common.notify-create-success'), { entity: 'Facet' });
                     this.facetForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
                 },
                 err => {
-                    this.notificationService.error(_('catalog.notify-create-facet-error'));
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'Facet',
+                        error: err.message,
+                    });
                 },
             );
     }
@@ -172,11 +175,12 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
                 () => {
                     this.facetForm.markAsPristine();
                     this.changeDetector.markForCheck();
-                    this.notificationService.success(_('catalog.notify-update-facet-success'));
+                    this.notificationService.success(_('common.notify-update-success'), { entity: 'Facet' });
                 },
                 err => {
-                    this.notificationService.error(_('catalog.notify-update-facet-error'), {
+                    this.notificationService.error(_('common.notify-update-error'), {
                         error: err.message,
+                        entity: 'Facet',
                     });
                 },
             );

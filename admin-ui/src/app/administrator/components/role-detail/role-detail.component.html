@@ -19,7 +19,7 @@
         <vdr-form-field [label]="'admin.description' | translate" for="description">
             <input id="description" type="text" formControlName="description" (input)="updateCode($event.target.value)">
         </vdr-form-field>
-        <vdr-form-field [label]="'admin.code' | translate" for="code" [readOnlyToggle]="true">
+        <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
             <input id="code" type="text" formControlName="code">
         </vdr-form-field>
     </section>

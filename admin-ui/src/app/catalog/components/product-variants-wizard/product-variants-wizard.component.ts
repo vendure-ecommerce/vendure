@@ -67,7 +67,7 @@ export class ProductVariantsWizardComponent implements OnChanges {
     createOptionGroup() {
         this.createOptionGroupForm.createOptionGroup().subscribe(data => {
             this.toggleSelectedGroup(data.createProductOptionGroup);
-            this.notificationService.success(_('catalog.notify-create-new-option-group'));
+            this.notificationService.success(_('common.notify-create-success'), { entity: 'OptionGroup' });
             this.createOptionGroupForm.resetForm();
         });
     }
