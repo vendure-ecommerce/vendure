@@ -2,17 +2,17 @@ type Customer implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    firstName: String
-    lastName: String
+    firstName: String!
+    lastName: String!
     phoneNumber: String
-    emailAddress: String
-    addresses: [Address]
+    emailAddress: String!
+    addresses: [Address!]
     user: User
 }
 
 input CreateCustomerInput {
-    firstName: String
-    lastName: String
+    firstName: String!
+    lastName: String!
     phoneNumber: String
     emailAddress: String!
 }

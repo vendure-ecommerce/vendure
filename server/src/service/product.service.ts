@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../api/common/request-context';
 import { ListQueryOptions } from '../common/types/common-types';
 import { Translated } from '../common/types/locale-types';
-import { assertFound } from '../common/utils';
+import { assertFound, idsAreEqual } from '../common/utils';
 import { ProductOptionGroup } from '../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../entity/product/product-translation.entity';
 import { Product } from '../entity/product/product.entity';
@@ -127,7 +127,7 @@ export class ProductService {
 
     private applyChannelPriceToVariants<T extends Product>(product: T, ctx: RequestContext): T {
         product.variants.forEach(v => {
-            const channelPrice = v.productVariantPrices.find(p => p.channelId === ctx.channelId);
+            const channelPrice = v.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
             if (!channelPrice) {
                 throw new I18nError(`error.no-price-found-for-channel`);
             }

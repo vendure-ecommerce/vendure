@@ -26,11 +26,10 @@ export class TestServer {
      * The populated data is saved into an .sqlite file for each test file. On subsequent runs, this file
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
-    async init(options: PopulateOptions & { disableAuth?: boolean }): Promise<void> {
+    async init(options: PopulateOptions): Promise<void> {
         setTestEnvironment();
         const testingConfig = testConfig;
         const dbFilePath = this.getDbFilePath();
-        testingConfig.disableAuth = options.disableAuth;
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {
             console.log(`Test data not found. Populating database and saving to "${dbFilePath}"`);

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { ConfigService } from '../../config/config.service';
 import { I18nError } from '../../i18n/i18n-error';
 import { ChannelService } from '../../service/channel.service';
 
@@ -10,14 +11,20 @@ import { RequestContext } from './request-context';
  */
 @Injectable()
 export class RequestContextService {
-    constructor(private channelService: ChannelService) {}
+    constructor(private channelService: ChannelService, private configService: ConfigService) {}
 
     /**
      * Creates a new RequestContext based on an Express request object.
      */
     fromRequest(req: any): RequestContext {
-        if (req && req.query) {
-            const token = req.query.token;
+        const tokenKey = this.configService.channelTokenKey;
+        let token = '';
+        if (req && req.query && req.query[tokenKey]) {
+            token = req.query[tokenKey];
+        } else if (req && req.headers && req.headers[tokenKey]) {
+            token = req.headers[tokenKey];
+        }
+        if (token) {
             const channel = this.channelService.getChannelFromToken(token);
             return new RequestContext(channel);
         }

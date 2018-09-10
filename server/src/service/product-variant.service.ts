@@ -8,7 +8,7 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { Translated } from '../common/types/locale-types';
-import { assertFound } from '../common/utils';
+import { assertFound, idsAreEqual } from '../common/utils';
 import { FacetValue } from '../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../entity/product-option/product-option.entity';
 import { CreateProductVariantDto } from '../entity/product-variant/create-product-variant.dto';
@@ -112,9 +112,7 @@ export class ProductVariantService {
             relations: ['options', 'facetValues'],
         });
 
-        const notFoundIds = productVariantIds.filter(
-            id => !variants.find(v => v.id.toString() === id.toString()),
-        );
+        const notFoundIds = productVariantIds.filter(id => !variants.find(v => idsAreEqual(v.id, id)));
         if (notFoundIds.length) {
             throw new I18nError('error.entity-with-id-not-found', {
                 entityName: 'ProductVariant',

@@ -29,7 +29,7 @@ import { Channel } from '../src/entity/channel/channel.entity';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
 
-import { GraphQlClient } from './simple-graphql-client';
+import { SimpleGraphQLClient } from './simple-graphql-client';
 
 // tslint:disable:no-console
 /**
@@ -38,7 +38,7 @@ import { GraphQlClient } from './simple-graphql-client';
 export class MockDataService {
     apiUrl: string;
 
-    constructor(private client: GraphQlClient, private logging = true) {
+    constructor(private client: SimpleGraphQLClient, private logging = true) {
         // make the generated results deterministic
         faker.seed(1);
     }
@@ -92,30 +92,6 @@ export class MockDataService {
                 data => this.log('Created option group:', data.createProductOptionGroup.name),
                 err => this.log(err),
             );
-    }
-
-    async populateAdmins(): Promise<any> {
-        const query = gql`
-            mutation($input: CreateAdministratorInput!) {
-                createAdministrator(input: $input) {
-                    id
-                    emailAddress
-                }
-            }
-        `;
-
-        const variables = {
-            input: {
-                firstName: 'Super',
-                lastName: 'Admin',
-                emailAddress: 'admin@test.com',
-                password: 'test',
-            } as CreateAdministratorDto,
-        };
-
-        await this.client
-            .query(query, variables)
-            .then(data => this.log('Created Administrator:', data), err => this.log(err));
     }
 
     async populateCustomers(count: number = 5): Promise<any> {

@@ -1,3 +1,5 @@
+import { ID } from 'shared/shared-types';
+
 /**
  * Takes a predicate function and returns a negated version.
  */
@@ -21,4 +23,15 @@ export function foundIn<T>(set: T[], compareBy: keyof T) {
  */
 export function assertFound<T>(promise: Promise<T | undefined>): Promise<T> {
     return promise as Promise<T>;
+}
+
+/**
+ * Compare ID values for equality, taking into account the fact that they may not be of matching types
+ * (string or number).
+ */
+export function idsAreEqual(id1?: ID, id2?: ID): boolean {
+    if (id1 === undefined || id2 === undefined) {
+        return false;
+    }
+    return id1.toString() === id2.toString();
 }

@@ -4,7 +4,7 @@ import { Permission } from '../../entity/role/permission';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/auth.service';
 import { ChannelService } from '../../service/channel.service';
-import { RolesGuard } from '../roles-guard';
+import { Allow } from '../roles-guard';
 
 @Resolver('Auth')
 export class AuthResolver {
@@ -30,7 +30,7 @@ export class AuthResolver {
      * Returns information about the current authenticated user.
      */
     @Query()
-    @RolesGuard([Permission.Authenticated])
+    @Allow(Permission.Authenticated)
     async me(@Context('req') request: any) {
         const user = await this.authService.validateUser(request.user.identifier);
         return user ? this.publiclyAccessibleUser(user) : null;

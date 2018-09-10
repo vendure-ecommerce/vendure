@@ -18,6 +18,12 @@ export interface VendureConfig {
      */
     disableAuth?: boolean;
     /**
+     * The name of the property which contains the token of the
+     * active channel. This property can be included either in
+     * the request header or as a query string.
+     */
+    channelTokenKey?: string;
+    /**
      * The default languageCode of the app.
      */
     defaultLanguageCode?: LanguageCode;
@@ -60,6 +66,7 @@ export interface VendureConfig {
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     disableAuth: false,
+    channelTokenKey: 'vendure-token',
     defaultLanguageCode: LanguageCode.en,
     port: API_PORT,
     cors: false,

@@ -11,8 +11,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./e2e/config/jest-e2e.json",
-    "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch",
+    "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
+    "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch --runInBand",
     "build": "rimraf dist && tsc -p tsconfig.build.json && gulp"
   },
   "main": "dist/index.js",

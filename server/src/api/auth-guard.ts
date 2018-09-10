@@ -1,13 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import * as passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Observable } from 'rxjs';
 
 import { JwtPayload } from '../common/types/auth-types';
 import { ConfigService } from '../config/config.service';
-import { User } from '../entity/user/user.entity';
 import { AuthService } from '../service/auth.service';
+
+import { PERMISSIONS_METADATA_KEY } from './roles-guard';
 
 /**
  * A guard which uses passport.js & the passport-jwt strategy to authenticate incoming GraphQL requests.
@@ -19,7 +19,11 @@ import { AuthService } from '../service/auth.service';
 export class AuthGuard implements CanActivate {
     strategy: any;
 
-    constructor(private configService: ConfigService, private authService: AuthService) {
+    constructor(
+        private reflector: Reflector,
+        private configService: ConfigService,
+        private authService: AuthService,
+    ) {
         this.strategy = new Strategy(
             {
                 secretOrKey: configService.jwtSecret,
@@ -34,7 +38,8 @@ export class AuthGuard implements CanActivate {
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        if (this.configService.disableAuth) {
+        const permissions = this.reflector.get<string[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
+        if (this.configService.disableAuth || !permissions) {
             return true;
         }
         const ctx = GqlExecutionContext.create(context).getContext();

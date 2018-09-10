@@ -8,11 +8,7 @@ import { Channel } from '../src/entity/channel/channel.entity';
 /**
  * Queries the database for the default Channel and returns its token.
  */
-export async function getDefaultChannelToken(
-    connectionOptions: ConnectionOptions,
-    logging = true,
-): Promise<string> {
-    (connectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
+export async function getDefaultChannelToken(logging = true): Promise<string> {
     const connection = await getConnection();
     let defaultChannel: Channel | undefined;
     try {

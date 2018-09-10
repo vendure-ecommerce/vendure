@@ -30,10 +30,10 @@ export async function populate(
     setConfig(config);
     await clearAllTables(config.dbConnectionOptions, logging);
     const app = await bootstrapFn(config);
-    const defaultChannelToken = await getDefaultChannelToken(config.dbConnectionOptions, logging);
-    const client = new SimpleGraphQLClient(
-        `http://localhost:${config.port}/${config.apiPath}?token=${defaultChannelToken}`,
-    );
+    const defaultChannelToken = await getDefaultChannelToken(logging);
+    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    client.setChannelToken(defaultChannelToken);
+    await client.asSuperAdmin();
     const mockDataService = new MockDataService(client, logging);
     let channels: Channel[] = [];
     if (options.channels) {
@@ -43,6 +43,5 @@ export async function populate(
     await mockDataService.populateProducts(options.productCount);
     await mockDataService.populateCustomers(options.customerCount);
     await mockDataService.populateFacets();
-    await mockDataService.populateAdmins();
     return app;
 }

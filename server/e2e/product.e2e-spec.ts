@@ -38,14 +38,13 @@ import {
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
-
+// tslint:disable:quotemark
 describe('Product resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
 
     beforeAll(async () => {
         const token = await server.init({
-            disableAuth: true,
             productCount: 20,
             customerCount: 1,
         });

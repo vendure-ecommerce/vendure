@@ -45,10 +45,15 @@ const exportedProviders = [
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {
-    constructor(private channelService: ChannelService, private roleService: RoleService) {}
+    constructor(
+        private channelService: ChannelService,
+        private roleService: RoleService,
+        private administratorService: AdministratorService,
+    ) {}
 
     async onModuleInit() {
         await this.channelService.initChannels();
         await this.roleService.initRoles();
+        await this.administratorService.initAdministrators();
     }
 }

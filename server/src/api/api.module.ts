@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 
 import { ConfigModule } from '../config/config.module';
@@ -6,6 +7,7 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdministratorResolver } from './administrator/administrator.resolver';
+import { AuthGuard } from './auth-guard';
 import { AuthResolver } from './auth/auth.resolver';
 import { ChannelResolver } from './channel/channel.resolver';
 import { RequestContextService } from './common/request-context.service';
@@ -17,6 +19,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { ProductOptionResolver } from './product-option/product-option.resolver';
 import { ProductResolver } from './product/product.resolver';
 import { RoleResolver } from './role/role.resolver';
+import { RolesGuard } from './roles-guard';
 
 const exportedProviders = [
     AdministratorResolver,
@@ -43,7 +46,19 @@ const exportedProviders = [
             imports: [ConfigModule, I18nModule],
         }),
     ],
-    providers: [...exportedProviders, JwtStrategy, RequestContextService],
+    providers: [
+        ...exportedProviders,
+        JwtStrategy,
+        RequestContextService,
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: RolesGuard,
+        },
+    ],
     exports: exportedProviders,
 })
 export class ApiModule {}

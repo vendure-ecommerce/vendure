@@ -17,6 +17,7 @@ import { ChannelService } from './channel.service';
 import { buildListQuery } from './helpers/build-list-query';
 import { ActiveConnection } from './helpers/connection.decorator';
 
+// TODO: replace with generated Input interface
 export interface CreateRoleDto {
     code: string;
     description: string;

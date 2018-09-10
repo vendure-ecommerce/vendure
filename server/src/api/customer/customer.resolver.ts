@@ -6,35 +6,35 @@ import { Customer } from '../../entity/customer/customer.entity';
 import { Permission } from '../../entity/role/permission';
 import { CustomerService } from '../../service/customer.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
-import { RolesGuard } from '../roles-guard';
+import { Allow } from '../roles-guard';
 
 @Resolver('Customer')
 export class CustomerResolver {
     constructor(private customerService: CustomerService) {}
 
     @Query()
-    @RolesGuard([Permission.ReadCustomer])
+    @Allow(Permission.ReadCustomer)
     @ApplyIdCodec()
     async customers(obj, args): Promise<PaginatedList<Customer>> {
         return this.customerService.findAll(args.options);
     }
 
     @Query()
-    @RolesGuard([Permission.ReadCustomer])
+    @Allow(Permission.ReadCustomer)
     @ApplyIdCodec()
     async customer(obj, args): Promise<Customer | undefined> {
         return this.customerService.findOne(args.id);
     }
 
     @ResolveProperty()
-    @RolesGuard([Permission.ReadCustomer])
+    @Allow(Permission.ReadCustomer)
     @ApplyIdCodec()
     async addresses(customer: Customer): Promise<Address[]> {
         return this.customerService.findAddressesByCustomerId(customer.id);
     }
 
     @Mutation()
-    @RolesGuard([Permission.CreateCustomer])
+    @Allow(Permission.CreateCustomer)
     @ApplyIdCodec()
     async createCustomer(_, args): Promise<Customer> {
         const { input, password } = args;
@@ -42,7 +42,7 @@ export class CustomerResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.CreateCustomer])
+    @Allow(Permission.CreateCustomer)
     @ApplyIdCodec()
     async createCustomerAddress(_, args): Promise<Address> {
         const { customerId, input } = args;

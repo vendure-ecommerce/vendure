@@ -17,7 +17,8 @@ export class Customer extends VendureEntity implements HasCustomFields {
 
     @Column() lastName: string;
 
-    @Column() phoneNumber: string;
+    @Column({ nullable: true })
+    phoneNumber: string;
 
     @Column({ unique: true })
     emailAddress: string;

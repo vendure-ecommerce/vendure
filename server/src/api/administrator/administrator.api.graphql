@@ -1,11 +1,13 @@
 type Query {
-  administrators(options: AdministratorListOptions): AdministratorList!
-  administrator(id: ID!): Administrator
+    administrators(options: AdministratorListOptions): AdministratorList!
+    administrator(id: ID!): Administrator
 }
 
 type Mutation {
-  "Create a new Administrator"
-  createAdministrator(input: CreateAdministratorInput!): Administrator!
+    "Create a new Administrator"
+    createAdministrator(input: CreateAdministratorInput!): Administrator!
+    "Assign a Role to an Administrator"
+    assignRoleToAdministrator(administratorId: ID!, roleId: ID!): Administrator!
 }
 
 type AdministratorList implements PaginatedList {

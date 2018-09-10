@@ -25,7 +25,7 @@ import { ProductService } from '../../service/product.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 import { RequestContext } from '../common/request-context';
 import { RequestContextPipe } from '../common/request-context.pipe';
-import { RolesGuard } from '../roles-guard';
+import { Allow } from '../roles-guard';
 
 @Resolver('Product')
 export class ProductResolver {
@@ -36,7 +36,7 @@ export class ProductResolver {
     ) {}
 
     @Query()
-    @RolesGuard([Permission.ReadCatalog])
+    @Allow(Permission.ReadCatalog)
     @ApplyIdCodec()
     async products(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -47,7 +47,7 @@ export class ProductResolver {
     }
 
     @Query()
-    @RolesGuard([Permission.ReadCatalog])
+    @Allow(Permission.ReadCatalog)
     @ApplyIdCodec()
     async product(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -58,7 +58,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.CreateCatalog])
+    @Allow(Permission.CreateCatalog)
     @ApplyIdCodec()
     async createProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -69,7 +69,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec()
     async updateProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -80,7 +80,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec(['productId', 'optionGroupId'])
     async addOptionGroupToProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -91,7 +91,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec(['productId', 'optionGroupId'])
     async removeOptionGroupFromProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -102,7 +102,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.CreateCatalog])
+    @Allow(Permission.CreateCatalog)
     @ApplyIdCodec()
     async generateVariantsForProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -114,7 +114,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec()
     async updateProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,
@@ -125,7 +125,7 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec()
     async applyFacetValuesToProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,

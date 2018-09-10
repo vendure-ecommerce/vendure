@@ -14,6 +14,10 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.disableAuth;
     }
 
+    get channelTokenKey(): string {
+        return this.activeConfig.channelTokenKey;
+    }
+
     get defaultLanguageCode(): LanguageCode {
         return this.activeConfig.defaultLanguageCode;
     }

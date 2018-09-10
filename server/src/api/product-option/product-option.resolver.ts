@@ -8,7 +8,7 @@ import { Permission } from '../../entity/role/permission';
 import { ProductOptionGroupService } from '../../service/product-option-group.service';
 import { ProductOptionService } from '../../service/product-option.service';
 import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
-import { RolesGuard } from '../roles-guard';
+import { Allow } from '../roles-guard';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {
@@ -18,21 +18,21 @@ export class ProductOptionResolver {
     ) {}
 
     @Query()
-    @RolesGuard([Permission.ReadCatalog])
+    @Allow(Permission.ReadCatalog)
     @ApplyIdCodec()
     productOptionGroups(obj, args): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(args.languageCode, args.filterTerm);
     }
 
     @Query()
-    @RolesGuard([Permission.ReadCatalog])
+    @Allow(Permission.ReadCatalog)
     @ApplyIdCodec()
     productOptionGroup(obj, args): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(args.id, args.languageCode);
     }
 
     @ResolveProperty()
-    @RolesGuard([Permission.ReadCatalog])
+    @Allow(Permission.ReadCatalog)
     @ApplyIdCodec()
     async options(optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
@@ -43,7 +43,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.CreateCatalog])
+    @Allow(Permission.CreateCatalog)
     @ApplyIdCodec()
     async createProductOptionGroup(
         _,
@@ -62,7 +62,7 @@ export class ProductOptionResolver {
     }
 
     @Mutation()
-    @RolesGuard([Permission.UpdateCatalog])
+    @Allow(Permission.UpdateCatalog)
     @ApplyIdCodec()
     async updateProductOptionGroup(_, args): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;

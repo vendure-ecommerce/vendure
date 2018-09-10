@@ -35,7 +35,7 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 
 * `cd admin-ui && yarn`
 * `yarn start`
-* Go to http://localhost:4200 and log in with "admin@test.com", "test"
+* Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
 ### Code Generation
 
@@ -64,7 +64,7 @@ The tests are run with the following scripts in the `server` directory:
 * `yarn test:e2e` - Run e2e tests once
 * `yarn test:e2e:watch` - Run e2e tests in watch mode
 
-The e2e tests are located in [`/server/e2e`](./server/e2e/). Each test suite (file) has the suffix `.e2e-spec.ts`. The first time the e2e tests are run,
+The e2e tests are located in [`/server/e2e`](./server/e2e). Each test suite (file) has the suffix `.e2e-spec.ts`. The first time the e2e tests are run,
 sqlite files will be generated in the `__data__` directory. These files are used to speed up subsequent runs of the e2e tests. They can be freely deleted
 and will be re-created the next time the e2e tests are run.
 
