@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
 import {
     CreateFacetValueInput,
     FacetWithValues,
@@ -13,13 +13,12 @@ import {
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
-import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
-import { getServerConfig } from '../../../data/server-config';
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -27,30 +26,29 @@ import { getServerConfig } from '../../../data/server-config';
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FacetDetailComponent implements OnInit, OnDestroy {
+export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> implements OnInit, OnDestroy {
     facet$: Observable<FacetWithValues>;
     values$: Observable<FacetWithValues_values[]>;
-    availableLanguages$: Observable<LanguageCode[]>;
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
-    languageCode$: Observable<LanguageCode>;
-    isNew$: Observable<boolean>;
     facetForm: FormGroup;
-    private destroy$ = new Subject<void>();
 
     constructor(
+        router: Router,
+        route: ActivatedRoute,
         private changeDetector: ChangeDetectorRef,
         private dataService: DataService,
-        private router: Router,
-        private route: ActivatedRoute,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
-    ) {}
+    ) {
+        super(route, router);
+    }
 
     ngOnInit() {
-        this.customFields = getServerConfig().customFields.Facet || [];
-        this.customValueFields = getServerConfig().customFields.FacetValue || [];
-        this.facet$ = this.route.data.pipe(switchMap(data => data.facet));
+        this.init();
+        this.customFields = this.getCustomFieldConfig('Facet');
+        this.customValueFields = this.getCustomFieldConfig('FacetValue');
+        this.facet$ = this.entity$;
         this.values$ = this.facet$.pipe(map(facet => facet.values));
         this.facetForm = this.formBuilder.group({
             facet: this.formBuilder.group({
@@ -62,23 +60,10 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
             }),
             values: this.formBuilder.array([]),
         });
-
-        this.isNew$ = this.facet$.pipe(map(facet => facet.id === ''));
-        this.languageCode$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('lang')),
-            map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
-        );
-
-        this.availableLanguages$ = this.facet$.pipe(map(p => p.translations.map(t => t.languageCode)));
-
-        combineLatest(this.facet$, this.languageCode$)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(([facet, languageCode]) => this.setFormValues(facet, languageCode));
     }
 
     ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.destroy();
     }
 
     updateCode(nameValue: string) {
@@ -200,7 +185,7 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
     /**
      * Sets the values of the form on changes to the facet or current language.
      */
-    private setFormValues(facet: FacetWithValues, languageCode: LanguageCode) {
+    protected setFormValues(facet: FacetWithValues, languageCode: LanguageCode) {
         const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
             this.facetForm.patchValue({
@@ -319,13 +304,5 @@ export class FacetDetailComponent implements OnInit, OnDestroy {
                 );
             })
             .filter(notNullOrUndefined);
-    }
-
-    private setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], {
-            queryParams: { [key]: value },
-            relativeTo: this.route,
-            queryParamsHandling: 'merge',
-        });
     }
 }

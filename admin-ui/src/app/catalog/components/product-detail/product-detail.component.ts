@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, EMPTY, forkJoin, Observable, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
 import {
     LanguageCode,
     ProductWithVariants,
@@ -13,13 +13,12 @@ import {
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
-import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { normalizeString } from '../../../common/utilities/normalize-string';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
-import { getServerConfig } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
@@ -29,30 +28,30 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
     styleUrls: ['./product-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailComponent implements OnInit, OnDestroy {
+export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants>
+    implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants>;
     variants$: Observable<ProductWithVariants_variants[]>;
-    availableLanguages$: Observable<LanguageCode[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
-    languageCode$: Observable<LanguageCode>;
-    isNew$: Observable<boolean>;
     productForm: FormGroup;
-    private destroy$ = new Subject<void>();
 
     constructor(
+        route: ActivatedRoute,
+        router: Router,
         private dataService: DataService,
-        private router: Router,
-        private route: ActivatedRoute,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
-    ) {}
+    ) {
+        super(route, router);
+    }
 
     ngOnInit() {
-        this.customFields = getServerConfig().customFields.Product || [];
-        this.customVariantFields = getServerConfig().customFields.ProductVariant || [];
-        this.product$ = this.route.data.pipe(switchMap(data => data.product));
+        this.init();
+        this.customFields = this.getCustomFieldConfig('Product');
+        this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
+        this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
         this.productForm = this.formBuilder.group({
             product: this.formBuilder.group({
@@ -65,22 +64,10 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
             }),
             variants: this.formBuilder.array([]),
         });
-        this.isNew$ = this.product$.pipe(map(product => product.id === ''));
-        this.languageCode$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('lang')),
-            map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
-        );
-
-        this.availableLanguages$ = this.product$.pipe(map(p => p.translations.map(t => t.languageCode)));
-
-        combineLatest(this.product$, this.languageCode$)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(([product, languageCode]) => this.setFormValues(product, languageCode));
     }
 
     ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.destroy();
     }
 
     setLanguage(code: LanguageCode) {
@@ -203,7 +190,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     /**
      * Sets the values of the form on changes to the product or current language.
      */
-    private setFormValues(product: ProductWithVariants, languageCode: LanguageCode) {
+    protected setFormValues(product: ProductWithVariants, languageCode: LanguageCode) {
         const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
             this.productForm.patchValue({
@@ -295,13 +282,5 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
                 );
             })
             .filter(notNullOrUndefined);
-    }
-
-    private setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], {
-            queryParams: { [key]: value },
-            relativeTo: this.route,
-            queryParamsHandling: 'merge',
-        });
     }
 }

@@ -1,8 +1,9 @@
 import { Route } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { ProductWithVariants } from 'shared/generated-types';
 
+import { createResolveData } from '../common/base-entity-resolver';
+import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
-import { DataService } from '../data/providers/data.service';
 
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
@@ -22,9 +23,7 @@ export const catalogRoutes: Route[] = [
     {
         path: 'products/:id',
         component: ProductDetailComponent,
-        resolve: {
-            product: ProductResolver,
-        },
+        resolve: createResolveData(ProductResolver),
         data: {
             breadcrumb: productBreadcrumb,
         },
@@ -39,57 +38,29 @@ export const catalogRoutes: Route[] = [
     {
         path: 'facets/:id',
         component: FacetDetailComponent,
-        resolve: {
-            facet: FacetResolver,
-        },
+        resolve: createResolveData(FacetResolver),
         data: {
             breadcrumb: facetBreadcrumb,
         },
     },
 ];
 
-export function productBreadcrumb(data: any, params: any, dataService: DataService) {
-    return dataService.product.getProduct(params.id).stream$.pipe(
-        map(productData => {
-            let productLabel = '';
-            if (params.id === 'create') {
-                productLabel = 'common.create';
-            } else {
-                productLabel = `#${params.id} (${productData.product && productData.product.name})`;
-            }
-            return [
-                {
-                    label: _('breadcrumb.products'),
-                    link: ['../', 'products'],
-                },
-                {
-                    label: productLabel,
-                    link: [params.id],
-                },
-            ];
-        }),
-    );
+export function productBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<ProductWithVariants>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.products',
+        getName: product => product.name,
+        route: 'products',
+    });
 }
 
-export function facetBreadcrumb(data: any, params: any, dataService: DataService) {
-    return dataService.facet.getFacet(params.id).stream$.pipe(
-        map(facetData => {
-            let facetLabel = '';
-            if (params.id === 'create') {
-                facetLabel = 'common.create';
-            } else {
-                facetLabel = `#${params.id} (${facetData.facet && facetData.facet.name})`;
-            }
-            return [
-                {
-                    label: _('breadcrumb.facets'),
-                    link: ['../', 'facets'],
-                },
-                {
-                    label: facetLabel,
-                    link: [params.id],
-                },
-            ];
-        }),
-    );
+export function facetBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<ProductWithVariants>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.facets',
+        getName: facet => facet.name,
+        route: 'facets',
+    });
 }
