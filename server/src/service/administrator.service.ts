@@ -26,7 +26,7 @@ export class AdministratorService {
         await this.ensureSuperAdminExists();
     }
 
-    findAll(options: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
+    findAll(options?: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
         return buildListQuery(this.connection, Administrator, options, ['user', 'user.roles'])
             .getManyAndCount()
             .then(([items, totalItems]) => ({

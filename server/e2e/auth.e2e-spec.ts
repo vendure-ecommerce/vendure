@@ -179,18 +179,11 @@ describe('Authorization & permissions', () => {
                     firstName: code,
                     lastName: 'Admin',
                     password,
+                    roleIds: [role.id],
                 },
             },
         );
         const admin = adminResult.createAdministrator;
-
-        await client.query<AssignRoleToAdministrator, AssignRoleToAdministratorVariables>(
-            ASSIGN_ROLE_TO_ADMINISTRATOR,
-            {
-                administratorId: admin.id,
-                roleId: role.id,
-            },
-        );
 
         return {
             identifier,

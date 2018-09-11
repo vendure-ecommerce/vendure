@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Administrator resolver createAdministrator 1`] = `
+Object {
+  "emailAddress": "test@test.com",
+  "firstName": "First",
+  "id": "2",
+  "lastName": "Last",
+  "user": Object {
+    "id": "3",
+    "identifier": "test@test.com",
+    "lastLogin": null,
+    "roles": Array [
+      Object {
+        "code": "__super_admin_role__",
+        "description": "SuperAdmin",
+        "permissions": Array [
+          "Authenticated",
+          "CreateAdministrator",
+          "CreateCatalog",
+          "CreateCustomer",
+          "CreateOrder",
+          "DeleteAdministrator",
+          "DeleteCatalog",
+          "DeleteCustomer",
+          "DeleteOrder",
+          "ReadAdministrator",
+          "ReadCatalog",
+          "ReadCustomer",
+          "ReadOrder",
+          "SuperAdmin",
+          "UpdateAdministrator",
+          "UpdateCatalog",
+          "UpdateCustomer",
+          "UpdateOrder",
+        ],
+      },
+    ],
+  },
+}
+`;
+
+exports[`Administrator resolver updateAdministrator 1`] = `
+Object {
+  "emailAddress": "new-email",
+  "firstName": "new first",
+  "id": "2",
+  "lastName": "new last",
+  "user": Object {
+    "id": "3",
+    "identifier": "test@test.com",
+    "lastLogin": null,
+    "roles": Array [
+      Object {
+        "code": "__customer_role__",
+        "description": "Customer",
+        "permissions": Array [
+          "Authenticated",
+        ],
+      },
+    ],
+  },
+}
+`;

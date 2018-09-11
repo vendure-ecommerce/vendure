@@ -22,7 +22,7 @@ import {
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
-describe('Product resolver', () => {
+describe('Role resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
     let createdRole: Role;
@@ -40,7 +40,7 @@ describe('Product resolver', () => {
         await server.destroy();
     });
 
-    it('roles list returns default roles', async () => {
+    it('roles', async () => {
         const result = await client.query<GetRoles, GetRolesVariables>(GET_ROLES);
 
         defaultRoles = result.roles.items;
@@ -48,7 +48,7 @@ describe('Product resolver', () => {
         expect(result.roles.totalItems).toBe(2);
     });
 
-    it('createRole creates a new role', async () => {
+    it('createRole', async () => {
         const result = await client.query<CreateRole, CreateRoleVariables>(CREATE_ROLE, {
             input: {
                 code: 'test',
@@ -61,12 +61,12 @@ describe('Product resolver', () => {
         expect(createdRole).toMatchSnapshot();
     });
 
-    it('role returns a role', async () => {
+    it('role', async () => {
         const result = await client.query<GetRole, GetRoleVariables>(GET_ROLE, { id: createdRole.id });
         expect(result.role).toEqual(createdRole);
     });
 
-    it('updateRole updates existing role', async () => {
+    it('updateRole', async () => {
         const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,

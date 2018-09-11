@@ -22,7 +22,7 @@ export class AdministratorResolver {
     @Allow(Permission.ReadAdministrator)
     @ApplyIdCodec()
     administrators(@Args() args: GetAdministratorsVariables): Promise<PaginatedList<Administrator>> {
-        return this.administratorService.findAll(args.options);
+        return this.administratorService.findAll(args.options || undefined);
     }
 
     @Query()

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Product resolver createRole creates a new role 1`] = `
+exports[`Role resolver createRole 1`] = `
 Object {
   "channels": Array [
     Object {
@@ -19,7 +19,7 @@ Object {
 }
 `;
 
-exports[`Product resolver updateRole updates existing role 1`] = `
+exports[`Role resolver updateRole 1`] = `
 Object {
   "channels": Array [
     Object {
