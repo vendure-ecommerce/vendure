@@ -23,10 +23,13 @@
         <td class="left">{{ role.code }}</td>
         <td class="left">{{ role.description }}</td>
         <td class="left">
-            <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
+            <ng-container *ngIf="!isDefaultRole(role)">
+                <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
+            </ng-container>
         </td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
+            <vdr-table-row-action [disabled]="isDefaultRole(role)"
+                                  iconShape="edit"
                                   [label]="'common.edit' | translate"
                                   [linkTo]="['./', role.id]">
             </vdr-table-row-action>

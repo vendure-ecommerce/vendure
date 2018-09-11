@@ -12,4 +12,5 @@ export class TableRowActionComponent {
     @Input() linkTo: any[];
     @Input() label: string;
     @Input() iconShape: string;
+    @Input() disabled = false;
 }
