@@ -1,25 +1,35 @@
 import { Observable } from 'rxjs';
 import {
+    CreateAdministrator,
+    CreateAdministratorInput,
+    CreateAdministratorVariables,
     CreateRole,
     CreateRoleInput,
     CreateRoleVariables,
+    GetAdministrator,
     GetAdministrators,
     GetAdministratorsVariables,
+    GetAdministratorVariables,
     GetRole,
     GetRoles,
     GetRolesVariables,
     GetRoleVariables,
+    UpdateAdministrator,
+    UpdateAdministratorInput,
+    UpdateAdministratorVariables,
     UpdateRole,
     UpdateRoleInput,
     UpdateRoleVariables,
 } from 'shared/generated-types';
 
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
+    CREATE_ADMINISTRATOR,
     CREATE_ROLE,
+    GET_ADMINISTRATOR,
     GET_ADMINISTRATORS,
     GET_ROLE,
     GET_ROLES,
+    UPDATE_ADMINISTRATOR,
     UPDATE_ROLE,
 } from '../definitions/administrator-definitions';
 import { QueryResult } from '../query-result';
@@ -39,6 +49,26 @@ export class AdministratorDataService {
                 skip,
             },
         });
+    }
+
+    getAdministrator(id: string): QueryResult<GetAdministrator, GetAdministratorVariables> {
+        return this.baseDataService.query<GetAdministrator, GetAdministratorVariables>(GET_ADMINISTRATOR, {
+            id,
+        });
+    }
+
+    createAdministrator(input: CreateAdministratorInput): Observable<CreateAdministrator> {
+        return this.baseDataService.mutate<CreateAdministrator, CreateAdministratorVariables>(
+            CREATE_ADMINISTRATOR,
+            { input },
+        );
+    }
+
+    updateAdministrator(input: UpdateAdministratorInput): Observable<UpdateAdministrator> {
+        return this.baseDataService.mutate<UpdateAdministrator, UpdateAdministratorVariables>(
+            UPDATE_ADMINISTRATOR,
+            { input },
+        );
     }
 
     getRoles(take: number = 10, skip: number = 0): QueryResult<GetRoles, GetRolesVariables> {

@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { CreateRoleInput, LanguageCode, Role, UpdateRoleInput } from 'shared/generated-types';
-import { Permission } from 'shared/generated-types';
+import { CreateRoleInput, LanguageCode, Permission, Role, UpdateRoleInput } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { normalizeString } from '../../../common/utilities/normalize-string';
@@ -16,6 +15,7 @@ import { DataService } from '../../../data/providers/data.service';
     selector: 'vdr-role-detail',
     templateUrl: './role-detail.component.html',
     styleUrls: ['./role-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
@@ -57,8 +57,8 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         }
     }
 
-    setPermission(key: string, value: boolean) {
-        this.permissions[key] = value;
+    setPermission(change: { permission: string; value: boolean }) {
+        this.permissions = { ...this.permissions, [change.permission]: change.value };
         this.permissionsChanged = true;
     }
 

@@ -4,10 +4,6 @@ import { Role } from 'shared/generated-types';
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { DataService } from '../../../data/providers/data.service';
 
-/**
- * Resolves the id from the path into a Customer entity.
- */
-
 @Injectable()
 export class RoleResolver extends BaseEntityResolver<Role> {
     constructor(private dataService: DataService) {

@@ -27,7 +27,7 @@
         height: 24px;
     }
 
-    &:hover {
+    &:not(.disabled):hover {
         border-color: $color-success;
         background-color: transparentize($color-success, 0.9);
     }
@@ -36,10 +36,19 @@
         background-color: $color-success;
         border-color: darken($color-success, 5%);
         color: white;
+
+        &:not(.disabled):hover {
+            background-color: transparentize($color-success, 0.2);
+            border-color: $color-success;
+        }
     }
 
     &:focus {
         outline: none;
         box-shadow: 0 0 2px 2px #6bc1e3
+    }
+
+    &.disabled {
+        cursor: default;
     }
 }

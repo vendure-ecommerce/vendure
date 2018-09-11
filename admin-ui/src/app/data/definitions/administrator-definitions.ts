@@ -45,9 +45,27 @@ export const GET_ADMINISTRATORS = gql`
     ${ADMINISTRATOR_FRAGMENT}
 `;
 
+export const GET_ADMINISTRATOR = gql`
+    query GetAdministrator($id: ID!) {
+        administrator(id: $id) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
 export const CREATE_ADMINISTRATOR = gql`
     mutation CreateAdministrator($input: CreateAdministratorInput!) {
         createAdministrator(input: $input) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const UPDATE_ADMINISTRATOR = gql`
+    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
+        updateAdministrator(input: $input) {
             ...Administrator
         }
     }

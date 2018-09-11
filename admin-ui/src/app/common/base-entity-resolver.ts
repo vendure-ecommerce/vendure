@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot, Resolve, ResolveData, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, shareReplay, take } from 'rxjs/operators';
 import { Type } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
@@ -32,7 +32,10 @@ export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
         if (id === 'create') {
             return of(of(this.emptyEntity));
         } else if (id) {
-            const stream = this.entityStream(id).pipe(filter(notNullOrUndefined));
+            const stream = this.entityStream(id).pipe(
+                filter(notNullOrUndefined),
+                shareReplay(1),
+            );
 
             return stream.pipe(
                 take(1),

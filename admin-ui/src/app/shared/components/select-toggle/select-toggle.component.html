@@ -1,6 +1,7 @@
 <div class="toggle"
+     [class.disabled]="disabled"
      [class.small]="size === 'small'"
-     tabindex="0"
+     [attr.tabindex]="disabled ? null : 0"
      [class.selected]="selected"
      (keydown.enter)="selectedChange.emit(!selected)"
      (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"

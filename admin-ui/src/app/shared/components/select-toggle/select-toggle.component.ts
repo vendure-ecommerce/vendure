@@ -12,5 +12,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 export class SelectToggleComponent {
     @Input() size: 'small' | 'large' = 'large';
     @Input() selected = false;
+    @Input() disabled = false;
     @Output() selectedChange = new EventEmitter<boolean>();
 }
