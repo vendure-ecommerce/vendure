@@ -1,5 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Permission } from 'shared/generated-types';
+import {
+    AssignRoleToAdministratorVariables,
+    CreateAdministratorVariables,
+    GetAdministratorsVariables,
+    GetAdministratorVariables,
+    Permission,
+    UpdateAdministratorVariables,
+} from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
@@ -14,29 +21,37 @@ export class AdministratorResolver {
     @Query()
     @Allow(Permission.ReadAdministrator)
     @ApplyIdCodec()
-    administrators(@Args() args: any): Promise<PaginatedList<Administrator>> {
+    administrators(@Args() args: GetAdministratorsVariables): Promise<PaginatedList<Administrator>> {
         return this.administratorService.findAll(args.options);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
     @ApplyIdCodec()
-    administrator(@Args() args: any): Promise<Administrator | undefined> {
+    administrator(@Args() args: GetAdministratorVariables): Promise<Administrator | undefined> {
         return this.administratorService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     @ApplyIdCodec()
-    createAdministrator(_, args): Promise<Administrator> {
+    createAdministrator(@Args() args: CreateAdministratorVariables): Promise<Administrator> {
         const { input } = args;
         return this.administratorService.create(input);
     }
 
     @Mutation()
+    @Allow(Permission.CreateAdministrator)
+    @ApplyIdCodec()
+    updateAdministrator(@Args() args: UpdateAdministratorVariables): Promise<Administrator> {
+        const { input } = args;
+        return this.administratorService.update(input);
+    }
+
+    @Mutation()
     @Allow(Permission.UpdateAdministrator)
     @ApplyIdCodec()
-    assignRoleToAdministrator(@Args() args): Promise<Administrator> {
+    assignRoleToAdministrator(@Args() args: AssignRoleToAdministratorVariables): Promise<Administrator> {
         return this.administratorService.assignRole(args.administratorId, args.roleId);
     }
 }

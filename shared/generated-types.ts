@@ -47,6 +47,45 @@ export interface GetAdministratorsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetAdministrator
+// ====================================================
+
+export interface GetAdministrator_administrator_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: Permission[];
+}
+
+export interface GetAdministrator_administrator_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: GetAdministrator_administrator_user_roles[];
+}
+
+export interface GetAdministrator_administrator {
+  __typename: "Administrator";
+  id: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: GetAdministrator_administrator_user;
+}
+
+export interface GetAdministrator {
+  administrator: GetAdministrator_administrator | null;
+}
+
+export interface GetAdministratorVariables {
+  id: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CreateAdministrator
 // ====================================================
 
@@ -83,6 +122,48 @@ export interface CreateAdministrator {
 
 export interface CreateAdministratorVariables {
   input: CreateAdministratorInput;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateAdministrator
+// ====================================================
+
+export interface UpdateAdministrator_updateAdministrator_user_roles {
+  __typename: "Role";
+  code: string;
+  description: string;
+  permissions: Permission[];
+}
+
+export interface UpdateAdministrator_updateAdministrator_user {
+  __typename: "User";
+  id: string;
+  identifier: string;
+  lastLogin: string | null;
+  roles: UpdateAdministrator_updateAdministrator_user_roles[];
+}
+
+export interface UpdateAdministrator_updateAdministrator {
+  __typename: "Administrator";
+  id: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  user: UpdateAdministrator_updateAdministrator_user;
+}
+
+export interface UpdateAdministrator {
+  /**
+   * Update an existing Administrator
+   */
+  updateAdministrator: UpdateAdministrator_updateAdministrator;
+}
+
+export interface UpdateAdministratorVariables {
+  input: UpdateAdministratorInput;
 }
 
 /* tslint:disable */
@@ -1873,10 +1954,11 @@ export interface BooleanOperators {
 }
 
 export interface CreateAdministratorInput {
-  firstName?: string | null;
-  lastName?: string | null;
+  firstName: string;
+  lastName: string;
   emailAddress: string;
   password: string;
+  roleIds: string[];
 }
 
 export interface CreateFacetCustomFieldsInput {
@@ -2071,6 +2153,15 @@ export interface RoleSortParameter {
 export interface StringOperators {
   eq?: string | null;
   contains?: string | null;
+}
+
+export interface UpdateAdministratorInput {
+  id: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  password?: string | null;
+  roleIds: string[];
 }
 
 export interface UpdateFacetCustomFieldsInput {

@@ -6,6 +6,8 @@ type Query {
 type Mutation {
     "Create a new Administrator"
     createAdministrator(input: CreateAdministratorInput!): Administrator!
+    "Update an existing Administrator"
+    updateAdministrator(input: UpdateAdministratorInput!): Administrator!
     "Assign a Role to an Administrator"
     assignRoleToAdministrator(administratorId: ID!, roleId: ID!): Administrator!
 }

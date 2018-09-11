@@ -9,8 +9,18 @@ type Administrator implements Node {
 }
 
 input CreateAdministratorInput {
-    firstName: String
-    lastName: String
+    firstName: String!
+    lastName: String!
     emailAddress: String!
     password: String!
+    roleIds: [ID!]!
+}
+
+input UpdateAdministratorInput {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    emailAddress: String!
+    password: String
+    roleIds: [ID!]!
 }

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateAdministratorInput, UpdateAdministratorInput } from 'shared/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ListQueryOptions } from '../common/types/common-types';
-import { CreateAdministratorDto } from '../entity/administrator/administrator.dto';
 import { Administrator } from '../entity/administrator/administrator.entity';
 import { User } from '../entity/user/user.entity';
 import { I18nError } from '../i18n/i18n-error';
@@ -41,18 +41,46 @@ export class AdministratorService {
         });
     }
 
-    async create(createAdministratorDto: CreateAdministratorDto): Promise<Administrator> {
-        const administrator = new Administrator(createAdministratorDto);
+    async create(input: CreateAdministratorInput): Promise<Administrator> {
+        const administrator = new Administrator(input);
 
         const user = new User();
-        user.passwordHash = await this.passwordService.hash(createAdministratorDto.password);
-        user.identifier = createAdministratorDto.emailAddress;
-        user.roles = [];
+        user.passwordHash = await this.passwordService.hash(input.password);
+        user.identifier = input.emailAddress;
 
         const createdUser = await this.connection.manager.save(user);
         administrator.user = createdUser;
 
-        return this.connection.manager.save(administrator);
+        let createdAdministrator = await this.connection.manager.save(administrator);
+        for (const roleId of input.roleIds) {
+            createdAdministrator = await this.assignRole(createdAdministrator.id, roleId);
+        }
+        return createdAdministrator;
+    }
+
+    async update(input: UpdateAdministratorInput): Promise<Administrator> {
+        const administrator = await this.findOne(input.id);
+        if (!administrator) {
+            throw new I18nError(`error.entity-with-id-not-found`, {
+                entityName: 'Administrator',
+                id: input.id,
+            });
+        }
+        administrator.emailAddress = input.emailAddress;
+        administrator.firstName = input.firstName;
+        administrator.lastName = input.lastName;
+        await this.connection.manager.save(administrator);
+
+        if (input.password) {
+            administrator.user.passwordHash = await this.passwordService.hash(input.password);
+        }
+        administrator.user.roles = [];
+        let updatedAdministrator = administrator;
+        await this.connection.manager.save(administrator.user);
+        for (const roleId of input.roleIds) {
+            updatedAdministrator = await this.assignRole(administrator.id, roleId);
+        }
+        return updatedAdministrator;
     }
 
     /**
@@ -87,13 +115,14 @@ export class AdministratorService {
         });
 
         if (!superAdminUser) {
+            const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = await this.create({
                 emailAddress: SUPER_ADMIN_USER_IDENTIFIER,
                 password: SUPER_ADMIN_USER_PASSWORD,
                 firstName: 'Super',
                 lastName: 'Admin',
+                roleIds: [superAdminRole.id as string],
             });
-            await this.assignRole(administrator.id, (await this.roleService.getSuperAdminRole()).id);
         }
     }
 }
