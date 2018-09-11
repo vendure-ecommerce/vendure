@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Product resolver createRole creates a new role 1`] = `
+Object {
+  "channels": Array [
+    Object {
+      "code": "__default_channel__",
+      "id": "1",
+      "token": "fv7ujes35zmpe1vgkvn8",
+    },
+  ],
+  "code": "test",
+  "description": "test role",
+  "id": "3",
+  "permissions": Array [
+    "ReadCustomer",
+    "UpdateCustomer",
+  ],
+}
+`;
+
+exports[`Product resolver updateRole updates existing role 1`] = `
+Object {
+  "channels": Array [
+    Object {
+      "code": "__default_channel__",
+      "id": "1",
+      "token": "fv7ujes35zmpe1vgkvn8",
+    },
+  ],
+  "code": "test-modified",
+  "description": "test role modified",
+  "id": "3",
+  "permissions": Array [
+    "ReadCustomer",
+    "UpdateCustomer",
+    "DeleteCustomer",
+  ],
+}
+`;

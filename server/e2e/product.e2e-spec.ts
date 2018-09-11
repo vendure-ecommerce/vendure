@@ -38,7 +38,7 @@ import {
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
-// tslint:disable:quotemark
+
 describe('Product resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
@@ -216,7 +216,7 @@ describe('Product resolver', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining("No Product with the id '999' could be found"),
+                    expect.stringContaining(`No Product with the id '999' could be found`),
                 );
             }
         });
@@ -245,7 +245,7 @@ describe('Product resolver', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining("No Product with the id '999' could be found"),
+                    expect.stringContaining(`No Product with the id '999' could be found`),
                 );
             }
         });
@@ -262,7 +262,7 @@ describe('Product resolver', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining("No OptionGroup with the id '999' could be found"),
+                    expect.stringContaining(`No OptionGroup with the id '999' could be found`),
                 );
             }
         });
@@ -290,7 +290,7 @@ describe('Product resolver', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining("No Product with the id '999' could be found"),
+                    expect.stringContaining(`No Product with the id '999' could be found`),
                 );
             }
         });
@@ -324,7 +324,7 @@ describe('Product resolver', () => {
                     fail('Should have thrown');
                 } catch (err) {
                     expect(err.message).toEqual(
-                        expect.stringContaining("No Product with the id '999' could be found"),
+                        expect.stringContaining(`No Product with the id '999' could be found`),
                     );
                 }
             });
@@ -374,7 +374,7 @@ describe('Product resolver', () => {
                     fail('Should have thrown');
                 } catch (err) {
                     expect(err.message).toEqual(
-                        expect.stringContaining("No ProductVariant with the id '999' could be found"),
+                        expect.stringContaining(`No ProductVariant with the id '999' could be found`),
                     );
                 }
             });
@@ -405,7 +405,7 @@ describe('Product resolver', () => {
                     fail('Should have thrown');
                 } catch (err) {
                     expect(err.message).toEqual(
-                        expect.stringContaining("No FacetValue with the id '999' could be found"),
+                        expect.stringContaining(`No FacetValue with the id '999' could be found`),
                     );
                 }
             });
@@ -422,7 +422,7 @@ describe('Product resolver', () => {
                     fail('Should have thrown');
                 } catch (err) {
                     expect(err.message).toEqual(
-                        expect.stringContaining("No ProductVariant with the id '999' could be found"),
+                        expect.stringContaining(`No ProductVariant with the id '999' could be found`),
                     );
                 }
             });

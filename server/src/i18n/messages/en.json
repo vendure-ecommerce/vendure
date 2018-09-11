@@ -1,5 +1,6 @@
 {
   "error": {
+    "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } with the id '{ id }' could be found",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }"

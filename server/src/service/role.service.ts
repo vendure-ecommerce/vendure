@@ -71,6 +71,9 @@ export class RoleService {
         if (!role) {
             throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Role', id: input.id });
         }
+        if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
+            throw new I18nError(`error.cannot-modify-role`, { roleCode: role.code });
+        }
         role.code = input.code;
         role.description = input.description;
         role.permissions = input.permissions;
