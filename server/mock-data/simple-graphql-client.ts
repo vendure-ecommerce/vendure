@@ -3,9 +3,9 @@ import { GraphQLClient } from 'graphql-request';
 import { GraphQLError } from 'graphql-request/dist/src/types';
 import { print } from 'graphql/language/printer';
 import { AttemptLogin, AttemptLoginVariables } from 'shared/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 
 import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../src/common/constants';
 import { getConfig } from '../src/config/vendure-config';
 
 // tslint:disable:no-console

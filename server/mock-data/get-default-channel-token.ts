@@ -1,6 +1,6 @@
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 import { ConnectionOptions, getConnection } from 'typeorm';
 
-import { DEFAULT_CHANNEL_CODE } from '../src/common/constants';
 import { Channel } from '../src/entity/channel/channel.entity';
 
 // tslint:disable:no-console

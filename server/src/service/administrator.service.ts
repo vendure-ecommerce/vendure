@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../common/constants';
 import { ListQueryOptions } from '../common/types/common-types';
 import { CreateAdministratorDto } from '../entity/administrator/administrator.dto';
 import { Administrator } from '../entity/administrator/administrator.entity';

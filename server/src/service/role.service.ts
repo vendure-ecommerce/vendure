@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRoleInput, Permission, UpdateRoleInput } from 'shared/generated-types';
-import { ID, PaginatedList } from 'shared/shared-types';
-import { Connection } from 'typeorm';
-
 import {
     CUSTOMER_ROLE_CODE,
     CUSTOMER_ROLE_DESCRIPTION,
     SUPER_ADMIN_ROLE_CODE,
     SUPER_ADMIN_ROLE_DESCRIPTION,
-} from '../common/constants';
+} from 'shared/shared-constants';
+import { ID, PaginatedList } from 'shared/shared-types';
+import { Connection } from 'typeorm';
+
 import { ListQueryOptions } from '../common/types/common-types';
 import { assertFound } from '../common/utils';
 import { Role } from '../entity/role/role.entity';

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
-import { DEFAULT_CHANNEL_CODE, DEFAULT_LANGUAGE_CODE } from '../common/constants';
+import { DEFAULT_LANGUAGE_CODE } from '../common/constants';
 import { ChannelAware } from '../common/types/common-types';
 import { Channel } from '../entity/channel/channel.entity';
 import { I18nError } from '../i18n/i18n-error';
