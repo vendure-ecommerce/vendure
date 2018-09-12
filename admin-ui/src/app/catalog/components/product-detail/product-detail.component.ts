@@ -45,14 +45,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         private notificationService: NotificationService,
     ) {
         super(route, router);
-    }
-
-    ngOnInit() {
-        this.init();
         this.customFields = this.getCustomFieldConfig('Product');
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
-        this.product$ = this.entity$;
-        this.variants$ = this.product$.pipe(map(product => product.variants));
         this.productForm = this.formBuilder.group({
             product: this.formBuilder.group({
                 name: ['', Validators.required],
@@ -64,6 +58,12 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             }),
             variants: this.formBuilder.array([]),
         });
+    }
+
+    ngOnInit() {
+        this.init();
+        this.product$ = this.entity$;
+        this.variants$ = this.product$.pipe(map(product => product.variants));
     }
 
     ngOnDestroy() {

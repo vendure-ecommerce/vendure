@@ -42,14 +42,8 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
         private notificationService: NotificationService,
     ) {
         super(route, router);
-    }
-
-    ngOnInit() {
-        this.init();
         this.customFields = this.getCustomFieldConfig('Facet');
         this.customValueFields = this.getCustomFieldConfig('FacetValue');
-        this.facet$ = this.entity$;
-        this.values$ = this.facet$.pipe(map(facet => facet.values));
         this.facetForm = this.formBuilder.group({
             facet: this.formBuilder.group({
                 code: ['', Validators.required],
@@ -60,6 +54,12 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
             }),
             values: this.formBuilder.array([]),
         });
+    }
+
+    ngOnInit() {
+        this.init();
+        this.facet$ = this.entity$;
+        this.values$ = this.facet$.pipe(map(facet => facet.values));
     }
 
     ngOnDestroy() {
