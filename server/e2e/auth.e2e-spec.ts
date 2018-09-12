@@ -39,7 +39,7 @@ describe('Authorization & permissions', () => {
             customerCount: 1,
         });
         await client.init();
-    }, 30000);
+    }, 60000);
 
     afterAll(async () => {
         await server.destroy();

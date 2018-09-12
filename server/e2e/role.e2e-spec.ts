@@ -10,6 +10,7 @@ import {
     UpdateRole,
     UpdateRoleVariables,
 } from 'shared/generated-types';
+import { omit } from 'shared/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from 'shared/shared-constants';
 
 import {
@@ -34,7 +35,7 @@ describe('Role resolver', () => {
             customerCount: 1,
         });
         await client.init();
-    }, 30000);
+    }, 60000);
 
     afterAll(async () => {
         await server.destroy();
@@ -58,7 +59,7 @@ describe('Role resolver', () => {
         });
 
         createdRole = result.createRole;
-        expect(createdRole).toMatchSnapshot();
+        expect(omit(createdRole, ['channels'])).toMatchSnapshot();
     });
 
     it('role', async () => {
@@ -76,7 +77,7 @@ describe('Role resolver', () => {
             },
         });
 
-        expect(result.updateRole).toMatchSnapshot();
+        expect(omit(result.updateRole, ['channels'])).toMatchSnapshot();
     });
 
     it('updateRole is not allowed for SuperAdmin role', async () => {

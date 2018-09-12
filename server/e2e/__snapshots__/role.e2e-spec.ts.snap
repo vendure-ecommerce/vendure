@@ -2,13 +2,6 @@
 
 exports[`Role resolver createRole 1`] = `
 Object {
-  "channels": Array [
-    Object {
-      "code": "__default_channel__",
-      "id": "1",
-      "token": "fv7ujes35zmpe1vgkvn8",
-    },
-  ],
   "code": "test",
   "description": "test role",
   "id": "3",
@@ -21,13 +14,6 @@ Object {
 
 exports[`Role resolver updateRole 1`] = `
 Object {
-  "channels": Array [
-    Object {
-      "code": "__default_channel__",
-      "id": "1",
-      "token": "fv7ujes35zmpe1vgkvn8",
-    },
-  ],
   "code": "test-modified",
   "description": "test role modified",
   "id": "3",
