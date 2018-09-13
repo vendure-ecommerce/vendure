@@ -1,4 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Request } from 'express';
 import { Permission } from 'shared/generated-types';
 
 import { User } from '../../entity/user/user.entity';
@@ -31,7 +32,7 @@ export class AuthResolver {
      */
     @Query()
     @Allow(Permission.Authenticated)
-    async me(@Context('req') request: any) {
+    async me(@Context('req') request: Request & { user: User }) {
         const user = await this.authService.validateUser(request.user.identifier);
         return user ? this.publiclyAccessibleUser(user) : null;
     }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 
 import { ConfigModule } from '../config/config.module';
@@ -7,6 +7,7 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdministratorResolver } from './administrator/administrator.resolver';
+import { AssetInterceptor } from './asset-interceptor';
 import { AssetResolver } from './asset/asset.resolver';
 import { AuthGuard } from './auth-guard';
 import { AuthResolver } from './auth/auth.resolver';
@@ -59,6 +60,10 @@ const exportedProviders = [
         {
             provide: APP_GUARD,
             useClass: RolesGuard,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: AssetInterceptor,
         },
     ],
     exports: exportedProviders,

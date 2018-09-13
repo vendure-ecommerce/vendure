@@ -80,7 +80,7 @@ export interface VendureConfig {
     /**
      * The max file size in bytes for uploaded assets.
      */
-    uploadMaxFileSize: number;
+    uploadMaxFileSize?: number;
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
