@@ -35,6 +35,12 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         slug
         image
         description
+        assets {
+            description
+            name
+            preview
+            type
+        }
         translations {
             languageCode
             name
@@ -72,6 +78,18 @@ export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
                 name
             }
         }
+    }
+`;
+
+export const ASSET_FRAGMENT = gql`
+    fragment Asset on Asset {
+        id
+        name
+        mimetype
+        type
+        name
+        preview
+        source
     }
 `;
 
@@ -207,4 +225,25 @@ export const GET_PRODUCT_OPTION_GROUPS = gql`
             }
         }
     }
+`;
+
+export const GET_ASSET_LIST = gql`
+    query GetAssetList($options: AssetListOptions) {
+        assets(options: $options) {
+            items {
+                ...Asset
+            }
+            totalItems
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const CREATE_ASSET = gql`
+    mutation CreateAsset($input: CreateAssetInput!) {
+        createAsset(input: $input) {
+            ...Asset
+        }
+    }
+    ${ASSET_FRAGMENT}
 `;

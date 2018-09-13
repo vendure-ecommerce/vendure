@@ -1,0 +1,5 @@
+enum AssetType {
+    IMAGE,
+    VIDEO,
+    BINARY
+}

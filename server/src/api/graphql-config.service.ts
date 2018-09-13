@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GqlModuleOptions, GqlOptionsFactory } from '@nestjs/graphql';
+import { GraphQLUpload } from 'apollo-server-core';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import { GraphQLDateTime } from 'graphql-iso-date';
@@ -36,6 +37,10 @@ export class GraphqlConfigService implements GqlOptionsFactory {
                 DateTime: GraphQLDateTime,
                 Node: dummyResolveType,
                 PaginatedList: dummyResolveType,
+                Upload: GraphQLUpload,
+            },
+            uploads: {
+                maxFileSize: this.configService.uploadMaxFileSize,
             },
             playground: true,
             debug: true,

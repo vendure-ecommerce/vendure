@@ -7,6 +7,7 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdministratorResolver } from './administrator/administrator.resolver';
+import { AssetResolver } from './asset/asset.resolver';
 import { AuthGuard } from './auth-guard';
 import { AuthResolver } from './auth/auth.resolver';
 import { ChannelResolver } from './channel/channel.resolver';
@@ -24,6 +25,7 @@ import { RolesGuard } from './roles-guard';
 const exportedProviders = [
     AdministratorResolver,
     AuthResolver,
+    AssetResolver,
     ChannelResolver,
     ConfigResolver,
     FacetResolver,

@@ -5,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
+import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { CreateOptionGroupDialogComponent } from './components/create-option-group-dialog/create-option-group-dialog.component';
 import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
@@ -37,6 +38,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         ProductVariantsListComponent,
         FacetValueSelectorComponent,
         ApplyFacetDialogComponent,
+        AssetListComponent,
     ],
     entryComponents: [
         CreateOptionGroupDialogComponent,

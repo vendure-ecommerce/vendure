@@ -1,4 +1,5 @@
 import { ApolloLink } from 'apollo-link';
+import { omit } from 'shared/omit';
 
 /**
  * The "__typename" property added by Apollo Client causes errors when posting the entity
@@ -11,7 +12,7 @@ export class OmitTypenameLink extends ApolloLink {
     constructor() {
         super((operation, forward) => {
             if (operation.variables) {
-                operation.variables = JSON.parse(JSON.stringify(operation.variables), this.omitTypename);
+                operation.variables = omit(operation.variables, ['__typename'], true);
             }
 
             return forward ? forward(operation) : null;

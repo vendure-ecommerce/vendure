@@ -1,0 +1,13 @@
+type Asset implements Node {
+    id: ID!
+    name: String!
+    description: String
+    type: AssetType!
+    mimetype: String!
+    source: String!
+    preview: String!
+}
+
+input CreateAssetInput {
+    file: Upload!
+}

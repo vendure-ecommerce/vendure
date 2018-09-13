@@ -38,6 +38,7 @@ class Address {
 }
 class Product {
     variants: ProductVariant[]
+    assets: Asset[]
 }
 class ProductOptionGroup
 class ProductOption {
@@ -45,6 +46,7 @@ class ProductOption {
 }
 class ProductVariant {
     sku: string
+    assets: Asset[]
     price: ProductVariantPrice[]
 }
 class ProductVariantPrice {
@@ -79,6 +81,8 @@ class FacetValue {
 }
 class Category {
 }
+class Asset {
+}
 
 Customer --  User
 Administrator -- User
@@ -87,10 +91,12 @@ Role o-- "1..*" Permission
 Role -- Channel
 Customer *-- "0..*" Address
 Product *-- "1..*" ProductVariant
+Product *-- "0..*" Asset
 ProductOptionGroup *-- "1..*" ProductOption
 Product o-- "0..*" ProductOptionGroup
 ProductVariant o-- "0..*" ProductOption
 ProductVariant o-- "0..*" FacetValue
+ProductVariant o-- "0..*" Asset
 Facet *-- "1..*" FacetValue
 Category o-- "1..*" FacetValue
 Customer *-- "0..*" Order

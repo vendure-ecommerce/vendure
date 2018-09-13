@@ -2,6 +2,7 @@
 
 exports[`Product resolver product mutation createProduct creates a new Product 1`] = `
 Object {
+  "assets": Array [],
   "description": "A baked potato",
   "id": "21",
   "image": "baked-potato",
@@ -29,6 +30,7 @@ Object {
 
 exports[`Product resolver product mutation updateProduct updates a Product 1`] = `
 Object {
+  "assets": Array [],
   "description": "A blob of mashed potato",
   "id": "21",
   "image": "mashed-potato",
@@ -96,6 +98,7 @@ Array [
 
 exports[`Product resolver product query returns expected properties 1`] = `
 Object {
+  "assets": Array [],
   "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
   "id": "2",
   "image": "http://lorempixel.com/640/480",

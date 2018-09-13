@@ -6,9 +6,9 @@ import {
     CreateProductOptionGroupInput,
     CreateProductOptionInput,
 } from 'shared/generated-types';
+import { normalizeString } from 'shared/normalize-string';
 
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
-import { normalizeString } from '../../../common/utilities/normalize-string';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

@@ -4,6 +4,9 @@ import {
     AddOptionGroupToProductVariables,
     ApplyFacetValuesToProductVariants,
     ApplyFacetValuesToProductVariantsVariables,
+    CreateAsset,
+    CreateAssetInput,
+    CreateAssetVariables,
     CreateProduct,
     CreateProductInput,
     CreateProductOptionGroup,
@@ -12,6 +15,8 @@ import {
     CreateProductVariables,
     GenerateProductVariants,
     GenerateProductVariantsVariables,
+    GetAssetList,
+    GetAssetListVariables,
     GetProductList,
     GetProductListVariables,
     GetProductOptionGroups,
@@ -34,9 +39,11 @@ import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
+    CREATE_ASSET,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
+    GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
@@ -164,6 +171,21 @@ export class ProductDataService {
         >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
             facetValueIds,
             productVariantIds,
+        });
+    }
+
+    getAssetList(take: number = 10, skip: number = 0): QueryResult<GetAssetList, GetAssetListVariables> {
+        return this.baseDataService.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST, {
+            options: {
+                skip,
+                take,
+            },
+        });
+    }
+
+    createAsset(file: File): Observable<CreateAsset> {
+        return this.baseDataService.mutate<CreateAsset, CreateAssetVariables>(CREATE_ASSET, {
+            input: { file },
         });
     }
 }

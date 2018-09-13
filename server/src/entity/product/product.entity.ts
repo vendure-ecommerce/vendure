@@ -1,8 +1,9 @@
 import { DeepPartial, HasCustomFields } from 'shared/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
+import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomProductFields } from '../custom-entity-fields';
@@ -22,7 +23,15 @@ export class Product extends VendureEntity implements Translatable, HasCustomFie
 
     description: LocaleString;
 
+    // TODO: remove once Assets have been implemented
     @Column() image: string;
+
+    @ManyToOne(type => Asset)
+    defaultAsset: Asset;
+
+    @ManyToMany(type => Asset)
+    @JoinTable()
+    assets: Asset[];
 
     @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Product>>;

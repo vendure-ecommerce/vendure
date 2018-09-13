@@ -5,6 +5,7 @@ import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
 
+import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
@@ -41,6 +42,13 @@ export const catalogRoutes: Route[] = [
         resolve: createResolveData(FacetResolver),
         data: {
             breadcrumb: facetBreadcrumb,
+        },
+    },
+    {
+        path: 'assets',
+        component: AssetListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.assets'),
         },
     },
 ];

@@ -6,6 +6,10 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
+import { DefaultAssetPreviewStrategy } from './asset-preview-strategy/default-asset-preview-strategy';
+import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { LocalAssetStorageStrategy } from './asset-storage-strategy/local-asset-storage-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
@@ -55,6 +59,17 @@ export interface VendureConfig {
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
+     * Defines the strategy used for storing uploaded binary files. By default files are
+     * persisted to the local file system.
+     */
+    assetStorageStrategy?: AssetStorageStrategy;
+    /**
+     * Defines the strategy used for creating preview images of uploaded assets. The default
+     * strategy resizes images based on maximum dimensions and outputs a sensible default
+     * preview image for other file types.
+     */
+    assetPreviewStrategy?: AssetPreviewStrategy;
+    /**
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
@@ -62,6 +77,10 @@ export interface VendureConfig {
      * Defines custom fields which can be used to extend the built-in entities.
      */
     customFields?: CustomFields;
+    /**
+     * The max file size in bytes for uploaded assets.
+     */
+    uploadMaxFileSize: number;
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
@@ -73,9 +92,13 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     jwtSecret: 'secret',
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),
+    // tslint:disable-next-line:no-non-null-assertion
+    assetStorageStrategy: new LocalAssetStorageStrategy('assets'),
+    assetPreviewStrategy: new DefaultAssetPreviewStrategy({ maxHeight: 50, maxWidth: 50 }),
     dbConnectionOptions: {
         type: 'mysql',
     },
+    uploadMaxFileSize: 20971520,
     customFields: {
         Address: [],
         Customer: [],

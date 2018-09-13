@@ -1,0 +1,25 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <!--<a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'catalog.create-new-asset' | translate }}
+        </a>-->
+        <input type="file" (change)="fileSelected($event)">
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="items$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.preview' | translate }}</vdr-dt-column>
+    <ng-template let-asset="item">
+        <td class="left">{{ asset.id }}</td>
+        <td class="left">{{ asset.code }}</td>
+        <td class="left"><img [src]="asset.preview"></td>
+    </ng-template>
+</vdr-data-table>

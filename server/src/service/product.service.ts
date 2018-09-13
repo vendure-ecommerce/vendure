@@ -55,7 +55,7 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
+        const relations = ['assets', 'variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
         const product = await this.connection.manager.findOne(Product, productId, { relations });
         if (!product) {
             return;

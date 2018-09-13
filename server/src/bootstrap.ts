@@ -1,8 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import * as path from 'path';
 import { Type } from 'shared/shared-types';
 import { EntitySubscriberInterface } from 'typeorm';
 
+import { LocalAssetStorageStrategy } from './config/asset-storage-strategy/local-asset-storage-strategy';
 import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
 import { VendureEntity } from './entity/base/base.entity';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
@@ -20,6 +22,17 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
+
+    // If the LocalAssetStorageStrategy is being used, set up the server to serve
+    // the asset files from the configured directory (defaults to /assets/)
+    const assetStore = config.assetStorageStrategy;
+    if (assetStore instanceof LocalAssetStorageStrategy) {
+        const uploadPath = assetStore.setAbsoluteUploadPath(path.join(__dirname, '..'));
+        app.useStaticAssets(uploadPath, {
+            prefix: `/${assetStore.uploadDir}`,
+        });
+    }
+
     return app.listen(config.port);
 }
 

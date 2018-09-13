@@ -20,6 +20,7 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants> {
                 name: '',
                 slug: '',
                 image: '',
+                assets: [],
                 description: '',
                 translations: [],
                 optionGroups: [],

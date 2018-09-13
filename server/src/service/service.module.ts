@@ -5,6 +5,7 @@ import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
 import { AdministratorService } from './administrator.service';
+import { AssetService } from './asset.service';
 import { AuthService } from './auth.service';
 import { ChannelService } from './channel.service';
 import { CustomerService } from './customer.service';
@@ -20,6 +21,7 @@ import { RoleService } from './role.service';
 
 const exportedProviders = [
     AdministratorService,
+    AssetService,
     AuthService,
     ChannelService,
     CustomerService,

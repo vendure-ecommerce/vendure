@@ -1,6 +1,7 @@
 # Third-party custom scalars
 scalar JSON
 scalar DateTime
+scalar Upload
 
 interface PaginatedList {
     items: [Node!]!

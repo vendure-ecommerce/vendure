@@ -803,6 +803,14 @@ export interface GetUiState {
 // GraphQL mutation operation: UpdateProduct
 // ====================================================
 
+export interface UpdateProduct_updateProduct_assets {
+  __typename: "Asset";
+  description: string | null;
+  name: string;
+  preview: string;
+  type: AssetType;
+}
+
 export interface UpdateProduct_updateProduct_translations {
   __typename: "ProductTranslation";
   languageCode: LanguageCode;
@@ -862,6 +870,7 @@ export interface UpdateProduct_updateProduct {
   slug: string;
   image: string;
   description: string;
+  assets: UpdateProduct_updateProduct_assets[];
   translations: UpdateProduct_updateProduct_translations[];
   optionGroups: UpdateProduct_updateProduct_optionGroups[];
   variants: UpdateProduct_updateProduct_variants[];
@@ -884,6 +893,14 @@ export interface UpdateProductVariables {
 // ====================================================
 // GraphQL mutation operation: CreateProduct
 // ====================================================
+
+export interface CreateProduct_createProduct_assets {
+  __typename: "Asset";
+  description: string | null;
+  name: string;
+  preview: string;
+  type: AssetType;
+}
 
 export interface CreateProduct_createProduct_translations {
   __typename: "ProductTranslation";
@@ -944,6 +961,7 @@ export interface CreateProduct_createProduct {
   slug: string;
   image: string;
   description: string;
+  assets: CreateProduct_createProduct_assets[];
   translations: CreateProduct_createProduct_translations[];
   optionGroups: CreateProduct_createProduct_optionGroups[];
   variants: CreateProduct_createProduct_variants[];
@@ -966,6 +984,14 @@ export interface CreateProductVariables {
 // ====================================================
 // GraphQL mutation operation: GenerateProductVariants
 // ====================================================
+
+export interface GenerateProductVariants_generateVariantsForProduct_assets {
+  __typename: "Asset";
+  description: string | null;
+  name: string;
+  preview: string;
+  type: AssetType;
+}
 
 export interface GenerateProductVariants_generateVariantsForProduct_translations {
   __typename: "ProductTranslation";
@@ -1026,6 +1052,7 @@ export interface GenerateProductVariants_generateVariantsForProduct {
   slug: string;
   image: string;
   description: string;
+  assets: GenerateProductVariants_generateVariantsForProduct_assets[];
   translations: GenerateProductVariants_generateVariantsForProduct_translations[];
   optionGroups: GenerateProductVariants_generateVariantsForProduct_optionGroups[];
   variants: GenerateProductVariants_generateVariantsForProduct_variants[];
@@ -1281,6 +1308,14 @@ export interface ApplyFacetValuesToProductVariantsVariables {
 // GraphQL query operation: GetProductWithVariants
 // ====================================================
 
+export interface GetProductWithVariants_product_assets {
+  __typename: "Asset";
+  description: string | null;
+  name: string;
+  preview: string;
+  type: AssetType;
+}
+
 export interface GetProductWithVariants_product_translations {
   __typename: "ProductTranslation";
   languageCode: LanguageCode;
@@ -1340,6 +1375,7 @@ export interface GetProductWithVariants_product {
   slug: string;
   image: string;
   description: string;
+  assets: GetProductWithVariants_product_assets[];
   translations: GetProductWithVariants_product_translations[];
   optionGroups: GetProductWithVariants_product_optionGroups[];
   variants: GetProductWithVariants_product_variants[];
@@ -1416,6 +1452,65 @@ export interface GetProductOptionGroups {
 export interface GetProductOptionGroupsVariables {
   filterTerm?: string | null;
   languageCode?: LanguageCode | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetAssetList
+// ====================================================
+
+export interface GetAssetList_assets_items {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  mimetype: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
+export interface GetAssetList_assets {
+  __typename: "AssetList";
+  items: GetAssetList_assets_items[];
+  totalItems: number;
+}
+
+export interface GetAssetList {
+  assets: GetAssetList_assets;
+}
+
+export interface GetAssetListVariables {
+  options?: AssetListOptions | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateAsset
+// ====================================================
+
+export interface CreateAsset_createAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  mimetype: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
+export interface CreateAsset {
+  /**
+   * Create a new Asset
+   */
+  createAsset: CreateAsset_createAsset;
+}
+
+export interface CreateAssetVariables {
+  input: CreateAssetInput;
 }
 
 /* tslint:disable */
@@ -1599,6 +1694,14 @@ export interface ProductVariant {
 // GraphQL fragment: ProductWithVariants
 // ====================================================
 
+export interface ProductWithVariants_assets {
+  __typename: "Asset";
+  description: string | null;
+  name: string;
+  preview: string;
+  type: AssetType;
+}
+
 export interface ProductWithVariants_translations {
   __typename: "ProductTranslation";
   languageCode: LanguageCode;
@@ -1658,6 +1761,7 @@ export interface ProductWithVariants {
   slug: string;
   image: string;
   description: string;
+  assets: ProductWithVariants_assets[];
   translations: ProductWithVariants_translations[];
   optionGroups: ProductWithVariants_optionGroups[];
   variants: ProductWithVariants_variants[];
@@ -1702,9 +1806,32 @@ export interface ProductOptionGroup {
 /* tslint:disable */
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL fragment: Asset
+// ====================================================
+
+export interface Asset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  mimetype: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
+
+export enum AssetType {
+  BINARY = "BINARY",
+  IMAGE = "IMAGE",
+  VIDEO = "VIDEO",
+}
 
 /**
  * ISO 639-1 language code
@@ -1949,6 +2076,29 @@ export interface AdministratorSortParameter {
   emailAddress?: SortOrder | null;
 }
 
+export interface AssetFilterParameter {
+  name?: StringOperators | null;
+  description?: StringOperators | null;
+  type?: StringOperators | null;
+  createdAt?: DateOperators | null;
+  updatedAt?: DateOperators | null;
+}
+
+export interface AssetListOptions {
+  take?: number | null;
+  skip?: number | null;
+  sort?: AssetSortParameter | null;
+  filter?: AssetFilterParameter | null;
+}
+
+export interface AssetSortParameter {
+  id?: SortOrder | null;
+  createdAt?: SortOrder | null;
+  updatedAt?: SortOrder | null;
+  name?: SortOrder | null;
+  description?: SortOrder | null;
+}
+
 export interface BooleanOperators {
   eq?: boolean | null;
 }
@@ -1959,6 +2109,10 @@ export interface CreateAdministratorInput {
   emailAddress: string;
   password: string;
   roleIds: string[];
+}
+
+export interface CreateAssetInput {
+  file: any;
 }
 
 export interface CreateFacetCustomFieldsInput {

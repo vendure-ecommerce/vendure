@@ -1,5 +1,6 @@
 import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
+import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
 import { Customer } from './customer/customer.entity';
 import { FacetValueTranslation } from './facet-value/facet-value-translation.entity';
@@ -24,6 +25,7 @@ import { User } from './user/user.entity';
 export const coreEntitiesMap = {
     Address,
     Administrator,
+    Asset,
     Channel,
     Customer,
     Facet,

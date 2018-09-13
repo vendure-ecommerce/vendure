@@ -17,6 +17,12 @@
                     <clr-icon shape="tag" size="20"></clr-icon>{{ 'nav.facets' | translate }}
                 </a>
                 </li>
+                <li><a class="nav-link"
+                       [routerLink]="['/catalog', 'assets']"
+                       routerLinkActive="active">
+                    <clr-icon shape="tag" size="20"></clr-icon>{{ 'nav.assets' | translate }}
+                </a>
+                </li>
                 <li>
                     <a class="nav-link">
                         <clr-icon shape="folder-open" size="20"></clr-icon>{{ 'nav.categories' | translate }}

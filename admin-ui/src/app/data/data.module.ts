@@ -1,12 +1,12 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Apollo, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
-import { HttpLink, HttpLinkModule } from 'apollo-angular-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { withClientState } from 'apollo-link-state';
+import { createUploadLink } from 'apollo-upload-client';
 import { API_PATH } from 'shared/shared-constants';
 
 import { environment } from '../../environments/environment';
@@ -34,10 +34,7 @@ const stateLink = withClientState({
     defaults: clientDefaults,
 });
 
-export function createApollo(
-    httpLink: HttpLink,
-    localStorageService: LocalStorageService,
-): ApolloClientOptions<any> {
+export function createApollo(localStorageService: LocalStorageService): ApolloClientOptions<any> {
     return {
         link: ApolloLink.from([
             stateLink,
@@ -57,7 +54,7 @@ export function createApollo(
                     };
                 }
             }),
-            httpLink.create({ uri: `${API_URL}/${API_PATH}` }),
+            createUploadLink({ uri: `${API_URL}/${API_PATH}` }),
         ]),
         cache: apolloCache,
     };
@@ -68,7 +65,7 @@ export function createApollo(
  * state via the apollo-link-state package.
  */
 @NgModule({
-    imports: [ApolloModule, HttpLinkModule, HttpClientModule],
+    imports: [ApolloModule, HttpClientModule],
     exports: [],
     declarations: [],
     providers: [
@@ -77,7 +74,7 @@ export function createApollo(
         {
             provide: APOLLO_OPTIONS,
             useFactory: createApollo,
-            deps: [HttpLink, LocalStorageService],
+            deps: [LocalStorageService],
         },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
         {
