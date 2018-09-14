@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { RequestHandler } from 'express';
 import { GraphQLDateTime } from 'graphql-iso-date';
 
 import { ApiModule } from './api/api.module';
@@ -16,6 +17,31 @@ export class AppModule implements NestModule {
 
     configure(consumer: MiddlewareConsumer) {
         validateCustomFieldsConfig(this.configService.customFields);
-        consumer.apply(this.i18nService.handle()).forRoutes(this.configService.apiPath);
+
+        const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
+            { handler: this.i18nService.handle(), route: this.configService.apiPath },
+        ];
+        const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
+        const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
+        for (const [route, handlers] of Object.entries(middlewareByRoute)) {
+            consumer.apply(...handlers).forRoutes(route);
+        }
+    }
+
+    /**
+     * Groups middleware handlers together in an object with the route as the key.
+     */
+    private groupMiddlewareByRoute(
+        middlewareArray: Array<{ handler: RequestHandler; route?: string }>,
+    ): { [route: string]: RequestHandler[] } {
+        const result = {} as { [route: string]: RequestHandler[] };
+        for (const middleware of middlewareArray) {
+            const route = middleware.route || this.configService.apiPath;
+            if (!result[route]) {
+                result[route] = [];
+            }
+            result[route].push(middleware.handler);
+        }
+        return result;
     }
 }

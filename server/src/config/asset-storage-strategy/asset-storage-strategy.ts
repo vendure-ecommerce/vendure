@@ -8,12 +8,6 @@ import { Stream } from 'stream';
  */
 export interface AssetStorageStrategy {
     /**
-     * Perform any setup required on bootstrapping the app, such as registering
-     * a static server or procuring keys from a 3rd-party service.
-     */
-    init(app: INestApplication & INestExpressApplication): Promise<void>;
-
-    /**
      * Writes a buffer to the store and returns a unique identifier for that
      * file such as a file path or a URL.
      */

@@ -1,4 +1,5 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { RequestHandler } from 'express';
 import { LanguageCode } from 'shared/generated-types';
 import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields, DeepPartial } from 'shared/shared-types';
@@ -7,12 +8,13 @@ import { ConnectionOptions } from 'typeorm';
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
-import { DefaultAssetPreviewStrategy } from './asset-preview-strategy/default-asset-preview-strategy';
+import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
-import { LocalAssetStorageStrategy } from './asset-storage-strategy/local-asset-storage-strategy';
+import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
+import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 export interface VendureConfig {
     /**
@@ -81,6 +83,14 @@ export interface VendureConfig {
      * The max file size in bytes for uploaded assets.
      */
     uploadMaxFileSize?: number;
+    /**
+     * Custom Express middleware for the server.
+     */
+    middleware?: Array<{ handler: RequestHandler; route: string }>;
+    /**
+     * An array of plugins.
+     */
+    plugins?: VendurePlugin[];
 }
 
 const defaultConfig: ReadOnlyRequired<VendureConfig> = {
@@ -92,9 +102,8 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     jwtSecret: 'secret',
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),
-    // tslint:disable-next-line:no-non-null-assertion
-    assetStorageStrategy: new LocalAssetStorageStrategy('assets'),
-    assetPreviewStrategy: new DefaultAssetPreviewStrategy({ maxHeight: 50, maxWidth: 50 }),
+    assetStorageStrategy: new NoAssetStorageStrategy(),
+    assetPreviewStrategy: new NoAssetPreviewStrategy(),
     dbConnectionOptions: {
         type: 'mysql',
     },
@@ -110,6 +119,8 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         ProductVariant: [],
         User: [],
     } as ReadOnlyRequired<CustomFields>,
+    middleware: [],
+    plugins: [],
 };
 
 let activeConfig = defaultConfig;

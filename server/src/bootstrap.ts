@@ -21,8 +21,6 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
-    await config.assetStorageStrategy.init(app);
-
     return app.listen(config.port);
 }
 
@@ -49,7 +47,12 @@ export async function preBootstrapConfig(
         },
     });
 
-    const config = getConfig();
+    let config = getConfig();
+
+    // Initialize plugins
+    for (const plugin of config.plugins) {
+        config = (await plugin.init(config)) as ReadOnlyRequired<VendureConfig>;
+    }
 
     registerCustomEntityFields(config);
     return config;

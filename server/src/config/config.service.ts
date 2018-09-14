@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { RequestHandler } from 'express';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFields } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
@@ -10,9 +11,22 @@ import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-str
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { getConfig, VendureConfig } from './vendure-config';
+import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 @Injectable()
 export class ConfigService implements VendureConfig {
+    private activeConfig: ReadOnlyRequired<VendureConfig>;
+
+    constructor() {
+        this.activeConfig = getConfig();
+        if (this.activeConfig.disableAuth) {
+            // tslint:disable-next-line
+            console.warn(
+                'WARNING: auth has been disabled. This should never be the case for a production system!',
+            );
+        }
+    }
+
     get disableAuth(): boolean {
         return this.activeConfig.disableAuth;
     }
@@ -65,15 +79,11 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.customFields;
     }
 
-    private activeConfig: ReadOnlyRequired<VendureConfig>;
+    get middleware(): Array<{ handler: RequestHandler; route: string }> {
+        return this.activeConfig.middleware;
+    }
 
-    constructor() {
-        this.activeConfig = getConfig();
-        if (this.activeConfig.disableAuth) {
-            // tslint:disable-next-line
-            console.warn(
-                'WARNING: auth has been disabled. This should never be the case for a production system!',
-            );
-        }
+    get plugins(): VendurePlugin[] {
+        return this.activeConfig.plugins;
     }
 }

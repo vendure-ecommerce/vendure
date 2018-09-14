@@ -1,6 +1,8 @@
+import * as path from 'path';
 import { API_PATH, API_PORT } from 'shared/shared-constants';
 
 import { VendureConfig } from './src/config/vendure-config';
+import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/default-asset-server-plugin';
 
 /**
  * Config settings used during development
@@ -30,4 +32,14 @@ export const devConfig: VendureConfig = {
             { name: 'nickname', type: 'localeString' },
         ],
     },
+    plugins: [
+        new DefaultAssetServerPlugin({
+            route: 'assets',
+            assetUploadDir: path.join(__dirname, 'assets'),
+            port: 4000,
+            hostname: 'http://localhost',
+            previewMaxHeight: 200,
+            previewMaxWidth: 200,
+        }),
+    ],
 };

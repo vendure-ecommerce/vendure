@@ -18,6 +18,8 @@ export class MockConfigService implements MockClass<ConfigService> {
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
     customFields = {};
+    middleware = [];
+    plugins = [];
 }
 
 export const ENCODED = 'encoded';
