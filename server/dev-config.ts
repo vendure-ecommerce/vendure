@@ -38,8 +38,13 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
             port: 4000,
             hostname: 'http://localhost',
-            previewMaxHeight: 200,
-            previewMaxWidth: 200,
+            previewMaxHeight: 1600,
+            previewMaxWidth: 1600,
+            presets: [
+                { name: 'tiny', width: 50, height: 50, mode: 'crop' },
+                { name: 'thumb', width: 150, height: 150, mode: 'crop' },
+                { name: 'medium', width: 500, height: 500, mode: 'resize' },
+            ],
         }),
     ],
 };

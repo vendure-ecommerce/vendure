@@ -34,10 +34,10 @@ export class AssetService {
         const { assetPreviewStrategy, assetStorageStrategy } = this.configService;
         const normalizedFileName = this.normalizeFileName(filename);
 
-        const sourceFile = await assetStorageStrategy.writeFileFromStream(normalizedFileName, stream);
-        const image = await assetStorageStrategy.readFileToBuffer(sourceFile);
+        const sourceFileName = await assetStorageStrategy.writeFileFromStream(normalizedFileName, stream);
+        const image = await assetStorageStrategy.readFileToBuffer(sourceFileName);
         const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, image);
-        const previewFile = await assetStorageStrategy.writeFileFromBuffer(
+        const previewFileName = await assetStorageStrategy.writeFileFromBuffer(
             this.addSuffix(normalizedFileName, '__preview'),
             preview,
         );
@@ -46,8 +46,8 @@ export class AssetService {
             type: AssetType.IMAGE,
             name: filename,
             mimetype,
-            source: sourceFile,
-            preview: previewFile,
+            source: sourceFileName,
+            preview: previewFileName,
         });
         return this.connection.manager.save(asset);
     }

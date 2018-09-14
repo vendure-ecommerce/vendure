@@ -10,10 +10,8 @@ import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-
  * A persistence strategy which saves files to the local file system.
  */
 export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
-    private uploadPath: string;
-
-    constructor(uploadDir: string = 'assets') {
-        this.setAbsoluteUploadPath(uploadDir);
+    constructor(private readonly uploadPath: string, private readonly route: string) {
+        this.ensureUploadPathExists(this.uploadPath);
     }
 
     writeFileFromStream(fileName: string, data: Stream): Promise<string> {
@@ -42,19 +40,21 @@ export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
     }
 
     toAbsoluteUrl(request: Request, identifier: string): string {
-        return `${request.protocol}://${request.get('host')}/${identifier}`;
+        return `${request.protocol}://${request.get('host')}/${this.route}/${identifier}`;
     }
 
-    private setAbsoluteUploadPath(uploadDir: string): string {
-        this.uploadPath = uploadDir;
+    private ensureUploadPathExists(uploadDir: string): void {
         if (!fs.existsSync(this.uploadPath)) {
             fs.mkdirSync(this.uploadPath);
         }
-        return this.uploadPath;
+        const cachePath = path.join(this.uploadPath, 'cache');
+        if (!fs.existsSync(cachePath)) {
+            fs.mkdirSync(cachePath);
+        }
     }
 
     private filePathToIdentifier(filePath: string): string {
-        return `${path.basename(this.uploadPath)}/${path.basename(filePath)}`;
+        return `${path.basename(filePath)}`;
     }
 
     private identifierToFilePath(identifier: string): string {
