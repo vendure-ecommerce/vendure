@@ -2,6 +2,7 @@
 
 :host {
     display: flex;
+    overflow: hidden;
 }
 
 .gallery {
@@ -10,11 +11,18 @@
     grid-template-columns: repeat(auto-fill, 150px);
     grid-gap: 10px 20px;
     height: 100%;
+    overflow-y: auto;
+    padding-left: 12px;
+    padding-top: 12px;
+
+    .card:hover {
+        box-shadow: 0 0.125rem 0 0 $color-brand;
+        border: 1px solid $color-brand;
+    }
 }
 
-.card:hover {
-    box-shadow: 0 0.125rem 0 0 $color-brand;
-    border: 1px solid $color-brand;
+.card {
+    margin-top: 0;
 }
 
 .selected-checkbox {
@@ -48,6 +56,45 @@
 
 .info-bar {
     width: 25%;
+    padding: 0 6px;
+    overflow-y: auto;
+
+    .card {
+        z-index: 1;
+    }
+
+    .stack {
+        z-index: 0;
+        opacity: 0;
+        transform: perspective(500px) translateZ(0px) translateY(-16px);
+        height: 16px;
+        transition: transform 0.3s, opacity 0s 0.3s;
+        background-color: white;
+
+        &.visible {
+            opacity: 1;
+            transform: perspective(500px) translateZ(-44px) translateY(0px);
+            background-color: $color-grey-1;
+            transition: transform 0.3s, color 0.3s;
+        }
+    }
+
+    .selection-count {
+        opacity: 0;
+        text-align: center;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0s 0.3s;
+        .trigger {
+            cursor: pointer;
+            color: $color-grey-4;
+            text-decoration: underline;
+        }
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s, visibility 0s;
+        }
+    }
 
     .placeholder {
         text-align: center;

@@ -31,9 +31,9 @@
   "catalog": {
     "add-facet-value": "Add facet value",
     "apply-facets": "Apply facets",
+    "assets-selected-count": "{ count } assets selected",
     "confirm-generate-product-variants": "Click 'Finish' to generate {count} product variants.",
     "create-group": "Create option group",
-    "create-new-asset": "Create new asset",
     "create-new-facet": "Create new facet",
     "create-new-option-group": "Create new option group",
     "create-new-product": "Create new product",
@@ -64,6 +64,7 @@
     "sku": "SKU",
     "slug": "Slug",
     "truncated-options-count": "{count} further {count, plural, one {option} other {options}}",
+    "upload-assets": "Upload assets",
     "values": "Values",
     "with-selected": "With selected"
   },

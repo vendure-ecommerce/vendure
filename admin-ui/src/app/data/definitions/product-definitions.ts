@@ -241,8 +241,8 @@ export const GET_ASSET_LIST = gql`
 `;
 
 export const CREATE_ASSET = gql`
-    mutation CreateAsset($input: CreateAssetInput!) {
-        createAsset(input: $input) {
+    mutation CreateAsset($input: [CreateAssetInput!]!) {
+        createAssets(input: $input) {
             ...Asset
         }
     }

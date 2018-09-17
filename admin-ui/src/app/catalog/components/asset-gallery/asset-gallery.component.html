@@ -35,4 +35,15 @@
             </div>
         </div>
     </div>
+    <div class="card stack" [class.visible]="selection.length > 1"></div>
+    <div class="selection-count" [class.visible]="selection.length > 1">
+        <clr-tooltip>
+            <div clrTooltipTrigger class="trigger">{{ 'catalog.assets-selected-count' | translate: { count: selection.length } }}</div>
+            <clr-tooltip-content clrPosition="top-left" clrSize="lg" *clrIfOpen>
+                <ul>
+                    <li *ngFor="let asset of selection">{{ asset.name }}</li>
+                </ul>
+            </clr-tooltip-content>
+        </clr-tooltip>
+    </div>
 </div>

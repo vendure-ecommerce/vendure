@@ -1,14 +1,17 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <!--<a class="btn btn-primary" [routerLink]="['./create']">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'catalog.create-new-asset' | translate }}
-        </a>-->
-        <input type="file" (change)="fileSelected($event)">
+        <input type="file"
+               class="file-input"
+               #fileInput
+               (change)="filesSelected($event)" multiple>
+        <button class="btn btn-primary" (click)="fileInput.click()">
+            <clr-icon shape="upload-cloud"></clr-icon>
+            {{ 'catalog.upload-assets' | translate }}
+        </button>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-asset-gallery [assets]="items$ | async"
+<vdr-asset-gallery [assets]="items$ | async | paginate : (paginationConfig$ | async) || {}"
                    [multiSelect]="true"></vdr-asset-gallery>
 
 <div class="paging-controls">

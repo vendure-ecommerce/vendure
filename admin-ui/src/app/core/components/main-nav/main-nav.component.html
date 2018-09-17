@@ -19,6 +19,7 @@
                 </li>
                 <li><a class="nav-link"
                        [routerLink]="['/catalog', 'assets']"
+                       [queryParams]="{ perPage: 25 }"
                        routerLinkActive="active">
                     <clr-icon shape="image-gallery" size="20"></clr-icon>{{ 'nav.assets' | translate }}
                 </a>

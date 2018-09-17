@@ -183,9 +183,9 @@ export class ProductDataService {
         });
     }
 
-    createAsset(file: File): Observable<CreateAsset> {
+    createAssets(files: File[]): Observable<CreateAsset> {
         return this.baseDataService.mutate<CreateAsset, CreateAssetVariables>(CREATE_ASSET, {
-            input: { file },
+            input: files.map(file => ({ file })),
         });
     }
 }

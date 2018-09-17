@@ -1,6 +1,6 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
@@ -20,6 +20,7 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
     private destroy$ = new Subject<void>();
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
+    private refresh$ = new BehaviorSubject<undefined>(undefined);
 
     constructor(private router: Router, private route: ActivatedRoute) {}
 
@@ -39,7 +40,7 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
         }
         const listQuery = this.listQueryFn(10, 0);
 
-        const fetchPage = ([currentPage, itemsPerPage]: [number, number]) => {
+        const fetchPage = ([currentPage, itemsPerPage, _]: [number, number, undefined]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
             listQuery.ref.refetch({ options: { skip, take } });
@@ -56,7 +57,7 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
             map(perPage => (!perPage ? 10 : +perPage)),
         );
 
-        combineLatest(this.currentPage$, this.itemsPerPage$)
+        combineLatest(this.currentPage$, this.itemsPerPage$, this.refresh$)
             .pipe(takeUntil(this.destroy$))
             .subscribe(fetchPage);
     }
@@ -72,6 +73,13 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
 
     setItemsPerPage(perPage: number) {
         this.setQueryParam('perPage', perPage);
+    }
+
+    /**
+     * Re-fetch the current page
+     */
+    refresh() {
+        this.refresh$.next(undefined);
     }
 
     private setQueryParam(key: string, value: any) {

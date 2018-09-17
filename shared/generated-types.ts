@@ -1493,7 +1493,7 @@ export interface GetAssetListVariables {
 // GraphQL mutation operation: CreateAsset
 // ====================================================
 
-export interface CreateAsset_createAsset {
+export interface CreateAsset_createAssets {
   __typename: "Asset";
   id: string;
   name: string;
@@ -1508,11 +1508,11 @@ export interface CreateAsset {
   /**
    * Create a new Asset
    */
-  createAsset: CreateAsset_createAsset;
+  createAssets: CreateAsset_createAssets[];
 }
 
 export interface CreateAssetVariables {
-  input: CreateAssetInput;
+  input: CreateAssetInput[];
 }
 
 /* tslint:disable */
