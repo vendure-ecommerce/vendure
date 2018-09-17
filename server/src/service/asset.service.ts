@@ -7,6 +7,7 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ListQueryOptions } from '../common/types/common-types';
+import { getAssetType } from '../common/utils';
 import { ConfigService } from '../config/config.service';
 import { Asset } from '../entity/asset/asset.entity';
 
@@ -35,17 +36,18 @@ export class AssetService {
         const normalizedFileName = this.normalizeFileName(filename);
 
         const sourceFileName = await assetStorageStrategy.writeFileFromStream(normalizedFileName, stream);
-        const image = await assetStorageStrategy.readFileToBuffer(sourceFileName);
-        const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, image);
+        const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileName);
+        const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
         const previewFileName = await assetStorageStrategy.writeFileFromBuffer(
-            this.addSuffix(normalizedFileName, '__preview'),
+            this.getPreviewFileName(mimetype, normalizedFileName),
             preview,
         );
 
         const asset = new Asset({
-            type: AssetType.IMAGE,
+            type: getAssetType(mimetype),
             name: filename,
-            mimetype,
+            fileSize: sourceFile.byteLength,
+            mimeType: mimetype,
             source: sourceFileName,
             preview: previewFileName,
         });
@@ -58,6 +60,16 @@ export class AssetService {
             .toString(8)
             .substr(2, 8);
         return this.addSuffix(normalized, `-${randomPart}`);
+    }
+
+    private getPreviewFileName(mimeType: string, sourceFileName: string): string {
+        const previewSuffix = '__preview';
+        switch (getAssetType(mimeType)) {
+            case AssetType.IMAGE:
+                return this.addSuffix(sourceFileName, previewSuffix);
+            default:
+                return this.addSuffix(`${sourceFileName}.png`, previewSuffix);
+        }
     }
 
     private addSuffix(fileName: string, suffix: string): string {

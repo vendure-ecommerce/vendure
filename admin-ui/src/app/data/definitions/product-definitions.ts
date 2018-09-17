@@ -85,7 +85,8 @@ export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
         id
         name
-        mimetype
+        fileSize
+        mimeType
         type
         name
         preview

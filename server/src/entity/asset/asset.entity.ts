@@ -21,7 +21,9 @@ export class Asset extends VendureEntity {
 
     @Column('varchar') type: AssetType;
 
-    @Column() mimetype: string;
+    @Column() mimeType: string;
+
+    @Column() fileSize: number;
 
     @Column() source: string;
 

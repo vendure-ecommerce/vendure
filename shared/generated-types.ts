@@ -1465,7 +1465,8 @@ export interface GetAssetList_assets_items {
   __typename: "Asset";
   id: string;
   name: string;
-  mimetype: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
   preview: string;
   source: string;
@@ -1496,7 +1497,8 @@ export interface CreateAsset_createAsset {
   __typename: "Asset";
   id: string;
   name: string;
-  mimetype: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
   preview: string;
   source: string;
@@ -1814,7 +1816,8 @@ export interface Asset {
   __typename: "Asset";
   id: string;
   name: string;
-  mimetype: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
   preview: string;
   source: string;

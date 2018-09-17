@@ -3,7 +3,8 @@ type Asset implements Node {
     name: String!
     description: String
     type: AssetType!
-    mimetype: String!
+    fileSize: Int!
+    mimeType: String!
     source: String!
     preview: String!
 }

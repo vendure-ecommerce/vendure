@@ -9,5 +9,5 @@ import { Stream } from 'stream';
  * - watermarks added to preview images
  */
 export interface AssetPreviewStrategy {
-    generatePreviewImage(mimetype: string, data: Buffer): Promise<Buffer>;
+    generatePreviewImage(mimeType: string, data: Buffer): Promise<Buffer>;
 }
