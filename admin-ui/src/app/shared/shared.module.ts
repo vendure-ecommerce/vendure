@@ -28,6 +28,7 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { FileSizePipe } from './pipes/file-size.pipe';
 import { ModalService } from './providers/modal/modal.service';
 
 const IMPORTS = [
@@ -52,6 +53,7 @@ const DECLARATIONS = [
     DataTableColumnComponent,
     PaginationControlsComponent,
     TableRowActionComponent,
+    FileSizePipe,
     FormFieldComponent,
     FormFieldControlDirective,
     FormItemComponent,
