@@ -7,7 +7,7 @@ import { AssetService } from '../../service/asset.service';
 import { RequestContextPipe } from '../common/request-context.pipe';
 import { Allow } from '../roles-guard';
 
-@Resolver('Auth')
+@Resolver('Assets')
 export class AssetResolver {
     constructor(private assetService: AssetService) {}
 
@@ -34,7 +34,7 @@ export class AssetResolver {
      */
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createAsset(@Args() args: CreateAssetVariables): Promise<Asset> {
-        return this.assetService.create(args.input);
+    async createAssets(@Args() args: CreateAssetVariables): Promise<Asset[]> {
+        return Promise.all(args.input.map(asset => this.assetService.create(asset)));
     }
 }
