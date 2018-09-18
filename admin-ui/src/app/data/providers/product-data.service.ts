@@ -80,7 +80,7 @@ export class ProductDataService {
 
     createProduct(product: CreateProductInput): Observable<CreateProduct> {
         const input: CreateProductVariables = {
-            input: pick(product, ['image', 'translations', 'optionGroupCodes', 'customFields']),
+            input: pick(product, ['translations', 'customFields']),
         };
         return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(
             addCustomFields(CREATE_PRODUCT),
@@ -90,7 +90,7 @@ export class ProductDataService {
 
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
         const input: UpdateProductVariables = {
-            input: pick(product, ['id', 'image', 'translations', 'customFields']),
+            input: pick(product, ['id', 'translations', 'customFields']),
         };
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(
             addCustomFields(UPDATE_PRODUCT),
@@ -111,7 +111,7 @@ export class ProductDataService {
 
     updateProductVariants(variants: UpdateProductVariantInput[]): Observable<UpdateProductVariants> {
         const input: UpdateProductVariantsVariables = {
-            input: variants.map(pick(['id', 'translations', 'sku', 'image', 'price'])),
+            input: variants.map(pick(['id', 'translations', 'sku', 'price'])),
         };
         return this.baseDataService.mutate<UpdateProductVariants, UpdateProductVariantsVariables>(
             UPDATE_PRODUCT_VARIANTS,

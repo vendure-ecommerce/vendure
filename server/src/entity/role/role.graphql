@@ -15,7 +15,7 @@ input CreateRoleInput {
 
 input UpdateRoleInput {
     id: ID!
-    code: String!
-    description: String!
-    permissions: [Permission!]!
+    code: String
+    description: String
+    permissions: [Permission!]
 }

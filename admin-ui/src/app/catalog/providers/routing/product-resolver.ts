@@ -19,7 +19,6 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants> {
                 languageCode: getDefaultLanguage(),
                 name: '',
                 slug: '',
-                image: '',
                 featuredAsset: null,
                 assets: [],
                 description: '',

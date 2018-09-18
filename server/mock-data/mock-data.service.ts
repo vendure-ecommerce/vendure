@@ -1,6 +1,8 @@
 import * as faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 import {
+    AddOptionGroupToProduct,
+    AddOptionGroupToProductVariables,
     CreateFacet,
     CreateFacetValueWithFacetInput,
     CreateFacetVariables,
@@ -18,13 +20,13 @@ import {
 
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { CreateAddressDto } from '../src/entity/address/address.dto';
-import { CreateAdministratorDto } from '../src/entity/administrator/administrator.dto';
 import { Channel } from '../src/entity/channel/channel.entity';
 import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
@@ -61,8 +63,8 @@ export class MockDataService {
         return channels;
     }
 
-    async populateOptions(): Promise<any> {
-        await this.client
+    async populateOptions(): Promise<string> {
+        return this.client
             .query<CreateProductOptionGroup, CreateProductOptionGroupVariables>(CREATE_PRODUCT_OPTION_GROUP, {
                 input: {
                     code: 'size',
@@ -88,10 +90,10 @@ export class MockDataService {
                     ],
                 },
             })
-            .then(
-                data => this.log('Created option group:', data.createProductOptionGroup.name),
-                err => this.log(err),
-            );
+            .then(data => {
+                this.log('Created option group:', data.createProductOptionGroup.name);
+                return data.createProductOptionGroup.id;
+            });
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
@@ -155,7 +157,7 @@ export class MockDataService {
         }
     }
 
-    async populateProducts(count: number = 5): Promise<any> {
+    async populateProducts(count: number = 5, optionGroupId: string): Promise<any> {
         for (let i = 0; i < count; i++) {
             const query = CREATE_PRODUCT;
 
@@ -164,10 +166,8 @@ export class MockDataService {
             const description = faker.lorem.sentence();
             const languageCodes = [LanguageCode.en, LanguageCode.de];
 
-            const variables = {
+            const variables: CreateProductVariables = {
                 input: {
-                    image: faker.image.imageUrl(),
-                    optionGroupCodes: ['size'],
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
                     ),
@@ -183,7 +183,15 @@ export class MockDataService {
                     },
                     err => this.log(err),
                 );
+
             if (product) {
+                await this.client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        productId: product.createProduct.id,
+                        optionGroupId,
+                    },
+                );
                 const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
                 const variants = prodWithVariants.generateVariantsForProduct.variants;
                 for (const variant of variants) {

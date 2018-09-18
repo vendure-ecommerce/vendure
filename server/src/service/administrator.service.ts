@@ -11,6 +11,7 @@ import { User } from '../entity/user/user.entity';
 import { I18nError } from '../i18n/i18n-error';
 
 import { buildListQuery } from './helpers/build-list-query';
+import { patchEntity } from './helpers/patch-entity';
 import { PasswordService } from './password.service';
 import { RoleService } from './role.service';
 
@@ -66,19 +67,18 @@ export class AdministratorService {
                 id: input.id,
             });
         }
-        administrator.emailAddress = input.emailAddress;
-        administrator.firstName = input.firstName;
-        administrator.lastName = input.lastName;
+        let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.manager.save(administrator);
 
         if (input.password) {
             administrator.user.passwordHash = await this.passwordService.hash(input.password);
         }
-        administrator.user.roles = [];
-        let updatedAdministrator = administrator;
-        await this.connection.manager.save(administrator.user);
-        for (const roleId of input.roleIds) {
-            updatedAdministrator = await this.assignRole(administrator.id, roleId);
+        if (input.roleIds) {
+            administrator.user.roles = [];
+            await this.connection.manager.save(administrator.user);
+            for (const roleId of input.roleIds) {
+                updatedAdministrator = await this.assignRole(administrator.id, roleId);
+            }
         }
         return updatedAdministrator;
     }

@@ -20,7 +20,7 @@ type ProductOptionGroupTranslation {
 input ProductOptionGroupTranslationInput {
     id: ID
     languageCode: LanguageCode!
-    name: String!
+    name: String
 }
 
 input CreateProductOptionGroupInput {
@@ -31,6 +31,6 @@ input CreateProductOptionGroupInput {
 
 input UpdateProductOptionGroupInput {
     id: ID!
-    code: String!
-    translations: [ProductOptionGroupTranslationInput!]!
+    code: String
+    translations: [ProductOptionGroupTranslationInput!]
 }

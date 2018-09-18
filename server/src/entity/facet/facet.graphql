@@ -20,7 +20,7 @@ type FacetTranslation {
 input FacetTranslationInput {
     id: ID
     languageCode: LanguageCode!
-    name: String!
+    name: String
 }
 
 input CreateFacetInput {
@@ -31,6 +31,6 @@ input CreateFacetInput {
 
 input UpdateFacetInput {
     id: ID!
-    code: String!
-    translations: [FacetTranslationInput!]!
+    code: String
+    translations: [FacetTranslationInput!]
 }

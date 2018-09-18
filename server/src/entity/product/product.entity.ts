@@ -23,9 +23,6 @@ export class Product extends VendureEntity implements Translatable, HasCustomFie
 
     description: LocaleString;
 
-    // TODO: remove once Assets have been implemented
-    @Column() image: string;
-
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 

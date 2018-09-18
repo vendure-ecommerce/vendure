@@ -41,7 +41,7 @@ export type Translation<T> =
 /**
  * This is the type of a translation object when provided as input to a create or update operation.
  */
-export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & {
+export type TranslationInput<T> = { [K in TranslatableKeys<T>]?: string | null } & {
     id?: ID | null;
     languageCode: LanguageCode;
 };
@@ -51,7 +51,7 @@ export type TranslationInput<T> = { [K in TranslatableKeys<T>]: string } & {
  * properties.
  */
 export interface TranslatedInput<T> {
-    translations: Array<TranslationInput<T>>;
+    translations?: Array<TranslationInput<T>> | null;
 }
 
 // prettier-ignore

@@ -77,16 +77,6 @@ describe('TranslationUpdater', () => {
             expect(diff.toAdd).toEqual(updated);
         });
 
-        it('correctly marks translations for removal', async () => {
-            const updated = [];
-
-            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
-                existing,
-                updated,
-            );
-            expect(diff.toRemove).toEqual(existing);
-        });
-
         it('correctly marks languages for update, addition and deletion', async () => {
             const updated: Array<TranslationInput<Product>> = [
                 {
@@ -108,7 +98,6 @@ describe('TranslationUpdater', () => {
             );
             expect(diff.toUpdate).toEqual([existing[0]]);
             expect(diff.toAdd).toEqual([updated[1]]);
-            expect(diff.toRemove).toEqual([existing[1]]);
         });
     });
 });

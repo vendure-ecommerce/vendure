@@ -86,30 +86,6 @@ describe('ProductService', () => {
             expect(savedTranslation2 instanceof ProductTranslation).toBe(true);
             expect(savedProduct.translations).toEqual([savedTranslation1, savedTranslation2]);
         });
-
-        it('adds OptionGroups to the product when specified', async () => {
-            const mockOptionGroups = [
-                { code: 'optionGroup1' },
-                { code: 'optionGroup2' },
-                { code: 'optionGroup3' },
-            ];
-            connection.registerMockRepository(ProductOptionGroup).find.mockReturnValue(mockOptionGroups);
-
-            await productService.create(new RequestContext(), {
-                translations: [
-                    {
-                        languageCode: LanguageCode.en,
-                        name: 'Test en',
-                        slug: 'test-en',
-                        description: 'Test description en',
-                    },
-                ],
-                optionGroupCodes: ['optionGroup2'],
-            });
-
-            const savedProduct = connection.manager.save.mock.calls[1][0];
-            expect(savedProduct.optionGroups).toEqual([mockOptionGroups[1]]);
-        });
     });
 
     describe('update()', () => {
@@ -123,7 +99,6 @@ describe('ProductService', () => {
 
             const dto: UpdateProductInput = {
                 id: '1',
-                image: 'some-image',
                 translations: [],
             };
             await productService.update(new RequestContext(), dto);

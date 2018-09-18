@@ -1,6 +1,6 @@
 import { LanguageCode, ProductWithVariants } from 'shared/generated-types';
 
-import { CustomFieldConfig } from 'shared/shared-types';
+import { CustomFieldConfig, DeepPartial } from 'shared/shared-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 
@@ -18,7 +18,7 @@ describe('createUpdatedTranslatable()', () => {
                 { languageCode: LanguageCode.en, name: 'Old Name EN' },
                 { languageCode: LanguageCode.de, name: 'Old Name DE' },
             ],
-        } as Partial<ProductWithVariants>;
+        } as DeepPartial<ProductWithVariants>;
     });
 
     it('returns a clone', () => {

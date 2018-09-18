@@ -20,7 +20,6 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         name
         price
         sku
-        image
         options {
             id
             code
@@ -46,7 +45,6 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         languageCode
         name
         slug
-        image
         description
         featuredAsset {
             ...Asset

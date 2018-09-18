@@ -1,10 +1,9 @@
 import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
+import { Translatable, Translation, TranslationInput } from '../../common/types/locale-types';
 import { foundIn, not } from '../../common/utils';
 import { I18nError } from '../../i18n/i18n-error';
-
-import { Translatable, Translation, TranslationInput } from '../../common/types/locale-types';
 
 export interface TranslationContructor<T> {
     new (input?: DeepPartial<TranslationInput<T>> | DeepPartial<Translation<T>>): Translation<T>;
@@ -13,7 +12,6 @@ export interface TranslationContructor<T> {
 export interface TranslationDiff<T> {
     toUpdate: Array<Translation<T>>;
     toAdd: Array<Translation<T>>;
-    toRemove: Array<Translation<T>>;
 }
 
 /**
@@ -28,30 +26,37 @@ export class TranslationUpdater<Entity extends Translatable> {
      */
     diff(
         existing: Array<Translation<Entity>>,
-        updated: Array<TranslationInput<Entity>>,
+        updated?: Array<TranslationInput<Entity>> | null,
     ): TranslationDiff<Entity> {
-        const translationEntities = this.translationInputsToEntities(updated, existing);
+        if (updated) {
+            const translationEntities = this.translationInputsToEntities(updated, existing);
 
-        const toDelete = existing.filter(not(foundIn(translationEntities, 'languageCode')));
-        const toAdd = translationEntities.filter(not(foundIn(existing, 'languageCode')));
-        const toUpdate = translationEntities.filter(foundIn(existing, 'languageCode'));
+            // TODO: deletion should be made more explicit that simple omission
+            // from the update array. This would lead to accidental deletion.
+            // const toDelete = existing.filter(not(foundIn(translationEntities, 'languageCode')));
+            const toDelete = [];
+            const toAdd = translationEntities.filter(not(foundIn(existing, 'languageCode')));
+            const toUpdate = translationEntities.filter(foundIn(existing, 'languageCode'));
 
-        return { toUpdate, toAdd, toRemove: toDelete };
+            return { toUpdate, toAdd };
+        } else {
+            return {
+                toUpdate: [],
+                toAdd: [],
+            };
+        }
     }
 
-    async applyDiff(entity: Entity, { toUpdate, toAdd, toRemove }: TranslationDiff<Entity>): Promise<Entity> {
-        entity.translations = [];
-
+    async applyDiff(entity: Entity, { toUpdate, toAdd }: TranslationDiff<Entity>): Promise<Entity> {
         if (toUpdate.length) {
             for (const translation of toUpdate) {
-                await this.manager
-                    .createQueryBuilder()
-                    .update(this.translationCtor)
-                    .set(translation)
-                    .where('id = :id', { id: translation.id })
-                    .execute();
+                // any cast below is required due to TS issue: https://github.com/Microsoft/TypeScript/issues/21592
+                const updated = await this.manager
+                    .getRepository(this.translationCtor)
+                    .save(translation as any);
+                const index = entity.translations.findIndex(t => t.languageCode === updated.languageCode);
+                entity.translations.splice(index, 1, updated);
             }
-            entity.translations = entity.translations.concat(toUpdate);
         }
 
         if (toAdd.length) {
@@ -67,17 +72,8 @@ export class TranslationUpdater<Entity extends Translatable> {
                     const id = (entity as any).id || 'undefined';
                     throw new I18nError('error.entity-with-id-not-found', { entityName, id });
                 }
-
                 entity.translations.push(newTranslation);
             }
-        }
-
-        if (toRemove.length) {
-            const toDeleteEntities = toRemove.map(translation => {
-                translation.base = entity;
-                return translation;
-            });
-            await this.manager.getRepository(this.translationCtor).remove(toDeleteEntities);
         }
 
         return entity;

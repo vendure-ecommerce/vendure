@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import {
+    CreateProductInput,
     LanguageCode,
     ProductWithVariants,
     ProductWithVariants_variants,
@@ -127,7 +128,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         product,
                         productGroup as FormGroup,
                         languageCode,
-                    );
+                    ) as CreateProductInput;
                     return this.dataService.product.createProduct(newProduct);
                 }),
             )
@@ -161,7 +162,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                             product,
                             productGroup as FormGroup,
                             languageCode,
-                        );
+                        ) as UpdateProductInput;
                         if (newProduct) {
                             updateOperations.push(this.dataService.product.updateProduct(newProduct));
                         }
@@ -253,7 +254,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         product: ProductWithVariants,
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
-    ): UpdateProductInput {
+    ): UpdateProductInput | CreateProductInput {
         return createUpdatedTranslatable(product, productFormGroup.value, this.customFields, languageCode, {
             languageCode,
             name: product.name || '',

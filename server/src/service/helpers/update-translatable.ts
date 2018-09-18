@@ -1,8 +1,10 @@
+import { omit } from 'shared/omit';
 import { ID, Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { Translatable, TranslatedInput, Translation } from '../../common/types/locale-types';
 
+import { patchEntity } from './patch-entity';
 import { TranslationUpdaterService } from './translation-updater.service';
 
 /**
@@ -26,7 +28,11 @@ export function updateTranslatable<T extends Translatable>(
         const translationUpdater = translationUpdaterService.create(translationType);
         const diff = translationUpdater.diff(existingTranslations, dto.translations);
 
-        const entity = await translationUpdater.applyDiff(new entityType(dto), diff);
+        const entity = await translationUpdater.applyDiff(
+            new entityType({ ...dto, translations: existingTranslations }),
+            diff,
+        );
+        const updatedEntity = patchEntity(entity as any, omit(dto, ['translations']));
         return connection.manager.save(entity);
     };
 }

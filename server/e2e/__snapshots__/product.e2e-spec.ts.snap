@@ -6,7 +6,6 @@ Object {
   "description": "A baked potato",
   "featuredAsset": null,
   "id": "21",
-  "image": "baked-potato",
   "languageCode": "en",
   "name": "en Baked Potato",
   "optionGroups": Array [],
@@ -35,7 +34,6 @@ Object {
   "description": "A blob of mashed potato",
   "featuredAsset": null,
   "id": "21",
-  "image": "mashed-potato",
   "languageCode": "en",
   "name": "en Mashed Potato",
   "optionGroups": Array [],
@@ -104,7 +102,6 @@ Object {
   "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
   "featuredAsset": null,
   "id": "2",
-  "image": "http://lorempixel.com/640/480",
   "languageCode": "en",
   "name": "en Practical Plastic Chicken",
   "optionGroups": Array [

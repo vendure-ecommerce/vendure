@@ -20,10 +20,12 @@ export function createTranslatable<T extends Translatable>(
         const entity = new entityType(dto);
         const translations: Array<Translation<T>> = [];
 
-        for (const input of dto.translations) {
-            const translation = new translationType(input);
-            translations.push(translation);
-            await connection.manager.save(translation);
+        if (dto.translations) {
+            for (const input of dto.translations) {
+                const translation = new translationType(input);
+                translations.push(translation);
+                await connection.manager.save(translation);
+            }
         }
 
         entity.translations = translations;

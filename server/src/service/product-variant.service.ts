@@ -89,7 +89,6 @@ export class ProductVariantService {
             const variant = await this.create(ctx, product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
-                image: '',
                 optionCodes: options.map(o => o.code),
                 translations: [
                     {

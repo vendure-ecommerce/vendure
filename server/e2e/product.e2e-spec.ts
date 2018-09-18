@@ -146,7 +146,6 @@ describe('Product resolver', () => {
         it('createProduct creates a new Product', async () => {
             const result = await client.query<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, {
                 input: {
-                    image: 'baked-potato',
                     translations: [
                         {
                             languageCode: LanguageCode.en,
@@ -171,7 +170,6 @@ describe('Product resolver', () => {
             const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
                 input: {
                     id: newProduct.id,
-                    image: 'mashed-potato',
                     translations: [
                         {
                             languageCode: LanguageCode.en,
@@ -191,12 +189,29 @@ describe('Product resolver', () => {
             expect(result.updateProduct).toMatchSnapshot();
         });
 
+        it('updateProduct accepts partial input', async () => {
+            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Very Mashed Potato',
+                        },
+                    ],
+                },
+            });
+            expect(result.updateProduct.translations.length).toBe(2);
+            expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
+            expect(result.updateProduct.translations[0].description).toBe('A blob of mashed potato');
+            expect(result.updateProduct.translations[1].name).toBe('de Mashed Potato');
+        });
+
         it('updateProduct errors with an invalid productId', async () => {
             try {
                 await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
                     input: {
                         id: '999',
-                        image: 'mashed-potato',
                         translations: [
                             {
                                 languageCode: LanguageCode.en,
@@ -339,7 +354,6 @@ describe('Product resolver', () => {
                                 id: firstVariant.id,
                                 translations: firstVariant.translations,
                                 sku: 'ABC',
-                                image: 'new-image',
                                 price: 432,
                             },
                         ],
@@ -351,7 +365,6 @@ describe('Product resolver', () => {
                     return;
                 }
                 expect(updatedVariant.sku).toBe('ABC');
-                expect(updatedVariant.image).toBe('new-image');
                 expect(updatedVariant.price).toBe(432);
             });
 
@@ -365,7 +378,6 @@ describe('Product resolver', () => {
                                     id: '999',
                                     translations: variants[0].translations,
                                     sku: 'ABC',
-                                    image: 'new-image',
                                     price: 432,
                                 },
                             ],

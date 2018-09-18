@@ -19,7 +19,7 @@ type ProductOptionTranslation {
 input ProductOptionTranslationInput {
     id: ID
     languageCode: LanguageCode!
-    name: String!
+    name: String
 }
 
 input CreateProductOptionInput {

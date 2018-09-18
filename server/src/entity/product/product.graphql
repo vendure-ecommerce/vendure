@@ -6,7 +6,6 @@ type Product implements Node {
     name: String!
     slug: String!
     description: String!
-    image: String!
     featuredAsset: Asset
     assets: [Asset!]!
     variants: [ProductVariant!]!
@@ -27,20 +26,20 @@ type ProductTranslation {
 input ProductTranslationInput {
     id: ID
     languageCode: LanguageCode!
-    name: String!
-    slug: String!
-    description: String!
+    name: String
+    slug: String
+    description: String
 }
 
 input CreateProductInput {
-    image: String
+    featuredAssetId: ID
+    assetIds: [ID!]
     translations: [ProductTranslationInput!]!
-    optionGroupCodes: [String!]
 }
 
 input UpdateProductInput {
     id: ID!
-    image: String
-    translations: [ProductTranslationInput!]!
-    optionGroupCodes: [String!]
+    featuredAssetId: ID
+    assetIds: [ID!]
+    translations: [ProductTranslationInput!]
 }

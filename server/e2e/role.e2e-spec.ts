@@ -80,6 +80,23 @@ describe('Role resolver', () => {
         expect(omit(result.updateRole, ['channels'])).toMatchSnapshot();
     });
 
+    it('updateRole works with partial input', async () => {
+        const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
+            input: {
+                id: createdRole.id,
+                code: 'test-modified-again',
+            },
+        });
+
+        expect(result.updateRole.code).toBe('test-modified-again');
+        expect(result.updateRole.description).toBe('test role modified');
+        expect(result.updateRole.permissions).toEqual([
+            Permission.ReadCustomer,
+            Permission.UpdateCustomer,
+            Permission.DeleteCustomer,
+        ]);
+    });
+
     it('updateRole is not allowed for SuperAdmin role', async () => {
         const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
         if (!superAdminRole) {

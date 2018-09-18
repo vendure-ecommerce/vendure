@@ -870,7 +870,6 @@ export interface UpdateProduct_updateProduct_variants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: UpdateProduct_updateProduct_variants_options[];
   facetValues: UpdateProduct_updateProduct_variants_facetValues[];
   translations: UpdateProduct_updateProduct_variants_translations[];
@@ -882,7 +881,6 @@ export interface UpdateProduct_updateProduct {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  image: string;
   description: string;
   featuredAsset: UpdateProduct_updateProduct_featuredAsset | null;
   assets: UpdateProduct_updateProduct_assets[];
@@ -976,7 +974,6 @@ export interface CreateProduct_createProduct_variants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: CreateProduct_createProduct_variants_options[];
   facetValues: CreateProduct_createProduct_variants_facetValues[];
   translations: CreateProduct_createProduct_variants_translations[];
@@ -988,7 +985,6 @@ export interface CreateProduct_createProduct {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  image: string;
   description: string;
   featuredAsset: CreateProduct_createProduct_featuredAsset | null;
   assets: CreateProduct_createProduct_assets[];
@@ -1082,7 +1078,6 @@ export interface GenerateProductVariants_generateVariantsForProduct_variants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: GenerateProductVariants_generateVariantsForProduct_variants_options[];
   facetValues: GenerateProductVariants_generateVariantsForProduct_variants_facetValues[];
   translations: GenerateProductVariants_generateVariantsForProduct_variants_translations[];
@@ -1094,7 +1089,6 @@ export interface GenerateProductVariants_generateVariantsForProduct {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  image: string;
   description: string;
   featuredAsset: GenerateProductVariants_generateVariantsForProduct_featuredAsset | null;
   assets: GenerateProductVariants_generateVariantsForProduct_assets[];
@@ -1152,7 +1146,6 @@ export interface UpdateProductVariants_updateProductVariants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: UpdateProductVariants_updateProductVariants_options[];
   facetValues: UpdateProductVariants_updateProductVariants_facetValues[];
   translations: UpdateProductVariants_updateProductVariants_translations[];
@@ -1328,7 +1321,6 @@ export interface ApplyFacetValuesToProductVariants_applyFacetValuesToProductVari
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: ApplyFacetValuesToProductVariants_applyFacetValuesToProductVariants_options[];
   facetValues: ApplyFacetValuesToProductVariants_applyFacetValuesToProductVariants_facetValues[];
   translations: ApplyFacetValuesToProductVariants_applyFacetValuesToProductVariants_translations[];
@@ -1420,7 +1412,6 @@ export interface GetProductWithVariants_product_variants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: GetProductWithVariants_product_variants_options[];
   facetValues: GetProductWithVariants_product_variants_facetValues[];
   translations: GetProductWithVariants_product_variants_translations[];
@@ -1432,7 +1423,6 @@ export interface GetProductWithVariants_product {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  image: string;
   description: string;
   featuredAsset: GetProductWithVariants_product_featuredAsset | null;
   assets: GetProductWithVariants_product_assets[];
@@ -1761,7 +1751,6 @@ export interface ProductVariant {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: ProductVariant_options[];
   facetValues: ProductVariant_facetValues[];
   translations: ProductVariant_translations[];
@@ -1841,7 +1830,6 @@ export interface ProductWithVariants_variants {
   name: string;
   price: number;
   sku: string;
-  image: string | null;
   options: ProductWithVariants_variants_options[];
   facetValues: ProductWithVariants_variants_facetValues[];
   translations: ProductWithVariants_variants_translations[];
@@ -1853,7 +1841,6 @@ export interface ProductWithVariants {
   languageCode: LanguageCode;
   name: string;
   slug: string;
-  image: string;
   description: string;
   featuredAsset: ProductWithVariants_featuredAsset | null;
   assets: ProductWithVariants_assets[];
@@ -2227,9 +2214,9 @@ export interface CreateProductCustomFieldsInput {
 }
 
 export interface CreateProductInput {
-  image?: string | null;
+  featuredAssetId?: string | null;
+  assetIds?: string[] | null;
   translations: ProductTranslationInput[];
-  optionGroupCodes?: string[] | null;
   customFields?: CreateProductCustomFieldsInput | null;
 }
 
@@ -2291,14 +2278,14 @@ export interface FacetSortParameter {
 export interface FacetTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
-  name: string;
+  name?: string | null;
   customFields?: any | null;
 }
 
 export interface FacetValueTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
-  name: string;
+  name?: string | null;
   customFields?: any | null;
 }
 
@@ -2323,7 +2310,7 @@ export interface ProductListOptions {
 export interface ProductOptionGroupTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
-  name: string;
+  name?: string | null;
   customFields?: any | null;
 }
 
@@ -2347,16 +2334,16 @@ export interface ProductTranslationCustomFieldsInput {
 export interface ProductTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
-  name: string;
-  slug: string;
-  description: string;
+  name?: string | null;
+  slug?: string | null;
+  description?: string | null;
   customFields?: ProductTranslationCustomFieldsInput | null;
 }
 
 export interface ProductVariantTranslationInput {
   id?: string | null;
   languageCode: LanguageCode;
-  name: string;
+  name?: string | null;
   customFields?: any | null;
 }
 
@@ -2389,11 +2376,11 @@ export interface StringOperators {
 
 export interface UpdateAdministratorInput {
   id: string;
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  emailAddress?: string | null;
   password?: string | null;
-  roleIds: string[];
+  roleIds?: string[] | null;
 }
 
 export interface UpdateFacetCustomFieldsInput {
@@ -2402,8 +2389,8 @@ export interface UpdateFacetCustomFieldsInput {
 
 export interface UpdateFacetInput {
   id: string;
-  code: string;
-  translations: FacetTranslationInput[];
+  code?: string | null;
+  translations?: FacetTranslationInput[] | null;
   customFields?: UpdateFacetCustomFieldsInput | null;
 }
 
@@ -2414,8 +2401,8 @@ export interface UpdateFacetValueCustomFieldsInput {
 
 export interface UpdateFacetValueInput {
   id: string;
-  code: string;
-  translations: FacetValueTranslationInput[];
+  code?: string | null;
+  translations?: FacetValueTranslationInput[] | null;
   customFields?: UpdateFacetValueCustomFieldsInput | null;
 }
 
@@ -2426,26 +2413,25 @@ export interface UpdateProductCustomFieldsInput {
 
 export interface UpdateProductInput {
   id: string;
-  image?: string | null;
-  translations: ProductTranslationInput[];
-  optionGroupCodes?: string[] | null;
+  featuredAssetId?: string | null;
+  assetIds?: string[] | null;
+  translations?: ProductTranslationInput[] | null;
   customFields?: UpdateProductCustomFieldsInput | null;
 }
 
 export interface UpdateProductVariantInput {
   id: string;
-  translations: ProductVariantTranslationInput[];
-  sku: string;
-  image?: string | null;
-  price: number;
+  translations?: ProductVariantTranslationInput[] | null;
+  sku?: string | null;
+  price?: number | null;
   customFields?: any | null;
 }
 
 export interface UpdateRoleInput {
   id: string;
-  code: string;
-  description: string;
-  permissions: Permission[];
+  code?: string | null;
+  description?: string | null;
+  permissions?: Permission[] | null;
 }
 
 //==============================================================

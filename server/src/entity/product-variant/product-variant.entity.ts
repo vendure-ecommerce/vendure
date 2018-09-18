@@ -21,8 +21,6 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @Column() sku: string;
 
-    @Column() image: string;
-
     @Column({
         name: 'lastPriceValue',
         comment: 'Not used - actual price is stored in product_variant_price table',

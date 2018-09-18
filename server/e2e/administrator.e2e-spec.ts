@@ -85,6 +85,21 @@ describe('Administrator resolver', () => {
         expect(result.updateAdministrator).toMatchSnapshot();
     });
 
+    it('updateAdministrator works with partial input', async () => {
+        const result = await client.query<UpdateAdministrator, UpdateAdministratorVariables>(
+            UPDATE_ADMINISTRATOR,
+            {
+                input: {
+                    id: createdAdmin.id,
+                    emailAddress: 'newest-email',
+                },
+            },
+        );
+        expect(result.updateAdministrator.emailAddress).toBe('newest-email');
+        expect(result.updateAdministrator.firstName).toBe('new first');
+        expect(result.updateAdministrator.lastName).toBe('new last');
+    });
+
     it('updateAdministrator throws with invalid roleId', async () => {
         try {
             const result = await client.query<UpdateAdministrator, UpdateAdministratorVariables>(

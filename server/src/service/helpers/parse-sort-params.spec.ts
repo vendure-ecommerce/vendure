@@ -43,14 +43,12 @@ describe('parseSortParams()', () => {
         const sortParams: SortParameter<Product> = {
             id: 'ASC',
             createdAt: 'DESC',
-            image: 'ASC',
         };
 
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
             'product.id': 'ASC',
             'product.createdAt': 'DESC',
-            'product.image': 'ASC',
         });
     });
 

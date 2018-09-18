@@ -86,12 +86,6 @@ export class ProductService {
     async create(ctx: RequestContext, createProductDto: CreateProductInput): Promise<Translated<Product>> {
         const save = createTranslatable(Product, ProductTranslation, async p => {
             this.channelService.assignToChannels(p, ctx);
-            const { optionGroupCodes } = createProductDto;
-            if (optionGroupCodes && optionGroupCodes.length) {
-                const optionGroups = await this.connection.getRepository(ProductOptionGroup).find();
-                const selectedOptionGroups = optionGroups.filter(og => optionGroupCodes.includes(og.code));
-                p.optionGroups = selectedOptionGroups;
-            }
         });
         const product = await save(this.connection, createProductDto);
         return assertFound(this.findOne(ctx, product.id));
