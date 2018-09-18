@@ -16,9 +16,6 @@ export class Asset extends VendureEntity {
 
     @Column() name: string;
 
-    @Column({ nullable: true })
-    description: string;
-
     @Column('varchar') type: AssetType;
 
     @Column() mimeType: string;

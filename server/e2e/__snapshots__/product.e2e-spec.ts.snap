@@ -4,6 +4,7 @@ exports[`Product resolver product mutation createProduct creates a new Product 1
 Object {
   "assets": Array [],
   "description": "A baked potato",
+  "featuredAsset": null,
   "id": "21",
   "image": "baked-potato",
   "languageCode": "en",
@@ -32,6 +33,7 @@ exports[`Product resolver product mutation updateProduct updates a Product 1`] =
 Object {
   "assets": Array [],
   "description": "A blob of mashed potato",
+  "featuredAsset": null,
   "id": "21",
   "image": "mashed-potato",
   "languageCode": "en",
@@ -100,6 +102,7 @@ exports[`Product resolver product query returns expected properties 1`] = `
 Object {
   "assets": Array [],
   "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
+  "featuredAsset": null,
   "id": "2",
   "image": "http://lorempixel.com/640/480",
   "languageCode": "en",

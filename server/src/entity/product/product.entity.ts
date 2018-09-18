@@ -27,7 +27,7 @@ export class Product extends VendureEntity implements Translatable, HasCustomFie
     @Column() image: string;
 
     @ManyToOne(type => Asset)
-    defaultAsset: Asset;
+    featuredAsset: Asset;
 
     @ManyToMany(type => Asset)
     @JoinTable()

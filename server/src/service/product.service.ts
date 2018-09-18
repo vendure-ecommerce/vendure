@@ -32,7 +32,14 @@ export class ProductService {
         ctx: RequestContext,
         options?: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const relations = ['variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
+        const relations = [
+            'featuredAsset',
+            'assets',
+            'variants',
+            'optionGroups',
+            'variants.options',
+            'variants.facetValues',
+        ];
 
         return buildListQuery(this.connection, Product, options, relations)
             .getManyAndCount()
@@ -55,7 +62,14 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const relations = ['assets', 'variants', 'optionGroups', 'variants.options', 'variants.facetValues'];
+        const relations = [
+            'featuredAsset',
+            'assets',
+            'variants',
+            'optionGroups',
+            'variants.options',
+            'variants.facetValues',
+        ];
         const product = await this.connection.manager.findOne(Product, productId, { relations });
         if (!product) {
             return;

@@ -43,7 +43,9 @@ export const devConfig: VendureConfig = {
             presets: [
                 { name: 'tiny', width: 50, height: 50, mode: 'crop' },
                 { name: 'thumb', width: 150, height: 150, mode: 'crop' },
+                { name: 'small', width: 300, height: 300, mode: 'resize' },
                 { name: 'medium', width: 500, height: 500, mode: 'resize' },
+                { name: 'large', width: 800, height: 800, mode: 'resize' },
             ],
         }),
     ],
