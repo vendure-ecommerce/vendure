@@ -1,13 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <input type="file"
-               class="file-input"
-               #fileInput
-               (change)="filesSelected($event)" multiple>
-        <button class="btn btn-primary" (click)="fileInput.click()">
-            <clr-icon shape="upload-cloud"></clr-icon>
-            {{ 'catalog.upload-assets' | translate }}
-        </button>
+        <vdr-asset-file-input (selectFiles)="filesSelected($event)"
+                              dropZoneTarget=".content-area"></vdr-asset-file-input>
     </vdr-ab-right>
 </vdr-action-bar>
 

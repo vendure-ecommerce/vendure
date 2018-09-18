@@ -1,0 +1,23 @@
+<input type="file"
+       class="file-input"
+       #fileInput
+       (change)="select($event)" multiple>
+<button class="btn btn-primary" (click)="fileInput.click()">
+    <clr-icon shape="upload-cloud"></clr-icon>
+    {{ 'catalog.upload-assets' | translate }}
+</button>
+<div class="drop-zone"
+     [ngStyle]="dropZoneStyle"
+     [class.visible]="dragging"
+     [class.dragging-over]="overDropZone"
+     (dragenter)="overDropZone = true"
+     (dragleave)="overDropZone = false"
+     (dragover)="onDragOver($event)"
+     (drop)="onDrop($event)"
+     #dropZone>
+    <div class="drop-label"
+         (dragenter)="overDropZone = true">
+        <clr-icon shape="upload-cloud" size="32"></clr-icon>
+        {{ 'catalog.drop-files-to-upload' | translate }}
+    </div>
+</div>

@@ -19,7 +19,10 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="productForm" >
+<form class="form" [formGroup]="productForm" *ngIf="product$ | async as product">
+
+    <div class="clr-row">
+        <div class="clr-col">
     <section class="form-block" formGroupName="product">
         <label>{{ 'catalog.product' | translate }}</label>
         <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
@@ -41,19 +44,25 @@
             </ng-container>
         </section>
     </section>
+        </div>
+        <div class="clr-col-md-auto">
+            <vdr-product-assets [assets]="product.assets"
+                                [featuredAsset]="product.featuredAsset"></vdr-product-assets>
+        </div>
+    </div>
 
     <section class="form-block" *ngIf="!(isNew$ | async)">
 
         <label>{{ 'catalog.product-variants' | translate }}</label>
 
         <vdr-generate-product-variants *ngIf="(variants$ | async)?.length === 0; else variants"
-                                       [product]="product$ | async"></vdr-generate-product-variants>
+                                       [product]="product"></vdr-generate-product-variants>
 
         <ng-template #variants>
-            <vdr-form-item *ngIf="(product$ | async)?.optionGroups.length"
+            <vdr-form-item *ngIf="product?.optionGroups.length"
                            [label]="'catalog.product-option-groups' | translate">
                 <div class="option-groups-list">
-                    <div *ngFor="let optionGroup of (product$ | async)?.optionGroups"
+                    <div *ngFor="let optionGroup of product?.optionGroups"
                          class="option-group">
                         <vdr-chip>{{ optionGroup.name }} ({{ optionGroup.code }})</vdr-chip>
                     </div>

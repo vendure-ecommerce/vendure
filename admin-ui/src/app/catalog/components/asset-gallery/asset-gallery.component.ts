@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Asset } from 'shared/generated-types';
 
 @Component({
@@ -13,6 +13,7 @@ export class AssetGalleryComponent {
      * If true, allows multiple assets to be selected by ctrl+clicking.
      */
     @Input() multiSelect = false;
+    @Output() selectionChange = new EventEmitter<Asset[]>();
 
     selection: Asset[] = [];
 
@@ -33,6 +34,7 @@ export class AssetGalleryComponent {
                 this.selection.splice(index, 1);
             }
         }
+        this.selectionChange.emit(this.selection);
     }
 
     isSelected(asset: Asset): boolean {

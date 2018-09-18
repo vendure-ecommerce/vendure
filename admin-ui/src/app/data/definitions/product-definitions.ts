@@ -1,5 +1,18 @@
 import gql from 'graphql-tag';
 
+export const ASSET_FRAGMENT = gql`
+    fragment Asset on Asset {
+        id
+        name
+        fileSize
+        mimeType
+        type
+        name
+        preview
+        source
+    }
+`;
+
 export const PRODUCT_VARIANT_FRAGMENT = gql`
     fragment ProductVariant on ProductVariant {
         id
@@ -35,11 +48,11 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         slug
         image
         description
+        featuredAsset {
+            ...Asset
+        }
         assets {
-            description
-            name
-            preview
-            type
+            ...Asset
         }
         translations {
             languageCode
@@ -58,6 +71,7 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         }
     }
     ${PRODUCT_VARIANT_FRAGMENT}
+    ${ASSET_FRAGMENT}
 `;
 
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
@@ -78,19 +92,6 @@ export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
                 name
             }
         }
-    }
-`;
-
-export const ASSET_FRAGMENT = gql`
-    fragment Asset on Asset {
-        id
-        name
-        fileSize
-        mimeType
-        type
-        name
-        preview
-        source
     }
 `;
 

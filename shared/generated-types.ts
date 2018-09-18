@@ -803,12 +803,26 @@ export interface GetUiState {
 // GraphQL mutation operation: UpdateProduct
 // ====================================================
 
+export interface UpdateProduct_updateProduct_featuredAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
 export interface UpdateProduct_updateProduct_assets {
   __typename: "Asset";
-  description: string | null;
+  id: string;
   name: string;
-  preview: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
+  preview: string;
+  source: string;
 }
 
 export interface UpdateProduct_updateProduct_translations {
@@ -870,6 +884,7 @@ export interface UpdateProduct_updateProduct {
   slug: string;
   image: string;
   description: string;
+  featuredAsset: UpdateProduct_updateProduct_featuredAsset | null;
   assets: UpdateProduct_updateProduct_assets[];
   translations: UpdateProduct_updateProduct_translations[];
   optionGroups: UpdateProduct_updateProduct_optionGroups[];
@@ -894,12 +909,26 @@ export interface UpdateProductVariables {
 // GraphQL mutation operation: CreateProduct
 // ====================================================
 
+export interface CreateProduct_createProduct_featuredAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
 export interface CreateProduct_createProduct_assets {
   __typename: "Asset";
-  description: string | null;
+  id: string;
   name: string;
-  preview: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
+  preview: string;
+  source: string;
 }
 
 export interface CreateProduct_createProduct_translations {
@@ -961,6 +990,7 @@ export interface CreateProduct_createProduct {
   slug: string;
   image: string;
   description: string;
+  featuredAsset: CreateProduct_createProduct_featuredAsset | null;
   assets: CreateProduct_createProduct_assets[];
   translations: CreateProduct_createProduct_translations[];
   optionGroups: CreateProduct_createProduct_optionGroups[];
@@ -985,12 +1015,26 @@ export interface CreateProductVariables {
 // GraphQL mutation operation: GenerateProductVariants
 // ====================================================
 
+export interface GenerateProductVariants_generateVariantsForProduct_featuredAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
 export interface GenerateProductVariants_generateVariantsForProduct_assets {
   __typename: "Asset";
-  description: string | null;
+  id: string;
   name: string;
-  preview: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
+  preview: string;
+  source: string;
 }
 
 export interface GenerateProductVariants_generateVariantsForProduct_translations {
@@ -1052,6 +1096,7 @@ export interface GenerateProductVariants_generateVariantsForProduct {
   slug: string;
   image: string;
   description: string;
+  featuredAsset: GenerateProductVariants_generateVariantsForProduct_featuredAsset | null;
   assets: GenerateProductVariants_generateVariantsForProduct_assets[];
   translations: GenerateProductVariants_generateVariantsForProduct_translations[];
   optionGroups: GenerateProductVariants_generateVariantsForProduct_optionGroups[];
@@ -1308,12 +1353,26 @@ export interface ApplyFacetValuesToProductVariantsVariables {
 // GraphQL query operation: GetProductWithVariants
 // ====================================================
 
+export interface GetProductWithVariants_product_featuredAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
 export interface GetProductWithVariants_product_assets {
   __typename: "Asset";
-  description: string | null;
+  id: string;
   name: string;
-  preview: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
+  preview: string;
+  source: string;
 }
 
 export interface GetProductWithVariants_product_translations {
@@ -1375,6 +1434,7 @@ export interface GetProductWithVariants_product {
   slug: string;
   image: string;
   description: string;
+  featuredAsset: GetProductWithVariants_product_featuredAsset | null;
   assets: GetProductWithVariants_product_assets[];
   translations: GetProductWithVariants_product_translations[];
   optionGroups: GetProductWithVariants_product_optionGroups[];
@@ -1651,6 +1711,24 @@ export interface FacetWithValues {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL fragment: Asset
+// ====================================================
+
+export interface Asset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: ProductVariant
 // ====================================================
 
@@ -1696,12 +1774,26 @@ export interface ProductVariant {
 // GraphQL fragment: ProductWithVariants
 // ====================================================
 
+export interface ProductWithVariants_featuredAsset {
+  __typename: "Asset";
+  id: string;
+  name: string;
+  fileSize: number;
+  mimeType: string;
+  type: AssetType;
+  preview: string;
+  source: string;
+}
+
 export interface ProductWithVariants_assets {
   __typename: "Asset";
-  description: string | null;
+  id: string;
   name: string;
-  preview: string;
+  fileSize: number;
+  mimeType: string;
   type: AssetType;
+  preview: string;
+  source: string;
 }
 
 export interface ProductWithVariants_translations {
@@ -1763,6 +1855,7 @@ export interface ProductWithVariants {
   slug: string;
   image: string;
   description: string;
+  featuredAsset: ProductWithVariants_featuredAsset | null;
   assets: ProductWithVariants_assets[];
   translations: ProductWithVariants_translations[];
   optionGroups: ProductWithVariants_optionGroups[];
@@ -1803,24 +1896,6 @@ export interface ProductOptionGroup {
   name: string;
   translations: ProductOptionGroup_translations[];
   options: ProductOptionGroup_options[];
-}
-
-/* tslint:disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL fragment: Asset
-// ====================================================
-
-export interface Asset {
-  __typename: "Asset";
-  id: string;
-  name: string;
-  fileSize: number;
-  mimeType: string;
-  type: AssetType;
-  preview: string;
-  source: string;
 }
 
 /* tslint:disable */

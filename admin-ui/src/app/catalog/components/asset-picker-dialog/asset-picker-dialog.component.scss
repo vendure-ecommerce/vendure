@@ -3,11 +3,12 @@
 :host {
     display: flex;
     flex-direction: column;
-    height: 100%;
 }
 
-vdr-asset-gallery {
-    flex: 1;
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .paging-controls {
@@ -15,4 +16,5 @@ vdr-asset-gallery {
     border-top: 1px solid $color-grey-2;
     display: flex;
     justify-content: space-between;
+    flex-shrink: 0;
 }

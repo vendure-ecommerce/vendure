@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { GetAssetList, GetAssetList_assets_items } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 
@@ -38,12 +39,11 @@ export class AssetListComponent extends BaseListComponent<GetAssetList, GetAsset
         );
     }
 
-    filesSelected(event: Event) {
-        const files = (event.target as HTMLInputElement).files;
-        if (files) {
-            this.dataService.product.createAssets(Array.from(files)).subscribe(res => {
+    filesSelected(files: File[]) {
+        if (files.length) {
+            this.dataService.product.createAssets(files).subscribe(res => {
                 super.refresh();
-                this.notificationService.success('catalog.notify-create-assets-success', {
+                this.notificationService.success(_('catalog.notify-create-assets-success'), {
                     count: files.length,
                 });
             });

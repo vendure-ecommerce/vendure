@@ -5,14 +5,17 @@ import { SharedModule } from '../shared/shared.module';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
+import { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
 import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
+import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { CreateOptionGroupDialogComponent } from './components/create-option-group-dialog/create-option-group-dialog.component';
 import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { FacetValueSelectorComponent } from './components/facet-value-selector/facet-value-selector.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
+import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -41,8 +44,12 @@ import { ProductResolver } from './providers/routing/product-resolver';
         ApplyFacetDialogComponent,
         AssetListComponent,
         AssetGalleryComponent,
+        ProductAssetsComponent,
+        AssetPickerDialogComponent,
+        AssetFileInputComponent,
     ],
     entryComponents: [
+        AssetPickerDialogComponent,
         CreateOptionGroupDialogComponent,
         SelectOptionGroupDialogComponent,
         ApplyFacetDialogComponent,

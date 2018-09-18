@@ -1,0 +1,37 @@
+@import "variables";
+
+:host {
+    width: 340px;
+    display: block;
+}
+
+.placeholder {
+    text-align: center;
+    color: $color-grey-3;
+}
+
+.featured-asset {
+    text-align: center;
+    background: $color-grey-2;
+    padding: 6px;
+}
+
+.all-assets {
+    display: flex;
+    flex-wrap: wrap;
+
+    .asset-thumb {
+        margin: 3px;
+        padding: 0;
+        border: 2px solid $color-grey-2;
+        cursor: pointer;
+
+        &.featured {
+            border-color: $color-brand;
+        }
+    }
+
+    .remove-asset {
+        color: $color-warning;
+    }
+}
