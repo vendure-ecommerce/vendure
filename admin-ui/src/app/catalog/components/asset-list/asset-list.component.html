@@ -15,16 +15,8 @@
                    [multiSelect]="true"></vdr-asset-gallery>
 
 <div class="paging-controls">
-    <div class="form-group">
-        <div class="select">
-            <select [value]="itemsPerPage$ | async" (change)="setItemsPerPage($event.target.value)">
-                <option [value]="10">10 per page</option>
-                <option [value]="25">25 per page</option>
-                <option [value]="50">50 per page</option>
-                <option [value]="100">100 per page</option>
-            </select>
-        </div>
-    </div>
+    <vdr-items-per-page-controls [itemsPerPage]="itemsPerPage$ | async"
+                                 (itemsPerPageChange)="setItemsPerPage($event)"></vdr-items-per-page-controls>
 
     <vdr-pagination-controls [currentPage]="currentPage$ | async"
                              [itemsPerPage]="itemsPerPage$ | async"

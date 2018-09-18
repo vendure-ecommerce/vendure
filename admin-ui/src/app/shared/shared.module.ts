@@ -20,6 +20,7 @@ import { DataTableComponent } from './components/data-table/data-table.component
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
+import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
@@ -51,6 +52,7 @@ const DECLARATIONS = [
     CustomFieldControlComponent,
     DataTableComponent,
     DataTableColumnComponent,
+    ItemsPerPageControlsComponent,
     PaginationControlsComponent,
     TableRowActionComponent,
     FileSizePipe,
