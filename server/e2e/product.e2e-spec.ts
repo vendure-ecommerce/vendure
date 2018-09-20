@@ -9,6 +9,8 @@ import {
     GenerateProductVariants,
     GenerateProductVariants_generateVariantsForProduct_variants,
     GenerateProductVariantsVariables,
+    GetAssetList,
+    GetAssetListVariables,
     GetProductList,
     GetProductListVariables,
     GetProductWithVariants,
@@ -29,6 +31,7 @@ import {
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_PRODUCT,
     GENERATE_PRODUCT_VARIANTS,
+    GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
@@ -38,6 +41,8 @@ import {
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+
+// tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
     const client = new TestClient();
@@ -166,6 +171,29 @@ describe('Product resolver', () => {
             expect(newProduct).toMatchSnapshot();
         });
 
+        it('createProduct creates a new Product with assets', async () => {
+            const assetsResult = await client.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST);
+            const assetIds = assetsResult.assets.items.slice(0, 2).map(a => a.id);
+            const featuredAssetId = assetsResult.assets.items[0].id;
+
+            const result = await client.query<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, {
+                input: {
+                    assetIds,
+                    featuredAssetId,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Has Assets',
+                            slug: 'en-has-assets',
+                            description: 'A product with assets',
+                        },
+                    ],
+                },
+            });
+            expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
+            expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
+        });
+
         it('updateProduct updates a Product', async () => {
             const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
                 input: {
@@ -205,6 +233,41 @@ describe('Product resolver', () => {
             expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
             expect(result.updateProduct.translations[0].description).toBe('A blob of mashed potato');
             expect(result.updateProduct.translations[1].name).toBe('de Mashed Potato');
+        });
+
+        it('updateProduct adds Assets to a product and sets featured asset', async () => {
+            const assetsResult = await client.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST);
+            const assetIds = assetsResult.assets.items.map(a => a.id);
+            const featuredAssetId = assetsResult.assets.items[2].id;
+
+            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    assetIds,
+                    featuredAssetId,
+                },
+            });
+            expect(result.updateProduct.assets.map(a => a.id)).toEqual(assetIds);
+            expect(result.updateProduct.featuredAsset!.id).toBe(featuredAssetId);
+        });
+
+        it('updateProduct sets a featured asset', async () => {
+            const productResult = await client.query<GetProductWithVariants, GetProductWithVariantsVariables>(
+                GET_PRODUCT_WITH_VARIANTS,
+                {
+                    id: newProduct.id,
+                    languageCode: LanguageCode.en,
+                },
+            );
+            const assets = productResult.product!.assets;
+
+            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    featuredAssetId: assets[0].id,
+                },
+            });
+            expect(result.updateProduct.featuredAsset!.id).toBe(assets[0].id);
         });
 
         it('updateProduct errors with an invalid productId', async () => {

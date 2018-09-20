@@ -13,6 +13,7 @@ import { ProductTranslation } from '../entity/product/product-translation.entity
 import { Product } from '../entity/product/product.entity';
 import { I18nError } from '../i18n/i18n-error';
 
+import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { buildListQuery } from './helpers/build-list-query';
 import { createTranslatable } from './helpers/create-translatable';
@@ -26,6 +27,7 @@ export class ProductService {
         @InjectConnection() private connection: Connection,
         private translationUpdaterService: TranslationUpdaterService,
         private channelService: ChannelService,
+        private assetService: AssetService,
     ) {}
 
     findAll(
@@ -83,17 +85,19 @@ export class ProductService {
         return this.applyChannelPriceToVariants(translated, ctx);
     }
 
-    async create(ctx: RequestContext, createProductDto: CreateProductInput): Promise<Translated<Product>> {
+    async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
         const save = createTranslatable(Product, ProductTranslation, async p => {
             this.channelService.assignToChannels(p, ctx);
         });
-        const product = await save(this.connection, createProductDto);
+        const product = await save(this.connection, input);
+        await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }
 
-    async update(ctx: RequestContext, updateProductDto: UpdateProductInput): Promise<Translated<Product>> {
+    async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         const save = updateTranslatable(Product, ProductTranslation, this.translationUpdaterService);
-        const product = await save(this.connection, updateProductDto);
+        const product = await save(this.connection, input);
+        await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -131,6 +135,22 @@ export class ProductService {
 
         await this.connection.manager.save(product);
         return assertFound(this.findOne(ctx, productId));
+    }
+
+    private async saveAssetInputs(product: Product, input: CreateProductInput | UpdateProductInput) {
+        if (input.assetIds || input.featuredAssetId) {
+            if (input.assetIds) {
+                const assets = await this.assetService.findByIds(input.assetIds);
+                product.assets = assets;
+            }
+            if (input.featuredAssetId) {
+                const featuredAsset = await this.assetService.findOne(input.featuredAssetId);
+                if (featuredAsset) {
+                    product.featuredAsset = featuredAsset;
+                }
+            }
+            await this.connection.manager.save(product);
+        }
     }
 
     private applyChannelPriceToVariants<T extends Product>(product: T, ctx: RequestContext): T {

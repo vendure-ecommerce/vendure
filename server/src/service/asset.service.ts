@@ -21,6 +21,10 @@ export class AssetService {
         return this.connection.getRepository(Asset).findOne(id);
     }
 
+    findByIds(ids: ID[]): Promise<Asset[]> {
+        return this.connection.getRepository(Asset).findByIds(ids);
+    }
+
     findAll(options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
         return buildListQuery(this.connection, Asset, options)
             .getManyAndCount()

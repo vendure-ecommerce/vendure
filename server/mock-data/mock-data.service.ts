@@ -169,7 +169,7 @@ export class MockDataService {
         });
     }
 
-    async populateProducts(count: number = 5, optionGroupId: string): Promise<any> {
+    async populateProducts(count: number = 5, optionGroupId: string, assets: Asset[]): Promise<any> {
         for (let i = 0; i < count; i++) {
             const query = CREATE_PRODUCT;
 
