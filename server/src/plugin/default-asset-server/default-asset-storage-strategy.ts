@@ -30,6 +30,14 @@ export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
         return this.filePathToIdentifier(filePath);
     }
 
+    fileExists(fileName: string): Promise<boolean> {
+        return new Promise(resolve => {
+            fs.access(this.identifierToFilePath(fileName), fs.constants.F_OK, err => {
+                resolve(!err);
+            });
+        });
+    }
+
     readFileToBuffer(identifier: string): Promise<Buffer> {
         return fs.readFile(this.identifierToFilePath(identifier));
     }

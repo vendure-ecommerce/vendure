@@ -7,6 +7,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
@@ -57,6 +58,10 @@ export class ConfigService implements VendureConfig {
 
     get entityIdStrategy(): EntityIdStrategy {
         return this.activeConfig.entityIdStrategy;
+    }
+
+    get assetNamingStrategy(): AssetNamingStrategy {
+        return this.activeConfig.assetNamingStrategy;
     }
 
     get assetStorageStrategy(): AssetStorageStrategy {

@@ -7,6 +7,8 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
+import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
@@ -61,6 +63,10 @@ export interface VendureConfig {
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
+     * Defines how asset files and preview images are named before being saved.
+     */
+    assetNamingStrategy?: AssetNamingStrategy;
+    /**
      * Defines the strategy used for storing uploaded binary files. By default files are
      * persisted to the local file system.
      */
@@ -102,6 +108,7 @@ const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     jwtSecret: 'secret',
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),
+    assetNamingStrategy: new DefaultAssetNamingStrategy(),
     assetStorageStrategy: new NoAssetStorageStrategy(),
     assetPreviewStrategy: new NoAssetPreviewStrategy(),
     dbConnectionOptions: {

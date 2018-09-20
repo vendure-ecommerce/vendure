@@ -13,6 +13,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     jwtSecret = 'secret';
     defaultLanguageCode: jest.Mock<any>;
     entityIdStrategy = new MockIdStrategy();
+    assetNamingStrategy = {} as any;
     assetStorageStrategy = {} as any;
     assetPreviewStrategy = {} as any;
     uploadMaxFileSize = 1024;

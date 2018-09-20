@@ -8,6 +8,7 @@ import { ProductTranslation } from '../entity/product/product-translation.entity
 import { Product } from '../entity/product/product.entity';
 import { MockConnection } from '../testing/connection.mock';
 
+import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { MockTranslationUpdaterService } from './helpers/translation-updater.mock';
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
@@ -25,6 +26,7 @@ describe('ProductService', () => {
                 { provide: TranslationUpdaterService, useClass: MockTranslationUpdaterService },
                 { provide: Connection, useClass: MockConnection },
                 { provide: ChannelService, useClass: MockChannelService },
+                { provide: AssetService, useValue: {} },
             ],
         }).compile();
 

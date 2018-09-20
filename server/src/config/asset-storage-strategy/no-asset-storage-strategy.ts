@@ -30,4 +30,8 @@ export class NoAssetStorageStrategy implements AssetStorageStrategy {
     toAbsoluteUrl(request: Request, identifier: string): string {
         throw new I18nError(errorMessage);
     }
+
+    fileExists(fileName: string): Promise<boolean> {
+        throw new I18nError(errorMessage);
+    }
 }

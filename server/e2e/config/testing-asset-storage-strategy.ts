@@ -37,4 +37,8 @@ export class TestingAssetStorageStrategy implements AssetStorageStrategy {
             writable.on('error', reject);
         });
     }
+
+    fileExists(fileName: string): Promise<boolean> {
+        return Promise.resolve(false);
+    }
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import * as path from 'path';
-import { AssetType, CreateAssetInput } from 'shared/generated-types';
-import { normalizeString } from 'shared/normalize-string';
+import { CreateAssetInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -37,48 +35,51 @@ export class AssetService {
     async create(input: CreateAssetInput): Promise<Asset> {
         const { stream, filename, mimetype, encoding } = await input.file;
         const { assetPreviewStrategy, assetStorageStrategy } = this.configService;
-        const normalizedFileName = this.normalizeFileName(filename);
+        const sourceFileName = await this.getSourceFileName(filename);
+        const previewFileName = await this.getPreviewFileName(sourceFileName);
 
-        const sourceFileName = await assetStorageStrategy.writeFileFromStream(normalizedFileName, stream);
-        const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileName);
+        const sourceFileIdentifier = await assetStorageStrategy.writeFileFromStream(sourceFileName, stream);
+        const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileIdentifier);
         const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
-        const previewFileName = await assetStorageStrategy.writeFileFromBuffer(
-            this.getPreviewFileName(mimetype, normalizedFileName),
+        const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
+            previewFileName,
             preview,
         );
 
         const asset = new Asset({
             type: getAssetType(mimetype),
-            name: filename,
+            name: sourceFileName,
             fileSize: sourceFile.byteLength,
             mimeType: mimetype,
-            source: sourceFileName,
-            preview: previewFileName,
+            source: sourceFileIdentifier,
+            preview: previewFileIdentifier,
         });
         return this.connection.manager.save(asset);
     }
 
-    private normalizeFileName(fileName: string): string {
-        const normalized = normalizeString(fileName, '-');
-        const randomPart = Math.random()
-            .toString(8)
-            .substr(2, 8);
-        return this.addSuffix(normalized, `-${randomPart}`);
+    private async getSourceFileName(fileName: string): Promise<string> {
+        const { assetNamingStrategy } = this.configService;
+        return this.generateUniqueName(fileName, (name, conflict) =>
+            assetNamingStrategy.generateSourceFileName(name, conflict),
+        );
     }
 
-    private getPreviewFileName(mimeType: string, sourceFileName: string): string {
-        const previewSuffix = '__preview';
-        switch (getAssetType(mimeType)) {
-            case AssetType.IMAGE:
-                return this.addSuffix(sourceFileName, previewSuffix);
-            default:
-                return this.addSuffix(`${sourceFileName}.png`, previewSuffix);
-        }
+    private async getPreviewFileName(fileName: string): Promise<string> {
+        const { assetNamingStrategy } = this.configService;
+        return this.generateUniqueName(fileName, (name, conflict) =>
+            assetNamingStrategy.generatePreviewFileName(name, conflict),
+        );
     }
 
-    private addSuffix(fileName: string, suffix: string): string {
-        const ext = path.extname(fileName);
-        const baseName = path.basename(fileName, ext);
-        return `${baseName}${suffix}${ext}`;
+    private async generateUniqueName(
+        inputFileName: string,
+        generateNameFn: (fileName: string, conflictName?: string) => string,
+    ): Promise<string> {
+        const { assetStorageStrategy } = this.configService;
+        let outputFileName: string | undefined;
+        do {
+            outputFileName = generateNameFn(inputFileName, outputFileName);
+        } while (await assetStorageStrategy.fileExists(outputFileName));
+        return outputFileName;
     }
 }
