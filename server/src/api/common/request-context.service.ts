@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 import { ConfigService } from '../../config/config.service';
 import { I18nError } from '../../i18n/i18n-error';
-import { ChannelService } from '../../service/channel.service';
+import { ChannelService } from '../../service/providers/channel.service';
 
 import { RequestContext } from './request-context';
 

@@ -1,7 +1,7 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 
 import { I18nError } from '../../i18n/i18n-error';
-import { ChannelService } from '../../service/channel.service';
+import { ChannelService } from '../../service/providers/channel.service';
 
 import { RequestContext } from './request-context';
 import { RequestContextService } from './request-context.service';

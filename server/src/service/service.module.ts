@@ -4,20 +4,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
-import { AdministratorService } from './administrator.service';
-import { AssetService } from './asset.service';
-import { AuthService } from './auth.service';
-import { ChannelService } from './channel.service';
-import { CustomerService } from './customer.service';
-import { FacetValueService } from './facet-value.service';
-import { FacetService } from './facet.service';
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
-import { PasswordService } from './password.service';
-import { ProductOptionGroupService } from './product-option-group.service';
-import { ProductOptionService } from './product-option.service';
-import { ProductVariantService } from './product-variant.service';
-import { ProductService } from './product.service';
-import { RoleService } from './role.service';
+import { AdministratorService } from './providers/administrator.service';
+import { AssetService } from './providers/asset.service';
+import { AuthService } from './providers/auth.service';
+import { ChannelService } from './providers/channel.service';
+import { CustomerService } from './providers/customer.service';
+import { FacetValueService } from './providers/facet-value.service';
+import { FacetService } from './providers/facet.service';
+import { PasswordService } from './providers/password.service';
+import { ProductOptionGroupService } from './providers/product-option-group.service';
+import { ProductOptionService } from './providers/product-option.service';
+import { ProductVariantService } from './providers/product-variant.service';
+import { ProductService } from './providers/product.service';
+import { RoleService } from './providers/role.service';
 
 const exportedProviders = [
     AdministratorService,

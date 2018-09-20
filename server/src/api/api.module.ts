@@ -6,22 +6,21 @@ import { ConfigModule } from '../config/config.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
-import { AdministratorResolver } from './administrator/administrator.resolver';
-import { AssetInterceptor } from './asset-interceptor';
-import { AssetResolver } from './asset/asset.resolver';
-import { AuthGuard } from './auth-guard';
-import { AuthResolver } from './auth/auth.resolver';
-import { ChannelResolver } from './channel/channel.resolver';
+import { AssetInterceptor } from './common/asset-interceptor';
+import { AuthGuard } from './common/auth-guard';
+import { GraphqlConfigService } from './common/graphql-config.service';
 import { RequestContextService } from './common/request-context.service';
-import { ConfigResolver } from './config/config.resolver';
-import { CustomerResolver } from './customer/customer.resolver';
-import { FacetResolver } from './facet/facet.resolver';
-import { GraphqlConfigService } from './graphql-config.service';
-import { JwtStrategy } from './jwt.strategy';
-import { ProductOptionResolver } from './product-option/product-option.resolver';
-import { ProductResolver } from './product/product.resolver';
-import { RoleResolver } from './role/role.resolver';
-import { RolesGuard } from './roles-guard';
+import { RolesGuard } from './common/roles-guard';
+import { AdministratorResolver } from './resolvers/administrator.resolver';
+import { AssetResolver } from './resolvers/asset.resolver';
+import { AuthResolver } from './resolvers/auth.resolver';
+import { ChannelResolver } from './resolvers/channel.resolver';
+import { ConfigResolver } from './resolvers/config.resolver';
+import { CustomerResolver } from './resolvers/customer.resolver';
+import { FacetResolver } from './resolvers/facet.resolver';
+import { ProductOptionResolver } from './resolvers/product-option.resolver';
+import { ProductResolver } from './resolvers/product.resolver';
+import { RoleResolver } from './resolvers/role.resolver';
 
 const exportedProviders = [
     AdministratorResolver,
@@ -51,7 +50,6 @@ const exportedProviders = [
     ],
     providers: [
         ...exportedProviders,
-        JwtStrategy,
         RequestContextService,
         {
             provide: APP_GUARD,
