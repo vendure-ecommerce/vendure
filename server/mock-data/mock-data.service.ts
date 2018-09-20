@@ -178,11 +178,16 @@ export class MockDataService {
             const description = faker.lorem.sentence();
             const languageCodes = [LanguageCode.en, LanguageCode.de];
 
+            // get 2 (pseudo) random asset ids
+            const randomAssets = this.shuffleArray(assets).slice(0, 2);
+
             const variables: CreateProductVariables = {
                 input: {
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
                     ),
+                    assetIds: randomAssets.map(a => a.id),
+                    featuredAssetId: randomAssets[0].id,
                 },
             };
 
@@ -298,5 +303,23 @@ export class MockDataService {
         if (this.logging) {
             console.log(...args);
         }
+    }
+
+    /**
+     * Deterministacally randomize array element order. Returns a new
+     * shuffled array and leaves the input array intact.
+     * Using Durstenfeld shuffle algorithm.
+     *
+     * Source: https://stackoverflow.com/a/12646864/772859
+     */
+    private shuffleArray<T>(array: T[]): T[] {
+        const clone = array.slice(0);
+        for (let i = clone.length - 1; i > 0; i--) {
+            const j = Math.floor((faker.random.number(1000) / 1000) * (i + 1));
+            const temp = clone[i];
+            clone[i] = clone[j];
+            clone[j] = temp;
+        }
+        return clone;
     }
 }

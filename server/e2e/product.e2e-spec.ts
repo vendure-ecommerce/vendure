@@ -95,9 +95,8 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(result.products.items.length).toBe(2);
+            expect(result.products.items.length).toBe(1);
             expect(result.products.items[0].name).toBe('en Practical Frozen Fish');
-            expect(result.products.items[1].name).toBe('en Sleek Wooden Fish');
         });
 
         it('sorts by name', async () => {

@@ -59,19 +59,19 @@ Object {
 exports[`Product resolver product mutation variants applyFacetValuesToProductVariants adds facets to variants 1`] = `
 Array [
   Object {
-    "code": "Schneider_Inc",
+    "code": "Harris_LLC",
     "id": "1",
-    "name": "Schneider Inc",
+    "name": "Harris LLC",
   },
   Object {
-    "code": "Ledner_-_Smitham",
+    "code": "Heathcote_-_Goyette",
     "id": "3",
-    "name": "Ledner - Smitham",
+    "name": "Heathcote - Goyette",
   },
   Object {
-    "code": "Rempel_LLC",
+    "code": "Fisher,_Sporer_and_Bailey",
     "id": "5",
-    "name": "Rempel LLC",
+    "name": "Fisher, Sporer and Bailey",
   },
 ]
 `;
@@ -79,31 +79,58 @@ Array [
 exports[`Product resolver product mutation variants applyFacetValuesToProductVariants adds facets to variants 2`] = `
 Array [
   Object {
-    "code": "Schneider_Inc",
+    "code": "Harris_LLC",
     "id": "1",
-    "name": "Schneider Inc",
+    "name": "Harris LLC",
   },
   Object {
-    "code": "Ledner_-_Smitham",
+    "code": "Heathcote_-_Goyette",
     "id": "3",
-    "name": "Ledner - Smitham",
+    "name": "Heathcote - Goyette",
   },
   Object {
-    "code": "Rempel_LLC",
+    "code": "Fisher,_Sporer_and_Bailey",
     "id": "5",
-    "name": "Rempel LLC",
+    "name": "Fisher, Sporer and Bailey",
   },
 ]
 `;
 
 exports[`Product resolver product query returns expected properties 1`] = `
 Object {
-  "assets": Array [],
-  "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
-  "featuredAsset": null,
+  "assets": Array [
+    Object {
+      "fileSize": 4,
+      "id": "1",
+      "mimeType": "image/jpeg",
+      "name": "charles-deluvio-695736-unsplash.jpg",
+      "preview": "test-url/test-assets/charles-deluvio-695736-unsplash__preview.jpg",
+      "source": "test-url/test-assets/charles-deluvio-695736-unsplash.jpg",
+      "type": "IMAGE",
+    },
+    Object {
+      "fileSize": 4,
+      "id": "5",
+      "mimeType": "image/jpeg",
+      "name": "mikkel-bech-748940-unsplash.jpg",
+      "preview": "test-url/test-assets/mikkel-bech-748940-unsplash__preview.jpg",
+      "source": "test-url/test-assets/mikkel-bech-748940-unsplash.jpg",
+      "type": "IMAGE",
+    },
+  ],
+  "description": "en Accusantium sed libero repudiandae.",
+  "featuredAsset": Object {
+    "fileSize": 4,
+    "id": "5",
+    "mimeType": "image/jpeg",
+    "name": "mikkel-bech-748940-unsplash.jpg",
+    "preview": "test-url/test-assets/mikkel-bech-748940-unsplash__preview.jpg",
+    "source": "test-url/test-assets/mikkel-bech-748940-unsplash.jpg",
+    "type": "IMAGE",
+  },
   "id": "2",
   "languageCode": "en",
-  "name": "en Practical Plastic Chicken",
+  "name": "en Intelligent Cotton Salad",
   "optionGroups": Array [
     Object {
       "code": "size",
@@ -112,19 +139,19 @@ Object {
       "name": "Size",
     },
   ],
-  "slug": "en practical-plastic-chicken",
+  "slug": "en intelligent-cotton-salad",
   "translations": Array [
     Object {
-      "description": "en Sed dignissimos debitis incidunt accusantium sed libero.",
+      "description": "en Accusantium sed libero repudiandae.",
       "languageCode": "en",
-      "name": "en Practical Plastic Chicken",
-      "slug": "en practical-plastic-chicken",
+      "name": "en Intelligent Cotton Salad",
+      "slug": "en intelligent-cotton-salad",
     },
     Object {
-      "description": "de Sed dignissimos debitis incidunt accusantium sed libero.",
+      "description": "de Accusantium sed libero repudiandae.",
       "languageCode": "de",
-      "name": "de Practical Plastic Chicken",
-      "slug": "de practical-plastic-chicken",
+      "name": "de Intelligent Cotton Salad",
+      "slug": "de intelligent-cotton-salad",
     },
   ],
 }
@@ -132,25 +159,25 @@ Object {
 
 exports[`Product resolver products list query sorts by name 1`] = `
 Array [
+  "en Awesome Cotton Keyboard",
   "en Awesome Granite Chair",
-  "en Fantastic Fresh Cheese",
-  "en Fantastic Rubber Sausages",
-  "en Fantastic Steel Computer",
-  "en Gorgeous Plastic Shoes",
-  "en Handcrafted Concrete Computer",
-  "en Intelligent Steel Ball",
-  "en Intelligent Wooden Car",
-  "en Licensed Frozen Chair",
-  "en Licensed Plastic Bike",
+  "en Ergonomic Metal Sausages",
+  "en Fantastic Granite Towels",
+  "en Generic Frozen Tuna",
+  "en Generic Metal Keyboard",
+  "en Handcrafted Wooden Soap",
+  "en Handmade Soft Hat",
+  "en Handmade Wooden Car",
+  "en Intelligent Cotton Salad",
+  "en Intelligent Metal Shoes",
+  "en Intelligent Rubber Chips",
+  "en Intelligent Wooden Hat",
+  "en Licensed Frozen Car",
   "en Practical Frozen Fish",
-  "en Practical Plastic Chicken",
-  "en Refined Cotton Chair",
-  "en Refined Plastic Computer",
-  "en Rustic Frozen Car",
-  "en Rustic Steel Salad",
-  "en Sleek Wooden Fish",
-  "en Unbranded Concrete Cheese",
-  "en Unbranded Concrete Salad",
-  "en Unbranded Plastic Pants",
+  "en Practical Rubber Pants",
+  "en Rustic Steel Gloves",
+  "en Small Wooden Chair",
+  "en Tasty Soft Gloves",
+  "en Unbranded Fresh Hat",
 ]
 `;

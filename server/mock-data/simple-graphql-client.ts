@@ -81,7 +81,7 @@ export class SimpleGraphQLClient {
                 })),
             ];
             curl.setOpt(Curl.option.URL, this.apiUrl);
-            curl.setOpt(Curl.option.VERBOSE, true);
+            curl.setOpt(Curl.option.VERBOSE, false);
             curl.setOpt(Curl.option.TIMEOUT_MS, 30000);
             curl.setOpt(Curl.option.HTTPPOST, postData);
             curl.setOpt(Curl.option.HTTPHEADER, [
@@ -91,7 +91,6 @@ export class SimpleGraphQLClient {
             curl.perform();
             curl.on('end', (statusCode, body) => {
                 curl.close();
-                console.log(JSON.parse(body));
                 resolve(JSON.parse(body).data);
             });
 
