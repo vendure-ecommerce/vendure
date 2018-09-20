@@ -14,7 +14,7 @@
         <ng-template #updateButton>
             <button class="btn btn-primary"
                     (click)="save()"
-                    [disabled]="productForm.invalid || productForm.pristine">{{ 'common.update' | translate }}</button>
+                    [disabled]="(productForm.invalid || productForm.pristine) && !assetsChanged()">{{ 'common.update' | translate }}</button>
         </ng-template>
     </vdr-ab-right>
 </vdr-action-bar>
@@ -47,7 +47,8 @@
         </div>
         <div class="clr-col-md-auto">
             <vdr-product-assets [assets]="product.assets"
-                                [featuredAsset]="product.featuredAsset"></vdr-product-assets>
+                                [featuredAsset]="product.featuredAsset"
+                                (change)="assetChanges = $event"></vdr-product-assets>
         </div>
     </div>
 

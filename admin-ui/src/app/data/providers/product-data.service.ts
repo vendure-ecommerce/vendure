@@ -79,7 +79,7 @@ export class ProductDataService {
 
     createProduct(product: CreateProductInput): Observable<CreateProduct> {
         const input: CreateProductVariables = {
-            input: pick(product, ['translations', 'customFields']),
+            input: pick(product, ['translations', 'customFields', 'assetIds', 'featuredAssetId']),
         };
         return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(
             addCustomFields(CREATE_PRODUCT),
@@ -89,7 +89,7 @@ export class ProductDataService {
 
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
         const input: UpdateProductVariables = {
-            input: pick(product, ['id', 'translations', 'customFields']),
+            input: pick(product, ['id', 'translations', 'customFields', 'assetIds', 'featuredAssetId']),
         };
         return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(
             addCustomFields(UPDATE_PRODUCT),

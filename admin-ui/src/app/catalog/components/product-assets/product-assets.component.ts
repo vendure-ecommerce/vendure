@@ -25,7 +25,7 @@ import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-
 export class ProductAssetsComponent {
     @Input() assets: Asset[] = [];
     @Input() featuredAsset: Asset | undefined;
-    @Output() change = new EventEmitter<{ assetIds: string[]; featuredAssetId: string }>();
+    @Output() change = new EventEmitter<{ assetIds: string[]; featuredAssetId: string | undefined }>();
 
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
@@ -45,6 +45,7 @@ export class ProductAssetsComponent {
                     if (!this.featuredAsset) {
                         this.featuredAsset = result[0];
                     }
+                    this.emitChangeEvent(this.assets, this.featuredAsset);
                     this.changeDetector.markForCheck();
                 }
             });
@@ -52,6 +53,7 @@ export class ProductAssetsComponent {
 
     setAsFeatured(asset: Asset) {
         this.featuredAsset = asset;
+        this.emitChangeEvent(this.assets, asset);
     }
 
     isFeatured(asset: Asset): boolean {
@@ -63,5 +65,13 @@ export class ProductAssetsComponent {
         if (this.featuredAsset && this.featuredAsset.id === asset.id) {
             this.featuredAsset = this.assets.length > 0 ? this.assets[0] : undefined;
         }
+        this.emitChangeEvent(this.assets, this.featuredAsset);
+    }
+
+    private emitChangeEvent(assets: Asset[], featuredAsset: Asset | undefined) {
+        this.change.emit({
+            assetIds: assets.map(a => a.id),
+            featuredAssetId: featuredAsset && featuredAsset.id,
+        });
     }
 }

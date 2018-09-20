@@ -9,10 +9,12 @@
     flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, 150px);
+    grid-template-rows: repeat(auto-fill, 180px);
     grid-gap: 10px 20px;
     overflow-y: auto;
     padding-left: 12px;
     padding-top: 12px;
+    padding-bottom: 12px;
 
     .card:hover {
         box-shadow: 0 0.125rem 0 0 $color-brand;

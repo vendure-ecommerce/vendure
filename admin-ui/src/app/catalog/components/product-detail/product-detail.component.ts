@@ -36,6 +36,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
+    assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
 
     constructor(
         route: ActivatedRoute,
@@ -77,6 +78,10 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
     customFieldIsSet(name: string): boolean {
         return !!this.productForm.get(['product', 'customFields', name]);
+    }
+
+    assetsChanged(): boolean {
+        return !!Object.values(this.assetChanges).length;
     }
 
     /**
@@ -137,6 +142,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Product',
                     });
+                    this.assetChanges = {};
                     this.productForm.markAsPristine();
                     this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
                 },
@@ -157,7 +163,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     const productGroup = this.productForm.get('product');
                     const updateOperations: Array<Observable<any>> = [];
 
-                    if (productGroup && productGroup.dirty) {
+                    if ((productGroup && productGroup.dirty) || this.assetsChanged()) {
                         const newProduct = this.getUpdatedProduct(
                             product,
                             productGroup as FormGroup,
@@ -183,6 +189,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .subscribe(
                 () => {
                     this.productForm.markAsPristine();
+                    this.assetChanges = {};
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Product',
                     });
@@ -255,12 +262,19 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
-        return createUpdatedTranslatable(product, productFormGroup.value, this.customFields, languageCode, {
+        const updatedProduct = createUpdatedTranslatable(
+            product,
+            productFormGroup.value,
+            this.customFields,
             languageCode,
-            name: product.name || '',
-            slug: product.slug || '',
-            description: product.description || '',
-        });
+            {
+                languageCode,
+                name: product.name || '',
+                slug: product.slug || '',
+                description: product.description || '',
+            },
+        );
+        return { ...updatedProduct, ...this.assetChanges } as UpdateProductInput | CreateProductInput;
     }
 
     /**
