@@ -21,5 +21,11 @@ if (require.main === module) {
         channels: ['mobile-app'],
     })
         .then(app => app.close())
-        .then(() => process.exit(0));
+        .then(
+            () => process.exit(0),
+            err => {
+                console.log(err);
+                process.exit(1);
+            },
+        );
 }

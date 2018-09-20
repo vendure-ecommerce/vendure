@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateAssetVariables, Permission } from 'shared/generated-types';
+import { CreateAssetsVariables, Permission } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Asset } from '../../entity/asset/asset.entity';
@@ -34,7 +34,7 @@ export class AssetResolver {
      */
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createAssets(@Args() args: CreateAssetVariables): Promise<Asset[]> {
+    async createAssets(@Args() args: CreateAssetsVariables): Promise<Asset[]> {
         return Promise.all(args.input.map(asset => this.assetService.create(asset)));
     }
 }

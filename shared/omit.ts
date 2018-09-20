@@ -8,7 +8,7 @@ declare const File: any;
 export function omit<T extends object, K extends keyof T>(obj: T, keysToOmit: K[]): Omit<T, K>;
 export function omit<T extends object | any[], K extends keyof T>(obj: T, keysToOmit: string[], recursive: boolean): T;
 export function omit<T extends any, K extends keyof T>(obj: T, keysToOmit: string[], recursive: boolean = false): T {
-    if ((recursive && !isObject(obj)) || obj instanceof File) {
+    if ((recursive && !isObject(obj)) || isFileObject(obj)) {
         return obj;
     }
 
@@ -29,4 +29,15 @@ export function omit<T extends any, K extends keyof T>(obj: T, keysToOmit: strin
 
 function isObject(input: any): input is object {
     return typeof input === 'object' && input !== null;
+}
+
+/**
+ * When running in the Node environment, there is no native File object.
+ */
+function isFileObject(input): boolean {
+    if (typeof File === 'undefined') {
+        return false;
+    } else {
+        return input instanceof File;
+    }
 }

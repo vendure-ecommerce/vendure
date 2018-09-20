@@ -4,9 +4,8 @@ import {
     AddOptionGroupToProductVariables,
     ApplyFacetValuesToProductVariants,
     ApplyFacetValuesToProductVariantsVariables,
-    CreateAsset,
-    CreateAssetInput,
-    CreateAssetVariables,
+    CreateAssets,
+    CreateAssetsVariables,
     CreateProduct,
     CreateProductInput,
     CreateProductOptionGroup,
@@ -39,7 +38,7 @@ import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
-    CREATE_ASSET,
+    CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
@@ -183,8 +182,8 @@ export class ProductDataService {
         });
     }
 
-    createAssets(files: File[]): Observable<CreateAsset> {
-        return this.baseDataService.mutate<CreateAsset, CreateAssetVariables>(CREATE_ASSET, {
+    createAssets(files: File[]): Observable<CreateAssets> {
+        return this.baseDataService.mutate<CreateAssets, CreateAssetsVariables>(CREATE_ASSETS, {
             input: files.map(file => ({ file })),
         });
     }

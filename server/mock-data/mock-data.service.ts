@@ -1,8 +1,11 @@
 import * as faker from 'faker/locale/en_GB';
+import * as fs from 'fs-extra';
 import gql from 'graphql-tag';
+import * as path from 'path';
 import {
     AddOptionGroupToProduct,
     AddOptionGroupToProductVariables,
+    Asset,
     CreateFacet,
     CreateFacetValueWithFacetInput,
     CreateFacetVariables,
@@ -155,6 +158,15 @@ export class MockDataService {
                 );
             }
         }
+    }
+
+    async populateAssets(): Promise<Asset[]> {
+        const fileNames = await fs.readdir(path.join(__dirname, 'assets'));
+        const filePaths = fileNames.map(fileName => path.join(__dirname, 'assets', fileName));
+        return this.client.uploadAssets(filePaths).then(response => {
+            console.log(`Created ${response.createAssets.length} Assets`);
+            return response.createAssets;
+        });
     }
 
     async populateProducts(count: number = 5, optionGroupId: string): Promise<any> {

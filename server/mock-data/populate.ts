@@ -39,6 +39,7 @@ export async function populate(
     if (options.channels) {
         channels = await mockDataService.populateChannels(options.channels);
     }
+    const assets = await mockDataService.populateAssets();
     const optionGroupId = await mockDataService.populateOptions();
     await mockDataService.populateProducts(options.productCount, optionGroupId);
     await mockDataService.populateCustomers(options.customerCount);

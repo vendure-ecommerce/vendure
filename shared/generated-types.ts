@@ -1540,10 +1540,10 @@ export interface GetAssetListVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CreateAsset
+// GraphQL mutation operation: CreateAssets
 // ====================================================
 
-export interface CreateAsset_createAssets {
+export interface CreateAssets_createAssets {
   __typename: "Asset";
   id: string;
   name: string;
@@ -1554,14 +1554,14 @@ export interface CreateAsset_createAssets {
   source: string;
 }
 
-export interface CreateAsset {
+export interface CreateAssets {
   /**
    * Create a new Asset
    */
-  createAssets: CreateAsset_createAssets[];
+  createAssets: CreateAssets_createAssets[];
 }
 
-export interface CreateAssetVariables {
+export interface CreateAssetsVariables {
   input: CreateAssetInput[];
 }
 

@@ -1,11 +1,12 @@
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
-import { GraphQLError } from 'graphql-request/dist/src/types';
 import { print } from 'graphql/language/printer';
-import { AttemptLogin, AttemptLoginVariables } from 'shared/generated-types';
+import { Curl } from 'node-libcurl';
+import { AttemptLogin, AttemptLoginVariables, CreateAssets } from 'shared/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 
 import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
+import { CREATE_ASSETS } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { getConfig } from '../src/config/vendure-config';
 
 // tslint:disable:no-console
@@ -17,7 +18,7 @@ export class SimpleGraphQLClient {
     private authToken: string;
     private channelToken: string;
 
-    constructor(apiUrl: string = '') {
+    constructor(private apiUrl: string = '') {
         this.client = new GraphQLClient(apiUrl);
     }
 
@@ -31,29 +32,75 @@ export class SimpleGraphQLClient {
         this.setHeaders();
     }
 
+    /**
+     * Performs both query and mutation operations.
+     */
     query<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T> {
         const queryString = print(query);
         return this.client.request(queryString, variables);
-    }
-
-    queryRaw<T = any, V = Record<string, any>>(
-        query: DocumentNode,
-        variables?: V,
-    ): Promise<{
-        data?: T;
-        extensions?: any;
-        headers: Record<string, string>;
-        status: number;
-        errors?: GraphQLError[];
-    }> {
-        const queryString = print(query);
-        return this.client.rawRequest<T>(queryString, variables);
     }
 
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
         const queryString = print(query);
         const result = await this.client.rawRequest<T>(queryString, variables);
         return result.status;
+    }
+
+    /**
+     * Uses curl to post a multipart/form-data request to create new assets. Due to differences between the Node and browser
+     * environments, we cannot just use an existing library like apollo-upload-client.
+     *
+     * Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
+     * Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
+     */
+    uploadAssets(filePaths: string[]): Promise<CreateAssets> {
+        return new Promise((resolve, reject) => {
+            const curl = new Curl();
+
+            const postData: any[] = [
+                {
+                    name: 'operations',
+                    contents: JSON.stringify({
+                        operationName: 'CreateAssets',
+                        variables: {
+                            input: filePaths.map(() => ({ file: null })),
+                        },
+                        query: print(CREATE_ASSETS),
+                    }),
+                },
+                {
+                    name: 'map',
+                    contents:
+                        '{' +
+                        filePaths.map((filePath, i) => `"${i}":["variables.input.${i}.file"]`).join(',') +
+                        '}',
+                },
+                ...filePaths.map((filePath, i) => ({
+                    name: i.toString(),
+                    file: filePath,
+                })),
+            ];
+            curl.setOpt(Curl.option.URL, this.apiUrl);
+            curl.setOpt(Curl.option.VERBOSE, true);
+            curl.setOpt(Curl.option.TIMEOUT_MS, 30000);
+            curl.setOpt(Curl.option.HTTPPOST, postData);
+            curl.setOpt(Curl.option.HTTPHEADER, [
+                `Authorization: Bearer ${this.authToken}`,
+                `${getConfig().channelTokenKey}: ${this.channelToken}`,
+            ]);
+            curl.perform();
+            curl.on('end', (statusCode, body) => {
+                curl.close();
+                console.log(JSON.parse(body));
+                resolve(JSON.parse(body).data);
+            });
+
+            curl.on('error', err => {
+                curl.close();
+                console.log(err);
+                reject(err);
+            });
+        });
     }
 
     async asUserWithCredentials(username: string, password: string) {

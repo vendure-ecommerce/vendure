@@ -239,8 +239,8 @@ export const GET_ASSET_LIST = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const CREATE_ASSET = gql`
-    mutation CreateAsset($input: [CreateAssetInput!]!) {
+export const CREATE_ASSETS = gql`
+    mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
         }

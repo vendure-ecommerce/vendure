@@ -2,6 +2,9 @@ import { API_PATH } from 'shared/shared-constants';
 
 import { VendureConfig } from '../../src/config/vendure-config';
 
+import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
+import { TestingAssetStorageStrategy } from './testing-asset-storage-strategy';
+
 export const TEST_CONNECTION_NAME = undefined;
 
 /**
@@ -20,4 +23,6 @@ export const testConfig: VendureConfig = {
         logging: false,
     },
     customFields: {},
+    assetStorageStrategy: new TestingAssetStorageStrategy(),
+    assetPreviewStrategy: new TestingAssetPreviewStrategy(),
 };
