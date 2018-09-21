@@ -16,6 +16,7 @@ import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { ServerConfigService } from '../../../data/server-config';
 
 @Component({
     selector: 'vdr-admin-detail',
@@ -33,12 +34,13 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     constructor(
         router: Router,
         route: ActivatedRoute,
+        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         private dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router);
+        super(route, router, serverConfigService);
         this.administratorForm = this.formBuilder.group({
             emailAddress: ['', Validators.required],
             firstName: ['', Validators.required],

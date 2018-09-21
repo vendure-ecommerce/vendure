@@ -48,7 +48,7 @@ export class FacetDataService {
 
     getFacet(id: string): QueryResult<GetFacetWithValues, GetFacetWithValuesVariables> {
         return this.baseDataService.query<GetFacetWithValues, GetFacetWithValuesVariables>(
-            addCustomFields(GET_FACET_WITH_VALUES),
+            GET_FACET_WITH_VALUES,
             {
                 id,
                 languageCode: getDefaultLanguage(),
@@ -60,20 +60,14 @@ export class FacetDataService {
         const input: CreateFacetVariables = {
             input: pick(facet, ['code', 'translations', 'values', 'customFields']),
         };
-        return this.baseDataService.mutate<CreateFacet, CreateFacetVariables>(
-            addCustomFields(CREATE_FACET),
-            input,
-        );
+        return this.baseDataService.mutate<CreateFacet, CreateFacetVariables>(CREATE_FACET, input);
     }
 
     updateFacet(facet: UpdateFacetInput): Observable<UpdateFacet> {
         const input: UpdateFacetVariables = {
             input: pick(facet, ['id', 'code', 'translations', 'customFields']),
         };
-        return this.baseDataService.mutate<UpdateFacet, UpdateFacetVariables>(
-            addCustomFields(UPDATE_FACET),
-            input,
-        );
+        return this.baseDataService.mutate<UpdateFacet, UpdateFacetVariables>(UPDATE_FACET, input);
     }
 
     createFacetValues(facetValues: CreateFacetValueInput[]): Observable<CreateFacetValues> {
@@ -81,7 +75,7 @@ export class FacetDataService {
             input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
         };
         return this.baseDataService.mutate<CreateFacetValues, CreateFacetValuesVariables>(
-            addCustomFields(CREATE_FACET_VALUES),
+            CREATE_FACET_VALUES,
             input,
         );
     }
@@ -91,7 +85,7 @@ export class FacetDataService {
             input: facetValues.map(pick(['id', 'code', 'translations', 'customFields'])),
         };
         return this.baseDataService.mutate<UpdateFacetValues, UpdateFacetValuesVariables>(
-            addCustomFields(UPDATE_FACET_VALUES),
+            UPDATE_FACET_VALUES,
             input,
         );
     }

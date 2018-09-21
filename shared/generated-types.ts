@@ -403,6 +403,22 @@ export interface GetCurrentUser {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GetServerConfig
+// ====================================================
+
+export interface GetServerConfig_config {
+  __typename: "Config";
+  customFields: any | null;
+}
+
+export interface GetServerConfig {
+  config: GetServerConfig_config;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CreateFacet
 // ====================================================
 

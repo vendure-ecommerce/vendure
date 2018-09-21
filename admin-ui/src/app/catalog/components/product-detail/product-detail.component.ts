@@ -20,6 +20,7 @@ import { createUpdatedTranslatable } from '../../../common/utilities/create-upda
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
@@ -41,12 +42,13 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     constructor(
         route: ActivatedRoute,
         router: Router,
+        serverConfigService: ServerConfigService,
         private dataService: DataService,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
     ) {
-        super(route, router);
+        super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Product');
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
         this.productForm = this.formBuilder.group({

@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { Apollo, APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
+import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
@@ -20,7 +20,7 @@ import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
 import { FetchAdapter } from './providers/fetch-adapter';
 import { DefaultInterceptor } from './providers/interceptor';
-import { loadServerConfigFactory } from './server-config';
+import { initializeServerConfigService, ServerConfigService } from './server-config';
 
 const apolloCache = new InMemoryCache();
 
@@ -79,6 +79,7 @@ export function createApollo(
         BaseDataService,
         DataService,
         FetchAdapter,
+        ServerConfigService,
         {
             provide: APOLLO_OPTIONS,
             useFactory: createApollo,
@@ -88,8 +89,8 @@ export function createApollo(
         {
             provide: APP_INITIALIZER,
             multi: true,
-            useFactory: loadServerConfigFactory,
-            deps: [Apollo],
+            useFactory: initializeServerConfigService,
+            deps: [ServerConfigService],
         },
     ],
 })

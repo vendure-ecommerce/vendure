@@ -1,45 +1,41 @@
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
+import { Injectable, Injector } from '@angular/core';
+import { GetServerConfig, GetServerConfig_config } from 'shared/generated-types';
 
-import { CustomFields } from 'shared/shared-types';
+import { GET_SERVER_CONFIG } from './definitions/config-definitions';
+import { BaseDataService } from './providers/base-data.service';
 
-export interface ServerConfig {
-    customFields: CustomFields;
+export type ServerConfig = GetServerConfig_config;
+
+export function initializeServerConfigService(serverConfigService: ServerConfigService): () => Promise<any> {
+    return serverConfigService.init();
 }
-
-export interface GetConfigResponse {
-    config: ServerConfig;
-}
-
-let serverConfig: ServerConfig;
 
 /**
- * Fetches the ServerConfig. Should be run as part of the app bootstrap process by attaching
- * to the Angular APP_INITIALIZER token.
+ * A service which fetches the config from the server upon initialization, and then provides that config
+ * to the components which require it.
  */
-export function loadServerConfigFactory(apollo: Apollo): () => Promise<ServerConfig> {
-    return () => {
-        // TODO: usethe gql tag function once graphql-js 14.0.0 is released
-        // issue: https://github.com/graphql/graphql-js/issues/1344
-        // note: the rc of 14.0.0 does not work with the apollo-cli used for codegen.
-        // Test this when upgrading.
-        const query = gql`
-            query GetConfig {
-                config {
-                    customFields
-                }
-            }
-        `;
-        return apollo
-            .query<GetConfigResponse>({ query })
-            .toPromise()
-            .then(result => {
-                serverConfig = result.data.config;
-                return serverConfig;
-            });
-    };
-}
+@Injectable()
+export class ServerConfigService {
+    private _serverConfig: ServerConfig = {} as any;
 
-export function getServerConfig(): ServerConfig {
-    return serverConfig;
+    constructor(private injector: Injector) {}
+
+    /**
+     * Fetches the ServerConfig. Should be run as part of the app bootstrap process by attaching
+     * to the Angular APP_INITIALIZER token.
+     */
+    init(): () => Promise<any> {
+        const baseDataService = this.injector.get<BaseDataService>(BaseDataService);
+        return () =>
+            baseDataService
+                .query<GetServerConfig>(GET_SERVER_CONFIG)
+                .single$.toPromise()
+                .then(result => {
+                    this._serverConfig = result.config;
+                });
+    }
+
+    get serverConfig(): ServerConfig {
+        return this._serverConfig;
+    }
 }

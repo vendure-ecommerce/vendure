@@ -19,6 +19,7 @@ import { createUpdatedTranslatable } from '../../../common/utilities/create-upda
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { ServerConfigService } from '../../../data/server-config';
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -36,12 +37,13 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
     constructor(
         router: Router,
         route: ActivatedRoute,
+        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         private dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router);
+        super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Facet');
         this.customValueFields = this.getCustomFieldConfig('FacetValue');
         this.facetForm = this.formBuilder.group({

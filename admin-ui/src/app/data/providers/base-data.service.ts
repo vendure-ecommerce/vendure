@@ -7,10 +7,13 @@ import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CustomFields } from 'shared/shared-types';
 
 import { API_URL } from '../../app.config';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
+import { addCustomFields } from '../add-custom-fields';
 import { QueryResult } from '../query-result';
+import { ServerConfigService } from '../server-config';
 
 /**
  * Make the MutationUpdaterFn type-safe until this issue is resolved: https://github.com/apollographql/apollo-link/issues/616
@@ -27,7 +30,12 @@ export class BaseDataService {
         private apollo: Apollo,
         private httpClient: HttpClient,
         private localStorageService: LocalStorageService,
+        private serverConfigService: ServerConfigService,
     ) {}
+
+    private get customFields(): CustomFields {
+        return this.serverConfigService.serverConfig.customFields || {};
+    }
 
     /**
      * Performs a GraphQL watch query
@@ -37,8 +45,9 @@ export class BaseDataService {
         variables?: V,
         fetchPolicy: FetchPolicy = 'cache-and-network',
     ): QueryResult<T, V> {
+        const withCustomFields = addCustomFields(query, this.customFields);
         const queryRef = this.apollo.watchQuery<T, V>({
-            query,
+            query: withCustomFields,
             variables,
             fetchPolicy,
         });
@@ -53,9 +62,10 @@ export class BaseDataService {
         variables?: V,
         update?: TypedMutationUpdateFn<T>,
     ): Observable<T> {
+        const withCustomFields = addCustomFields(mutation, this.customFields);
         return this.apollo
             .mutate<T, V>({
-                mutation,
+                mutation: withCustomFields,
                 variables,
                 update: update as any,
             })

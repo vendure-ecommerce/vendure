@@ -1,14 +1,10 @@
-import { ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
 
-import { NotificationService } from '../core/providers/notification/notification.service';
-import { DataService } from '../data/providers/data.service';
-import { getServerConfig } from '../data/server-config';
+import { ServerConfigService } from '../data/server-config';
 
 import { getDefaultLanguage } from './utilities/get-default-language';
 
@@ -19,7 +15,11 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     isNew$: Observable<boolean>;
     protected destroy$ = new Subject<void>();
 
-    protected constructor(protected route: ActivatedRoute, protected router: Router) {}
+    protected constructor(
+        protected route: ActivatedRoute,
+        protected router: Router,
+        private serverConfigService: ServerConfigService,
+    ) {}
 
     init() {
         this.entity$ = this.route.data.pipe(switchMap(data => data.entity));
@@ -44,7 +44,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
 
     protected getCustomFieldConfig(key: keyof CustomFields): CustomFieldConfig[] {
-        return getServerConfig().customFields[key] || [];
+        return this.serverConfigService.serverConfig.customFields[key] || [];
     }
 
     protected setQueryParam(key: string, value: any) {

@@ -9,18 +9,11 @@ import {
 
 import { CustomFields } from 'shared/shared-types';
 
-import { getServerConfig } from './server-config';
-
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured
  * custom fields to those fragments.
  */
-export function addCustomFields(
-    documentNode: DocumentNode,
-    providedCustomFields?: CustomFields,
-): DocumentNode {
-    const customFields = providedCustomFields || getServerConfig().customFields;
-
+export function addCustomFields(documentNode: DocumentNode, customFields: CustomFields): DocumentNode {
     const fragmentDefs = documentNode.definitions.filter(isFragmentDefinition);
 
     for (const fragmentDef of fragmentDefs) {

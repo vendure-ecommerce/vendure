@@ -69,7 +69,7 @@ export class ProductDataService {
 
     getProduct(id: string): QueryResult<GetProductWithVariants, GetProductWithVariantsVariables> {
         return this.baseDataService.query<GetProductWithVariants, GetProductWithVariantsVariables>(
-            addCustomFields(GET_PRODUCT_WITH_VARIANTS),
+            GET_PRODUCT_WITH_VARIANTS,
             {
                 id,
                 languageCode: getDefaultLanguage(),
@@ -81,20 +81,14 @@ export class ProductDataService {
         const input: CreateProductVariables = {
             input: pick(product, ['translations', 'customFields', 'assetIds', 'featuredAssetId']),
         };
-        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(
-            addCustomFields(CREATE_PRODUCT),
-            input,
-        );
+        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, input);
     }
 
     updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
         const input: UpdateProductVariables = {
             input: pick(product, ['id', 'translations', 'customFields', 'assetIds', 'featuredAssetId']),
         };
-        return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(
-            addCustomFields(UPDATE_PRODUCT),
-            input,
-        );
+        return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
     }
 
     generateProductVariants(
