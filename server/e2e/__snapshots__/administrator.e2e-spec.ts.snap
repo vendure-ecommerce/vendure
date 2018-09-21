@@ -14,6 +14,7 @@ Object {
       Object {
         "code": "__super_admin_role__",
         "description": "SuperAdmin",
+        "id": "T_1",
         "permissions": Array [
           "Authenticated",
           "CreateAdministrator",
@@ -54,6 +55,7 @@ Object {
       Object {
         "code": "__customer_role__",
         "description": "Customer",
+        "id": "T_2",
         "permissions": Array [
           "Authenticated",
         ],
