@@ -93,7 +93,7 @@
     "coverageDirectory": "../coverage",
     "globals": {
       "ts-jest": {
-        "skipBabel": true
+        "skipBabel": false
       }
     }
   }

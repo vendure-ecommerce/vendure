@@ -4,6 +4,7 @@ import { VendureConfig } from '../../src/config/vendure-config';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
 import { TestingAssetStorageStrategy } from './testing-asset-storage-strategy';
+import { TestingEntityIdStrategy } from './testing-entity-id-strategy';
 
 export const TEST_CONNECTION_NAME = undefined;
 
@@ -23,6 +24,7 @@ export const testConfig: VendureConfig = {
         logging: false,
     },
     customFields: {},
+    entityIdStrategy: new TestingEntityIdStrategy(),
     assetStorageStrategy: new TestingAssetStorageStrategy(),
     assetPreviewStrategy: new TestingAssetPreviewStrategy(),
 };

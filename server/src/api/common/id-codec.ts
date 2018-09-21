@@ -18,9 +18,15 @@ export class IdCodec {
      * @param target - The object to be decoded
      * @param transformKeys - An optional array of keys of the target to be decoded. If not defined,
      * then the default recursive behaviour will be used.
+     * @return A decoded clone of the target
      */
-    decode<T extends string | number | object | undefined>(target: T, transformKeys?: Array<keyof T>): T {
-        return this.transformRecursive(target, input => this.entityIdStrategy.decodeId(input), transformKeys);
+    decode<T extends string | number | object | undefined>(target: T, transformKeys?: string[]): T {
+        const transformKeysWithId = [...(transformKeys || []), 'id'];
+        return this.transformRecursive(
+            target,
+            input => this.entityIdStrategy.decodeId(input),
+            transformKeysWithId,
+        );
     }
 
     /**
@@ -30,67 +36,74 @@ export class IdCodec {
      * @param target - The object to be encoded
      * @param transformKeys - An optional array of keys of the target to be encoded. If not defined,
      * then the default recursive behaviour will be used.
+     * @return An encoded clone of the target
      */
-    encode<T extends string | number | object | undefined>(target: T, transformKeys?: Array<keyof T>): T {
-        return this.transformRecursive(target, input => this.entityIdStrategy.encodeId(input), transformKeys);
+    encode<T extends string | number | object | undefined>(target: T, transformKeys?: string[]): T {
+        const transformKeysWithId = [...(transformKeys || []), 'id'];
+        return this.transformRecursive(
+            target,
+            input => this.entityIdStrategy.encodeId(input),
+            transformKeysWithId,
+        );
     }
 
-    private transformRecursive<T>(
-        target: T,
-        transformFn: (input: any) => ID,
-        transformKeys?: Array<keyof T>,
-    ): T {
-        if (target == null) {
+    private transformRecursive<T>(target: T, transformFn: (input: any) => ID, transformKeys?: string[]): T {
+        // noinspection SuspiciousInstanceOfGuard
+        if (
+            target == null ||
+            target instanceof Promise ||
+            target instanceof Date ||
+            target instanceof RegExp
+        ) {
             return target;
         }
         if (typeof target === 'string' || typeof target === 'number') {
             return transformFn(target as any) as any;
         }
-        this.transform(target, transformFn, transformKeys);
-
-        if (transformKeys) {
-            return target;
-        }
 
         if (Array.isArray(target)) {
-            if (target.length === 0) {
+            (target as any) = target.slice(0);
+            if (target.length === 0 || typeof target[0] === 'string' || typeof target[0] === 'number') {
                 return target;
             }
             const isSimpleObject = this.isSimpleObject(target[0]);
-            const isEntity = this.isEntity(target[0]);
-            if (isSimpleObject && !isEntity) {
-                return target;
-            }
             if (isSimpleObject) {
                 const length = target.length;
                 for (let i = 0; i < length; i++) {
-                    this.transform(target[i], transformFn);
+                    target[i] = this.transform(target[i], transformFn, transformKeys);
                 }
             } else {
                 const length = target.length;
                 for (let i = 0; i < length; i++) {
-                    target[i] = this.transformRecursive(target[i], transformFn);
+                    target[i] = this.transformRecursive(target[i], transformFn, transformKeys);
                 }
             }
         } else {
+            target = this.transform(target, transformFn, transformKeys);
             for (const key of Object.keys(target)) {
                 if (this.isObject(target[key])) {
-                    this.transformRecursive(target[key], transformFn);
+                    target[key] = this.transformRecursive(target[key], transformFn, transformKeys);
                 }
             }
         }
         return target;
     }
 
-    private transform<T>(target: T, transformFn: (input: any) => ID, transformKeys?: Array<keyof T>): T {
+    private transform<T>(target: T, transformFn: (input: any) => ID, transformKeys?: string[]): T {
+        const clone = Object.assign({}, target);
         if (transformKeys) {
             for (const key of transformKeys) {
-                target[key] = transformFn(target[key]) as any;
+                if (target.hasOwnProperty(key)) {
+                    const val = target[key];
+                    if (Array.isArray(val)) {
+                        clone[key] = val.map(v => transformFn(v));
+                    } else {
+                        clone[key] = transformFn(val);
+                    }
+                }
             }
-        } else if (this.isEntity(target)) {
-            target.id = transformFn(target.id);
         }
-        return target;
+        return clone;
     }
 
     private isSimpleObject(target: any): boolean {
@@ -101,10 +114,6 @@ export class IdCodec {
             }
         }
         return true;
-    }
-
-    private isEntity(target: any): target is VendureEntity {
-        return target && target.hasOwnProperty('id');
     }
 
     private isObject(target: any): target is object {

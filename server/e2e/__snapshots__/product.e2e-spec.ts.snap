@@ -5,7 +5,7 @@ Object {
   "assets": Array [],
   "description": "A baked potato",
   "featuredAsset": null,
-  "id": "21",
+  "id": "T_21",
   "languageCode": "en",
   "name": "en Baked Potato",
   "optionGroups": Array [],
@@ -33,7 +33,7 @@ Object {
   "assets": Array [],
   "description": "A blob of mashed potato",
   "featuredAsset": null,
-  "id": "21",
+  "id": "T_21",
   "languageCode": "en",
   "name": "en Mashed Potato",
   "optionGroups": Array [],
@@ -60,17 +60,17 @@ exports[`Product resolver product mutation variants applyFacetValuesToProductVar
 Array [
   Object {
     "code": "Harris_LLC",
-    "id": "1",
+    "id": "T_1",
     "name": "Harris LLC",
   },
   Object {
     "code": "Heathcote_-_Goyette",
-    "id": "3",
+    "id": "T_3",
     "name": "Heathcote - Goyette",
   },
   Object {
     "code": "Fisher,_Sporer_and_Bailey",
-    "id": "5",
+    "id": "T_5",
     "name": "Fisher, Sporer and Bailey",
   },
 ]
@@ -80,17 +80,17 @@ exports[`Product resolver product mutation variants applyFacetValuesToProductVar
 Array [
   Object {
     "code": "Harris_LLC",
-    "id": "1",
+    "id": "T_1",
     "name": "Harris LLC",
   },
   Object {
     "code": "Heathcote_-_Goyette",
-    "id": "3",
+    "id": "T_3",
     "name": "Heathcote - Goyette",
   },
   Object {
     "code": "Fisher,_Sporer_and_Bailey",
-    "id": "5",
+    "id": "T_5",
     "name": "Fisher, Sporer and Bailey",
   },
 ]
@@ -101,7 +101,7 @@ Object {
   "assets": Array [
     Object {
       "fileSize": 4,
-      "id": "1",
+      "id": "T_1",
       "mimeType": "image/jpeg",
       "name": "charles-deluvio-695736-unsplash.jpg",
       "preview": "test-url/test-assets/charles-deluvio-695736-unsplash__preview.jpg",
@@ -110,7 +110,7 @@ Object {
     },
     Object {
       "fileSize": 4,
-      "id": "5",
+      "id": "T_5",
       "mimeType": "image/jpeg",
       "name": "mikkel-bech-748940-unsplash.jpg",
       "preview": "test-url/test-assets/mikkel-bech-748940-unsplash__preview.jpg",
@@ -121,20 +121,20 @@ Object {
   "description": "en Accusantium sed libero repudiandae.",
   "featuredAsset": Object {
     "fileSize": 4,
-    "id": "5",
+    "id": "T_5",
     "mimeType": "image/jpeg",
     "name": "mikkel-bech-748940-unsplash.jpg",
     "preview": "test-url/test-assets/mikkel-bech-748940-unsplash__preview.jpg",
     "source": "test-url/test-assets/mikkel-bech-748940-unsplash.jpg",
     "type": "IMAGE",
   },
-  "id": "2",
+  "id": "T_2",
   "languageCode": "en",
   "name": "en Intelligent Cotton Salad",
   "optionGroups": Array [
     Object {
       "code": "size",
-      "id": "1",
+      "id": "T_1",
       "languageCode": "en",
       "name": "Size",
     },

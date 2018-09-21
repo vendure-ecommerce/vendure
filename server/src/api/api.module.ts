@@ -9,6 +9,7 @@ import { ServiceModule } from '../service/service.module';
 import { AssetInterceptor } from './common/asset-interceptor';
 import { AuthGuard } from './common/auth-guard';
 import { GraphqlConfigService } from './common/graphql-config.service';
+import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
 import { RolesGuard } from './common/roles-guard';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
@@ -62,6 +63,10 @@ const exportedProviders = [
         {
             provide: APP_INTERCEPTOR,
             useClass: AssetInterceptor,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: IdInterceptor,
         },
     ],
     exports: exportedProviders,

@@ -119,7 +119,7 @@ describe('Product resolver', () => {
                 GET_PRODUCT_WITH_VARIANTS,
                 {
                     languageCode: LanguageCode.en,
-                    id: '2',
+                    id: 'T_2',
                 },
             );
 
@@ -302,12 +302,12 @@ describe('Product resolver', () => {
             const result = await client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
                 ADD_OPTION_GROUP_TO_PRODUCT,
                 {
-                    optionGroupId: '1',
+                    optionGroupId: 'T_1',
                     productId: newProduct.id,
                 },
             );
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
-            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('1');
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_1');
         });
 
         it('addOptionGroupToProduct errors with an invalid productId', async () => {
@@ -315,7 +315,7 @@ describe('Product resolver', () => {
                 await client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
-                        optionGroupId: '1',
+                        optionGroupId: 'T_1',
                         productId: '999',
                     },
                 );

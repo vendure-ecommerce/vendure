@@ -11,7 +11,7 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { AdministratorService } from '../../service/providers/administrator.service';
-import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
+import { Decode } from '../common/id-interceptor';
 import { Allow } from '../common/roles-guard';
 
 @Resolver('Administrator')
@@ -20,21 +20,19 @@ export class AdministratorResolver {
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    @ApplyIdCodec()
     administrators(@Args() args: GetAdministratorsVariables): Promise<PaginatedList<Administrator>> {
         return this.administratorService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    @ApplyIdCodec()
     administrator(@Args() args: GetAdministratorVariables): Promise<Administrator | undefined> {
         return this.administratorService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
-    @ApplyIdCodec()
+    @Decode('roleIds')
     createAdministrator(@Args() args: CreateAdministratorVariables): Promise<Administrator> {
         const { input } = args;
         return this.administratorService.create(input);
@@ -42,7 +40,6 @@ export class AdministratorResolver {
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
-    @ApplyIdCodec()
     updateAdministrator(@Args() args: UpdateAdministratorVariables): Promise<Administrator> {
         const { input } = args;
         return this.administratorService.update(input);
@@ -50,7 +47,7 @@ export class AdministratorResolver {
 
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
-    @ApplyIdCodec()
+    @Decode('administratorId', 'roleId')
     assignRoleToAdministrator(@Args() args: AssignRoleToAdministratorVariables): Promise<Administrator> {
         return this.administratorService.assignRole(args.administratorId, args.roleId);
     }

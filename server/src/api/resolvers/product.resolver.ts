@@ -22,7 +22,7 @@ import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/providers/facet-value.service';
 import { ProductVariantService } from '../../service/providers/product-variant.service';
 import { ProductService } from '../../service/providers/product.service';
-import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
+import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
 import { RequestContextPipe } from '../common/request-context.pipe';
 import { Allow } from '../common/roles-guard';
@@ -37,7 +37,6 @@ export class ProductResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @ApplyIdCodec()
     async products(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: GetProductListVariables,
@@ -48,7 +47,6 @@ export class ProductResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @ApplyIdCodec()
     async product(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: GetProductWithVariantsVariables,
@@ -59,7 +57,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @ApplyIdCodec()
+    @Decode('assetIds', 'featuredAssetId')
     async createProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: CreateProductVariables,
@@ -70,7 +68,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec()
+    @Decode('assetIds', 'featuredAssetId')
     async updateProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: UpdateProductVariables,
@@ -81,7 +79,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec(['productId', 'optionGroupId'])
+    @Decode('productId', 'optionGroupId')
     async addOptionGroupToProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: AddOptionGroupToProductVariables,
@@ -92,7 +90,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec(['productId', 'optionGroupId'])
+    @Decode('productId', 'optionGroupId')
     async removeOptionGroupFromProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: RemoveOptionGroupFromProductVariables,
@@ -103,7 +101,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @ApplyIdCodec()
+    @Decode('productId')
     async generateVariantsForProduct(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: GenerateProductVariantsVariables,
@@ -115,7 +113,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec()
     async updateProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: UpdateProductVariantsVariables,
@@ -126,7 +123,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec()
+    @Decode('facetValueIds', 'productVariantIds')
     async applyFacetValuesToProductVariants(
         @Context(RequestContextPipe) ctx: RequestContext,
         @Args() args: ApplyFacetValuesToProductVariantsVariables,

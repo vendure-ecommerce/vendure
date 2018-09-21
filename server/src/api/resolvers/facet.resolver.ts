@@ -1,4 +1,4 @@
-import { Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreateFacetValuesVariables,
     CreateFacetVariables,
@@ -15,7 +15,6 @@ import { Facet } from '../../entity/facet/facet.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/providers/facet-value.service';
 import { FacetService } from '../../service/providers/facet.service';
-import { ApplyIdCodec } from '../common/apply-id-codec-decorator';
 import { Allow } from '../common/roles-guard';
 
 @Resolver('Facet')
@@ -24,22 +23,19 @@ export class FacetResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @ApplyIdCodec()
-    facets(obj, args): Promise<PaginatedList<Translated<Facet>>> {
+    facets(@Args() args): Promise<PaginatedList<Translated<Facet>>> {
         return this.facetService.findAll(args.languageCode, args.options);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @ApplyIdCodec()
-    async facet(obj, args): Promise<Translated<Facet> | undefined> {
+    async facet(@Args() args): Promise<Translated<Facet> | undefined> {
         return this.facetService.findOne(args.id, args.languageCode);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @ApplyIdCodec()
-    async createFacet(_, args: CreateFacetVariables): Promise<Translated<Facet>> {
+    async createFacet(@Args() args: CreateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
         const facet = await this.facetService.create(args.input);
 
@@ -54,16 +50,16 @@ export class FacetResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec()
-    async updateFacet(_, args: UpdateFacetVariables): Promise<Translated<Facet>> {
+    async updateFacet(@Args() args: UpdateFacetVariables): Promise<Translated<Facet>> {
         const { input } = args;
         return this.facetService.update(args.input);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @ApplyIdCodec()
-    async createFacetValues(_, args: CreateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
+    async createFacetValues(
+        @Args() args: CreateFacetValuesVariables,
+    ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         const facetId = input[0].facetId;
         const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
@@ -75,8 +71,9 @@ export class FacetResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @ApplyIdCodec()
-    async updateFacetValues(_, args: UpdateFacetValuesVariables): Promise<Array<Translated<FacetValue>>> {
+    async updateFacetValues(
+        @Args() args: UpdateFacetValuesVariables,
+    ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));
     }

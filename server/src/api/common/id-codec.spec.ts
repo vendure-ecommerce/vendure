@@ -29,6 +29,47 @@ describe('IdCodecService', () => {
             expect(idCodec.encode(undefined as any)).toBeUndefined();
         });
 
+        it('returns a clone of the input object', () => {
+            const input = { id: 'id', name: 'foo' };
+
+            const result = idCodec.encode(input);
+            expect(result).not.toBe(input);
+        });
+
+        it('returns a deep clone', () => {
+            const obj1 = { 1: true };
+            const obj2 = { 2: true };
+            const arr = [obj1, obj2];
+            const parent = { myArray: arr };
+            const input = { foo: parent };
+
+            const result = idCodec.encode(input);
+            expect(result).not.toBe(input);
+            expect(result.foo).not.toBe(parent);
+            expect(result.foo.myArray).not.toBe(arr);
+            expect(result.foo.myArray[0]).not.toBe(obj1);
+            expect(result.foo.myArray[1]).not.toBe(obj2);
+        });
+
+        it('does not clone complex object instances', () => {
+            // tslint:disable:no-floating-promises
+            const promise = new Promise(() => {
+                /**/
+            });
+            const date = new Date();
+            const regex = new RegExp('');
+            const input = {
+                promise,
+                date,
+                regex,
+            };
+            const result = idCodec.encode(input);
+            expect(result.promise).toBe(promise);
+            expect(result.date).toBe(date);
+            expect(result.regex).toBe(regex);
+            // tslint:enable:no-floating-promises
+        });
+
         it('works with simple entity', () => {
             const input = { id: 'id', name: 'foo' };
 
@@ -142,7 +183,7 @@ describe('IdCodecService', () => {
             const input = { id: 'id', name: 'foo' };
 
             const result = idCodec.encode(input, ['name']);
-            expect(result).toEqual({ id: 'id', name: ENCODED });
+            expect(result).toEqual({ id: ENCODED, name: ENCODED });
         });
     });
 
@@ -264,10 +305,76 @@ describe('IdCodecService', () => {
         });
 
         it('transformKeys can be customized', () => {
+            const input = { name: 'foo' };
+
+            const result = idCodec.decode(input, ['name']);
+            expect(result).toEqual({ name: DECODED });
+        });
+
+        it('id keys is still implicitly decoded when transformKeys are defined', () => {
             const input = { id: 'id', name: 'foo' };
 
             const result = idCodec.decode(input, ['name']);
-            expect(result).toEqual({ id: 'id', name: DECODED });
+            expect(result).toEqual({ id: DECODED, name: DECODED });
+        });
+
+        it('transformKeys works for nested matching keys', () => {
+            const input = {
+                input: {
+                    id: 'id',
+                    featuredAssetId: 'id',
+                    foo: 'bar',
+                },
+            };
+
+            const result = idCodec.decode(input, ['featuredAssetId']);
+            expect(result).toEqual({
+                input: {
+                    id: DECODED,
+                    featuredAssetId: DECODED,
+                    foo: 'bar',
+                },
+            });
+        });
+
+        it('transformKeys works for nested matching key array', () => {
+            const input = {
+                input: {
+                    id: 'id',
+                    assetIds: ['id1', 'id2', 'id3'],
+                    foo: 'bar',
+                },
+            };
+
+            const result = idCodec.decode(input, ['assetIds']);
+            expect(result).toEqual({
+                input: {
+                    id: DECODED,
+                    assetIds: [DECODED, DECODED, DECODED],
+                    foo: 'bar',
+                },
+            });
+        });
+
+        it('transformKeys works for multiple nested keys', () => {
+            const input = {
+                input: {
+                    id: 'id',
+                    featuredAssetId: 'id',
+                    assetIds: ['id1', 'id2', 'id3'],
+                    foo: 'bar',
+                },
+            };
+
+            const result = idCodec.decode(input, ['featuredAssetId', 'assetIds']);
+            expect(result).toEqual({
+                input: {
+                    id: DECODED,
+                    featuredAssetId: DECODED,
+                    assetIds: [DECODED, DECODED, DECODED],
+                    foo: 'bar',
+                },
+            });
         });
     });
 });

@@ -4,7 +4,7 @@ exports[`Role resolver createRole 1`] = `
 Object {
   "code": "test",
   "description": "test role",
-  "id": "3",
+  "id": "T_3",
   "permissions": Array [
     "ReadCustomer",
     "UpdateCustomer",
@@ -16,7 +16,7 @@ exports[`Role resolver updateRole 1`] = `
 Object {
   "code": "test-modified",
   "description": "test role modified",
-  "id": "3",
+  "id": "T_3",
   "permissions": Array [
     "ReadCustomer",
     "UpdateCustomer",
