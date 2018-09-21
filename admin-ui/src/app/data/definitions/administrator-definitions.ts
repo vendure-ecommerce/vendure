@@ -11,6 +11,7 @@ export const ADMINISTRATOR_FRAGMENT = gql`
             identifier
             lastLogin
             roles {
+                id
                 code
                 description
                 permissions

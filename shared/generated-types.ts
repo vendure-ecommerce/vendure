@@ -7,6 +7,7 @@
 
 export interface GetAdministrators_administrators_items_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
@@ -52,6 +53,7 @@ export interface GetAdministratorsVariables {
 
 export interface GetAdministrator_administrator_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
@@ -91,6 +93,7 @@ export interface GetAdministratorVariables {
 
 export interface CreateAdministrator_createAdministrator_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
@@ -133,6 +136,7 @@ export interface CreateAdministratorVariables {
 
 export interface UpdateAdministrator_updateAdministrator_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
@@ -311,6 +315,7 @@ export interface UpdateRoleVariables {
 
 export interface AssignRoleToAdministrator_assignRoleToAdministrator_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
@@ -1574,6 +1579,7 @@ export interface CreateAssetsVariables {
 
 export interface Administrator_user_roles {
   __typename: "Role";
+  id: string;
   code: string;
   description: string;
   permissions: Permission[];
