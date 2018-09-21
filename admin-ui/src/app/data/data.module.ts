@@ -18,6 +18,7 @@ import { clientResolvers } from './client-state/client-resolvers';
 import { OmitTypenameLink } from './omit-typename-link';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
+import { FetchAdapter } from './providers/fetch-adapter';
 import { DefaultInterceptor } from './providers/interceptor';
 import { loadServerConfigFactory } from './server-config';
 
@@ -34,7 +35,10 @@ const stateLink = withClientState({
     defaults: clientDefaults,
 });
 
-export function createApollo(localStorageService: LocalStorageService): ApolloClientOptions<any> {
+export function createApollo(
+    localStorageService: LocalStorageService,
+    fetchAdapter: FetchAdapter,
+): ApolloClientOptions<any> {
     return {
         link: ApolloLink.from([
             stateLink,
@@ -54,7 +58,10 @@ export function createApollo(localStorageService: LocalStorageService): ApolloCl
                     };
                 }
             }),
-            createUploadLink({ uri: `${API_URL}/${API_PATH}` }),
+            createUploadLink({
+                uri: `${API_URL}/${API_PATH}`,
+                fetch: fetchAdapter.fetch,
+            }),
         ]),
         cache: apolloCache,
     };
@@ -71,10 +78,11 @@ export function createApollo(localStorageService: LocalStorageService): ApolloCl
     providers: [
         BaseDataService,
         DataService,
+        FetchAdapter,
         {
             provide: APOLLO_OPTIONS,
             useFactory: createApollo,
-            deps: [LocalStorageService],
+            deps: [LocalStorageService, FetchAdapter],
         },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
         {
