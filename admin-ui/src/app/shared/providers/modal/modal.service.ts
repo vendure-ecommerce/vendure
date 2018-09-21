@@ -1,6 +1,7 @@
 import { ComponentFactoryResolver, Injectable, ViewContainerRef } from '@angular/core';
 import { Type } from '@angular/core/src/type';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { OverlayHostService } from '../../../core/providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../components/modal-dialog/modal-dialog.component';
@@ -41,16 +42,10 @@ export interface ModalOptions<T> {
  */
 @Injectable()
 export class ModalService {
-    hostView: ViewContainerRef;
-
     constructor(
         private componentFactoryResolver: ComponentFactoryResolver,
-        overlayHostService: OverlayHostService,
-    ) {
-        overlayHostService.getHostView().then(view => {
-            this.hostView = view;
-        });
-    }
+        private overlayHostService: OverlayHostService,
+    ) {}
 
     /**
      * Create a modal from a component. The component must implement the {@link Dialog} interface.
@@ -96,17 +91,22 @@ export class ModalService {
         options?: ModalOptions<T>,
     ): Observable<R | undefined> {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
-        const modalComponentRef = this.hostView.createComponent(modalFactory);
-        const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
-        modalInstance.childComponentType = component;
-        modalInstance.options = options;
 
-        return new Observable(subscriber => {
-            modalInstance.closeModal = (result: any) => {
-                modalComponentRef.destroy();
-                subscriber.next(result);
-                subscriber.complete();
-            };
-        });
+        return from(this.overlayHostService.getHostView()).pipe(
+            mergeMap(hostView => {
+                const modalComponentRef = hostView.createComponent(modalFactory);
+                const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
+                modalInstance.childComponentType = component;
+                modalInstance.options = options;
+
+                return new Observable(subscriber => {
+                    modalInstance.closeModal = (result: any) => {
+                        modalComponentRef.destroy();
+                        subscriber.next(result);
+                        subscriber.complete();
+                    };
+                });
+            }),
+        );
     }
 }

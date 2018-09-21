@@ -21,18 +21,16 @@ const TOAST_DURATION = 3000;
  */
 @Injectable()
 export class NotificationService {
-    private hostView: ViewContainerRef;
+    private get hostView(): Promise<ViewContainerRef> {
+        return this.overlayHostService.getHostView();
+    }
     private openToastRefs: Array<{ ref: ComponentRef<NotificationComponent>; timerId: any }> = [];
 
     constructor(
         private i18nService: I18nService,
         private resolver: ComponentFactoryResolver,
-        overlayHostService: OverlayHostService,
-    ) {
-        overlayHostService.getHostView().then(view => {
-            this.hostView = view;
-        });
-    }
+        private overlayHostService: OverlayHostService,
+    ) {}
 
     /**
      * Display a success toast notification
@@ -89,9 +87,10 @@ export class NotificationService {
     /**
      * Load a ToastComponent into the DOM host location.
      */
-    private createToast(config: ToastConfig): void {
+    private async createToast(config: ToastConfig): Promise<void> {
         const toastFactory = this.resolver.resolveComponentFactory(NotificationComponent);
-        const ref = this.hostView.createComponent<NotificationComponent>(toastFactory);
+        const hostView = await this.hostView;
+        const ref = hostView.createComponent<NotificationComponent>(toastFactory);
         const toast: NotificationComponent = ref.instance;
         const dismissFn = this.createDismissFunction(ref);
         toast.type = config.type || 'info';
