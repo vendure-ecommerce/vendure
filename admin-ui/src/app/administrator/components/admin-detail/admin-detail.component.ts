@@ -85,7 +85,6 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Administrator',
-                    error: err.message,
                 });
             },
         );
@@ -119,7 +118,6 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Administrator',
-                        error: err.message,
                     });
                 },
             );

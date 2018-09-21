@@ -128,7 +128,6 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Facet',
-                        error: err.message,
                     });
                 },
             );
@@ -181,7 +180,6 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
-                        error: err.message,
                         entity: 'Facet',
                     });
                 },

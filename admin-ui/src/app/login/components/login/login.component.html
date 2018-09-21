@@ -22,10 +22,10 @@
                     {{ 'common.remember-me' | translate }}
                 </label>
             </div>
-            <div class="error active" *ngIf="lastError">
-                {{ lastError }}
-            </div>
-            <button type="submit" class="btn btn-primary" (click)="logIn()">{{ 'common.login' | translate }}</button>
+            <button type="submit"
+                    class="btn btn-primary"
+                    (click)="logIn()"
+                    [disabled]="!username || !password">{{ 'common.login' | translate }}</button>
         </div>
     </form>
 </div>

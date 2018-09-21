@@ -151,7 +151,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Product',
-                        error: err.message,
                     });
                 },
             );
@@ -198,7 +197,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
-                        error: err.message,
                         entity: 'Product',
                     });
                 },

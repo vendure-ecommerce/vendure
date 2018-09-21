@@ -30,9 +30,14 @@ export class ServerConfigService {
             baseDataService
                 .query<GetServerConfig>(GET_SERVER_CONFIG)
                 .single$.toPromise()
-                .then(result => {
-                    this._serverConfig = result.config;
-                });
+                .then(
+                    result => {
+                        this._serverConfig = result.config;
+                    },
+                    err => {
+                        // Let the error fall through to be caught by the http interceptor.
+                    },
+                );
     }
 
     get serverConfig(): ServerConfig {

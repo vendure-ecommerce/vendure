@@ -82,7 +82,6 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Role',
-                    error: err.message,
                 });
             },
         );
@@ -113,7 +112,6 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Role',
-                        error: err.message,
                     });
                 },
             );

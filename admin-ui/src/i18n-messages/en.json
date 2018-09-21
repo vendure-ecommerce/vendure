@@ -91,9 +91,9 @@
     "log-out": "Log out",
     "login": "Log in",
     "next": "Next",
-    "notify-create-error": "An error occurred, could not create { entity }\n\n { error }",
+    "notify-create-error": "An error occurred, could not create { entity }",
     "notify-create-success": "Created new { entity }",
-    "notify-update-error": "An error occurred, could not update { entity }\n\n { error }",
+    "notify-update-error": "An error occurred, could not update { entity }",
     "notify-update-success": "Updated { entity }",
     "password": "Password",
     "remember-me": "Remember me",
@@ -101,6 +101,9 @@
     "username": "Username"
   },
   "error": {
+    "401-unauthorized": "Invalid login. Please try again",
+    "403-forbidden": "Your session has expired. Please log in",
+    "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
   },
