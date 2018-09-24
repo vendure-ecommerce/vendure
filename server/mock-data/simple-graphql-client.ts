@@ -3,7 +3,11 @@ import { GraphQLClient } from 'graphql-request';
 import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
 import { AttemptLogin, AttemptLoginVariables, CreateAssets } from 'shared/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
+import {
+    AUTH_TOKEN_KEY,
+    SUPER_ADMIN_USER_IDENTIFIER,
+    SUPER_ADMIN_USER_PASSWORD,
+} from 'shared/shared-constants';
 
 import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
 import { CREATE_ASSETS } from '../../admin-ui/src/app/data/definitions/product-definitions';
@@ -103,12 +107,12 @@ export class SimpleGraphQLClient {
     }
 
     async asUserWithCredentials(username: string, password: string) {
-        const result = await this.query<AttemptLogin, AttemptLoginVariables>(ATTEMPT_LOGIN, {
+        const result = await this.client.rawRequest<AttemptLogin>(print(ATTEMPT_LOGIN), {
             username,
             password,
-        });
-        if (result.login) {
-            this.setAuthToken(result.login.authToken);
+        } as AttemptLoginVariables);
+        if (result.data && result.data.login) {
+            this.setAuthToken(result.headers.get(AUTH_TOKEN_KEY));
         } else {
             console.error(result);
         }

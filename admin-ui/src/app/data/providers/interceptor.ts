@@ -10,10 +10,12 @@ import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY } from 'shared/shared-constants';
 
 import { API_URL } from '../../app.config';
 import { AuthService } from '../../core/providers/auth/auth.service';
 import { _ } from '../../core/providers/i18n/mark-for-extraction';
+import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
 import { NotificationService } from '../../core/providers/notification/notification.service';
 
 import { DataService } from './data.service';
@@ -31,6 +33,7 @@ export class DefaultInterceptor implements HttpInterceptor {
         private injector: Injector,
         private authService: AuthService,
         private router: Router,
+        private localStorageService: LocalStorageService,
     ) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -39,6 +42,18 @@ export class DefaultInterceptor implements HttpInterceptor {
             tap(
                 event => {
                     if (event instanceof HttpResponse) {
+                        if (event.headers.get(AUTH_TOKEN_KEY)) {
+                            this.localStorageService.setForSession(
+                                'authToken',
+                                event.headers.get(AUTH_TOKEN_KEY),
+                            );
+                        }
+                        if (event.headers.get(REFRESH_TOKEN_KEY)) {
+                            this.localStorageService.set(
+                                'refreshToken',
+                                event.headers.get(REFRESH_TOKEN_KEY),
+                            );
+                        }
                         this.notifyOnError(event);
                         this.dataService.client.completeRequest().subscribe();
                     }

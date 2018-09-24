@@ -2,6 +2,7 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request } from 'express';
 import { Permission } from 'shared/generated-types';
 
+import { AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../../../shared/shared-constants';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
@@ -17,11 +18,15 @@ export class AuthResolver {
      */
     @Mutation()
     async login(@Args() args: { username: string; password: string }) {
-        const { user, token } = await this.authService.createToken(args.username, args.password);
+        const { user, authToken, refreshToken } = await this.authService.createTokens(
+            args.username,
+            args.password,
+        );
 
-        if (token) {
+        if (authToken) {
             return {
-                authToken: token,
+                [AUTH_TOKEN_KEY]: authToken,
+                [REFRESH_TOKEN_KEY]: refreshToken,
                 user: this.publiclyAccessibleUser(user),
             };
         }

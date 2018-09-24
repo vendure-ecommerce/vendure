@@ -5,12 +5,11 @@ import { ConfigService } from './config.service';
 import { EntityIdStrategy, PrimaryKeyType } from './entity-id-strategy/entity-id-strategy';
 
 export class MockConfigService implements MockClass<ConfigService> {
-    disableAuth = false;
+    authOptions: {};
     channelTokenKey: 'vendure-token';
     apiPath = 'api';
     port = 3000;
     cors = false;
-    jwtSecret = 'secret';
     defaultLanguageCode: jest.Mock<any>;
     entityIdStrategy = new MockIdStrategy();
     assetNamingStrategy = {} as any;

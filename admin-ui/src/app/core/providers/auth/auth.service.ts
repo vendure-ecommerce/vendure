@@ -21,7 +21,6 @@ export class AuthService {
     logIn(username: string, password: string): Observable<SetAsLoggedIn> {
         return this.dataService.auth.attemptLogin(username, password).pipe(
             switchMap(response => {
-                this.localStorageService.setForSession('authToken', response.login.authToken);
                 this.localStorageService.setForSession(
                     'activeChannelToken',
                     response.login.user.channelTokens[0],

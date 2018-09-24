@@ -368,7 +368,6 @@ export interface AttemptLogin_login_user {
 export interface AttemptLogin_login {
   __typename: "LoginResult";
   user: AttemptLogin_login_user;
-  authToken: string;
 }
 
 export interface AttemptLogin {

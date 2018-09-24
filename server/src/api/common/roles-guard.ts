@@ -36,7 +36,7 @@ export class RolesGuard {
 
     canActivate(context: ExecutionContext): boolean {
         const permissions = this.reflector.get<string[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
-        if (this.configService.disableAuth || !permissions) {
+        if (this.configService.authOptions.disableAuth || !permissions) {
             return true;
         }
         const req = context.getArgByIndex(2).req;

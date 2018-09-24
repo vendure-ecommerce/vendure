@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-export type LocalStorageKey = 'authToken' | 'activeChannelToken';
+export type LocalStorageKey = 'refreshToken' | 'authToken' | 'activeChannelToken';
 const PREFIX = 'vnd_';
 
 /**

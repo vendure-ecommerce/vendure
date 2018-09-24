@@ -11,7 +11,7 @@ import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strate
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
-import { getConfig, VendureConfig } from './vendure-config';
+import { AuthOptions, getConfig, VendureConfig } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class ConfigService implements VendureConfig {
 
     constructor() {
         this.activeConfig = getConfig();
-        if (this.activeConfig.disableAuth) {
+        if (this.activeConfig.authOptions.disableAuth) {
             // tslint:disable-next-line
             console.warn(
                 'WARNING: auth has been disabled. This should never be the case for a production system!',
@@ -28,8 +28,8 @@ export class ConfigService implements VendureConfig {
         }
     }
 
-    get disableAuth(): boolean {
-        return this.activeConfig.disableAuth;
+    get authOptions(): AuthOptions {
+        return this.activeConfig.authOptions;
     }
 
     get channelTokenKey(): string {
@@ -50,10 +50,6 @@ export class ConfigService implements VendureConfig {
 
     get cors(): boolean | CorsOptions {
         return this.activeConfig.cors;
-    }
-
-    get jwtSecret(): string {
-        return this.activeConfig.jwtSecret;
     }
 
     get entityIdStrategy(): EntityIdStrategy {

@@ -15,7 +15,9 @@ export const testConfig: VendureConfig = {
     port: 3050,
     apiPath: API_PATH,
     cors: true,
-    jwtSecret: 'some-secret',
+    authOptions: {
+        jwtSecret: 'some-secret',
+    },
     dbConnectionOptions: {
         type: 'sqljs',
         database: new Uint8Array([]),

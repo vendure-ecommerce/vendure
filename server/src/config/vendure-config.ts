@@ -1,30 +1,51 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { RequestHandler } from 'express';
 import { LanguageCode } from 'shared/generated-types';
-import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
-import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
-import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
-import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
-import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { defaultConfig } from './default-config';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
-export interface VendureConfig {
+export interface AuthOptions {
     /**
      * Disable authentication & permissions checks.
      * NEVER set the to true in production. It exists
-     * only to aid the ease of development.
+     * only to aid certain development tasks.
      */
     disableAuth?: boolean;
+    /**
+     * The secret used for signing each JWT used in authenticating users.
+     * In production applications, this should not be stored as a string in
+     * source control for security reasons, but may be loaded from an external
+     * file not under source control, or from an environment variable, for example.
+     * See https://stackoverflow.com/a/30090120/772859
+     */
+    jwtSecret: string;
+    /**
+     * Auth token duration. Typically this should be short-lived (on the order of minutes) to allow the
+     * revocation of tokens.
+     * Expressed in seconds or a string describing a time span
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+     */
+    expiresIn?: string | number;
+    /**
+     * Refresh token duration. This shoud be on the order of days or weeks, depending on how long a user
+     * should be able to remain logged in without having to re-authenticate.
+     * Expressed in seconds or a string describing a time span
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+     */
+    refreshEvery?: string | number;
+}
+
+export interface VendureConfig {
     /**
      * The name of the property which contains the token of the
      * active channel. This property can be included either in
@@ -48,13 +69,9 @@ export interface VendureConfig {
      */
     port: number;
     /**
-     * The secret used for signing each JWT used in authenticating users.
-     * In production applications, this should not be stored as a string in
-     * source control for security reasons, but may be loaded from an external
-     * file not under source control, or from an environment variable, for example.
-     * See https://stackoverflow.com/a/30090120/772859
+     * Configuration for authorization.
      */
-    jwtSecret: string;
+    authOptions: AuthOptions;
     /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
@@ -98,37 +115,6 @@ export interface VendureConfig {
      */
     plugins?: VendurePlugin[];
 }
-
-const defaultConfig: ReadOnlyRequired<VendureConfig> = {
-    disableAuth: false,
-    channelTokenKey: 'vendure-token',
-    defaultLanguageCode: LanguageCode.en,
-    port: API_PORT,
-    cors: false,
-    jwtSecret: 'secret',
-    apiPath: API_PATH,
-    entityIdStrategy: new AutoIncrementIdStrategy(),
-    assetNamingStrategy: new DefaultAssetNamingStrategy(),
-    assetStorageStrategy: new NoAssetStorageStrategy(),
-    assetPreviewStrategy: new NoAssetPreviewStrategy(),
-    dbConnectionOptions: {
-        type: 'mysql',
-    },
-    uploadMaxFileSize: 20971520,
-    customFields: {
-        Address: [],
-        Customer: [],
-        Facet: [],
-        FacetValue: [],
-        Product: [],
-        ProductOption: [],
-        ProductOptionGroup: [],
-        ProductVariant: [],
-        User: [],
-    } as ReadOnlyRequired<CustomFields>,
-    middleware: [],
-    plugins: [],
-};
 
 let activeConfig = defaultConfig;
 

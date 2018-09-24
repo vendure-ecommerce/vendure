@@ -15,7 +15,6 @@ export const ATTEMPT_LOGIN = gql`
             user {
                 ...CurrentUser
             }
-            authToken
         }
     }
     ${CURRENT_USER_FRAGMENT}

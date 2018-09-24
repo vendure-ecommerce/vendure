@@ -8,11 +8,12 @@ import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/defa
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
-    disableAuth: false,
+    authOptions: {
+        disableAuth: false,
+        jwtSecret: 'some-secret',
+    },
     port: API_PORT,
     apiPath: API_PATH,
-    cors: true,
-    jwtSecret: 'some-secret',
     dbConnectionOptions: {
         type: 'mysql',
         synchronize: true,
