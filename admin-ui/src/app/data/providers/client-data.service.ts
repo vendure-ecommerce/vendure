@@ -27,6 +27,10 @@ import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 
+/**
+ * Note: local queries all have a fetch-policy of "cache-first" explicitly specified due to:
+ * https://github.com/apollographql/apollo-link-state/issues/236
+ */
 export class ClientDataService {
     constructor(private baseDataService: BaseDataService) {}
 
@@ -39,7 +43,7 @@ export class ClientDataService {
     }
 
     getNetworkStatus(): QueryResult<GetNetworkStatus> {
-        return this.baseDataService.query<GetNetworkStatus>(GET_NEWTORK_STATUS);
+        return this.baseDataService.query<GetNetworkStatus>(GET_NEWTORK_STATUS, {}, 'cache-first');
     }
 
     loginSuccess(username: string): Observable<SetAsLoggedIn> {
@@ -54,11 +58,11 @@ export class ClientDataService {
     }
 
     userStatus(): QueryResult<GetUserStatus> {
-        return this.baseDataService.query<GetUserStatus>(GET_USER_STATUS);
+        return this.baseDataService.query<GetUserStatus>(GET_USER_STATUS, {}, 'cache-first');
     }
 
     uiState(): QueryResult<GetUiState> {
-        return this.baseDataService.query<GetUiState>(GET_UI_STATE);
+        return this.baseDataService.query<GetUiState>(GET_UI_STATE, {}, 'cache-first');
     }
 
     setUiLanguage(languageCode: LanguageCode): Observable<SetUiLanguage> {

@@ -362,7 +362,6 @@ export interface AttemptLogin_login_user {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 export interface AttemptLogin_login {
@@ -377,6 +376,18 @@ export interface AttemptLogin {
 export interface AttemptLoginVariables {
   username: string;
   password: string;
+  rememberMe: boolean;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: LogOut
+// ====================================================
+
+export interface LogOut {
+  logout: boolean;
 }
 
 /* tslint:disable */
@@ -391,7 +402,6 @@ export interface GetCurrentUser_me {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 export interface GetCurrentUser {
@@ -725,7 +735,7 @@ export interface SetAsLoggedIn_setAsLoggedIn {
 }
 
 export interface SetAsLoggedIn {
-  setAsLoggedIn: SetAsLoggedIn_setAsLoggedIn | null;
+  setAsLoggedIn: SetAsLoggedIn_setAsLoggedIn;
 }
 
 export interface SetAsLoggedInVariables {
@@ -748,7 +758,7 @@ export interface SetAsLoggedOut_setAsLoggedOut {
 }
 
 export interface SetAsLoggedOut {
-  setAsLoggedOut: SetAsLoggedOut_setAsLoggedOut | null;
+  setAsLoggedOut: SetAsLoggedOut_setAsLoggedOut;
 }
 
 /* tslint:disable */
@@ -1652,7 +1662,6 @@ export interface CurrentUser {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 /* tslint:disable */

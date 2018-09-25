@@ -12,14 +12,15 @@ import { AUTH_REDIRECT_PARAM } from '../../../data/providers/interceptor';
 export class LoginComponent {
     username = '';
     password = '';
+    rememberMe = false;
 
     constructor(private authService: AuthService, private router: Router) {}
 
     logIn(): void {
-        this.authService.logIn(this.username, this.password).subscribe(
+        this.authService.logIn(this.username, this.password, this.rememberMe).subscribe(
             () => {
                 const redirect = this.getRedirectRoute();
-                this.router.navigate([redirect ? redirect : '/']);
+                this.router.navigateByUrl(redirect ? redirect : '/');
             },
             err => {
                 /* error handled by http interceptor */

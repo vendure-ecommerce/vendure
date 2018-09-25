@@ -20,6 +20,7 @@ export class FetchAdapter {
                 headers: init.headers as any,
                 observe: 'response',
                 responseType: 'json',
+                withCredentials: true,
             })
             .toPromise()
             .then(result => {

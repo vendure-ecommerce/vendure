@@ -3,16 +3,18 @@ type Query {
 }
 
 type Mutation {
-    login(username: String!, password: String!): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    logout: Boolean!
 }
 
 type LoginResult {
     user: CurrentUser!
+    "The token will only be returned when using the `bearer` tokenMethod"
+    token: String
 }
 
 type CurrentUser {
     id: ID!
     identifier: String!
-    roles: [String!]!
     channelTokens: [String!]!
 }

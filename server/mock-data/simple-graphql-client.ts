@@ -1,15 +1,11 @@
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
+import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
-import { AttemptLogin, AttemptLoginVariables, CreateAssets } from 'shared/generated-types';
-import {
-    AUTH_TOKEN_KEY,
-    SUPER_ADMIN_USER_IDENTIFIER,
-    SUPER_ADMIN_USER_PASSWORD,
-} from 'shared/shared-constants';
+import { CreateAssets } from 'shared/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 
-import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
 import { CREATE_ASSETS } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { getConfig } from '../src/config/vendure-config';
 
@@ -107,12 +103,26 @@ export class SimpleGraphQLClient {
     }
 
     async asUserWithCredentials(username: string, password: string) {
-        const result = await this.client.rawRequest<AttemptLogin>(print(ATTEMPT_LOGIN), {
-            username,
-            password,
-        } as AttemptLoginVariables);
-        if (result.data && result.data.login) {
-            this.setAuthToken(result.headers.get(AUTH_TOKEN_KEY));
+        const result = await this.query(
+            gql`
+                mutation($username: String!, $password: String!) {
+                    login(username: $username, password: $password) {
+                        user {
+                            id
+                            identifier
+                            channelTokens
+                        }
+                        token
+                    }
+                }
+            `,
+            {
+                username,
+                password,
+            },
+        );
+        if (result && result.login) {
+            this.setAuthToken(result.login.token);
         } else {
             console.error(result);
         }

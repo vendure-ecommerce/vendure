@@ -68,6 +68,7 @@ export class MockDataService implements DataServiceMock {
     auth = {
         checkLoggedIn: spyObservable('checkLoggedIn'),
         attemptLogin: spyObservable('attemptLogin'),
+        logOut: spyObservable('logOut'),
     };
     facet = {
         getFacets: spyQueryResult('getFacets'),

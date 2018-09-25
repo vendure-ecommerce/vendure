@@ -10,7 +10,7 @@ import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/defa
 export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
-        jwtSecret: 'some-secret',
+        sessionSecret: 'some-secret',
     },
     port: API_PORT,
     apiPath: API_PATH,

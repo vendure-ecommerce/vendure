@@ -1,93 +1,88 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import * as jwt from 'jsonwebtoken';
-import { Permission } from 'shared/generated-types';
+import * as crypto from 'crypto';
+import * as ms from 'ms';
+import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { JwtPayload } from '../../common/types/auth-types';
 import { ConfigService } from '../../config/config.service';
+import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
 import { PasswordService } from './password.service';
 
 @Injectable()
 export class AuthService {
+    private readonly sessionDurationInMs;
+
     constructor(
         private passwordService: PasswordService,
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
-    ) {}
+    ) {
+        this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration);
+    }
 
     /**
-     * Creates auth & refresh tokens after user login.
+     * Authenticates a user's credentials and if okay, creates a new session.
      */
-    async createTokens(
-        identifier: string,
-        password: string,
-    ): Promise<{ user: User; authToken: string; refreshToken: string }> {
+    async authenticate(identifier: string, password: string): Promise<Session> {
         const user = await this.getUserFromIdentifier(identifier);
         const passwordMatches = await this.passwordService.check(password, user.passwordHash);
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }
-        const { authToken, refreshToken } = this.createTokensForUser(user);
-        return { user, authToken, refreshToken };
+        const token = await this.generateSessionToken();
+        const session = new Session({
+            token,
+            user,
+            expires: this.getExpiryDate(),
+            invalidated: false,
+        });
+        await this.invalidateUserSessions(user);
+        // save the new session
+        const newSession = this.connection.getRepository(Session).save(session);
+        return newSession;
     }
 
     /**
-     * Attempts to refresh the authToken based on the provided refreshToken.
+     * Looks for a valid session with the given token and returns one if found.
      */
-    async refreshTokens(
-        token: string,
-        refreshToken: string,
-    ): Promise<{ user: User; authToken: string; refreshToken: string } | null> {
-        const jwtPayload = jwt.decode(token) as JwtPayload | null;
-
-        if (jwtPayload) {
-            const user = await this.getUserFromIdentifier(jwtPayload.identifier);
-
-            try {
-                jwt.verify(refreshToken, this.getRefreshTokenSecret(user));
-            } catch (e) {
-                throw new UnauthorizedException();
-            }
-
-            const newTokens = this.createTokensForUser(user);
-            return {
-                user,
-                authToken: newTokens.authToken,
-                refreshToken: newTokens.refreshToken,
-            };
-        } else {
-            return null;
+    async validateSession(token: string): Promise<Session | undefined> {
+        const session = await this.connection.getRepository(Session).findOne({
+            where: { token, invalidated: false },
+            relations: ['user', 'user.roles', 'user.roles.channels'],
+        });
+        if (session && session.expires > new Date()) {
+            await this.updateSessionExpiry(session);
+            return session;
         }
     }
 
-    async validateUser(identifier: string): Promise<User | undefined> {
-        return await this.connection.getRepository(User).findOne({
-            where: { identifier },
-            relations: ['roles', 'roles.channels'],
-        });
+    /**
+     * Invalidates all existing sessions for the given user.
+     */
+    async invalidateUserSessions(user: User): Promise<void> {
+        await this.connection.getRepository(Session).update({ user }, { invalidated: true });
     }
 
-    private createTokensForUser(user: User): { authToken: string; refreshToken: string } {
-        const payload: JwtPayload = {
-            identifier: user.identifier,
-            roles: user.roles.reduce((roles, r) => [...roles, ...r.permissions], [] as Permission[]),
-        };
-        const authToken = jwt.sign(payload, this.configService.authOptions.jwtSecret, {
-            expiresIn: this.configService.authOptions.expiresIn,
-            algorithm: 'HS256',
+    /**
+     * Invalidates all sessions for the user associated with the given session token.
+     */
+    async invalidateSessionByToken(token: string): Promise<void> {
+        const session = await this.connection.getRepository(Session).findOne({
+            where: { token },
+            relations: ['user'],
         });
+        if (session) {
+            return this.invalidateUserSessions(session.user);
+        }
+    }
 
-        // The refreshToken is signed with a combination of the JWT secret and the user's password hash.
-        // This means that changing the password will invalidate any active refresh tokens automatically.
-        const refreshToken = jwt.sign({ identifier: user.identifier }, this.getRefreshTokenSecret(user), {
-            expiresIn: this.configService.authOptions.refreshEvery,
-            algorithm: 'HS256',
+    async getUserById(userId: ID): Promise<User | undefined> {
+        return this.connection.getRepository(User).findOne(userId, {
+            relations: ['roles', 'roles.channels'],
         });
-
-        return { authToken, refreshToken };
     }
 
     private async getUserFromIdentifier(identifier: string): Promise<User> {
@@ -101,7 +96,39 @@ export class AuthService {
         return user;
     }
 
-    private getRefreshTokenSecret(user: User): string {
-        return this.configService.authOptions.jwtSecret + '_' + user.passwordHash;
+    /**
+     * Generates a random session token.
+     */
+    private generateSessionToken(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(32, (err, buf) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(buf.toString('hex'));
+            });
+        });
+    }
+
+    /**
+     * If we are over half way to the current session's expiry date, then we update it.
+     *
+     * This ensures that the session will not expire when in active use, but prevents us from
+     * needing to run an update query on *every* request.
+     */
+    private async updateSessionExpiry(session: Session) {
+        const now = new Date().getTime();
+        if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
+            await this.connection
+                .getRepository(Session)
+                .update({ id: session.id }, { expires: this.getExpiryDate() });
+        }
+    }
+
+    /**
+     * Returns a future expiry date according to the configured sessionDuration.
+     */
+    private getExpiryDate(): Date {
+        return new Date(Date.now() + this.sessionDurationInMs);
     }
 }

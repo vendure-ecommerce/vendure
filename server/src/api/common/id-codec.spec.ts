@@ -24,6 +24,13 @@ describe('IdCodecService', () => {
             expect(result).toEqual(ENCODED);
         });
 
+        it('works with a boolean', () => {
+            const input = true;
+
+            const result = idCodec.encode(input);
+            expect(result).toEqual(true);
+        });
+
         it('passes through null or undefined without throwing', () => {
             expect(idCodec.encode(null as any)).toBeNull();
             expect(idCodec.encode(undefined as any)).toBeUndefined();

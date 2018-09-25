@@ -1,35 +1,61 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request } from 'express';
-import { Permission } from 'shared/generated-types';
+import * as ms from 'ms';
+import { AttemptLoginVariables, Permission } from 'shared/generated-types';
 
-import { AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../../../shared/shared-constants';
+import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
+import { extractAuthToken } from '../common/extract-auth-token';
 import { Allow } from '../common/roles-guard';
 
 @Resolver('Auth')
 export class AuthResolver {
-    constructor(private authService: AuthService, private channelService: ChannelService) {}
+    constructor(
+        private authService: AuthService,
+        private channelService: ChannelService,
+        private configService: ConfigService,
+    ) {}
 
     /**
      * Attempts a login given the username and password of a user. If successful, returns
-     * the user data and a token to be used by Bearer auth.
+     * the user data and returns the token either in a cookie or in the response body.
      */
     @Mutation()
-    async login(@Args() args: { username: string; password: string }) {
-        const { user, authToken, refreshToken } = await this.authService.createTokens(
-            args.username,
-            args.password,
-        );
+    async login(@Args() args: AttemptLoginVariables, @Context('req') request: Request) {
+        const session = await this.authService.authenticate(args.username, args.password);
 
-        if (authToken) {
+        if (session) {
+            let token: string | null = null;
+            if (this.configService.authOptions.tokenMethod === 'cookie') {
+                if (request.session) {
+                    if (args.rememberMe) {
+                        request.sessionOptions.maxAge = ms('1y');
+                    }
+                    request.session.token = session.token;
+                }
+            } else {
+                token = session.token;
+            }
             return {
-                [AUTH_TOKEN_KEY]: authToken,
-                [REFRESH_TOKEN_KEY]: refreshToken,
-                user: this.publiclyAccessibleUser(user),
+                user: this.publiclyAccessibleUser(session.user),
+                token,
             };
         }
+    }
+
+    @Mutation()
+    async logout(@Context('req') request: Request) {
+        const token = extractAuthToken(request, this.configService.authOptions.tokenMethod);
+        if (!token) {
+            return false;
+        }
+        await this.authService.invalidateSessionByToken(token);
+        if (request.session) {
+            request.session = undefined;
+        }
+        return true;
     }
 
     /**
@@ -38,7 +64,7 @@ export class AuthResolver {
     @Query()
     @Allow(Permission.Authenticated)
     async me(@Context('req') request: Request & { user: User }) {
-        const user = await this.authService.validateUser(request.user.identifier);
+        const user = await this.authService.getUserById(request.user.id);
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 
@@ -49,10 +75,6 @@ export class AuthResolver {
         return {
             id: user.id,
             identifier: user.identifier,
-            roles: user.roles.reduce(
-                (roleTypes, role) => [...roleTypes, ...role.permissions],
-                [] as Permission[],
-            ),
             channelTokens: this.getAvailableChannelTokens(user),
         };
     }

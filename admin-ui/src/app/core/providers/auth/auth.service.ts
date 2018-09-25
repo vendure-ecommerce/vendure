@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
-import { AttemptLogin, SetAsLoggedIn } from 'shared/generated-types';
+import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { SetAsLoggedIn } from 'shared/generated-types';
 
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { DataService } from '../../../data/providers/data.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
@@ -18,13 +17,10 @@ export class AuthService {
      * Attempts to log in via the REST login endpoint and updates the app
      * state on success.
      */
-    logIn(username: string, password: string): Observable<SetAsLoggedIn> {
-        return this.dataService.auth.attemptLogin(username, password).pipe(
+    logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn> {
+        return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
-                this.localStorageService.setForSession(
-                    'activeChannelToken',
-                    response.login.user.channelTokens[0],
-                );
+                this.setChannelToken(response.login.user.channelTokens[0]);
                 return this.dataService.client.loginSuccess(username);
             }),
         );
@@ -33,9 +29,19 @@ export class AuthService {
     /**
      * Update the user status to being logged out.
      */
-    logOut(): void {
-        this.dataService.client.logOut();
-        this.localStorageService.remove('authToken');
+    logOut(): Observable<boolean> {
+        return this.dataService.client.userStatus().single$.pipe(
+            switchMap(status => {
+                if (status.userStatus.isLoggedIn) {
+                    return this.dataService.client
+                        .logOut()
+                        .pipe(mergeMap(() => this.dataService.auth.logOut()));
+                } else {
+                    return [];
+                }
+            }),
+            mapTo(true),
+        );
     }
 
     /**
@@ -59,19 +65,20 @@ export class AuthService {
      * that token against the API.
      */
     validateAuthToken(): Observable<boolean> {
-        if (!this.localStorageService.get('authToken')) {
-            return of(false);
-        }
-
         return this.dataService.auth.checkLoggedIn().single$.pipe(
-            map(result => {
+            mergeMap(result => {
                 if (!result.me) {
-                    return false;
+                    return of(false);
                 }
-                this.dataService.client.loginSuccess(result.me.identifier);
-                return true;
+                this.setChannelToken(result.me.channelTokens[0]);
+                return this.dataService.client.loginSuccess(result.me.identifier);
             }),
+            mapTo(true),
             catchError(err => of(false)),
         );
+    }
+
+    private setChannelToken(channelToken: string) {
+        this.localStorageService.set('activeChannelToken', channelToken);
     }
 }

@@ -23,7 +23,8 @@ export class AppShellComponent implements OnInit {
     }
 
     logOut() {
-        this.authService.logOut();
-        this.router.navigate(['/login']);
+        this.authService.logOut().subscribe(() => {
+            this.router.navigate(['/login']);
+        });
     }
 }
