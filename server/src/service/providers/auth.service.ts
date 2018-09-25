@@ -33,6 +33,7 @@ export class AuthService {
             token,
             user,
             expires: new Date(Date.now() + ms(this.configService.authOptions.sessionDuration)),
+            invalidated: false,
         });
         await this.invalidateUserSessions(user);
         // save the new session

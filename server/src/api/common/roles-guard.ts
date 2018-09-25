@@ -1,6 +1,5 @@
 import { ExecutionContext, Injectable, ReflectMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Permission } from 'shared/generated-types';
 
 import { idsAreEqual } from '../../common/utils';

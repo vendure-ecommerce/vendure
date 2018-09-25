@@ -17,6 +17,7 @@ export const testConfig: VendureConfig = {
     cors: true,
     authOptions: {
         sessionSecret: 'some-secret',
+        tokenMethod: 'bearer',
     },
     dbConnectionOptions: {
         type: 'sqljs',

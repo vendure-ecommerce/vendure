@@ -23,7 +23,8 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     authOptions: {
         disableAuth: false,
-        sessionSecret: 'jwt-secret',
+        tokenMethod: 'cookie',
+        sessionSecret: 'session-secret',
         sessionDuration: '7d',
     },
     apiPath: API_PATH,

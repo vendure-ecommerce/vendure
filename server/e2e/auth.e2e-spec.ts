@@ -54,6 +54,7 @@ describe('Authorization & permissions', () => {
             await assertRequestAllowed<AttemptLoginVariables>(ATTEMPT_LOGIN, {
                 username: SUPER_ADMIN_USER_IDENTIFIER,
                 password: SUPER_ADMIN_USER_PASSWORD,
+                rememberMe: false,
             });
         });
     });

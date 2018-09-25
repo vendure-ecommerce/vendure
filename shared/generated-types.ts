@@ -727,8 +727,15 @@ export interface RequestCompleted {
 // GraphQL mutation operation: SetAsLoggedIn
 // ====================================================
 
+export interface SetAsLoggedIn_setAsLoggedIn {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
 export interface SetAsLoggedIn {
-  setAsLoggedIn: boolean;
+  setAsLoggedIn: SetAsLoggedIn_setAsLoggedIn;
 }
 
 export interface SetAsLoggedInVariables {
@@ -743,8 +750,15 @@ export interface SetAsLoggedInVariables {
 // GraphQL mutation operation: SetAsLoggedOut
 // ====================================================
 
+export interface SetAsLoggedOut_setAsLoggedOut {
+  __typename: "UserStatus";
+  username: string;
+  isLoggedIn: boolean;
+  loginTime: string;
+}
+
 export interface SetAsLoggedOut {
-  setAsLoggedOut: boolean;
+  setAsLoggedOut: SetAsLoggedOut_setAsLoggedOut;
 }
 
 /* tslint:disable */

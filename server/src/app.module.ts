@@ -22,15 +22,17 @@ export class AppModule implements NestModule {
 
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
             { handler: this.i18nService.handle(), route: this.configService.apiPath },
-            {
+        ];
+        if (this.configService.authOptions.tokenMethod === 'cookie') {
+            defaultMiddleware.push({
                 handler: cookieSession({
                     name: 'session',
                     secret: this.configService.authOptions.sessionSecret,
                     httpOnly: true,
                 }),
                 route: this.configService.apiPath,
-            },
-        ];
+            });
+        }
         const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {

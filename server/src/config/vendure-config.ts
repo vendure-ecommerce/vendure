@@ -22,14 +22,25 @@ export interface AuthOptions {
      */
     disableAuth?: boolean;
     /**
-     * The secret used for signing the session cookies for authenticated users.
+     * Sets the method by which the session token is delivered and read.
+     *
+     * - "cookie": Upon login, a 'Set-Cookie' header will be returned to the client, setting a
+     *   cookie containing the session token. A browser-based client (making requests with credentials)
+     *   should automatically send the session cookie with each request.
+     * - "bearer": Upon login, the token is returned in the response and should be then stored by the
+     *   client app. Each request should include the header "Authorization: Bearer <token>".
+     */
+    tokenMethod?: 'cookie' | 'bearer';
+    /**
+     * The secret used for signing the session cookies for authenticated users. Only applies when
+     * tokenMethod is set to "cookie".
      *
      * In production applications, this should not be stored as a string in
      * source control for security reasons, but may be loaded from an external
      * file not under source control, or from an environment variable, for example.
      * See https://stackoverflow.com/a/30090120/772859
      */
-    sessionSecret: string;
+    sessionSecret?: string;
     /**
      * Session duration, i.e. the time which must elapse from the last authenticted request
      * after which the user must re-authenticate.

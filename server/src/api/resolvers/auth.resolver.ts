@@ -3,6 +3,7 @@ import { Request } from 'express';
 import * as ms from 'ms';
 import { AttemptLoginVariables, Permission } from 'shared/generated-types';
 
+import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
@@ -10,25 +11,35 @@ import { Allow } from '../common/roles-guard';
 
 @Resolver('Auth')
 export class AuthResolver {
-    constructor(private authService: AuthService, private channelService: ChannelService) {}
+    constructor(
+        private authService: AuthService,
+        private channelService: ChannelService,
+        private configService: ConfigService,
+    ) {}
 
     /**
      * Attempts a login given the username and password of a user. If successful, returns
-     * the user data and sets the session.
+     * the user data and returns the token either in a cookie or in the response body.
      */
     @Mutation()
     async login(@Args() args: AttemptLoginVariables, @Context('req') request: Request) {
         const session = await this.authService.authenticate(args.username, args.password);
 
         if (session) {
-            if (request.session) {
-                if (args.rememberMe) {
-                    request.sessionOptions.maxAge = ms('1y');
+            let token: string | null = null;
+            if (this.configService.authOptions.tokenMethod === 'cookie') {
+                if (request.session) {
+                    if (args.rememberMe) {
+                        request.sessionOptions.maxAge = ms('1y');
+                    }
+                    request.session.token = session.token;
                 }
-                request.session.token = session.token;
+            } else {
+                token = session.token;
             }
             return {
                 user: this.publiclyAccessibleUser(session.user),
+                token,
             };
         }
     }
