@@ -12,7 +12,6 @@ import { GraphqlConfigService } from './common/graphql-config.service';
 import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
 import { RolesGuard } from './common/roles-guard';
-import { TokenInterceptor } from './common/token-interceptor';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
@@ -60,10 +59,6 @@ const exportedProviders = [
         {
             provide: APP_GUARD,
             useClass: RolesGuard,
-        },
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: TokenInterceptor,
         },
         {
             provide: APP_INTERCEPTOR,

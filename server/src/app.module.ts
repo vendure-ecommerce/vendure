@@ -1,6 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 import { GraphQLDateTime } from 'graphql-iso-date';
+import * as ms from 'ms';
 
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
@@ -20,6 +22,14 @@ export class AppModule implements NestModule {
 
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
             { handler: this.i18nService.handle(), route: this.configService.apiPath },
+            {
+                handler: cookieSession({
+                    name: 'session',
+                    secret: this.configService.authOptions.sessionSecret,
+                    httpOnly: true,
+                }),
+                route: this.configService.apiPath,
+            },
         ];
         const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);

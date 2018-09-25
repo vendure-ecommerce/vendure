@@ -1,5 +1,5 @@
 import { LanguageCode } from 'shared/generated-types';
-import { API_PATH, API_PORT, AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY } from 'shared/shared-constants';
+import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields } from 'shared/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
@@ -19,13 +19,12 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     port: API_PORT,
     cors: {
         origin: true,
-        exposedHeaders: [AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY],
+        credentials: true,
     },
     authOptions: {
         disableAuth: false,
-        jwtSecret: 'jwt-secret',
-        expiresIn: '5m',
-        refreshEvery: '7d',
+        sessionSecret: 'jwt-secret',
+        sessionDuration: '7d',
     },
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),

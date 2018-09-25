@@ -7,7 +7,7 @@ import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { withClientState } from 'apollo-link-state';
 import { createUploadLink } from 'apollo-upload-client';
-import { API_PATH, REFRESH_TOKEN_KEY } from 'shared/shared-constants';
+import { API_PATH } from 'shared/shared-constants';
 
 import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
@@ -44,20 +44,12 @@ export function createApollo(
             stateLink,
             new OmitTypenameLink(),
             setContext(() => {
-                // Add JWT auth token & channel token to all requests.
                 const channelToken = localStorageService.get('activeChannelToken');
-                const authToken = localStorageService.get('authToken') || '';
-                const refreshToken = localStorageService.get('refreshToken') || '';
-                if (!authToken) {
-                    return {};
-                } else {
+                if (channelToken) {
                     return {
-                        // prettier-ignore
                         headers: {
-                            'Authorization': `Bearer ${authToken}`,
                             'vendure-token': channelToken,
-                            [REFRESH_TOKEN_KEY]: refreshToken,
-                        }
+                        },
                     };
                 }
             }),

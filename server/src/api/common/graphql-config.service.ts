@@ -50,6 +50,8 @@ export class GraphqlConfigService implements GqlOptionsFactory {
             formatError: err => {
                 return this.i18nService.translateError(err);
             },
+            // This is handled by the Express cors plugin
+            cors: false,
         };
     }
 

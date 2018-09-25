@@ -10,7 +10,6 @@ import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { AUTH_TOKEN_KEY, REFRESH_TOKEN_KEY } from 'shared/shared-constants';
 
 import { API_URL } from '../../app.config';
 import { AuthService } from '../../core/providers/auth/auth.service';
@@ -42,18 +41,6 @@ export class DefaultInterceptor implements HttpInterceptor {
             tap(
                 event => {
                     if (event instanceof HttpResponse) {
-                        if (event.headers.get(AUTH_TOKEN_KEY)) {
-                            this.localStorageService.setForSession(
-                                'authToken',
-                                event.headers.get(AUTH_TOKEN_KEY),
-                            );
-                        }
-                        if (event.headers.get(REFRESH_TOKEN_KEY)) {
-                            this.localStorageService.set(
-                                'refreshToken',
-                                event.headers.get(REFRESH_TOKEN_KEY),
-                            );
-                        }
                         this.notifyOnError(event);
                         this.dataService.client.completeRequest().subscribe();
                     }
@@ -62,6 +49,8 @@ export class DefaultInterceptor implements HttpInterceptor {
                     if (err instanceof HttpErrorResponse) {
                         this.notifyOnError(err);
                         this.dataService.client.completeRequest().subscribe();
+                    } else {
+                        this.displayErrorNotification(err.message);
                     }
                 },
             ),
@@ -87,11 +76,12 @@ export class DefaultInterceptor implements HttpInterceptor {
                         break;
                     case 403:
                         this.displayErrorNotification(_(`error.403-forbidden`));
-                        this.authService.logOut();
-                        this.router.navigate(['/login'], {
-                            queryParams: {
-                                [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
-                            },
+                        this.authService.logOut().subscribe(() => {
+                            this.router.navigate(['/login'], {
+                                queryParams: {
+                                    [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
+                                },
+                            });
                         });
                         break;
                     default:

@@ -22,27 +22,22 @@ export interface AuthOptions {
      */
     disableAuth?: boolean;
     /**
-     * The secret used for signing each JWT used in authenticating users.
+     * The secret used for signing the session cookies for authenticated users.
+     *
      * In production applications, this should not be stored as a string in
      * source control for security reasons, but may be loaded from an external
      * file not under source control, or from an environment variable, for example.
      * See https://stackoverflow.com/a/30090120/772859
      */
-    jwtSecret: string;
+    sessionSecret: string;
     /**
-     * Auth token duration. Typically this should be short-lived (on the order of minutes) to allow the
-     * revocation of tokens.
-     * Expressed in seconds or a string describing a time span
+     * Session duration, i.e. the time which must elapse from the last authenticted request
+     * after which the user must re-authenticate.
+     *
+     * Expressed as a string describing a time span
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
      */
-    expiresIn?: string | number;
-    /**
-     * Refresh token duration. This shoud be on the order of days or weeks, depending on how long a user
-     * should be able to remain logged in without having to re-authenticate.
-     * Expressed in seconds or a string describing a time span
-     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
-     */
-    refreshEvery?: string | number;
+    sessionDuration?: string | number;
 }
 
 export interface VendureConfig {

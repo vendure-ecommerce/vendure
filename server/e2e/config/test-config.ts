@@ -16,7 +16,7 @@ export const testConfig: VendureConfig = {
     apiPath: API_PATH,
     cors: true,
     authOptions: {
-        jwtSecret: 'some-secret',
+        sessionSecret: 'some-secret',
     },
     dbConnectionOptions: {
         type: 'sqljs',

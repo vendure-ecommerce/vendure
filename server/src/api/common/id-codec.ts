@@ -38,7 +38,7 @@ export class IdCodec {
      * then the default recursive behaviour will be used.
      * @return An encoded clone of the target
      */
-    encode<T extends string | number | object | undefined>(target: T, transformKeys?: string[]): T {
+    encode<T extends string | number | boolean | object | undefined>(target: T, transformKeys?: string[]): T {
         const transformKeysWithId = [...(transformKeys || []), 'id'];
         return this.transformRecursive(
             target,
@@ -51,6 +51,7 @@ export class IdCodec {
         // noinspection SuspiciousInstanceOfGuard
         if (
             target == null ||
+            typeof target === 'boolean' ||
             target instanceof Promise ||
             target instanceof Date ||
             target instanceof RegExp

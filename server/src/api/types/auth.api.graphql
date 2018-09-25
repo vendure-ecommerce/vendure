@@ -3,7 +3,8 @@ type Query {
 }
 
 type Mutation {
-    login(username: String!, password: String!): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean!): LoginResult!
+    logout: Boolean!
 }
 
 type LoginResult {
@@ -13,6 +14,5 @@ type LoginResult {
 type CurrentUser {
     id: ID!
     identifier: String!
-    roles: [String!]!
     channelTokens: [String!]!
 }

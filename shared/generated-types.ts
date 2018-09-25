@@ -362,7 +362,6 @@ export interface AttemptLogin_login_user {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 export interface AttemptLogin_login {
@@ -377,6 +376,18 @@ export interface AttemptLogin {
 export interface AttemptLoginVariables {
   username: string;
   password: string;
+  rememberMe: boolean;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: LogOut
+// ====================================================
+
+export interface LogOut {
+  logout: boolean;
 }
 
 /* tslint:disable */
@@ -391,7 +402,6 @@ export interface GetCurrentUser_me {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 export interface GetCurrentUser {
@@ -717,15 +727,8 @@ export interface RequestCompleted {
 // GraphQL mutation operation: SetAsLoggedIn
 // ====================================================
 
-export interface SetAsLoggedIn_setAsLoggedIn {
-  __typename: "UserStatus";
-  username: string;
-  isLoggedIn: boolean;
-  loginTime: string;
-}
-
 export interface SetAsLoggedIn {
-  setAsLoggedIn: SetAsLoggedIn_setAsLoggedIn | null;
+  setAsLoggedIn: boolean;
 }
 
 export interface SetAsLoggedInVariables {
@@ -740,15 +743,8 @@ export interface SetAsLoggedInVariables {
 // GraphQL mutation operation: SetAsLoggedOut
 // ====================================================
 
-export interface SetAsLoggedOut_setAsLoggedOut {
-  __typename: "UserStatus";
-  username: string;
-  isLoggedIn: boolean;
-  loginTime: string;
-}
-
 export interface SetAsLoggedOut {
-  setAsLoggedOut: SetAsLoggedOut_setAsLoggedOut | null;
+  setAsLoggedOut: boolean;
 }
 
 /* tslint:disable */
@@ -1652,7 +1648,6 @@ export interface CurrentUser {
   id: string;
   identifier: string;
   channelTokens: string[];
-  roles: string[];
 }
 
 /* tslint:disable */
