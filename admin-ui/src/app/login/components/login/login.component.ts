@@ -20,7 +20,7 @@ export class LoginComponent {
         this.authService.logIn(this.username, this.password, this.rememberMe).subscribe(
             () => {
                 const redirect = this.getRedirectRoute();
-                this.router.navigate([redirect ? redirect : '/']);
+                this.router.navigateByUrl(redirect ? redirect : '/');
             },
             err => {
                 /* error handled by http interceptor */

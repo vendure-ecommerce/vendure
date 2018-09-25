@@ -75,8 +75,10 @@ export class DefaultInterceptor implements HttpInterceptor {
                         this.displayErrorNotification(_(`error.401-unauthorized`));
                         break;
                     case 403:
-                        this.displayErrorNotification(_(`error.403-forbidden`));
                         this.authService.logOut().subscribe(() => {
+                            if (!window.location.pathname.includes('login')) {
+                                this.displayErrorNotification(_(`error.403-forbidden`));
+                            }
                             this.router.navigate(['/login'], {
                                 queryParams: {
                                     [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
