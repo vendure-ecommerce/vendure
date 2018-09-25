@@ -11,6 +11,9 @@ if (require.main === module) {
     // Running from command line
     const populateConfig: VendureConfig = {
         ...devConfig,
+        authOptions: {
+            tokenMethod: 'bearer',
+        },
         customFields: {},
     };
     // tslint:disable
