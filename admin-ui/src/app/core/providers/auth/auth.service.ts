@@ -20,10 +20,7 @@ export class AuthService {
     logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
-                this.localStorageService.setForSession(
-                    'activeChannelToken',
-                    response.login.user.channelTokens[0],
-                );
+                this.setChannelToken(response.login.user.channelTokens[0]);
                 return this.dataService.client.loginSuccess(username);
             }),
         );
@@ -73,10 +70,15 @@ export class AuthService {
                 if (!result.me) {
                     return of(false);
                 }
+                this.setChannelToken(result.me.channelTokens[0]);
                 return this.dataService.client.loginSuccess(result.me.identifier);
             }),
             mapTo(true),
             catchError(err => of(false)),
         );
+    }
+
+    private setChannelToken(channelToken: string) {
+        this.localStorageService.set('activeChannelToken', channelToken);
     }
 }

@@ -7,6 +7,7 @@ import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
+import { extractAuthToken } from '../common/extract-auth-token';
 import { Allow } from '../common/roles-guard';
 
 @Resolver('Auth')
@@ -45,9 +46,12 @@ export class AuthResolver {
     }
 
     @Mutation()
-    @Allow(Permission.Authenticated)
-    async logout(@Context('req') request: Request & { user: User }) {
-        await this.authService.invalidateUserSessions(request.user);
+    async logout(@Context('req') request: Request) {
+        const token = extractAuthToken(request, this.configService.authOptions.tokenMethod);
+        if (!token) {
+            return false;
+        }
+        await this.authService.invalidateSessionByToken(token);
         if (request.session) {
             request.session = undefined;
         }

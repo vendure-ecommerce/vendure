@@ -1,11 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Request } from 'express';
 
 import { ConfigService } from '../../config/config.service';
 import { AuthService } from '../../service/providers/auth.service';
 
+import { extractAuthToken } from './extract-auth-token';
 import { PERMISSIONS_METADATA_KEY } from './roles-guard';
 
 /**
@@ -23,12 +23,15 @@ export class AuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        const ctx = GqlExecutionContext.create(context).getContext();
+        const authDisabled = this.configService.authOptions.disableAuth;
         const permissions = this.reflector.get<string[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
-        if (this.configService.authOptions.disableAuth || !permissions) {
+
+        if (authDisabled || !permissions) {
             return true;
         }
-        const ctx = GqlExecutionContext.create(context).getContext();
-        const token = this.getToken(ctx.req);
+
+        const token = extractAuthToken(ctx.req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;
         }
@@ -38,26 +41,6 @@ export class AuthGuard implements CanActivate {
             return true;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Get the session token from either the cookie or the Authorization header, depending
-     * on the configured tokenMethod.
-     */
-    private getToken(req: Request): string | undefined {
-        if (this.configService.authOptions.tokenMethod === 'cookie') {
-            if (req.session && req.session.token) {
-                return req.session.token;
-            }
-        } else {
-            const authHeader = req.get('Authorization');
-            if (authHeader) {
-                const matches = authHeader.match(/bearer\s+(.+)$/i);
-                if (matches) {
-                    return matches[1];
-                }
-            }
         }
     }
 }

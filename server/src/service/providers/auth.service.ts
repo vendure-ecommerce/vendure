@@ -13,11 +13,15 @@ import { PasswordService } from './password.service';
 
 @Injectable()
 export class AuthService {
+    private readonly sessionDurationInMs;
+
     constructor(
         private passwordService: PasswordService,
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
-    ) {}
+    ) {
+        this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration);
+    }
 
     /**
      * Authenticates a user's credentials and if okay, creates a new session.
@@ -32,7 +36,7 @@ export class AuthService {
         const session = new Session({
             token,
             user,
-            expires: new Date(Date.now() + ms(this.configService.authOptions.sessionDuration)),
+            expires: this.getExpiryDate(),
             invalidated: false,
         });
         await this.invalidateUserSessions(user);
@@ -50,6 +54,7 @@ export class AuthService {
             relations: ['user', 'user.roles', 'user.roles.channels'],
         });
         if (session && session.expires > new Date()) {
+            await this.updateSessionExpiry(session);
             return session;
         }
     }
@@ -59,6 +64,19 @@ export class AuthService {
      */
     async invalidateUserSessions(user: User): Promise<void> {
         await this.connection.getRepository(Session).update({ user }, { invalidated: true });
+    }
+
+    /**
+     * Invalidates all sessions for the user associated with the given session token.
+     */
+    async invalidateSessionByToken(token: string): Promise<void> {
+        const session = await this.connection.getRepository(Session).findOne({
+            where: { token },
+            relations: ['user'],
+        });
+        if (session) {
+            return this.invalidateUserSessions(session.user);
+        }
     }
 
     async getUserById(userId: ID): Promise<User | undefined> {
@@ -90,5 +108,27 @@ export class AuthService {
                 resolve(buf.toString('hex'));
             });
         });
+    }
+
+    /**
+     * If we are over half way to the current session's expiry date, then we update it.
+     *
+     * This ensures that the session will not expire when in active use, but prevents us from
+     * needing to run an update query on *every* request.
+     */
+    private async updateSessionExpiry(session: Session) {
+        const now = new Date().getTime();
+        if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
+            await this.connection
+                .getRepository(Session)
+                .update({ id: session.id }, { expires: this.getExpiryDate() });
+        }
+    }
+
+    /**
+     * Returns a future expiry date according to the configured sessionDuration.
+     */
+    private getExpiryDate(): Date {
+        return new Date(Date.now() + this.sessionDurationInMs);
     }
 }
