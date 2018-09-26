@@ -26,7 +26,7 @@
     "@nestjs/testing": "5.3.8",
     "@nestjs/typeorm": "^5.2.2",
     "apollo-server-express": "^2.0.4",
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^3.0.1",
     "body-parser": "^1.18.3",
     "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.3",

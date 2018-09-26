@@ -1,0 +1,7 @@
+type AdjustmentSource implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    type: String!
+}

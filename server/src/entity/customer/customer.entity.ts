@@ -5,6 +5,7 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';
+import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
@@ -25,6 +26,9 @@ export class Customer extends VendureEntity implements HasCustomFields {
 
     @OneToMany(type => Address, address => address.customer)
     addresses: Address[];
+
+    @OneToMany(type => Order, order => order.customer)
+    orders: Order[];
 
     @OneToOne(type => User, { eager: true })
     @JoinColumn()

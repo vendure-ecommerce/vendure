@@ -58,13 +58,9 @@ class OrderItem {
     order: Order
     productVariant: ProductVariant
 }
-class OrderItemUnit {
-    orderItem: OrderItem
-}
 class Adjustment {
-    orderItemUnit?: OrderItemUnit
-    orderItem?: OrderItem
-    order?: Order
+    target: OrderItem | Order
+    source: AdjustmentSource
 }
 enum AdjustmentType {
     Tax
@@ -103,11 +99,10 @@ Customer *-- "0..*" Order
 OrderItem - ProductVariant
 Order *-- OrderItem
 Order -- Channel
-OrderItem *-- OrderItemUnit
-OrderItemUnit o-- Adjustment
 OrderItem o-- Adjustment
 Order o-- Adjustment
 Adjustment - AdjustmentType
+Adjustment o-- AdjustmentSource
 AdjustmentSource - AdjustmentType
 AdjustmentSource o-- Channel
 Product o-- Channel

@@ -1,0 +1,9 @@
+type Order implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    code: String!
+    customer: Customer!
+    items: [OrderItem!]!
+    adjustments: [Adjustment!]!
+}

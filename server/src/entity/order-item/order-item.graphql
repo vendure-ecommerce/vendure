@@ -1,0 +1,10 @@
+type OrderItem implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    unitPrice: Int!
+    quantity: Int!
+    adjustments: [Adjustment!]!
+    order: Order!
+}

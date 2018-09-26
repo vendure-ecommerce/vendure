@@ -1,0 +1,28 @@
+@startuml
+!include theme.puml
+title Order State Diagram
+
+[*] --> AddingItems: AddProductVariantToOrder
+AddingItems: Customer is adding items to order
+AddingItems: All non-shipping Adjustments get applied here
+
+AddingItems --> ArrangingShipping:Next
+ArrangingShipping: Shipping destination is set
+ArrangingShipping: Shipping Adjustment added to Order
+
+ArrangingShipping --> AddingItems:Previous
+ArrangingShipping --> ArrangingPayment:Next
+ArrangingPayment: Payment provider is used to take payment
+
+ArrangingPayment --> ArrangingShipping:Previous
+ArrangingPayment --> OrderComplete:Next
+OrderComplete: Order is complete and ready to be processed
+
+OrderComplete --> Cancelled:Cancel
+Cancelled: Customer or Admin cancelled the order
+
+Cancelled --> [*]
+
+OrderComplete --> [*]
+
+@enduml

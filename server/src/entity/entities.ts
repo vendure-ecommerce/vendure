@@ -1,4 +1,8 @@
 import { Address } from './address/address.entity';
+import { AdjustmentSource } from './adjustment-source/adjustment-source.entity';
+import { Adjustment } from './adjustment/adjustment.entity';
+import { OrderAdjustment } from './adjustment/order-adjustment.entity';
+import { OrderItemAdjustment } from './adjustment/order-item-adjustment.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
@@ -7,6 +11,8 @@ import { FacetValueTranslation } from './facet-value/facet-value-translation.ent
 import { FacetValue } from './facet-value/facet-value.entity';
 import { FacetTranslation } from './facet/facet-translation.entity';
 import { Facet } from './facet/facet.entity';
+import { OrderItem } from './order-item/order-item.entity';
+import { Order } from './order/order.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from './product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from './product-option/product-option-translation.entity';
@@ -25,6 +31,8 @@ import { User } from './user/user.entity';
  */
 export const coreEntitiesMap = {
     Address,
+    Adjustment,
+    AdjustmentSource,
     Administrator,
     Asset,
     Channel,
@@ -33,12 +41,16 @@ export const coreEntitiesMap = {
     FacetTranslation,
     FacetValue,
     FacetValueTranslation,
+    Order,
+    OrderAdjustment,
+    OrderItem,
+    OrderItemAdjustment,
     Product,
-    ProductTranslation,
     ProductOption,
-    ProductOptionTranslation,
     ProductOptionGroup,
     ProductOptionGroupTranslation,
+    ProductOptionTranslation,
+    ProductTranslation,
     ProductVariant,
     ProductVariantPrice,
     ProductVariantTranslation,

@@ -1,0 +1,11 @@
+type Adjustment implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    type: String!
+    amount: Int!
+    target: AdjustmentTarget!
+    source: AdjustmentSource!
+}
+
+union AdjustmentTarget = Order | OrderItem
