@@ -4,8 +4,7 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Asset } from '../../entity/asset/asset.entity';
 import { AssetService } from '../../service/providers/asset.service';
-import { RequestContextPipe } from '../common/request-context.pipe';
-import { Allow } from '../common/roles-guard';
+import { Allow } from '../common/auth-guard';
 
 @Resolver('Assets')
 export class AssetResolver {

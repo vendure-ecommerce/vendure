@@ -6,6 +6,7 @@ import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ConfigService } from '../../config/config.service';
+import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
@@ -26,14 +27,14 @@ export class AuthService {
     /**
      * Authenticates a user's credentials and if okay, creates a new session.
      */
-    async authenticate(identifier: string, password: string): Promise<Session> {
+    async authenticate(identifier: string, password: string): Promise<AuthenticatedSession> {
         const user = await this.getUserFromIdentifier(identifier);
         const passwordMatches = await this.passwordService.check(password, user.passwordHash);
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }
         const token = await this.generateSessionToken();
-        const session = new Session({
+        const session = new AuthenticatedSession({
             token,
             user,
             expires: this.getExpiryDate(),
@@ -41,7 +42,7 @@ export class AuthService {
         });
         await this.invalidateUserSessions(user);
         // save the new session
-        const newSession = this.connection.getRepository(Session).save(session);
+        const newSession = await this.connection.getRepository(Session).save(session);
         return newSession;
     }
 
@@ -63,14 +64,14 @@ export class AuthService {
      * Invalidates all existing sessions for the given user.
      */
     async invalidateUserSessions(user: User): Promise<void> {
-        await this.connection.getRepository(Session).update({ user }, { invalidated: true });
+        await this.connection.getRepository(AuthenticatedSession).update({ user }, { invalidated: true });
     }
 
     /**
      * Invalidates all sessions for the user associated with the given session token.
      */
     async invalidateSessionByToken(token: string): Promise<void> {
-        const session = await this.connection.getRepository(Session).findOne({
+        const session = await this.connection.getRepository(AuthenticatedSession).findOne({
             where: { token },
             relations: ['user'],
         });

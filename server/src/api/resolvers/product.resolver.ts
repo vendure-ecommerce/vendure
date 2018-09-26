@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AddOptionGroupToProductVariables,
     ApplyFacetValuesToProductVariantsVariables,
@@ -22,10 +22,10 @@ import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/providers/facet-value.service';
 import { ProductVariantService } from '../../service/providers/product-variant.service';
 import { ProductService } from '../../service/providers/product.service';
+import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
-import { RequestContextPipe } from '../common/request-context.pipe';
-import { Allow } from '../common/roles-guard';
+import { Ctx } from '../common/request-context.decorator';
 
 @Resolver('Product')
 export class ProductResolver {
@@ -38,20 +38,18 @@ export class ProductResolver {
     @Query()
     @Allow(Permission.ReadCatalog)
     async products(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: GetProductListVariables,
     ): Promise<PaginatedList<Translated<Product>>> {
-        ctx.setLanguageCode(args.languageCode);
         return this.productService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
     async product(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: GetProductWithVariantsVariables,
     ): Promise<Translated<Product> | undefined> {
-        ctx.setLanguageCode(args.languageCode);
         return this.productService.findOne(ctx, args.id);
     }
 
@@ -59,7 +57,7 @@ export class ProductResolver {
     @Allow(Permission.CreateCatalog)
     @Decode('assetIds', 'featuredAssetId')
     async createProduct(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: CreateProductVariables,
     ): Promise<Translated<Product>> {
         const { input } = args;
@@ -70,7 +68,7 @@ export class ProductResolver {
     @Allow(Permission.UpdateCatalog)
     @Decode('assetIds', 'featuredAssetId')
     async updateProduct(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductVariables,
     ): Promise<Translated<Product>> {
         const { input } = args;
@@ -81,7 +79,7 @@ export class ProductResolver {
     @Allow(Permission.UpdateCatalog)
     @Decode('productId', 'optionGroupId')
     async addOptionGroupToProduct(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: AddOptionGroupToProductVariables,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
@@ -92,7 +90,7 @@ export class ProductResolver {
     @Allow(Permission.UpdateCatalog)
     @Decode('productId', 'optionGroupId')
     async removeOptionGroupFromProduct(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: RemoveOptionGroupFromProductVariables,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
@@ -103,7 +101,7 @@ export class ProductResolver {
     @Allow(Permission.CreateCatalog)
     @Decode('productId')
     async generateVariantsForProduct(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: GenerateProductVariantsVariables,
     ): Promise<Translated<Product>> {
         const { productId, defaultPrice, defaultSku } = args;
@@ -114,7 +112,7 @@ export class ProductResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductVariants(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductVariantsVariables,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
@@ -125,7 +123,7 @@ export class ProductResolver {
     @Allow(Permission.UpdateCatalog)
     @Decode('facetValueIds', 'productVariantIds')
     async applyFacetValuesToProductVariants(
-        @Context(RequestContextPipe) ctx: RequestContext,
+        @Ctx() ctx: RequestContext,
         @Args() args: ApplyFacetValuesToProductVariantsVariables,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { facetValueIds, productVariantIds } = args;

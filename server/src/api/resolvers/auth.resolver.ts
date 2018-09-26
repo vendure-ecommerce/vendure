@@ -7,8 +7,8 @@ import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
+import { Allow } from '../common/auth-guard';
 import { extractAuthToken } from '../common/extract-auth-token';
-import { Allow } from '../common/roles-guard';
 
 @Resolver('Auth')
 export class AuthResolver {

@@ -23,6 +23,8 @@ import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
 import { Role } from './role/role.entity';
+import { AnonymousSession } from './session/anonymous-session.entity';
+import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
 import { User } from './user/user.entity';
 
@@ -34,7 +36,9 @@ export const coreEntitiesMap = {
     Adjustment,
     AdjustmentSource,
     Administrator,
+    AnonymousSession,
     Asset,
+    AuthenticatedSession,
     Channel,
     Customer,
     Facet,

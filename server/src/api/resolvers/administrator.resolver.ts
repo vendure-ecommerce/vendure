@@ -11,8 +11,8 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { AdministratorService } from '../../service/providers/administrator.service';
+import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
-import { Allow } from '../common/roles-guard';
 
 @Resolver('Administrator')
 export class AdministratorResolver {

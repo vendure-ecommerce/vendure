@@ -3,7 +3,7 @@ import { Permission } from 'shared/generated-types';
 
 import { Channel } from '../../entity/channel/channel.entity';
 import { ChannelService } from '../../service/providers/channel.service';
-import { Allow } from '../common/roles-guard';
+import { Allow } from '../common/auth-guard';
 
 @Resolver('Channel')
 export class ChannelResolver {

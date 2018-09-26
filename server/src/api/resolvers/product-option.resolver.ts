@@ -6,7 +6,7 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../service/providers/product-option-group.service';
 import { ProductOptionService } from '../../service/providers/product-option.service';
-import { Allow } from '../common/roles-guard';
+import { Allow } from '../common/auth-guard';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {

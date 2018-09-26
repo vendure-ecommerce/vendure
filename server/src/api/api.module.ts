@@ -11,7 +11,6 @@ import { AuthGuard } from './common/auth-guard';
 import { GraphqlConfigService } from './common/graphql-config.service';
 import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
-import { RolesGuard } from './common/roles-guard';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
@@ -19,6 +18,7 @@ import { ChannelResolver } from './resolvers/channel.resolver';
 import { ConfigResolver } from './resolvers/config.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
 import { FacetResolver } from './resolvers/facet.resolver';
+import { OrderResolver } from './resolvers/order.resolver';
 import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
@@ -31,6 +31,7 @@ const exportedProviders = [
     ConfigResolver,
     FacetResolver,
     CustomerResolver,
+    OrderResolver,
     ProductOptionResolver,
     ProductResolver,
     RoleResolver,
@@ -55,10 +56,6 @@ const exportedProviders = [
         {
             provide: APP_GUARD,
             useClass: AuthGuard,
-        },
-        {
-            provide: APP_GUARD,
-            useClass: RolesGuard,
         },
         {
             provide: APP_INTERCEPTOR,
