@@ -1,10 +1,11 @@
-import { Type } from 'shared/shared-types';
+import { ID, Type } from 'shared/shared-types';
 import { Connection, FindManyOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { ListQueryOptions } from '../../common/types/common-types';
 import { VendureEntity } from '../../entity/base/base.entity';
 
+import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
@@ -16,6 +17,7 @@ export function buildListQuery<T extends VendureEntity>(
     entity: Type<T>,
     options: ListQueryOptions<T> = {},
     relations?: string[],
+    channelId?: ID,
 ): SelectQueryBuilder<T> {
     const skip = options.skip;
     let take = options.take;
@@ -41,6 +43,13 @@ export function buildListQuery<T extends VendureEntity>(
             qb.andWhere(clause, parameters);
         }
     });
+
+    if (channelId) {
+        const channelFilter = parseChannelParam(connection, entity, channelId);
+        if (channelFilter) {
+            qb.andWhere(channelFilter.clause, channelFilter.parameters);
+        }
+    }
 
     return qb.orderBy(sort);
 }

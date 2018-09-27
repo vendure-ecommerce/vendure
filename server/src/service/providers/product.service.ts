@@ -41,9 +41,10 @@ export class ProductService {
             'optionGroups',
             'variants.options',
             'variants.facetValues',
+            'channels',
         ];
 
-        return buildListQuery(this.connection, Product, options, relations)
+        return buildListQuery(this.connection, Product, options, relations, ctx.channelId)
             .getManyAndCount()
             .then(([products, totalItems]) => {
                 const items = products
