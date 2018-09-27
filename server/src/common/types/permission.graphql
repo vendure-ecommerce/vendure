@@ -1,9 +1,11 @@
-" Permissions for administrators "
+" Permissions for administrators and customers "
 enum Permission {
     " The Authenticated role means simply that the user is logged in "
     Authenticated
     " SuperAdmin can perform the most sensitive tasks "
     SuperAdmin
+    " Owner means the user owns this entity, e.g. a Customer's own Order"
+    Owner
 
     CreateCatalog
     ReadCatalog

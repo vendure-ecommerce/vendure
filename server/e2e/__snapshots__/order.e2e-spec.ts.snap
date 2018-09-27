@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Orders as anonymous user addItemToOrder() creates a new Order with an item 1`] = `
+Object {
+  "id": "T_1",
+  "productVariant": Object {
+    "id": "T_1",
+  },
+  "quantity": 1,
+}
+`;

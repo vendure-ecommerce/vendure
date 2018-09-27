@@ -28,8 +28,8 @@ export class ConfigService implements VendureConfig {
         }
     }
 
-    get authOptions(): AuthOptions {
-        return this.activeConfig.authOptions;
+    get authOptions(): Required<AuthOptions> {
+        return this.activeConfig.authOptions as Required<AuthOptions>;
     }
 
     get channelTokenKey(): string {

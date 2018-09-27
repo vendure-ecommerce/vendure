@@ -3,6 +3,7 @@ import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
+import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
@@ -15,4 +16,7 @@ export abstract class Session extends VendureEntity {
     @Column() expires: Date;
 
     @Column() invalidated: boolean;
+
+    @ManyToOne(type => Order)
+    activeOrder?: Order;
 }

@@ -27,6 +27,10 @@ export class SimpleGraphQLClient {
         this.setHeaders();
     }
 
+    getAuthToken(): string {
+        return this.authToken;
+    }
+
     setChannelToken(token: string) {
         this.channelToken = token;
         this.setHeaders();
@@ -35,9 +39,15 @@ export class SimpleGraphQLClient {
     /**
      * Performs both query and mutation operations.
      */
-    query<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T> {
+    async query<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T> {
         const queryString = print(query);
-        return this.client.request(queryString, variables);
+        const result = await this.client.rawRequest<T>(queryString, variables);
+
+        const authToken = result.headers.get(getConfig().authOptions.authTokenHeaderKey);
+        if (authToken) {
+            this.setAuthToken(authToken);
+        }
+        return result.data as T;
     }
 
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
@@ -101,7 +111,6 @@ export class SimpleGraphQLClient {
             });
         });
     }
-
     async asUserWithCredentials(username: string, password: string) {
         const result = await this.query(
             gql`
@@ -121,11 +130,6 @@ export class SimpleGraphQLClient {
                 password,
             },
         );
-        if (result && result.login) {
-            this.setAuthToken(result.login.token);
-        } else {
-            console.error(result);
-        }
     }
 
     async asSuperAdmin() {

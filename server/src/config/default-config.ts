@@ -25,6 +25,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         disableAuth: false,
         tokenMethod: 'cookie',
         sessionSecret: 'session-secret',
+        authTokenHeaderKey: 'vendure-auth-token',
         sessionDuration: '7d',
     },
     apiPath: API_PATH,

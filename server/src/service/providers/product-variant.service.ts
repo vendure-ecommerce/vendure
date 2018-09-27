@@ -30,6 +30,18 @@ export class ProductVariantService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
+    findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
+        const relations = [];
+        return this.connection
+            .getRepository(ProductVariant)
+            .findOne(productVariantId, { relations })
+            .then(result => {
+                if (result) {
+                    return translateDeep(this.applyChannelPrice(result, ctx.channelId), ctx.languageCode);
+                }
+            });
+    }
+
     async create(
         ctx: RequestContext,
         product: Product,
@@ -128,6 +140,18 @@ export class ProductVariantService {
         }
 
         return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE, ['options', 'facetValues']));
+    }
+
+    /**
+     * Populates the `price` field with the price for the specified channel.
+     */
+    applyChannelPrice(variant: ProductVariant, channelId: ID): ProductVariant {
+        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, channelId));
+        if (!channelPrice) {
+            throw new I18nError(`error.no-price-found-for-channel`);
+        }
+        variant.price = channelPrice.price;
+        return variant;
     }
 
     private createVariantName(productName: string, options: ProductOption[]): string {

@@ -20,6 +20,7 @@ import { updateTranslatable } from '../helpers/update-translatable';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
+import { ProductVariantService } from './product-variant.service';
 
 @Injectable()
 export class ProductService {
@@ -28,6 +29,7 @@ export class ProductService {
         private translationUpdaterService: TranslationUpdaterService,
         private channelService: ChannelService,
         private assetService: AssetService,
+        private productVariantService: ProductVariantService,
     ) {}
 
     findAll(
@@ -155,13 +157,9 @@ export class ProductService {
     }
 
     private applyChannelPriceToVariants<T extends Product>(product: T, ctx: RequestContext): T {
-        product.variants.forEach(v => {
-            const channelPrice = v.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
-            if (!channelPrice) {
-                throw new I18nError(`error.no-price-found-for-channel`);
-            }
-            v.price = channelPrice.price;
-        });
+        product.variants = product.variants.map(v =>
+            this.productVariantService.applyChannelPrice(v, ctx.channelId),
+        );
         return product;
     }
 

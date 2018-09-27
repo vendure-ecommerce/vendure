@@ -6,12 +6,17 @@ import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ConfigService } from '../../config/config.service';
+import { Order } from '../../entity/order/order.entity';
+import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
 import { PasswordService } from './password.service';
 
+/**
+ * The AuthService manages both authenticated and anonymous sessions.
+ */
 @Injectable()
 export class AuthService {
     private readonly sessionDurationInMs;
@@ -37,12 +42,28 @@ export class AuthService {
         const session = new AuthenticatedSession({
             token,
             user,
-            expires: this.getExpiryDate(),
+            expires: this.getExpiryDate(this.sessionDurationInMs),
             invalidated: false,
         });
         await this.invalidateUserSessions(user);
         // save the new session
-        const newSession = await this.connection.getRepository(Session).save(session);
+        const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
+        return newSession;
+    }
+
+    /**
+     * Create an anonymous session.
+     */
+    async createAnonymousSession(): Promise<AnonymousSession> {
+        const token = await this.generateSessionToken();
+        const anonymousSessionDurationInMs = ms('1y');
+        const session = new AnonymousSession({
+            token,
+            expires: this.getExpiryDate(anonymousSessionDurationInMs),
+            invalidated: false,
+        });
+        // save the new session
+        const newSession = await this.connection.getRepository(AnonymousSession).save(session);
         return newSession;
     }
 
@@ -52,12 +73,17 @@ export class AuthService {
     async validateSession(token: string): Promise<Session | undefined> {
         const session = await this.connection.getRepository(Session).findOne({
             where: { token, invalidated: false },
-            relations: ['user', 'user.roles', 'user.roles.channels'],
+            relations: ['user', 'user.roles', 'user.roles.channels', 'activeOrder'],
         });
         if (session && session.expires > new Date()) {
             await this.updateSessionExpiry(session);
             return session;
         }
+    }
+
+    async setActiveOrder<T extends Session>(session: T, order: Order): Promise<T> {
+        session.activeOrder = order;
+        return this.connection.getRepository(Session).save(session);
     }
 
     /**
@@ -122,14 +148,14 @@ export class AuthService {
         if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
             await this.connection
                 .getRepository(Session)
-                .update({ id: session.id }, { expires: this.getExpiryDate() });
+                .update({ id: session.id }, { expires: this.getExpiryDate(this.sessionDurationInMs) });
         }
     }
 
     /**
-     * Returns a future expiry date according to the configured sessionDuration.
+     * Returns a future expiry date according timeToExpireInMs in the future.
      */
-    private getExpiryDate(): Date {
-        return new Date(Date.now() + this.sessionDurationInMs);
+    private getExpiryDate(timeToExpireInMs: number): Date {
+        return new Date(Date.now() + timeToExpireInMs);
     }
 }

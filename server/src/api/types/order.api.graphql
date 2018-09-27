@@ -1,0 +1,35 @@
+type Query {
+    order(id: ID!): Order
+    orders(options: OrderListOptions): OrderList
+}
+
+type Mutation {
+    addItemToOrder(productVariantId: ID!, quantity: Int!): Order
+    removeItemFromOrder(orderItemId: ID!): Order
+    adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
+}
+
+type OrderList implements PaginatedList {
+    items: [Order!]!
+    totalItems: Int!
+}
+
+input OrderListOptions {
+    take: Int
+    skip: Int
+    sort: OrderSortParameter
+    filter: OrderFilterParameter
+}
+
+input OrderSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    code: SortOrder
+}
+
+input OrderFilterParameter {
+    code: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}

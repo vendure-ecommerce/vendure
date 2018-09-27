@@ -1,0 +1,22 @@
+' This diagram illustrates the logic governing the handling of anonymous sessions
+' for a Customer making an Order
+@startuml
+!include theme.puml
+title Customer Session Flow
+start
+:addItemToOrder();
+if (authToken exists?) then (yes)
+    :get Session from authToken;
+else (no)
+    :create new AnonymousSession;
+    :set authToken cookie;
+endif
+if (Session has associated Order?) then (yes)
+    :get existing Order;
+else
+    :create new Order;
+endif
+:add item to Order;
+:return Order;
+stop
+@enduml

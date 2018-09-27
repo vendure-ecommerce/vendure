@@ -10,7 +10,4 @@ export class AnonymousSession extends Session {
     constructor(input: DeepPartial<AnonymousSession>) {
         super(input);
     }
-
-    @ManyToOne(type => Order)
-    order: Order;
 }

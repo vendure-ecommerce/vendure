@@ -42,6 +42,10 @@ export interface AuthOptions {
      */
     sessionSecret?: string;
     /**
+     * Sets the header property which will be used to send the auth token when using the "bearer" method.
+     */
+    authTokenHeaderKey?: string;
+    /**
      * Session duration, i.e. the time which must elapse from the last authenticted request
      * after which the user must re-authenticate.
      *

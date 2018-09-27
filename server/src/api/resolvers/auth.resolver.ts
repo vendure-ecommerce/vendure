@@ -1,6 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Request } from 'express';
-import * as ms from 'ms';
+import { Request, Response } from 'express';
 import { AttemptLoginVariables, Permission } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
@@ -9,6 +8,7 @@ import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
 import { Allow } from '../common/auth-guard';
 import { extractAuthToken } from '../common/extract-auth-token';
+import { setAuthToken } from '../common/set-auth-token';
 
 @Resolver('Auth')
 export class AuthResolver {
@@ -23,24 +23,23 @@ export class AuthResolver {
      * the user data and returns the token either in a cookie or in the response body.
      */
     @Mutation()
-    async login(@Args() args: AttemptLoginVariables, @Context('req') request: Request) {
+    async login(
+        @Args() args: AttemptLoginVariables,
+        @Context('req') req: Request,
+        @Context('res') res: Response,
+    ) {
         const session = await this.authService.authenticate(args.username, args.password);
 
         if (session) {
-            let token: string | null = null;
-            if (this.configService.authOptions.tokenMethod === 'cookie') {
-                if (request.session) {
-                    if (args.rememberMe) {
-                        request.sessionOptions.maxAge = ms('1y');
-                    }
-                    request.session.token = session.token;
-                }
-            } else {
-                token = session.token;
-            }
+            setAuthToken({
+                req,
+                res,
+                authOptions: this.configService.authOptions,
+                rememberMe: args.rememberMe,
+                authToken: session.token,
+            });
             return {
                 user: this.publiclyAccessibleUser(session.user),
-                token,
             };
         }
     }

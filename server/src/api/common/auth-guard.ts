@@ -1,16 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable, ReflectMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Permission } from 'shared/generated-types';
 
-import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
+import { AuthService } from '../../service/providers/auth.service';
 
-import { RequestContext } from './request-context';
+import { extractAuthToken } from './extract-auth-token';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from './request-context.service';
+import { setAuthToken } from './set-auth-token';
 
 export const PERMISSIONS_METADATA_KEY = '__permissions__';
 
@@ -40,50 +40,46 @@ export class AuthGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
         private configService: ConfigService,
+        private authService: AuthService,
         private requestContextService: RequestContextService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const req: Request = GqlExecutionContext.create(context).getContext().req;
+        const ctx = GqlExecutionContext.create(context).getContext();
+        const req: Request = ctx.req;
+        const res: Response = ctx.res;
         const authDisabled = this.configService.authOptions.disableAuth;
-        const permissions = this.reflector.get<string[]>(
-            PERMISSIONS_METADATA_KEY,
-            context.getHandler(),
-        ) as Permission[];
-        const requestContext = await this.requestContextService.fromRequest(req);
+        const permissions = this.reflector.get<Permission[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
+        const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
+        const session = await this.getSession(req, res, hasOwnerPermission);
+        const requestContext = await this.requestContextService.fromRequest(req, permissions, session);
         req[REQUEST_CONTEXT_KEY] = requestContext;
 
         if (authDisabled || !permissions) {
             return true;
         } else {
-            return this.userHasRequiredPermissionsOnChannel(permissions, requestContext);
+            return requestContext.isAuthorized || requestContext.authorizedAsOwnerOnly;
         }
     }
 
-    private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
-        return !!session && !!(session as AuthenticatedSession).user;
-    }
-
-    private userHasRequiredPermissionsOnChannel(
-        permissions: Permission[],
-        requestContext: RequestContext,
-    ): boolean {
-        const user = requestContext.user;
-        if (!user) {
-            return false;
+    private async getSession(
+        req: Request,
+        res: Response,
+        hasOwnerPermission: boolean,
+    ): Promise<Session | undefined> {
+        const authToken = extractAuthToken(req, this.configService.authOptions.tokenMethod);
+        if (authToken) {
+            return await this.authService.validateSession(authToken);
+        } else if (hasOwnerPermission) {
+            const session = await this.authService.createAnonymousSession();
+            setAuthToken({
+                authToken: session.token,
+                rememberMe: true,
+                authOptions: this.configService.authOptions,
+                req,
+                res,
+            });
+            return session;
         }
-        const permissionsOnChannel = user.roles
-            .filter(role => role.channels.find(c => idsAreEqual(c.id, requestContext.channel.id)))
-            .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
-        return arraysIntersect(permissions, permissionsOnChannel);
     }
-}
-
-/**
- * Returns true if any element of arr1 appears in arr2.
- */
-function arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
-    return arr1.reduce((intersects, role) => {
-        return intersects || arr2.includes(role);
-    }, false);
 }

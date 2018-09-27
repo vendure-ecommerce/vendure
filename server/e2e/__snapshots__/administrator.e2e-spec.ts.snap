@@ -25,6 +25,7 @@ Object {
           "DeleteCatalog",
           "DeleteCustomer",
           "DeleteOrder",
+          "Owner",
           "ReadAdministrator",
           "ReadCatalog",
           "ReadCustomer",

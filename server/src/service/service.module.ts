@@ -12,6 +12,7 @@ import { ChannelService } from './providers/channel.service';
 import { CustomerService } from './providers/customer.service';
 import { FacetValueService } from './providers/facet-value.service';
 import { FacetService } from './providers/facet.service';
+import { OrderService } from './providers/order.service';
 import { PasswordService } from './providers/password.service';
 import { ProductOptionGroupService } from './providers/product-option-group.service';
 import { ProductOptionService } from './providers/product-option.service';
@@ -27,6 +28,7 @@ const exportedProviders = [
     CustomerService,
     FacetService,
     FacetValueService,
+    OrderService,
     ProductOptionService,
     ProductOptionGroupService,
     ProductService,

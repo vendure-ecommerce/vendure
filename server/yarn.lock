@@ -249,6 +249,12 @@
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
 
+"@types/nanoid@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/nanoid/-/nanoid-1.2.0.tgz#c0141cfec5b4818016355389b0bd539097d872ff"
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*":
   version "10.5.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.5.2.tgz#f19f05314d5421fe37e74153254201a7bf00a707"
@@ -3933,6 +3939,10 @@ nan@2.10.0, nan@^2.9.2:
 nan@2.11.0, nan@^2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
+
+nanoid@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-1.2.4.tgz#4f0e19e7e63341e9fe9adaa8d96ba594f5dcc6db"
 
 nanomatch@^1.2.9:
   version "1.2.13"

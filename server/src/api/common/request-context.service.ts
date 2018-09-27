@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { LanguageCode } from 'shared/generated-types';
+import { LanguageCode, Permission } from 'shared/generated-types';
 
+import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
-import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
 
-import { extractAuthToken } from './extract-auth-token';
 import { RequestContext } from './request-context';
 
 export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
@@ -20,33 +19,31 @@ export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
  */
 @Injectable()
 export class RequestContextService {
-    constructor(
-        private channelService: ChannelService,
-        private authService: AuthService,
-        private configService: ConfigService,
-    ) {}
+    constructor(private channelService: ChannelService, private configService: ConfigService) {}
 
     /**
      * Creates a new RequestContext based on an Express request object.
      */
-    async fromRequest(req: Request): Promise<RequestContext> {
+    async fromRequest(
+        req: Request,
+        requiredPermissions?: Permission[],
+        session?: Session,
+    ): Promise<RequestContext> {
         const channelToken = this.getChannelToken(req);
-        const channel = channelToken && this.channelService.getChannelFromToken(channelToken);
-        if (channel) {
-            const session = await this.getSession(req);
-            let user: User | undefined;
-            if (this.isAuthenticatedSession(session)) {
-                user = session.user;
-            }
-            const languageCode = this.getLanguageCode(req);
-            return new RequestContext({
-                channel,
-                languageCode,
-                user,
-                session,
-            });
-        }
-        throw new I18nError(`error.unexpected-request-context`);
+        const channel = (channelToken && this.channelService.getChannelFromToken(channelToken)) || undefined;
+
+        const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);
+        const languageCode = this.getLanguageCode(req);
+        const user = session && (session as AuthenticatedSession).user;
+        const isAuthorized = this.userHasRequiredPermissionsOnChannel(requiredPermissions, channel, user);
+        const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
+        return new RequestContext({
+            channel,
+            languageCode,
+            session,
+            isAuthorized,
+            authorizedAsOwnerOnly,
+        });
     }
 
     private getChannelToken(req: Request): string | undefined {
@@ -61,18 +58,34 @@ export class RequestContextService {
         return channelToken;
     }
 
-    private async getSession(req: Request): Promise<Session | undefined> {
-        const authToken = extractAuthToken(req, this.configService.authOptions.tokenMethod);
-        if (authToken) {
-            return await this.authService.validateSession(authToken);
-        }
-    }
-
     private getLanguageCode(req: Request): LanguageCode | undefined {
         return req.body && req.body.variables && req.body.variables.languageCode;
     }
 
     private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
         return !!session && !!(session as AuthenticatedSession).user;
+    }
+
+    private userHasRequiredPermissionsOnChannel(
+        permissions: Permission[] = [],
+        channel?: Channel,
+        user?: User,
+    ): boolean {
+        if (!user || !channel) {
+            return false;
+        }
+        const permissionsOnChannel = user.roles
+            .filter(role => role.channels.find(c => idsAreEqual(c.id, channel.id)))
+            .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
+        return this.arraysIntersect(permissions, permissionsOnChannel);
+    }
+
+    /**
+     * Returns true if any element of arr1 appears in arr2.
+     */
+    private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
+        return arr1.reduce((intersects, role) => {
+            return intersects || arr2.includes(role);
+        }, false);
     }
 }

@@ -2119,7 +2119,7 @@ export enum LanguageCode {
 }
 
 /**
- *  Permissions for administrators 
+ *  Permissions for administrators and customers 
  */
 export enum Permission {
   Authenticated = "Authenticated",
@@ -2131,6 +2131,7 @@ export enum Permission {
   DeleteCatalog = "DeleteCatalog",
   DeleteCustomer = "DeleteCustomer",
   DeleteOrder = "DeleteOrder",
+  Owner = "Owner",
   ReadAdministrator = "ReadAdministrator",
   ReadCatalog = "ReadCatalog",
   ReadCustomer = "ReadCustomer",
