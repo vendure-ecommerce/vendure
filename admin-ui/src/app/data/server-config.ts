@@ -1,10 +1,10 @@
 import { Injectable, Injector } from '@angular/core';
-import { GetServerConfig, GetServerConfig_config } from 'shared/generated-types';
+import { GetServerConfig } from 'shared/generated-types';
 
 import { GET_SERVER_CONFIG } from './definitions/config-definitions';
 import { BaseDataService } from './providers/base-data.service';
 
-export type ServerConfig = GetServerConfig_config;
+export type ServerConfig = GetServerConfig.Config;
 
 export function initializeServerConfigService(serverConfigService: ServerConfigService): () => Promise<any> {
     return serverConfigService.init();
@@ -28,7 +28,7 @@ export class ServerConfigService {
         const baseDataService = this.injector.get<BaseDataService>(BaseDataService);
         return () =>
             baseDataService
-                .query<GetServerConfig>(GET_SERVER_CONFIG)
+                .query<GetServerConfig.Query>(GET_SERVER_CONFIG)
                 .single$.toPromise()
                 .then(
                     result => {

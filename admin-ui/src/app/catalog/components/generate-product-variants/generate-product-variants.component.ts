@@ -10,7 +10,7 @@ import { ProductVariantsWizardComponent } from '../product-variants-wizard/produ
     styleUrls: ['./generate-product-variants.component.scss'],
 })
 export class GenerateProductVariantsComponent {
-    @Input() product: ProductWithVariants;
+    @Input() product: ProductWithVariants.Fragment;
     @ViewChild('productVariantsWizard') productVariantsWizard: ProductVariantsWizardComponent;
     constructor(private dataService: DataService) {}
 

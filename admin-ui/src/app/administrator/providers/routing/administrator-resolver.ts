@@ -5,7 +5,7 @@ import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
-export class AdministratorResolver extends BaseEntityResolver<Administrator> {
+export class AdministratorResolver extends BaseEntityResolver<Administrator.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {

@@ -19,7 +19,7 @@ downloadIntrospectionSchema(SCHEMA_OUTPUT_FILE)
             schema: SCHEMA_OUTPUT_FILE,
             clientSchema: path.join(__dirname, 'client-schema.ts'),
             template: 'typescript',
-            out: path.join(__dirname,  '../shared/'),
+            out: path.join(__dirname,  '../shared/generated-types.ts'),
             overwrite: true,
             args: [CLIENT_QUERY_FILES],
         });

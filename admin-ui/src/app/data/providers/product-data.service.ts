@@ -1,40 +1,25 @@
-import { Observable } from 'rxjs';
 import {
     AddOptionGroupToProduct,
-    AddOptionGroupToProductVariables,
     ApplyFacetValuesToProductVariants,
-    ApplyFacetValuesToProductVariantsVariables,
     CreateAssets,
-    CreateAssetsVariables,
     CreateProduct,
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
-    CreateProductOptionGroupVariables,
-    CreateProductVariables,
     GenerateProductVariants,
-    GenerateProductVariantsVariables,
     GetAssetList,
-    GetAssetListVariables,
     GetProductList,
-    GetProductListVariables,
     GetProductOptionGroups,
-    GetProductOptionGroupsVariables,
     GetProductWithVariants,
-    GetProductWithVariantsVariables,
     RemoveOptionGroupFromProduct,
-    RemoveOptionGroupFromProductVariables,
     UpdateProduct,
     UpdateProductInput,
-    UpdateProductVariables,
     UpdateProductVariantInput,
     UpdateProductVariants,
-    UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 import { pick } from 'shared/pick';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { addCustomFields } from '../add-custom-fields';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
@@ -50,15 +35,14 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from '../definitions/product-definitions';
-import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 
 export class ProductDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getProducts(take: number = 10, skip: number = 0): QueryResult<GetProductList, GetProductListVariables> {
-        return this.baseDataService.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
+    getProducts(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetProductList.Query, GetProductList.Variables>(GET_PRODUCT_LIST, {
             options: {
                 take,
                 skip,
@@ -67,8 +51,8 @@ export class ProductDataService {
         });
     }
 
-    getProduct(id: string): QueryResult<GetProductWithVariants, GetProductWithVariantsVariables> {
-        return this.baseDataService.query<GetProductWithVariants, GetProductWithVariantsVariables>(
+    getProduct(id: string) {
+        return this.baseDataService.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
             GET_PRODUCT_WITH_VARIANTS,
             {
                 id,
@@ -77,75 +61,69 @@ export class ProductDataService {
         );
     }
 
-    createProduct(product: CreateProductInput): Observable<CreateProduct> {
-        const input: CreateProductVariables = {
+    createProduct(product: CreateProductInput) {
+        const input: CreateProduct.Variables = {
             input: pick(product, ['translations', 'customFields', 'assetIds', 'featuredAssetId']),
         };
-        return this.baseDataService.mutate<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, input);
-    }
-
-    updateProduct(product: UpdateProductInput): Observable<UpdateProduct> {
-        const input: UpdateProductVariables = {
-            input: pick(product, ['id', 'translations', 'customFields', 'assetIds', 'featuredAssetId']),
-        };
-        return this.baseDataService.mutate<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, input);
-    }
-
-    generateProductVariants(
-        productId: string,
-        defaultPrice?: number,
-        defaultSku?: string,
-    ): Observable<GenerateProductVariants> {
-        return this.baseDataService.mutate<GenerateProductVariants, GenerateProductVariantsVariables>(
-            GENERATE_PRODUCT_VARIANTS,
-            { productId, defaultPrice, defaultSku },
+        return this.baseDataService.mutate<CreateProduct.Mutation, CreateProduct.Variables>(
+            CREATE_PRODUCT,
+            input,
         );
     }
 
-    updateProductVariants(variants: UpdateProductVariantInput[]): Observable<UpdateProductVariants> {
-        const input: UpdateProductVariantsVariables = {
+    updateProduct(product: UpdateProductInput) {
+        const input: UpdateProduct.Variables = {
+            input: pick(product, ['id', 'translations', 'customFields', 'assetIds', 'featuredAssetId']),
+        };
+        return this.baseDataService.mutate<UpdateProduct.Mutation, UpdateProduct.Variables>(
+            UPDATE_PRODUCT,
+            input,
+        );
+    }
+
+    generateProductVariants(productId: string, defaultPrice?: number, defaultSku?: string) {
+        return this.baseDataService.mutate<
+            GenerateProductVariants.Mutation,
+            GenerateProductVariants.Variables
+        >(GENERATE_PRODUCT_VARIANTS, { productId, defaultPrice, defaultSku });
+    }
+
+    updateProductVariants(variants: UpdateProductVariantInput[]) {
+        const input: UpdateProductVariants.Variables = {
             input: variants.map(pick(['id', 'translations', 'sku', 'price'])),
         };
-        return this.baseDataService.mutate<UpdateProductVariants, UpdateProductVariantsVariables>(
+        return this.baseDataService.mutate<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
             UPDATE_PRODUCT_VARIANTS,
             input,
         );
     }
 
-    createProductOptionGroups(
-        productOptionGroup: CreateProductOptionGroupInput,
-    ): Observable<CreateProductOptionGroup> {
-        const input: CreateProductOptionGroupVariables = {
+    createProductOptionGroups(productOptionGroup: CreateProductOptionGroupInput) {
+        const input: CreateProductOptionGroup.Variables = {
             input: productOptionGroup,
         };
-        return this.baseDataService.mutate<CreateProductOptionGroup, CreateProductOptionGroupVariables>(
-            CREATE_PRODUCT_OPTION_GROUP,
-            input,
-        );
-    }
-
-    addOptionGroupToProduct(
-        variables: AddOptionGroupToProductVariables,
-    ): Observable<AddOptionGroupToProduct> {
-        return this.baseDataService.mutate<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
-            ADD_OPTION_GROUP_TO_PRODUCT,
-            variables,
-        );
-    }
-
-    removeOptionGroupFromProduct(
-        variables: RemoveOptionGroupFromProductVariables,
-    ): Observable<RemoveOptionGroupFromProduct> {
         return this.baseDataService.mutate<
-            RemoveOptionGroupFromProduct,
-            RemoveOptionGroupFromProductVariables
+            CreateProductOptionGroup.Mutation,
+            CreateProductOptionGroup.Variables
+        >(CREATE_PRODUCT_OPTION_GROUP, input);
+    }
+
+    addOptionGroupToProduct(variables: AddOptionGroupToProduct.Variables) {
+        return this.baseDataService.mutate<
+            AddOptionGroupToProduct.Mutation,
+            AddOptionGroupToProduct.Variables
+        >(ADD_OPTION_GROUP_TO_PRODUCT, variables);
+    }
+
+    removeOptionGroupFromProduct(variables: RemoveOptionGroupFromProduct.Variables) {
+        return this.baseDataService.mutate<
+            RemoveOptionGroupFromProduct.Mutation,
+            RemoveOptionGroupFromProduct.Variables
         >(REMOVE_OPTION_GROUP_FROM_PRODUCT, variables);
     }
 
-    getProductOptionGroups(
-        filterTerm?: string,
-    ): QueryResult<GetProductOptionGroups, GetProductOptionGroupsVariables> {
-        return this.baseDataService.query<GetProductOptionGroups, GetProductOptionGroupsVariables>(
+    getProductOptionGroups(filterTerm?: string) {
+        return this.baseDataService.query<GetProductOptionGroups.Query, GetProductOptionGroups.Variables>(
             GET_PRODUCT_OPTION_GROUPS,
             {
                 filterTerm,
@@ -154,21 +132,18 @@ export class ProductDataService {
         );
     }
 
-    applyFacetValuesToProductVariants(
-        facetValueIds: string[],
-        productVariantIds: string[],
-    ): Observable<ApplyFacetValuesToProductVariants> {
+    applyFacetValuesToProductVariants(facetValueIds: string[], productVariantIds: string[]) {
         return this.baseDataService.mutate<
-            ApplyFacetValuesToProductVariants,
-            ApplyFacetValuesToProductVariantsVariables
+            ApplyFacetValuesToProductVariants.Mutation,
+            ApplyFacetValuesToProductVariants.Variables
         >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
             facetValueIds,
             productVariantIds,
         });
     }
 
-    getAssetList(take: number = 10, skip: number = 0): QueryResult<GetAssetList, GetAssetListVariables> {
-        return this.baseDataService.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST, {
+    getAssetList(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetAssetList.Query, GetAssetList.Variables>(GET_ASSET_LIST, {
             options: {
                 skip,
                 take,
@@ -176,8 +151,8 @@ export class ProductDataService {
         });
     }
 
-    createAssets(files: File[]): Observable<CreateAssets> {
-        return this.baseDataService.mutate<CreateAssets, CreateAssetsVariables>(CREATE_ASSETS, {
+    createAssets(files: File[]) {
+        return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
             input: files.map(file => ({ file })),
         });
     }

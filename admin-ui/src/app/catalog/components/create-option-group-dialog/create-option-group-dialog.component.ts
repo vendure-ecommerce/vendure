@@ -10,11 +10,11 @@ import { CreateOptionGroupFormComponent } from '../create-option-group-form/crea
     styleUrls: ['./create-option-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateOptionGroupDialogComponent implements Dialog<CreateProductOptionGroup> {
+export class CreateOptionGroupDialogComponent implements Dialog<CreateProductOptionGroup.Mutation> {
     productId: string;
     productName: string;
     @ViewChild('createOptionGroupForm') createOptionGroupForm: CreateOptionGroupFormComponent;
-    resolveWith: (result?: CreateProductOptionGroup) => void;
+    resolveWith: (result?: CreateProductOptionGroup.Mutation) => void;
 
     createOptionGroup() {
         this.createOptionGroupForm.createOptionGroup().subscribe(data => this.resolveWith(data));

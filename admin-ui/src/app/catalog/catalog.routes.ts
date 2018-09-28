@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { ProductWithVariants } from 'shared/generated-types';
+import { FacetWithValues, ProductWithVariants } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -54,7 +54,7 @@ export const catalogRoutes: Route[] = [
 ];
 
 export function productBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<ProductWithVariants>({
+    return detailBreadcrumb<ProductWithVariants.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.products',
@@ -64,7 +64,7 @@ export function productBreadcrumb(data: any, params: any) {
 }
 
 export function facetBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<ProductWithVariants>({
+    return detailBreadcrumb<FacetWithValues.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.facets',

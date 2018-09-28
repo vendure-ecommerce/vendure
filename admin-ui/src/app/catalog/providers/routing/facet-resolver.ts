@@ -9,7 +9,7 @@ import { DataService } from '../../../data/providers/data.service';
  * Resolves the id from the path into a Customer entity.
  */
 @Injectable()
-export class FacetResolver extends BaseEntityResolver<FacetWithValues> {
+export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {

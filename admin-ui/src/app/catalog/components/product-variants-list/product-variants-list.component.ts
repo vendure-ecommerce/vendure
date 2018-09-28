@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormArray } from '@angular/forms';
-
-import { ProductWithVariants_variants } from 'shared/generated-types';
+import { ProductWithVariants } from 'shared/generated-types';
 
 @Component({
     selector: 'vdr-product-variants-list',
@@ -11,7 +10,7 @@ import { ProductWithVariants_variants } from 'shared/generated-types';
 })
 export class ProductVariantsListComponent {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductWithVariants_variants[];
+    @Input() variants: ProductWithVariants.Variants[];
     selectedVariantIds: string[] = [];
 
     areAllSelected(): boolean {

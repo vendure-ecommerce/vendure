@@ -17,7 +17,7 @@ export class AuthService {
      * Attempts to log in via the REST login endpoint and updates the app
      * state on success.
      */
-    logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn> {
+    logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn.Mutation> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
                 this.setChannelToken(response.login.user.channelTokens[0]);
