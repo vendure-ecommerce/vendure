@@ -1,13 +1,16 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request, Response } from 'express';
-import { LoginMutationArgs, LoginResult, MutationResolvers, Permission } from 'shared/generated-types';
+import { LoginMutationArgs, LoginResult, Permission } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
+import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/providers/auth.service';
 import { ChannelService } from '../../service/providers/channel.service';
 import { Allow } from '../common/auth-guard';
 import { extractAuthToken } from '../common/extract-auth-token';
+import { RequestContext } from '../common/request-context';
+import { Ctx } from '../common/request-context.decorator';
 import { setAuthToken } from '../common/set-auth-token';
 
 @Resolver('Auth')
@@ -63,8 +66,9 @@ export class AuthResolver {
      */
     @Query()
     @Allow(Permission.Authenticated)
-    async me(@Context('req') request: Request & { user: User }) {
-        const user = await this.authService.getUserById(request.user.id);
+    async me(@Ctx() ctx: RequestContext) {
+        const sessionUser = (ctx.session as AuthenticatedSession).user;
+        const user = sessionUser && (await this.authService.getUserById(sessionUser.id));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 
