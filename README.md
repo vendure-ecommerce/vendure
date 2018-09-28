@@ -16,6 +16,16 @@ the server is located in the `server` directory.
 We will ship with an administration UI which is a stand-alone web application which can be used to perform tasks such
 as inventory, order and customer management. The code for this is located in the `admin-ui` directory.
 
+```
+vendure/
+├── admin-ui/       # Source of the admin ui app (an Angular CLI project)
+├── codegen/        # Scripts used to generate TypeScript types from the GraphQL schemas & documents
+├── docs/           # Documentation source (not much there yet)
+├── server/         # Source for the Vendure server
+├── shared/         # Types and utils shared by the server & admin ui
+
+```
+
 ## Development
 
 ### Server
@@ -39,8 +49,8 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 
 ### Code Generation
 
-[apollo-cli](https://github.com/apollographql/apollo-cli) is used to automatically create TypeScript interfaces
-for all GraphQL queries used in the admin ui. These generated interfaces are used in both the admin ui and the server.
+[graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces
+for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
 
 Run `yarn generate-gql-types` to generate TypeScript interfaces based on these queries. The generated
 types are located at [`./shared/generated-types.ts`](./shared/generated-types.ts).

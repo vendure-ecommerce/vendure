@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "apollo": "apollo",
-    "generate-gql-types": "ts-node generate-graphql-types.ts",
-    "generate-gql-types2": "ts-node ./codegen/generate-graphql-types.ts",
+    "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
     "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
     "format": "prettier --write",
@@ -15,7 +14,6 @@
     "prepush": "yarn test && cd admin-ui && yarn build --prod"
   },
   "devDependencies": {
-    "apollo": "^1.7.1",
     "graphql": "^14.0.2",
     "graphql-code-generator": "^0.12.6",
     "graphql-codegen-typescript-template": "^0.12.6",
