@@ -45,15 +45,19 @@ export class AuthResolver {
     }
 
     @Mutation()
-    async logout(@Context('req') request: Request) {
-        const token = extractAuthToken(request, this.configService.authOptions.tokenMethod);
+    async logout(@Context('req') req: Request, @Context('res') res: Response) {
+        const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;
         }
         await this.authService.invalidateSessionByToken(token);
-        if (request.session) {
-            request.session = undefined;
-        }
+        setAuthToken({
+            req,
+            res,
+            authOptions: this.configService.authOptions,
+            rememberMe: false,
+            authToken: '',
+        });
         return true;
     }
 

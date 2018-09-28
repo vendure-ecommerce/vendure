@@ -44,7 +44,7 @@ export class SimpleGraphQLClient {
         const result = await this.client.rawRequest<T>(queryString, variables);
 
         const authToken = result.headers.get(getConfig().authOptions.authTokenHeaderKey);
-        if (authToken) {
+        if (authToken != null) {
             this.setAuthToken(authToken);
         }
         return result.data as T;
@@ -111,7 +111,18 @@ export class SimpleGraphQLClient {
             });
         });
     }
+
     async asUserWithCredentials(username: string, password: string) {
+        // first log out as the current user
+        if (this.authToken) {
+            await this.query(
+                gql`
+                    mutation {
+                        logout
+                    }
+                `,
+            );
+        }
         const result = await this.query(
             gql`
                 mutation($username: String!, $password: String!) {
@@ -136,14 +147,23 @@ export class SimpleGraphQLClient {
         await this.asUserWithCredentials(SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD);
     }
 
-    asAnonymousUser() {
-        this.setAuthToken('');
+    async asAnonymousUser() {
+        await this.query(
+            gql`
+                mutation {
+                    logout
+                }
+            `,
+        );
     }
 
     private setHeaders() {
-        this.client.setHeaders({
-            Authorization: `Bearer ${this.authToken}`,
+        const headers: any = {
             [getConfig().channelTokenKey]: this.channelToken,
-        });
+        };
+        if (this.authToken) {
+            headers.Authorization = `Bearer ${this.authToken}`;
+        }
+        this.client.setHeaders(headers);
     }
 }

@@ -1,5 +1,8 @@
 import gql from 'graphql-tag';
 
+import { Customer } from '../src/entity/customer/customer.entity';
+import { OrderItem } from '../src/entity/order-item/order-item.entity';
+
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -20,49 +23,11 @@ describe('Orders', () => {
     });
 
     describe('as anonymous user', () => {
+        let firstOrderItemId: string;
+
         beforeAll(async () => {
-            client.asAnonymousUser();
+            await client.asAnonymousUser();
         });
-
-        const TEST_ORDER_FRAGMENT = gql`
-            fragment TestOrderFragment on Order {
-                id
-                items {
-                    id
-                    quantity
-                    productVariant {
-                        id
-                    }
-                }
-            }
-        `;
-
-        const ADD_ITEM_TO_ORDER = gql`
-            mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
-                addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
-                    ...TestOrderFragment
-                }
-            }
-            ${TEST_ORDER_FRAGMENT}
-        `;
-
-        const ADJUST_ITEM_QUENTITY = gql`
-            mutation AdjustItemQuantity($orderItemId: ID!, $quantity: Int!) {
-                adjustItemQuantity(orderItemId: $orderItemId, quantity: $quantity) {
-                    ...TestOrderFragment
-                }
-            }
-            ${TEST_ORDER_FRAGMENT}
-        `;
-
-        const REMOVE_ITEM_FROM_ORDER = gql`
-            mutation RemoveItemFromOrder($orderItemId: ID!) {
-                removeItemFromOrder(orderItemId: $orderItemId) {
-                    ...TestOrderFragment
-                }
-            }
-            ${TEST_ORDER_FRAGMENT}
-        `;
 
         it('addItemToOrder() starts with no session token', () => {
             expect(client.getAuthToken()).toBe('');
@@ -75,7 +40,10 @@ describe('Orders', () => {
             });
 
             expect(result.addItemToOrder.items.length).toBe(1);
-            expect(result.addItemToOrder.items[0]).toMatchSnapshot();
+            expect(result.addItemToOrder.items[0].quantity).toBe(1);
+            expect(result.addItemToOrder.items[0].productVariant.id).toBe('T_1');
+            expect(result.addItemToOrder.items[0].id).toBe('T_1');
+            firstOrderItemId = result.addItemToOrder.items[0].id;
         });
 
         it('addItemToOrder() creates an anonymous session', () => {
@@ -120,9 +88,9 @@ describe('Orders', () => {
             expect(result.addItemToOrder.items[0].quantity).toBe(3);
         });
 
-        it('adjustItemQuantity() with an existing productVariantId adds quantity to the existing OrderItem', async () => {
+        it('adjustItemQuantity() adjusts the quantity', async () => {
             const result = await client.query(ADJUST_ITEM_QUENTITY, {
-                orderItemId: 'T_1',
+                orderItemId: firstOrderItemId,
                 quantity: 50,
             });
 
@@ -133,7 +101,7 @@ describe('Orders', () => {
         it('adjustItemQuantity() errors with a negative quantity', async () => {
             try {
                 await client.query(ADJUST_ITEM_QUENTITY, {
-                    orderItemId: 'T_1',
+                    orderItemId: firstOrderItemId,
                     quantity: -3,
                 });
                 fail('Should have thrown');
@@ -167,7 +135,7 @@ describe('Orders', () => {
             expect(result1.addItemToOrder.items.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const result2 = await client.query(REMOVE_ITEM_FROM_ORDER, {
-                orderItemId: 'T_1',
+                orderItemId: firstOrderItemId,
             });
             expect(result2.removeItemFromOrder.items.length).toBe(1);
             expect(result2.removeItemFromOrder.items.map(i => i.productVariant.id)).toEqual(['T_3']);
@@ -186,4 +154,109 @@ describe('Orders', () => {
             }
         });
     });
+
+    describe('as authenticated user', () => {
+        let firstOrderItemId: string;
+
+        beforeAll(async () => {
+            await client.asSuperAdmin();
+            const result = await client.query(gql`
+                query {
+                    customer(id: "T_1") {
+                        id
+                        emailAddress
+                    }
+                }
+            `);
+            const customer: Customer = result.customer;
+            await client.asUserWithCredentials(customer.emailAddress, 'test');
+        });
+
+        it('addItemToOrder() creates a new Order with an item', async () => {
+            const result = await client.query(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+
+            expect(result.addItemToOrder.items.length).toBe(1);
+            expect(result.addItemToOrder.items[0].quantity).toBe(1);
+            expect(result.addItemToOrder.items[0].productVariant.id).toBe('T_1');
+            firstOrderItemId = result.addItemToOrder.items[0].id;
+        });
+
+        it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderItem', async () => {
+            const result = await client.query(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+
+            expect(result.addItemToOrder.items.length).toBe(1);
+            expect(result.addItemToOrder.items[0].quantity).toBe(3);
+        });
+
+        it('adjustItemQuantity() adjusts the quantity', async () => {
+            const result = await client.query(ADJUST_ITEM_QUENTITY, {
+                orderItemId: firstOrderItemId,
+                quantity: 50,
+            });
+
+            expect(result.adjustItemQuantity.items.length).toBe(1);
+            expect(result.adjustItemQuantity.items[0].quantity).toBe(50);
+        });
+
+        it('removeItemFromOrder() removes the correct item', async () => {
+            const result1 = await client.query(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 3,
+            });
+            expect(result1.addItemToOrder.items.length).toBe(2);
+            expect(result1.addItemToOrder.items.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+
+            const result2 = await client.query(REMOVE_ITEM_FROM_ORDER, {
+                orderItemId: firstOrderItemId,
+            });
+            expect(result2.removeItemFromOrder.items.length).toBe(1);
+            expect(result2.removeItemFromOrder.items.map(i => i.productVariant.id)).toEqual(['T_3']);
+        });
+    });
 });
+
+const TEST_ORDER_FRAGMENT = gql`
+    fragment TestOrderFragment on Order {
+        id
+        items {
+            id
+            quantity
+            productVariant {
+                id
+            }
+        }
+    }
+`;
+
+const ADD_ITEM_TO_ORDER = gql`
+    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+const ADJUST_ITEM_QUENTITY = gql`
+    mutation AdjustItemQuantity($orderItemId: ID!, $quantity: Int!) {
+        adjustItemQuantity(orderItemId: $orderItemId, quantity: $quantity) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+const REMOVE_ITEM_FROM_ORDER = gql`
+    mutation RemoveItemFromOrder($orderItemId: ID!) {
+        removeItemFromOrder(orderItemId: $orderItemId) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
