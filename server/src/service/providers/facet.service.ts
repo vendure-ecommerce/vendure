@@ -24,7 +24,10 @@ export class FacetService {
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
-    findAll(lang: LanguageCode, options: ListQueryOptions<Facet>): Promise<PaginatedList<Translated<Facet>>> {
+    findAll(
+        lang: LanguageCode,
+        options?: ListQueryOptions<Facet>,
+    ): Promise<PaginatedList<Translated<Facet>>> {
         const relations = ['values'];
 
         return buildListQuery(this.connection, Facet, options, relations)
@@ -46,15 +49,15 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values']));
     }
 
-    async create(createFacetDto: CreateFacetInput): Promise<Translated<Facet>> {
+    async create(input: CreateFacetInput): Promise<Translated<Facet>> {
         const save = createTranslatable(Facet, FacetTranslation);
-        const facet = await save(this.connection, createFacetDto);
+        const facet = await save(this.connection, input);
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateFacetDto: UpdateFacetInput): Promise<Translated<Facet>> {
+    async update(input: UpdateFacetInput): Promise<Translated<Facet>> {
         const save = updateTranslatable(Facet, FacetTranslation, this.translationUpdaterService);
-        const facet = await save(this.connection, updateFacetDto);
+        const facet = await save(this.connection, input);
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 }

@@ -421,7 +421,6 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
-    token?: string | null;
 }
 
 export interface AdministratorListOptions {
@@ -925,14 +924,14 @@ export interface CreateCustomerMutationArgs {
     password?: string | null;
 }
 export interface CreateCustomerAddressMutationArgs {
-    customerId?: string | null;
-    input?: CreateAddressInput | null;
+    customerId: string;
+    input: CreateAddressInput;
 }
 export interface CreateFacetMutationArgs {
-    input?: CreateFacetInput | null;
+    input: CreateFacetInput;
 }
 export interface UpdateFacetMutationArgs {
-    input?: UpdateFacetInput | null;
+    input: UpdateFacetInput;
 }
 export interface CreateFacetValuesMutationArgs {
     input: CreateFacetValueInput[];
@@ -952,16 +951,16 @@ export interface AdjustItemQuantityMutationArgs {
     quantity: number;
 }
 export interface CreateProductOptionGroupMutationArgs {
-    input?: CreateProductOptionGroupInput | null;
+    input: CreateProductOptionGroupInput;
 }
 export interface UpdateProductOptionGroupMutationArgs {
-    input?: UpdateProductOptionGroupInput | null;
+    input: UpdateProductOptionGroupInput;
 }
 export interface CreateProductMutationArgs {
-    input?: CreateProductInput | null;
+    input: CreateProductInput;
 }
 export interface UpdateProductMutationArgs {
-    input?: UpdateProductInput | null;
+    input: UpdateProductInput;
 }
 export interface AddOptionGroupToProductMutationArgs {
     productId: string;
@@ -2450,8 +2449,8 @@ export namespace MutationResolvers {
         CreateCustomerAddressArgs
     >;
     export interface CreateCustomerAddressArgs {
-        customerId?: string | null;
-        input?: CreateAddressInput | null;
+        customerId: string;
+        input: CreateAddressInput;
     }
 
     export type CreateFacetResolver<R = Facet, Parent = any, Context = any> = Resolver<
@@ -2461,7 +2460,7 @@ export namespace MutationResolvers {
         CreateFacetArgs
     >;
     export interface CreateFacetArgs {
-        input?: CreateFacetInput | null;
+        input: CreateFacetInput;
     }
 
     export type UpdateFacetResolver<R = Facet, Parent = any, Context = any> = Resolver<
@@ -2471,7 +2470,7 @@ export namespace MutationResolvers {
         UpdateFacetArgs
     >;
     export interface UpdateFacetArgs {
-        input?: UpdateFacetInput | null;
+        input: UpdateFacetInput;
     }
 
     export type CreateFacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
@@ -2532,7 +2531,7 @@ export namespace MutationResolvers {
         Context = any
     > = Resolver<R, Parent, Context, CreateProductOptionGroupArgs>;
     export interface CreateProductOptionGroupArgs {
-        input?: CreateProductOptionGroupInput | null;
+        input: CreateProductOptionGroupInput;
     }
 
     export type UpdateProductOptionGroupResolver<
@@ -2541,7 +2540,7 @@ export namespace MutationResolvers {
         Context = any
     > = Resolver<R, Parent, Context, UpdateProductOptionGroupArgs>;
     export interface UpdateProductOptionGroupArgs {
-        input?: UpdateProductOptionGroupInput | null;
+        input: UpdateProductOptionGroupInput;
     }
 
     export type CreateProductResolver<R = Product, Parent = any, Context = any> = Resolver<
@@ -2551,7 +2550,7 @@ export namespace MutationResolvers {
         CreateProductArgs
     >;
     export interface CreateProductArgs {
-        input?: CreateProductInput | null;
+        input: CreateProductInput;
     }
 
     export type UpdateProductResolver<R = Product, Parent = any, Context = any> = Resolver<
@@ -2561,7 +2560,7 @@ export namespace MutationResolvers {
         UpdateProductArgs
     >;
     export interface UpdateProductArgs {
-        input?: UpdateProductInput | null;
+        input: UpdateProductInput;
     }
 
     export type AddOptionGroupToProductResolver<R = Product, Parent = any, Context = any> = Resolver<
@@ -2677,11 +2676,9 @@ export namespace MutationResolvers {
 export namespace LoginResultResolvers {
     export interface Resolvers<Context = any> {
         user?: UserResolver<CurrentUser, any, Context>;
-        token?: TokenResolver<string | null, any, Context>;
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TokenResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace GetAdministrators {

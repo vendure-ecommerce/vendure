@@ -1,15 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AddOptionGroupToProductVariables,
-    ApplyFacetValuesToProductVariantsVariables,
-    CreateProductVariables,
-    GenerateProductVariantsVariables,
-    GetProductListVariables,
-    GetProductWithVariantsVariables,
+    AddOptionGroupToProductMutationArgs,
+    ApplyFacetValuesToProductVariantsMutationArgs,
+    CreateProductMutationArgs,
+    GenerateVariantsForProductMutationArgs,
     Permission,
-    RemoveOptionGroupFromProductVariables,
-    UpdateProductVariables,
-    UpdateProductVariantsVariables,
+    ProductQueryArgs,
+    ProductsQueryArgs,
+    RemoveOptionGroupFromProductMutationArgs,
+    UpdateProductMutationArgs,
+    UpdateProductVariantsMutationArgs,
 } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 
@@ -39,7 +39,7 @@ export class ProductResolver {
     @Allow(Permission.ReadCatalog)
     async products(
         @Ctx() ctx: RequestContext,
-        @Args() args: GetProductListVariables,
+        @Args() args: ProductsQueryArgs,
     ): Promise<PaginatedList<Translated<Product>>> {
         return this.productService.findAll(ctx, args.options || undefined);
     }
@@ -48,7 +48,7 @@ export class ProductResolver {
     @Allow(Permission.ReadCatalog)
     async product(
         @Ctx() ctx: RequestContext,
-        @Args() args: GetProductWithVariantsVariables,
+        @Args() args: ProductQueryArgs,
     ): Promise<Translated<Product> | undefined> {
         return this.productService.findOne(ctx, args.id);
     }
@@ -58,7 +58,7 @@ export class ProductResolver {
     @Decode('assetIds', 'featuredAssetId')
     async createProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateProductVariables,
+        @Args() args: CreateProductMutationArgs,
     ): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.create(ctx, input);
@@ -69,7 +69,7 @@ export class ProductResolver {
     @Decode('assetIds', 'featuredAssetId')
     async updateProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateProductVariables,
+        @Args() args: UpdateProductMutationArgs,
     ): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.update(ctx, input);
@@ -80,7 +80,7 @@ export class ProductResolver {
     @Decode('productId', 'optionGroupId')
     async addOptionGroupToProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: AddOptionGroupToProductVariables,
+        @Args() args: AddOptionGroupToProductMutationArgs,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.addOptionGroupToProduct(ctx, productId, optionGroupId);
@@ -91,7 +91,7 @@ export class ProductResolver {
     @Decode('productId', 'optionGroupId')
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: RemoveOptionGroupFromProductVariables,
+        @Args() args: RemoveOptionGroupFromProductMutationArgs,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
@@ -102,7 +102,7 @@ export class ProductResolver {
     @Decode('productId')
     async generateVariantsForProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: GenerateProductVariantsVariables,
+        @Args() args: GenerateVariantsForProductMutationArgs,
     ): Promise<Translated<Product>> {
         const { productId, defaultPrice, defaultSku } = args;
         await this.productVariantService.generateVariantsForProduct(ctx, productId, defaultPrice, defaultSku);
@@ -113,7 +113,7 @@ export class ProductResolver {
     @Allow(Permission.UpdateCatalog)
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateProductVariantsVariables,
+        @Args() args: UpdateProductVariantsMutationArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
         return Promise.all(input.map(variant => this.productVariantService.update(variant)));
@@ -124,7 +124,7 @@ export class ProductResolver {
     @Decode('facetValueIds', 'productVariantIds')
     async applyFacetValuesToProductVariants(
         @Ctx() ctx: RequestContext,
-        @Args() args: ApplyFacetValuesToProductVariantsVariables,
+        @Args() args: ApplyFacetValuesToProductVariantsMutationArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { facetValueIds, productVariantIds } = args;
         const facetValues = await Promise.all(

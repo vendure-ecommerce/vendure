@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { UpdateProductVariantInput } from 'shared/generated-types';
+import { CreateProductVariantInput, UpdateProductVariantInput } from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 import { generateAllCombinations } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
@@ -11,7 +11,6 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { CreateProductVariantDto } from '../../entity/product-variant/create-product-variant.dto';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -45,10 +44,10 @@ export class ProductVariantService {
     async create(
         ctx: RequestContext,
         product: Product,
-        createProductVariantDto: CreateProductVariantDto,
+        input: CreateProductVariantInput,
     ): Promise<ProductVariant> {
         const save = createTranslatable(ProductVariant, ProductVariantTranslation, async variant => {
-            const { optionCodes } = createProductVariantDto;
+            const { optionCodes } = input;
             if (optionCodes && optionCodes.length) {
                 const options = await this.connection.getRepository(ProductOption).find();
                 const selectedOptions = options.filter(og => optionCodes.includes(og.code));
@@ -57,18 +56,18 @@ export class ProductVariantService {
             variant.product = product;
             const variantPrice = new ProductVariantPrice();
         });
-        return await save(this.connection, createProductVariantDto, { channelId: ctx.channelId });
+        return await save(this.connection, input, { channelId: ctx.channelId });
     }
 
-    async update(updateProductVariantsDto: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
+    async update(input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
         const save = updateTranslatable(
             ProductVariant,
             ProductVariantTranslation,
             this.translationUpdaterService,
         );
-        await save(this.connection, updateProductVariantsDto);
+        await save(this.connection, input);
         const variant = await assertFound(
-            this.connection.manager.getRepository(ProductVariant).findOne(updateProductVariantsDto.id, {
+            this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
                 relations: ['options', 'facetValues'],
             }),
         );

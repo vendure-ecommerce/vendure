@@ -5,17 +5,23 @@ type Query {
 
 type Mutation {
     "Create a new Product"
-    createProduct(input: CreateProductInput): Product!
+    createProduct(input: CreateProductInput!): Product!
+
     "Update an existing Product"
-    updateProduct(input: UpdateProductInput): Product!
+    updateProduct(input: UpdateProductInput!): Product!
+
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
+
     "Remove an OptionGroup from a Product"
     removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
+
     "Create a set of ProductVariants based on the OptionGroups assigned to the given Product"
     generateVariantsForProduct(productId: ID!, defaultPrice: Int, defaultSku: String): Product!
+
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
+
     "Applies a FacetValue to the given ProductVariants"
     applyFacetValuesToProductVariants(facetValueIds: [ID!]!, productVariantIds: [ID!]!): [ProductVariant!]!
 }

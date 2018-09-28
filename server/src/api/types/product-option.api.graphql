@@ -5,7 +5,7 @@ type Query {
 
 type Mutation {
     "Create a new ProductOptionGroup"
-    createProductOptionGroup(input: CreateProductOptionGroupInput): ProductOptionGroup!
+    createProductOptionGroup(input: CreateProductOptionGroupInput!): ProductOptionGroup!
     "Update an existing ProductOptionGroup"
-    updateProductOptionGroup(input: UpdateProductOptionGroupInput): ProductOptionGroup!
+    updateProductOptionGroup(input: UpdateProductOptionGroupInput!): ProductOptionGroup!
 }

@@ -1,21 +1,16 @@
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import {
-    AssignRoleToAdministrator,
-    AssignRoleToAdministratorVariables,
-    AttemptLoginVariables,
     CreateAdministrator,
-    CreateAdministratorVariables,
-    CreateProductVariables,
+    CreateProductMutationArgs,
     CreateRole,
-    CreateRoleVariables,
+    LoginMutationArgs,
     Permission,
-    UpdateProductVariables,
+    UpdateProductMutationArgs,
 } from 'shared/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 
 import {
-    ASSIGN_ROLE_TO_ADMINISTRATOR,
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
 } from '../../admin-ui/src/app/data/definitions/administrator-definitions';
@@ -46,12 +41,12 @@ describe('Authorization & permissions', () => {
     });
 
     describe('Anonymous user', () => {
-        beforeAll(() => {
-            client.asAnonymousUser();
+        beforeAll(async () => {
+            await client.asAnonymousUser();
         });
 
         it('can attempt login', async () => {
-            await assertRequestAllowed<AttemptLoginVariables>(ATTEMPT_LOGIN, {
+            await assertRequestAllowed<LoginMutationArgs>(ATTEMPT_LOGIN, {
                 username: SUPER_ADMIN_USER_IDENTIFIER,
                 password: SUPER_ADMIN_USER_PASSWORD,
                 rememberMe: false,
@@ -73,7 +68,7 @@ describe('Authorization & permissions', () => {
         });
 
         it('cannot uppdate', async () => {
-            await assertRequestForbidden<UpdateProductVariables>(UPDATE_PRODUCT, {
+            await assertRequestForbidden<UpdateProductMutationArgs>(UPDATE_PRODUCT, {
                 input: {
                     id: '1',
                     translations: [],
@@ -82,7 +77,7 @@ describe('Authorization & permissions', () => {
         });
 
         it('cannot create', async () => {
-            await assertRequestForbidden<CreateProductVariables>(CREATE_PRODUCT, {
+            await assertRequestForbidden<CreateProductMutationArgs>(CREATE_PRODUCT, {
                 input: {
                     translations: [],
                 },
@@ -157,7 +152,7 @@ describe('Authorization & permissions', () => {
         code: string,
         permissions: Permission[],
     ): Promise<{ identifier: string; password: string }> {
-        const roleResult = await client.query<CreateRole, CreateRoleVariables>(CREATE_ROLE, {
+        const roleResult = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
             input: {
                 code,
                 description: '',
@@ -172,7 +167,7 @@ describe('Authorization & permissions', () => {
             .substr(2, 8)}`;
         const password = `test`;
 
-        const adminResult = await client.query<CreateAdministrator, CreateAdministratorVariables>(
+        const adminResult = await client.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
             CREATE_ADMINISTRATOR,
             {
                 input: {

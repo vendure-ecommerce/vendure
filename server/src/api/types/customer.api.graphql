@@ -7,7 +7,7 @@ type Mutation {
   "Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer."
   createCustomer(input: CreateCustomerInput!, password: String): Customer!
   "Create a new Address and associate it with the Customer specified by customerId"
-  createCustomerAddress(customerId: ID, input: CreateAddressInput): Address!
+  createCustomerAddress(customerId: ID!, input: CreateAddressInput!): Address!
 }
 
 type CustomerList implements PaginatedList {

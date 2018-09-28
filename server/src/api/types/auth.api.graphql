@@ -9,8 +9,6 @@ type Mutation {
 
 type LoginResult {
     user: CurrentUser!
-    "The token will only be returned when using the `bearer` tokenMethod"
-    token: String
 }
 
 type CurrentUser {

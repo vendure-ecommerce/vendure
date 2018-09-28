@@ -1,5 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Permission } from 'shared/generated-types';
+import {
+    AddItemToOrderMutationArgs,
+    AdjustItemQuantityMutationArgs,
+    OrderQueryArgs,
+    OrdersQueryArgs,
+    Permission,
+    RemoveItemFromOrderMutationArgs,
+} from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Order } from '../../entity/order/order.entity';
@@ -17,13 +24,13 @@ export class OrderResolver {
 
     @Query()
     @Allow(Permission.ReadOrder)
-    orders(@Args() args): Promise<PaginatedList<Order>> {
+    orders(@Args() args: OrdersQueryArgs): Promise<PaginatedList<Order>> {
         return {} as any;
     }
 
     @Query()
     @Allow(Permission.ReadOrder, Permission.Owner)
-    async order(@Ctx() ctx: RequestContext, @Args() args): Promise<Order | undefined> {
+    async order(@Ctx() ctx: RequestContext, @Args() args: OrderQueryArgs): Promise<Order | undefined> {
         const order = await this.orderService.findOne(ctx, args.id);
         if (order && ctx.authorizedAsOwnerOnly) {
             if (ctx.session && ctx.session.activeOrder && ctx.session.activeOrder.id === order.id) {
@@ -38,7 +45,10 @@ export class OrderResolver {
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     @Decode('productVariantId')
-    async addItemToOrder(@Ctx() ctx: RequestContext, @Args() args): Promise<Order> {
+    async addItemToOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: AddItemToOrderMutationArgs,
+    ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx);
         return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity);
     }
@@ -46,7 +56,10 @@ export class OrderResolver {
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     @Decode('orderItemId')
-    async adjustItemQuantity(@Ctx() ctx: RequestContext, @Args() args): Promise<Order> {
+    async adjustItemQuantity(
+        @Ctx() ctx: RequestContext,
+        @Args() args: AdjustItemQuantityMutationArgs,
+    ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx);
         return this.orderService.adjustItemQuantity(ctx, order.id, args.orderItemId, args.quantity);
     }
@@ -54,7 +67,10 @@ export class OrderResolver {
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     @Decode('orderItemId')
-    async removeItemFromOrder(@Ctx() ctx: RequestContext, @Args() args): Promise<Order> {
+    async removeItemFromOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: RemoveItemFromOrderMutationArgs,
+    ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderItemId);
     }

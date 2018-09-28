@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Permission } from 'shared/generated-types';
+import { CreateChannelMutationArgs, Permission } from 'shared/generated-types';
 
 import { Channel } from '../../entity/channel/channel.entity';
 import { ChannelService } from '../../service/providers/channel.service';
@@ -11,7 +11,7 @@ export class ChannelResolver {
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
-    createChannel(@Args() args): Promise<Channel> {
+    createChannel(@Args() args: CreateChannelMutationArgs): Promise<Channel> {
         return this.channelService.create(args.code);
     }
 }

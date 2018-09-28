@@ -1,5 +1,11 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { CreateProductOptionGroupVariables, Permission } from 'shared/generated-types';
+import {
+    CreateProductOptionGroupMutationArgs,
+    Permission,
+    ProductOptionGroupQueryArgs,
+    ProductOptionGroupsQueryArgs,
+    UpdateProductOptionGroupMutationArgs,
+} from 'shared/generated-types';
 
 import { Translated } from '../../common/types/locale-types';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
@@ -7,6 +13,8 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { ProductOptionGroupService } from '../../service/providers/product-option-group.service';
 import { ProductOptionService } from '../../service/providers/product-option.service';
 import { Allow } from '../common/auth-guard';
+import { RequestContext } from '../common/request-context';
+import { Ctx } from '../common/request-context.decorator';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {
@@ -17,14 +25,20 @@ export class ProductOptionResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    productOptionGroups(@Args() args): Promise<Array<Translated<ProductOptionGroup>>> {
-        return this.productOptionGroupService.findAll(args.languageCode, args.filterTerm);
+    productOptionGroups(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ProductOptionGroupsQueryArgs,
+    ): Promise<Array<Translated<ProductOptionGroup>>> {
+        return this.productOptionGroupService.findAll(ctx.languageCode, args.filterTerm || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    productOptionGroup(@Args() args): Promise<Translated<ProductOptionGroup> | undefined> {
-        return this.productOptionGroupService.findOne(args.id, args.languageCode);
+    productOptionGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ProductOptionGroupQueryArgs,
+    ): Promise<Translated<ProductOptionGroup> | undefined> {
+        return this.productOptionGroupService.findOne(args.id, ctx.languageCode);
     }
 
     @ResolveProperty()
@@ -40,7 +54,7 @@ export class ProductOptionResolver {
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOptionGroup(
-        @Args() args: CreateProductOptionGroupVariables,
+        @Args() args: CreateProductOptionGroupMutationArgs,
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(args.input);
@@ -56,7 +70,9 @@ export class ProductOptionResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async updateProductOptionGroup(@Args() args): Promise<Translated<ProductOptionGroup>> {
+    async updateProductOptionGroup(
+        @Args() args: UpdateProductOptionGroupMutationArgs,
+    ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(args.input);
     }

@@ -1,5 +1,11 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission } from 'shared/generated-types';
+import {
+    CreateCustomerAddressMutationArgs,
+    CreateCustomerMutationArgs,
+    CustomerQueryArgs,
+    CustomersQueryArgs,
+    Permission,
+} from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Address } from '../../entity/address/address.entity';
@@ -14,13 +20,13 @@ export class CustomerResolver {
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customers(@Args() args): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.options);
+    async customers(@Args() args: CustomersQueryArgs): Promise<PaginatedList<Customer>> {
+        return this.customerService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customer(@Args() args): Promise<Customer | undefined> {
+    async customer(@Args() args: CustomerQueryArgs): Promise<Customer | undefined> {
         return this.customerService.findOne(args.id);
     }
 
@@ -32,15 +38,15 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
-    async createCustomer(@Args() args): Promise<Customer> {
+    async createCustomer(@Args() args: CreateCustomerMutationArgs): Promise<Customer> {
         const { input, password } = args;
-        return this.customerService.create(input, password);
+        return this.customerService.create(input, password || undefined);
     }
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
     @Decode('customerId')
-    async createCustomerAddress(@Args() args): Promise<Address> {
+    async createCustomerAddress(@Args() args: CreateCustomerAddressMutationArgs): Promise<Address> {
         const { customerId, input } = args;
         return this.customerService.createAddress(customerId, input);
     }
