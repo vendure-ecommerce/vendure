@@ -24,8 +24,8 @@ export class OrderResolver {
 
     @Query()
     @Allow(Permission.ReadOrder)
-    orders(@Args() args: OrdersQueryArgs): Promise<PaginatedList<Order>> {
-        return {} as any;
+    orders(@Ctx() ctx: RequestContext, @Args() args: OrdersQueryArgs): Promise<PaginatedList<Order>> {
+        return this.orderService.findAll(ctx, args.options || undefined);
     }
 
     @Query()

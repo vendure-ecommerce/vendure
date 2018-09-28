@@ -36,7 +36,9 @@
             <label for="tabexample2">{{ 'nav.sales' | translate }}</label>
             <ul class="nav-list">
                 <li>
-                    <a class="nav-link">
+                    <a class="nav-link"
+                       [routerLink]="['/orders']"
+                       routerLinkActive="active">
                         <clr-icon shape="shopping-cart" size="20"></clr-icon>{{ 'nav.orders' | translate }}
                     </a>
                 </li>

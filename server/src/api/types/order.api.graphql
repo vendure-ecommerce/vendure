@@ -1,6 +1,6 @@
 type Query {
     order(id: ID!): Order
-    orders(options: OrderListOptions): OrderList
+    orders(options: OrderListOptions): OrderList!
 }
 
 type Mutation {

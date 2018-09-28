@@ -27,6 +27,10 @@ export const routes: Route[] = [
                 path: 'admin',
                 loadChildren: './administrator/administrator.module#AdministratorModule',
             },
+            {
+                path: 'orders',
+                loadChildren: './order/order.module#OrderModule',
+            },
         ],
     },
 ];

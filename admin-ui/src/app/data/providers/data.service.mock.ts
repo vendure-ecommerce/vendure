@@ -50,6 +50,9 @@ export class MockDataService implements DataServiceMock {
         uiState: spyQueryResult('uiState'),
         setUiLanguage: spyObservable('setUiLanguage'),
     };
+    order = {
+        getOrders: spyQueryResult('getOrders'),
+    };
     product = {
         getProducts: spyQueryResult('getProducts'),
         getProduct: spyQueryResult('getProduct'),

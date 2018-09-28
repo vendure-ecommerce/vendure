@@ -50,7 +50,7 @@ export interface Query {
     facets: FacetList;
     facet?: Facet | null;
     order?: Order | null;
-    orders?: OrderList | null;
+    orders: OrderList;
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
     products: ProductList;
@@ -1231,7 +1231,7 @@ export namespace QueryResolvers {
         facets?: FacetsResolver<FacetList, any, Context>;
         facet?: FacetResolver<Facet | null, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
-        orders?: OrdersResolver<OrderList | null, any, Context>;
+        orders?: OrdersResolver<OrderList, any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
         products?: ProductsResolver<ProductList, any, Context>;
@@ -1341,7 +1341,7 @@ export namespace QueryResolvers {
         id: string;
     }
 
-    export type OrdersResolver<R = OrderList | null, Parent = any, Context = any> = Resolver<
+    export type OrdersResolver<R = OrderList, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context,
@@ -3059,6 +3059,25 @@ export namespace GetUiState {
     };
 }
 
+export namespace GetOrderList {
+    export type Variables = {
+        options?: OrderListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        orders: Orders;
+    };
+
+    export type Orders = {
+        __typename?: 'OrderList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = Order.Fragment;
+}
+
 export namespace UpdateProduct {
     export type Variables = {
         input: UpdateProductInput;
@@ -3395,6 +3414,23 @@ export namespace FacetWithValues {
     };
 
     export type Values = FacetValue.Fragment;
+}
+
+export namespace Order {
+    export type Fragment = {
+        __typename?: 'Order';
+        id: string;
+        createdAt: DateTime;
+        updatedAt: DateTime;
+        code: string;
+        customer: Customer;
+    };
+
+    export type Customer = {
+        __typename?: 'Customer';
+        firstName: string;
+        lastName: string;
+    };
 }
 
 export namespace Asset {

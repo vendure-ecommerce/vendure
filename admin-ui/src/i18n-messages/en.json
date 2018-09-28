@@ -25,6 +25,7 @@
     "assets": "Assets",
     "dashboard": "Dashboard",
     "facets": "Facets",
+    "orders": "Orders",
     "products": "Products",
     "roles": "Roles"
   },
@@ -83,6 +84,7 @@
     "code": "Code",
     "confirm": "Confirm",
     "create": "Create",
+    "created-at": "Created at",
     "edit": "Edit",
     "edit-field": "Edit field",
     "finish": "Finish",
@@ -98,6 +100,7 @@
     "password": "Password",
     "remember-me": "Remember me",
     "update": "Update",
+    "updated-at": "Updated at",
     "username": "Username"
   },
   "error": {
@@ -118,5 +121,8 @@
     "products": "Products",
     "roles": "Roles",
     "sales": "Sales"
+  },
+  "order": {
+    "create-new-order": "Create new order"
   }
 }

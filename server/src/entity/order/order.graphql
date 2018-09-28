@@ -3,7 +3,7 @@ type Order implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     code: String!
-    customer: Customer!
+    customer: Customer
     items: [OrderItem!]!
     adjustments: [Adjustment!]!
 }
