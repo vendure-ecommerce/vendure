@@ -23,7 +23,7 @@ export function createResolveData<T extends BaseEntityResolver<R>, R>(
 export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
     constructor(
         private readonly emptyEntity: T,
-        private entityStream: (id: string) => Observable<T | null>,
+        private entityStream: (id: string) => Observable<T | null | undefined>,
     ) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<T>> {

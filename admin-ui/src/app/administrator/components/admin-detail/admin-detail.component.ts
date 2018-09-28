@@ -26,8 +26,8 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class AdminDetailComponent extends BaseDetailComponent<Administrator> implements OnInit, OnDestroy {
     administrator$: Observable<Administrator>;
-    allRoles$: Observable<Role[]>;
-    selectedRoles: Role[] = [];
+    allRoles$: Observable<Role.Fragment[]>;
+    selectedRoles: Role.Fragment[] = [];
     administratorForm: FormGroup;
     selectedRolePermissions: { [K in Permission]: boolean } = {} as any;
 

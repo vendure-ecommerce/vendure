@@ -4,21 +4,17 @@ import gql from 'graphql-tag';
 import * as path from 'path';
 import {
     AddOptionGroupToProduct,
-    AddOptionGroupToProductVariables,
     Asset,
+    CreateAddressInput,
+    CreateCustomerInput,
     CreateFacet,
     CreateFacetValueWithFacetInput,
-    CreateFacetVariables,
     CreateProduct,
     CreateProductOptionGroup,
-    CreateProductOptionGroupVariables,
-    CreateProductVariables,
     GenerateProductVariants,
-    GenerateProductVariantsVariables,
     LanguageCode,
     ProductTranslationInput,
     UpdateProductVariants,
-    UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
@@ -29,9 +25,7 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { CreateAddressDto } from '../src/entity/address/address.dto';
 import { Channel } from '../src/entity/channel/channel.entity';
-import { CreateCustomerDto } from '../src/entity/customer/customer.dto';
 import { Customer } from '../src/entity/customer/customer.entity';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
@@ -68,31 +62,34 @@ export class MockDataService {
 
     async populateOptions(): Promise<string> {
         return this.client
-            .query<CreateProductOptionGroup, CreateProductOptionGroupVariables>(CREATE_PRODUCT_OPTION_GROUP, {
-                input: {
-                    code: 'size',
-                    translations: [
-                        { languageCode: LanguageCode.en, name: 'Size' },
-                        { languageCode: LanguageCode.de, name: 'Größe' },
-                    ],
-                    options: [
-                        {
-                            code: 'small',
-                            translations: [
-                                { languageCode: LanguageCode.en, name: 'Small' },
-                                { languageCode: LanguageCode.de, name: 'Klein' },
-                            ],
-                        },
-                        {
-                            code: 'large',
-                            translations: [
-                                { languageCode: LanguageCode.en, name: 'Large' },
-                                { languageCode: LanguageCode.de, name: 'Groß' },
-                            ],
-                        },
-                    ],
+            .query<CreateProductOptionGroup.Mutation, CreateProductOptionGroup.Variables>(
+                CREATE_PRODUCT_OPTION_GROUP,
+                {
+                    input: {
+                        code: 'size',
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Size' },
+                            { languageCode: LanguageCode.de, name: 'Größe' },
+                        ],
+                        options: [
+                            {
+                                code: 'small',
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Small' },
+                                    { languageCode: LanguageCode.de, name: 'Klein' },
+                                ],
+                            },
+                            {
+                                code: 'large',
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Large' },
+                                    { languageCode: LanguageCode.de, name: 'Groß' },
+                                ],
+                            },
+                        ],
+                    },
                 },
-            })
+            )
             .then(data => {
                 this.log('Created option group:', data.createProductOptionGroup.name);
                 return data.createProductOptionGroup.id;
@@ -119,7 +116,7 @@ export class MockDataService {
                     lastName,
                     emailAddress: faker.internet.email(firstName, lastName),
                     phoneNumber: faker.phone.phoneNumber(),
-                } as CreateCustomerDto,
+                } as CreateCustomerInput,
                 password: 'test',
             };
 
@@ -129,7 +126,7 @@ export class MockDataService {
 
             if (customer) {
                 const query2 = gql`
-                    mutation($customerId: ID!, $input: CreateAddressInput) {
+                    mutation($customerId: ID!, $input: CreateAddressInput!) {
                         createCustomerAddress(customerId: $customerId, input: $input) {
                             id
                             streetLine1
@@ -145,7 +142,7 @@ export class MockDataService {
                         province: faker.address.county(),
                         postalCode: faker.address.zipCode(),
                         country: faker.address.country(),
-                    } as CreateAddressDto,
+                    } as CreateAddressInput,
                     customerId: customer.id,
                 };
 
@@ -181,7 +178,7 @@ export class MockDataService {
             // get 2 (pseudo) random asset ids
             const randomAssets = this.shuffleArray(assets).slice(0, 2);
 
-            const variables: CreateProductVariables = {
+            const variables: CreateProduct.Variables = {
                 input: {
                     translations: languageCodes.map(code =>
                         this.makeProductTranslation(code, name, slug, description),
@@ -192,7 +189,7 @@ export class MockDataService {
             };
 
             const product = await this.client
-                .query<CreateProduct, CreateProductVariables>(query, variables)
+                .query<CreateProduct.Mutation, CreateProduct.Variables>(query, variables)
                 .then(
                     data => {
                         this.log(`Created Product ${i + 1}:`, data.createProduct.name);
@@ -202,7 +199,7 @@ export class MockDataService {
                 );
 
             if (product) {
-                await this.client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
+                await this.client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
                         productId: product.createProduct.id,
@@ -219,7 +216,7 @@ export class MockDataService {
                     delete variantDE.id;
                     variant.translations.push(variantDE);
                 }
-                await this.client.query<UpdateProductVariants, UpdateProductVariantsVariables>(
+                await this.client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: variants.map(({ id, translations, sku, price }) => ({
@@ -235,7 +232,7 @@ export class MockDataService {
     }
 
     async populateFacets() {
-        await this.client.query<CreateFacet, CreateFacetVariables>(CREATE_FACET, {
+        await this.client.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
             input: {
                 code: 'brand',
                 translations: [
@@ -287,9 +284,9 @@ export class MockDataService {
         };
     }
 
-    private async makeProductVariant(productId: string): Promise<GenerateProductVariants> {
+    private async makeProductVariant(productId: string): Promise<GenerateProductVariants.Mutation> {
         const query = GENERATE_PRODUCT_VARIANTS;
-        return this.client.query<GenerateProductVariants, GenerateProductVariantsVariables>(query, {
+        return this.client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(query, {
             productId,
             defaultSku: faker.random.alphaNumeric(5),
             defaultPrice: faker.random.number({

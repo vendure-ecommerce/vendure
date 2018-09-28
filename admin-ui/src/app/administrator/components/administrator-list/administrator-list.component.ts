@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetAdministrators, GetAdministrators_administrators_items } from 'shared/generated-types';
+import { GetAdministrators } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { DataService } from '../../../data/providers/data.service';
@@ -11,8 +11,8 @@ import { DataService } from '../../../data/providers/data.service';
     styleUrls: ['./administrator-list.component.scss'],
 })
 export class AdministratorListComponent extends BaseListComponent<
-    GetAdministrators,
-    GetAdministrators_administrators_items
+    GetAdministrators.Query,
+    GetAdministrators.Items
 > {
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);

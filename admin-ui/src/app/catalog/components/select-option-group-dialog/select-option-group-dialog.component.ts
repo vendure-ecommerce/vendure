@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { GetProductOptionGroups_productOptionGroups, ProductOptionGroup } from 'shared/generated-types';
+import { ProductOptionGroup } from 'shared/generated-types';
 
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
@@ -9,11 +9,11 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./select-option-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectOptionGroupDialogComponent implements Dialog<ProductOptionGroup> {
-    existingOptionGroups: Array<Partial<ProductOptionGroup>>;
-    resolveWith: (result?: ProductOptionGroup) => void;
+export class SelectOptionGroupDialogComponent implements Dialog<ProductOptionGroup.Fragment> {
+    existingOptionGroups: Array<Partial<ProductOptionGroup.Fragment>>;
+    resolveWith: (result?: ProductOptionGroup.Fragment) => void;
 
-    selectGroup(group: ProductOptionGroup) {
+    selectGroup(group: ProductOptionGroup.Fragment) {
         this.resolveWith(group);
     }
 

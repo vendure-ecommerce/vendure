@@ -4,10 +4,9 @@ import {
     GetNetworkStatus,
     GetUiState,
     GetUserStatus,
-    GetUserStatus_userStatus,
     LanguageCode,
-    SetAsLoggedInVariables,
-    SetUiLanguageVariables,
+    SetAsLoggedIn,
+    SetUiLanguage,
 } from 'shared/generated-types';
 
 import { GET_NEWTORK_STATUS } from '../definitions/local-definitions';
@@ -32,9 +31,9 @@ export const clientResolvers: ResolverDefinition = {
         requestCompleted: (_, args, { cache }): number => {
             return updateRequestsInFlight(cache, -1);
         },
-        setAsLoggedIn: (_, args: SetAsLoggedInVariables, { cache }): GetUserStatus_userStatus => {
+        setAsLoggedIn: (_, args: SetAsLoggedIn.Variables, { cache }): GetUserStatus.UserStatus => {
             const { username, loginTime } = args;
-            const data: GetUserStatus = {
+            const data: GetUserStatus.Query = {
                 userStatus: {
                     __typename: 'UserStatus',
                     username,
@@ -45,8 +44,8 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeData({ data });
             return data.userStatus;
         },
-        setAsLoggedOut: (_, args, { cache }): GetUserStatus_userStatus => {
-            const data: GetUserStatus = {
+        setAsLoggedOut: (_, args, { cache }): GetUserStatus.UserStatus => {
+            const data: GetUserStatus.Query = {
                 userStatus: {
                     __typename: 'UserStatus',
                     username: '',
@@ -57,8 +56,8 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeData({ data });
             return data.userStatus;
         },
-        setUiLanguage: (_, args: SetUiLanguageVariables, { cache }): LanguageCode => {
-            const data: GetUiState = {
+        setUiLanguage: (_, args: SetUiLanguage.Variables, { cache }): LanguageCode => {
+            const data: GetUiState.Query = {
                 uiState: {
                     __typename: 'UiState',
                     language: args.languageCode,
@@ -71,9 +70,9 @@ export const clientResolvers: ResolverDefinition = {
 };
 
 function updateRequestsInFlight(cache: InMemoryCache, increment: 1 | -1): number {
-    const previous = cache.readQuery<GetNetworkStatus>({ query: GET_NEWTORK_STATUS });
+    const previous = cache.readQuery<GetNetworkStatus.Query>({ query: GET_NEWTORK_STATUS });
     const inFlightRequests = previous.networkStatus.inFlightRequests + increment;
-    const data: GetNetworkStatus = {
+    const data: GetNetworkStatus.Query = {
         networkStatus: {
             __typename: 'NetworkStatus',
             inFlightRequests,

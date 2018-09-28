@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { PaginationInstance } from 'ngx-pagination';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { Asset, GetAssetList, GetAssetListVariables } from 'shared/generated-types';
+import { Asset, GetAssetList } from 'shared/generated-types';
 
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
@@ -29,7 +29,7 @@ export class AssetPickerDialogComponent implements OnInit, Dialog<Asset[]> {
 
     resolveWith: (result?: Asset[]) => void;
     selection: Asset[] = [];
-    private listQuery: QueryResult<GetAssetList, GetAssetListVariables>;
+    private listQuery: QueryResult<GetAssetList.Query, GetAssetList.Variables>;
 
     constructor(private dataService: DataService, private notificationService: NotificationService) {}
 

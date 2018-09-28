@@ -7,7 +7,6 @@ import {
     CreateProductInput,
     LanguageCode,
     ProductWithVariants,
-    ProductWithVariants_variants,
     UpdateProductInput,
     UpdateProductVariantInput,
 } from 'shared/generated-types';
@@ -30,10 +29,10 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
     styleUrls: ['./product-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants>
+export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants.Fragment>
     implements OnInit, OnDestroy {
-    product$: Observable<ProductWithVariants>;
-    variants$: Observable<ProductWithVariants_variants[]>;
+    product$: Observable<ProductWithVariants.Fragment>;
+    variants$: Observable<ProductWithVariants.Variants[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
@@ -206,7 +205,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     /**
      * Sets the values of the form on changes to the product or current language.
      */
-    protected setFormValues(product: ProductWithVariants, languageCode: LanguageCode) {
+    protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
         const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
             this.productForm.patchValue({
@@ -258,7 +257,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      * can then be persisted to the API.
      */
     private getUpdatedProduct(
-        product: ProductWithVariants,
+        product: ProductWithVariants.Fragment,
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
@@ -282,7 +281,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      * which can be persisted to the API.
      */
     private getUpdatedProductVariants(
-        product: ProductWithVariants,
+        product: ProductWithVariants.Fragment,
         variantsFormArray: FormArray,
         languageCode: LanguageCode,
     ): UpdateProductVariantInput[] {

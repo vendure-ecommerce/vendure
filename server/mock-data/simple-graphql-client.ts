@@ -63,7 +63,7 @@ export class SimpleGraphQLClient {
      * Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
      * Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
      */
-    uploadAssets(filePaths: string[]): Promise<CreateAssets> {
+    uploadAssets(filePaths: string[]): Promise<CreateAssets.Mutation> {
         return new Promise((resolve, reject) => {
             const curl = new Curl();
 
@@ -132,7 +132,6 @@ export class SimpleGraphQLClient {
                             identifier
                             channelTokens
                         }
-                        token
                     }
                 }
             `,

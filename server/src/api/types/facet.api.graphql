@@ -5,9 +5,9 @@ type Query {
 
 type Mutation {
     "Create a new Facet"
-    createFacet(input: CreateFacetInput): Facet!
+    createFacet(input: CreateFacetInput!): Facet!
     "Update an existing Facet"
-    updateFacet(input: UpdateFacetInput): Facet!
+    updateFacet(input: UpdateFacetInput!): Facet!
     "Create one or more FacetValues"
     createFacetValues(input: [CreateFacetValueInput!]!): [FacetValue!]!
     "Update one or more FacetValues"

@@ -6,7 +6,7 @@
     "removeComments": true,
     "noLib": false,
     "skipLibCheck": true,
-    "lib": ["es2017"],
+    "lib": ["es2017", "esnext.asynciterable"],
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

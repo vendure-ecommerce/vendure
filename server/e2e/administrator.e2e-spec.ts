@@ -1,13 +1,9 @@
 import {
     Administrator,
     CreateAdministrator,
-    CreateAdministratorVariables,
     GetAdministrator,
     GetAdministrators,
-    GetAdministratorsVariables,
-    GetAdministratorVariables,
     UpdateAdministrator,
-    UpdateAdministratorVariables,
 } from 'shared/generated-types';
 
 import {
@@ -23,7 +19,7 @@ import { TestServer } from './test-server';
 describe('Administrator resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
-    let createdAdmin: Administrator;
+    let createdAdmin: Administrator.Fragment;
 
     beforeAll(async () => {
         const token = await server.init({
@@ -38,13 +34,15 @@ describe('Administrator resolver', () => {
     });
 
     it('administrators', async () => {
-        const result = await client.query<GetAdministrators, GetAdministratorsVariables>(GET_ADMINISTRATORS);
+        const result = await client.query<GetAdministrators.Query, GetAdministrators.Variables>(
+            GET_ADMINISTRATORS,
+        );
         expect(result.administrators.items.length).toBe(1);
         expect(result.administrators.totalItems).toBe(1);
     });
 
     it('createAdministrator', async () => {
-        const result = await client.query<CreateAdministrator, CreateAdministratorVariables>(
+        const result = await client.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
             CREATE_ADMINISTRATOR,
             {
                 input: {
@@ -62,14 +60,17 @@ describe('Administrator resolver', () => {
     });
 
     it('administrator', async () => {
-        const result = await client.query<GetAdministrator, GetAdministratorVariables>(GET_ADMINISTRATOR, {
-            id: createdAdmin.id,
-        });
+        const result = await client.query<GetAdministrator.Query, GetAdministrator.Variables>(
+            GET_ADMINISTRATOR,
+            {
+                id: createdAdmin.id,
+            },
+        );
         expect(result.administrator).toEqual(createdAdmin);
     });
 
     it('updateAdministrator', async () => {
-        const result = await client.query<UpdateAdministrator, UpdateAdministratorVariables>(
+        const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
             UPDATE_ADMINISTRATOR,
             {
                 input: {
@@ -86,7 +87,7 @@ describe('Administrator resolver', () => {
     });
 
     it('updateAdministrator works with partial input', async () => {
-        const result = await client.query<UpdateAdministrator, UpdateAdministratorVariables>(
+        const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
             UPDATE_ADMINISTRATOR,
             {
                 input: {
@@ -102,7 +103,7 @@ describe('Administrator resolver', () => {
 
     it('updateAdministrator throws with invalid roleId', async () => {
         try {
-            const result = await client.query<UpdateAdministrator, UpdateAdministratorVariables>(
+            const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
                 UPDATE_ADMINISTRATOR,
                 {
                     input: {

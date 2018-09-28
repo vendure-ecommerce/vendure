@@ -7,7 +7,6 @@ export const ASSET_FRAGMENT = gql`
         fileSize
         mimeType
         type
-        name
         preview
         source
     }

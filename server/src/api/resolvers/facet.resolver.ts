@@ -1,10 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateFacetValuesVariables,
-    CreateFacetVariables,
+    CreateFacetMutationArgs,
+    CreateFacetValuesMutationArgs,
+    FacetQueryArgs,
+    FacetsQueryArgs,
     Permission,
-    UpdateFacetValuesVariables,
-    UpdateFacetVariables,
+    UpdateFacetMutationArgs,
+    UpdateFacetValuesMutationArgs,
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
@@ -16,6 +18,8 @@ import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/providers/facet-value.service';
 import { FacetService } from '../../service/providers/facet.service';
 import { Allow } from '../common/auth-guard';
+import { RequestContext } from '../common/request-context';
+import { Ctx } from '../common/request-context.decorator';
 
 @Resolver('Facet')
 export class FacetResolver {
@@ -23,19 +27,25 @@ export class FacetResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    facets(@Args() args): Promise<PaginatedList<Translated<Facet>>> {
-        return this.facetService.findAll(args.languageCode, args.options);
+    facets(
+        @Ctx() ctx: RequestContext,
+        @Args() args: FacetsQueryArgs,
+    ): Promise<PaginatedList<Translated<Facet>>> {
+        return this.facetService.findAll(ctx.languageCode, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async facet(@Args() args): Promise<Translated<Facet> | undefined> {
-        return this.facetService.findOne(args.id, args.languageCode);
+    async facet(
+        @Ctx() ctx: RequestContext,
+        @Args() args: FacetQueryArgs,
+    ): Promise<Translated<Facet> | undefined> {
+        return this.facetService.findOne(args.id, ctx.languageCode);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createFacet(@Args() args: CreateFacetVariables): Promise<Translated<Facet>> {
+    async createFacet(@Args() args: CreateFacetMutationArgs): Promise<Translated<Facet>> {
         const { input } = args;
         const facet = await this.facetService.create(args.input);
 
@@ -50,7 +60,7 @@ export class FacetResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async updateFacet(@Args() args: UpdateFacetVariables): Promise<Translated<Facet>> {
+    async updateFacet(@Args() args: UpdateFacetMutationArgs): Promise<Translated<Facet>> {
         const { input } = args;
         return this.facetService.update(args.input);
     }
@@ -58,7 +68,7 @@ export class FacetResolver {
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createFacetValues(
-        @Args() args: CreateFacetValuesVariables,
+        @Args() args: CreateFacetValuesMutationArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         const facetId = input[0].facetId;
@@ -72,7 +82,7 @@ export class FacetResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateFacetValues(
-        @Args() args: UpdateFacetValuesVariables,
+        @Args() args: UpdateFacetValuesMutationArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));

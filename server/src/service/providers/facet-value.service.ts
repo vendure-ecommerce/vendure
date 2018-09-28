@@ -47,16 +47,16 @@ export class FacetValueService {
 
     async create(
         facet: Facet,
-        createFacetValueDto: CreateFacetValueInput | CreateFacetValueWithFacetInput,
+        input: CreateFacetValueInput | CreateFacetValueWithFacetInput,
     ): Promise<Translated<FacetValue>> {
         const save = createTranslatable(FacetValue, FacetValueTranslation, fv => (fv.facet = facet));
-        const facetValue = await save(this.connection, createFacetValueDto);
+        const facetValue = await save(this.connection, input);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(updateFacetValueDto: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
+    async update(input: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
         const save = updateTranslatable(FacetValue, FacetValueTranslation, this.translationUpdaterService);
-        const facetValue = await save(this.connection, updateFacetValueDto);
+        const facetValue = await save(this.connection, input);
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 }

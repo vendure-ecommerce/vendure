@@ -1,26 +1,18 @@
-import { Observable } from 'rxjs';
 import {
     CreateFacet,
     CreateFacetInput,
     CreateFacetValueInput,
     CreateFacetValues,
-    CreateFacetValuesVariables,
-    CreateFacetVariables,
     GetFacetList,
-    GetFacetListVariables,
     GetFacetWithValues,
-    GetFacetWithValuesVariables,
     UpdateFacet,
     UpdateFacetInput,
     UpdateFacetValueInput,
     UpdateFacetValues,
-    UpdateFacetValuesVariables,
-    UpdateFacetVariables,
 } from 'shared/generated-types';
 import { pick } from 'shared/pick';
 
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { addCustomFields } from '../add-custom-fields';
 import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
@@ -29,15 +21,14 @@ import {
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
 } from '../definitions/facet-definitions';
-import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 
 export class FacetDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getFacets(take: number = 10, skip: number = 0): QueryResult<GetFacetList, GetFacetListVariables> {
-        return this.baseDataService.query<GetFacetList, GetFacetListVariables>(GET_FACET_LIST, {
+    getFacets(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(GET_FACET_LIST, {
             options: {
                 take,
                 skip,
@@ -46,8 +37,8 @@ export class FacetDataService {
         });
     }
 
-    getFacet(id: string): QueryResult<GetFacetWithValues, GetFacetWithValuesVariables> {
-        return this.baseDataService.query<GetFacetWithValues, GetFacetWithValuesVariables>(
+    getFacet(id: string) {
+        return this.baseDataService.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
             GET_FACET_WITH_VALUES,
             {
                 id,
@@ -56,35 +47,35 @@ export class FacetDataService {
         );
     }
 
-    createFacet(facet: CreateFacetInput): Observable<CreateFacet> {
-        const input: CreateFacetVariables = {
+    createFacet(facet: CreateFacetInput) {
+        const input: CreateFacet.Variables = {
             input: pick(facet, ['code', 'translations', 'values', 'customFields']),
         };
-        return this.baseDataService.mutate<CreateFacet, CreateFacetVariables>(CREATE_FACET, input);
+        return this.baseDataService.mutate<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, input);
     }
 
-    updateFacet(facet: UpdateFacetInput): Observable<UpdateFacet> {
-        const input: UpdateFacetVariables = {
+    updateFacet(facet: UpdateFacetInput) {
+        const input: UpdateFacet.Variables = {
             input: pick(facet, ['id', 'code', 'translations', 'customFields']),
         };
-        return this.baseDataService.mutate<UpdateFacet, UpdateFacetVariables>(UPDATE_FACET, input);
+        return this.baseDataService.mutate<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, input);
     }
 
-    createFacetValues(facetValues: CreateFacetValueInput[]): Observable<CreateFacetValues> {
-        const input: CreateFacetValuesVariables = {
+    createFacetValues(facetValues: CreateFacetValueInput[]) {
+        const input: CreateFacetValues.Variables = {
             input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
         };
-        return this.baseDataService.mutate<CreateFacetValues, CreateFacetValuesVariables>(
+        return this.baseDataService.mutate<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
             CREATE_FACET_VALUES,
             input,
         );
     }
 
-    updateFacetValues(facetValues: UpdateFacetValueInput[]): Observable<UpdateFacetValues> {
-        const input: UpdateFacetValuesVariables = {
+    updateFacetValues(facetValues: UpdateFacetValueInput[]) {
+        const input: UpdateFacetValues.Variables = {
             input: facetValues.map(pick(['id', 'code', 'translations', 'customFields'])),
         };
-        return this.baseDataService.mutate<UpdateFacetValues, UpdateFacetValuesVariables>(
+        return this.baseDataService.mutate<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
             UPDATE_FACET_VALUES,
             input,
         );

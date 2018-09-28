@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { GetAssetList, GetAssetList_assets_items } from 'shared/generated-types';
+import { GetAssetList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -15,7 +15,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './asset-list.component.html',
     styleUrls: ['./asset-list.component.scss'],
 })
-export class AssetListComponent extends BaseListComponent<GetAssetList, GetAssetList_assets_items>
+export class AssetListComponent extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
     implements OnInit {
     paginationConfig$: Observable<PaginationInstance>;
 

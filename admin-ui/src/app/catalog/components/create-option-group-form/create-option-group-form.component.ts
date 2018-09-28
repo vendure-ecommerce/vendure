@@ -43,7 +43,7 @@ export class CreateOptionGroupFormComponent implements OnInit {
         }
     }
 
-    createOptionGroup(): Observable<CreateProductOptionGroup> {
+    createOptionGroup(): Observable<CreateProductOptionGroup.Mutation> {
         return this.dataService.product.createProductOptionGroups(this.createGroupFromForm());
     }
 

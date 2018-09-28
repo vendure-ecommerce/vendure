@@ -17,11 +17,11 @@ import { SelectOptionGroupComponent } from '../select-option-group/select-option
     styleUrls: ['./product-variants-wizard.component.scss'],
 })
 export class ProductVariantsWizardComponent implements OnChanges {
-    @Input() product: ProductWithVariants;
+    @Input() product: ProductWithVariants.Fragment;
     @ViewChild('wizard') wizard: ClrWizard;
     @ViewChild('createOptionGroupForm') createOptionGroupForm: CreateOptionGroupFormComponent;
     @ViewChild('selectOptionGroup') selectOptionGroup: SelectOptionGroupComponent;
-    selectedOptionGroups: Array<Partial<ProductOptionGroup>> = [];
+    selectedOptionGroups: Array<Partial<ProductOptionGroup.Fragment>> = [];
     productVariantPreviewList: string[] = [];
     defaultPrice = 0;
     defaultSku = '';
@@ -72,7 +72,7 @@ export class ProductVariantsWizardComponent implements OnChanges {
         });
     }
 
-    toggleSelectedGroup(optionGroup: ProductOptionGroup) {
+    toggleSelectedGroup(optionGroup: ProductOptionGroup.Fragment) {
         const selected = !!this.selectedOptionGroups.find(og => og.id === optionGroup.id);
         if (selected) {
             this.selectedOptionGroups = this.selectedOptionGroups.filter(og => og.id !== optionGroup.id);

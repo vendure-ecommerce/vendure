@@ -11,11 +11,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
-import {
-    GetProductOptionGroups,
-    GetProductOptionGroupsVariables,
-    ProductOptionGroup,
-} from 'shared/generated-types';
+import { GetProductOptionGroups, ProductOptionGroup } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 
 import { DataService } from '../../../data/providers/data.service';
@@ -32,7 +28,7 @@ export class SelectOptionGroupComponent implements OnInit, OnChanges, OnDestroy 
     @Output() selectGroup = new EventEmitter<ProductOptionGroup>();
     optionGroups$: Observable<Array<DeepPartial<ProductOptionGroup>>>;
     filterInput = new FormControl();
-    optionGroupsQuery: QueryResult<GetProductOptionGroups, GetProductOptionGroupsVariables>;
+    optionGroupsQuery: QueryResult<GetProductOptionGroups.Query, GetProductOptionGroups.Variables>;
     truncateOptionsTo = 4;
     private inputChange$ = new Subject<ProductOptionGroup[]>();
     private destroy$ = new Subject<void>();

@@ -5,7 +5,7 @@ import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
-export class RoleResolver extends BaseEntityResolver<Role> {
+export class RoleResolver extends BaseEntityResolver<Role.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {

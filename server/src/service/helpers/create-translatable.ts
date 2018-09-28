@@ -14,15 +14,15 @@ export function createTranslatable<T extends Translatable>(
 ) {
     return async function saveTranslatable(
         connection: Connection,
-        dto: TranslatedInput<T>,
+        input: TranslatedInput<T>,
         data?: any,
     ): Promise<T> {
-        const entity = new entityType(dto);
+        const entity = new entityType(input);
         const translations: Array<Translation<T>> = [];
 
-        if (dto.translations) {
-            for (const input of dto.translations) {
-                const translation = new translationType(input);
+        if (input.translations) {
+            for (const translationInput of input.translations) {
+                const translation = new translationType(translationInput);
                 translations.push(translation);
                 await connection.manager.save(translation);
             }

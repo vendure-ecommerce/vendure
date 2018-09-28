@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import {
     GetNetworkStatus,
     GetUiState,
@@ -7,10 +6,7 @@ import {
     RequestCompleted,
     RequestStarted,
     SetAsLoggedIn,
-    SetAsLoggedInVariables,
-    SetAsLoggedOut,
     SetUiLanguage,
-    SetUiLanguageVariables,
 } from 'shared/generated-types';
 
 import {
@@ -23,7 +19,6 @@ import {
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
 } from '../definitions/local-definitions';
-import { QueryResult } from '../query-result';
 
 import { BaseDataService } from './base-data.service';
 
@@ -34,39 +29,42 @@ import { BaseDataService } from './base-data.service';
 export class ClientDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    startRequest(): Observable<RequestStarted> {
-        return this.baseDataService.mutate<RequestStarted>(REQUEST_STARTED);
+    startRequest() {
+        return this.baseDataService.mutate<RequestStarted.Mutation>(REQUEST_STARTED);
     }
 
-    completeRequest(): Observable<RequestCompleted> {
-        return this.baseDataService.mutate<RequestCompleted>(REQUEST_COMPLETED);
+    completeRequest() {
+        return this.baseDataService.mutate<RequestCompleted.Mutation>(REQUEST_COMPLETED);
     }
 
-    getNetworkStatus(): QueryResult<GetNetworkStatus> {
-        return this.baseDataService.query<GetNetworkStatus>(GET_NEWTORK_STATUS, {}, 'cache-first');
+    getNetworkStatus() {
+        return this.baseDataService.query<GetNetworkStatus.Query>(GET_NEWTORK_STATUS, {}, 'cache-first');
     }
 
-    loginSuccess(username: string): Observable<SetAsLoggedIn> {
-        return this.baseDataService.mutate<SetAsLoggedIn, SetAsLoggedInVariables>(SET_AS_LOGGED_IN, {
-            username,
-            loginTime: Date.now().toString(),
-        });
+    loginSuccess(username: string) {
+        return this.baseDataService.mutate<SetAsLoggedIn.Mutation, SetAsLoggedIn.Variables>(
+            SET_AS_LOGGED_IN,
+            {
+                username,
+                loginTime: Date.now().toString(),
+            },
+        );
     }
 
-    logOut(): Observable<SetAsLoggedOut> {
+    logOut() {
         return this.baseDataService.mutate(SET_AS_LOGGED_OUT);
     }
 
-    userStatus(): QueryResult<GetUserStatus> {
-        return this.baseDataService.query<GetUserStatus>(GET_USER_STATUS, {}, 'cache-first');
+    userStatus() {
+        return this.baseDataService.query<GetUserStatus.Query>(GET_USER_STATUS, {}, 'cache-first');
     }
 
-    uiState(): QueryResult<GetUiState> {
-        return this.baseDataService.query<GetUiState>(GET_UI_STATE, {}, 'cache-first');
+    uiState() {
+        return this.baseDataService.query<GetUiState.Query>(GET_UI_STATE, {}, 'cache-first');
     }
 
-    setUiLanguage(languageCode: LanguageCode): Observable<SetUiLanguage> {
-        return this.baseDataService.mutate<SetUiLanguage, SetUiLanguageVariables>(SET_UI_LANGUAGE, {
+    setUiLanguage(languageCode: LanguageCode) {
+        return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(SET_UI_LANGUAGE, {
             languageCode,
         });
     }

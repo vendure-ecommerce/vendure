@@ -1,15 +1,4 @@
-import {
-    CreateRole,
-    CreateRoleVariables,
-    GetRole,
-    GetRoles,
-    GetRolesVariables,
-    GetRoleVariables,
-    Permission,
-    Role,
-    UpdateRole,
-    UpdateRoleVariables,
-} from 'shared/generated-types';
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from 'shared/generated-types';
 import { omit } from 'shared/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from 'shared/shared-constants';
 
@@ -26,8 +15,8 @@ import { TestServer } from './test-server';
 describe('Role resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
-    let createdRole: Role;
-    let defaultRoles: Role[];
+    let createdRole: Role.Fragment;
+    let defaultRoles: Role.Fragment[];
 
     beforeAll(async () => {
         const token = await server.init({
@@ -42,7 +31,7 @@ describe('Role resolver', () => {
     });
 
     it('roles', async () => {
-        const result = await client.query<GetRoles, GetRolesVariables>(GET_ROLES);
+        const result = await client.query<GetRoles.Query, GetRoles.Variables>(GET_ROLES);
 
         defaultRoles = result.roles.items;
         expect(result.roles.items.length).toBe(2);
@@ -50,7 +39,7 @@ describe('Role resolver', () => {
     });
 
     it('createRole', async () => {
-        const result = await client.query<CreateRole, CreateRoleVariables>(CREATE_ROLE, {
+        const result = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
             input: {
                 code: 'test',
                 description: 'test role',
@@ -63,12 +52,12 @@ describe('Role resolver', () => {
     });
 
     it('role', async () => {
-        const result = await client.query<GetRole, GetRoleVariables>(GET_ROLE, { id: createdRole.id });
+        const result = await client.query<GetRole.Query, GetRole.Variables>(GET_ROLE, { id: createdRole.id });
         expect(result.role).toEqual(createdRole);
     });
 
     it('updateRole', async () => {
-        const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
+        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,
                 code: 'test-modified',
@@ -81,7 +70,7 @@ describe('Role resolver', () => {
     });
 
     it('updateRole works with partial input', async () => {
-        const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
+        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,
                 code: 'test-modified-again',
@@ -104,7 +93,7 @@ describe('Role resolver', () => {
             return;
         }
         try {
-            const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
+            const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: superAdminRole.id,
                     code: 'superadmin-modified',
@@ -127,7 +116,7 @@ describe('Role resolver', () => {
             return;
         }
         try {
-            const result = await client.query<UpdateRole, UpdateRoleVariables>(UPDATE_ROLE, {
+            const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: customerRole.id,
                     code: 'customer-modified',

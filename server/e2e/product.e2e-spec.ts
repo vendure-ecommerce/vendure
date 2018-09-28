@@ -1,28 +1,17 @@
 import {
     AddOptionGroupToProduct,
-    AddOptionGroupToProductVariables,
     ApplyFacetValuesToProductVariants,
-    ApplyFacetValuesToProductVariantsVariables,
     CreateProduct,
-    CreateProduct_createProduct,
-    CreateProductVariables,
     GenerateProductVariants,
-    GenerateProductVariants_generateVariantsForProduct_variants,
-    GenerateProductVariantsVariables,
     GetAssetList,
-    GetAssetListVariables,
     GetProductList,
-    GetProductListVariables,
     GetProductWithVariants,
-    GetProductWithVariantsVariables,
     LanguageCode,
+    ProductWithVariants,
     RemoveOptionGroupFromProduct,
-    RemoveOptionGroupFromProductVariables,
     SortOrder,
     UpdateProduct,
-    UpdateProductVariables,
     UpdateProductVariants,
-    UpdateProductVariantsVariables,
 } from 'shared/generated-types';
 import { omit } from 'shared/omit';
 
@@ -62,52 +51,64 @@ describe('Product resolver', () => {
 
     describe('products list query', () => {
         it('returns all products when no options passed', async () => {
-            const result = await client.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
-                languageCode: LanguageCode.en,
-            });
+            const result = await client.query<GetProductList.Query, GetProductList.Variables>(
+                GET_PRODUCT_LIST,
+                {
+                    languageCode: LanguageCode.en,
+                },
+            );
 
             expect(result.products.items.length).toBe(20);
             expect(result.products.totalItems).toBe(20);
         });
 
         it('limits result set with skip & take', async () => {
-            const result = await client.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
-                languageCode: LanguageCode.en,
-                options: {
-                    skip: 0,
-                    take: 3,
+            const result = await client.query<GetProductList.Query, GetProductList.Variables>(
+                GET_PRODUCT_LIST,
+                {
+                    languageCode: LanguageCode.en,
+                    options: {
+                        skip: 0,
+                        take: 3,
+                    },
                 },
-            });
+            );
 
             expect(result.products.items.length).toBe(3);
             expect(result.products.totalItems).toBe(20);
         });
 
         it('filters by name', async () => {
-            const result = await client.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
-                languageCode: LanguageCode.en,
-                options: {
-                    filter: {
-                        name: {
-                            contains: 'fish',
+            const result = await client.query<GetProductList.Query, GetProductList.Variables>(
+                GET_PRODUCT_LIST,
+                {
+                    languageCode: LanguageCode.en,
+                    options: {
+                        filter: {
+                            name: {
+                                contains: 'fish',
+                            },
                         },
                     },
                 },
-            });
+            );
 
             expect(result.products.items.length).toBe(1);
             expect(result.products.items[0].name).toBe('en Practical Frozen Fish');
         });
 
         it('sorts by name', async () => {
-            const result = await client.query<GetProductList, GetProductListVariables>(GET_PRODUCT_LIST, {
-                languageCode: LanguageCode.en,
-                options: {
-                    sort: {
-                        name: SortOrder.ASC,
+            const result = await client.query<GetProductList.Query, GetProductList.Variables>(
+                GET_PRODUCT_LIST,
+                {
+                    languageCode: LanguageCode.en,
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
                     },
                 },
-            });
+            );
 
             expect(result.products.items.map(p => p.name)).toMatchSnapshot();
         });
@@ -115,7 +116,7 @@ describe('Product resolver', () => {
 
     describe('product query', () => {
         it('returns expected properties', async () => {
-            const result = await client.query<GetProductWithVariants, GetProductWithVariantsVariables>(
+            const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
                 GET_PRODUCT_WITH_VARIANTS,
                 {
                     languageCode: LanguageCode.en,
@@ -132,7 +133,7 @@ describe('Product resolver', () => {
         });
 
         it('returns null when id not found', async () => {
-            const result = await client.query<GetProductWithVariants, GetProductWithVariantsVariables>(
+            const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
                 GET_PRODUCT_WITH_VARIANTS,
                 {
                     languageCode: LanguageCode.en,
@@ -145,89 +146,103 @@ describe('Product resolver', () => {
     });
 
     describe('product mutation', () => {
-        let newProduct: CreateProduct_createProduct;
+        let newProduct: ProductWithVariants.Fragment;
 
         it('createProduct creates a new Product', async () => {
-            const result = await client.query<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, {
-                input: {
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'en Baked Potato',
-                            slug: 'en-baked-potato',
-                            description: 'A baked potato',
-                        },
-                        {
-                            languageCode: LanguageCode.de,
-                            name: 'de Baked Potato',
-                            slug: 'de-baked-potato',
-                            description: 'Eine baked Erdapfel',
-                        },
-                    ],
+            const result = await client.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Baked Potato',
+                                slug: 'en-baked-potato',
+                                description: 'A baked potato',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'de Baked Potato',
+                                slug: 'de-baked-potato',
+                                description: 'Eine baked Erdapfel',
+                            },
+                        ],
+                    },
                 },
-            });
+            );
             newProduct = result.createProduct;
             expect(newProduct).toMatchSnapshot();
         });
 
         it('createProduct creates a new Product with assets', async () => {
-            const assetsResult = await client.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST);
+            const assetsResult = await client.query<GetAssetList.Query, GetAssetList.Variables>(
+                GET_ASSET_LIST,
+            );
             const assetIds = assetsResult.assets.items.slice(0, 2).map(a => a.id);
             const featuredAssetId = assetsResult.assets.items[0].id;
 
-            const result = await client.query<CreateProduct, CreateProductVariables>(CREATE_PRODUCT, {
-                input: {
-                    assetIds,
-                    featuredAssetId,
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'en Has Assets',
-                            slug: 'en-has-assets',
-                            description: 'A product with assets',
-                        },
-                    ],
+            const result = await client.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        assetIds,
+                        featuredAssetId,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Has Assets',
+                                slug: 'en-has-assets',
+                                description: 'A product with assets',
+                            },
+                        ],
+                    },
                 },
-            });
+            );
             expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
         });
 
         it('updateProduct updates a Product', async () => {
-            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
-                input: {
-                    id: newProduct.id,
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'en Mashed Potato',
-                            slug: 'en-mashed-potato',
-                            description: 'A blob of mashed potato',
-                        },
-                        {
-                            languageCode: LanguageCode.de,
-                            name: 'de Mashed Potato',
-                            slug: 'de-mashed-potato',
-                            description: 'Eine blob von gemashed Erdapfel',
-                        },
-                    ],
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Mashed Potato',
+                                slug: 'en-mashed-potato',
+                                description: 'A blob of mashed potato',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'de Mashed Potato',
+                                slug: 'de-mashed-potato',
+                                description: 'Eine blob von gemashed Erdapfel',
+                            },
+                        ],
+                    },
                 },
-            });
+            );
             expect(result.updateProduct).toMatchSnapshot();
         });
 
         it('updateProduct accepts partial input', async () => {
-            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
-                input: {
-                    id: newProduct.id,
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'en Very Mashed Potato',
-                        },
-                    ],
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Very Mashed Potato',
+                            },
+                        ],
+                    },
                 },
-            });
+            );
             expect(result.updateProduct.translations.length).toBe(2);
             expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
             expect(result.updateProduct.translations[0].description).toBe('A blob of mashed potato');
@@ -235,43 +250,51 @@ describe('Product resolver', () => {
         });
 
         it('updateProduct adds Assets to a product and sets featured asset', async () => {
-            const assetsResult = await client.query<GetAssetList, GetAssetListVariables>(GET_ASSET_LIST);
+            const assetsResult = await client.query<GetAssetList.Query, GetAssetList.Variables>(
+                GET_ASSET_LIST,
+            );
             const assetIds = assetsResult.assets.items.map(a => a.id);
             const featuredAssetId = assetsResult.assets.items[2].id;
 
-            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
-                input: {
-                    id: newProduct.id,
-                    assetIds,
-                    featuredAssetId,
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        assetIds,
+                        featuredAssetId,
+                    },
                 },
-            });
+            );
             expect(result.updateProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.updateProduct.featuredAsset!.id).toBe(featuredAssetId);
         });
 
         it('updateProduct sets a featured asset', async () => {
-            const productResult = await client.query<GetProductWithVariants, GetProductWithVariantsVariables>(
-                GET_PRODUCT_WITH_VARIANTS,
-                {
-                    id: newProduct.id,
-                    languageCode: LanguageCode.en,
-                },
-            );
+            const productResult = await client.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: newProduct.id,
+                languageCode: LanguageCode.en,
+            });
             const assets = productResult.product!.assets;
 
-            const result = await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
-                input: {
-                    id: newProduct.id,
-                    featuredAssetId: assets[0].id,
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        featuredAssetId: assets[0].id,
+                    },
                 },
-            });
+            );
             expect(result.updateProduct.featuredAsset!.id).toBe(assets[0].id);
         });
 
         it('updateProduct errors with an invalid productId', async () => {
             try {
-                await client.query<UpdateProduct, UpdateProductVariables>(UPDATE_PRODUCT, {
+                await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                     input: {
                         id: '999',
                         translations: [
@@ -299,20 +322,20 @@ describe('Product resolver', () => {
         });
 
         it('addOptionGroupToProduct adds an option group', async () => {
-            const result = await client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
-                ADD_OPTION_GROUP_TO_PRODUCT,
-                {
-                    optionGroupId: 'T_1',
-                    productId: newProduct.id,
-                },
-            );
+            const result = await client.query<
+                AddOptionGroupToProduct.Mutation,
+                AddOptionGroupToProduct.Variables
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                optionGroupId: 'T_1',
+                productId: newProduct.id,
+            });
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
             expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_1');
         });
 
         it('addOptionGroupToProduct errors with an invalid productId', async () => {
             try {
-                await client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
+                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
                         optionGroupId: 'T_1',
@@ -329,7 +352,7 @@ describe('Product resolver', () => {
 
         it('addOptionGroupToProduct errors with an invalid optionGroupId', async () => {
             try {
-                await client.query<AddOptionGroupToProduct, AddOptionGroupToProductVariables>(
+                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
                         optionGroupId: '999',
@@ -346,8 +369,8 @@ describe('Product resolver', () => {
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
             const result = await client.query<
-                RemoveOptionGroupFromProduct,
-                RemoveOptionGroupFromProductVariables
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: '1',
                 productId: '1',
@@ -357,13 +380,13 @@ describe('Product resolver', () => {
 
         it('removeOptionGroupFromProduct errors with an invalid productId', async () => {
             try {
-                await client.query<RemoveOptionGroupFromProduct, RemoveOptionGroupFromProductVariables>(
-                    REMOVE_OPTION_GROUP_FROM_PRODUCT,
-                    {
-                        optionGroupId: '1',
-                        productId: '999',
-                    },
-                );
+                await client.query<
+                    RemoveOptionGroupFromProduct.Mutation,
+                    RemoveOptionGroupFromProduct.Variables
+                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    optionGroupId: '1',
+                    productId: '999',
+                });
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
@@ -373,17 +396,17 @@ describe('Product resolver', () => {
         });
 
         describe('variants', () => {
-            let variants: GenerateProductVariants_generateVariantsForProduct_variants[];
+            let variants: ProductWithVariants.Variants[];
 
             it('generateVariantsForProduct generates variants', async () => {
-                const result = await client.query<GenerateProductVariants, GenerateProductVariantsVariables>(
-                    GENERATE_PRODUCT_VARIANTS,
-                    {
-                        productId: newProduct.id,
-                        defaultPrice: 123,
-                        defaultSku: 'ABC',
-                    },
-                );
+                const result = await client.query<
+                    GenerateProductVariants.Mutation,
+                    GenerateProductVariants.Variables
+                >(GENERATE_PRODUCT_VARIANTS, {
+                    productId: newProduct.id,
+                    defaultPrice: 123,
+                    defaultSku: 'ABC',
+                });
                 variants = result.generateVariantsForProduct.variants;
                 expect(variants.length).toBe(2);
                 expect(variants[0].options.length).toBe(1);
@@ -392,7 +415,7 @@ describe('Product resolver', () => {
 
             it('generateVariantsForProduct throws with an invalid productId', async () => {
                 try {
-                    await client.query<GenerateProductVariants, GenerateProductVariantsVariables>(
+                    await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
                         GENERATE_PRODUCT_VARIANTS,
                         {
                             productId: '999',
@@ -408,19 +431,19 @@ describe('Product resolver', () => {
 
             it('updateProductVariants updates variants', async () => {
                 const firstVariant = variants[0];
-                const result = await client.query<UpdateProductVariants, UpdateProductVariantsVariables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: firstVariant.id,
-                                translations: firstVariant.translations,
-                                sku: 'ABC',
-                                price: 432,
-                            },
-                        ],
-                    },
-                );
+                const result = await client.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            translations: firstVariant.translations,
+                            sku: 'ABC',
+                            price: 432,
+                        },
+                    ],
+                });
                 const updatedVariant = result.updateProductVariants[0];
                 if (!updatedVariant) {
                     fail('no updated variant returned.');
@@ -432,7 +455,7 @@ describe('Product resolver', () => {
 
             it('updateProductVariants throws with an invalid variant id', async () => {
                 try {
-                    await client.query<UpdateProductVariants, UpdateProductVariantsVariables>(
+                    await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                         UPDATE_PRODUCT_VARIANTS,
                         {
                             input: [
@@ -455,8 +478,8 @@ describe('Product resolver', () => {
 
             it('applyFacetValuesToProductVariants adds facets to variants', async () => {
                 const result = await client.query<
-                    ApplyFacetValuesToProductVariants,
-                    ApplyFacetValuesToProductVariantsVariables
+                    ApplyFacetValuesToProductVariants.Mutation,
+                    ApplyFacetValuesToProductVariants.Variables
                 >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
                     facetValueIds: ['1', '3', '5'],
                     productVariantIds: variants.map(v => v.id),
@@ -470,8 +493,8 @@ describe('Product resolver', () => {
             it('applyFacetValuesToProductVariants errors with invalid facet value id', async () => {
                 try {
                     await client.query<
-                        ApplyFacetValuesToProductVariants,
-                        ApplyFacetValuesToProductVariantsVariables
+                        ApplyFacetValuesToProductVariants.Mutation,
+                        ApplyFacetValuesToProductVariants.Variables
                     >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
                         facetValueIds: ['999', '888'],
                         productVariantIds: variants.map(v => v.id),
@@ -487,8 +510,8 @@ describe('Product resolver', () => {
             it('applyFacetValuesToProductVariants errors with invalid variant id', async () => {
                 try {
                     await client.query<
-                        ApplyFacetValuesToProductVariants,
-                        ApplyFacetValuesToProductVariantsVariables
+                        ApplyFacetValuesToProductVariants.Mutation,
+                        ApplyFacetValuesToProductVariants.Variables
                     >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
                         facetValueIds: ['1', '3', '5'],
                         productVariantIds: ['999'],

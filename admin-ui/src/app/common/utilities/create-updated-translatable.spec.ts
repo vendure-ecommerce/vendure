@@ -18,7 +18,7 @@ describe('createUpdatedTranslatable()', () => {
                 { languageCode: LanguageCode.en, name: 'Old Name EN' },
                 { languageCode: LanguageCode.de, name: 'Old Name DE' },
             ],
-        } as DeepPartial<ProductWithVariants>;
+        } as DeepPartial<ProductWithVariants.Fragment>;
     });
 
     it('returns a clone', () => {

@@ -36,10 +36,10 @@ export class ProductOptionService {
 
     async create(
         group: ProductOptionGroup,
-        createProductOptionDto: CreateProductOptionInput,
+        input: CreateProductOptionInput,
     ): Promise<Translated<ProductOption>> {
         const save = createTranslatable(ProductOption, ProductOptionTranslation, po => (po.group = group));
-        const option = await save(this.connection, createProductOptionDto);
+        const option = await save(this.connection, input);
         return assertFound(this.findOne(option.id, DEFAULT_LANGUAGE_CODE));
     }
 }

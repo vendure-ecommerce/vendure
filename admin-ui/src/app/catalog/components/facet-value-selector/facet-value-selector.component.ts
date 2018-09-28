@@ -4,7 +4,12 @@ import { FacetValue } from 'shared/generated-types';
 
 import { DataService } from '../../../data/providers/data.service';
 
-export type FacetValueSeletorItem = { name: string; facetName: string; id: string; value: FacetValue };
+export type FacetValueSeletorItem = {
+    name: string;
+    facetName: string;
+    id: string;
+    value: FacetValue.Fragment;
+};
 
 @Component({
     selector: 'vdr-facet-value-selector',
@@ -13,7 +18,7 @@ export type FacetValueSeletorItem = { name: string; facetName: string; id: strin
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetValueSelectorComponent implements OnInit {
-    @Output() selectedValuesChange = new EventEmitter<FacetValue[]>();
+    @Output() selectedValuesChange = new EventEmitter<FacetValue.Fragment[]>();
 
     facetValues$: Observable<FacetValueSeletorItem[]>;
     constructor(private dataService: DataService) {}

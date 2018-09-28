@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductOptionGroupInput, LanguageCode } from 'shared/generated-types';
+import {
+    CreateProductOptionGroupInput,
+    LanguageCode,
+    UpdateProductOptionGroupInput,
+} from 'shared/generated-types';
 import { ID } from 'shared/shared-types';
 import { Connection, FindManyOptions, Like } from 'typeorm';
 
@@ -8,7 +12,6 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
-import { UpdateProductOptionGroupDto } from '../../entity/product-option-group/product-option-group.dto';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 
 import { createTranslatable } from '../helpers/create-translatable';
@@ -45,23 +48,19 @@ export class ProductOptionGroupService {
             .then(group => group && translateDeep(group, lang, ['options']));
     }
 
-    async create(
-        createProductOptionGroupDto: CreateProductOptionGroupInput,
-    ): Promise<Translated<ProductOptionGroup>> {
+    async create(input: CreateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
         const save = createTranslatable(ProductOptionGroup, ProductOptionGroupTranslation);
-        const group = await save(this.connection, createProductOptionGroupDto);
+        const group = await save(this.connection, input);
         return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 
-    async update(
-        updateProductOptionGroupDto: UpdateProductOptionGroupDto,
-    ): Promise<Translated<ProductOptionGroup>> {
+    async update(input: UpdateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
         const save = updateTranslatable(
             ProductOptionGroup,
             ProductOptionGroupTranslation,
             this.translationUpdaterService,
         );
-        const group = await save(this.connection, updateProductOptionGroupDto);
+        const group = await save(this.connection, input);
         return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 }

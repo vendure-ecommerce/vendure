@@ -6,7 +6,6 @@ import { map, mergeMap, take } from 'rxjs/operators';
 import {
     CreateFacetValueInput,
     FacetWithValues,
-    FacetWithValues_values,
     LanguageCode,
     UpdateFacetValueInput,
 } from 'shared/generated-types';
@@ -27,9 +26,10 @@ import { ServerConfigService } from '../../../data/server-config';
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> implements OnInit, OnDestroy {
-    facet$: Observable<FacetWithValues>;
-    values$: Observable<FacetWithValues_values[]>;
+export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fragment>
+    implements OnInit, OnDestroy {
+    facet$: Observable<FacetWithValues.Fragment>;
+    values$: Observable<FacetWithValues.Values[]>;
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
     facetForm: FormGroup;
@@ -189,7 +189,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
     /**
      * Sets the values of the form on changes to the facet or current language.
      */
-    protected setFormValues(facet: FacetWithValues, languageCode: LanguageCode) {
+    protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
         const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
             this.facetForm.patchValue({
@@ -268,7 +268,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
      * can then be persisted to the API.
      */
     private getUpdatedFacet(
-        facet: FacetWithValues,
+        facet: FacetWithValues.Fragment,
         facetFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): any {
@@ -283,7 +283,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues> i
      * which can be persisted to the API.
      */
     private getUpdatedFacetValues(
-        facet: FacetWithValues,
+        facet: FacetWithValues.Fragment,
         valuesFormArray: FormArray,
         languageCode: LanguageCode,
     ): UpdateFacetValueInput[] {

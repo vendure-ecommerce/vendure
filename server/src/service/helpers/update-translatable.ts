@@ -18,21 +18,21 @@ export function updateTranslatable<T extends Translatable>(
 ) {
     return async function saveTranslatable(
         connection: Connection,
-        dto: TranslatedInput<T> & { id: ID },
+        input: TranslatedInput<T> & { id: ID },
     ): Promise<T> {
         const existingTranslations = await connection.getRepository(translationType).find({
-            where: { base: dto.id },
+            where: { base: input.id },
             relations: ['base'],
         });
 
         const translationUpdater = translationUpdaterService.create(translationType);
-        const diff = translationUpdater.diff(existingTranslations, dto.translations);
+        const diff = translationUpdater.diff(existingTranslations, input.translations);
 
         const entity = await translationUpdater.applyDiff(
-            new entityType({ ...dto, translations: existingTranslations }),
+            new entityType({ ...input, translations: existingTranslations }),
             diff,
         );
-        const updatedEntity = patchEntity(entity as any, omit(dto, ['translations']));
+        const updatedEntity = patchEntity(entity as any, omit(input, ['translations']));
         return connection.manager.save(entity);
     };
 }

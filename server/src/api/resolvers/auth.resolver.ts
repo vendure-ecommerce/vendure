@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request, Response } from 'express';
-import { AttemptLoginVariables, Permission } from 'shared/generated-types';
+import { LoginMutationArgs, LoginResult, MutationResolvers, Permission } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
@@ -24,28 +24,25 @@ export class AuthResolver {
      */
     @Mutation()
     async login(
-        @Args() args: AttemptLoginVariables,
+        @Args() args: LoginMutationArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ) {
+    ): Promise<LoginResult> {
         const session = await this.authService.authenticate(args.username, args.password);
-
-        if (session) {
-            setAuthToken({
-                req,
-                res,
-                authOptions: this.configService.authOptions,
-                rememberMe: args.rememberMe,
-                authToken: session.token,
-            });
-            return {
-                user: this.publiclyAccessibleUser(session.user),
-            };
-        }
+        setAuthToken({
+            req,
+            res,
+            authOptions: this.configService.authOptions,
+            rememberMe: args.rememberMe || false,
+            authToken: session.token,
+        });
+        return {
+            user: this.publiclyAccessibleUser(session.user),
+        };
     }
 
     @Mutation()
-    async logout(@Context('req') req: Request, @Context('res') res: Response) {
+    async logout(@Context('req') req: Request, @Context('res') res: Response): Promise<boolean> {
         const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;

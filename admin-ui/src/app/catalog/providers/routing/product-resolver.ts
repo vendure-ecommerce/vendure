@@ -10,7 +10,7 @@ import { DataService } from '../../../data/providers/data.service';
  */
 
 @Injectable()
-export class ProductResolver extends BaseEntityResolver<ProductWithVariants> {
+export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {
