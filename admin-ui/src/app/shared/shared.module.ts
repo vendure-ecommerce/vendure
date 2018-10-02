@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ClarityModule } from '@clr/angular';
+import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -12,6 +12,7 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
+import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { ChipComponent } from './components/chip/chip.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
@@ -34,6 +35,7 @@ import { ModalService } from './providers/modal/modal.service';
 
 const IMPORTS = [
     ClarityModule,
+    ClrFormsNextModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -47,6 +49,7 @@ const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
+    AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,
     CustomFieldControlComponent,

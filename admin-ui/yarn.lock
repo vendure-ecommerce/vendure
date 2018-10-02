@@ -234,19 +234,21 @@
     typescript "2.4.1"
     yargs "8.0.2"
 
-"@clr/angular@^0.12.10":
-  version "0.12.10"
-  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-0.12.10.tgz#aab495e6067a066d1fd7c7f8af20b8a80e558816"
+"@clr/angular@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-0.13.3.tgz#a36d4aae796a1721f6fa331726b06bd47f7dc24a"
   dependencies:
     tslib "^1.9.0"
 
-"@clr/icons@^0.12.10":
-  version "0.12.10"
-  resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-0.12.10.tgz#10e41ab0076b508f283c82796973d5a37976e8c2"
+"@clr/icons@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-0.13.3.tgz#2b9881dfa6b716755b19296eaf0bb9a4b7988cba"
 
-"@clr/ui@^0.12.10":
-  version "0.12.10"
-  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-0.12.10.tgz#aba591dfe528a8db5c0ee2d4fbd936cac1c16ccf"
+"@clr/ui@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-0.13.3.tgz#3f8f41ee3f9c3c1f1b427b32e596bd232bd97152"
+  optionalDependencies:
+    bootstrap "4.0.0-alpha.5"
 
 "@heroku-cli/color@^1.1.3":
   version "1.1.10"
@@ -1355,6 +1357,13 @@ bonjour@^3.5.0:
 boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
+
+bootstrap@4.0.0-alpha.5:
+  version "4.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-4.0.0-alpha.5.tgz#a126b648c3bd2f52b8fad4bbc5e2d0ad2abf7064"
+  dependencies:
+    jquery "1.9.1 - 3"
+    tether "^1.3.7"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -4310,6 +4319,10 @@ java-properties@^0.2.9:
   version "0.2.10"
   resolved "https://registry.yarnpkg.com/java-properties/-/java-properties-0.2.10.tgz#2551560c25fa1ad94d998218178f233ad9b18f60"
 
+"jquery@1.9.1 - 3":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+
 js-base64@^2.1.8:
   version "2.4.8"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.8.tgz#57a9b130888f956834aa40c5b165ba59c758f033"
@@ -7141,6 +7154,10 @@ tar@^4:
     mkdirp "^0.5.0"
     safe-buffer "^5.1.2"
     yallist "^3.0.2"
+
+tether@^1.3.7:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/tether/-/tether-1.4.5.tgz#8efd7b35572767ba502259ba9b1cc167fcf6f2c1"
 
 text-table@^0.2.0:
   version "0.2.0"

@@ -1,0 +1,23 @@
+@import "variables";
+
+:host {
+    display: inline-flex;
+}
+.affix {
+    display: flex;
+    align-items: center;
+    background-color: $color-grey-2;
+    top: 1px;
+    padding: 3px;
+    line-height: .58333rem;
+    border-bottom: 1px solid $color-grey-4;
+    transition: border 0.2s;
+}
+
+.prefix {
+    order: -1;
+}
+
+::ng-deep input:focus ~ .affix {
+    border-bottom: 2px solid #0094d2;
+}

@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestingCommonModule } from '../../../../testing/testing-common.module';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { MockNotificationService } from '../../../core/providers/notification/notification.service.mock';
+import { AffixedInputComponent } from '../../../shared/components/affixed-input/affixed-input.component';
 import { ChipComponent } from '../../../shared/components/chip/chip.component';
 import { CurrencyInputComponent } from '../../../shared/components/currency-input/currency-input.component';
 import { SelectToggleComponent } from '../../../shared/components/select-toggle/select-toggle.component';
@@ -26,6 +27,7 @@ describe('ProductVariantsWizardComponent', () => {
                 SelectToggleComponent,
                 ChipComponent,
                 CurrencyInputComponent,
+                AffixedInputComponent,
             ],
             providers: [{ provide: NotificationService, useClass: MockNotificationService }],
         }).compileComponents();
