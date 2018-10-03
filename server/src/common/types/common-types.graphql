@@ -12,12 +12,6 @@ interface Node {
     id: ID!
 }
 
-enum AdjustmentType {
-    TAX
-    PROMOTION
-    SHIPPING
-}
-
 enum SortOrder {
     ASC
     DESC

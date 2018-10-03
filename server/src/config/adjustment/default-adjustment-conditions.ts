@@ -1,23 +1,13 @@
-import { AdjustmentOperation, AdjustmentType } from 'shared/generated-types';
+import { AdjustmentOperationTarget, AdjustmentType } from 'shared/generated-types';
 
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 
-export type AdjustmentConditionArgType = 'int' | 'money' | 'string' | 'datetime';
-export type AdjustmentConditionArg = { name: string; type: AdjustmentConditionArgType };
-export type AdjustmentConditionPredicate<T extends OrderItem | Order> = (
-    target: T,
-    args: { [argName: string]: any },
-    context: any,
-) => boolean;
-
-export interface AdjustmentConditionConfig<T extends OrderItem | Order> extends AdjustmentOperation {
-    args: AdjustmentConditionArg[];
-    predicate: AdjustmentConditionPredicate<T>;
-}
+import { AdjustmentConditionConfig } from './adjustment-types';
 
 export const minimumOrderAmount: AdjustmentConditionConfig<Order> = {
     type: AdjustmentType.PROMOTION,
+    target: AdjustmentOperationTarget.ORDER,
     code: 'minimum_order_amount',
     args: [{ name: 'amount', type: 'money' }],
     predicate(target: Order, args) {
@@ -28,6 +18,7 @@ export const minimumOrderAmount: AdjustmentConditionConfig<Order> = {
 
 export const dateRange: AdjustmentConditionConfig<Order> = {
     type: AdjustmentType.PROMOTION,
+    target: AdjustmentOperationTarget.ORDER,
     code: 'date_range',
     args: [{ name: 'start', type: 'datetime' }, { name: 'end', type: 'datetime' }],
     predicate(target: Order, args) {
@@ -36,3 +27,16 @@ export const dateRange: AdjustmentConditionConfig<Order> = {
     },
     description: 'If Order placed between { start } and { end }',
 };
+
+export const atLeastNOfProduct: AdjustmentConditionConfig<OrderItem> = {
+    type: AdjustmentType.PROMOTION,
+    target: AdjustmentOperationTarget.ORDER_ITEM,
+    code: 'at_least_n_of_product',
+    args: [{ name: 'minimum', type: 'int' }],
+    predicate(target: OrderItem, args) {
+        return target.quantity >= args.minimum;
+    },
+    description: 'Buy at least { minimum } of any product',
+};
+
+export const defaultAdjustmentConditions = [minimumOrderAmount, dateRange, atLeastNOfProduct];

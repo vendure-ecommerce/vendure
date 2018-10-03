@@ -6,6 +6,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { AdjustmentActionConfig, AdjustmentConditionConfig } from './adjustment/adjustment-types';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
@@ -108,6 +109,16 @@ export interface VendureConfig {
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
+    /**
+     * An array of adjustment conditions which can be used to construct AdjustmentSources
+     * (promotions, taxes and shipping).
+     */
+    adjustmentConditions?: Array<AdjustmentConditionConfig<any>>;
+    /**
+     * An array of adjustment actions which can be used to construct AdjustmentSources
+     * (promotions, taxes and shipping).
+     */
+    adjustmentActions?: Array<AdjustmentActionConfig<any>>;
     /**
      * Defines custom fields which can be used to extend the built-in entities.
      */

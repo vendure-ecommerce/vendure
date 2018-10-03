@@ -20,14 +20,10 @@ import { assertFound } from '../../common/utils';
 import {
     AdjustmentActionArgType,
     AdjustmentActionConfig,
-    orderPercentageDiscount,
-} from '../../config/adjustment/adjustment-actions';
-import {
     AdjustmentConditionArgType,
     AdjustmentConditionConfig,
-    dateRange,
-    minimumOrderAmount,
-} from '../../config/adjustment/adjustment-conditions';
+} from '../../config/adjustment/adjustment-types';
+import { ConfigService } from '../../config/config.service';
 import {
     AdjustmentOperationValues,
     AdjustmentSource,
@@ -43,10 +39,13 @@ export class AdjustmentSourceService {
     availableConditions: Array<AdjustmentConditionConfig<any>> = [];
     availableActions: Array<AdjustmentActionConfig<any>> = [];
 
-    constructor(@InjectConnection() private connection: Connection, private channelService: ChannelService) {
-        // TODO: get from config
-        this.availableConditions = [minimumOrderAmount, dateRange];
-        this.availableActions = [orderPercentageDiscount];
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
+        private channelService: ChannelService,
+    ) {
+        this.availableConditions = this.configService.adjustmentConditions;
+        this.availableActions = this.configService.adjustmentActions;
     }
 
     findAll(
@@ -148,6 +147,7 @@ export class AdjustmentSourceService {
             const match = this.getAdjustmentOperationByCode(type, v.code);
             return {
                 type: match.type,
+                target: match.target,
                 code: v.code,
                 args: match.args.map((args, i) => ({
                     ...args,

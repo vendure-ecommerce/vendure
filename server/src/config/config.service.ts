@@ -7,6 +7,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { AdjustmentActionConfig, AdjustmentConditionConfig } from './adjustment/adjustment-types';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
@@ -74,6 +75,14 @@ export class ConfigService implements VendureConfig {
 
     get uploadMaxFileSize(): number {
         return this.activeConfig.uploadMaxFileSize;
+    }
+
+    get adjustmentConditions(): Array<AdjustmentConditionConfig<any>> {
+        return this.activeConfig.adjustmentConditions;
+    }
+
+    get adjustmentActions(): Array<AdjustmentActionConfig<any>> {
+        return this.activeConfig.adjustmentActions;
     }
 
     get customFields(): CustomFields {
