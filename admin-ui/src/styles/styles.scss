@@ -5,3 +5,11 @@
 a:link, a:visited {
     color: darken($color-brand, 20%);
 }
+
+.btn-link.btn-warning {
+    color: $color-warning;
+
+    &:hover {
+        color: darken($color-warning, 20%);
+    }
+}

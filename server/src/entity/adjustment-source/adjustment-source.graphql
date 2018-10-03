@@ -3,5 +3,39 @@ type AdjustmentSource implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     name: String!
+    type: AdjustmentType!
+    conditions: [AdjustmentOperation!]!
+    actions: [AdjustmentOperation!]!
+}
+
+type AdjustmentArg {
+    name: String!
     type: String!
+    value: String
+}
+
+type AdjustmentOperation {
+    type: AdjustmentType!
+    code: String!
+    args: [AdjustmentArg!]!
+    description: String!
+}
+
+input AdjustmentOperationInput {
+    code: String!
+    arguments: [String!]!
+}
+
+input CreateAdjustmentSourceInput {
+    name: String!
+    type: AdjustmentType!
+    conditions: [AdjustmentOperationInput!]!
+    actions: [AdjustmentOperationInput!]!
+}
+
+input UpdateAdjustmentSourceInput {
+    id: ID!
+    name: String
+    conditions: [AdjustmentOperationInput!]
+    actions: [AdjustmentOperationInput!]
 }

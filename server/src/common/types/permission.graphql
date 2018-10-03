@@ -26,4 +26,9 @@ enum Permission {
     ReadOrder
     UpdateOrder
     DeleteOrder
+
+    CreateAdjustmentSource
+    ReadAdjustmentSource
+    UpdateAdjustmentSource
+    DeleteAdjustmentSource
 }

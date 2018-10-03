@@ -5,6 +5,7 @@ import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { AdjustmentSourceService } from './providers/adjustment-source.service';
 import { AdministratorService } from './providers/administrator.service';
 import { AssetService } from './providers/asset.service';
 import { AuthService } from './providers/auth.service';
@@ -21,6 +22,7 @@ import { ProductService } from './providers/product.service';
 import { RoleService } from './providers/role.service';
 
 const exportedProviders = [
+    AdjustmentSourceService,
     AdministratorService,
     AssetService,
     AuthService,

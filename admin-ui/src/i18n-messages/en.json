@@ -27,6 +27,7 @@
     "facets": "Facets",
     "orders": "Orders",
     "products": "Products",
+    "promotions": "Promotions",
     "roles": "Roles"
   },
   "catalog": {
@@ -92,6 +93,7 @@
     "language": "Language",
     "log-out": "Log out",
     "login": "Log in",
+    "name": "Name",
     "next": "Next",
     "notify-create-error": "An error occurred, could not create { entity }",
     "notify-create-success": "Created new { entity }",
@@ -99,6 +101,7 @@
     "notify-update-success": "Updated { entity }",
     "password": "Password",
     "remember-me": "Remember me",
+    "remove": "Remove",
     "update": "Update",
     "updated-at": "Updated at",
     "username": "Username"
@@ -108,7 +111,15 @@
     "403-forbidden": "Your session has expired. Please log in",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
-    "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
+    "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants",
+    "this-field-is-required": "This field is required"
+  },
+  "marketing": {
+    "actions": "Actions",
+    "add-action": "Add action",
+    "add-condition": "Add condition",
+    "conditions": "Conditions",
+    "create-new-promotion": "Create new promotion"
   },
   "nav": {
     "administrator": "Admin",
@@ -117,8 +128,10 @@
     "catalog": "Catalog",
     "categories": "Categories",
     "facets": "Facets",
+    "marketing": "Marketing",
     "orders": "Orders",
     "products": "Products",
+    "promotions": "Promotions",
     "roles": "Roles",
     "sales": "Sales"
   },

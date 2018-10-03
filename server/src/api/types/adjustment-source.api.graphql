@@ -1,0 +1,40 @@
+type Query {
+    adjustmentSource(id: ID!): AdjustmentSource
+    adjustmentSources(type: AdjustmentType!, options: AdjustmentSourceListOptions): AdjustmentSourceList!
+    adjustmentOperations(type: AdjustmentType!): AdjustmentOperations!
+}
+
+type AdjustmentOperations {
+    conditions: [AdjustmentOperation!]!
+    actions: [AdjustmentOperation!]!
+}
+
+type Mutation {
+    createAdjustmentSource(input: CreateAdjustmentSourceInput!): AdjustmentSource!
+    updateAdjustmentSource(input: UpdateAdjustmentSourceInput!): AdjustmentSource!
+}
+
+type AdjustmentSourceList implements PaginatedList {
+    items: [AdjustmentSource!]!
+    totalItems: Int!
+}
+
+input AdjustmentSourceListOptions {
+    take: Int
+    skip: Int
+    sort: AdjustmentSourceSortParameter
+    filter: AdjustmentSourceFilterParameter
+}
+
+input AdjustmentSourceSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+}
+
+input AdjustmentSourceFilterParameter {
+    name: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}

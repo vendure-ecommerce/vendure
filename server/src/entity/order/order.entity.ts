@@ -22,4 +22,6 @@ export class Order extends VendureEntity {
 
     @OneToMany(type => OrderAdjustment, adjustment => adjustment.target)
     adjustments: OrderAdjustment[];
+
+    price: number;
 }

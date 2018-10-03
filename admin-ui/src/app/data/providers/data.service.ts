@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { AdjustmentSourceDataService } from './adjustment-source-data.service';
 import { AdministratorDataService } from './administrator-data.service';
 import { AuthDataService } from './auth-data.service';
 import { BaseDataService } from './base-data.service';
@@ -10,6 +11,7 @@ import { ProductDataService } from './product-data.service';
 
 @Injectable()
 export class DataService {
+    adjustmentSource: AdjustmentSourceDataService;
     administrator: AdministratorDataService;
     auth: AuthDataService;
     product: ProductDataService;
@@ -18,6 +20,7 @@ export class DataService {
     order: OrderDataService;
 
     constructor(baseDataService: BaseDataService) {
+        this.adjustmentSource = new AdjustmentSourceDataService(baseDataService);
         this.administrator = new AdministratorDataService(baseDataService);
         this.auth = new AuthDataService(baseDataService);
         this.product = new ProductDataService(baseDataService);

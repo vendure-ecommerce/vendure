@@ -46,6 +46,19 @@
         </section>
         <section class="nav-group">
             <input id="tabexample2" type="checkbox">
+            <label for="tabexample2">{{ 'nav.marketing' | translate }}</label>
+            <ul class="nav-list">
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/marketing', 'promotions']"
+                       routerLinkActive="active">
+                        <clr-icon shape="asterisk" size="20"></clr-icon>{{ 'nav.promotions' | translate }}
+                    </a>
+                </li>
+            </ul>
+        </section>
+        <section class="nav-group">
+            <input id="tabexample2" type="checkbox">
             <label for="tabexample2">{{ 'nav.administrator' | translate }}</label>
             <ul class="nav-list">
                 <li>

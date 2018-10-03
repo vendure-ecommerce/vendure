@@ -1,0 +1,33 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'marketing.create-new-promotion' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="items$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.created-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-promotion="item">
+        <td class="left">{{ promotion.id }}</td>
+        <td class="left">{{ promotion.name }}</td>
+        <td class="left">{{ promotion.createdAt }}</td>
+        <td class="left">{{ promotion.updatedAt }}</td>
+        <td class="right">
+            <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
+                                  [linkTo]="['./', promotion.id]">
+            </vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

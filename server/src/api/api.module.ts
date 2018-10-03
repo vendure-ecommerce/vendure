@@ -11,6 +11,7 @@ import { AuthGuard } from './common/auth-guard';
 import { GraphqlConfigService } from './common/graphql-config.service';
 import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
+import { AdjustmentSourceResolver } from './resolvers/adjustment-source.resolver';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
@@ -24,6 +25,7 @@ import { ProductResolver } from './resolvers/product.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
 
 const exportedProviders = [
+    AdjustmentSourceResolver,
     AdministratorResolver,
     AuthResolver,
     AssetResolver,

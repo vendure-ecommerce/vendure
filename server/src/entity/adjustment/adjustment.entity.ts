@@ -1,6 +1,7 @@
+import { AdjustmentType } from 'shared/generated-types';
 import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
 
-import { AdjustmentSource, AdjustmentType } from '../adjustment-source/adjustment-source.entity';
+import { AdjustmentSource } from '../adjustment-source/adjustment-source.entity';
 import { VendureEntity } from '../base/base.entity';
 
 @Entity()

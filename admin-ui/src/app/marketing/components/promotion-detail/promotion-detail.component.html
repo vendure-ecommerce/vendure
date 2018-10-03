@@ -1,0 +1,75 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <button class="btn btn-primary"
+                *ngIf="isNew$ | async; else updateButton"
+                (click)="create()"
+                [disabled]="!saveButtonEnabled()">{{ 'common.create' | translate }}</button>
+        <ng-template #updateButton>
+            <button class="btn btn-primary"
+                    (click)="save()"
+                    [disabled]="!saveButtonEnabled()">{{ 'common.update' | translate }}</button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="promotionForm" >
+    <section class="form-block">
+        <vdr-form-field [label]="'common.name' | translate" for="name">
+            <input id="name" type="text" formControlName="name">
+        </vdr-form-field>
+    </section>
+
+    <div class="clr-row">
+        <div class="clr-col" formArrayName="conditions">
+            <label>{{ 'marketing.conditions' | translate }}</label>
+            <ng-container *ngFor="let condition of conditions; index as i">
+                <vdr-adjustment-operation-input (remove)="removeCondition($event)"
+                                                [operation]="condition"
+                                                [formControlName]="i"></vdr-adjustment-operation-input>
+            </ng-container>
+
+            <div>
+                <clr-dropdown>
+                    <div clrDropdownTrigger>
+                        <button class="btn btn-outline">
+                            <clr-icon shape="plus"></clr-icon> {{ 'marketing.add-condition' | translate }}
+                        </button>
+                    </div>
+                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                        <button *ngFor="let condition of getAvailableConditions()"
+                                type="button"
+                                clrDropdownItem (click)="addCondition(condition)">
+                            {{ condition.code }}
+                        </button>
+                    </clr-dropdown-menu>
+                </clr-dropdown>
+            </div>
+        </div>
+        <div class="clr-col" formArrayName="actions">
+            <label>{{ 'marketing.actions' | translate }}</label>
+            <vdr-adjustment-operation-input *ngFor="let action of actions; index as i"
+                                            (remove)="removeAction($event)"
+                                            [operation]="action"
+                                            [formControlName]="i"></vdr-adjustment-operation-input>
+            <div>
+                <clr-dropdown>
+                    <div clrDropdownTrigger>
+                        <button class="btn btn-outline">
+                            <clr-icon shape="plus"></clr-icon> {{ 'marketing.add-action' | translate }}
+                        </button>
+                    </div>
+                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                        <button *ngFor="let action of getAvailableActions()"
+                                type="button"
+                                clrDropdownItem (click)="addAction(action)">
+                            {{ action.code }}
+                        </button>
+                    </clr-dropdown-menu>
+                </clr-dropdown>
+            </div>
+        </div>
+    </div>
+</form>

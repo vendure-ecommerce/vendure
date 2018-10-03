@@ -1,0 +1,21 @@
+:host {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.operation-inputs {
+    display: flex;
+    flex-wrap: wrap;
+
+    .clr-form-control {
+        margin-top: 0;
+    }
+
+    clr-input-container:not(:last-child) {
+        margin-right: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+}
