@@ -35,7 +35,8 @@
             "scripts": [],
             "stylePreprocessorOptions": {
               "includePaths": ["./src/styles"]
-            }
+            },
+            "showCircularDependencies": false
           },
           "configurations": {
             "production": {
