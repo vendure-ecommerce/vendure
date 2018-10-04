@@ -20,6 +20,7 @@ export const ADJUSTMENT_SOURCE_FRAGMENT = gql`
         updatedAt
         name
         type
+        enabled
         conditions {
             ...AdjustmentOperation
         }

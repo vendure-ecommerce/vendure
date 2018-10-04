@@ -93,6 +93,7 @@ export class AdjustmentSourceService {
         const adjustmentSource = new AdjustmentSource({
             name: input.name,
             type: input.type,
+            enabled: input.enabled,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
         });

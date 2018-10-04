@@ -71,6 +71,7 @@ export interface AdjustmentSource extends Node {
     updatedAt: DateTime;
     name: string;
     type: AdjustmentType;
+    enabled: boolean;
     conditions: AdjustmentOperation[];
     actions: AdjustmentOperation[];
 }
@@ -316,14 +317,10 @@ export interface ProductVariantTranslation {
     name: string;
 }
 
-export interface Adjustment extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    type: string;
+export interface Adjustment {
+    adjustmentSourceId: string;
+    description: string;
     amount: number;
-    target: AdjustmentTarget;
-    source: AdjustmentSource;
 }
 
 export interface OrderList extends PaginatedList {
@@ -668,6 +665,7 @@ export interface RoleFilterParameter {
 export interface CreateAdjustmentSourceInput {
     name: string;
     type: AdjustmentType;
+    enabled: boolean;
     conditions: AdjustmentOperationInput[];
     actions: AdjustmentOperationInput[];
 }
@@ -680,6 +678,7 @@ export interface AdjustmentOperationInput {
 export interface UpdateAdjustmentSourceInput {
     id: string;
     name?: string | null;
+    enabled?: boolean | null;
     conditions?: AdjustmentOperationInput[] | null;
     actions?: AdjustmentOperationInput[] | null;
 }
@@ -1312,8 +1311,6 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
-export type AdjustmentTarget = Order | OrderItem;
-
 export namespace QueryResolvers {
     export interface Resolvers<Context = any> {
         adjustmentSource?: AdjustmentSourceResolver<AdjustmentSource | null, any, Context>;
@@ -1563,6 +1560,7 @@ export namespace AdjustmentSourceResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         name?: NameResolver<string, any, Context>;
         type?: TypeResolver<AdjustmentType, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
         conditions?: ConditionsResolver<AdjustmentOperation[], any, Context>;
         actions?: ActionsResolver<AdjustmentOperation[], any, Context>;
     }
@@ -1572,6 +1570,7 @@ export namespace AdjustmentSourceResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ConditionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2256,30 +2255,18 @@ export namespace ProductVariantTranslationResolvers {
 
 export namespace AdjustmentResolvers {
     export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        type?: TypeResolver<string, any, Context>;
+        adjustmentSourceId?: AdjustmentSourceIdResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
         amount?: AmountResolver<number, any, Context>;
-        target?: TargetResolver<AdjustmentTarget, any, Context>;
-        source?: SourceResolver<AdjustmentSource, any, Context>;
     }
 
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AdjustmentSourceIdResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TargetResolver<R = AdjustmentTarget, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type SourceResolver<R = AdjustmentSource, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace OrderListResolvers {
@@ -3653,6 +3640,7 @@ export namespace AdjustmentSource {
         updatedAt: DateTime;
         name: string;
         type: AdjustmentType;
+        enabled: boolean;
         conditions: Conditions[];
         actions: Actions[];
     };

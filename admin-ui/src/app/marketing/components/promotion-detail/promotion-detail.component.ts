@@ -116,6 +116,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
         const input: CreateAdjustmentSourceInput = {
             name: formValue.name,
             type: AdjustmentType.PROMOTION,
+            enabled: true,
             conditions: this.mapOperationsToInputs(this.conditions, formValue),
             actions: this.mapOperationsToInputs(this.actions, formValue),
         };

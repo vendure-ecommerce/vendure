@@ -18,6 +18,7 @@ export class PromotionResolver extends BaseEntityResolver<AdjustmentSource.Fragm
                 updatedAt: '',
                 type: AdjustmentType.PROMOTION,
                 name: '',
+                enabled: false,
                 conditions: [],
                 actions: [],
             },

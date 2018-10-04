@@ -4,6 +4,7 @@ type AdjustmentSource implements Node {
     updatedAt: DateTime!
     name: String!
     type: AdjustmentType!
+    enabled: Boolean!
     conditions: [AdjustmentOperation!]!
     actions: [AdjustmentOperation!]!
 }
@@ -41,6 +42,7 @@ input AdjustmentOperationInput {
 input CreateAdjustmentSourceInput {
     name: String!
     type: AdjustmentType!
+    enabled: Boolean!
     conditions: [AdjustmentOperationInput!]!
     actions: [AdjustmentOperationInput!]!
 }
@@ -48,6 +50,7 @@ input CreateAdjustmentSourceInput {
 input UpdateAdjustmentSourceInput {
     id: ID!
     name: String
+    enabled: Boolean
     conditions: [AdjustmentOperationInput!]
     actions: [AdjustmentOperationInput!]
 }

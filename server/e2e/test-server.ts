@@ -26,9 +26,9 @@ export class TestServer {
      * The populated data is saved into an .sqlite file for each test file. On subsequent runs, this file
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
-    async init(options: PopulateOptions): Promise<void> {
+    async init(options: PopulateOptions, customConfig: Partial<VendureConfig> = {}): Promise<void> {
         setTestEnvironment();
-        const testingConfig = testConfig;
+        const testingConfig = { ...testConfig, ...customConfig };
         const dbFilePath = this.getDbFilePath();
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {
