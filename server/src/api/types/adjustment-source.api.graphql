@@ -37,4 +37,5 @@ input AdjustmentSourceFilterParameter {
     name: StringOperators
     createdAt: DateOperators
     updatedAt: DateOperators
+    type: StringOperators
 }

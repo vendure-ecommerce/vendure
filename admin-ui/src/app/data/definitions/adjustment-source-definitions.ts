@@ -18,8 +18,8 @@ export const ADJUSTMENT_SOURCE_FRAGMENT = gql`
         id
         createdAt
         updatedAt
-        type
         name
+        type
         conditions {
             ...AdjustmentOperation
         }

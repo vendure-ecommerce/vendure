@@ -77,7 +77,6 @@ export interface AdjustmentSource extends Node {
 
 export interface AdjustmentOperation {
     type: AdjustmentType;
-    target: AdjustmentOperationTarget;
     code: string;
     args: AdjustmentArg[];
     description: string;
@@ -472,6 +471,7 @@ export interface AdjustmentSourceFilterParameter {
     name?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
+    type?: StringOperators | null;
 }
 
 export interface StringOperators {
@@ -1088,11 +1088,6 @@ export enum AdjustmentType {
     SHIPPING = 'SHIPPING',
 }
 
-export enum AdjustmentOperationTarget {
-    ORDER = 'ORDER',
-    ORDER_ITEM = 'ORDER_ITEM',
-}
-
 export enum SortOrder {
     ASC = 'ASC',
     DESC = 'DESC',
@@ -1592,18 +1587,12 @@ export namespace AdjustmentSourceResolvers {
 export namespace AdjustmentOperationResolvers {
     export interface Resolvers<Context = any> {
         type?: TypeResolver<AdjustmentType, any, Context>;
-        target?: TargetResolver<AdjustmentOperationTarget, any, Context>;
         code?: CodeResolver<string, any, Context>;
         args?: ArgsResolver<AdjustmentArg[], any, Context>;
         description?: DescriptionResolver<string, any, Context>;
     }
 
     export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TargetResolver<R = AdjustmentOperationTarget, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ArgsResolver<R = AdjustmentArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -3662,8 +3651,8 @@ export namespace AdjustmentSource {
         id: string;
         createdAt: DateTime;
         updatedAt: DateTime;
-        type: AdjustmentType;
         name: string;
+        type: AdjustmentType;
         conditions: Conditions[];
         actions: Actions[];
     };

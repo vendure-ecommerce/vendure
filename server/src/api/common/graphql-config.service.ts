@@ -37,17 +37,6 @@ export class GraphqlConfigService implements GqlOptionsFactory {
                 DateTime: GraphQLDateTime,
                 Node: dummyResolveType,
                 PaginatedList: dummyResolveType,
-                AdjustmentTarget: {
-                    __resolveType(obj) {
-                        if (obj.hasOwnProperty('quantity')) {
-                            return 'OrderItem';
-                        }
-                        if (obj.hasOwnProperty('items')) {
-                            return 'Order';
-                        }
-                        return null;
-                    },
-                },
                 Upload: GraphQLUpload,
             },
             uploads: {

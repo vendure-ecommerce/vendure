@@ -17,6 +17,8 @@ export class MockConfigService implements MockClass<ConfigService> {
     assetPreviewStrategy = {} as any;
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
+    adjustmentConditions = [];
+    adjustmentActions = [];
     customFields = {};
     middleware = [];
     plugins = [];

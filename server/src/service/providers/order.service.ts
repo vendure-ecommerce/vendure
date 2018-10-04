@@ -12,12 +12,14 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
 
+import { AdjustmentApplicatorService } from './adjustment-applicator.service';
 import { ProductVariantService } from './product-variant.service';
 
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
+        private adjustmentApplicatorService: AdjustmentApplicatorService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -41,6 +43,9 @@ export class OrderService {
         const newOrder = new Order({
             code: generatePublicId(),
             items: [],
+            adjustments: [],
+            totalPriceBeforeAdjustment: 0,
+            totalPrice: 0,
         });
         return this.connection.getRepository(Order).save(newOrder);
     }
@@ -57,18 +62,19 @@ export class OrderService {
         const existingItem = order.items.find(item => idsAreEqual(item.productVariant.id, productVariantId));
 
         if (existingItem) {
-            existingItem.quantity += quantity;
-            await this.connection.getRepository(OrderItem).save(existingItem);
-        } else {
-            const orderItem = new OrderItem({
-                quantity,
-                productVariant,
-                unitPrice: productVariant.price,
-            });
-            const newOrderItem = await this.connection.getRepository(OrderItem).save(orderItem);
-            order.items.push(newOrderItem);
-            await this.connection.getRepository(Order).save(order);
+            return this.adjustItemQuantity(ctx, orderId, existingItem.id, existingItem.quantity + quantity);
         }
+        const orderItem = new OrderItem({
+            quantity,
+            productVariant,
+            unitPrice: productVariant.price,
+            totalPriceBeforeAdjustment: productVariant.price * quantity,
+            totalPrice: productVariant.price * quantity,
+            adjustments: [],
+        });
+        const newOrderItem = await this.connection.getRepository(OrderItem).save(orderItem);
+        order.items.push(newOrderItem);
+        await this.adjustmentApplicatorService.applyAdjustments(order);
         return assertFound(this.findOne(ctx, order.id));
     }
 
@@ -83,6 +89,7 @@ export class OrderService {
         const orderItem = this.getOrderItemOrThrow(order, orderItemId);
         orderItem.quantity = quantity;
         await this.connection.getRepository(OrderItem).save(orderItem);
+        await this.adjustmentApplicatorService.applyAdjustments(order);
         return assertFound(this.findOne(ctx, order.id));
     }
 
@@ -90,7 +97,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderItem = this.getOrderItemOrThrow(order, orderItemId);
         order.items = order.items.filter(item => !idsAreEqual(item.id, orderItemId));
-        await this.connection.getRepository(Order).save(order);
+        await this.adjustmentApplicatorService.applyAdjustments(order);
         return assertFound(this.findOne(ctx, order.id));
     }
 

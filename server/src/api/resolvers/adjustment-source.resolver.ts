@@ -1,7 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AdjustmentOperationsQueryArgs,
-    AdjustmentSource as ResolvedAdjustmentSource,
     AdjustmentSourceQueryArgs,
     AdjustmentSourcesQueryArgs,
     CreateAdjustmentSourceMutationArgs,
@@ -26,8 +25,17 @@ export class AdjustmentSourceResolver {
     adjustmentSources(
         @Ctx() ctx: RequestContext,
         @Args() args: AdjustmentSourcesQueryArgs,
-    ): Promise<PaginatedList<ResolvedAdjustmentSource>> {
-        return this.adjustmentSourceService.findAll(args.type, args.options || undefined);
+    ): Promise<PaginatedList<AdjustmentSource>> {
+        if (!args.options) {
+            args.options = {};
+        }
+        if (!args.options.filter) {
+            args.options.filter = {};
+        }
+        args.options.filter.type = {
+            eq: args.type,
+        };
+        return this.adjustmentSourceService.findAll(args.options || undefined);
     }
 
     @Query()
@@ -35,7 +43,7 @@ export class AdjustmentSourceResolver {
     adjustmentSource(
         @Ctx() ctx: RequestContext,
         @Args() args: AdjustmentSourceQueryArgs,
-    ): Promise<ResolvedAdjustmentSource | undefined> {
+    ): Promise<AdjustmentSource | undefined> {
         return this.adjustmentSourceService.findOne(args.id);
     }
 
@@ -50,7 +58,7 @@ export class AdjustmentSourceResolver {
     createAdjustmentSource(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateAdjustmentSourceMutationArgs,
-    ): Promise<ResolvedAdjustmentSource> {
+    ): Promise<AdjustmentSource> {
         return this.adjustmentSourceService.createAdjustmentSource(ctx, args.input);
     }
 
@@ -59,7 +67,7 @@ export class AdjustmentSourceResolver {
     updateAdjustmentSource(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateAdjustmentSourceMutationArgs,
-    ): Promise<ResolvedAdjustmentSource> {
+    ): Promise<AdjustmentSource> {
         return this.adjustmentSourceService.updateAdjustmentSource(ctx, args.input);
     }
 }

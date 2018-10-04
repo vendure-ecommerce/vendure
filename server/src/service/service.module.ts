@@ -5,6 +5,7 @@ import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { AdjustmentApplicatorService } from './providers/adjustment-applicator.service';
 import { AdjustmentSourceService } from './providers/adjustment-source.service';
 import { AdministratorService } from './providers/administrator.service';
 import { AssetService } from './providers/asset.service';
@@ -47,7 +48,12 @@ const exportedProviders = [
  */
 @Module({
     imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
-    providers: [...exportedProviders, PasswordService, TranslationUpdaterService],
+    providers: [
+        ...exportedProviders,
+        PasswordService,
+        TranslationUpdaterService,
+        AdjustmentApplicatorService,
+    ],
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {

@@ -1,8 +1,5 @@
 import { Address } from './address/address.entity';
 import { AdjustmentSource } from './adjustment-source/adjustment-source.entity';
-import { Adjustment } from './adjustment/adjustment.entity';
-import { OrderAdjustment } from './adjustment/order-adjustment.entity';
-import { OrderItemAdjustment } from './adjustment/order-item-adjustment.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
@@ -33,7 +30,6 @@ import { User } from './user/user.entity';
  */
 export const coreEntitiesMap = {
     Address,
-    Adjustment,
     AdjustmentSource,
     Administrator,
     AnonymousSession,
@@ -46,9 +42,7 @@ export const coreEntitiesMap = {
     FacetValue,
     FacetValueTranslation,
     Order,
-    OrderAdjustment,
     OrderItem,
-    OrderItemAdjustment,
     Product,
     ProductOption,
     ProductOptionGroup,

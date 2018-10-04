@@ -1,18 +1,28 @@
-import { AdjustmentOperationTarget, AdjustmentType } from 'shared/generated-types';
+import { AdjustmentType } from 'shared/generated-types';
 
-import { Order } from '../../entity/order/order.entity';
+import { AdjustmentActionDefinition } from './adjustment-types';
 
-import { AdjustmentActionConfig } from './adjustment-types';
-
-export const orderPercentageDiscount: AdjustmentActionConfig<Order> = {
+export const orderPercentageDiscount: AdjustmentActionDefinition = {
     type: AdjustmentType.PROMOTION,
-    target: AdjustmentOperationTarget.ORDER,
     code: 'order_percentage_discount',
     args: [{ name: 'discount', type: 'percentage' }],
-    calculate(target, args) {
-        return target.price * args.discount;
+    calculate(order, args) {
+        return [{ amount: (order.totalPrice * args.discount) / 100 }];
     },
     description: 'Discount order by { discount }%',
 };
 
-export const defaultAdjustmentActions = [orderPercentageDiscount];
+export const itemPercentageDiscount: AdjustmentActionDefinition = {
+    type: AdjustmentType.PROMOTION,
+    code: 'item_percentage_discount',
+    args: [{ name: 'discount', type: 'percentage' }],
+    calculate(order, args) {
+        return order.items.map(item => ({
+            orderItemId: item.id,
+            amount: (item.totalPrice * args.discount) / 100,
+        }));
+    },
+    description: 'Discount every item by { discount }%',
+};
+
+export const defaultAdjustmentActions = [orderPercentageDiscount, itemPercentageDiscount];

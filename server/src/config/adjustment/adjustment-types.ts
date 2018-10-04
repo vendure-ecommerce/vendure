@@ -1,31 +1,29 @@
-import { AdjustmentOperation, AdjustmentOperationTarget } from 'shared/generated-types';
+import { AdjustmentOperation } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
 
-import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 
 export type AdjustmentActionArgType = 'percentage' | 'money';
 export type AdjustmentActionArg = { name: string; type: AdjustmentActionArgType; value?: string };
-export type AdjustmentActionCalculation<T extends OrderItem | Order> = (
-    target: T,
+export type AdjustmentActionResult = {
+    orderItemId?: ID;
+    amount: number;
+};
+export type AdjustmentActionCalculation = (
+    order: Order,
     args: { [argName: string]: any },
-    context: any,
-) => number;
+) => AdjustmentActionResult[];
 
-export interface AdjustmentActionConfig<T extends OrderItem | Order> extends AdjustmentOperation {
+export interface AdjustmentActionDefinition extends AdjustmentOperation {
     args: AdjustmentActionArg[];
-    calculate: AdjustmentActionCalculation<T>;
+    calculate: AdjustmentActionCalculation;
 }
 
 export type AdjustmentConditionArgType = 'int' | 'money' | 'string' | 'datetime';
 export type AdjustmentConditionArg = { name: string; type: AdjustmentConditionArgType };
-export type AdjustmentConditionPredicate<T extends OrderItem | Order> = (
-    target: T,
-    args: { [argName: string]: any },
-    context: any,
-) => boolean;
+export type AdjustmentConditionPredicate = (order: Order, args: { [argName: string]: any }) => boolean;
 
-export interface AdjustmentConditionConfig<T extends OrderItem | Order> extends AdjustmentOperation {
-    target: T extends Order ? AdjustmentOperationTarget.ORDER : AdjustmentOperationTarget.ORDER_ITEM;
+export interface AdjustmentConditionDefinition extends AdjustmentOperation {
     args: AdjustmentConditionArg[];
-    predicate: AdjustmentConditionPredicate<T>;
+    predicate: AdjustmentConditionPredicate;
 }

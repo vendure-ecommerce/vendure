@@ -8,15 +8,16 @@ type AdjustmentSource implements Node {
     actions: [AdjustmentOperation!]!
 }
 
+type Adjustment {
+    adjustmentSourceId: ID!
+    description: String!
+    amount: Int!
+}
+
 enum AdjustmentType {
     TAX
     PROMOTION
     SHIPPING
-}
-
-enum AdjustmentOperationTarget {
-    ORDER
-    ORDER_ITEM
 }
 
 type AdjustmentArg {
@@ -27,7 +28,6 @@ type AdjustmentArg {
 
 type AdjustmentOperation {
     type: AdjustmentType!
-    target: AdjustmentOperationTarget!
     code: String!
     args: [AdjustmentArg!]!
     description: String!
