@@ -3,8 +3,10 @@ type OrderItem implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     productVariant: ProductVariant!
+    adjustments: [Adjustment!]!
+    featuredAsset: Asset
     unitPrice: Int!
     quantity: Int!
-    adjustments: [Adjustment!]!
+    totalPrice: Int!
     order: Order!
 }

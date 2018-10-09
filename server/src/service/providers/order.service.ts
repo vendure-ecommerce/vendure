@@ -11,6 +11,7 @@ import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
+import { translateDeep } from '../helpers/translate-entity';
 
 import { AdjustmentApplicatorService } from './adjustment-applicator.service';
 import { ProductVariantService } from './product-variant.service';
@@ -33,10 +34,16 @@ export class OrderService {
             });
     }
 
-    findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
-        return this.connection.getRepository(Order).findOne(orderId, {
-            relations: ['items', 'items.productVariant'],
+    async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
+        const order = await this.connection.getRepository(Order).findOne(orderId, {
+            relations: ['items', 'items.productVariant', 'items.featuredAsset'],
         });
+        if (order) {
+            order.items.forEach(item => {
+                item.productVariant = translateDeep(item.productVariant, ctx.languageCode);
+            });
+            return order;
+        }
     }
 
     create(): Promise<Order> {
@@ -67,6 +74,7 @@ export class OrderService {
         const orderItem = new OrderItem({
             quantity,
             productVariant,
+            featuredAsset: productVariant.product.featuredAsset,
             unitPrice: productVariant.price,
             totalPriceBeforeAdjustment: productVariant.price * quantity,
             totalPrice: productVariant.price * quantity,
@@ -88,6 +96,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderItem = this.getOrderItemOrThrow(order, orderItemId);
         orderItem.quantity = quantity;
+        orderItem.totalPriceBeforeAdjustment = orderItem.unitPrice * orderItem.quantity;
         await this.connection.getRepository(OrderItem).save(orderItem);
         await this.adjustmentApplicatorService.applyAdjustments(order);
         return assertFound(this.findOne(ctx, order.id));

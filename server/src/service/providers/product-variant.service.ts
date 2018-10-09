@@ -30,7 +30,7 @@ export class ProductVariantService {
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
-        const relations = [];
+        const relations = ['product', 'product.featuredAsset'];
         return this.connection
             .getRepository(ProductVariant)
             .findOne(productVariantId, { relations })

@@ -6,4 +6,5 @@ type Order implements Node {
     customer: Customer
     items: [OrderItem!]!
     adjustments: [Adjustment!]!
+    totalPrice: Int!
 }

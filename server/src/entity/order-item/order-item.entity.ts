@@ -2,6 +2,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Adjustment } from '../adjustment-source/adjustment-source.entity';
+import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -14,6 +15,9 @@ export class OrderItem extends VendureEntity {
 
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
+
+    @ManyToOne(type => Asset)
+    featuredAsset: Asset;
 
     @Column() unitPrice: number;
 
