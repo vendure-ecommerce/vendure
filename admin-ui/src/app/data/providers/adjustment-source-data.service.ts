@@ -23,25 +23,19 @@ export class AdjustmentSourceDataService {
     constructor(private baseDataService: BaseDataService) {}
 
     getPromotions(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetAdjustmentSourceList.Query, GetAdjustmentSourceList.Variables>(
-            GET_ADJUSTMENT_SOURCE_LIST,
-            {
-                type: AdjustmentType.PROMOTION,
-                options: {
-                    take,
-                    skip,
-                },
-            },
-        );
+        return this.getAdjustmentSourceList(AdjustmentType.PROMOTION, take, skip);
     }
 
     getPromotion(id: string) {
-        return this.baseDataService.query<GetAdjustmentSource.Query, GetAdjustmentSource.Variables>(
-            GET_ADJUSTMENT_SOURCE,
-            {
-                id,
-            },
-        );
+        return this.getAdjustmentSource(AdjustmentType.PROMOTION, id);
+    }
+
+    getTaxCategories(take: number = 10, skip: number = 0) {
+        return this.getAdjustmentSourceList(AdjustmentType.TAX, take, skip);
+    }
+
+    getTaxCategory(id: string) {
+        return this.getAdjustmentSource(AdjustmentType.TAX, id);
     }
 
     getAdjustmentOperations(type: AdjustmentType) {
@@ -54,6 +48,44 @@ export class AdjustmentSourceDataService {
     }
 
     createPromotion(input: CreateAdjustmentSourceInput) {
+        return this.createAdjustmentSource(input);
+    }
+
+    updatePromotion(input: UpdateAdjustmentSourceInput) {
+        return this.updateAdjustmentSource(input);
+    }
+
+    createTaxCategory(input: CreateAdjustmentSourceInput) {
+        return this.createAdjustmentSource(input);
+    }
+
+    updateTaxCategory(input: UpdateAdjustmentSourceInput) {
+        return this.updateAdjustmentSource(input);
+    }
+
+    private getAdjustmentSourceList(type: AdjustmentType, take: number, skip: number) {
+        return this.baseDataService.query<GetAdjustmentSourceList.Query, GetAdjustmentSourceList.Variables>(
+            GET_ADJUSTMENT_SOURCE_LIST,
+            {
+                type,
+                options: {
+                    take,
+                    skip,
+                },
+            },
+        );
+    }
+
+    private getAdjustmentSource(type: AdjustmentType, id: string) {
+        return this.baseDataService.query<GetAdjustmentSource.Query, GetAdjustmentSource.Variables>(
+            GET_ADJUSTMENT_SOURCE,
+            {
+                id,
+            },
+        );
+    }
+
+    private createAdjustmentSource(input: CreateAdjustmentSourceInput) {
         return this.baseDataService.mutate<CreateAdjustmentSource.Mutation, CreateAdjustmentSource.Variables>(
             CREATE_ADJUSTMENT_SOURCE,
             {
@@ -62,7 +94,7 @@ export class AdjustmentSourceDataService {
         );
     }
 
-    updatePromotion(input: UpdateAdjustmentSourceInput) {
+    private updateAdjustmentSource(input: UpdateAdjustmentSourceInput) {
         return this.baseDataService.mutate<UpdateAdjustmentSource.Mutation, UpdateAdjustmentSource.Variables>(
             UPDATE_ADJUSTMENT_SOURCE,
             {

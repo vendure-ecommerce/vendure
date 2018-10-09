@@ -77,5 +77,18 @@
                 </li>
             </ul>
         </section>
+        <section class="nav-group">
+            <input id="tabexample2" type="checkbox">
+            <label for="tabexample2">{{ 'nav.settings' | translate }}</label>
+            <ul class="nav-list">
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/settings', 'tax-categories']"
+                       routerLinkActive="active">
+                        <clr-icon shape="calculator" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}
+                    </a>
+                </li>
+            </ul>
+        </section>
     </section>
 </nav>

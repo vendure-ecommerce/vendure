@@ -33,9 +33,13 @@ export class MockDataService implements DataServiceMock {
     adjustmentSource = {
         getPromotions: spyQueryResult('getPromotions'),
         getPromotion: spyQueryResult('getPromotion'),
+        getTaxCategories: spyQueryResult('getTaxCategories'),
+        getTaxCategory: spyQueryResult('getTaxCategory'),
         getAdjustmentOperations: spyQueryResult('getAdjustmentOperations'),
         createPromotion: spyObservable('createPromotion'),
         updatePromotion: spyObservable('updatePromotion'),
+        createTaxCategory: spyObservable('createTaxCategory'),
+        updateTaxCategory: spyObservable('updateTaxCategory'),
     };
     administrator = {
         getAdministrators: spyQueryResult('getAdministrators'),

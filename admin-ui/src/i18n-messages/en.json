@@ -28,7 +28,8 @@
     "orders": "Orders",
     "products": "Products",
     "promotions": "Promotions",
-    "roles": "Roles"
+    "roles": "Roles",
+    "tax-categories": "Tax categories"
   },
   "catalog": {
     "add-asset": "Add asset",
@@ -133,9 +134,15 @@
     "products": "Products",
     "promotions": "Promotions",
     "roles": "Roles",
-    "sales": "Sales"
+    "sales": "Sales",
+    "settings": "Settings",
+    "tax-categories": "Tax categories"
   },
   "order": {
     "create-new-order": "Create new order"
+  },
+  "settings": {
+    "create-new-tax-category": "Create tax category",
+    "tax-rate": "Tax rate"
   }
 }

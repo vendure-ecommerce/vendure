@@ -12,6 +12,7 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
+import { AdjustmentOperationInputComponent } from './components/adjustment-operation-input/adjustment-operation-input.component';
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { ChipComponent } from './components/chip/chip.component';
@@ -50,6 +51,7 @@ const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
+    AdjustmentOperationInputComponent,
     AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,

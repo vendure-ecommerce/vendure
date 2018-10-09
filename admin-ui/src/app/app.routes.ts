@@ -35,6 +35,10 @@ export const routes: Route[] = [
                 path: 'marketing',
                 loadChildren: './marketing/marketing.module#MarketingModule',
             },
+            {
+                path: 'settings',
+                loadChildren: './settings/settings.module#SettingsModule',
+            },
         ],
     },
 ];
