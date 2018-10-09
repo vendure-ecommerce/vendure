@@ -6,6 +6,8 @@ enum Permission {
     SuperAdmin
     " Owner means the user owns this entity, e.g. a Customer's own Order"
     Owner
+    " Public means any unauthenticated user may perform the operation "
+    Public
 
     CreateCatalog
     ReadCatalog

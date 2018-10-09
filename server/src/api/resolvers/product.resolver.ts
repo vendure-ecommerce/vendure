@@ -36,7 +36,7 @@ export class ProductResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.Public)
     async products(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductsQueryArgs,
@@ -45,7 +45,7 @@ export class ProductResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.Public)
     async product(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductQueryArgs,

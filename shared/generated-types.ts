@@ -1096,6 +1096,7 @@ export enum Permission {
     Authenticated = 'Authenticated',
     SuperAdmin = 'SuperAdmin',
     Owner = 'Owner',
+    Public = 'Public',
     CreateCatalog = 'CreateCatalog',
     ReadCatalog = 'ReadCatalog',
     UpdateCatalog = 'UpdateCatalog',
