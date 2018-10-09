@@ -147,8 +147,8 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
                     const input: UpdateAdjustmentSourceInput = {
                         id: promotion.id,
                         name: formValue.name,
-                        conditions: this.mapOperationsToInputs(this.conditions, formValue),
-                        actions: this.mapOperationsToInputs(this.actions, formValue),
+                        conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
+                        actions: this.mapOperationsToInputs(this.actions, formValue.actions),
                     };
                     return this.dataService.adjustmentSource.updatePromotion(input);
                 }),
@@ -185,12 +185,12 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
      */
     private mapOperationsToInputs(
         operations: AdjustmentOperation[],
-        formValue: any,
+        formValueOperations: any,
     ): AdjustmentOperationInput[] {
         return operations.map((o, i) => {
             return {
                 code: o.code,
-                arguments: Object.values(formValue.conditions[i].args).map(v => v.toString()),
+                arguments: Object.values(formValueOperations[i].args).map(v => v.toString()),
             };
         });
     }
