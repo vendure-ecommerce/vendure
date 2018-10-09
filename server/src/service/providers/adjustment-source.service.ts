@@ -156,7 +156,7 @@ export class AdjustmentSourceService {
             type === 'condition' ? this.availableConditions : this.availableActions;
         const match = available.find(a => a.code === code);
         if (!match) {
-            throw new I18nError(`error.adjustment-source-with-code-not-found`, { code });
+            throw new I18nError(`error.adjustment-operation-with-code-not-found`, { code });
         }
         return match;
     }

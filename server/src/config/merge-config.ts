@@ -1,5 +1,7 @@
 import { DeepPartial } from 'shared/shared-types';
 
+import { taxAction } from './adjustment/required-adjustment-actions';
+import { taxCondition } from './adjustment/required-adjustment-conditions';
 import { VendureConfig } from './vendure-config';
 
 /**
@@ -38,6 +40,23 @@ export function mergeConfig<T extends VendureConfig>(target: T, source: DeepPart
             } else {
                 Object.assign(target, { [key]: source[key] });
             }
+        }
+    }
+
+    // Always include the required adjustment operations
+    const requiredAdjustmentActions = [taxAction];
+    const requiredAdjustmentConditions = [taxCondition];
+    for (const requiredAction of requiredAdjustmentActions) {
+        if (target.adjustmentActions && !target.adjustmentActions.find(a => a.code === requiredAction.code)) {
+            target.adjustmentActions.push(requiredAction);
+        }
+    }
+    for (const requiredCondition of requiredAdjustmentConditions) {
+        if (
+            target.adjustmentConditions &&
+            !target.adjustmentConditions.find(c => c.code === requiredCondition.code)
+        ) {
+            target.adjustmentConditions.push(requiredCondition);
         }
     }
 
