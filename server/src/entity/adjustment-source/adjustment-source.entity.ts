@@ -3,6 +3,7 @@ import { DeepPartial, ID } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
+import { I18nError } from '../../i18n/i18n-error';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 
@@ -25,6 +26,16 @@ export class AdjustmentSource extends VendureEntity implements ChannelAware {
     @Column('simple-json') conditions: AdjustmentOperation[];
 
     @Column('simple-json') actions: AdjustmentOperation[];
+
+    /**
+     * A shorthand method for getting the tax rate on a TAX type adjustment source.
+     */
+    getTaxCategoryRate(): number {
+        if (this.type !== AdjustmentType.TAX) {
+            throw new I18nError(`error.getTaxCategoryRate-only-valid-for-tax-adjustment-sources`);
+        }
+        return Number(this.actions[0].args[0].value);
+    }
 }
 
 /**

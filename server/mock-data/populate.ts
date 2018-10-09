@@ -41,7 +41,8 @@ export async function populate(
     }
     const assets = await mockDataService.populateAssets();
     const optionGroupId = await mockDataService.populateOptions();
-    await mockDataService.populateProducts(options.productCount, optionGroupId, assets);
+    const taxCategories = await mockDataService.populateTaxCategories();
+    await mockDataService.populateProducts(options.productCount, optionGroupId, assets, taxCategories);
     await mockDataService.populateCustomers(options.customerCount);
     await mockDataService.populateFacets();
     return app;

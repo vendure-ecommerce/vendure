@@ -4,8 +4,11 @@ import gql from 'graphql-tag';
 import * as path from 'path';
 import {
     AddOptionGroupToProduct,
+    AdjustmentSource,
+    AdjustmentType,
     Asset,
     CreateAddressInput,
+    CreateAdjustmentSource,
     CreateCustomerInput,
     CreateFacet,
     CreateFacetValueWithFacetInput,
@@ -14,9 +17,11 @@ import {
     GenerateProductVariants,
     LanguageCode,
     ProductTranslationInput,
+    ProductVariant,
     UpdateProductVariants,
 } from 'shared/generated-types';
 
+import { CREATE_ADJUSTMENT_SOURCE } from '../../admin-ui/src/app/data/definitions/adjustment-source-definitions';
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -25,6 +30,8 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
+import { taxAction } from '../src/config/adjustment/required-adjustment-actions';
+import { taxCondition } from '../src/config/adjustment/required-adjustment-conditions';
 import { Channel } from '../src/entity/channel/channel.entity';
 import { Customer } from '../src/entity/customer/customer.entity';
 
@@ -94,6 +101,44 @@ export class MockDataService {
                 this.log('Created option group:', data.createProductOptionGroup.name);
                 return data.createProductOptionGroup.id;
             });
+    }
+
+    async populateTaxCategories() {
+        const taxCategories = [
+            { name: 'Standard Tax', rate: 20 },
+            { name: 'Reduced Tax', rate: 5 },
+            { name: 'Zero Tax', rate: 0 },
+        ];
+
+        const results: AdjustmentSource.Fragment[] = [];
+
+        for (const category of taxCategories) {
+            const result = await this.client.query<
+                CreateAdjustmentSource.Mutation,
+                CreateAdjustmentSource.Variables
+            >(CREATE_ADJUSTMENT_SOURCE, {
+                input: {
+                    name: category.name,
+                    type: AdjustmentType.TAX,
+                    enabled: true,
+                    conditions: [
+                        {
+                            code: taxCondition.code,
+                            arguments: [],
+                        },
+                    ],
+                    actions: [
+                        {
+                            code: taxAction.code,
+                            arguments: [category.rate.toString()],
+                        },
+                    ],
+                },
+            });
+            results.push(result.createAdjustmentSource);
+        }
+        this.log(`Created ${results.length} tax categories`);
+        return results;
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
@@ -166,7 +211,12 @@ export class MockDataService {
         });
     }
 
-    async populateProducts(count: number = 5, optionGroupId: string, assets: Asset[]): Promise<any> {
+    async populateProducts(
+        count: number = 5,
+        optionGroupId: string,
+        assets: Asset[],
+        taxCategories: AdjustmentSource.Fragment[],
+    ): Promise<any> {
         for (let i = 0; i < count; i++) {
             const query = CREATE_PRODUCT;
 
@@ -206,7 +256,10 @@ export class MockDataService {
                         optionGroupId,
                     },
                 );
-                const prodWithVariants = await this.makeProductVariant(product.createProduct.id);
+                const prodWithVariants = await this.makeProductVariant(
+                    product.createProduct.id,
+                    taxCategories[0],
+                );
                 const variants = prodWithVariants.generateVariantsForProduct.variants;
                 for (const variant of variants) {
                     const variantEN = variant.translations[0];
@@ -284,10 +337,14 @@ export class MockDataService {
         };
     }
 
-    private async makeProductVariant(productId: string): Promise<GenerateProductVariants.Mutation> {
+    private async makeProductVariant(
+        productId: string,
+        taxCategory: AdjustmentSource.Fragment,
+    ): Promise<GenerateProductVariants.Mutation> {
         const query = GENERATE_PRODUCT_VARIANTS;
         return this.client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(query, {
             productId,
+            defaultTaxCategoryId: taxCategory.id,
             defaultSku: faker.random.alphaNumeric(5),
             defaultPrice: faker.random.number({
                 min: 100,

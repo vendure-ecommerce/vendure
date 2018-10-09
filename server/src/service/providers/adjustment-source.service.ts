@@ -86,6 +86,16 @@ export class AdjustmentSourceService {
         return this.activeSources;
     }
 
+    /**
+     * Returns the default tax category.
+     * TODO: currently just returns the first one. There should be a "default" flag.
+     */
+    async getDefaultTaxCategory(): Promise<AdjustmentSource> {
+        const sources = await this.getActiveAdjustmentSources();
+        const taxCategories = sources.filter(s => s.type === AdjustmentType.TAX);
+        return taxCategories[0];
+    }
+
     async createAdjustmentSource(
         ctx: RequestContext,
         input: CreateAdjustmentSourceInput,

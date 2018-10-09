@@ -17,7 +17,7 @@ type Mutation {
     removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
 
     "Create a set of ProductVariants based on the OptionGroups assigned to the given Product"
-    generateVariantsForProduct(productId: ID!, defaultPrice: Int, defaultSku: String): Product!
+    generateVariantsForProduct(productId: ID!, defaultTaxCategoryId: ID, defaultPrice: Int, defaultSku: String): Product!
 
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!

@@ -1,4 +1,4 @@
-import { DeepPartial, HasCustomFields } from 'shared/shared-types';
+import { DeepPartial, HasCustomFields, ID } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -21,11 +21,29 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @Column() sku: string;
 
+    /**
+     * A synthetic property which is populated with data from a ProductVariantPrice entity.
+     * It is marked as a @Column() so that changes to it will trigger the afterUpdate subscriber.
+     */
     @Column({
         name: 'lastPriceValue',
         comment: 'Not used - actual price is stored in product_variant_price table',
     })
     price: number;
+
+    /**
+     * A synthetic property which is populated with data from a ProductVariantPrice entity.
+     */
+    priceBeforeTax: number;
+
+    /**
+     * A synthetic property which is populated with data from a ProductVariantPrice entity.
+     */
+    taxCategory: {
+        id: ID;
+        name: string;
+        taxRate: number;
+    };
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];

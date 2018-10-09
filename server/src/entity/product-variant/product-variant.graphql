@@ -5,7 +5,9 @@ type ProductVariant implements Node {
     languageCode: LanguageCode!
     sku: String!
     name: String!
+    priceBeforeTax: Int!
     price: Int!
+    taxCategory: ProductTaxCategory!
     options: [ProductOption!]!
     facetValues: [FacetValue!]!
     translations: [ProductVariantTranslation!]!
@@ -19,6 +21,12 @@ type ProductVariantTranslation {
     name: String!
 }
 
+type ProductTaxCategory {
+    id: ID!
+    name: String!
+    taxRate: Float!
+}
+
 input ProductVariantTranslationInput {
     id: ID
     languageCode: LanguageCode!
@@ -28,7 +36,9 @@ input ProductVariantTranslationInput {
 input CreateProductVariantInput {
     translations: [ProductVariantTranslationInput!]!
     sku: String!
-    price: Int!
+    priceBeforeTax: Int
+    price: Int
+    taxCategoryId: ID!
     optionCodes: [String!]
 }
 
@@ -36,5 +46,7 @@ input UpdateProductVariantInput {
     id: ID!
     translations: [ProductVariantTranslationInput!]
     sku: String
+    taxCategoryId: ID
+    priceBeforeTax: Int
     price: Int
 }

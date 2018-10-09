@@ -19,6 +19,7 @@ export function updateTranslatable<T extends Translatable>(
     return async function saveTranslatable(
         connection: Connection,
         input: TranslatedInput<T> & { id: ID },
+        data?: any,
     ): Promise<T> {
         const existingTranslations = await connection.getRepository(translationType).find({
             where: { base: input.id },
@@ -33,6 +34,6 @@ export function updateTranslatable<T extends Translatable>(
             diff,
         );
         const updatedEntity = patchEntity(entity as any, omit(input, ['translations']));
-        return connection.manager.save(entity);
+        return connection.manager.save(entity, { data });
     };
 }

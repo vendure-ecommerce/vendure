@@ -11,22 +11,23 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { I18nError } from '../../i18n/i18n-error';
-
 import { createTranslatable } from '../helpers/create-translatable';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
+
+import { AdjustmentSourceService } from './adjustment-source.service';
 
 @Injectable()
 export class ProductVariantService {
     constructor(
         @InjectConnection() private connection: Connection,
         private translationUpdaterService: TranslationUpdaterService,
+        private adjustmentSourceService: AdjustmentSourceService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -54,29 +55,35 @@ export class ProductVariantService {
                 variant.options = selectedOptions;
             }
             variant.product = product;
-            const variantPrice = new ProductVariantPrice();
         });
-        return await save(this.connection, input, { channelId: ctx.channelId });
+        return await save(this.connection, input, {
+            channelId: ctx.channelId,
+            taxCategoryId: input.taxCategoryId,
+        });
     }
 
-    async update(input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
+    async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
         const save = updateTranslatable(
             ProductVariant,
             ProductVariantTranslation,
             this.translationUpdaterService,
         );
-        await save(this.connection, input);
+        await save(this.connection, input, { channelId: ctx.channelId, taxCategoryId: input.taxCategoryId });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
                 relations: ['options', 'facetValues'],
             }),
         );
-        return translateDeep(variant, DEFAULT_LANGUAGE_CODE, ['options', 'facetValues']);
+        return translateDeep(this.applyChannelPrice(variant, ctx.channelId), DEFAULT_LANGUAGE_CODE, [
+            'options',
+            'facetValues',
+        ]);
     }
 
     async generateVariantsForProduct(
         ctx: RequestContext,
         productId: ID,
+        defaultTaxCategoryId?: string | null,
         defaultPrice?: number | null,
         defaultSku?: string | null,
     ): Promise<Array<Translated<ProductVariant>>> {
@@ -94,6 +101,10 @@ export class ProductVariantService {
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
 
+        const taxCategoryId =
+            defaultTaxCategoryId ||
+            (await this.adjustmentSourceService.getDefaultTaxCategory()).id.toString();
+
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {
             const name = this.createVariantName(productName, options);
@@ -101,6 +112,7 @@ export class ProductVariantService {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
                 optionCodes: options.map(o => o.code),
+                taxCategoryId,
                 translations: [
                     {
                         languageCode: ctx.languageCode,
@@ -115,6 +127,7 @@ export class ProductVariantService {
     }
 
     async addFacetValues(
+        ctx: RequestContext,
         productVariantIds: ID[],
         facetValues: FacetValue[],
     ): Promise<Array<Translated<ProductVariant>>> {
@@ -138,7 +151,12 @@ export class ProductVariantService {
             await this.connection.manager.save(variant);
         }
 
-        return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE, ['options', 'facetValues']));
+        return variants.map(v =>
+            translateDeep(this.applyChannelPrice(v, ctx.channelId), DEFAULT_LANGUAGE_CODE, [
+                'options',
+                'facetValues',
+            ]),
+        );
     }
 
     /**
@@ -150,6 +168,12 @@ export class ProductVariantService {
             throw new I18nError(`error.no-price-found-for-channel`);
         }
         variant.price = channelPrice.price;
+        variant.priceBeforeTax = channelPrice.priceBeforeTax;
+        variant.taxCategory = {
+            id: channelPrice.taxCategory.id,
+            name: channelPrice.taxCategory.name,
+            taxRate: channelPrice.taxCategory.getTaxCategoryRate() || 0,
+        };
         return variant;
     }
 

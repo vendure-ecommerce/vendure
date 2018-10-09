@@ -53,6 +53,7 @@ export interface Query {
     facets: FacetList;
     facet?: Facet | null;
     order?: Order | null;
+    activeOrder?: Order | null;
     orders: OrderList;
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
@@ -263,6 +264,7 @@ export interface Order extends Node {
     customer?: Customer | null;
     items: OrderItem[];
     adjustments: Adjustment[];
+    totalPrice: number;
 }
 
 export interface OrderItem extends Node {
@@ -270,9 +272,11 @@ export interface OrderItem extends Node {
     createdAt: DateTime;
     updatedAt: DateTime;
     productVariant: ProductVariant;
+    adjustments: Adjustment[];
+    featuredAsset?: Asset | null;
     unitPrice: number;
     quantity: number;
-    adjustments: Adjustment[];
+    totalPrice: number;
     order: Order;
 }
 
@@ -283,11 +287,19 @@ export interface ProductVariant extends Node {
     languageCode: LanguageCode;
     sku: string;
     name: string;
+    priceBeforeTax: number;
     price: number;
+    taxCategory: ProductTaxCategory;
     options: ProductOption[];
     facetValues: FacetValue[];
     translations: ProductVariantTranslation[];
     customFields?: Json | null;
+}
+
+export interface ProductTaxCategory {
+    id: string;
+    name: string;
+    taxRate: number;
 }
 
 export interface ProductOption extends Node {
@@ -861,6 +873,8 @@ export interface UpdateProductVariantInput {
     id: string;
     translations?: ProductVariantTranslationInput[] | null;
     sku?: string | null;
+    taxCategoryId?: string | null;
+    priceBeforeTax?: number | null;
     price?: number | null;
     customFields?: Json | null;
 }
@@ -888,7 +902,9 @@ export interface UpdateRoleInput {
 export interface CreateProductVariantInput {
     translations: ProductVariantTranslationInput[];
     sku: string;
-    price: number;
+    priceBeforeTax?: number | null;
+    price?: number | null;
+    taxCategoryId: string;
     optionCodes?: string[] | null;
     customFields?: Json | null;
 }
@@ -1057,6 +1073,7 @@ export interface RemoveOptionGroupFromProductMutationArgs {
 }
 export interface GenerateVariantsForProductMutationArgs {
     productId: string;
+    defaultTaxCategoryId?: string | null;
     defaultPrice?: number | null;
     defaultSku?: string | null;
 }
@@ -1328,6 +1345,7 @@ export namespace QueryResolvers {
         facets?: FacetsResolver<FacetList, any, Context>;
         facet?: FacetResolver<Facet | null, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
+        activeOrder?: ActiveOrderResolver<Order | null, any, Context>;
         orders?: OrdersResolver<OrderList, any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
@@ -1468,6 +1486,11 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type ActiveOrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type OrdersResolver<R = OrderList, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2083,6 +2106,7 @@ export namespace OrderResolvers {
         customer?: CustomerResolver<Customer | null, any, Context>;
         items?: ItemsResolver<OrderItem[], any, Context>;
         adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        totalPrice?: TotalPriceResolver<number, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2100,6 +2124,7 @@ export namespace OrderResolvers {
         Parent,
         Context
     >;
+    export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace OrderItemResolvers {
@@ -2108,9 +2133,11 @@ export namespace OrderItemResolvers {
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         productVariant?: ProductVariantResolver<ProductVariant, any, Context>;
+        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         unitPrice?: UnitPriceResolver<number, any, Context>;
         quantity?: QuantityResolver<number, any, Context>;
-        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        totalPrice?: TotalPriceResolver<number, any, Context>;
         order?: OrderResolver<Order, any, Context>;
     }
 
@@ -2122,13 +2149,19 @@ export namespace OrderItemResolvers {
         Parent,
         Context
     >;
-    export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type QuantityResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
+    export type FeaturedAssetResolver<R = Asset | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type QuantityResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type OrderResolver<R = Order, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
@@ -2140,7 +2173,9 @@ export namespace ProductVariantResolvers {
         languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
         sku?: SkuResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
+        priceBeforeTax?: PriceBeforeTaxResolver<number, any, Context>;
         price?: PriceResolver<number, any, Context>;
+        taxCategory?: TaxCategoryResolver<ProductTaxCategory, any, Context>;
         options?: OptionsResolver<ProductOption[], any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductVariantTranslation[], any, Context>;
@@ -2157,7 +2192,17 @@ export namespace ProductVariantResolvers {
     >;
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type PriceBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TaxCategoryResolver<R = ProductTaxCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type OptionsResolver<R = ProductOption[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2178,6 +2223,18 @@ export namespace ProductVariantResolvers {
         Parent,
         Context
     >;
+}
+
+export namespace ProductTaxCategoryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        taxRate?: TaxRateResolver<number, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TaxRateResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace ProductOptionResolvers {
@@ -2806,6 +2863,7 @@ export namespace MutationResolvers {
     >;
     export interface GenerateVariantsForProductArgs {
         productId: string;
+        defaultTaxCategoryId?: string | null;
         defaultPrice?: number | null;
         defaultSku?: string | null;
     }
@@ -3400,6 +3458,7 @@ export namespace CreateProduct {
 export namespace GenerateProductVariants {
     export type Variables = {
         productId: string;
+        defaultTaxCategoryId?: string | null;
         defaultPrice?: number | null;
         defaultSku?: string | null;
     };
@@ -3781,10 +3840,19 @@ export namespace ProductVariant {
         languageCode: LanguageCode;
         name: string;
         price: number;
+        priceBeforeTax: number;
+        taxCategory: TaxCategory;
         sku: string;
         options: Options[];
         facetValues: FacetValues[];
         translations: Translations[];
+    };
+
+    export type TaxCategory = {
+        __typename?: 'ProductTaxCategory';
+        id: string;
+        name: string;
+        taxRate: number;
     };
 
     export type Options = {

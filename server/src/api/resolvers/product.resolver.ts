@@ -99,13 +99,19 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('productId')
+    @Decode('productId', 'defaultTaxCategoryId')
     async generateVariantsForProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: GenerateVariantsForProductMutationArgs,
     ): Promise<Translated<Product>> {
-        const { productId, defaultPrice, defaultSku } = args;
-        await this.productVariantService.generateVariantsForProduct(ctx, productId, defaultPrice, defaultSku);
+        const { productId, defaultTaxCategoryId, defaultPrice, defaultSku } = args;
+        await this.productVariantService.generateVariantsForProduct(
+            ctx,
+            productId,
+            defaultTaxCategoryId,
+            defaultPrice,
+            defaultSku,
+        );
         return assertFound(this.productService.findOne(ctx, productId));
     }
 
@@ -116,7 +122,7 @@ export class ProductResolver {
         @Args() args: UpdateProductVariantsMutationArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(variant => this.productVariantService.update(variant)));
+        return Promise.all(input.map(variant => this.productVariantService.update(ctx, variant)));
     }
 
     @Mutation()
@@ -140,6 +146,6 @@ export class ProductResolver {
             }),
         );
 
-        return this.productVariantService.addFacetValues(productVariantIds, facetValues);
+        return this.productVariantService.addFacetValues(ctx, productVariantIds, facetValues);
     }
 }
