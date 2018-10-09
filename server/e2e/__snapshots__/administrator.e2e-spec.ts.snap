@@ -19,6 +19,7 @@ Object {
           "Authenticated",
           "SuperAdmin",
           "Owner",
+          "Public",
           "CreateCatalog",
           "ReadCatalog",
           "UpdateCatalog",
