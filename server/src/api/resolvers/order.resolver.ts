@@ -42,6 +42,19 @@ export class OrderResolver {
         return order;
     }
 
+    @Query()
+    @Allow(Permission.Owner)
+    async activeOrder(@Ctx() ctx: RequestContext): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            if (ctx.session && ctx.session.activeOrder && ctx.session.activeOrder.id) {
+                const order = await this.orderService.findOne(ctx, ctx.session.activeOrder.id);
+                return order;
+            } else {
+                return;
+            }
+        }
+    }
+
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     @Decode('productVariantId')

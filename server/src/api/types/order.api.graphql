@@ -1,5 +1,6 @@
 type Query {
     order(id: ID!): Order
+    activeOrder: Order
     orders(options: OrderListOptions): OrderList!
 }
 
