@@ -1,14 +1,14 @@
 <table class="table">
     <tr>
-        <th>{{ 'admin.section' | translate }}</th>
-        <th>{{ 'admin.create' | translate }}</th>
-        <th>{{ 'admin.read' | translate }}</th>
-        <th>{{ 'admin.update' | translate }}</th>
-        <th>{{ 'admin.delete' | translate }}</th>
+        <th>{{ 'settings.section' | translate }}</th>
+        <th>{{ 'settings.create' | translate }}</th>
+        <th>{{ 'settings.read' | translate }}</th>
+        <th>{{ 'settings.update' | translate }}</th>
+        <th>{{ 'settings.delete' | translate }}</th>
     </tr>
     <tbody>
     <tr>
-        <td>{{ 'admin.catalog' | translate }}</td>
+        <td>{{ 'settings.catalog' | translate }}</td>
         <td><vdr-select-toggle size="small"
                                [disabled]="readonly"
                                [selected]="permissions['CreateCatalog']"
@@ -27,7 +27,7 @@
                                (selectedChange)="setPermission('DeleteCatalog', $event)"></vdr-select-toggle></td>
     </tr>
     <tr>
-        <td>{{ 'admin.customer' | translate }}</td>
+        <td>{{ 'settings.customer' | translate }}</td>
         <td><vdr-select-toggle size="small"
                                [disabled]="readonly"
                                [selected]="permissions['CreateCustomer']"
@@ -46,7 +46,7 @@
                                (selectedChange)="setPermission('DeleteCustomer', $event)"></vdr-select-toggle></td>
     </tr>
     <tr>
-        <td>{{ 'admin.order' | translate }}</td>
+        <td>{{ 'settings.order' | translate }}</td>
         <td><vdr-select-toggle size="small"
                                [disabled]="readonly"
                                [selected]="permissions['CreateOrder']"
@@ -65,7 +65,7 @@
                                (selectedChange)="setPermission('DeleteOrder', $event)"></vdr-select-toggle></td>
     </tr>
     <tr>
-        <td>{{ 'admin.administrator' | translate }}</td>
+        <td>{{ 'settings.administrator' | translate }}</td>
         <td><vdr-select-toggle size="small"
                                [disabled]="readonly"
                                [selected]="permissions['CreateAdministrator']"

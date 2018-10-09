@@ -24,10 +24,6 @@ export const routes: Route[] = [
                 loadChildren: './catalog/catalog.module#CatalogModule',
             },
             {
-                path: 'admin',
-                loadChildren: './administrator/administrator.module#AdministratorModule',
-            },
-            {
                 path: 'orders',
                 loadChildren: './order/order.module#OrderModule',
             },

@@ -1,24 +1,6 @@
 {
   "admin": {
-    "administrator": "Administrator",
-    "catalog": "Catalog",
-    "create": "Create",
-    "create-new-administrator": "Create new administrator",
-    "create-new-role": "Create new role",
-    "customer": "Customer",
-    "delete": "Delete",
-    "description": "Description",
-    "email-address": "Email address",
-    "first-name": "First name",
-    "last-name": "Last name",
-    "order": "Order",
-    "password": "Password",
-    "permissions": "Permissions",
-    "read": "Read",
-    "role": "Role",
-    "roles": "Roles",
-    "section": "Section",
-    "update": "Update"
+    "create-new-administrator": "Create new administrator"
   },
   "breadcrumb": {
     "administrators": "Administrators",
@@ -123,7 +105,6 @@
     "create-new-promotion": "Create new promotion"
   },
   "nav": {
-    "administrator": "Admin",
     "administrators": "Administrators",
     "assets": "Assets",
     "catalog": "Catalog",
@@ -142,7 +123,25 @@
     "create-new-order": "Create new order"
   },
   "settings": {
+    "administrator": "Administrator",
+    "catalog": "Catalog",
+    "create": "Create",
+    "create-new-role": "Create new role",
     "create-new-tax-category": "Create tax category",
-    "tax-rate": "Tax rate"
+    "customer": "Customer",
+    "delete": "Delete",
+    "description": "Description",
+    "email-address": "Email address",
+    "first-name": "First name",
+    "last-name": "Last name",
+    "order": "Order",
+    "password": "Password",
+    "permissions": "Permissions",
+    "read": "Read",
+    "role": "Role",
+    "roles": "Roles",
+    "section": "Section",
+    "tax-rate": "Tax rate",
+    "update": "Update"
   }
 }

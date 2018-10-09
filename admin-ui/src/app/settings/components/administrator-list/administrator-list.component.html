@@ -14,9 +14,9 @@
                 (pageChange)="setPageNumber($event)"
                 (itemsPerPageChange)="setItemsPerPage($event)">
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'admin.first-name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'admin.last-name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'admin.email-address' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.first-name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.last-name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.email-address' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-administrator="item">
         <td class="left">{{ administrator.id }}</td>

@@ -2,7 +2,7 @@
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
-            {{ 'admin.create-new-role' | translate }}
+            {{ 'settings.create-new-role' | translate }}
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
@@ -15,8 +15,8 @@
                 (itemsPerPageChange)="setItemsPerPage($event)">
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'admin.description' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'admin.permissions' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.description' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.permissions' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-role="item">
         <td class="left">{{ role.id }}</td>

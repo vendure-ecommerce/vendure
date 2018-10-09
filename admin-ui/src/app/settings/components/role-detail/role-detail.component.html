@@ -15,8 +15,8 @@
 
 <form class="form" [formGroup]="roleForm" >
     <section class="form-block">
-        <label>{{ 'admin.role' | translate }}</label>
-        <vdr-form-field [label]="'admin.description' | translate" for="description">
+        <label>{{ 'settings.role' | translate }}</label>
+        <vdr-form-field [label]="'settings.description' | translate" for="description">
             <input id="description" type="text" formControlName="description" (input)="updateCode($event.target.value)">
         </vdr-form-field>
         <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
@@ -24,7 +24,7 @@
         </vdr-form-field>
     </section>
     <section class="form-block">
-        <label>{{ 'admin.permissions' | translate }}</label>
+        <label>{{ 'settings.permissions' | translate }}</label>
         <vdr-permission-grid [permissions]="permissions" (permissionChange)="setPermission($event)"></vdr-permission-grid>
     </section>
 </form>
