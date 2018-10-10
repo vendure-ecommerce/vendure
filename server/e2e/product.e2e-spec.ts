@@ -132,6 +132,28 @@ describe('Product resolver', () => {
             expect(result.product.variants.length).toBe(2);
         });
 
+        it('ProductVariant price properties are correct', async () => {
+            const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
+                GET_PRODUCT_WITH_VARIANTS,
+                {
+                    languageCode: LanguageCode.en,
+                    id: 'T_2',
+                },
+            );
+
+            if (!result.product) {
+                fail('Product not found');
+                return;
+            }
+            expect(result.product.variants[0].priceBeforeTax).toBe(621);
+            expect(result.product.variants[0].price).toBe(745);
+            expect(result.product.variants[0].taxCategory).toEqual({
+                id: 'T_1',
+                name: 'Standard Tax',
+                taxRate: 20,
+            });
+        });
+
         it('returns null when id not found', async () => {
             const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
                 GET_PRODUCT_WITH_VARIANTS,
@@ -451,6 +473,30 @@ describe('Product resolver', () => {
                 }
                 expect(updatedVariant.sku).toBe('ABC');
                 expect(updatedVariant.price).toBe(432);
+            });
+
+            it('updateProductVariants updates taxCategory and priceBeforeTax', async () => {
+                const firstVariant = variants[0];
+                const result = await client.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            price: 105,
+                            taxCategoryId: 'T_2',
+                        },
+                    ],
+                });
+                const updatedVariant = result.updateProductVariants[0];
+                if (!updatedVariant) {
+                    fail('no updated variant returned.');
+                    return;
+                }
+                expect(updatedVariant.price).toBe(105);
+                expect(updatedVariant.taxCategory.id).toBe('T_2');
+                expect(updatedVariant.priceBeforeTax).toBe(100);
             });
 
             it('updateProductVariants throws with an invalid variant id', async () => {
