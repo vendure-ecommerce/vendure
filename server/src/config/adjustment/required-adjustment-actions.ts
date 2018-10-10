@@ -1,16 +1,20 @@
 import { AdjustmentType } from 'shared/generated-types';
 
-import { AdjustmentActionDefinition } from './adjustment-types';
+import { idsAreEqual } from '../../common/utils';
 
-export const taxAction: AdjustmentActionDefinition = {
+import { AdjustmentActionDefinition, TaxActionDefinition } from './adjustment-types';
+
+export const taxAction: TaxActionDefinition = {
     type: AdjustmentType.TAX,
     code: 'tax_action',
-    args: [{ name: 'discount', type: 'percentage' }],
-    calculate(order, args) {
-        return order.items.map(item => ({
-            orderItemId: item.id,
-            amount: -(item.totalPrice * args.discount) / 100,
-        }));
+    args: [{ name: 'taxRate', type: 'percentage' }],
+    calculate(order, args, context) {
+        return order.items
+            .filter(item => idsAreEqual(item.taxCategoryId, context.taxCategoryId))
+            .map(item => ({
+                orderItemId: item.id,
+                amount: (item.totalPrice * args.taxRate) / 100,
+            }));
     },
     description: 'Apply tax of { discount }%',
 };

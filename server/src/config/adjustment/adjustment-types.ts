@@ -9,14 +9,18 @@ export type AdjustmentActionResult = {
     orderItemId?: ID;
     amount: number;
 };
-export type AdjustmentActionCalculation = (
+export type AdjustmentActionCalculation<Context = any> = (
     order: Order,
     args: { [argName: string]: any },
+    context: Context,
 ) => AdjustmentActionResult[];
 
 export interface AdjustmentActionDefinition extends AdjustmentOperation {
     args: AdjustmentActionArg[];
     calculate: AdjustmentActionCalculation;
+}
+export interface TaxActionDefinition extends AdjustmentActionDefinition {
+    calculate: AdjustmentActionCalculation<{ taxCategoryId: ID }>;
 }
 
 export type AdjustmentConditionArgType = 'int' | 'money' | 'string' | 'datetime';

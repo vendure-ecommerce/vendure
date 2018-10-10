@@ -4,6 +4,8 @@ import {
     AdjustmentActionDefinition,
     AdjustmentConditionDefinition,
 } from '../../config/adjustment/adjustment-types';
+import { taxAction } from '../../config/adjustment/required-adjustment-actions';
+import { taxCondition } from '../../config/adjustment/required-adjustment-conditions';
 import { AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -51,29 +53,6 @@ describe('applyAdjustments()', () => {
         },
     };
 
-    const alwaysTrueCondition: AdjustmentConditionDefinition = {
-        code: 'always_true',
-        description: 'Always returns true',
-        args: [],
-        type: AdjustmentType.TAX,
-        predicate: (order, args) => {
-            return true;
-        },
-    };
-
-    const standardTaxAction: AdjustmentActionDefinition = {
-        code: 'standard_tax',
-        description: 'Adds standard sales tax of { percentage }%',
-        args: [{ name: 'percentage', type: 'percentage' }],
-        type: AdjustmentType.TAX,
-        calculate: (order, args) => {
-            return order.items.map(item => ({
-                orderItemId: item.id,
-                amount: item.totalPrice * (args.percentage / 100),
-            }));
-        },
-    };
-
     const promoSource1 = new AdjustmentSource({
         id: 'ps1',
         name: 'Promo source 1',
@@ -104,32 +83,11 @@ describe('applyAdjustments()', () => {
         ],
     });
 
-    const standardTaxSource = new AdjustmentSource({
-        id: 'ts1',
-        name: 'Tax source',
-        type: AdjustmentType.TAX,
-        conditions: [
-            {
-                code: alwaysTrueCondition.code,
-                args: [],
-            },
-        ],
-        actions: [
-            {
-                code: standardTaxAction.code,
-                args: [
-                    {
-                        type: 'percentage',
-                        name: 'percentage',
-                        value: '20',
-                    },
-                ],
-            },
-        ],
-    });
+    const standardTaxSource = AdjustmentSource.createTaxCategory(20, 'Standard Tax', 'ts1');
+    const zeroTaxSource = AdjustmentSource.createTaxCategory(0, 'Zero Tax 2', 'ts2');
 
-    const conditions = [minOrderTotalCondition, alwaysTrueCondition];
-    const actions = [orderDiscountAction, standardTaxAction];
+    const conditions = [minOrderTotalCondition, taxCondition];
+    const actions = [orderDiscountAction, taxAction];
 
     it('applies a promo source to an order', () => {
         const order = new Order({
@@ -167,18 +125,20 @@ describe('applyAdjustments()', () => {
                     unitPrice: 300,
                     quantity: 2,
                     totalPriceBeforeAdjustment: 600,
+                    taxCategoryId: standardTaxSource.id,
                 }),
                 new OrderItem({
                     id: 'oi2',
                     unitPrice: 450,
                     quantity: 1,
                     totalPriceBeforeAdjustment: 450,
+                    taxCategoryId: zeroTaxSource.id,
                 }),
             ],
             totalPriceBeforeAdjustment: 1050,
         });
 
-        applyAdjustments(order, [standardTaxSource], conditions, actions);
+        applyAdjustments(order, [standardTaxSource, zeroTaxSource], conditions, actions);
 
         expect(order.adjustments).toEqual([]);
         expect(order.items[0].adjustments).toEqual([
@@ -191,14 +151,14 @@ describe('applyAdjustments()', () => {
         expect(order.items[0].totalPrice).toBe(720);
         expect(order.items[1].adjustments).toEqual([
             {
-                adjustmentSourceId: standardTaxSource.id,
-                description: standardTaxSource.name,
-                amount: 90,
+                adjustmentSourceId: zeroTaxSource.id,
+                description: zeroTaxSource.name,
+                amount: 0,
             },
         ]);
-        expect(order.items[1].totalPrice).toBe(540);
+        expect(order.items[1].totalPrice).toBe(450);
 
-        expect(order.totalPrice).toBe(1260);
+        expect(order.totalPrice).toBe(1170);
     });
 
     it('evaluates promo conditions on items after tax is applied', () => {
@@ -210,12 +170,13 @@ describe('applyAdjustments()', () => {
                     unitPrice: 240,
                     quantity: 2,
                     totalPriceBeforeAdjustment: 480,
+                    taxCategoryId: standardTaxSource.id,
                 }),
             ],
             totalPriceBeforeAdjustment: 480,
         });
 
-        applyAdjustments(order, [promoSource1, standardTaxSource], conditions, actions);
+        applyAdjustments(order, [promoSource1, standardTaxSource, zeroTaxSource], conditions, actions);
 
         expect(order.items[0].adjustments).toEqual([
             {

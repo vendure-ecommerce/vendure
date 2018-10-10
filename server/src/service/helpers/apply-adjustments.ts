@@ -6,8 +6,7 @@ import {
     AdjustmentActionResult,
     AdjustmentConditionDefinition,
 } from '../../config/adjustment/adjustment-types';
-import { AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
-import { Adjustment } from '../../entity/adjustment-source/adjustment-source.entity';
+import { Adjustment, AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
 import { Order } from '../../entity/order/order.entity';
 
 /**
@@ -114,11 +113,14 @@ function applyActionCalculations(
         if (!actionConfig) {
             continue;
         }
-        const actionResults = actionConfig.calculate(order, argsArrayToHash(action.args)).map(result => {
-            // Do not allow fractions of pennies.
-            result.amount = Math.round(result.amount);
-            return result;
-        });
+        const context = source.type === AdjustmentType.TAX ? { taxCategoryId: source.id } : {};
+        const actionResults = actionConfig
+            .calculate(order, argsArrayToHash(action.args), context)
+            .map(result => {
+                // Do not allow fractions of pennies.
+                result.amount = Math.round(result.amount);
+                return result;
+            });
         results = [...results, ...actionResults];
     }
     return results;

@@ -74,10 +74,12 @@ export class OrderService {
         const orderItem = new OrderItem({
             quantity,
             productVariant,
+            taxCategoryId: productVariant.taxCategory.id,
             featuredAsset: productVariant.product.featuredAsset,
             unitPrice: productVariant.price,
-            totalPriceBeforeAdjustment: productVariant.price * quantity,
-            totalPrice: productVariant.price * quantity,
+            unitPriceBeforeTax: productVariant.priceBeforeTax,
+            totalPriceBeforeAdjustment: productVariant.priceBeforeTax * quantity,
+            totalPrice: productVariant.priceBeforeTax * quantity,
             adjustments: [],
         });
         const newOrderItem = await this.connection.getRepository(OrderItem).save(orderItem);

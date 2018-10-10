@@ -46,8 +46,9 @@ export class OrderResolver {
     @Allow(Permission.Owner)
     async activeOrder(@Ctx() ctx: RequestContext): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            if (ctx.session && ctx.session.activeOrder && ctx.session.activeOrder.id) {
-                const order = await this.orderService.findOne(ctx, ctx.session.activeOrder.id);
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                const order = await this.orderService.findOne(ctx, sessionOrder.id);
                 return order;
             } else {
                 return;

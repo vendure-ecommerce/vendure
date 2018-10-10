@@ -1,4 +1,4 @@
-import { DeepPartial } from 'shared/shared-types';
+import { DeepPartial, ID } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Adjustment } from '../adjustment-source/adjustment-source.entity';
@@ -16,9 +16,19 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
+    @Column('varchar') taxCategoryId: ID;
+
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
+    /**
+     * Corresponds to the priceBeforeTax value of the associated ProductVariant.
+     */
+    @Column() unitPriceBeforeTax: number;
+
+    /**
+     * Corresponds to the price value of the associated ProductVariant.
+     */
     @Column() unitPrice: number;
 
     @Column() quantity: number;
