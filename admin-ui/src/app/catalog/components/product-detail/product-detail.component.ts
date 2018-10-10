@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import {
+    AdjustmentSource,
     CreateProductInput,
     LanguageCode,
     ProductWithVariants,
@@ -33,6 +34,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
+    taxCategories$: Observable<AdjustmentSource.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
@@ -67,6 +69,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
+        this.taxCategories$ = this.dataService.adjustmentSource
+            .getTaxCategories()
+            .mapSingle(data => data.adjustmentSources.items);
     }
 
     ngOnDestroy() {
@@ -240,6 +245,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     sku: variant.sku,
                     name: variantTranslation ? variantTranslation.name : '',
                     price: variant.price,
+                    priceBeforeTax: variant.priceBeforeTax,
+                    taxCategoryId: variant.taxCategory.id,
                 };
 
                 const existing = variantsFormArray.at(i);
@@ -296,12 +303,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         }
         return dirtyVariants
             .map((variant, i) => {
-                return createUpdatedTranslatable(
+                const updated = createUpdatedTranslatable(
                     variant,
                     dirtyVariantValues[i],
                     this.customVariantFields,
                     languageCode,
-                );
+                ) as UpdateProductVariantInput;
+                updated.taxCategoryId = dirtyVariantValues[i].taxCategoryId;
+                return updated;
             })
             .filter(notNullOrUndefined);
     }

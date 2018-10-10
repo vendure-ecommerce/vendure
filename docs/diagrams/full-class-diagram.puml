@@ -108,5 +108,6 @@ AdjustmentSource o-- Channel
 Product o-- Channel
 ProductVariant *-- "1..*" ProductVariantPrice
 ProductVariantPrice o-- Channel
+ProductVariantPrice "taxCategory" -- AdjustmentSource
 
 @enduml

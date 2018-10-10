@@ -1,46 +1,73 @@
 <div class="with-selected">
+    <vdr-select-toggle size="small"
+                       [selected]="areAllSelected()"
+                       (selectedChange)="toggleSelectAll()"></vdr-select-toggle>
     <ng-container *ngIf="selectedVariantIds.length">
         <label>{{ 'catalog.with-selected' | translate }}:</label><ng-content></ng-content>
     </ng-container>
 </div>
-<table class="variants-list table">
-    <thead>
-    <tr>
-        <th>
-            <vdr-select-toggle size="small"
-                               [selected]="areAllSelected()"
-                               (selectedChange)="toggleSelectAll()"></vdr-select-toggle>
-        </th>
-        <th>{{ 'catalog.sku' | translate }}</th>
-        <th>{{ 'catalog.name' | translate }}</th>
-        <th>{{ 'catalog.facets' | translate }}</th>
-        <th>{{ 'catalog.options' | translate }}</th>
-        <th>{{ 'catalog.price' | translate }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr class="variant"
-        *ngFor="let variant of variants; let i = index">
-        <td>
-            <vdr-select-toggle size="small"
-                               [selected]="isVariantSelected(variant.id)"
-                               (selectedChange)="toggleSelectVariant(variant.id)"></vdr-select-toggle>
-        </td>
-        <td>
-            <input type="text" [formControl]="formArray.get([i, 'sku'])">
-        </td>
-        <td>
-            <input type="text" [formControl]="formArray.get([i, 'name'])">
-        </td>
-        <td>
-            <vdr-chip *ngFor="let facetValue of variant.facetValues">{{ facetValue.name }}</vdr-chip>
-        </td>
-        <td>
-            <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
-        </td>
-        <td>
-            <vdr-currency-input [formControl]="formArray.get([i, 'price'])"></vdr-currency-input>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="variants-list">
+    <div class="variant-container card" *ngFor="let variant of variants; let i = index">
+        <div class="card-block header-row">
+            <div class="toggle">
+                <vdr-select-toggle size="small"
+                                   [selected]="isVariantSelected(variant.id)"
+                                   (selectedChange)="toggleSelectVariant(variant.id)"></vdr-select-toggle>
+            </div>
+            <div class="options">
+                <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
+            </div>
+            <div class="flex-spacer"></div>
+            <div class="facets">
+                <div *ngIf="variant.facetValues.length">{{ 'catalog.facets' | translate }}:</div>
+                <div *ngIf="!variant.facetValues.length">{{ 'catalog.no-facets' | translate }}</div>
+                <vdr-chip *ngFor="let facetValue of variant.facetValues">{{ facetValue.name }}</vdr-chip>
+            </div>
+        </div>
+        <div class="card-block">
+            <div class="details">
+                <div class="sku">
+                    <clr-input-container>
+                        <label>{{ 'catalog.sku' | translate }}</label>
+                        <input clrInput type="text" [formControl]="formArray.get([i, 'sku'])">
+                    </clr-input-container>
+                </div>
+                <div class="name">
+                    <clr-input-container>
+                        <label>{{ 'catalog.name' | translate }}</label>
+                        <input clrInput type="text" [formControl]="formArray.get([i, 'name'])">
+                    </clr-input-container>
+                </div>
+            </div>
+            <div class="pricing">
+                <div class="price-before-tax">
+                    <clr-input-container>
+                        <label>{{ 'catalog.price-before-tax' | translate }}</label>
+                        <vdr-currency-input clrInput
+                                            [formControl]="formArray.get([i, 'priceBeforeTax'])"
+                                            (input)="setPrice(i)"></vdr-currency-input>
+                    </clr-input-container>
+                </div>
+                <div class="tax-category">
+                    <clr-select-container>
+                        <label>{{ 'catalog.tax-category' | translate }}</label>
+                        <select clrSelect name="options"
+                                [formControl]="formArray.get([i, 'taxCategoryId'])"
+                                (change)="setPrice(i)">
+                            <option *ngFor="let taxCategory of taxCategories"
+                                    [value]="taxCategory.id">{{ taxCategory.name }}</option>
+                        </select>
+                    </clr-select-container>
+                </div>
+                <div class="price">
+                    <clr-input-container>
+                        <label>{{ 'catalog.price' | translate }}</label>
+                        <vdr-currency-input clrInput
+                                            [formControl]="formArray.get([i, 'price'])"
+                                            (input)="setPreTaxPrice(i)"></vdr-currency-input>
+                    </clr-input-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

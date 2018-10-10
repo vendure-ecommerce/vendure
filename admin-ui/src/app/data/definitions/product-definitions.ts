@@ -18,6 +18,12 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         languageCode
         name
         price
+        priceBeforeTax
+        taxCategory {
+            id
+            name
+            taxRate
+        }
         sku
         options {
             id
@@ -111,9 +117,15 @@ export const CREATE_PRODUCT = gql`
 `;
 
 export const GENERATE_PRODUCT_VARIANTS = gql`
-    mutation GenerateProductVariants($productId: ID!, $defaultPrice: Int, $defaultSku: String) {
+    mutation GenerateProductVariants(
+        $productId: ID!
+        $defaultTaxCategoryId: ID
+        $defaultPrice: Int
+        $defaultSku: String
+    ) {
         generateVariantsForProduct(
             productId: $productId
+            defaultTaxCategoryId: $defaultTaxCategoryId
             defaultPrice: $defaultPrice
             defaultSku: $defaultSku
         ) {

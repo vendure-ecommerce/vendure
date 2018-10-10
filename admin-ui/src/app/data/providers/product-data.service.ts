@@ -90,7 +90,9 @@ export class ProductDataService {
 
     updateProductVariants(variants: UpdateProductVariantInput[]) {
         const input: UpdateProductVariants.Variables = {
-            input: variants.map(pick(['id', 'translations', 'sku', 'price'])),
+            input: variants.map(
+                pick(['id', 'translations', 'sku', 'price', 'priceBeforeTax', 'taxCategoryId']),
+            ),
         };
         return this.baseDataService.mutate<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
             UPDATE_PRODUCT_VARIANTS,

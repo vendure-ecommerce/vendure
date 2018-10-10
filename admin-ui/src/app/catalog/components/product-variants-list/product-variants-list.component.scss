@@ -1,10 +1,53 @@
+@import "variables";
+
 .with-selected {
-    min-height: 40px;
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    border: 1px solid $color-grey-2;
+    border-radius: 3px;
+    padding: 6px 18px;
+
+    vdr-select-toggle {
+        margin-right: 12px;
+    }
+
     > label {
         margin-right: 12px;
     }
 }
 
-.table {
-    margin-top: 0;
+.variant-container {
+    .header-row {
+        display: flex;
+        align-items: center;
+    }
+
+    .flex-spacer {
+        flex: 1;
+    }
+
+    .clr-form-control {
+        margin-top: 0;
+    }
+
+    .facets {
+        display: flex;
+        align-items: center;
+    }
+
+    .details {
+        display: flex;
+        margin-bottom: 24px;
+        > div {
+            margin-right: 12px;
+        }
+    }
+
+    .pricing {
+        display: flex;
+        > div {
+            margin-right: 12px;
+        }
+    }
 }
