@@ -117,6 +117,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
+    @Decode('taxCategoryId')
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductVariantsMutationArgs,
