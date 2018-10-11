@@ -9,6 +9,7 @@ import {
     Asset,
     CreateAddressInput,
     CreateAdjustmentSource,
+    CreateCountry,
     CreateCustomerInput,
     CreateFacet,
     CreateFacetValueWithFacetInput,
@@ -30,6 +31,7 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
+import { CREATE_COUNTRY } from '../../admin-ui/src/app/data/definitions/settings-definitions';
 import { taxAction } from '../src/config/adjustment/required-adjustment-actions';
 import { taxCondition } from '../src/config/adjustment/required-adjustment-conditions';
 import { Channel } from '../src/entity/channel/channel.entity';
@@ -65,6 +67,24 @@ export class MockDataService {
             this.log(`Created Channel: ${channel.createChannel.code}`);
         }
         return channels;
+    }
+
+    async populateCountries() {
+        const countriesFile = await fs.readFile(
+            path.join(__dirname, 'data-sources', 'countries.json'),
+            'utf8',
+        );
+        const countries: any[] = JSON.parse(countriesFile);
+        for (const country of countries) {
+            await this.client.query<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
+                input: {
+                    code: country['alpha-2'],
+                    name: country.name,
+                    enabled: true,
+                },
+            });
+        }
+        this.log(`Created ${countries.length} Countries`);
     }
 
     async populateOptions(): Promise<string> {
