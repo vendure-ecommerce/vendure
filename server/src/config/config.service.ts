@@ -33,6 +33,10 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.authOptions as Required<AuthOptions>;
     }
 
+    get defaultChannelToken(): string | null {
+        return this.activeConfig.defaultChannelToken;
+    }
+
     get channelTokenKey(): string {
         return this.activeConfig.channelTokenKey;
     }

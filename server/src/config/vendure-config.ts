@@ -64,6 +64,11 @@ export interface VendureConfig {
      */
     channelTokenKey?: string;
     /**
+     * The token for the default channel. If not specified, a token
+     * will be randomly generated.
+     */
+    defaultChannelToken?: string | null;
+    /**
      * The default languageCode of the app.
      */
     defaultLanguageCode?: LanguageCode;

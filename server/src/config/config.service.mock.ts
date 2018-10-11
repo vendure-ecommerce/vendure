@@ -6,6 +6,7 @@ import { EntityIdStrategy, PrimaryKeyType } from './entity-id-strategy/entity-id
 
 export class MockConfigService implements MockClass<ConfigService> {
     authOptions: {};
+    defaultChannelToken: 'channel-token';
     channelTokenKey: 'vendure-token';
     apiPath = 'api';
     port = 3000;

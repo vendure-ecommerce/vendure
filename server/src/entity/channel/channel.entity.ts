@@ -8,7 +8,9 @@ import { VendureEntity } from '../base/base.entity';
 export class Channel extends VendureEntity {
     constructor(input?: DeepPartial<Channel>) {
         super(input);
-        this.token = this.generateToken();
+        if (!input || !input.token) {
+            this.token = this.generateToken();
+        }
     }
 
     @Column({ unique: true })

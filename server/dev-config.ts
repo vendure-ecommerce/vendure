@@ -8,6 +8,7 @@ import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/defa
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
+    defaultChannelToken: 'default-channel',
     authOptions: {
         disableAuth: false,
         sessionSecret: 'some-secret',

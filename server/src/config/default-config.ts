@@ -17,6 +17,7 @@ import { VendureConfig } from './vendure-config';
  */
 export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     channelTokenKey: 'vendure-token',
+    defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
     port: API_PORT,
     cors: {

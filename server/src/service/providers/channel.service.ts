@@ -6,6 +6,7 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ChannelAware } from '../../common/types/common-types';
+import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { I18nError } from '../../i18n/i18n-error';
 
@@ -13,7 +14,7 @@ import { I18nError } from '../../i18n/i18n-error';
 export class ChannelService {
     private allChannels: Channel[] = [];
 
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(@InjectConnection() private connection: Connection, private configService: ConfigService) {}
 
     /**
      * When the app is bootstrapped, ensure a default Channel exists and populate the
@@ -69,8 +70,10 @@ export class ChannelService {
 
     /**
      * There must always be a default Channel. If none yet exists, this method creates one.
+     * Also ensures the default Channel token matches the defaultChannelToken config setting.
      */
     private async ensureDefaultChannelExists() {
+        const { defaultChannelToken } = this.configService;
         const defaultChannel = await this.connection.getRepository(Channel).findOne({
             where: {
                 code: DEFAULT_CHANNEL_CODE,
@@ -81,8 +84,12 @@ export class ChannelService {
             const newDefaultChannel = new Channel({
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: DEFAULT_LANGUAGE_CODE,
+                token: defaultChannelToken,
             });
             await this.connection.manager.save(newDefaultChannel);
+        } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
+            defaultChannel.token = defaultChannelToken;
+            await this.connection.manager.save(defaultChannel);
         }
     }
 }
