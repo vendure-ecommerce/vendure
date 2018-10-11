@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/typeorm';
 import { CreateRoleInput, Permission, UpdateRoleInput } from 'shared/generated-types';
 import {
     CUSTOMER_ROLE_CODE,
@@ -14,14 +15,13 @@ import { assertFound } from '../../common/utils';
 import { Role } from '../../entity/role/role.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
-import { ActiveConnection } from '../helpers/connection.decorator';
 import { patchEntity } from '../helpers/patch-entity';
 
 import { ChannelService } from './channel.service';
 
 @Injectable()
 export class RoleService {
-    constructor(@ActiveConnection() private connection: Connection, private channelService: ChannelService) {}
+    constructor(@InjectConnection() private connection: Connection, private channelService: ChannelService) {}
 
     async initRoles() {
         await this.ensureSuperAdminRoleExists();

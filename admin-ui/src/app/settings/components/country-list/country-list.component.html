@@ -1,0 +1,36 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'settings.create-new-country' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="items$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-country="item">
+        <td class="left">{{ country.id }}</td>
+        <td class="left">{{ country.code }}</td>
+        <td class="left">{{ country.name }}</td>
+        <td class="left">
+            <clr-icon [class.enabled]="country.enabled"
+                      [attr.shape]="country.enabled ? 'check' : 'times'"></clr-icon>
+        </td>
+        <td class="right">
+            <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
+                                  [linkTo]="['./', country.id]">
+            </vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

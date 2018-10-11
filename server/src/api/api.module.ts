@@ -17,6 +17,7 @@ import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
 import { ChannelResolver } from './resolvers/channel.resolver';
 import { ConfigResolver } from './resolvers/config.resolver';
+import { CountryResolver } from './resolvers/country.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
 import { FacetResolver } from './resolvers/facet.resolver';
 import { OrderResolver } from './resolvers/order.resolver';
@@ -31,6 +32,7 @@ const exportedProviders = [
     AssetResolver,
     ChannelResolver,
     ConfigResolver,
+    CountryResolver,
     FacetResolver,
     CustomerResolver,
     OrderResolver,

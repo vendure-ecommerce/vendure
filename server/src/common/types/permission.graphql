@@ -33,4 +33,9 @@ enum Permission {
     ReadAdjustmentSource
     UpdateAdjustmentSource
     DeleteAdjustmentSource
+
+    CreateSettings
+    ReadSettings
+    UpdateSettings
+    DeleteSettings
 }

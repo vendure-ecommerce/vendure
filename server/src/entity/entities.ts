@@ -3,6 +3,7 @@ import { AdjustmentSource } from './adjustment-source/adjustment-source.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
+import { Country } from './country/country.entity';
 import { Customer } from './customer/customer.entity';
 import { FacetValueTranslation } from './facet-value/facet-value-translation.entity';
 import { FacetValue } from './facet-value/facet-value.entity';
@@ -36,6 +37,7 @@ export const coreEntitiesMap = {
     Asset,
     AuthenticatedSession,
     Channel,
+    Country,
     Customer,
     Facet,
     FacetTranslation,

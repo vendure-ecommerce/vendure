@@ -92,4 +92,10 @@ export class MockDataService implements DataServiceMock {
         createFacetValues: spyObservable('createFacetValues'),
         updateFacetValues: spyObservable('updateFacetValues'),
     };
+    settings = {
+        getCountries: spyQueryResult('getCountries'),
+        getCountry: spyQueryResult('getCountry'),
+        createCountry: spyObservable('createCountry'),
+        updateCountry: spyObservable('updateCountry'),
+    };
 }

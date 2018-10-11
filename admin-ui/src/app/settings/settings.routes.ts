@@ -7,11 +7,14 @@ import { _ } from '../core/providers/i18n/mark-for-extraction';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
 import { AdministratorListComponent } from './components/administrator-list/administrator-list.component';
+import { CountryDetailComponent } from './components/country-detail/country-detail.component';
+import { CountryListComponent } from './components/country-list/country-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
+import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 
@@ -57,6 +60,21 @@ export const settingsRoutes: Route[] = [
             breadcrumb: taxCategoryBreadcrumb,
         },
     },
+    {
+        path: 'countries',
+        component: CountryListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.countries'),
+        },
+    },
+    {
+        path: 'countries/:id',
+        component: CountryDetailComponent,
+        resolve: createResolveData(CountryResolver),
+        data: {
+            breadcrumb: countryBreadcrumb,
+        },
+    },
 ];
 
 export function administratorBreadcrumb(data: any, params: any) {
@@ -86,5 +104,15 @@ export function taxCategoryBreadcrumb(data: any, params: any) {
         breadcrumbKey: 'breadcrumb.tax-categories',
         getName: promotion => promotion.name,
         route: 'tax-categories',
+    });
+}
+
+export function countryBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<AdjustmentSource.Fragment>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.countries',
+        getName: promotion => promotion.name,
+        route: 'countries',
     });
 }

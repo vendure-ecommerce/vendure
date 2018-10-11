@@ -82,6 +82,13 @@
                         <clr-icon shape="calculator" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}
                     </a>
                 </li>
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/settings', 'countries']"
+                       routerLinkActive="active">
+                        <clr-icon shape="world" size="20"></clr-icon>{{ 'nav.countries' | translate }}
+                    </a>
+                </li>
             </ul>
         </section>
     </section>

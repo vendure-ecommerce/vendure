@@ -8,6 +8,7 @@ import { ClientDataService } from './client-data.service';
 import { FacetDataService } from './facet-data.service';
 import { OrderDataService } from './order-data.service';
 import { ProductDataService } from './product-data.service';
+import { SettingsDataService } from './settings-data.service';
 
 @Injectable()
 export class DataService {
@@ -18,6 +19,7 @@ export class DataService {
     client: ClientDataService;
     facet: FacetDataService;
     order: OrderDataService;
+    settings: SettingsDataService;
 
     constructor(baseDataService: BaseDataService) {
         this.adjustmentSource = new AdjustmentSourceDataService(baseDataService);
@@ -27,5 +29,6 @@ export class DataService {
         this.client = new ClientDataService(baseDataService);
         this.facet = new FacetDataService(baseDataService);
         this.order = new OrderDataService(baseDataService);
+        this.settings = new SettingsDataService(baseDataService);
     }
 }

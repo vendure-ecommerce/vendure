@@ -16,7 +16,6 @@ import { FacetValueTranslation } from '../../entity/facet-value/facet-value-tran
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 
-import { ActiveConnection } from '../helpers/connection.decorator';
 import { createTranslatable } from '../helpers/create-translatable';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
@@ -25,7 +24,7 @@ import { updateTranslatable } from '../helpers/update-translatable';
 @Injectable()
 export class FacetValueService {
     constructor(
-        @ActiveConnection() private connection: Connection,
+        @InjectConnection() private connection: Connection,
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 

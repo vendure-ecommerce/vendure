@@ -48,6 +48,8 @@ export interface Query {
     asset?: Asset | null;
     me?: CurrentUser | null;
     config: Config;
+    countries: CountryList;
+    country?: Country | null;
     customers: CustomerList;
     customer?: Customer | null;
     facets: FacetList;
@@ -165,6 +167,18 @@ export interface CurrentUser {
 
 export interface Config {
     customFields?: Json | null;
+}
+
+export interface CountryList extends PaginatedList {
+    items: Country[];
+    totalItems: number;
+}
+
+export interface Country extends Node {
+    id: string;
+    code: string;
+    name: string;
+    enabled: boolean;
 }
 
 export interface CustomerList extends PaginatedList {
@@ -431,6 +445,8 @@ export interface Mutation {
     login: LoginResult;
     logout: boolean;
     createChannel: Channel;
+    createCountry: Country;
+    updateCountry: Country;
     createCustomer: Customer;
     createCustomerAddress: Address;
     createFacet: Facet;
@@ -547,6 +563,34 @@ export interface AssetFilterParameter {
     updatedAt?: DateOperators | null;
 }
 
+export interface CountryListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: CountrySortParameter | null;
+    filter?: CountryFilterParameter | null;
+}
+
+export interface CountrySortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    code?: SortOrder | null;
+    name?: SortOrder | null;
+    enabled?: SortOrder | null;
+}
+
+export interface CountryFilterParameter {
+    code?: StringOperators | null;
+    name?: StringOperators | null;
+    enabled?: BooleanOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
+export interface BooleanOperators {
+    eq?: boolean | null;
+}
+
 export interface CustomerListOptions {
     take?: number | null;
     skip?: number | null;
@@ -595,10 +639,6 @@ export interface FacetFilterParameter {
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
     searchable?: BooleanOperators | null;
-}
-
-export interface BooleanOperators {
-    eq?: boolean | null;
 }
 
 export interface OrderListOptions {
@@ -714,6 +754,19 @@ export interface UpdateAdministratorInput {
 
 export interface CreateAssetInput {
     file: Upload;
+}
+
+export interface CreateCountryInput {
+    code: string;
+    name: string;
+    enabled: boolean;
+}
+
+export interface UpdateCountryInput {
+    id: string;
+    code?: string | null;
+    name?: string | null;
+    enabled?: boolean | null;
 }
 
 export interface CreateCustomerInput {
@@ -951,6 +1004,12 @@ export interface AssetsQueryArgs {
 export interface AssetQueryArgs {
     id: string;
 }
+export interface CountriesQueryArgs {
+    options?: CountryListOptions | null;
+}
+export interface CountryQueryArgs {
+    id: string;
+}
 export interface CustomersQueryArgs {
     options?: CustomerListOptions | null;
 }
@@ -1019,6 +1078,12 @@ export interface LoginMutationArgs {
 }
 export interface CreateChannelMutationArgs {
     code: string;
+}
+export interface CreateCountryMutationArgs {
+    input: CreateCountryInput;
+}
+export interface UpdateCountryMutationArgs {
+    input: UpdateCountryInput;
 }
 export interface CreateCustomerMutationArgs {
     input: CreateCustomerInput;
@@ -1134,6 +1199,10 @@ export enum Permission {
     ReadAdjustmentSource = 'ReadAdjustmentSource',
     UpdateAdjustmentSource = 'UpdateAdjustmentSource',
     DeleteAdjustmentSource = 'DeleteAdjustmentSource',
+    CreateSettings = 'CreateSettings',
+    ReadSettings = 'ReadSettings',
+    UpdateSettings = 'UpdateSettings',
+    DeleteSettings = 'DeleteSettings',
 }
 
 export enum AssetType {
@@ -1340,6 +1409,8 @@ export namespace QueryResolvers {
         asset?: AssetResolver<Asset | null, any, Context>;
         me?: MeResolver<CurrentUser | null, any, Context>;
         config?: ConfigResolver<Config, any, Context>;
+        countries?: CountriesResolver<CountryList, any, Context>;
+        country?: CountryResolver<Country | null, any, Context>;
         customers?: CustomersResolver<CustomerList, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         facets?: FacetsResolver<FacetList, any, Context>;
@@ -1434,6 +1505,26 @@ export namespace QueryResolvers {
         Context
     >;
     export type ConfigResolver<R = Config, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CountriesResolver<R = CountryList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CountriesArgs
+    >;
+    export interface CountriesArgs {
+        options?: CountryListOptions | null;
+    }
+
+    export type CountryResolver<R = Country | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CountryArgs
+    >;
+    export interface CountryArgs {
+        id: string;
+    }
+
     export type CustomersResolver<R = CustomerList, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -1821,6 +1912,30 @@ export namespace ConfigResolvers {
         Parent,
         Context
     >;
+}
+
+export namespace CountryListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<Country[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace CountryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace CustomerListResolvers {
@@ -2586,6 +2701,8 @@ export namespace MutationResolvers {
         login?: LoginResolver<LoginResult, any, Context>;
         logout?: LogoutResolver<boolean, any, Context>;
         createChannel?: CreateChannelResolver<Channel, any, Context>;
+        createCountry?: CreateCountryResolver<Country, any, Context>;
+        updateCountry?: UpdateCountryResolver<Country, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
@@ -2699,6 +2816,26 @@ export namespace MutationResolvers {
     >;
     export interface CreateChannelArgs {
         code: string;
+    }
+
+    export type CreateCountryResolver<R = Country, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateCountryArgs
+    >;
+    export interface CreateCountryArgs {
+        input: CreateCountryInput;
+    }
+
+    export type UpdateCountryResolver<R = Country, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateCountryArgs
+    >;
+    export interface UpdateCountryArgs {
+        input: UpdateCountryInput;
     }
 
     export type CreateCustomerResolver<R = Customer, Parent = any, Context = any> = Resolver<
@@ -3675,6 +3812,64 @@ export namespace CreateAssets {
     export type CreateAssets = Asset.Fragment;
 }
 
+export namespace GetCountryList {
+    export type Variables = {
+        options?: CountryListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        countries: Countries;
+    };
+
+    export type Countries = {
+        __typename?: 'CountryList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = Country.Fragment;
+}
+
+export namespace GetCountry {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        country?: Country | null;
+    };
+
+    export type Country = Country.Fragment;
+}
+
+export namespace CreateCountry {
+    export type Variables = {
+        input: CreateCountryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createCountry: CreateCountry;
+    };
+
+    export type CreateCountry = Country.Fragment;
+}
+
+export namespace UpdateCountry {
+    export type Variables = {
+        input: UpdateCountryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateCountry: UpdateCountry;
+    };
+
+    export type UpdateCountry = Country.Fragment;
+}
+
 export namespace AdjustmentOperation {
     export type Fragment = {
         __typename?: 'AdjustmentOperation';
@@ -3944,5 +4139,15 @@ export namespace ProductOptionGroup {
     export type _Translations = {
         __typename?: 'ProductOptionTranslation';
         name: string;
+    };
+}
+
+export namespace Country {
+    export type Fragment = {
+        __typename?: 'Country';
+        id: string;
+        code: string;
+        name: string;
+        enabled: boolean;
     };
 }

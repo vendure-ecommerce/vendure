@@ -1,0 +1,20 @@
+type Country implements Node {
+    id: ID!
+    code: String!
+    name: String!
+    enabled: Boolean!
+}
+
+input CreateCountryInput {
+    code: String!
+    name: String!
+    enabled: Boolean!
+}
+
+
+input UpdateCountryInput {
+    id: ID!
+    code: String
+    name: String
+    enabled: Boolean
+}
