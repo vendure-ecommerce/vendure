@@ -1,6 +1,11 @@
 <table class="table">
     <thead>
     <tr>
+        <th *ngIf="isRowSelectedFn">
+            <vdr-select-toggle size="small"
+                               [selected]="allSelected"
+                               (selectedChange)="allSelectChange.emit()"></vdr-select-toggle>
+        </th>
         <th *ngFor="let header of columns?.toArray()" class="left">
             <ng-container *ngTemplateOutlet="header.template"></ng-container>
         </th>
@@ -8,15 +13,22 @@
     </thead>
     <tbody>
     <tr *ngFor="let item of items | paginate:{ itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: totalItems }">
+        <td *ngIf="isRowSelectedFn">
+            <vdr-select-toggle size="small"
+                               [selected]="isRowSelectedFn(item)"
+                               (selectedChange)="rowSelectChange.emit(item)"></vdr-select-toggle>
+        </td>
         <ng-container *ngTemplateOutlet="rowTemplate; context: { item: item }"></ng-container>
     </tr>
     </tbody>
 </table>
 <div class="table-footer">
-    <vdr-items-per-page-controls [itemsPerPage]="itemsPerPage"
+    <vdr-items-per-page-controls *ngIf="totalItems"
+                                 [itemsPerPage]="itemsPerPage"
                                  (itemsPerPageChange)="itemsPerPageChange.emit($event)"></vdr-items-per-page-controls>
 
-    <vdr-pagination-controls [currentPage]="currentPage"
+    <vdr-pagination-controls *ngIf="totalItems"
+                             [currentPage]="currentPage"
                              [itemsPerPage]="itemsPerPage"
                              [totalItems]="totalItems"
                              (pageChange)="pageChange.emit($event)"></vdr-pagination-controls>

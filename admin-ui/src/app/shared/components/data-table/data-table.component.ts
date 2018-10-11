@@ -20,11 +20,15 @@ import { DataTableColumnComponent } from './data-table-column.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTableComponent {
-    @Input() items: any[];
+export class DataTableComponent<T> {
+    @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
     @Input() totalItems: number;
+    @Input() allSelected: boolean;
+    @Input() isRowSelectedFn: (item: T) => boolean;
+    @Output() allSelectChange = new EventEmitter<void>();
+    @Output() rowSelectChange = new EventEmitter<T>();
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
