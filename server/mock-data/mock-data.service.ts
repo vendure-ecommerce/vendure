@@ -7,6 +7,7 @@ import {
     AdjustmentSource,
     AdjustmentType,
     Asset,
+    Country,
     CreateAddressInput,
     CreateAdjustmentSource,
     CreateCountry,
@@ -15,6 +16,7 @@ import {
     CreateFacetValueWithFacetInput,
     CreateProduct,
     CreateProductOptionGroup,
+    CreateZone,
     GenerateProductVariants,
     LanguageCode,
     ProductTranslationInput,
@@ -31,7 +33,7 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { CREATE_COUNTRY } from '../../admin-ui/src/app/data/definitions/settings-definitions';
+import { CREATE_COUNTRY, CREATE_ZONE } from '../../admin-ui/src/app/data/definitions/settings-definitions';
 import { taxAction } from '../src/config/adjustment/required-adjustment-actions';
 import { taxCondition } from '../src/config/adjustment/required-adjustment-conditions';
 import { Channel } from '../src/entity/channel/channel.entity';
@@ -75,16 +77,32 @@ export class MockDataService {
             'utf8',
         );
         const countries: any[] = JSON.parse(countriesFile);
+        const zones: { [zoneName: string]: string[] } = {};
         for (const country of countries) {
-            await this.client.query<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
+            const result = await this.client.query<CreateCountry.Mutation, CreateCountry.Variables>(
+                CREATE_COUNTRY,
+                {
+                    input: {
+                        code: country['alpha-2'],
+                        name: country.name,
+                        enabled: true,
+                    },
+                },
+            );
+            if (!zones[country.region]) {
+                zones[country.region] = [];
+            }
+            zones[country.region].push(result.createCountry.id);
+        }
+        for (const [name, memberIds] of Object.entries(zones)) {
+            await this.client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
                 input: {
-                    code: country['alpha-2'],
-                    name: country.name,
-                    enabled: true,
+                    name,
+                    memberIds,
                 },
             });
         }
-        this.log(`Created ${countries.length} Countries`);
+        this.log(`Created ${countries.length} Countries in ${Object.keys(zones).length} Zones`);
     }
 
     async populateOptions(): Promise<string> {
