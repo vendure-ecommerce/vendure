@@ -1,0 +1,15 @@
+type Query {
+    zones: [Zone!]!
+    zone(id: ID!): Zone
+}
+
+type Mutation {
+    "Create a new Zone"
+    createZone(input: CreateZoneInput!): Zone!
+    "Update an existing Zone"
+    updateZone(input: UpdateZoneInput!): Zone!
+    "Add members to a Zone"
+    addMembersToZone(zoneId: ID!, memberIds: [ID!]!): Zone!
+    "Remove members from a Zone"
+    removeMembersFromZone(zoneId: ID!, memberIds: [ID!]!): Zone!
+}

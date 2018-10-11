@@ -25,12 +25,12 @@ export class CountryService {
     }
 
     findOne(countryId: ID): Promise<Country | undefined> {
-        return this.connection.manager.findOne(Country, countryId);
+        return this.connection.getRepository(Country).findOne(countryId);
     }
 
     async create(input: CreateCountryInput): Promise<Country> {
         const country = new Country(input);
-        return this.connection.manager.save(country);
+        return this.connection.getRepository(Country).save(country);
     }
 
     async update(input: UpdateCountryInput): Promise<Country> {
@@ -39,7 +39,7 @@ export class CountryService {
             throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Country', id: input.id });
         }
         const updatedCountry = patchEntity(country, input);
-        await this.connection.manager.save(updatedCountry);
+        await this.connection.getRepository(Country).save(updatedCountry);
         return assertFound(this.findOne(country.id));
     }
 }

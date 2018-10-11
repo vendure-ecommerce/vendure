@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
+import { QueryResolvers } from 'shared/generated-types';
 
 import { ConfigModule } from '../config/config.module';
 import { I18nModule } from '../i18n/i18n.module';
@@ -24,6 +25,7 @@ import { OrderResolver } from './resolvers/order.resolver';
 import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
+import { ZoneResolver } from './resolvers/zone.resolver';
 
 const exportedProviders = [
     AdjustmentSourceResolver,
@@ -39,6 +41,7 @@ const exportedProviders = [
     ProductOptionResolver,
     ProductResolver,
     RoleResolver,
+    ZoneResolver,
 ];
 
 /**

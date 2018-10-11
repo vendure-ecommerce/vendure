@@ -22,6 +22,7 @@ import { ProductOptionService } from './providers/product-option.service';
 import { ProductVariantService } from './providers/product-variant.service';
 import { ProductService } from './providers/product.service';
 import { RoleService } from './providers/role.service';
+import { ZoneService } from './providers/zone.service';
 
 const exportedProviders = [
     AdjustmentSourceService,
@@ -39,6 +40,7 @@ const exportedProviders = [
     ProductService,
     ProductVariantService,
     RoleService,
+    ZoneService,
 ];
 
 /**

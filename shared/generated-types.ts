@@ -63,6 +63,8 @@ export interface Query {
     product?: Product | null;
     roles: RoleList;
     role?: Role | null;
+    zones: Zone[];
+    zone?: Zone | null;
     networkStatus: NetworkStatus;
     userStatus: UserStatus;
     uiState: UiState;
@@ -421,6 +423,14 @@ export interface RoleList extends PaginatedList {
     totalItems: number;
 }
 
+export interface Zone extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    members: Country[];
+}
+
 export interface NetworkStatus {
     inFlightRequests: number;
 }
@@ -467,6 +477,10 @@ export interface Mutation {
     applyFacetValuesToProductVariants: ProductVariant[];
     createRole: Role;
     updateRole: Role;
+    createZone: Zone;
+    updateZone: Zone;
+    addMembersToZone: Zone;
+    removeMembersFromZone: Zone;
     requestStarted: number;
     requestCompleted: number;
     setAsLoggedIn: UserStatus;
@@ -952,6 +966,16 @@ export interface UpdateRoleInput {
     permissions?: Permission[] | null;
 }
 
+export interface CreateZoneInput {
+    name: string;
+    memberIds?: string[] | null;
+}
+
+export interface UpdateZoneInput {
+    id: string;
+    name?: string | null;
+}
+
 export interface CreateProductVariantInput {
     translations: ProductVariantTranslationInput[];
     sku: string;
@@ -1050,6 +1074,9 @@ export interface RolesQueryArgs {
     options?: RoleListOptions | null;
 }
 export interface RoleQueryArgs {
+    id: string;
+}
+export interface ZoneQueryArgs {
     id: string;
 }
 export interface CreateAdjustmentSourceMutationArgs {
@@ -1154,6 +1181,20 @@ export interface CreateRoleMutationArgs {
 }
 export interface UpdateRoleMutationArgs {
     input: UpdateRoleInput;
+}
+export interface CreateZoneMutationArgs {
+    input: CreateZoneInput;
+}
+export interface UpdateZoneMutationArgs {
+    input: UpdateZoneInput;
+}
+export interface AddMembersToZoneMutationArgs {
+    zoneId: string;
+    memberIds: string[];
+}
+export interface RemoveMembersFromZoneMutationArgs {
+    zoneId: string;
+    memberIds: string[];
 }
 export interface SetAsLoggedInMutationArgs {
     username: string;
@@ -1424,6 +1465,8 @@ export namespace QueryResolvers {
         product?: ProductResolver<Product | null, any, Context>;
         roles?: RolesResolver<RoleList, any, Context>;
         role?: RoleResolver<Role | null, any, Context>;
+        zones?: ZonesResolver<Zone[], any, Context>;
+        zone?: ZoneResolver<Zone | null, any, Context>;
         networkStatus?: NetworkStatusResolver<NetworkStatus, any, Context>;
         userStatus?: UserStatusResolver<UserStatus, any, Context>;
         uiState?: UiStateResolver<UiState, any, Context>;
@@ -1652,6 +1695,17 @@ export namespace QueryResolvers {
         RoleArgs
     >;
     export interface RoleArgs {
+        id: string;
+    }
+
+    export type ZonesResolver<R = Zone[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ZoneArgs
+    >;
+    export interface ZoneArgs {
         id: string;
     }
 
@@ -2654,6 +2708,22 @@ export namespace RoleListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace ZoneResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        members?: MembersResolver<Country[], any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type MembersResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace NetworkStatusResolvers {
     export interface Resolvers<Context = any> {
         inFlightRequests?: InFlightRequestsResolver<number, any, Context>;
@@ -2727,6 +2797,10 @@ export namespace MutationResolvers {
         >;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
+        createZone?: CreateZoneResolver<Zone, any, Context>;
+        updateZone?: UpdateZoneResolver<Zone, any, Context>;
+        addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
+        removeMembersFromZone?: RemoveMembersFromZoneResolver<Zone, any, Context>;
         requestStarted?: RequestStartedResolver<number, any, Context>;
         requestCompleted?: RequestCompletedResolver<number, any, Context>;
         setAsLoggedIn?: SetAsLoggedInResolver<UserStatus, any, Context>;
@@ -3042,6 +3116,48 @@ export namespace MutationResolvers {
     >;
     export interface UpdateRoleArgs {
         input: UpdateRoleInput;
+    }
+
+    export type CreateZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateZoneArgs
+    >;
+    export interface CreateZoneArgs {
+        input: CreateZoneInput;
+    }
+
+    export type UpdateZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateZoneArgs
+    >;
+    export interface UpdateZoneArgs {
+        input: UpdateZoneInput;
+    }
+
+    export type AddMembersToZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        AddMembersToZoneArgs
+    >;
+    export interface AddMembersToZoneArgs {
+        zoneId: string;
+        memberIds: string[];
+    }
+
+    export type RemoveMembersFromZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        RemoveMembersFromZoneArgs
+    >;
+    export interface RemoveMembersFromZoneArgs {
+        zoneId: string;
+        memberIds: string[];
     }
 
     export type RequestStartedResolver<R = number, Parent = any, Context = any> = Resolver<
@@ -3870,6 +3986,84 @@ export namespace UpdateCountry {
     export type UpdateCountry = Country.Fragment;
 }
 
+export namespace GetZones {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        zones: Zones[];
+    };
+
+    export type Zones = Zone.Fragment;
+}
+
+export namespace GetZone {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        zone?: Zone | null;
+    };
+
+    export type Zone = Zone.Fragment;
+}
+
+export namespace CreateZone {
+    export type Variables = {
+        input: CreateZoneInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createZone: CreateZone;
+    };
+
+    export type CreateZone = Zone.Fragment;
+}
+
+export namespace UpdateZone {
+    export type Variables = {
+        input: UpdateZoneInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateZone: UpdateZone;
+    };
+
+    export type UpdateZone = Zone.Fragment;
+}
+
+export namespace AddMembersToZone {
+    export type Variables = {
+        zoneId: string;
+        memberIds: string[];
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        addMembersToZone: AddMembersToZone;
+    };
+
+    export type AddMembersToZone = Zone.Fragment;
+}
+
+export namespace RemoveMembersFromZone {
+    export type Variables = {
+        zoneId: string;
+        memberIds: string[];
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        removeMembersFromZone: RemoveMembersFromZone;
+    };
+
+    export type RemoveMembersFromZone = Zone.Fragment;
+}
+
 export namespace AdjustmentOperation {
     export type Fragment = {
         __typename?: 'AdjustmentOperation';
@@ -4150,4 +4344,15 @@ export namespace Country {
         name: string;
         enabled: boolean;
     };
+}
+
+export namespace Zone {
+    export type Fragment = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+        members: Members[];
+    };
+
+    export type Members = Country.Fragment;
 }

@@ -25,6 +25,7 @@ import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
 import { User } from './user/user.entity';
+import { Zone } from './zone/zone.entity';
 
 /**
  * A map of all the core database entities.
@@ -57,4 +58,5 @@ export const coreEntitiesMap = {
     Role,
     Session,
     User,
+    Zone,
 };

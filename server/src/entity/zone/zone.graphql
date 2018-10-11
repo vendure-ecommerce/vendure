@@ -1,0 +1,17 @@
+type Zone implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    members: [Country!]!
+}
+
+input CreateZoneInput {
+    name: String!
+    memberIds: [ID!]
+}
+
+input UpdateZoneInput {
+    id: ID!
+    name: String
+}

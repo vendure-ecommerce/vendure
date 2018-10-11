@@ -15,30 +15,30 @@ import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
 import { Ctx } from '../common/request-context.decorator';
 
-@Resolver('Facet')
+@Resolver('Country')
 export class CountryResolver {
     constructor(private countryService: CountryService) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadSettings)
     countries(@Ctx() ctx: RequestContext, @Args() args: CountriesQueryArgs): Promise<PaginatedList<Country>> {
         return this.countryService.findAll(args.options || undefined);
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadSettings)
     async country(@Ctx() ctx: RequestContext, @Args() args: CountryQueryArgs): Promise<Country | undefined> {
         return this.countryService.findOne(args.id);
     }
 
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateSettings)
     async createCountry(@Args() args: CreateCountryMutationArgs): Promise<Country> {
         return this.countryService.create(args.input);
     }
 
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateSettings)
     async updateCountry(@Args() args: UpdateCountryMutationArgs): Promise<Country> {
         return this.countryService.update(args.input);
     }
