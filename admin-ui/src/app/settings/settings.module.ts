@@ -12,6 +12,7 @@ import { RoleDetailComponent } from './components/role-detail/role-detail.compon
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
+import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/zone-selector-dialog.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
@@ -30,7 +31,9 @@ import { settingsRoutes } from './settings.routes';
         PermissionGridComponent,
         CountryListComponent,
         CountryDetailComponent,
+        ZoneSelectorDialogComponent,
     ],
+    entryComponents: [ZoneSelectorDialogComponent],
     providers: [TaxCategoryResolver, AdministratorResolver, RoleResolver, CountryResolver],
 })
 export class SettingsModule {}

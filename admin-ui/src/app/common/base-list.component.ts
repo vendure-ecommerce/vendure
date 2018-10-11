@@ -5,7 +5,7 @@ import { map, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
 
-export type ListQueryFn<R> = (...args: any[]) => QueryResult<R, any>;
+export type ListQueryFn<R> = (take: number, skip: number, ...args: any[]) => QueryResult<R, any>;
 export type MappingFn<T, R> = (result: R) => { items: T[]; totalItems: number };
 
 /**

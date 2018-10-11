@@ -128,12 +128,15 @@
     "create-new-order": "Create new order"
   },
   "settings": {
+    "add-countries-to-zone": "Add countries to zone...",
+    "add-countries-to-zone-success": "Added { countryCount } {countryCount, plural, one {country} other {countries}} to zone \"{ zoneName }\"",
     "administrator": "Administrator",
     "catalog": "Catalog",
     "create": "Create",
     "create-new-country": "Create new country",
     "create-new-role": "Create new role",
     "create-new-tax-category": "Create tax category",
+    "create-zone": "Create zone",
     "customer": "Customer",
     "delete": "Delete",
     "description": "Description",
@@ -144,10 +147,14 @@
     "password": "Password",
     "permissions": "Permissions",
     "read": "Read",
+    "remove-countries-from-zone": "Remove countries from zone...",
+    "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
     "role": "Role",
     "roles": "Roles",
     "section": "Section",
+    "select-zone": "Select zone",
     "tax-rate": "Tax rate",
-    "update": "Update"
+    "update": "Update",
+    "zone": "Zone"
   }
 }

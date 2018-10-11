@@ -97,5 +97,11 @@ export class MockDataService implements DataServiceMock {
         getCountry: spyQueryResult('getCountry'),
         createCountry: spyObservable('createCountry'),
         updateCountry: spyObservable('updateCountry'),
+        getZones: spyQueryResult('getZones'),
+        getZone: spyQueryResult('getZone'),
+        createZone: spyObservable('createZone'),
+        updateZone: spyObservable('updateZone'),
+        addMembersToZone: spyObservable('addMembersToZone'),
+        removeMembersFromZone: spyObservable('removeMembersFromZone'),
     };
 }
