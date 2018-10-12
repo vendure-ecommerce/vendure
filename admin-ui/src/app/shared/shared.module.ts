@@ -32,6 +32,7 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { ModalService } from './providers/modal/modal.service';
 
@@ -53,6 +54,7 @@ const DECLARATIONS = [
     ActionBarRightComponent,
     AdjustmentOperationInputComponent,
     AffixedInputComponent,
+    BackgroundColorFromDirective,
     ChipComponent,
     CurrencyInputComponent,
     CustomFieldControlComponent,

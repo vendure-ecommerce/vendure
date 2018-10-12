@@ -11,5 +11,10 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 })
 export class ChipComponent {
     @Input() icon: string;
+    /**
+     * If set, the chip will have an auto-generated background
+     * color based on the string value passed in.
+     */
+    @Input() colorFrom = '';
     @Output() iconClick = new EventEmitter<MouseEvent>();
 }

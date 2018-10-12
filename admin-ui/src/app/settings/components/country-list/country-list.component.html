@@ -30,7 +30,8 @@
         <td class="left">{{ country.code }}</td>
         <td class="left">{{ country.name }}</td>
         <td class="left">
-            <vdr-chip *ngFor="let zone of country.zones">{{ zone.name }}</vdr-chip>
+            <vdr-chip *ngFor="let zone of country.zones"
+                      [colorFrom]="zone.id">{{ zone.name }}</vdr-chip>
         </td>
         <td class="left">
             <clr-icon [class.enabled]="country.enabled"

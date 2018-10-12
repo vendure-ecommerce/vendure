@@ -1,10 +1,18 @@
 @import "variables";
 
 :host {
-    display: inline-flex;
+    display: inline-block;
+}
+
+.wrapper {
+    display: flex;
     border: 1px solid $color-grey-4;
     border-radius: 3px;
     margin: 6px;
+    &.with-background {
+        color: $color-grey-1;
+        border-color: transparent;
+    }
 }
 
 .chip-label {
