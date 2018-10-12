@@ -12,6 +12,7 @@ import { AssetService } from './providers/asset.service';
 import { AuthService } from './providers/auth.service';
 import { ChannelService } from './providers/channel.service';
 import { CountryService } from './providers/country.service';
+import { CustomerGroupService } from './providers/customer-group.service';
 import { CustomerService } from './providers/customer.service';
 import { FacetValueService } from './providers/facet-value.service';
 import { FacetService } from './providers/facet.service';
@@ -31,6 +32,7 @@ const exportedProviders = [
     AuthService,
     ChannelService,
     CountryService,
+    CustomerGroupService,
     CustomerService,
     FacetService,
     FacetValueService,

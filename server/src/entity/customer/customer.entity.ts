@@ -1,10 +1,11 @@
 import { DeepPartial } from 'shared/shared-types';
 import { HasCustomFields } from 'shared/shared-types';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';
+import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
@@ -23,6 +24,10 @@ export class Customer extends VendureEntity implements HasCustomFields {
 
     @Column({ unique: true })
     emailAddress: string;
+
+    @ManyToMany(type => CustomerGroup)
+    @JoinTable()
+    groups: CustomerGroup[];
 
     @OneToMany(type => Address, address => address.customer)
     addresses: Address[];

@@ -50,6 +50,8 @@ export interface Query {
     config: Config;
     countries: CountryList;
     country?: Country | null;
+    customerGroups: CustomerGroup[];
+    customerGroup?: CustomerGroup | null;
     customers: CustomerList;
     customer?: Customer | null;
     facets: FacetList;
@@ -181,6 +183,13 @@ export interface Country extends Node {
     code: string;
     name: string;
     enabled: boolean;
+}
+
+export interface CustomerGroup extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
 }
 
 export interface CustomerList extends PaginatedList {
@@ -457,6 +466,10 @@ export interface Mutation {
     createChannel: Channel;
     createCountry: Country;
     updateCountry: Country;
+    createCustomerGroup: CustomerGroup;
+    updateCustomerGroup: CustomerGroup;
+    addCustomersToGroup: CustomerGroup;
+    removeCustomersFromGroup: CustomerGroup;
     createCustomer: Customer;
     createCustomerAddress: Address;
     createFacet: Facet;
@@ -783,6 +796,16 @@ export interface UpdateCountryInput {
     enabled?: boolean | null;
 }
 
+export interface CreateCustomerGroupInput {
+    name: string;
+    customerIds?: string[] | null;
+}
+
+export interface UpdateCustomerGroupInput {
+    id: string;
+    name?: string | null;
+}
+
 export interface CreateCustomerInput {
     firstName: string;
     lastName: string;
@@ -1034,6 +1057,9 @@ export interface CountriesQueryArgs {
 export interface CountryQueryArgs {
     id: string;
 }
+export interface CustomerGroupQueryArgs {
+    id: string;
+}
 export interface CustomersQueryArgs {
     options?: CustomerListOptions | null;
 }
@@ -1111,6 +1137,20 @@ export interface CreateCountryMutationArgs {
 }
 export interface UpdateCountryMutationArgs {
     input: UpdateCountryInput;
+}
+export interface CreateCustomerGroupMutationArgs {
+    input: CreateCustomerGroupInput;
+}
+export interface UpdateCustomerGroupMutationArgs {
+    input: UpdateCustomerGroupInput;
+}
+export interface AddCustomersToGroupMutationArgs {
+    customerGroupId: string;
+    customerIds: string[];
+}
+export interface RemoveCustomersFromGroupMutationArgs {
+    customerGroupId: string;
+    customerIds: string[];
 }
 export interface CreateCustomerMutationArgs {
     input: CreateCustomerInput;
@@ -1452,6 +1492,8 @@ export namespace QueryResolvers {
         config?: ConfigResolver<Config, any, Context>;
         countries?: CountriesResolver<CountryList, any, Context>;
         country?: CountryResolver<Country | null, any, Context>;
+        customerGroups?: CustomerGroupsResolver<CustomerGroup[], any, Context>;
+        customerGroup?: CustomerGroupResolver<CustomerGroup | null, any, Context>;
         customers?: CustomersResolver<CustomerList, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         facets?: FacetsResolver<FacetList, any, Context>;
@@ -1565,6 +1607,21 @@ export namespace QueryResolvers {
         CountryArgs
     >;
     export interface CountryArgs {
+        id: string;
+    }
+
+    export type CustomerGroupsResolver<R = CustomerGroup[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CustomerGroupResolver<R = CustomerGroup | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CustomerGroupArgs
+    >;
+    export interface CustomerGroupArgs {
         id: string;
     }
 
@@ -1990,6 +2047,20 @@ export namespace CountryResolvers {
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace CustomerGroupResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace CustomerListResolvers {
@@ -2773,6 +2844,10 @@ export namespace MutationResolvers {
         createChannel?: CreateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
         updateCountry?: UpdateCountryResolver<Country, any, Context>;
+        createCustomerGroup?: CreateCustomerGroupResolver<CustomerGroup, any, Context>;
+        updateCustomerGroup?: UpdateCustomerGroupResolver<CustomerGroup, any, Context>;
+        addCustomersToGroup?: AddCustomersToGroupResolver<CustomerGroup, any, Context>;
+        removeCustomersFromGroup?: RemoveCustomersFromGroupResolver<CustomerGroup, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
@@ -2910,6 +2985,48 @@ export namespace MutationResolvers {
     >;
     export interface UpdateCountryArgs {
         input: UpdateCountryInput;
+    }
+
+    export type CreateCustomerGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateCustomerGroupArgs
+    >;
+    export interface CreateCustomerGroupArgs {
+        input: CreateCustomerGroupInput;
+    }
+
+    export type UpdateCustomerGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateCustomerGroupArgs
+    >;
+    export interface UpdateCustomerGroupArgs {
+        input: UpdateCustomerGroupInput;
+    }
+
+    export type AddCustomersToGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        AddCustomersToGroupArgs
+    >;
+    export interface AddCustomersToGroupArgs {
+        customerGroupId: string;
+        customerIds: string[];
+    }
+
+    export type RemoveCustomersFromGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        RemoveCustomersFromGroupArgs
+    >;
+    export interface RemoveCustomersFromGroupArgs {
+        customerGroupId: string;
+        customerIds: string[];
     }
 
     export type CreateCustomerResolver<R = Customer, Parent = any, Context = any> = Resolver<

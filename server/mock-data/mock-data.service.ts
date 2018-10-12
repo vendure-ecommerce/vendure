@@ -203,9 +203,9 @@ export class MockDataService {
                 password: 'test',
             };
 
-            const customer: Customer | void = await this.client
+            const customer: { id: string; emailAddress: string } | void = await this.client
                 .query(query1, variables1)
-                .then((data: any) => data.createCustomer as Customer, err => this.log(err));
+                .then((data: any) => data.createCustomer, err => this.log(err));
 
             if (customer) {
                 const query2 = gql`

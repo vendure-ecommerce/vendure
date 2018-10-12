@@ -4,6 +4,7 @@ import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
 import { Country } from './country/country.entity';
+import { CustomerGroup } from './customer-group/customer-group.entity';
 import { Customer } from './customer/customer.entity';
 import { FacetValueTranslation } from './facet-value/facet-value-translation.entity';
 import { FacetValue } from './facet-value/facet-value.entity';
@@ -40,6 +41,7 @@ export const coreEntitiesMap = {
     Channel,
     Country,
     Customer,
+    CustomerGroup,
     Facet,
     FacetTranslation,
     FacetValue,

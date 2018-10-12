@@ -1,0 +1,16 @@
+type CustomerGroup implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+}
+
+input CreateCustomerGroupInput {
+    name: String!
+    customerIds: [ID!]
+}
+
+input UpdateCustomerGroupInput {
+    id: ID!
+    name: String
+}
