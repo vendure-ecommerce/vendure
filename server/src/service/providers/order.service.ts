@@ -77,9 +77,9 @@ export class OrderService {
             taxCategoryId: productVariant.taxCategory.id,
             featuredAsset: productVariant.product.featuredAsset,
             unitPrice: productVariant.price,
-            unitPriceBeforeTax: productVariant.priceBeforeTax,
-            totalPriceBeforeAdjustment: productVariant.priceBeforeTax * quantity,
-            totalPrice: productVariant.priceBeforeTax * quantity,
+            unitPriceBeforeTax: 0,
+            totalPriceBeforeAdjustment: 0 * quantity,
+            totalPrice: 0 * quantity,
             adjustments: [],
         });
         const newOrderItem = await this.connection.getRepository(OrderItem).save(orderItem);

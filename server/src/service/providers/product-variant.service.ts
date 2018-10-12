@@ -21,11 +21,13 @@ import { TranslationUpdaterService } from '../helpers/translation-updater.servic
 import { updateTranslatable } from '../helpers/update-translatable';
 
 import { AdjustmentSourceService } from './adjustment-source.service';
+import { TaxCategoryService } from './tax-category.service';
 
 @Injectable()
 export class ProductVariantService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private taxCategoryService: TaxCategoryService,
         private translationUpdaterService: TranslationUpdaterService,
         private adjustmentSourceService: AdjustmentSourceService,
     ) {}
@@ -55,6 +57,7 @@ export class ProductVariantService {
                 variant.options = selectedOptions;
             }
             variant.product = product;
+            variant.taxCategory = { id: input.taxCategoryId } as any;
         });
         return await save(this.connection, input, {
             channelId: ctx.channelId,
@@ -67,11 +70,19 @@ export class ProductVariantService {
             ProductVariant,
             ProductVariantTranslation,
             this.translationUpdaterService,
+            async updatedVariant => {
+                if (input.taxCategoryId) {
+                    const taxCategory = await this.taxCategoryService.findOne(input.taxCategoryId);
+                    if (taxCategory) {
+                        updatedVariant.taxCategory = taxCategory;
+                    }
+                }
+            },
         );
         await save(this.connection, input, { channelId: ctx.channelId, taxCategoryId: input.taxCategoryId });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: ['options', 'facetValues'],
+                relations: ['options', 'facetValues', 'taxCategory'],
             }),
         );
         return translateDeep(this.applyChannelPrice(variant, ctx.channelId), DEFAULT_LANGUAGE_CODE, [
@@ -168,12 +179,6 @@ export class ProductVariantService {
             throw new I18nError(`error.no-price-found-for-channel`);
         }
         variant.price = channelPrice.price;
-        variant.priceBeforeTax = channelPrice.priceBeforeTax;
-        variant.taxCategory = {
-            id: channelPrice.taxCategory.id,
-            name: channelPrice.taxCategory.name,
-            taxRate: channelPrice.taxCategory.getTaxCategoryRate() || 0,
-        };
         return variant;
     }
 

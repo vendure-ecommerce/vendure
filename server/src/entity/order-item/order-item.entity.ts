@@ -1,7 +1,7 @@
 import { DeepPartial, ID } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Adjustment } from '../adjustment-source/adjustment-source.entity';
+import { Adjustment } from '../../common/types/adjustment-source';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';

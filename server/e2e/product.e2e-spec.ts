@@ -145,7 +145,6 @@ describe('Product resolver', () => {
                 fail('Product not found');
                 return;
             }
-            expect(result.product.variants[0].priceBeforeTax).toBe(621);
             expect(result.product.variants[0].price).toBe(745);
             expect(result.product.variants[0].taxCategory).toEqual({
                 id: 'T_1',
@@ -496,7 +495,6 @@ describe('Product resolver', () => {
                 }
                 expect(updatedVariant.price).toBe(105);
                 expect(updatedVariant.taxCategory.id).toBe('T_2');
-                expect(updatedVariant.priceBeforeTax).toBe(100);
             });
 
             it('updateProductVariants throws with an invalid variant id', async () => {

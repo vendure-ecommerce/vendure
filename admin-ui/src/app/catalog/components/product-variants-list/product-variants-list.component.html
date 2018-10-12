@@ -40,20 +40,11 @@
                 </div>
             </div>
             <div class="pricing">
-                <div class="price-before-tax">
-                    <clr-input-container>
-                        <label>{{ 'catalog.price-before-tax' | translate }}</label>
-                        <vdr-currency-input clrInput
-                                            [formControl]="formArray.get([i, 'priceBeforeTax'])"
-                                            (input)="setPrice(i)"></vdr-currency-input>
-                    </clr-input-container>
-                </div>
                 <div class="tax-category">
                     <clr-select-container>
                         <label>{{ 'catalog.tax-category' | translate }}</label>
                         <select clrSelect name="options"
-                                [formControl]="formArray.get([i, 'taxCategoryId'])"
-                                (change)="setPrice(i)">
+                                [formControl]="formArray.get([i, 'taxCategoryId'])">
                             <option *ngFor="let taxCategory of taxCategories"
                                     [value]="taxCategory.id">{{ taxCategory.name }}</option>
                         </select>
@@ -63,8 +54,7 @@
                     <clr-input-container>
                         <label>{{ 'catalog.price' | translate }}</label>
                         <vdr-currency-input clrInput
-                                            [formControl]="formArray.get([i, 'price'])"
-                                            (input)="setPreTaxPrice(i)"></vdr-currency-input>
+                                            [formControl]="formArray.get([i, 'price'])"></vdr-currency-input>
                     </clr-input-container>
                 </div>
             </div>

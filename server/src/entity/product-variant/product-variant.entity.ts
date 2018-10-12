@@ -7,6 +7,7 @@ import { CustomProductVariantFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { TaxCategory } from '../tax-category/tax-category.entity';
 
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
@@ -31,19 +32,8 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     })
     price: number;
 
-    /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
-     */
-    priceBeforeTax: number;
-
-    /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
-     */
-    taxCategory: {
-        id: ID;
-        name: string;
-        taxRate: number;
-    };
+    @ManyToOne(type => TaxCategory)
+    taxCategory: TaxCategory;
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];

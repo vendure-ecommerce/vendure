@@ -30,14 +30,6 @@ export class AdjustmentSourceDataService {
         return this.getAdjustmentSource(AdjustmentType.PROMOTION, id);
     }
 
-    getTaxCategories(take: number = 10, skip: number = 0) {
-        return this.getAdjustmentSourceList(AdjustmentType.TAX, take, skip);
-    }
-
-    getTaxCategory(id: string) {
-        return this.getAdjustmentSource(AdjustmentType.TAX, id);
-    }
-
     getAdjustmentOperations(type: AdjustmentType) {
         return this.baseDataService.query<GetAdjustmentOperations.Query, GetAdjustmentOperations.Variables>(
             GET_ADJUSTMENT_OPERATIONS,
@@ -52,14 +44,6 @@ export class AdjustmentSourceDataService {
     }
 
     updatePromotion(input: UpdateAdjustmentSourceInput) {
-        return this.updateAdjustmentSource(input);
-    }
-
-    createTaxCategory(input: CreateAdjustmentSourceInput) {
-        return this.createAdjustmentSource(input);
-    }
-
-    updateTaxCategory(input: UpdateAdjustmentSourceInput) {
         return this.updateAdjustmentSource(input);
     }
 

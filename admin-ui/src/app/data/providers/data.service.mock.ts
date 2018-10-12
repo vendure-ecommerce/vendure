@@ -33,13 +33,9 @@ export class MockDataService implements DataServiceMock {
     adjustmentSource = {
         getPromotions: spyQueryResult('getPromotions'),
         getPromotion: spyQueryResult('getPromotion'),
-        getTaxCategories: spyQueryResult('getTaxCategories'),
-        getTaxCategory: spyQueryResult('getTaxCategory'),
         getAdjustmentOperations: spyQueryResult('getAdjustmentOperations'),
         createPromotion: spyObservable('createPromotion'),
         updatePromotion: spyObservable('updatePromotion'),
-        createTaxCategory: spyObservable('createTaxCategory'),
-        updateTaxCategory: spyObservable('updateTaxCategory'),
     };
     administrator = {
         getAdministrators: spyQueryResult('getAdministrators'),
@@ -103,5 +99,9 @@ export class MockDataService implements DataServiceMock {
         updateZone: spyObservable('updateZone'),
         addMembersToZone: spyObservable('addMembersToZone'),
         removeMembersFromZone: spyObservable('removeMembersFromZone'),
+        getTaxCategories: spyQueryResult('getTaxCategories'),
+        getTaxCategory: spyQueryResult('getTaxCategory'),
+        createTaxCategory: spyObservable('createTaxCategory'),
+        updateTaxCategory: spyObservable('updateTaxCategory'),
     };
 }

@@ -1,7 +1,7 @@
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
-import { Adjustment } from '../adjustment-source/adjustment-source.entity';
+import { Adjustment } from '../../common/types/adjustment-source';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';

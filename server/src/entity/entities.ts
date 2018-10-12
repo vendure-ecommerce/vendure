@@ -21,10 +21,13 @@ import { ProductVariantTranslation } from './product-variant/product-variant-tra
 import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
+import { Promotion } from './promotion/promotion.entity';
 import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { TaxCategory } from './tax-category/tax-category.entity';
+import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
 import { Zone } from './zone/zone.entity';
 
@@ -33,7 +36,6 @@ import { Zone } from './zone/zone.entity';
  */
 export const coreEntitiesMap = {
     Address,
-    AdjustmentSource,
     Administrator,
     AnonymousSession,
     Asset,
@@ -57,8 +59,11 @@ export const coreEntitiesMap = {
     ProductVariant,
     ProductVariantPrice,
     ProductVariantTranslation,
+    Promotion,
     Role,
     Session,
+    TaxCategory,
+    TaxRate,
     User,
     Zone,
 };

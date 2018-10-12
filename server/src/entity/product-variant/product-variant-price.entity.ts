@@ -15,11 +15,6 @@ export class ProductVariantPrice extends VendureEntity {
 
     @Column() price: number;
 
-    @Column() priceBeforeTax: number;
-
-    @ManyToOne(type => AdjustmentSource, { eager: true })
-    taxCategory: AdjustmentSource;
-
     @Column() channelId: number;
 
     @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices)

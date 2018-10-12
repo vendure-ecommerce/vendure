@@ -1,8 +1,6 @@
-import { ID } from 'shared/shared-types';
-import { Connection, EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
 
 import { I18nError } from '../../i18n/i18n-error';
-import { AdjustmentSource } from '../adjustment-source/adjustment-source.entity';
 
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariant } from './product-variant.entity';
@@ -22,11 +20,8 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
         if (channelId === undefined) {
             throw new I18nError(`error.channel-id-not-set`);
         }
-        const taxCategory = await this.getTaxCategory(event.connection, taxCategoryId);
         const variantPrice = new ProductVariantPrice({ price, channelId });
         variantPrice.variant = event.entity;
-        variantPrice.priceBeforeTax = this.getPriceBeforeTax(price, taxCategory.getTaxCategoryRate());
-        variantPrice.taxCategory = taxCategory;
         await event.manager.save(variantPrice);
     }
 
@@ -40,29 +35,8 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
         if (!variantPrice) {
             throw new I18nError(`error.could-not-find-product-variant-price`);
         }
-        let taxCategory = variantPrice.taxCategory;
-        if (event.queryRunner.data.taxCategoryId !== undefined) {
-            taxCategory = await this.getTaxCategory(event.connection, event.queryRunner.data.taxCategoryId);
-            variantPrice.taxCategory = taxCategory;
-        }
 
         variantPrice.price = event.entity.price || 0;
-        variantPrice.priceBeforeTax = this.getPriceBeforeTax(
-            variantPrice.price,
-            taxCategory.getTaxCategoryRate(),
-        );
         await event.manager.save(variantPrice);
-    }
-
-    private getPriceBeforeTax(priceAfterTax: number, taxRatePercentage: number): number {
-        return Math.round(priceAfterTax / (1 + taxRatePercentage / 100));
-    }
-
-    private async getTaxCategory(connection: Connection, id: ID): Promise<AdjustmentSource> {
-        const taxCategory = await connection.getRepository(AdjustmentSource).findOne(id);
-        if (!taxCategory) {
-            throw new I18nError(`error.tax-category-not-found`, { id });
-        }
-        return taxCategory;
     }
 }

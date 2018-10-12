@@ -68,13 +68,3 @@ export class AdjustmentSource extends VendureEntity implements ChannelAware {
         });
     }
 }
-
-/**
- * When an AdjustmentSource is applied to an OrderItem or Order, an Adjustment is
- * generated based on the actions assigned to the AdjustmentSource.
- */
-export interface Adjustment {
-    adjustmentSourceId: ID;
-    description: string;
-    amount: number;
-}

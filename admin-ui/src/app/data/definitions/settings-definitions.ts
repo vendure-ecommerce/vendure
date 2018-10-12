@@ -112,3 +112,46 @@ export const REMOVE_MEMBERS_FROM_ZONE = gql`
     }
     ${ZONE_FRAGMENT}
 `;
+
+export const TAX_CATEGORY_FRAGMENT = gql`
+    fragment TaxCategory on TaxCategory {
+        id
+        name
+    }
+`;
+
+export const GET_TAX_CATEGORIES = gql`
+    query GetTaxCategories {
+        taxCategories {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const GET_TAX_CATEGORY = gql`
+    query GetTaxCategory($id: ID!) {
+        taxCategory(id: $id) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const CREATE_TAX_CATEGORY = gql`
+    mutation CreateTaxCategory($input: CreateTaxCategoryInput!) {
+        createTaxCategory(input: $input) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const UPDATE_TAX_CATEGORY = gql`
+    mutation UpdateTaxCategory($input: UpdateTaxCategoryInput!) {
+        updateTaxCategory(input: $input) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;

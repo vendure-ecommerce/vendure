@@ -15,6 +15,7 @@ export function updateTranslatable<T extends Translatable>(
     entityType: Type<T>,
     translationType: Type<Translation<T>>,
     translationUpdaterService: TranslationUpdaterService,
+    beforeSave?: (newEntity: T) => void,
 ) {
     return async function saveTranslatable(
         connection: Connection,
@@ -34,6 +35,9 @@ export function updateTranslatable<T extends Translatable>(
             diff,
         );
         const updatedEntity = patchEntity(entity as any, omit(input, ['translations']));
-        return connection.manager.save(entity, { data });
+        if (typeof beforeSave === 'function') {
+            await beforeSave(entity);
+        }
+        return connection.manager.save(updatedEntity, { data });
     };
 }

@@ -74,6 +74,7 @@ export class ProductService {
             'optionGroups',
             'variants.options',
             'variants.facetValues',
+            'variants.taxCategory',
         ];
         const product = await this.connection.manager.findOne(Product, productId, { relations });
         if (!product) {

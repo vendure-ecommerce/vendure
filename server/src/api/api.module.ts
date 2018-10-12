@@ -26,6 +26,7 @@ import { OrderResolver } from './resolvers/order.resolver';
 import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
+import { TaxCategoryResolver } from './resolvers/tax-category.resolver';
 import { ZoneResolver } from './resolvers/zone.resolver';
 
 const exportedProviders = [
@@ -43,6 +44,7 @@ const exportedProviders = [
     ProductOptionResolver,
     ProductResolver,
     RoleResolver,
+    TaxCategoryResolver,
     ZoneResolver,
 ];
 

@@ -7,12 +7,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="items$ | async"
-                [itemsPerPage]="itemsPerPage$ | async"
-                [totalItems]="totalItems$ | async"
-                [currentPage]="currentPage$ | async"
-                (pageChange)="setPageNumber($event)"
-                (itemsPerPageChange)="setItemsPerPage($event)">
+<vdr-data-table [items]="taxCategories$ | async">
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.tax-rate' | translate }}</vdr-dt-column>

@@ -72,15 +72,15 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
             return;
         }
         const formValue = this.taxCategoryForm.value;
-        const input = this.createAdjustmentSourceInput(formValue.name, formValue.taxRate);
-        this.dataService.adjustmentSource.createTaxCategory(input).subscribe(
+        const input = { name: formValue.name };
+        this.dataService.settings.createTaxCategory(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxCategory',
                 });
                 this.taxCategoryForm.markAsPristine();
                 this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createAdjustmentSource.id], { relativeTo: this.route });
+                this.router.navigate(['../', data.createTaxCategory.id], { relativeTo: this.route });
             },
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {
@@ -99,12 +99,11 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
             .pipe(
                 take(1),
                 mergeMap(taxCategory => {
-                    const input = this.createAdjustmentSourceInput(
-                        formValue.name,
-                        formValue.taxRate,
-                        taxCategory.id,
-                    );
-                    return this.dataService.adjustmentSource.updatePromotion(input);
+                    const input = {
+                        id: taxCategory.id,
+                        nadme: formValue.name,
+                    };
+                    return this.dataService.settings.updateTaxCategory(input);
                 }),
             )
             .subscribe(
@@ -121,39 +120,6 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
                     });
                 },
             );
-    }
-
-    private createAdjustmentSourceInput(name: string, taxRate: number): CreateAdjustmentSourceInput;
-    private createAdjustmentSourceInput(
-        name: string,
-        taxRate: number,
-        id: string,
-    ): UpdateAdjustmentSourceInput;
-    private createAdjustmentSourceInput(
-        name: string,
-        taxRate: number,
-        id?: string,
-    ): CreateAdjustmentSourceInput | UpdateAdjustmentSourceInput {
-        const input = {
-            name,
-            conditions: [
-                {
-                    code: this.taxCondition.code,
-                    arguments: [],
-                },
-            ],
-            actions: [
-                {
-                    code: this.taxAction.code,
-                    arguments: [taxRate.toString()],
-                },
-            ],
-        };
-        if (id !== undefined) {
-            return { ...input, id };
-        } else {
-            return { ...input, type: AdjustmentType.TAX, enabled: true } as CreateAdjustmentSourceInput;
-        }
     }
 
     /**

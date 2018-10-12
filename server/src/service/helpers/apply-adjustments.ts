@@ -1,12 +1,13 @@
 import { AdjustmentArg, AdjustmentType } from 'shared/generated-types';
 
+import { Adjustment } from '../../common/types/adjustment-source';
 import { idsAreEqual } from '../../common/utils';
 import {
     AdjustmentActionDefinition,
     AdjustmentActionResult,
     AdjustmentConditionDefinition,
 } from '../../config/adjustment/adjustment-types';
-import { Adjustment, AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
+import { AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
 import { Order } from '../../entity/order/order.entity';
 
 /**

@@ -7,7 +7,9 @@ import {
     AdjustmentSource,
     CreateProductInput,
     LanguageCode,
+    ProductVariant,
     ProductWithVariants,
+    TaxCategory,
     UpdateProductInput,
     UpdateProductVariantInput,
 } from 'shared/generated-types';
@@ -34,7 +36,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
-    taxCategories$: Observable<AdjustmentSource.Fragment[]>;
+    taxCategories$: Observable<TaxCategory[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
@@ -69,9 +71,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
-        this.taxCategories$ = this.dataService.adjustmentSource
+        this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.adjustmentSources.items);
+            .mapSingle(data => data.taxCategories);
     }
 
     ngOnDestroy() {
@@ -245,7 +247,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     sku: variant.sku,
                     name: variantTranslation ? variantTranslation.name : '',
                     price: variant.price,
-                    priceBeforeTax: variant.priceBeforeTax,
                     taxCategoryId: variant.taxCategory.id,
                 };
 

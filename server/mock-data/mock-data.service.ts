@@ -40,6 +40,7 @@ import { Channel } from '../src/entity/channel/channel.entity';
 import { Customer } from '../src/entity/customer/customer.entity';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
+import TaxCategory = ProductVariant.TaxCategory;
 
 // tslint:disable:no-console
 /**
@@ -142,38 +143,26 @@ export class MockDataService {
     }
 
     async populateTaxCategories() {
-        const taxCategories = [
-            { name: 'Standard Tax', rate: 20 },
-            { name: 'Reduced Tax', rate: 5 },
-            { name: 'Zero Tax', rate: 0 },
-        ];
+        const taxCategories = [{ name: 'Standard Tax' }, { name: 'Reduced Tax' }, { name: 'Zero Tax' }];
 
-        const results: AdjustmentSource.Fragment[] = [];
+        const results: TaxCategory[] = [];
 
         for (const category of taxCategories) {
-            const result = await this.client.query<
-                CreateAdjustmentSource.Mutation,
-                CreateAdjustmentSource.Variables
-            >(CREATE_ADJUSTMENT_SOURCE, {
-                input: {
-                    name: category.name,
-                    type: AdjustmentType.TAX,
-                    enabled: true,
-                    conditions: [
-                        {
-                            code: taxCondition.code,
-                            arguments: [],
-                        },
-                    ],
-                    actions: [
-                        {
-                            code: taxAction.code,
-                            arguments: [category.rate.toString()],
-                        },
-                    ],
+            const result = await this.client.query(
+                gql`
+                    mutation($input: CreateTaxCategoryInput!) {
+                        createTaxCategory(input: $input) {
+                            id
+                        }
+                    }
+                `,
+                {
+                    input: {
+                        name: category.name,
+                    },
                 },
-            });
-            results.push(result.createAdjustmentSource);
+            );
+            results.push(result.createTaxCategory);
         }
         this.log(`Created ${results.length} tax categories`);
         return results;
@@ -253,7 +242,7 @@ export class MockDataService {
         count: number = 5,
         optionGroupId: string,
         assets: Asset[],
-        taxCategories: AdjustmentSource.Fragment[],
+        taxCategories: TaxCategory[],
     ): Promise<any> {
         for (let i = 0; i < count; i++) {
             const query = CREATE_PRODUCT;
@@ -377,7 +366,7 @@ export class MockDataService {
 
     private async makeProductVariant(
         productId: string,
-        taxCategory: AdjustmentSource.Fragment,
+        taxCategory: TaxCategory,
     ): Promise<GenerateProductVariants.Mutation> {
         const query = GENERATE_PRODUCT_VARIANTS;
         return this.client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(query, {

@@ -65,6 +65,8 @@ export interface Query {
     product?: Product | null;
     roles: RoleList;
     role?: Role | null;
+    taxCategories: TaxCategory[];
+    taxCategory?: TaxCategory | null;
     zones: Zone[];
     zone?: Zone | null;
     networkStatus: NetworkStatus;
@@ -312,19 +314,17 @@ export interface ProductVariant extends Node {
     languageCode: LanguageCode;
     sku: string;
     name: string;
-    priceBeforeTax: number;
     price: number;
-    taxCategory: ProductTaxCategory;
+    taxCategory: TaxCategory;
     options: ProductOption[];
     facetValues: FacetValue[];
     translations: ProductVariantTranslation[];
     customFields?: Json | null;
 }
 
-export interface ProductTaxCategory {
+export interface TaxCategory extends Node {
     id: string;
     name: string;
-    taxRate: number;
 }
 
 export interface ProductOption extends Node {
@@ -490,6 +490,8 @@ export interface Mutation {
     applyFacetValuesToProductVariants: ProductVariant[];
     createRole: Role;
     updateRole: Role;
+    createTaxCategory: TaxCategory;
+    updateTaxCategory: TaxCategory;
     createZone: Zone;
     updateZone: Zone;
     addMembersToZone: Zone;
@@ -964,7 +966,6 @@ export interface UpdateProductVariantInput {
     translations?: ProductVariantTranslationInput[] | null;
     sku?: string | null;
     taxCategoryId?: string | null;
-    priceBeforeTax?: number | null;
     price?: number | null;
     customFields?: Json | null;
 }
@@ -989,6 +990,15 @@ export interface UpdateRoleInput {
     permissions?: Permission[] | null;
 }
 
+export interface CreateTaxCategoryInput {
+    name: string;
+}
+
+export interface UpdateTaxCategoryInput {
+    id: string;
+    name?: string | null;
+}
+
 export interface CreateZoneInput {
     name: string;
     memberIds?: string[] | null;
@@ -1002,7 +1012,6 @@ export interface UpdateZoneInput {
 export interface CreateProductVariantInput {
     translations: ProductVariantTranslationInput[];
     sku: string;
-    priceBeforeTax?: number | null;
     price?: number | null;
     taxCategoryId: string;
     optionCodes?: string[] | null;
@@ -1100,6 +1109,9 @@ export interface RolesQueryArgs {
     options?: RoleListOptions | null;
 }
 export interface RoleQueryArgs {
+    id: string;
+}
+export interface TaxCategoryQueryArgs {
     id: string;
 }
 export interface ZoneQueryArgs {
@@ -1221,6 +1233,12 @@ export interface CreateRoleMutationArgs {
 }
 export interface UpdateRoleMutationArgs {
     input: UpdateRoleInput;
+}
+export interface CreateTaxCategoryMutationArgs {
+    input: CreateTaxCategoryInput;
+}
+export interface UpdateTaxCategoryMutationArgs {
+    input: UpdateTaxCategoryInput;
 }
 export interface CreateZoneMutationArgs {
     input: CreateZoneInput;
@@ -1507,6 +1525,8 @@ export namespace QueryResolvers {
         product?: ProductResolver<Product | null, any, Context>;
         roles?: RolesResolver<RoleList, any, Context>;
         role?: RoleResolver<Role | null, any, Context>;
+        taxCategories?: TaxCategoriesResolver<TaxCategory[], any, Context>;
+        taxCategory?: TaxCategoryResolver<TaxCategory | null, any, Context>;
         zones?: ZonesResolver<Zone[], any, Context>;
         zone?: ZoneResolver<Zone | null, any, Context>;
         networkStatus?: NetworkStatusResolver<NetworkStatus, any, Context>;
@@ -1752,6 +1772,21 @@ export namespace QueryResolvers {
         RoleArgs
     >;
     export interface RoleArgs {
+        id: string;
+    }
+
+    export type TaxCategoriesResolver<R = TaxCategory[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TaxCategoryResolver<R = TaxCategory | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxCategoryArgs
+    >;
+    export interface TaxCategoryArgs {
         id: string;
     }
 
@@ -2413,9 +2448,8 @@ export namespace ProductVariantResolvers {
         languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
         sku?: SkuResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
-        priceBeforeTax?: PriceBeforeTaxResolver<number, any, Context>;
         price?: PriceResolver<number, any, Context>;
-        taxCategory?: TaxCategoryResolver<ProductTaxCategory, any, Context>;
+        taxCategory?: TaxCategoryResolver<TaxCategory, any, Context>;
         options?: OptionsResolver<ProductOption[], any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductVariantTranslation[], any, Context>;
@@ -2432,13 +2466,8 @@ export namespace ProductVariantResolvers {
     >;
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type PriceBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TaxCategoryResolver<R = ProductTaxCategory, Parent = any, Context = any> = Resolver<
+    export type TaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2465,16 +2494,14 @@ export namespace ProductVariantResolvers {
     >;
 }
 
-export namespace ProductTaxCategoryResolvers {
+export namespace TaxCategoryResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
-        taxRate?: TaxRateResolver<number, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TaxRateResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace ProductOptionResolvers {
@@ -2872,6 +2899,8 @@ export namespace MutationResolvers {
         >;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
+        createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
+        updateTaxCategory?: UpdateTaxCategoryResolver<TaxCategory, any, Context>;
         createZone?: CreateZoneResolver<Zone, any, Context>;
         updateZone?: UpdateZoneResolver<Zone, any, Context>;
         addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
@@ -3233,6 +3262,26 @@ export namespace MutationResolvers {
     >;
     export interface UpdateRoleArgs {
         input: UpdateRoleInput;
+    }
+
+    export type CreateTaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateTaxCategoryArgs
+    >;
+    export interface CreateTaxCategoryArgs {
+        input: CreateTaxCategoryInput;
+    }
+
+    export type UpdateTaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateTaxCategoryArgs
+    >;
+    export interface UpdateTaxCategoryArgs {
+        input: UpdateTaxCategoryInput;
     }
 
     export type CreateZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
@@ -4181,6 +4230,56 @@ export namespace RemoveMembersFromZone {
     export type RemoveMembersFromZone = Zone.Fragment;
 }
 
+export namespace GetTaxCategories {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        taxCategories: TaxCategories[];
+    };
+
+    export type TaxCategories = TaxCategory.Fragment;
+}
+
+export namespace GetTaxCategory {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        taxCategory?: TaxCategory | null;
+    };
+
+    export type TaxCategory = TaxCategory.Fragment;
+}
+
+export namespace CreateTaxCategory {
+    export type Variables = {
+        input: CreateTaxCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createTaxCategory: CreateTaxCategory;
+    };
+
+    export type CreateTaxCategory = TaxCategory.Fragment;
+}
+
+export namespace UpdateTaxCategory {
+    export type Variables = {
+        input: UpdateTaxCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateTaxCategory: UpdateTaxCategory;
+    };
+
+    export type UpdateTaxCategory = TaxCategory.Fragment;
+}
+
 export namespace AdjustmentOperation {
     export type Fragment = {
         __typename?: 'AdjustmentOperation';
@@ -4346,7 +4445,6 @@ export namespace ProductVariant {
         languageCode: LanguageCode;
         name: string;
         price: number;
-        priceBeforeTax: number;
         taxCategory: TaxCategory;
         sku: string;
         options: Options[];
@@ -4355,10 +4453,9 @@ export namespace ProductVariant {
     };
 
     export type TaxCategory = {
-        __typename?: 'ProductTaxCategory';
+        __typename?: 'TaxCategory';
         id: string;
         name: string;
-        taxRate: number;
     };
 
     export type Options = {
@@ -4472,4 +4569,12 @@ export namespace Zone {
     };
 
     export type Members = Country.Fragment;
+}
+
+export namespace TaxCategory {
+    export type Fragment = {
+        __typename?: 'TaxCategory';
+        id: string;
+        name: string;
+    };
 }

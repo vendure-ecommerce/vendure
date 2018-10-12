@@ -23,6 +23,7 @@ import { ProductOptionService } from './providers/product-option.service';
 import { ProductVariantService } from './providers/product-variant.service';
 import { ProductService } from './providers/product.service';
 import { RoleService } from './providers/role.service';
+import { TaxCategoryService } from './providers/tax-category.service';
 import { ZoneService } from './providers/zone.service';
 
 const exportedProviders = [
@@ -42,6 +43,7 @@ const exportedProviders = [
     ProductService,
     ProductVariantService,
     RoleService,
+    TaxCategoryService,
     ZoneService,
 ];
 
