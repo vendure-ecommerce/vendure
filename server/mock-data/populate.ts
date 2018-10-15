@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
+import { Channel } from 'shared/generated-types';
 
 import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig, VendureConfig } from '../src/config/vendure-config';
-import { Channel } from '../src/entity/channel/channel.entity';
 
 import { clearAllTables } from './clear-all-tables';
 import { getDefaultChannelToken } from './get-default-channel-token';
@@ -35,14 +35,14 @@ export async function populate(
     client.setChannelToken(defaultChannelToken);
     await client.asSuperAdmin();
     const mockDataService = new MockDataService(client, logging);
-    let channels: Channel[] = [];
     if (options.channels) {
-        channels = await mockDataService.populateChannels(options.channels);
+        await mockDataService.populateChannels(options.channels);
     }
-    await mockDataService.populateCountries();
+    const zones = await mockDataService.populateCountries();
+    await mockDataService.setChannelDefaultZones(zones);
     const assets = await mockDataService.populateAssets();
     const optionGroupId = await mockDataService.populateOptions();
-    const taxCategories = await mockDataService.populateTaxCategories();
+    const taxCategories = await mockDataService.populateTaxCategories(zones);
     await mockDataService.populateProducts(options.productCount, optionGroupId, assets, taxCategories);
     await mockDataService.populateCustomers(options.customerCount);
     await mockDataService.populateFacets();

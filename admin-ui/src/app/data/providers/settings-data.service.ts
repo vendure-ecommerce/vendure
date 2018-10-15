@@ -1,5 +1,7 @@
 import {
     AddMembersToZone,
+    CreateChannel,
+    CreateChannelInput,
     CreateCountry,
     CreateCountryInput,
     CreateTaxCategory,
@@ -8,6 +10,8 @@ import {
     CreateTaxRateInput,
     CreateZone,
     CreateZoneInput,
+    GetChannel,
+    GetChannels,
     GetCountry,
     GetCountryList,
     GetTaxCategories,
@@ -17,6 +21,8 @@ import {
     GetZone,
     GetZones,
     RemoveMembersFromZone,
+    UpdateChannel,
+    UpdateChannelInput,
     UpdateCountry,
     UpdateCountryInput,
     UpdateTaxCategory,
@@ -29,10 +35,13 @@ import {
 
 import {
     ADD_MEMBERS_TO_ZONE,
+    CREATE_CHANNEL,
     CREATE_COUNTRY,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
+    GET_CHANNEL,
+    GET_CHANNELS,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_TAX_CATEGORIES,
@@ -41,6 +50,7 @@ import {
     GET_TAX_RATE_LIST,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
+    UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
@@ -168,6 +178,28 @@ export class SettingsDataService {
 
     updateTaxRate(input: UpdateTaxRateInput) {
         return this.baseDataService.mutate<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+            input,
+        });
+    }
+
+    getChannels() {
+        return this.baseDataService.query<GetChannels.Query>(GET_CHANNELS);
+    }
+
+    getChannel(id: string) {
+        return this.baseDataService.query<GetChannel.Query, GetChannel.Variables>(GET_CHANNEL, {
+            id,
+        });
+    }
+
+    createChannel(input: CreateChannelInput) {
+        return this.baseDataService.mutate<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
+            input,
+        });
+    }
+
+    updateChannel(input: UpdateChannelInput) {
+        return this.baseDataService.mutate<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
             input,
         });
     }

@@ -5,6 +5,7 @@
   "breadcrumb": {
     "administrators": "Administrators",
     "assets": "Assets",
+    "channels": "Channels",
     "countries": "Countries",
     "dashboard": "Dashboard",
     "facets": "Facets",
@@ -13,7 +14,7 @@
     "promotions": "Promotions",
     "roles": "Roles",
     "tax-categories": "Tax categories",
-    "tax-rates": ""
+    "tax-rates": "Tax rates"
   },
   "catalog": {
     "add-asset": "Add asset",
@@ -113,6 +114,7 @@
     "assets": "Assets",
     "catalog": "Catalog",
     "categories": "Categories",
+    "channels": "Channels",
     "countries": "Countries",
     "facets": "Facets",
     "marketing": "Marketing",
@@ -134,12 +136,15 @@
     "administrator": "Administrator",
     "catalog": "Catalog",
     "create": "Create",
+    "create-new-channel": "Create new channel",
     "create-new-country": "Create new country",
     "create-new-role": "Create new role",
     "create-new-tax-category": "Create tax category",
     "create-new-tax-rate": "Create new tax rate",
     "create-zone": "Create zone",
     "customer": "Customer",
+    "default-shipping-zone": "Default shipping zone",
+    "default-tax-zone": "Default tax zone",
     "delete": "Delete",
     "description": "Description",
     "email-address": "Email address",

@@ -70,6 +70,13 @@
                 </li>
                 <li>
                     <a class="nav-link"
+                       [routerLink]="['/settings', 'channels']"
+                       routerLinkActive="active">
+                        <clr-icon shape="layers" size="20"></clr-icon>{{ 'nav.channels' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link"
                        [routerLink]="['/settings', 'roles']"
                        routerLinkActive="active">
                         <clr-icon shape="users" size="20"></clr-icon>{{ 'nav.roles' | translate }}

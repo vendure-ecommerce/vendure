@@ -215,3 +215,56 @@ export const UPDATE_TAX_RATE = gql`
     }
     ${TAX_RATE_FRAGMENT}
 `;
+
+export const CHANNEL_FRAGMENT = gql`
+    fragment Channel on Channel {
+        id
+        code
+        token
+        defaultLanguageCode
+        defaultShippingZone {
+            id
+            name
+        }
+        defaultTaxZone {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_CHANNELS = gql`
+    query GetChannels {
+        channels {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const GET_CHANNEL = gql`
+    query GetChannel($id: ID!) {
+        channel(id: $id) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const CREATE_CHANNEL = gql`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const UPDATE_CHANNEL = gql`
+    mutation UpdateChannel($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { Administrator, Country, GetCountry, Role, TaxCategory, TaxRate } from 'shared/generated-types';
+import { Administrator, Channel, Country, Role, TaxCategory, TaxRate } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -7,6 +7,8 @@ import { _ } from '../core/providers/i18n/mark-for-extraction';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
 import { AdministratorListComponent } from './components/administrator-list/administrator-list.component';
+import { ChannelDetailComponent } from './components/channel-detail/channel-detail.component';
+import { ChannelListComponent } from './components/channel-list/channel-list.component';
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
@@ -16,6 +18,7 @@ import { TaxCategoryListComponent } from './components/tax-category-list/tax-cat
 import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
 import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
+import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
@@ -34,6 +37,19 @@ export const settingsRoutes: Route[] = [
         component: AdminDetailComponent,
         resolve: createResolveData(AdministratorResolver),
         data: { breadcrumb: administratorBreadcrumb },
+    },
+    {
+        path: 'channels',
+        component: ChannelListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.channels'),
+        },
+    },
+    {
+        path: 'channels/:id',
+        component: ChannelDetailComponent,
+        resolve: createResolveData(ChannelResolver),
+        data: { breadcrumb: channelBreadcrumb },
     },
     {
         path: 'roles',
@@ -102,6 +118,16 @@ export function administratorBreadcrumb(data: any, params: any) {
         breadcrumbKey: 'breadcrumb.administrators',
         getName: admin => `${admin.firstName} ${admin.lastName}`,
         route: 'administrators',
+    });
+}
+
+export function channelBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<Channel>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.channels',
+        getName: channel => channel.code,
+        route: 'channels',
     });
 }
 

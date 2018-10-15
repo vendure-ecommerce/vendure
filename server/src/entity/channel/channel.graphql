@@ -4,4 +4,24 @@ type Channel implements Node {
     updatedAt: DateTime!
     code: String!
     token: String!
+    defaultTaxZone: Zone
+    defaultShippingZone: Zone
+    defaultLanguageCode: LanguageCode!
+}
+
+input CreateChannelInput {
+    code: String!
+    token: String!
+    defaultLanguageCode: LanguageCode!
+    defaultTaxZoneId: ID
+    defaultShippingZoneId: ID
+}
+
+input UpdateChannelInput {
+    id: ID!
+    code: String
+    token: String
+    defaultLanguageCode: LanguageCode
+    defaultTaxZoneId: ID
+    defaultShippingZoneId: ID
 }

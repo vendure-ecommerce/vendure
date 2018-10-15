@@ -44,6 +44,8 @@ export interface Query {
     assets: AssetList;
     asset?: Asset | null;
     me?: CurrentUser | null;
+    channels: Channel[];
+    channel?: Channel | null;
     config: Config;
     countries: CountryList;
     country?: Country | null;
@@ -118,6 +120,24 @@ export interface Channel extends Node {
     updatedAt: DateTime;
     code: string;
     token: string;
+    defaultTaxZone: Zone;
+    defaultShippingZone: Zone;
+    defaultLanguageCode: LanguageCode;
+}
+
+export interface Zone extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    members: Country[];
+}
+
+export interface Country extends Node {
+    id: string;
+    code: string;
+    name: string;
+    enabled: boolean;
 }
 
 export interface AssetList extends PaginatedList {
@@ -148,13 +168,6 @@ export interface Config {
 export interface CountryList extends PaginatedList {
     items: Country[];
     totalItems: number;
-}
-
-export interface Country extends Node {
-    id: string;
-    code: string;
-    name: string;
-    enabled: boolean;
 }
 
 export interface CustomerGroup extends Node {
@@ -274,6 +287,7 @@ export interface OrderLine extends Node {
     quantity: number;
     items: OrderItem[];
     totalPrice: number;
+    adjustments: Adjustment[];
     order: Order;
 }
 
@@ -459,14 +473,6 @@ export interface TaxRate extends Node {
     customerGroup?: CustomerGroup | null;
 }
 
-export interface Zone extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    name: string;
-    members: Country[];
-}
-
 export interface NetworkStatus {
     inFlightRequests: number;
 }
@@ -489,6 +495,7 @@ export interface Mutation {
     login: LoginResult;
     logout: boolean;
     createChannel: Channel;
+    updateChannel: Channel;
     createCountry: Country;
     updateCountry: Country;
     createCustomerGroup: CustomerGroup;
@@ -816,6 +823,23 @@ export interface CreateAssetInput {
     file: Upload;
 }
 
+export interface CreateChannelInput {
+    code: string;
+    token: string;
+    defaultLanguageCode: LanguageCode;
+    defaultTaxZoneId?: string | null;
+    defaultShippingZoneId?: string | null;
+}
+
+export interface UpdateChannelInput {
+    id: string;
+    code?: string | null;
+    token?: string | null;
+    defaultLanguageCode?: LanguageCode | null;
+    defaultTaxZoneId?: string | null;
+    defaultShippingZoneId?: string | null;
+}
+
 export interface CreateCountryInput {
     code: string;
     name: string;
@@ -1120,6 +1144,9 @@ export interface AssetsQueryArgs {
 export interface AssetQueryArgs {
     id: string;
 }
+export interface ChannelQueryArgs {
+    id: string;
+}
 export interface CountriesQueryArgs {
     options?: CountryListOptions | null;
 }
@@ -1208,7 +1235,10 @@ export interface LoginMutationArgs {
     rememberMe?: boolean | null;
 }
 export interface CreateChannelMutationArgs {
-    code: string;
+    input: CreateChannelInput;
+}
+export interface UpdateChannelMutationArgs {
+    input: UpdateChannelInput;
 }
 export interface CreateCountryMutationArgs {
     input: CreateCountryInput;
@@ -1374,12 +1404,6 @@ export enum Permission {
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
     DeleteSettings = 'DeleteSettings',
-}
-
-export enum AssetType {
-    IMAGE = 'IMAGE',
-    VIDEO = 'VIDEO',
-    BINARY = 'BINARY',
 }
 
 export enum LanguageCode {
@@ -1569,6 +1593,12 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export enum AssetType {
+    IMAGE = 'IMAGE',
+    VIDEO = 'VIDEO',
+    BINARY = 'BINARY',
+}
+
 export namespace QueryResolvers {
     export interface Resolvers<Context = any> {
         administrators?: AdministratorsResolver<AdministratorList, any, Context>;
@@ -1576,6 +1606,8 @@ export namespace QueryResolvers {
         assets?: AssetsResolver<AssetList, any, Context>;
         asset?: AssetResolver<Asset | null, any, Context>;
         me?: MeResolver<CurrentUser | null, any, Context>;
+        channels?: ChannelsResolver<Channel[], any, Context>;
+        channel?: ChannelResolver<Channel | null, any, Context>;
         config?: ConfigResolver<Config, any, Context>;
         countries?: CountriesResolver<CountryList, any, Context>;
         country?: CountryResolver<Country | null, any, Context>;
@@ -1653,6 +1685,17 @@ export namespace QueryResolvers {
         Parent,
         Context
     >;
+    export type ChannelsResolver<R = Channel[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ChannelResolver<R = Channel | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ChannelArgs
+    >;
+    export interface ChannelArgs {
+        id: string;
+    }
+
     export type ConfigResolver<R = Config, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CountriesResolver<R = CountryList, Parent = any, Context = any> = Resolver<
         R,
@@ -1998,6 +2041,9 @@ export namespace ChannelResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         token?: TokenResolver<string, any, Context>;
+        defaultTaxZone?: DefaultTaxZoneResolver<Zone, any, Context>;
+        defaultShippingZone?: DefaultShippingZoneResolver<Zone, any, Context>;
+        defaultLanguageCode?: DefaultLanguageCodeResolver<LanguageCode, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2005,6 +2051,47 @@ export namespace ChannelResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TokenResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DefaultTaxZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DefaultShippingZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DefaultLanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace ZoneResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        members?: MembersResolver<Country[], any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type MembersResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace CountryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace AssetListResolvers {
@@ -2073,20 +2160,6 @@ export namespace CountryListResolvers {
 
     export type ItemsResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace CountryResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        enabled?: EnabledResolver<boolean, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace CustomerGroupResolvers {
@@ -2418,6 +2491,7 @@ export namespace OrderLineResolvers {
         quantity?: QuantityResolver<number, any, Context>;
         items?: ItemsResolver<OrderItem[], any, Context>;
         totalPrice?: TotalPriceResolver<number, any, Context>;
+        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
         order?: OrderResolver<Order, any, Context>;
     }
 
@@ -2438,6 +2512,11 @@ export namespace OrderLineResolvers {
     export type QuantityResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ItemsResolver<R = OrderItem[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type OrderResolver<R = Order, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
@@ -2937,22 +3016,6 @@ export namespace TaxRateResolvers {
     >;
 }
 
-export namespace ZoneResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        members?: MembersResolver<Country[], any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type MembersResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
 export namespace NetworkStatusResolvers {
     export interface Resolvers<Context = any> {
         inFlightRequests?: InFlightRequestsResolver<number, any, Context>;
@@ -2998,6 +3061,7 @@ export namespace MutationResolvers {
         login?: LoginResolver<LoginResult, any, Context>;
         logout?: LogoutResolver<boolean, any, Context>;
         createChannel?: CreateChannelResolver<Channel, any, Context>;
+        updateChannel?: UpdateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
         updateCountry?: UpdateCountryResolver<Country, any, Context>;
         createCustomerGroup?: CreateCustomerGroupResolver<CustomerGroup, any, Context>;
@@ -3106,7 +3170,17 @@ export namespace MutationResolvers {
         CreateChannelArgs
     >;
     export interface CreateChannelArgs {
-        code: string;
+        input: CreateChannelInput;
+    }
+
+    export type UpdateChannelResolver<R = Channel, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateChannelArgs
+    >;
+    export interface UpdateChannelArgs {
+        input: UpdateChannelInput;
     }
 
     export type CreateCountryResolver<R = Country, Parent = any, Context = any> = Resolver<
@@ -4488,6 +4562,56 @@ export namespace UpdateTaxRate {
     export type UpdateTaxRate = TaxRate.Fragment;
 }
 
+export namespace GetChannels {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        channels: Channels[];
+    };
+
+    export type Channels = Channel.Fragment;
+}
+
+export namespace GetChannel {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        channel?: Channel | null;
+    };
+
+    export type Channel = Channel.Fragment;
+}
+
+export namespace CreateChannel {
+    export type Variables = {
+        input: CreateChannelInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createChannel: CreateChannel;
+    };
+
+    export type CreateChannel = Channel.Fragment;
+}
+
+export namespace UpdateChannel {
+    export type Variables = {
+        input: UpdateChannelInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateChannel: UpdateChannel;
+    };
+
+    export type UpdateChannel = Channel.Fragment;
+}
+
 export namespace Administrator {
     export type Fragment = {
         __typename?: 'Administrator';
@@ -4811,6 +4935,30 @@ export namespace TaxRate {
 
     export type CustomerGroup = {
         __typename?: 'CustomerGroup';
+        id: string;
+        name: string;
+    };
+}
+
+export namespace Channel {
+    export type Fragment = {
+        __typename?: 'Channel';
+        id: string;
+        code: string;
+        token: string;
+        defaultLanguageCode: LanguageCode;
+        defaultShippingZone: DefaultShippingZone;
+        defaultTaxZone: DefaultTaxZone;
+    };
+
+    export type DefaultShippingZone = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+    };
+
+    export type DefaultTaxZone = {
+        __typename?: 'Zone';
         id: string;
         name: string;
     };

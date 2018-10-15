@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateChannelInput, UpdateChannelInput } from 'shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
+import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ChannelAware } from '../../common/types/common-types';
+import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
+import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
+import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
 export class ChannelService {
@@ -55,17 +60,47 @@ export class ChannelService {
     }
 
     findAll(): Promise<Channel[]> {
-        return this.connection.getRepository(Channel).find();
+        return this.connection
+            .getRepository(Channel)
+            .find({ relations: ['defaultShippingZone', 'defaultTaxZone'] });
     }
 
-    async create(code: string): Promise<Channel> {
-        const channel = new Channel({
-            code,
-            defaultLanguageCode: DEFAULT_LANGUAGE_CODE,
-        });
+    findOne(id: ID): Promise<Channel | undefined> {
+        return this.connection
+            .getRepository(Channel)
+            .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
+    }
+
+    async create(input: CreateChannelInput): Promise<Channel> {
+        const channel = new Channel(input);
+        if (input.defaultTaxZoneId) {
+            channel.defaultTaxZone = await this.getZoneOrThrow(input.defaultTaxZoneId);
+        }
+        if (input.defaultShippingZoneId) {
+            channel.defaultShippingZone = await this.getZoneOrThrow(input.defaultShippingZoneId);
+        }
         const newChannel = await this.connection.getRepository(Channel).save(channel);
         this.allChannels.push(channel);
         return channel;
+    }
+
+    async update(input: UpdateChannelInput): Promise<Channel> {
+        const channel = await this.findOne(input.id);
+        if (!channel) {
+            throw new I18nError(`error.entity-with-id-not-found`, {
+                entityName: 'Channel',
+                id: input.id,
+            });
+        }
+        const updatedChannel = patchEntity(channel, input);
+        if (input.defaultTaxZoneId) {
+            updatedChannel.defaultTaxZone = await this.getZoneOrThrow(input.defaultTaxZoneId);
+        }
+        if (input.defaultShippingZoneId) {
+            updatedChannel.defaultShippingZone = await this.getZoneOrThrow(input.defaultShippingZoneId);
+        }
+        await this.connection.getRepository(Channel).save(updatedChannel);
+        return assertFound(this.findOne(channel.id));
     }
 
     /**
@@ -91,5 +126,16 @@ export class ChannelService {
             defaultChannel.token = defaultChannelToken;
             await this.connection.manager.save(defaultChannel);
         }
+    }
+
+    private async getZoneOrThrow(id: ID): Promise<Zone> {
+        const zone = await this.connection.getRepository(Zone).findOne(id);
+        if (!zone) {
+            throw new I18nError(`error.entity-with-id-not-found`, {
+                entityName: 'Zone',
+                id,
+            });
+        }
+        return zone;
     }
 }

@@ -1,8 +1,9 @@
 import { LanguageCode } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
+import { Zone } from '../zone/zone.entity';
 
 @Entity()
 export class Channel extends VendureEntity {
@@ -20,6 +21,12 @@ export class Channel extends VendureEntity {
     token: string;
 
     @Column('varchar') defaultLanguageCode: LanguageCode;
+
+    @ManyToOne(type => Zone)
+    defaultTaxZone: Zone;
+
+    @ManyToOne(type => Zone)
+    defaultShippingZone: Zone;
 
     private generateToken(): string {
         const randomString = () =>

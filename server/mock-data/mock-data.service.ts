@@ -5,20 +5,25 @@ import * as path from 'path';
 import {
     AddOptionGroupToProduct,
     Asset,
-    Country,
+    Channel,
     CreateAddressInput,
+    CreateChannel,
     CreateCountry,
     CreateCustomerInput,
     CreateFacet,
     CreateFacetValueWithFacetInput,
     CreateProduct,
     CreateProductOptionGroup,
+    CreateTaxRate,
     CreateZone,
     GenerateProductVariants,
+    GetChannels,
     LanguageCode,
     ProductTranslationInput,
     ProductVariant,
+    UpdateChannel,
     UpdateProductVariants,
+    Zone,
 } from 'shared/generated-types';
 
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
@@ -29,10 +34,14 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { CREATE_COUNTRY, CREATE_ZONE } from '../../admin-ui/src/app/data/definitions/settings-definitions';
-import { taxAction } from '../src/config/adjustment/required-adjustment-actions';
-import { taxCondition } from '../src/config/adjustment/required-adjustment-conditions';
-import { Channel } from '../src/entity/channel/channel.entity';
+import {
+    CREATE_CHANNEL,
+    CREATE_COUNTRY,
+    CREATE_TAX_RATE,
+    CREATE_ZONE,
+    GET_CHANNELS,
+    UPDATE_CHANNEL,
+} from '../../admin-ui/src/app/data/definitions/settings-definitions';
 import { Customer } from '../src/entity/customer/customer.entity';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
@@ -50,25 +59,26 @@ export class MockDataService {
         faker.seed(1);
     }
 
-    async populateChannels(channelCodes: string[]): Promise<Channel[]> {
-        const channels: Channel[] = [];
+    async populateChannels(channelCodes: string[]): Promise<Channel.Fragment[]> {
+        const channels: Channel.Fragment[] = [];
         for (const code of channelCodes) {
-            const channel = await this.client.query<any>(gql`
-                mutation {
-                    createChannel(code: "${code}") {
-                        id
-                        code
-                        token
-                    }
-                }
-            `);
+            const channel = await this.client.query<CreateChannel.Mutation, CreateChannel.Variables>(
+                CREATE_CHANNEL,
+                {
+                    input: {
+                        code,
+                        token: `${code}_token`,
+                        defaultLanguageCode: LanguageCode.en,
+                    },
+                },
+            );
             channels.push(channel.createChannel);
             this.log(`Created Channel: ${channel.createChannel.code}`);
         }
         return channels;
     }
 
-    async populateCountries() {
+    async populateCountries(): Promise<Zone.Fragment[]> {
         const countriesFile = await fs.readFile(
             path.join(__dirname, 'data-sources', 'countries.json'),
             'utf8',
@@ -91,15 +101,38 @@ export class MockDataService {
             }
             zones[country.region].push(result.createCountry.id);
         }
+
+        const createdZones: Zone.Fragment[] = [];
         for (const [name, memberIds] of Object.entries(zones)) {
-            await this.client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
+            const result = await this.client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
                 input: {
                     name,
                     memberIds,
                 },
             });
+            createdZones.push(result.createZone);
         }
         this.log(`Created ${countries.length} Countries in ${Object.keys(zones).length} Zones`);
+        return createdZones;
+    }
+
+    async setChannelDefaultZones(zones: Zone.Fragment[]) {
+        const defaultZone = zones.find(z => z.name === 'UK');
+        if (!defaultZone) {
+            this.log(`Default zone could not be found`);
+            return;
+        }
+        const result = await this.client.query<GetChannels.Query>(GET_CHANNELS);
+        for (const channel of result.channels) {
+            await this.client.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                input: {
+                    id: channel.id,
+                    defaultTaxZoneId: defaultZone.id,
+                    defaultShippingZoneId: defaultZone.id,
+                },
+            });
+        }
+        this.log(`Set default zones for ${result.channels.length} Channels`);
     }
 
     async populateOptions(): Promise<string> {
@@ -138,10 +171,10 @@ export class MockDataService {
             });
     }
 
-    async populateTaxCategories() {
+    async populateTaxCategories(zones: Zone.Fragment[]) {
         const taxCategories = [{ name: 'Standard Tax' }, { name: 'Reduced Tax' }, { name: 'Zero Tax' }];
 
-        const results: TaxCategory[] = [];
+        const createdTaxCategories: TaxCategory[] = [];
 
         for (const category of taxCategories) {
             const result = await this.client.query(
@@ -158,10 +191,24 @@ export class MockDataService {
                     },
                 },
             );
-            results.push(result.createTaxCategory);
+            createdTaxCategories.push(result.createTaxCategory);
         }
-        this.log(`Created ${results.length} tax categories`);
-        return results;
+        this.log(`Created ${createdTaxCategories.length} tax categories`);
+
+        // create tax rates
+        for (const zone of zones) {
+            await this.client.query<CreateTaxRate.Mutation, CreateTaxRate.Variables>(CREATE_TAX_RATE, {
+                input: {
+                    name: `Standard Tax for ${zone.name}`,
+                    enabled: true,
+                    value: 20,
+                    categoryId: createdTaxCategories[0].id,
+                    zoneId: zone.id,
+                },
+            });
+        }
+
+        return createdTaxCategories;
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
