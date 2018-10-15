@@ -79,7 +79,14 @@
                     <a class="nav-link"
                        [routerLink]="['/settings', 'tax-categories']"
                        routerLinkActive="active">
-                        <clr-icon shape="calculator" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}
+                        <clr-icon shape="view-list" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link"
+                       [routerLink]="['/settings', 'tax-rates']"
+                       routerLinkActive="active">
+                        <clr-icon shape="calculator" size="20"></clr-icon>{{ 'nav.tax-rates' | translate }}
                     </a>
                 </li>
                 <li>

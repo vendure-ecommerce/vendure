@@ -67,6 +67,8 @@ export interface Query {
     role?: Role | null;
     taxCategories: TaxCategory[];
     taxCategory?: TaxCategory | null;
+    taxRates: TaxRateList;
+    taxRate?: TaxRate | null;
     zones: Zone[];
     zone?: Zone | null;
     networkStatus: NetworkStatus;
@@ -102,6 +104,8 @@ export interface User extends Node {
 
 export interface Role extends Node {
     id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
     code: string;
     description: string;
     permissions: Permission[];
@@ -268,6 +272,7 @@ export interface OrderLine extends Node {
     featuredAsset?: Asset | null;
     unitPrice: number;
     quantity: number;
+    items: OrderItem[];
     totalPrice: number;
     order: Order;
 }
@@ -289,6 +294,8 @@ export interface ProductVariant extends Node {
 
 export interface TaxCategory extends Node {
     id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
     name: string;
 }
 
@@ -317,6 +324,12 @@ export interface ProductVariantTranslation {
     updatedAt: DateTime;
     languageCode: LanguageCode;
     name: string;
+}
+
+export interface OrderItem extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export interface Adjustment {
@@ -429,6 +442,23 @@ export interface RoleList extends PaginatedList {
     totalItems: number;
 }
 
+export interface TaxRateList extends PaginatedList {
+    items: TaxRate[];
+    totalItems: number;
+}
+
+export interface TaxRate extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    enabled: boolean;
+    value: number;
+    category: TaxCategory;
+    zone: Zone;
+    customerGroup?: CustomerGroup | null;
+}
+
 export interface Zone extends Node {
     id: string;
     createdAt: DateTime;
@@ -489,6 +519,8 @@ export interface Mutation {
     updateRole: Role;
     createTaxCategory: TaxCategory;
     updateTaxCategory: TaxCategory;
+    createTaxRate: TaxRate;
+    updateTaxRate: TaxRate;
     createZone: Zone;
     updateZone: Zone;
     addMembersToZone: Zone;
@@ -736,6 +768,29 @@ export interface RoleSortParameter {
 export interface RoleFilterParameter {
     code?: StringOperators | null;
     description?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
+export interface TaxRateListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: TaxRateSortParameter | null;
+    filter?: TaxRateFilterParameter | null;
+}
+
+export interface TaxRateSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    name?: SortOrder | null;
+    enabled?: SortOrder | null;
+}
+
+export interface TaxRateFilterParameter {
+    code?: StringOperators | null;
+    name?: StringOperators | null;
+    enabled?: BooleanOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
 }
@@ -995,6 +1050,25 @@ export interface UpdateTaxCategoryInput {
     name?: string | null;
 }
 
+export interface CreateTaxRateInput {
+    name: string;
+    enabled: boolean;
+    value: number;
+    categoryId: string;
+    zoneId: string;
+    customerGroupId?: string | null;
+}
+
+export interface UpdateTaxRateInput {
+    id: string;
+    name?: string | null;
+    value?: number | null;
+    enabled?: boolean | null;
+    categoryId?: string | null;
+    zoneId?: string | null;
+    customerGroupId?: string | null;
+}
+
 export interface CreateZoneInput {
     name: string;
     memberIds?: string[] | null;
@@ -1104,6 +1178,12 @@ export interface RoleQueryArgs {
     id: string;
 }
 export interface TaxCategoryQueryArgs {
+    id: string;
+}
+export interface TaxRatesQueryArgs {
+    options?: TaxRateListOptions | null;
+}
+export interface TaxRateQueryArgs {
     id: string;
 }
 export interface ZoneQueryArgs {
@@ -1231,6 +1311,12 @@ export interface CreateTaxCategoryMutationArgs {
 }
 export interface UpdateTaxCategoryMutationArgs {
     input: UpdateTaxCategoryInput;
+}
+export interface CreateTaxRateMutationArgs {
+    input: CreateTaxRateInput;
+}
+export interface UpdateTaxRateMutationArgs {
+    input: UpdateTaxRateInput;
 }
 export interface CreateZoneMutationArgs {
     input: CreateZoneInput;
@@ -1513,6 +1599,8 @@ export namespace QueryResolvers {
         role?: RoleResolver<Role | null, any, Context>;
         taxCategories?: TaxCategoriesResolver<TaxCategory[], any, Context>;
         taxCategory?: TaxCategoryResolver<TaxCategory | null, any, Context>;
+        taxRates?: TaxRatesResolver<TaxRateList, any, Context>;
+        taxRate?: TaxRateResolver<TaxRate | null, any, Context>;
         zones?: ZonesResolver<Zone[], any, Context>;
         zone?: ZoneResolver<Zone | null, any, Context>;
         networkStatus?: NetworkStatusResolver<NetworkStatus, any, Context>;
@@ -1771,6 +1859,26 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type TaxRatesResolver<R = TaxRateList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxRatesArgs
+    >;
+    export interface TaxRatesArgs {
+        options?: TaxRateListOptions | null;
+    }
+
+    export type TaxRateResolver<R = TaxRate | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxRateArgs
+    >;
+    export interface TaxRateArgs {
+        id: string;
+    }
+
     export type ZonesResolver<R = Zone[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
         R,
@@ -1862,6 +1970,8 @@ export namespace UserResolvers {
 export namespace RoleResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
         permissions?: PermissionsResolver<Permission[], any, Context>;
@@ -1869,6 +1979,8 @@ export namespace RoleResolvers {
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PermissionsResolver<R = Permission[], Parent = any, Context = any> = Resolver<
@@ -2304,6 +2416,7 @@ export namespace OrderLineResolvers {
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         unitPrice?: UnitPriceResolver<number, any, Context>;
         quantity?: QuantityResolver<number, any, Context>;
+        items?: ItemsResolver<OrderItem[], any, Context>;
         totalPrice?: TotalPriceResolver<number, any, Context>;
         order?: OrderResolver<Order, any, Context>;
     }
@@ -2323,6 +2436,7 @@ export namespace OrderLineResolvers {
     >;
     export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type QuantityResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ItemsResolver<R = OrderItem[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type OrderResolver<R = Order, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
@@ -2384,10 +2498,14 @@ export namespace ProductVariantResolvers {
 export namespace TaxCategoryResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         name?: NameResolver<string, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
@@ -2463,6 +2581,18 @@ export namespace ProductVariantTranslationResolvers {
         Context
     >;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace OrderItemResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace AdjustmentResolvers {
@@ -2769,6 +2899,44 @@ export namespace RoleListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace TaxRateListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<TaxRate[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = TaxRate[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace TaxRateResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+        value?: ValueResolver<number, any, Context>;
+        category?: CategoryResolver<TaxCategory, any, Context>;
+        zone?: ZoneResolver<Zone, any, Context>;
+        customerGroup?: CustomerGroupResolver<CustomerGroup | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValueResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CustomerGroupResolver<R = CustomerGroup | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
 export namespace ZoneResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -2864,6 +3032,8 @@ export namespace MutationResolvers {
         updateRole?: UpdateRoleResolver<Role, any, Context>;
         createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
         updateTaxCategory?: UpdateTaxCategoryResolver<TaxCategory, any, Context>;
+        createTaxRate?: CreateTaxRateResolver<TaxRate, any, Context>;
+        updateTaxRate?: UpdateTaxRateResolver<TaxRate, any, Context>;
         createZone?: CreateZoneResolver<Zone, any, Context>;
         updateZone?: UpdateZoneResolver<Zone, any, Context>;
         addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
@@ -3245,6 +3415,26 @@ export namespace MutationResolvers {
     >;
     export interface UpdateTaxCategoryArgs {
         input: UpdateTaxCategoryInput;
+    }
+
+    export type CreateTaxRateResolver<R = TaxRate, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateTaxRateArgs
+    >;
+    export interface CreateTaxRateArgs {
+        input: CreateTaxRateInput;
+    }
+
+    export type UpdateTaxRateResolver<R = TaxRate, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateTaxRateArgs
+    >;
+    export interface UpdateTaxRateArgs {
+        input: UpdateTaxRateInput;
     }
 
     export type CreateZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
@@ -4240,6 +4430,64 @@ export namespace UpdateTaxCategory {
     export type UpdateTaxCategory = TaxCategory.Fragment;
 }
 
+export namespace GetTaxRateList {
+    export type Variables = {
+        options?: TaxRateListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        taxRates: TaxRates;
+    };
+
+    export type TaxRates = {
+        __typename?: 'TaxRateList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = TaxRate.Fragment;
+}
+
+export namespace GetTaxRate {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        taxRate?: TaxRate | null;
+    };
+
+    export type TaxRate = TaxRate.Fragment;
+}
+
+export namespace CreateTaxRate {
+    export type Variables = {
+        input: CreateTaxRateInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createTaxRate: CreateTaxRate;
+    };
+
+    export type CreateTaxRate = TaxRate.Fragment;
+}
+
+export namespace UpdateTaxRate {
+    export type Variables = {
+        input: UpdateTaxRateInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateTaxRate: UpdateTaxRate;
+    };
+
+    export type UpdateTaxRate = TaxRate.Fragment;
+}
+
 export namespace Administrator {
     export type Fragment = {
         __typename?: 'Administrator';
@@ -4532,6 +4780,37 @@ export namespace Zone {
 export namespace TaxCategory {
     export type Fragment = {
         __typename?: 'TaxCategory';
+        id: string;
+        name: string;
+    };
+}
+
+export namespace TaxRate {
+    export type Fragment = {
+        __typename?: 'TaxRate';
+        id: string;
+        name: string;
+        enabled: boolean;
+        value: number;
+        category: Category;
+        zone: Zone;
+        customerGroup?: CustomerGroup | null;
+    };
+
+    export type Category = {
+        __typename?: 'TaxCategory';
+        id: string;
+        name: string;
+    };
+
+    export type Zone = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+    };
+
+    export type CustomerGroup = {
+        __typename?: 'CustomerGroup';
         id: string;
         name: string;
     };

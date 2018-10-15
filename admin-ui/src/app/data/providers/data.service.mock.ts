@@ -103,5 +103,9 @@ export class MockDataService implements DataServiceMock {
         getTaxCategory: spyQueryResult('getTaxCategory'),
         createTaxCategory: spyObservable('createTaxCategory'),
         updateTaxCategory: spyObservable('updateTaxCategory'),
+        getTaxRates: spyQueryResult('getTaxRates'),
+        getTaxRate: spyQueryResult('getTaxRate'),
+        createTaxRate: spyObservable('createTaxRate'),
+        updateTaxRate: spyObservable('updateTaxRate'),
     };
 }

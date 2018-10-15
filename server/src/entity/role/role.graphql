@@ -1,5 +1,7 @@
 type Role implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     code: String!
     description: String!
     permissions: [Permission!]!

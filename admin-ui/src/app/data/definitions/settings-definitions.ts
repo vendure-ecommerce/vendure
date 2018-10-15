@@ -155,3 +155,63 @@ export const UPDATE_TAX_CATEGORY = gql`
     }
     ${TAX_CATEGORY_FRAGMENT}
 `;
+
+export const TAX_RATE_FRAGMENT = gql`
+    fragment TaxRate on TaxRate {
+        id
+        name
+        enabled
+        value
+        category {
+            id
+            name
+        }
+        zone {
+            id
+            name
+        }
+        customerGroup {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_TAX_RATE_LIST = gql`
+    query GetTaxRateList($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                ...TaxRate
+            }
+            totalItems
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const GET_TAX_RATE = gql`
+    query GetTaxRate($id: ID!) {
+        taxRate(id: $id) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const CREATE_TAX_RATE = gql`
+    mutation CreateTaxRate($input: CreateTaxRateInput!) {
+        createTaxRate(input: $input) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const UPDATE_TAX_RATE = gql`
+    mutation UpdateTaxRate($input: UpdateTaxRateInput!) {
+        updateTaxRate(input: $input) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;

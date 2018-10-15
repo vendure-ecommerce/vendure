@@ -34,7 +34,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
-    taxCategories$: Observable<TaxCategory[]>;
+    taxCategories$: Observable<TaxCategory.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;

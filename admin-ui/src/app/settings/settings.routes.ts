@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { Administrator, Country, GetCountry, Role, TaxCategory } from 'shared/generated-types';
+import { Administrator, Country, GetCountry, Role, TaxCategory, TaxRate } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -13,10 +13,13 @@ import { RoleDetailComponent } from './components/role-detail/role-detail.compon
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
+import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
+import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
+import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 
 export const settingsRoutes: Route[] = [
     {
@@ -61,6 +64,21 @@ export const settingsRoutes: Route[] = [
         },
     },
     {
+        path: 'tax-rates',
+        component: TaxRateListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.tax-rates'),
+        },
+    },
+    {
+        path: 'tax-rates/:id',
+        component: TaxRateDetailComponent,
+        resolve: createResolveData(TaxRateResolver),
+        data: {
+            breadcrumb: taxRateBreadcrumb,
+        },
+    },
+    {
         path: 'countries',
         component: CountryListComponent,
         data: {
@@ -102,8 +120,18 @@ export function taxCategoryBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-categories',
-        getName: promotion => promotion.name,
+        getName: category => category.name,
         route: 'tax-categories',
+    });
+}
+
+export function taxRateBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<TaxRate.Fragment>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.tax-rates',
+        getName: category => category.name,
+        route: 'tax-rates',
     });
 }
 

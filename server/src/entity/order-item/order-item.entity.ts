@@ -14,6 +14,5 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => OrderLine, line => line.items)
     line: OrderLine;
 
-    /*@Column('simple-json')
-    pendingAdjustments: Adjustment[];*/
+    @Column('simple-json') pendingAdjustments: Adjustment[];
 }

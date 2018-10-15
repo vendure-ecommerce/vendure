@@ -4,12 +4,16 @@ import {
     CreateCountryInput,
     CreateTaxCategory,
     CreateTaxCategoryInput,
+    CreateTaxRate,
+    CreateTaxRateInput,
     CreateZone,
     CreateZoneInput,
     GetCountry,
     GetCountryList,
     GetTaxCategories,
     GetTaxCategory,
+    GetTaxRate,
+    GetTaxRateList,
     GetZone,
     GetZones,
     RemoveMembersFromZone,
@@ -17,6 +21,8 @@ import {
     UpdateCountryInput,
     UpdateTaxCategory,
     UpdateTaxCategoryInput,
+    UpdateTaxRate,
+    UpdateTaxRateInput,
     UpdateZone,
     UpdateZoneInput,
 } from 'shared/generated-types';
@@ -25,15 +31,19 @@ import {
     ADD_MEMBERS_TO_ZONE,
     CREATE_COUNTRY,
     CREATE_TAX_CATEGORY,
+    CREATE_TAX_RATE,
     CREATE_ZONE,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_TAX_CATEGORIES,
     GET_TAX_CATEGORY,
+    GET_TAX_RATE,
+    GET_TAX_RATE_LIST,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_COUNTRY,
     UPDATE_TAX_CATEGORY,
+    UPDATE_TAX_RATE,
     UPDATE_ZONE,
 } from '../definitions/settings-definitions';
 
@@ -133,5 +143,32 @@ export class SettingsDataService {
                 input,
             },
         );
+    }
+
+    getTaxRates(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetTaxRateList.Query, GetTaxRateList.Variables>(GET_TAX_RATE_LIST, {
+            options: {
+                take,
+                skip,
+            },
+        });
+    }
+
+    getTaxRate(id: string) {
+        return this.baseDataService.query<GetTaxRate.Query, GetTaxRate.Variables>(GET_TAX_RATE, {
+            id,
+        });
+    }
+
+    createTaxRate(input: CreateTaxRateInput) {
+        return this.baseDataService.mutate<CreateTaxRate.Mutation, CreateTaxRate.Variables>(CREATE_TAX_RATE, {
+            input,
+        });
+    }
+
+    updateTaxRate(input: UpdateTaxRateInput) {
+        return this.baseDataService.mutate<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+            input,
+        });
     }
 }

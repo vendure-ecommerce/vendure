@@ -3,7 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { AdjustmentOperation, LanguageCode, TaxCategory } from 'shared/generated-types';
+import {
+    AdjustmentOperation,
+    CreateTaxCategoryInput,
+    LanguageCode,
+    TaxCategory,
+    UpdateTaxCategoryInput,
+} from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -59,7 +65,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
             return;
         }
         const formValue = this.taxCategoryForm.value;
-        const input = { name: formValue.name };
+        const input = { name: formValue.name } as CreateTaxCategoryInput;
         this.dataService.settings.createTaxCategory(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
@@ -88,8 +94,8 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
                 mergeMap(taxCategory => {
                     const input = {
                         id: taxCategory.id,
-                        nadme: formValue.name,
-                    };
+                        name: formValue.name,
+                    } as UpdateTaxCategoryInput;
                     return this.dataService.settings.updateTaxCategory(input);
                 }),
             )

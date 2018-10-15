@@ -12,11 +12,14 @@ import { RoleDetailComponent } from './components/role-detail/role-detail.compon
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
+import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
+import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
 import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/zone-selector-dialog.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
+import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 import { settingsRoutes } from './settings.routes';
 
 @NgModule({
@@ -32,8 +35,10 @@ import { settingsRoutes } from './settings.routes';
         CountryListComponent,
         CountryDetailComponent,
         ZoneSelectorDialogComponent,
+        TaxRateListComponent,
+        TaxRateDetailComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
-    providers: [TaxCategoryResolver, AdministratorResolver, RoleResolver, CountryResolver],
+    providers: [TaxCategoryResolver, AdministratorResolver, RoleResolver, CountryResolver, TaxRateResolver],
 })
 export class SettingsModule {}

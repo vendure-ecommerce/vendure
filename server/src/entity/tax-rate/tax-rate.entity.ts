@@ -1,4 +1,4 @@
-import { AdjustmentOperation, AdjustmentType } from 'shared/generated-types';
+import { AdjustmentOperation } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 
@@ -18,6 +18,8 @@ export class TaxRate extends VendureEntity implements AdjustmentSource {
     @Column() name: string;
 
     @Column() enabled: boolean;
+
+    @Column() value: number;
 
     @ManyToOne(type => TaxCategory)
     category: TaxCategory;

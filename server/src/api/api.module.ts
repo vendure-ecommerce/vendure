@@ -27,6 +27,7 @@ import { ProductResolver } from './resolvers/product.resolver';
 import { PromotionResolver } from './resolvers/promotion.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
 import { TaxCategoryResolver } from './resolvers/tax-category.resolver';
+import { TaxRateResolver } from './resolvers/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/zone.resolver';
 
 const exportedProviders = [
@@ -45,6 +46,7 @@ const exportedProviders = [
     ProductResolver,
     RoleResolver,
     TaxCategoryResolver,
+    TaxRateResolver,
     ZoneResolver,
 ];
 

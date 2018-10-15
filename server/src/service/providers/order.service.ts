@@ -96,7 +96,11 @@ export class OrderService {
                 orderLine.items = [];
             }
             for (let i = currentQuantity; i < quantity; i++) {
-                const orderItem = await this.connection.getRepository(OrderItem).save(new OrderItem());
+                const orderItem = await this.connection.getRepository(OrderItem).save(
+                    new OrderItem({
+                        pendingAdjustments: [],
+                    }),
+                );
                 orderLine.items.push(orderItem);
             }
         } else if (quantity < currentQuantity) {

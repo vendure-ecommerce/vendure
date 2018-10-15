@@ -12,7 +12,8 @@
     "products": "Products",
     "promotions": "Promotions",
     "roles": "Roles",
-    "tax-categories": "Tax categories"
+    "tax-categories": "Tax categories",
+    "tax-rates": ""
   },
   "catalog": {
     "add-asset": "Add asset",
@@ -46,7 +47,6 @@
     "option-group-options-tooltip": "Enter each option on a new line in the default language ({ defaultLanguage })",
     "original-asset-size": "Source size",
     "price": "Price",
-    "price-before-tax": "Price before tax",
     "product": "Product",
     "product-name": "Product name",
     "product-option-groups": "Option groups",
@@ -122,7 +122,8 @@
     "roles": "Roles",
     "sales": "Sales",
     "settings": "Settings",
-    "tax-categories": "Tax categories"
+    "tax-categories": "Tax categories",
+    "tax-rates": "Tax Rates"
   },
   "order": {
     "create-new-order": "Create new order"
@@ -136,6 +137,7 @@
     "create-new-country": "Create new country",
     "create-new-role": "Create new role",
     "create-new-tax-category": "Create tax category",
+    "create-new-tax-rate": "Create new tax rate",
     "create-zone": "Create zone",
     "customer": "Customer",
     "delete": "Delete",
@@ -146,6 +148,7 @@
     "order": "Order",
     "password": "Password",
     "permissions": "Permissions",
+    "rate": "Rate",
     "read": "Read",
     "remove-countries-from-zone": "Remove countries from zone...",
     "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
@@ -153,6 +156,7 @@
     "roles": "Roles",
     "section": "Section",
     "select-zone": "Select zone",
+    "tax-category": "Tax category",
     "tax-rate": "Tax rate",
     "update": "Update",
     "zone": "Zone"
