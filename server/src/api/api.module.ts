@@ -12,7 +12,6 @@ import { AuthGuard } from './common/auth-guard';
 import { GraphqlConfigService } from './common/graphql-config.service';
 import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
-import { AdjustmentSourceResolver } from './resolvers/adjustment-source.resolver';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
@@ -25,12 +24,13 @@ import { FacetResolver } from './resolvers/facet.resolver';
 import { OrderResolver } from './resolvers/order.resolver';
 import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
+import { PromotionResolver } from './resolvers/promotion.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
 import { TaxCategoryResolver } from './resolvers/tax-category.resolver';
 import { ZoneResolver } from './resolvers/zone.resolver';
 
 const exportedProviders = [
-    AdjustmentSourceResolver,
+    PromotionResolver,
     AdministratorResolver,
     AuthResolver,
     AssetResolver,

@@ -1,0 +1,41 @@
+type Query {
+    promotion(id: ID!): Promotion
+    promotions(options: PromotionListOptions): PromotionList!
+    adjustmentOperations: AdjustmentOperations!
+}
+
+type AdjustmentOperations {
+    conditions: [AdjustmentOperation!]!
+    actions: [AdjustmentOperation!]!
+}
+
+type Mutation {
+    createPromotion(input: CreatePromotionInput!): Promotion!
+    updatePromotion(input: UpdatePromotionInput!): Promotion!
+}
+
+type PromotionList implements PaginatedList {
+    items: [Promotion!]!
+    totalItems: Int!
+}
+
+input PromotionListOptions {
+    take: Int
+    skip: Int
+    sort: PromotionSortParameter
+    filter: PromotionFilterParameter
+}
+
+input PromotionSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+}
+
+input PromotionFilterParameter {
+    name: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+    type: StringOperators
+}

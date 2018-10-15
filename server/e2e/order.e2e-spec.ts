@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 import { Customer } from '../src/entity/customer/customer.entity';
-import { OrderItem } from '../src/entity/order-item/order-item.entity';
+import { OrderLine } from '../src/entity/order-line/order-line.entity';
 
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
@@ -78,7 +78,7 @@ describe('Orders', () => {
             }
         });
 
-        it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderItem', async () => {
+        it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const result = await client.query(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 2,
@@ -184,7 +184,7 @@ describe('Orders', () => {
             firstOrderItemId = result.addItemToOrder.items[0].id;
         });
 
-        it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderItem', async () => {
+        it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const result = await client.query(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 2,

@@ -4,10 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import {
-    AdjustmentSource,
     CreateProductInput,
     LanguageCode,
-    ProductVariant,
     ProductWithVariants,
     TaxCategory,
     UpdateProductInput,

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { AdjustmentSource, Administrator, Role } from 'shared/generated-types';
+import { Administrator, Country, GetCountry, Role, TaxCategory } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -98,7 +98,7 @@ export function roleBreadcrumb(data: any, params: any) {
 }
 
 export function taxCategoryBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<AdjustmentSource.Fragment>({
+    return detailBreadcrumb<TaxCategory.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-categories',
@@ -108,7 +108,7 @@ export function taxCategoryBreadcrumb(data: any, params: any) {
 }
 
 export function countryBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<AdjustmentSource.Fragment>({
+    return detailBreadcrumb<Country.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.countries',

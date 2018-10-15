@@ -30,7 +30,7 @@ export function spyObservable(name: string, returnValue: any = {}): jasmine.Spy 
 }
 
 export class MockDataService implements DataServiceMock {
-    adjustmentSource = {
+    promotion = {
         getPromotions: spyQueryResult('getPromotions'),
         getPromotion: spyQueryResult('getPromotion'),
         getAdjustmentOperations: spyQueryResult('getAdjustmentOperations'),

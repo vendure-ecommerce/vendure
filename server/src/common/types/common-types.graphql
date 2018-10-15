@@ -3,6 +3,12 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
+type Adjustment {
+    promotionId: ID!
+    description: String!
+    amount: Int!
+}
+
 interface PaginatedList {
     items: [Node!]!
     totalItems: Int!

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
-import { AdjustmentSource, ProductWithVariants, TaxCategory } from 'shared/generated-types';
+import { ProductWithVariants, TaxCategory } from 'shared/generated-types';
 
 @Component({
     selector: 'vdr-product-variants-list',

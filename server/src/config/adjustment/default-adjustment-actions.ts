@@ -1,9 +1,6 @@
-import { AdjustmentType } from 'shared/generated-types';
-
 import { AdjustmentActionDefinition } from './adjustment-types';
 
 export const orderPercentageDiscount: AdjustmentActionDefinition = {
-    type: AdjustmentType.PROMOTION,
     code: 'order_percentage_discount',
     args: [{ name: 'discount', type: 'percentage' }],
     calculate(order, args) {
@@ -13,11 +10,10 @@ export const orderPercentageDiscount: AdjustmentActionDefinition = {
 };
 
 export const itemPercentageDiscount: AdjustmentActionDefinition = {
-    type: AdjustmentType.PROMOTION,
     code: 'item_percentage_discount',
     args: [{ name: 'discount', type: 'percentage' }],
     calculate(order, args) {
-        return order.items.map(item => ({
+        return order.lines.map(item => ({
             orderItemId: item.id,
             amount: -(item.totalPrice * args.discount) / 100,
         }));

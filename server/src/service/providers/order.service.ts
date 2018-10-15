@@ -7,6 +7,7 @@ import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { I18nError } from '../../i18n/i18n-error';
@@ -24,7 +25,7 @@ export class OrderService {
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
-        return buildListQuery(this.connection, Order, options, ['items', 'items.productVariant', 'customer'])
+        return buildListQuery(this.connection, Order, options, ['lines', 'lines.productVariant', 'customer'])
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
@@ -36,10 +37,10 @@ export class OrderService {
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
         const order = await this.connection.getRepository(Order).findOne(orderId, {
-            relations: ['items', 'items.productVariant', 'items.featuredAsset'],
+            relations: ['lines', 'lines.productVariant', 'lines.featuredAsset', 'lines.items'],
         });
         if (order) {
-            order.items.forEach(item => {
+            order.lines.forEach(item => {
                 item.productVariant = translateDeep(item.productVariant, ctx.languageCode);
             });
             return order;
@@ -49,9 +50,7 @@ export class OrderService {
     create(): Promise<Order> {
         const newOrder = new Order({
             code: generatePublicId(),
-            items: [],
-            adjustments: [],
-            totalPriceBeforeAdjustment: 0,
+            lines: [],
             totalPrice: 0,
         });
         return this.connection.getRepository(Order).save(newOrder);
@@ -66,49 +65,51 @@ export class OrderService {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        const existingItem = order.items.find(item => idsAreEqual(item.productVariant.id, productVariantId));
+        let orderLine = order.lines.find(line => idsAreEqual(line.productVariant.id, productVariantId));
 
-        if (existingItem) {
-            return this.adjustItemQuantity(ctx, orderId, existingItem.id, existingItem.quantity + quantity);
+        if (!orderLine) {
+            const newLine = new OrderLine({
+                productVariant,
+                taxCategoryId: productVariant.taxCategory.id,
+                featuredAsset: productVariant.product.featuredAsset,
+                unitPrice: productVariant.price,
+            });
+            orderLine = await this.connection.getRepository(OrderLine).save(newLine);
+            order.lines.push(orderLine);
+            await this.connection.getRepository(Order).save(order);
         }
-        const orderItem = new OrderItem({
-            quantity,
-            productVariant,
-            taxCategoryId: productVariant.taxCategory.id,
-            featuredAsset: productVariant.product.featuredAsset,
-            unitPrice: productVariant.price,
-            unitPriceBeforeTax: 0,
-            totalPriceBeforeAdjustment: 0 * quantity,
-            totalPrice: 0 * quantity,
-            adjustments: [],
-        });
-        const newOrderItem = await this.connection.getRepository(OrderItem).save(orderItem);
-        order.items.push(newOrderItem);
-        await this.adjustmentApplicatorService.applyAdjustments(order);
-        return assertFound(this.findOne(ctx, order.id));
+        return this.adjustItemQuantity(ctx, orderId, orderLine.id, orderLine.quantity + quantity);
     }
 
     async adjustItemQuantity(
         ctx: RequestContext,
         orderId: ID,
-        orderItemId: ID,
+        orderLineId: ID,
         quantity: number,
     ): Promise<Order> {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
-        const orderItem = this.getOrderItemOrThrow(order, orderItemId);
-        orderItem.quantity = quantity;
-        orderItem.totalPriceBeforeAdjustment = orderItem.unitPrice * orderItem.quantity;
-        await this.connection.getRepository(OrderItem).save(orderItem);
-        await this.adjustmentApplicatorService.applyAdjustments(order);
+        const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+        const currentQuantity = orderLine.quantity;
+        if (currentQuantity < quantity) {
+            if (!orderLine.items) {
+                orderLine.items = [];
+            }
+            for (let i = currentQuantity; i < quantity; i++) {
+                const orderItem = await this.connection.getRepository(OrderItem).save(new OrderItem());
+                orderLine.items.push(orderItem);
+            }
+        } else if (quantity < currentQuantity) {
+            orderLine.items = orderLine.items.slice(0, quantity);
+        }
+        await this.connection.getRepository(OrderLine).save(orderLine);
         return assertFound(this.findOne(ctx, order.id));
     }
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderItemId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        const orderItem = this.getOrderItemOrThrow(order, orderItemId);
-        order.items = order.items.filter(item => !idsAreEqual(item.id, orderItemId));
-        await this.adjustmentApplicatorService.applyAdjustments(order);
+        const orderItem = this.getOrderLineOrThrow(order, orderItemId);
+        order.lines = order.lines.filter(item => !idsAreEqual(item.id, orderItemId));
         return assertFound(this.findOne(ctx, order.id));
     }
 
@@ -134,8 +135,8 @@ export class OrderService {
         return productVariant;
     }
 
-    private getOrderItemOrThrow(order: Order, orderItemId: ID): OrderItem {
-        const orderItem = order.items.find(item => idsAreEqual(item.id, orderItemId));
+    private getOrderLineOrThrow(order: Order, orderItemId: ID): OrderLine {
+        const orderItem = order.lines.find(item => idsAreEqual(item.id, orderItemId));
         if (!orderItem) {
             throw new I18nError(`error.order-does-not-contain-item-with-id`, { id: orderItemId });
         }

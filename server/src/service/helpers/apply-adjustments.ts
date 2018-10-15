@@ -31,7 +31,7 @@ export function applyAdjustments(
 
         for (const result of results) {
             if (result.orderItemId) {
-                const item = order.items.find(i => idsAreEqual(i.id, result.orderItemId));
+                const item = order.lines.find(i => idsAreEqual(i.id, result.orderItemId));
                 if (item) {
                     item.adjustments.push({
                         adjustmentSourceId: source.id,
@@ -70,7 +70,7 @@ export function orderAdjustmentSources(sources: AdjustmentSource[]): AdjustmentS
  * to be an empty array.
  */
 function initializeOrder(order: Order) {
-    for (const item of order.items) {
+    for (const item of order.lines) {
         item.totalPrice = item.totalPriceBeforeAdjustment;
         item.adjustments = [];
     }
@@ -79,7 +79,7 @@ function initializeOrder(order: Order) {
 }
 
 function getTotalPriceOfItems(order: Order): number {
-    return order.items.reduce((total, item) => total + item.totalPrice, 0);
+    return order.lines.reduce((total, item) => total + item.totalPrice, 0);
 }
 
 function getTotalAdjustmentAmount(adjustments: Adjustment[]): number {

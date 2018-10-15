@@ -20,7 +20,6 @@ import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
 
-import { AdjustmentSourceService } from './adjustment-source.service';
 import { TaxCategoryService } from './tax-category.service';
 
 @Injectable()
@@ -29,11 +28,10 @@ export class ProductVariantService {
         @InjectConnection() private connection: Connection,
         private taxCategoryService: TaxCategoryService,
         private translationUpdaterService: TranslationUpdaterService,
-        private adjustmentSourceService: AdjustmentSourceService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
-        const relations = ['product', 'product.featuredAsset'];
+        const relations = ['product', 'product.featuredAsset', 'taxCategory'];
         return this.connection
             .getRepository(ProductVariant)
             .findOne(productVariantId, { relations })
@@ -112,9 +110,8 @@ export class ProductVariantService {
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
 
-        const taxCategoryId =
-            defaultTaxCategoryId ||
-            (await this.adjustmentSourceService.getDefaultTaxCategory()).id.toString();
+        // TODO: how to handle default tax category?
+        const taxCategoryId = defaultTaxCategoryId || '1';
 
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {

@@ -2,11 +2,4 @@ type OrderItem implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    productVariant: ProductVariant!
-    adjustments: [Adjustment!]!
-    featuredAsset: Asset
-    unitPrice: Int!
-    quantity: Int!
-    totalPrice: Int!
-    order: Order!
 }

@@ -4,12 +4,9 @@ import gql from 'graphql-tag';
 import * as path from 'path';
 import {
     AddOptionGroupToProduct,
-    AdjustmentSource,
-    AdjustmentType,
     Asset,
     Country,
     CreateAddressInput,
-    CreateAdjustmentSource,
     CreateCountry,
     CreateCustomerInput,
     CreateFacet,
@@ -24,7 +21,6 @@ import {
     UpdateProductVariants,
 } from 'shared/generated-types';
 
-import { CREATE_ADJUSTMENT_SOURCE } from '../../admin-ui/src/app/data/definitions/adjustment-source-definitions';
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,

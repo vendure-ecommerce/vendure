@@ -4,7 +4,7 @@ type Order implements Node {
     updatedAt: DateTime!
     code: String!
     customer: Customer
-    items: [OrderItem!]!
-    adjustments: [Adjustment!]!
+    lines: [OrderLine!]!
+    adjustments: [Adjustment!]
     totalPrice: Int!
 }

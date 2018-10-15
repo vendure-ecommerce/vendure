@@ -3,14 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import {
-    AdjustmentOperation,
-    AdjustmentSource,
-    AdjustmentType,
-    CreateAdjustmentSourceInput,
-    LanguageCode,
-    UpdateAdjustmentSourceInput,
-} from 'shared/generated-types';
+import { AdjustmentOperation, LanguageCode, TaxCategory } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -24,9 +17,9 @@ import { ServerConfigService } from '../../../data/server-config';
     styleUrls: ['./tax-category-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSource.Fragment>
+export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.Fragment>
     implements OnInit, OnDestroy {
-    taxCategory$: Observable<AdjustmentSource.Fragment>;
+    taxCategory$: Observable<TaxCategory.Fragment>;
     taxCategoryForm: FormGroup;
 
     private taxCondition: AdjustmentOperation;
@@ -51,12 +44,6 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
     ngOnInit() {
         this.init();
         this.taxCategory$ = this.entity$;
-        const allOperations$ = this.dataService.adjustmentSource
-            .getAdjustmentOperations(AdjustmentType.TAX)
-            .single$.subscribe(data => {
-                this.taxCondition = data.adjustmentOperations.conditions[0];
-                this.taxAction = data.adjustmentOperations.actions[0];
-            });
     }
 
     ngOnDestroy() {
@@ -125,11 +112,9 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: AdjustmentSource.Fragment, languageCode: LanguageCode): void {
-        const action = entity.actions[0];
+    protected setFormValues(entity: TaxCategory.Fragment, languageCode: LanguageCode): void {
         this.taxCategoryForm.patchValue({
             name: entity.name,
-            taxRate: action ? action.args[0].value : 0,
         });
     }
 }

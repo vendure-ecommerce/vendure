@@ -3,9 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import {
     AdjustmentOperation,
     AdjustmentOperationInput,
-    AdjustmentType,
-    CreateAdjustmentSourceInput,
-    UpdateAdjustmentSourceInput,
+    CreatePromotionInput,
+    UpdatePromotionInput,
 } from 'shared/generated-types';
 import { omit } from 'shared/omit';
 import { ID, PaginatedList } from 'shared/shared-types';
@@ -19,7 +18,7 @@ import {
     AdjustmentConditionDefinition,
 } from '../../config/adjustment/adjustment-types';
 import { ConfigService } from '../../config/config.service';
-import { AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
+import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
 import { patchEntity } from '../helpers/patch-entity';
@@ -27,7 +26,7 @@ import { patchEntity } from '../helpers/patch-entity';
 import { ChannelService } from './channel.service';
 
 @Injectable()
-export class AdjustmentSourceService {
+export class PromotionService {
     availableConditions: AdjustmentConditionDefinition[] = [];
     availableActions: AdjustmentActionDefinition[] = [];
     /**
@@ -35,7 +34,7 @@ export class AdjustmentSourceService {
      * every time an order is changed, which will happen often. Caching them means
      * a DB call is not required newly each time.
      */
-    private activeSources: AdjustmentSource[] = [];
+    private activePromotions: Promotion[] = [];
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -46,8 +45,8 @@ export class AdjustmentSourceService {
         this.availableActions = this.configService.adjustmentActions;
     }
 
-    findAll(options?: ListQueryOptions<AdjustmentSource>): Promise<PaginatedList<AdjustmentSource>> {
-        return buildListQuery(this.connection, AdjustmentSource, options)
+    findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
+        return buildListQuery(this.connection, Promotion, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -55,8 +54,8 @@ export class AdjustmentSourceService {
             }));
     }
 
-    async findOne(adjustmentSourceId: ID): Promise<AdjustmentSource | undefined> {
-        return this.connection.manager.findOne(AdjustmentSource, adjustmentSourceId, {
+    async findOne(adjustmentSourceId: ID): Promise<Promotion | undefined> {
+        return this.connection.manager.findOne(Promotion, adjustmentSourceId, {
             relations: [],
         });
     }
@@ -64,60 +63,41 @@ export class AdjustmentSourceService {
     /**
      * Returns all available AdjustmentOperations.
      */
-    getAdjustmentOperations(
-        type: AdjustmentType,
-    ): {
+    getAdjustmentOperations(): {
         conditions: AdjustmentConditionDefinition[];
         actions: AdjustmentActionDefinition[];
     } {
         return {
-            conditions: this.availableConditions.filter(o => o.type === type),
-            actions: this.availableActions.filter(o => o.type === type),
+            conditions: this.availableConditions,
+            actions: this.availableActions,
         };
     }
 
     /**
      * Returns all active AdjustmentSources.
      */
-    async getActiveAdjustmentSources(): Promise<AdjustmentSource[]> {
-        if (!this.activeSources.length) {
-            await this.updateActiveSources();
+    async getActivePromotions(): Promise<Promotion[]> {
+        if (!this.activePromotions.length) {
+            await this.updatePromotions();
         }
-        return this.activeSources;
+        return this.activePromotions;
     }
 
-    /**
-     * Returns the default tax category.
-     * TODO: currently just returns the first one. There should be a "default" flag.
-     */
-    async getDefaultTaxCategory(): Promise<AdjustmentSource> {
-        const sources = await this.getActiveAdjustmentSources();
-        const taxCategories = sources.filter(s => s.type === AdjustmentType.TAX);
-        return taxCategories[0];
-    }
-
-    async createAdjustmentSource(
-        ctx: RequestContext,
-        input: CreateAdjustmentSourceInput,
-    ): Promise<AdjustmentSource> {
-        const adjustmentSource = new AdjustmentSource({
+    async createPromotion(ctx: RequestContext, input: CreatePromotionInput): Promise<Promotion> {
+        const adjustmentSource = new Promotion({
             name: input.name,
-            type: input.type,
             enabled: input.enabled,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
         });
         this.channelService.assignToChannels(adjustmentSource, ctx);
         const newAdjustmentSource = await this.connection.manager.save(adjustmentSource);
-        await this.updateActiveSources();
+        await this.updatePromotions();
         return assertFound(this.findOne(newAdjustmentSource.id));
     }
 
-    async updateAdjustmentSource(
-        ctx: RequestContext,
-        input: UpdateAdjustmentSourceInput,
-    ): Promise<AdjustmentSource> {
-        const adjustmentSource = await this.connection.getRepository(AdjustmentSource).findOne(input.id);
+    async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
+        const adjustmentSource = await this.connection.getRepository(Promotion).findOne(input.id);
         if (!adjustmentSource) {
             throw new I18nError(`error.entity-with-id-not-found`, {
                 entityName: 'AdjustmentSource',
@@ -134,7 +114,7 @@ export class AdjustmentSourceService {
             updatedAdjustmentSource.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
         await this.connection.manager.save(updatedAdjustmentSource);
-        await this.updateActiveSources();
+        await this.updatePromotions();
         return assertFound(this.findOne(updatedAdjustmentSource.id));
     }
 
@@ -148,7 +128,6 @@ export class AdjustmentSourceService {
         const match = this.getAdjustmentOperationByCode(type, input.code);
         const output: AdjustmentOperation = {
             code: input.code,
-            type: match.type,
             description: match.description,
             args: input.arguments.map((inputArg, i) => {
                 return {
@@ -174,8 +153,8 @@ export class AdjustmentSourceService {
     /**
      * Update the activeSources cache.
      */
-    private async updateActiveSources() {
-        this.activeSources = await this.connection.getRepository(AdjustmentSource).find({
+    private async updatePromotions() {
+        this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
     }

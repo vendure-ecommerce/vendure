@@ -7,7 +7,7 @@ import {
 import { taxAction } from '../../config/adjustment/required-adjustment-actions';
 import { taxCondition } from '../../config/adjustment/required-adjustment-conditions';
 import { AdjustmentSource } from '../../entity/adjustment-source/adjustment-source.entity';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
 import { applyAdjustments, orderAdjustmentSources } from './apply-adjustments';
@@ -92,8 +92,8 @@ describe('applyAdjustments()', () => {
     it('applies a promo source to an order', () => {
         const order = new Order({
             code: 'ABC',
-            items: [
-                new OrderItem({
+            lines: [
+                new OrderLine({
                     id: 'oi1',
                     unitPrice: 300,
                     quantity: 2,
@@ -112,22 +112,22 @@ describe('applyAdjustments()', () => {
                 amount: -60,
             },
         ]);
-        expect(order.items[0].adjustments).toEqual([]);
+        expect(order.lines[0].adjustments).toEqual([]);
         expect(order.totalPrice).toBe(540);
     });
 
-    it('applies a tax source to order items', () => {
+    it('applies a tax source to order lines', () => {
         const order = new Order({
             code: 'ABC',
-            items: [
-                new OrderItem({
+            lines: [
+                new OrderLine({
                     id: 'oi1',
                     unitPrice: 300,
                     quantity: 2,
                     totalPriceBeforeAdjustment: 600,
                     taxCategoryId: standardTaxSource.id,
                 }),
-                new OrderItem({
+                new OrderLine({
                     id: 'oi2',
                     unitPrice: 450,
                     quantity: 1,
@@ -141,31 +141,31 @@ describe('applyAdjustments()', () => {
         applyAdjustments(order, [standardTaxSource, zeroTaxSource], conditions, actions);
 
         expect(order.adjustments).toEqual([]);
-        expect(order.items[0].adjustments).toEqual([
+        expect(order.lines[0].adjustments).toEqual([
             {
                 adjustmentSourceId: standardTaxSource.id,
                 description: standardTaxSource.name,
                 amount: 120,
             },
         ]);
-        expect(order.items[0].totalPrice).toBe(720);
-        expect(order.items[1].adjustments).toEqual([
+        expect(order.lines[0].totalPrice).toBe(720);
+        expect(order.lines[1].adjustments).toEqual([
             {
                 adjustmentSourceId: zeroTaxSource.id,
                 description: zeroTaxSource.name,
                 amount: 0,
             },
         ]);
-        expect(order.items[1].totalPrice).toBe(450);
+        expect(order.lines[1].totalPrice).toBe(450);
 
         expect(order.totalPrice).toBe(1170);
     });
 
-    it('evaluates promo conditions on items after tax is applied', () => {
+    it('evaluates promo conditions on lines after tax is applied', () => {
         const order = new Order({
             code: 'ABC',
-            items: [
-                new OrderItem({
+            lines: [
+                new OrderLine({
                     id: 'oi1',
                     unitPrice: 240,
                     quantity: 2,
@@ -178,14 +178,14 @@ describe('applyAdjustments()', () => {
 
         applyAdjustments(order, [promoSource1, standardTaxSource, zeroTaxSource], conditions, actions);
 
-        expect(order.items[0].adjustments).toEqual([
+        expect(order.lines[0].adjustments).toEqual([
             {
                 adjustmentSourceId: standardTaxSource.id,
                 description: standardTaxSource.name,
                 amount: 96,
             },
         ]);
-        expect(order.items[0].totalPrice).toBe(576);
+        expect(order.lines[0].totalPrice).toBe(576);
         expect(order.adjustments).toEqual([
             {
                 adjustmentSourceId: promoSource1.id,

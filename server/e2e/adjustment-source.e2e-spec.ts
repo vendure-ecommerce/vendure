@@ -15,7 +15,7 @@ import {
     GET_ADJUSTMENT_SOURCE,
     GET_ADJUSTMENT_SOURCE_LIST,
     UPDATE_ADJUSTMENT_SOURCE,
-} from '../../admin-ui/src/app/data/definitions/adjustment-source-definitions';
+} from '../../admin-ui/src/app/data/definitions/promotion-definitions';
 import {
     AdjustmentActionDefinition,
     AdjustmentConditionDefinition,
@@ -62,7 +62,7 @@ describe('AdjustmentSource resolver', () => {
         await server.destroy();
     });
 
-    it('createAdjustmentSource promotion', async () => {
+    it('createPromotion promotion', async () => {
         const result = await client.query<CreateAdjustmentSource.Mutation, CreateAdjustmentSource.Variables>(
             CREATE_ADJUSTMENT_SOURCE,
             {
@@ -89,7 +89,7 @@ describe('AdjustmentSource resolver', () => {
         expect(pick(promoAdjustmentSource, snapshotProps)).toMatchSnapshot();
     });
 
-    it('createAdjustmentSource tax', async () => {
+    it('createPromotion tax', async () => {
         const result = await client.query<CreateAdjustmentSource.Mutation, CreateAdjustmentSource.Variables>(
             CREATE_ADJUSTMENT_SOURCE,
             {
@@ -115,7 +115,7 @@ describe('AdjustmentSource resolver', () => {
         expect(pick(result.createAdjustmentSource, snapshotProps)).toMatchSnapshot();
     });
 
-    it('createAdjustmentSource shipping', async () => {
+    it('createPromotion shipping', async () => {
         const result = await client.query<CreateAdjustmentSource.Mutation, CreateAdjustmentSource.Variables>(
             CREATE_ADJUSTMENT_SOURCE,
             {
@@ -141,7 +141,7 @@ describe('AdjustmentSource resolver', () => {
         expect(pick(result.createAdjustmentSource, snapshotProps)).toMatchSnapshot();
     });
 
-    it('updateAdjustmentSource', async () => {
+    it('updatePromotion', async () => {
         const result = await client.query<UpdateAdjustmentSource.Mutation, UpdateAdjustmentSource.Variables>(
             UPDATE_ADJUSTMENT_SOURCE,
             {
@@ -163,7 +163,7 @@ describe('AdjustmentSource resolver', () => {
         expect(pick(result.updateAdjustmentSource, snapshotProps)).toMatchSnapshot();
     });
 
-    it('adjustmentSource', async () => {
+    it('promotion', async () => {
         const result = await client.query<GetAdjustmentSource.Query, GetAdjustmentSource.Variables>(
             GET_ADJUSTMENT_SOURCE,
             {
@@ -171,7 +171,7 @@ describe('AdjustmentSource resolver', () => {
             },
         );
 
-        expect(result.adjustmentSource!.name).toBe(promoAdjustmentSource.name);
+        expect(result.promotion!.name).toBe(promoAdjustmentSource.name);
     });
 
     it('adjustmentSources, type = promotion', async () => {

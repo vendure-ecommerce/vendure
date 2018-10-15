@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AdjustmentSource, AdjustmentType, Country } from 'shared/generated-types';
+import { Country } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { DataService } from '../../../data/providers/data.service';

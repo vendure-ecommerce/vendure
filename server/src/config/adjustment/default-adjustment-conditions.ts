@@ -1,11 +1,8 @@
-import { AdjustmentType } from 'shared/generated-types';
-
 import { Order } from '../../entity/order/order.entity';
 
 import { AdjustmentConditionDefinition } from './adjustment-types';
 
 export const minimumOrderAmount: AdjustmentConditionDefinition = {
-    type: AdjustmentType.PROMOTION,
     code: 'minimum_order_amount',
     args: [{ name: 'amount', type: 'money' }],
     predicate(order: Order, args) {
@@ -15,7 +12,6 @@ export const minimumOrderAmount: AdjustmentConditionDefinition = {
 };
 
 export const dateRange: AdjustmentConditionDefinition = {
-    type: AdjustmentType.PROMOTION,
     code: 'date_range',
     args: [{ name: 'start', type: 'datetime' }, { name: 'end', type: 'datetime' }],
     predicate(order: Order, args) {
@@ -26,11 +22,10 @@ export const dateRange: AdjustmentConditionDefinition = {
 };
 
 export const atLeastNOfProduct: AdjustmentConditionDefinition = {
-    type: AdjustmentType.PROMOTION,
     code: 'at_least_n_of_product',
     args: [{ name: 'minimum', type: 'int' }],
     predicate(order: Order, args) {
-        return order.items.reduce((result, item) => {
+        return order.lines.reduce((result, item) => {
             return result || item.quantity >= args.minimum;
         }, false);
     },

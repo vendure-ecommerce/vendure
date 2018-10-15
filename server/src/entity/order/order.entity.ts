@@ -4,7 +4,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Adjustment } from '../../common/types/adjustment-source';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
-import { OrderItem } from '../order-item/order-item.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 
 @Entity()
 export class Order extends VendureEntity {
@@ -17,12 +17,12 @@ export class Order extends VendureEntity {
     @ManyToOne(type => Customer)
     customer: Customer;
 
-    @OneToMany(type => OrderItem, item => item.order)
-    items: OrderItem[];
-
-    @Column('simple-json') adjustments: Adjustment[];
-
-    @Column() totalPriceBeforeAdjustment: number;
+    @OneToMany(type => OrderLine, line => line.order)
+    lines: OrderLine[];
 
     @Column() totalPrice: number;
+
+    get adjustments() {
+        return [];
+    }
 }

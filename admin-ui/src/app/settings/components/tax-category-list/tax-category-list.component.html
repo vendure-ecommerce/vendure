@@ -10,12 +10,10 @@
 <vdr-data-table [items]="taxCategories$ | async">
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.tax-rate' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxCategory="item">
         <td class="left">{{ taxCategory.id }}</td>
         <td class="left">{{ taxCategory.name }}</td>
-        <td class="left">{{ taxCategory.actions[0].args[0].value }}%</td>
         <td class="right">
             <vdr-table-row-action iconShape="edit"
                                   [label]="'common.edit' | translate"

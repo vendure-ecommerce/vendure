@@ -6,11 +6,10 @@ import { mergeMap, take } from 'rxjs/operators';
 import {
     AdjustmentOperation,
     AdjustmentOperationInput,
-    AdjustmentSource,
-    AdjustmentType,
-    CreateAdjustmentSourceInput,
+    CreatePromotionInput,
     LanguageCode,
-    UpdateAdjustmentSourceInput,
+    Promotion,
+    UpdatePromotionInput,
 } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
@@ -25,9 +24,9 @@ import { ServerConfigService } from '../../../data/server-config';
     styleUrls: ['./promotion-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSource.Fragment>
+export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Fragment>
     implements OnInit, OnDestroy {
-    promotion$: Observable<AdjustmentSource.Fragment>;
+    promotion$: Observable<Promotion.Fragment>;
     promotionForm: FormGroup;
     conditions: AdjustmentOperation[] = [];
     actions: AdjustmentOperation[] = [];
@@ -55,12 +54,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
     ngOnInit() {
         this.init();
         this.promotion$ = this.entity$;
-        const allOperations$ = this.dataService.adjustmentSource
-            .getAdjustmentOperations(AdjustmentType.PROMOTION)
-            .single$.subscribe(data => {
-                this.allActions = data.adjustmentOperations.actions;
-                this.allConditions = data.adjustmentOperations.conditions;
-            });
+        this.dataService.promotion.getAdjustmentOperations().single$.subscribe(data => {
+            this.allActions = data.adjustmentOperations.actions;
+            this.allConditions = data.adjustmentOperations.conditions;
+        });
     }
 
     ngOnDestroy() {
@@ -113,19 +110,18 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
             return;
         }
         const formValue = this.promotionForm.value;
-        const input: CreateAdjustmentSourceInput = {
+        const input: CreatePromotionInput = {
             name: formValue.name,
-            type: AdjustmentType.PROMOTION,
             enabled: true,
-            conditions: this.mapOperationsToInputs(this.conditions, formValue),
-            actions: this.mapOperationsToInputs(this.actions, formValue),
+            conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
+            actions: this.mapOperationsToInputs(this.actions, formValue.actions),
         };
-        this.dataService.adjustmentSource.createPromotion(input).subscribe(
+        this.dataService.promotion.createPromotion(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), { entity: 'Promotion' });
                 this.promotionForm.markAsPristine();
                 this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createAdjustmentSource.id], { relativeTo: this.route });
+                this.router.navigate(['../', data.createPromotion.id], { relativeTo: this.route });
             },
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {
@@ -144,13 +140,13 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
             .pipe(
                 take(1),
                 mergeMap(promotion => {
-                    const input: UpdateAdjustmentSourceInput = {
+                    const input: UpdatePromotionInput = {
                         id: promotion.id,
                         name: formValue.name,
                         conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
                         actions: this.mapOperationsToInputs(this.actions, formValue.actions),
                     };
-                    return this.dataService.adjustmentSource.updatePromotion(input);
+                    return this.dataService.promotion.updatePromotion(input);
                 }),
             )
             .subscribe(
@@ -172,7 +168,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<AdjustmentSour
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: AdjustmentSource.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
         this.promotionForm.patchValue({ name: entity.name });
         entity.conditions.forEach(o => {
             this.addOperation('conditions', o);

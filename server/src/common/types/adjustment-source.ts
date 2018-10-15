@@ -6,7 +6,7 @@ export interface AdjustmentSource {
 }
 
 /**
- * When an AdjustmentSource is applied to an OrderItem or Order, an Adjustment is
+ * When an AdjustmentSource is applied to an OrderItem, an Adjustment is
  * generated based on the actions assigned to the AdjustmentSource.
  */
 export interface Adjustment {
