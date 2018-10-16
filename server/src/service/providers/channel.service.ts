@@ -13,6 +13,7 @@ import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
+import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
 import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
@@ -74,10 +75,14 @@ export class ChannelService {
     async create(input: CreateChannelInput): Promise<Channel> {
         const channel = new Channel(input);
         if (input.defaultTaxZoneId) {
-            channel.defaultTaxZone = await this.getZoneOrThrow(input.defaultTaxZoneId);
+            channel.defaultTaxZone = await getEntityOrThrow(this.connection, Zone, input.defaultTaxZoneId);
         }
         if (input.defaultShippingZoneId) {
-            channel.defaultShippingZone = await this.getZoneOrThrow(input.defaultShippingZoneId);
+            channel.defaultShippingZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultShippingZoneId,
+            );
         }
         const newChannel = await this.connection.getRepository(Channel).save(channel);
         this.allChannels.push(channel);
@@ -94,10 +99,18 @@ export class ChannelService {
         }
         const updatedChannel = patchEntity(channel, input);
         if (input.defaultTaxZoneId) {
-            updatedChannel.defaultTaxZone = await this.getZoneOrThrow(input.defaultTaxZoneId);
+            updatedChannel.defaultTaxZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultTaxZoneId,
+            );
         }
         if (input.defaultShippingZoneId) {
-            updatedChannel.defaultShippingZone = await this.getZoneOrThrow(input.defaultShippingZoneId);
+            updatedChannel.defaultShippingZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultShippingZoneId,
+            );
         }
         await this.connection.getRepository(Channel).save(updatedChannel);
         return assertFound(this.findOne(channel.id));
@@ -126,16 +139,5 @@ export class ChannelService {
             defaultChannel.token = defaultChannelToken;
             await this.connection.manager.save(defaultChannel);
         }
-    }
-
-    private async getZoneOrThrow(id: ID): Promise<Zone> {
-        const zone = await this.connection.getRepository(Zone).findOne(id);
-        if (!zone) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'Zone',
-                id,
-            });
-        }
-        return zone;
     }
 }

@@ -13,7 +13,7 @@ import { Connection } from 'typeorm';
 import { assertFound } from '../../common/utils';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { I18nError } from '../../i18n/i18n-error';
+import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
 import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class CustomerGroupService {
     }
 
     async update(input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
-        const customerGroup = await this.getCustomerGroupOrThrow(input.id);
+        const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
         await this.connection.getRepository(CustomerGroup).save(updatedCustomerGroup);
         return assertFound(this.findOne(customerGroup.id));
@@ -46,7 +46,7 @@ export class CustomerGroupService {
 
     async addCustomersToGroup(input: AddCustomersToGroupMutationArgs): Promise<CustomerGroup> {
         const countries = await this.getCustomersFromIds(input.customerIds);
-        const customerGroup = await this.getCustomerGroupOrThrow(input.customerGroupId);
+        const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         const customers = unique(customerGroup.customers.concat(countries), 'id');
         customerGroup.customers = customers;
         await this.connection.getRepository(CustomerGroup).save(customerGroup);
@@ -54,19 +54,11 @@ export class CustomerGroupService {
     }
 
     async removeCustomersFromGroup(input: RemoveCustomersFromGroupMutationArgs): Promise<CustomerGroup> {
-        const customerGroup = await this.getCustomerGroupOrThrow(input.customerGroupId);
+        const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         customerGroup.customers = customerGroup.customers.filter(
             customer => !input.customerIds.includes(customer.id as string),
         );
         await this.connection.getRepository(CustomerGroup).save(customerGroup);
-        return customerGroup;
-    }
-
-    private async getCustomerGroupOrThrow(id: ID): Promise<CustomerGroup> {
-        const customerGroup = await this.findOne(id);
-        if (!customerGroup) {
-            throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'CustomerGroup', id });
-        }
         return customerGroup;
     }
 
