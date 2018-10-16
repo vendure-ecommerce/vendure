@@ -120,8 +120,8 @@ export interface Channel extends Node {
     updatedAt: DateTime;
     code: string;
     token: string;
-    defaultTaxZone: Zone;
-    defaultShippingZone: Zone;
+    defaultTaxZone?: Zone | null;
+    defaultShippingZone?: Zone | null;
     defaultLanguageCode: LanguageCode;
 }
 
@@ -347,7 +347,8 @@ export interface OrderItem extends Node {
 }
 
 export interface Adjustment {
-    promotionId: string;
+    adjustmentSource: string;
+    type: AdjustmentType;
     description: string;
     amount: number;
 }
@@ -1599,6 +1600,14 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export enum AdjustmentType {
+    TAX = 'TAX',
+    PROMOTION = 'PROMOTION',
+    REFUND = 'REFUND',
+    TAX_REFUND = 'TAX_REFUND',
+    PROMOTION_REFUND = 'PROMOTION_REFUND',
+}
+
 export namespace QueryResolvers {
     export interface Resolvers<Context = any> {
         administrators?: AdministratorsResolver<AdministratorList, any, Context>;
@@ -2041,8 +2050,8 @@ export namespace ChannelResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         token?: TokenResolver<string, any, Context>;
-        defaultTaxZone?: DefaultTaxZoneResolver<Zone, any, Context>;
-        defaultShippingZone?: DefaultShippingZoneResolver<Zone, any, Context>;
+        defaultTaxZone?: DefaultTaxZoneResolver<Zone | null, any, Context>;
+        defaultShippingZone?: DefaultShippingZoneResolver<Zone | null, any, Context>;
         defaultLanguageCode?: DefaultLanguageCodeResolver<LanguageCode, any, Context>;
     }
 
@@ -2051,8 +2060,12 @@ export namespace ChannelResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TokenResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DefaultTaxZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DefaultShippingZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
+    export type DefaultTaxZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DefaultShippingZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2676,12 +2689,18 @@ export namespace OrderItemResolvers {
 
 export namespace AdjustmentResolvers {
     export interface Resolvers<Context = any> {
-        promotionId?: PromotionIdResolver<string, any, Context>;
+        adjustmentSource?: AdjustmentSourceResolver<string, any, Context>;
+        type?: TypeResolver<AdjustmentType, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
         amount?: AmountResolver<number, any, Context>;
     }
 
-    export type PromotionIdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AdjustmentSourceResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
@@ -4947,8 +4966,8 @@ export namespace Channel {
         code: string;
         token: string;
         defaultLanguageCode: LanguageCode;
-        defaultShippingZone: DefaultShippingZone;
-        defaultTaxZone: DefaultTaxZone;
+        defaultShippingZone?: DefaultShippingZone | null;
+        defaultTaxZone?: DefaultTaxZone | null;
     };
 
     export type DefaultShippingZone = {

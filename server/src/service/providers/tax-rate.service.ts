@@ -51,13 +51,13 @@ export class TaxRateService {
         }
         const updatedTaxRate = patchEntity(taxRate, input);
         if (input.categoryId) {
-            taxRate.category = await this.getTaxCategoryOrThrow(input.categoryId);
+            updatedTaxRate.category = await this.getTaxCategoryOrThrow(input.categoryId);
         }
         if (input.zoneId) {
-            taxRate.category = await this.getZoneOrThrow(input.zoneId);
+            updatedTaxRate.category = await this.getZoneOrThrow(input.zoneId);
         }
         if (input.customerGroupId) {
-            taxRate.customerGroup = await this.getCustomerGroupOrThrow(input.customerGroupId);
+            updatedTaxRate.customerGroup = await this.getCustomerGroupOrThrow(input.customerGroupId);
         }
         await this.connection.getRepository(TaxRate).save(updatedTaxRate);
         return assertFound(this.findOne(taxRate.id));

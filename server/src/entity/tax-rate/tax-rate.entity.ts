@@ -1,16 +1,17 @@
-import { AdjustmentOperation } from 'shared/generated-types';
+import { Adjustment, AdjustmentType } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Adjustment, AdjustmentSource } from '../../common/types/adjustment-source';
-import { VendureEntity } from '../base/base.entity';
-import { Channel } from '../channel/channel.entity';
+import { AdjustmentSource } from '../../common/types/adjustment-source';
+import { idsAreEqual } from '../../common/utils';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { Zone } from '../zone/zone.entity';
 
 @Entity()
-export class TaxRate extends VendureEntity implements AdjustmentSource {
+export class TaxRate extends AdjustmentSource {
+    readonly type = AdjustmentType.TAX;
+
     constructor(input?: DeepPartial<TaxRate>) {
         super(input);
     }
@@ -30,11 +31,17 @@ export class TaxRate extends VendureEntity implements AdjustmentSource {
     @ManyToOne(type => CustomerGroup, { nullable: true })
     customerGroup?: CustomerGroup;
 
-    apply(): Adjustment[] {
-        return [];
+    apply(price: number): Adjustment {
+        const tax = Math.round(price * (this.value / 100));
+        return {
+            type: this.type,
+            adjustmentSource: this.getSourceId(),
+            description: this.name,
+            amount: tax,
+        };
     }
 
-    test(): boolean {
-        return false;
+    test(zone: Zone, taxCategory: TaxCategory): boolean {
+        return idsAreEqual(taxCategory.id, this.category.id) && idsAreEqual(zone.id, this.zone.id);
     }
 }

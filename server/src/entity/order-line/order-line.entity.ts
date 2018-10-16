@@ -1,13 +1,14 @@
-import { DeepPartial, ID } from 'shared/shared-types';
+import { Adjustment, AdjustmentType } from 'shared/generated-types';
+import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
-import { Adjustment } from '../../common/types/adjustment-source';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+import { TaxCategory } from '../tax-category/tax-category.entity';
 
 @Entity()
 export class OrderLine extends VendureEntity {
@@ -18,7 +19,8 @@ export class OrderLine extends VendureEntity {
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
-    @Column('varchar') taxCategoryId: ID;
+    @ManyToOne(type => TaxCategory)
+    taxCategory: TaxCategory;
 
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
@@ -32,12 +34,32 @@ export class OrderLine extends VendureEntity {
     order: Order;
 
     @Calculated()
+    get unitPriceWithTax(): number {
+        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
+        return this.unitPrice + (taxAdjustment ? taxAdjustment.amount : 0);
+    }
+
+    @Calculated()
     get quantity(): number {
         return this.items ? this.items.length : 0;
     }
 
     @Calculated()
     get totalPrice(): number {
-        return this.unitPrice * this.quantity;
+        const taxAdjustments = this.adjustments
+            .filter(a => a.type === AdjustmentType.TAX)
+            .reduce((amount, a) => amount + a.amount, 0);
+        return this.unitPrice * this.quantity + taxAdjustments;
+    }
+
+    @Calculated()
+    get adjustments(): Adjustment[] {
+        if (this.items) {
+            return this.items.reduce(
+                (adjustments, i) => [...adjustments, ...i.pendingAdjustments],
+                [] as Adjustment[],
+            );
+        }
+        return [];
     }
 }

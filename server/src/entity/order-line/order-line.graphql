@@ -5,8 +5,10 @@ type OrderLine implements Node {
     productVariant: ProductVariant!
     featuredAsset: Asset
     unitPrice: Int!
+    unitPriceWithTax: Int!
     quantity: Int!
     items: [OrderItem!]!
     totalPrice: Int!
+    adjustments: [Adjustment!]!
     order: Order!
 }

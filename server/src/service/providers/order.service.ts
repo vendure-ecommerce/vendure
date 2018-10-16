@@ -1,4 +1,5 @@
 import { InjectConnection } from '@nestjs/typeorm';
+import { Adjustment, AdjustmentType } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -10,6 +11,8 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Promotion } from '../../entity/promotion/promotion.entity';
+import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
 import { translateDeep } from '../helpers/translate-entity';
@@ -37,7 +40,13 @@ export class OrderService {
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
         const order = await this.connection.getRepository(Order).findOne(orderId, {
-            relations: ['lines', 'lines.productVariant', 'lines.featuredAsset', 'lines.items'],
+            relations: [
+                'lines',
+                'lines.productVariant',
+                'lines.featuredAsset',
+                'lines.items',
+                'lines.taxCategory',
+            ],
         });
         if (order) {
             order.lines.forEach(item => {
@@ -70,7 +79,7 @@ export class OrderService {
         if (!orderLine) {
             const newLine = new OrderLine({
                 productVariant,
-                taxCategoryId: productVariant.taxCategory.id,
+                taxCategory: productVariant.taxCategory,
                 featuredAsset: productVariant.product.featuredAsset,
                 unitPrice: productVariant.price,
             });
@@ -107,14 +116,16 @@ export class OrderService {
             orderLine.items = orderLine.items.slice(0, quantity);
         }
         await this.connection.getRepository(OrderLine).save(orderLine);
-        return assertFound(this.findOne(ctx, order.id));
+        return this.calculateOrderTotals(ctx, order);
     }
 
-    async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderItemId: ID): Promise<Order> {
+    async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        const orderItem = this.getOrderLineOrThrow(order, orderItemId);
-        order.lines = order.lines.filter(item => !idsAreEqual(item.id, orderItemId));
-        return assertFound(this.findOne(ctx, order.id));
+        const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+        order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        const updatedOrder = await this.calculateOrderTotals(ctx, order);
+        await this.connection.getRepository(OrderLine).remove(orderLine);
+        return updatedOrder;
     }
 
     private async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {
@@ -139,10 +150,10 @@ export class OrderService {
         return productVariant;
     }
 
-    private getOrderLineOrThrow(order: Order, orderItemId: ID): OrderLine {
-        const orderItem = order.lines.find(item => idsAreEqual(item.id, orderItemId));
+    private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
+        const orderItem = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderItem) {
-            throw new I18nError(`error.order-does-not-contain-item-with-id`, { id: orderItemId });
+            throw new I18nError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
         return orderItem;
     }
@@ -154,5 +165,47 @@ export class OrderService {
         if (quantity < 0) {
             throw new I18nError(`error.order-item-quantity-must-be-positive`, { quantity });
         }
+    }
+
+    private async calculateOrderTotals(ctx: RequestContext, order: Order): Promise<Order> {
+        if (!ctx.channel) {
+            throw new I18nError(`error.no-active-channel`);
+        }
+        const activeZone = ctx.channel.defaultTaxZone;
+
+        const taxRates = await this.connection.getRepository(TaxRate).find({
+            where: {
+                enabled: true,
+                zone: activeZone,
+            },
+            relations: ['category', 'zone', 'customerGroup'],
+        });
+        const promotions = await this.connection.getRepository(Promotion).find({ where: { enabled: true } });
+
+        for (const line of order.lines) {
+            const applicableTaxRate = taxRates.find(taxRate => taxRate.test(activeZone, line.taxCategory));
+
+            for (const item of line.items) {
+                if (applicableTaxRate) {
+                    item.pendingAdjustments = [];
+                    item.pendingAdjustments = item.pendingAdjustments.concat(
+                        applicableTaxRate.apply(line.unitPrice),
+                    );
+                    await this.connection.getRepository(OrderItem).save(item);
+                }
+            }
+        }
+
+        const totalPrice = order.lines.reduce((total, line) => total + line.totalPrice, 0);
+        const totalTax = order.lines
+            .reduce((adjustments, line) => [...adjustments, ...line.adjustments], [] as Adjustment[])
+            .filter(a => a.type === AdjustmentType.TAX)
+            .reduce((total, a) => total + a.amount, 0);
+        const totalPriceBeforeTax = totalPrice - totalTax;
+
+        order.totalPriceBeforeTax = totalPriceBeforeTax;
+        order.totalPrice = totalPrice;
+        await this.connection.getRepository(Order).save(order);
+        return order;
     }
 }

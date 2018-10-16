@@ -1,13 +1,15 @@
-import { AdjustmentOperation, AdjustmentType } from 'shared/generated-types';
+import { Adjustment, AdjustmentOperation, AdjustmentType } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { Adjustment, AdjustmentSource } from '../../common/types/adjustment-source';
+import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 
 @Entity()
-export class Promotion extends VendureEntity implements AdjustmentSource {
+export class Promotion extends AdjustmentSource {
+    type = AdjustmentType.PROMOTION;
+
     constructor(input?: DeepPartial<Promotion>) {
         super(input);
     }
@@ -24,8 +26,8 @@ export class Promotion extends VendureEntity implements AdjustmentSource {
 
     @Column('simple-json') actions: AdjustmentOperation[];
 
-    apply(): Adjustment[] {
-        return [];
+    apply(): Adjustment {
+        return {} as any;
     }
 
     test(): boolean {

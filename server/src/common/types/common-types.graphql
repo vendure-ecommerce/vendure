@@ -3,8 +3,17 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
+enum AdjustmentType {
+    TAX
+    PROMOTION
+    REFUND
+    TAX_REFUND
+    PROMOTION_REFUND
+}
+
 type Adjustment {
-    promotionId: ID!
+    adjustmentSource: String!
+    type: AdjustmentType!
     description: String!
     amount: Int!
 }

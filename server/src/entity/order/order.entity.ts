@@ -1,7 +1,6 @@
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
-import { Adjustment } from '../../common/types/adjustment-source';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { OrderLine } from '../order-line/order-line.entity';
@@ -20,9 +19,7 @@ export class Order extends VendureEntity {
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
 
-    @Column() totalPrice: number;
+    @Column() totalPriceBeforeTax: number;
 
-    get adjustments() {
-        return [];
-    }
+    @Column() totalPrice: number;
 }
