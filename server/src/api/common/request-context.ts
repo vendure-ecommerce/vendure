@@ -13,13 +13,13 @@ import { I18nError } from '../../i18n/i18n-error';
  */
 export class RequestContext {
     private readonly _languageCode: LanguageCode;
-    private readonly _channel?: Channel;
+    private readonly _channel: Channel;
     private readonly _session?: Session;
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
 
     constructor(options: {
-        channel?: Channel;
+        channel: Channel;
         session?: Session;
         languageCode?: LanguageCode;
         isAuthorized: boolean;
@@ -34,14 +34,11 @@ export class RequestContext {
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
     }
 
-    get channel(): Channel | undefined {
+    get channel(): Channel {
         return this._channel;
     }
 
     get channelId(): ID {
-        if (!this._channel) {
-            throw new I18nError('error.no-valid-channel-specified');
-        }
         return this._channel.id;
     }
 

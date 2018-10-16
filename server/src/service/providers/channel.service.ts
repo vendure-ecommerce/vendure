@@ -44,8 +44,12 @@ export class ChannelService {
     /**
      * Given a channel token, returns the corresponding Channel if it exists.
      */
-    getChannelFromToken(token: string): Channel | undefined {
-        return this.allChannels.find(channel => channel.token === token);
+    getChannelFromToken(token: string): Channel {
+        const channel = this.allChannels.find(c => c.token === token);
+        if (!channel) {
+            throw new I18nError(`error.channel-not-found`, { token });
+        }
+        return channel;
     }
 
     /**

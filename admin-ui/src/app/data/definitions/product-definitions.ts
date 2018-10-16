@@ -18,6 +18,12 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         languageCode
         name
         price
+        priceWithTax
+        taxRateApplied {
+            id
+            name
+            value
+        }
         taxCategory {
             id
             name

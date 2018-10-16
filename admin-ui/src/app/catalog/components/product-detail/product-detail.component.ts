@@ -245,6 +245,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     sku: variant.sku,
                     name: variantTranslation ? variantTranslation.name : '',
                     price: variant.price,
+                    priceWithTax: variant.priceWithTax,
                     taxCategoryId: variant.taxCategory.id,
                 };
 

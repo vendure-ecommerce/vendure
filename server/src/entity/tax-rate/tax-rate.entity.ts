@@ -31,13 +31,19 @@ export class TaxRate extends AdjustmentSource {
     @ManyToOne(type => CustomerGroup, { nullable: true })
     customerGroup?: CustomerGroup;
 
+    /**
+     * Returns the tax applicable to the given price.
+     */
+    getTax(price: number): number {
+        return Math.round(price * (this.value / 100));
+    }
+
     apply(price: number): Adjustment {
-        const tax = Math.round(price * (this.value / 100));
         return {
             type: this.type,
             adjustmentSource: this.getSourceId(),
             description: this.name,
-            amount: tax,
+            amount: this.getTax(price),
         };
     }
 

@@ -1,4 +1,4 @@
-import { DeepPartial, HasCustomFields, ID } from 'shared/shared-types';
+import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -8,6 +8,7 @@ import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
+import { TaxRate } from '../tax-rate/tax-rate.entity';
 
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
@@ -31,6 +32,16 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
         comment: 'Not used - actual price is stored in product_variant_price table',
     })
     price: number;
+
+    /**
+     * Calculated at run-time
+     */
+    priceWithTax?: number;
+
+    /**
+     * Calculated at run-time
+     */
+    taxRateApplied?: TaxRate;
 
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;

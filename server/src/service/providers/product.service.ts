@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound, idsAreEqual } from '../../common/utils';
+import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -21,6 +21,7 @@ import { updateTranslatable } from '../helpers/update-translatable';
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { ProductVariantService } from './product-variant.service';
+import { TaxRateService } from './tax-rate.service';
 
 @Injectable()
 export class ProductService {
@@ -30,6 +31,7 @@ export class ProductService {
         private channelService: ChannelService,
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
+        private taxRateService: TaxRateService,
     ) {}
 
     findAll(
@@ -43,22 +45,25 @@ export class ProductService {
             'optionGroups',
             'variants.options',
             'variants.facetValues',
+            'variants.taxCategory',
             'channels',
         ];
 
         return buildListQuery(this.connection, Product, options, relations, ctx.channelId)
             .getManyAndCount()
-            .then(([products, totalItems]) => {
-                const items = products
-                    .map(product =>
-                        translateDeep(product, ctx.languageCode, [
-                            'optionGroups',
-                            'variants',
-                            ['variants', 'options'],
-                            ['variants', 'facetValues'],
-                        ]),
-                    )
-                    .map(product => this.applyChannelPriceToVariants(product, ctx));
+            .then(async ([products, totalItems]) => {
+                const items = await Promise.all(
+                    products
+                        .map(product =>
+                            translateDeep(product, ctx.languageCode, [
+                                'optionGroups',
+                                'variants',
+                                ['variants', 'options'],
+                                ['variants', 'facetValues'],
+                            ]),
+                        )
+                        .map(async product => await this.applyPriceAndTaxToVariants(product, ctx)),
+                );
                 return {
                     items,
                     totalItems,
@@ -86,7 +91,7 @@ export class ProductService {
             ['variants', 'options'],
             ['variants', 'facetValues'],
         ]);
-        return this.applyChannelPriceToVariants(translated, ctx);
+        return this.applyPriceAndTaxToVariants(translated, ctx);
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
@@ -157,10 +162,27 @@ export class ProductService {
         }
     }
 
-    private applyChannelPriceToVariants<T extends Product>(product: T, ctx: RequestContext): T {
-        product.variants = product.variants.map(v =>
-            this.productVariantService.applyChannelPrice(v, ctx.channelId),
-        );
+    /**
+     * The price of a ProductVariant depends on the current channel and the priceWithTax further
+     * depends on the currently-active zone and applicable TaxRates.
+     * This method uses the RequestContext to determine these values and apply them to each
+     * ProductVariant of the given Product.
+     */
+    private async applyPriceAndTaxToVariants<T extends Product>(product: T, ctx: RequestContext): Promise<T> {
+        const activeTaxRates = await this.taxRateService.getActiveTaxRates();
+        product.variants = product.variants.map(variant => {
+            this.productVariantService.applyChannelPrice(variant, ctx.channelId);
+            const applicableTaxRate = activeTaxRates.find(r =>
+                r.test(ctx.channel.defaultTaxZone, variant.taxCategory),
+            );
+            if (applicableTaxRate) {
+                variant.priceWithTax = variant.price + applicableTaxRate.getTax(variant.price);
+                variant.taxRateApplied = applicableTaxRate;
+            } else {
+                variant.priceWithTax = variant.price;
+            }
+            return variant;
+        });
         return product;
     }
 

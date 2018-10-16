@@ -168,11 +168,7 @@ export class OrderService {
     }
 
     private async calculateOrderTotals(ctx: RequestContext, order: Order): Promise<Order> {
-        if (!ctx.channel) {
-            throw new I18nError(`error.no-active-channel`);
-        }
         const activeZone = ctx.channel.defaultTaxZone;
-
         const taxRates = await this.connection.getRepository(TaxRate).find({
             where: {
                 enabled: true,

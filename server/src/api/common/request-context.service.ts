@@ -8,6 +8,7 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
+import { I18nError } from '../../i18n/i18n-error';
 import { ChannelService } from '../../service/providers/channel.service';
 
 import { RequestContext } from './request-context';
@@ -30,7 +31,7 @@ export class RequestContextService {
         session?: Session,
     ): Promise<RequestContext> {
         const channelToken = this.getChannelToken(req);
-        const channel = (channelToken && this.channelService.getChannelFromToken(channelToken)) || undefined;
+        const channel = this.channelService.getChannelFromToken(channelToken);
 
         const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);
         const languageCode = this.getLanguageCode(req);
@@ -46,14 +47,16 @@ export class RequestContextService {
         });
     }
 
-    private getChannelToken(req: Request): string | undefined {
+    private getChannelToken(req: Request): string {
         const tokenKey = this.configService.channelTokenKey;
-        let channelToken: string | undefined;
+        let channelToken: string;
 
         if (req && req.query && req.query[tokenKey]) {
             channelToken = req.query[tokenKey];
         } else if (req && req.headers && req.headers[tokenKey]) {
             channelToken = req.headers[tokenKey] as string;
+        } else {
+            throw new I18nError('error.no-valid-channel-specified');
         }
         return channelToken;
     }

@@ -15,6 +15,10 @@ import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
 import { patchEntity } from '../helpers/patch-entity';
 
 export class TaxRateService {
+    /**
+     * We cache all active TaxRates to avoid hitting the DB many times
+     * per request.
+     */
     private activeTaxRates: TaxRate[] = [];
 
     constructor(@InjectConnection() private connection: Connection) {}
@@ -46,6 +50,7 @@ export class TaxRateService {
             );
         }
         const newTaxRate = await this.connection.getRepository(TaxRate).save(taxRate);
+        await this.updateActiveTaxRates();
         return assertFound(this.findOne(newTaxRate.id));
     }
 
@@ -72,6 +77,23 @@ export class TaxRateService {
             );
         }
         await this.connection.getRepository(TaxRate).save(updatedTaxRate);
+        await this.updateActiveTaxRates();
         return assertFound(this.findOne(taxRate.id));
+    }
+
+    async getActiveTaxRates(): Promise<TaxRate[]> {
+        if (!this.activeTaxRates.length) {
+            await this.updateActiveTaxRates();
+        }
+        return this.activeTaxRates;
+    }
+
+    private async updateActiveTaxRates() {
+        this.activeTaxRates = await this.connection.getRepository(TaxRate).find({
+            relations: ['category', 'zone', 'customerGroup'],
+            where: {
+                enabled: true,
+            },
+        });
     }
 }
