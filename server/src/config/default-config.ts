@@ -4,12 +4,13 @@ import { CustomFields } from 'shared/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
-import { defaultAdjustmentActions } from './adjustment/default-adjustment-actions';
-import { defaultAdjustmentConditions } from './adjustment/default-adjustment-conditions';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { defaultPromotionActions } from './promotion/default-promotion-actions';
+import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
+import { HalfEvenRoundingStrategy } from './rounding-strategy/half-even-rounding-strategy';
 import { VendureConfig } from './vendure-config';
 
 /**
@@ -32,6 +33,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         sessionDuration: '7d',
     },
     apiPath: API_PATH,
+    roundingStrategy: new HalfEvenRoundingStrategy(),
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetNamingStrategy: new DefaultAssetNamingStrategy(),
     assetStorageStrategy: new NoAssetStorageStrategy(),
@@ -40,8 +42,8 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         type: 'mysql',
     },
     uploadMaxFileSize: 20971520,
-    adjustmentConditions: defaultAdjustmentConditions,
-    adjustmentActions: defaultAdjustmentActions,
+    promotionConditions: defaultPromotionConditions,
+    promotionActions: defaultPromotionActions,
     customFields: {
         Address: [],
         Customer: [],

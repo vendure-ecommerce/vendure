@@ -10,7 +10,14 @@
 
             <clr-input-container *ngFor="let arg of operation.args">
                 <label>{{ arg.name | titlecase }}</label>
-
+                <div *ngIf="arg.type === 'boolean'"
+                     clrInput
+                     class="checkbox" >
+                    <input type="checkbox"
+                           [formControlName]="arg.name"
+                           [id]="arg.name">
+                    <label [for]="arg.name"></label>
+                </div>
                 <input *ngIf="arg.type === 'int'"
                        clrInput [name]="arg.name"
                        type="number"

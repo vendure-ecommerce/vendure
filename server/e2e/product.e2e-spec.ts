@@ -149,7 +149,6 @@ describe('Product resolver', () => {
             expect(result.product.variants[0].taxCategory).toEqual({
                 id: 'T_1',
                 name: 'Standard Tax',
-                taxRate: 20,
             });
         });
 

@@ -9,6 +9,7 @@ import {
 import { Channel } from '../../entity/channel/channel.entity';
 import { ChannelService } from '../../service/providers/channel.service';
 import { Allow } from '../common/auth-guard';
+import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
 import { Ctx } from '../common/request-context.decorator';
 
@@ -30,12 +31,14 @@ export class ChannelResolver {
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
+    @Decode('defaultTaxZoneId', 'defaultShippingZoneId')
     async createChannel(@Args() args: CreateChannelMutationArgs): Promise<Channel> {
         return this.channelService.create(args.input);
     }
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
+    @Decode('defaultTaxZoneId', 'defaultShippingZoneId')
     async updateChannel(@Args() args: UpdateChannelMutationArgs): Promise<Channel> {
         return this.channelService.update(args.input);
     }

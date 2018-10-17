@@ -276,7 +276,7 @@ export class MockDataService {
         const fileNames = await fs.readdir(path.join(__dirname, 'assets'));
         const filePaths = fileNames.map(fileName => path.join(__dirname, 'assets', fileName));
         return this.client.uploadAssets(filePaths).then(response => {
-            console.log(`Created ${response.createAssets.length} Assets`);
+            this.log(`Created ${response.createAssets.length} Assets`);
             return response.createAssets;
         });
     }

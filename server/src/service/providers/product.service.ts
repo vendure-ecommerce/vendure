@@ -52,18 +52,16 @@ export class ProductService {
         return buildListQuery(this.connection, Product, options, relations, ctx.channelId)
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
-                const items = await Promise.all(
-                    products
-                        .map(product =>
-                            translateDeep(product, ctx.languageCode, [
-                                'optionGroups',
-                                'variants',
-                                ['variants', 'options'],
-                                ['variants', 'facetValues'],
-                            ]),
-                        )
-                        .map(async product => await this.applyPriceAndTaxToVariants(product, ctx)),
-                );
+                const items = products
+                    .map(product =>
+                        translateDeep(product, ctx.languageCode, [
+                            'optionGroups',
+                            'variants',
+                            ['variants', 'options'],
+                            ['variants', 'facetValues'],
+                        ]),
+                    )
+                    .map(product => this.applyPriceAndTaxToVariants(product, ctx));
                 return {
                     items,
                     totalItems,
@@ -168,20 +166,13 @@ export class ProductService {
      * This method uses the RequestContext to determine these values and apply them to each
      * ProductVariant of the given Product.
      */
-    private async applyPriceAndTaxToVariants<T extends Product>(product: T, ctx: RequestContext): Promise<T> {
-        const activeTaxRates = await this.taxRateService.getActiveTaxRates();
+    private applyPriceAndTaxToVariants<T extends Product>(product: T, ctx: RequestContext): T {
         product.variants = product.variants.map(variant => {
-            this.productVariantService.applyChannelPrice(variant, ctx.channelId);
-            const applicableTaxRate = activeTaxRates.find(r =>
-                r.test(ctx.channel.defaultTaxZone, variant.taxCategory),
+            return this.productVariantService.applyChannelPriceAndTax(
+                variant,
+                ctx.channelId,
+                ctx.channel.defaultTaxZone,
             );
-            if (applicableTaxRate) {
-                variant.priceWithTax = variant.price + applicableTaxRate.getTax(variant.price);
-                variant.taxRateApplied = applicableTaxRate;
-            } else {
-                variant.priceWithTax = variant.price;
-            }
-            return variant;
         });
         return product;
     }

@@ -1,0 +1,120 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Promotion resolver adjustmentOperations 1`] = `
+Object {
+  "actions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "percentage",
+          "type": "percentage",
+          "value": null,
+        },
+      ],
+      "code": "promo_action",
+      "description": "description for promo_action",
+    },
+  ],
+  "conditions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "arg",
+          "type": "money",
+          "value": null,
+        },
+      ],
+      "code": "promo_condition",
+      "description": "description for promo_condition",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "name": "arg",
+          "type": "money",
+          "value": null,
+        },
+      ],
+      "code": "promo_condition2",
+      "description": "description for promo_condition2",
+    },
+  ],
+}
+`;
+
+exports[`Promotion resolver createPromotion promotion 1`] = `
+Object {
+  "actions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "percentage",
+          "type": "percentage",
+          "value": "50",
+        },
+      ],
+      "code": "promo_action",
+      "description": "description for promo_action",
+    },
+  ],
+  "conditions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "arg",
+          "type": "money",
+          "value": "500",
+        },
+      ],
+      "code": "promo_condition",
+      "description": "description for promo_condition",
+    },
+  ],
+  "enabled": true,
+  "name": "test promotion",
+}
+`;
+
+exports[`Promotion resolver updatePromotion 1`] = `
+Object {
+  "actions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "percentage",
+          "type": "percentage",
+          "value": "50",
+        },
+      ],
+      "code": "promo_action",
+      "description": "description for promo_action",
+    },
+  ],
+  "conditions": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "arg",
+          "type": "money",
+          "value": "90",
+        },
+      ],
+      "code": "promo_condition",
+      "description": "description for promo_condition",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "name": "arg",
+          "type": "money",
+          "value": "10",
+        },
+      ],
+      "code": "promo_condition2",
+      "description": "description for promo_condition2",
+    },
+  ],
+  "enabled": true,
+  "name": "test promotion",
+}
+`;

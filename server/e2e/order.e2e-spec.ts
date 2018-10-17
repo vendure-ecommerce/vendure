@@ -39,11 +39,11 @@ describe('Orders', () => {
                 quantity: 1,
             });
 
-            expect(result.addItemToOrder.items.length).toBe(1);
-            expect(result.addItemToOrder.items[0].quantity).toBe(1);
-            expect(result.addItemToOrder.items[0].productVariant.id).toBe('T_1');
-            expect(result.addItemToOrder.items[0].id).toBe('T_1');
-            firstOrderItemId = result.addItemToOrder.items[0].id;
+            expect(result.addItemToOrder.lines.length).toBe(1);
+            expect(result.addItemToOrder.lines[0].quantity).toBe(1);
+            expect(result.addItemToOrder.lines[0].productVariant.id).toBe('T_1');
+            expect(result.addItemToOrder.lines[0].id).toBe('T_1');
+            firstOrderItemId = result.addItemToOrder.lines[0].id;
         });
 
         it('addItemToOrder() creates an anonymous session', () => {
@@ -84,8 +84,8 @@ describe('Orders', () => {
                 quantity: 2,
             });
 
-            expect(result.addItemToOrder.items.length).toBe(1);
-            expect(result.addItemToOrder.items[0].quantity).toBe(3);
+            expect(result.addItemToOrder.lines.length).toBe(1);
+            expect(result.addItemToOrder.lines[0].quantity).toBe(3);
         });
 
         it('adjustItemQuantity() adjusts the quantity', async () => {
@@ -94,8 +94,8 @@ describe('Orders', () => {
                 quantity: 50,
             });
 
-            expect(result.adjustItemQuantity.items.length).toBe(1);
-            expect(result.adjustItemQuantity.items[0].quantity).toBe(50);
+            expect(result.adjustItemQuantity.lines.length).toBe(1);
+            expect(result.adjustItemQuantity.lines[0].quantity).toBe(50);
         });
 
         it('adjustItemQuantity() errors with a negative quantity', async () => {
@@ -121,7 +121,7 @@ describe('Orders', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining(`This order does not contain an OrderItem with the id 999`),
+                    expect.stringContaining(`This order does not contain an OrderLine with the id 999`),
                 );
             }
         });
@@ -131,14 +131,14 @@ describe('Orders', () => {
                 productVariantId: 'T_3',
                 quantity: 3,
             });
-            expect(result1.addItemToOrder.items.length).toBe(2);
-            expect(result1.addItemToOrder.items.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(result1.addItemToOrder.lines.length).toBe(2);
+            expect(result1.addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const result2 = await client.query(REMOVE_ITEM_FROM_ORDER, {
                 orderItemId: firstOrderItemId,
             });
-            expect(result2.removeItemFromOrder.items.length).toBe(1);
-            expect(result2.removeItemFromOrder.items.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(result2.removeItemFromOrder.lines.length).toBe(1);
+            expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it('removeItemFromOrder() errors with an invalid orderItemId', async () => {
@@ -149,7 +149,7 @@ describe('Orders', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining(`This order does not contain an OrderItem with the id 999`),
+                    expect.stringContaining(`This order does not contain an OrderLine with the id 999`),
                 );
             }
         });
@@ -178,10 +178,10 @@ describe('Orders', () => {
                 quantity: 1,
             });
 
-            expect(result.addItemToOrder.items.length).toBe(1);
-            expect(result.addItemToOrder.items[0].quantity).toBe(1);
-            expect(result.addItemToOrder.items[0].productVariant.id).toBe('T_1');
-            firstOrderItemId = result.addItemToOrder.items[0].id;
+            expect(result.addItemToOrder.lines.length).toBe(1);
+            expect(result.addItemToOrder.lines[0].quantity).toBe(1);
+            expect(result.addItemToOrder.lines[0].productVariant.id).toBe('T_1');
+            firstOrderItemId = result.addItemToOrder.lines[0].id;
         });
 
         it('addItemToOrder() with an existing productVariantId adds quantity to the existing OrderLine', async () => {
@@ -190,8 +190,8 @@ describe('Orders', () => {
                 quantity: 2,
             });
 
-            expect(result.addItemToOrder.items.length).toBe(1);
-            expect(result.addItemToOrder.items[0].quantity).toBe(3);
+            expect(result.addItemToOrder.lines.length).toBe(1);
+            expect(result.addItemToOrder.lines[0].quantity).toBe(3);
         });
 
         it('adjustItemQuantity() adjusts the quantity', async () => {
@@ -200,8 +200,8 @@ describe('Orders', () => {
                 quantity: 50,
             });
 
-            expect(result.adjustItemQuantity.items.length).toBe(1);
-            expect(result.adjustItemQuantity.items[0].quantity).toBe(50);
+            expect(result.adjustItemQuantity.lines.length).toBe(1);
+            expect(result.adjustItemQuantity.lines[0].quantity).toBe(50);
         });
 
         it('removeItemFromOrder() removes the correct item', async () => {
@@ -209,14 +209,14 @@ describe('Orders', () => {
                 productVariantId: 'T_3',
                 quantity: 3,
             });
-            expect(result1.addItemToOrder.items.length).toBe(2);
-            expect(result1.addItemToOrder.items.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(result1.addItemToOrder.lines.length).toBe(2);
+            expect(result1.addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const result2 = await client.query(REMOVE_ITEM_FROM_ORDER, {
                 orderItemId: firstOrderItemId,
             });
-            expect(result2.removeItemFromOrder.items.length).toBe(1);
-            expect(result2.removeItemFromOrder.items.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(result2.removeItemFromOrder.lines.length).toBe(1);
+            expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
     });
 });
@@ -224,7 +224,7 @@ describe('Orders', () => {
 const TEST_ORDER_FRAGMENT = gql`
     fragment TestOrderFragment on Order {
         id
-        items {
+        lines {
             id
             quantity
             productVariant {

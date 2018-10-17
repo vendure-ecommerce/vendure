@@ -13,11 +13,9 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
-import {
-    AdjustmentActionDefinition,
-    AdjustmentConditionDefinition,
-} from '../../config/adjustment/adjustment-types';
 import { ConfigService } from '../../config/config.service';
+import { PromotionAction } from '../../config/promotion/promotion-action';
+import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
@@ -27,8 +25,8 @@ import { ChannelService } from './channel.service';
 
 @Injectable()
 export class PromotionService {
-    availableConditions: AdjustmentConditionDefinition[] = [];
-    availableActions: AdjustmentActionDefinition[] = [];
+    availableConditions: PromotionCondition[] = [];
+    availableActions: PromotionAction[] = [];
     /**
      * All active AdjustmentSources are cached in memory becuase they are needed
      * every time an order is changed, which will happen often. Caching them means
@@ -41,8 +39,8 @@ export class PromotionService {
         private configService: ConfigService,
         private channelService: ChannelService,
     ) {
-        this.availableConditions = this.configService.adjustmentConditions;
-        this.availableActions = this.configService.adjustmentActions;
+        this.availableConditions = this.configService.promotionConditions;
+        this.availableActions = this.configService.promotionActions;
     }
 
     findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
@@ -55,21 +53,26 @@ export class PromotionService {
     }
 
     async findOne(adjustmentSourceId: ID): Promise<Promotion | undefined> {
-        return this.connection.manager.findOne(Promotion, adjustmentSourceId, {
-            relations: [],
-        });
+        return this.connection.manager.findOne(Promotion, adjustmentSourceId, {});
     }
 
     /**
      * Returns all available AdjustmentOperations.
      */
     getAdjustmentOperations(): {
-        conditions: AdjustmentConditionDefinition[];
-        actions: AdjustmentActionDefinition[];
+        conditions: AdjustmentOperation[];
+        actions: AdjustmentOperation[];
     } {
+        const toAdjustmentOperation = (source: PromotionCondition | PromotionAction) => {
+            return {
+                code: source.code,
+                description: source.description,
+                args: Object.entries(source.args).map(([name, type]) => ({ name, type })),
+            };
+        };
         return {
-            conditions: this.availableConditions,
-            actions: this.availableActions,
+            conditions: this.availableConditions.map(toAdjustmentOperation),
+            actions: this.availableActions.map(toAdjustmentOperation),
         };
     }
 
@@ -131,17 +134,20 @@ export class PromotionService {
             description: match.description,
             args: input.arguments.map((inputArg, i) => {
                 return {
-                    name: match.args[i].name,
-                    type: match.args[i].type,
-                    value: inputArg,
+                    name: inputArg.name,
+                    type: match.args[inputArg.name],
+                    value: inputArg.value,
                 };
             }),
         };
         return output;
     }
 
-    private getAdjustmentOperationByCode(type: 'condition' | 'action', code: string): AdjustmentOperation {
-        const available: AdjustmentOperation[] =
+    private getAdjustmentOperationByCode(
+        type: 'condition' | 'action',
+        code: string,
+    ): PromotionCondition | PromotionAction {
+        const available: Array<PromotionAction | PromotionCondition> =
             type === 'condition' ? this.availableConditions : this.availableActions;
         const match = available.find(a => a.code === code);
         if (!match) {

@@ -12,14 +12,15 @@ export class MockConfigService implements MockClass<ConfigService> {
     port = 3000;
     cors = false;
     defaultLanguageCode: jest.Mock<any>;
+    roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
     assetNamingStrategy = {} as any;
     assetStorageStrategy = {} as any;
     assetPreviewStrategy = {} as any;
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
-    adjustmentConditions = [];
-    adjustmentActions = [];
+    promotionConditions = [];
+    promotionActions = [];
     customFields = {};
     middleware = [];
     plugins = [];

@@ -21,9 +21,14 @@ type AdjustmentOperation {
     description: String!
 }
 
+input AdjustmentOperationInputArg {
+    name: String!
+    value: String!
+}
+
 input AdjustmentOperationInput {
     code: String!
-    arguments: [String!]!
+    arguments: [AdjustmentOperationInputArg!]!
 }
 
 input CreatePromotionInput {

@@ -1,10 +1,11 @@
 {
   "error": {
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
+    "channel-not-found":  "No channel with the token \"{ token }\" exists",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } with the id '{ id }' could be found",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
-    "order-does-not-contain-item-with-id": "This order does not contain an OrderItem with the id { id }",
+    "order-does-not-contain-line-with-id": "This order does not contain an OrderLine with the id { id }",
     "order-item-quantity-must-be-positive": "{ quantity } is not a valid quantity for an OrderItem"
   }
 }

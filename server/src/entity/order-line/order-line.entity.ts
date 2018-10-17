@@ -34,9 +34,16 @@ export class OrderLine extends VendureEntity {
     order: Order;
 
     @Calculated()
+    get unitPriceWithPromotions(): number {
+        const firstItemPromotionTotal = this.items[0].pendingAdjustments
+            .filter(a => a.type === AdjustmentType.PROMOTION)
+            .reduce((total, a) => total + a.amount, 0);
+        return this.unitPrice + firstItemPromotionTotal;
+    }
+
+    @Calculated()
     get unitPriceWithTax(): number {
-        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-        return this.unitPrice + (taxAdjustment ? taxAdjustment.amount : 0);
+        return this.unitPriceWithPromotions + this.unitTax;
     }
 
     @Calculated()
@@ -46,20 +53,33 @@ export class OrderLine extends VendureEntity {
 
     @Calculated()
     get totalPrice(): number {
-        const taxAdjustments = this.adjustments
-            .filter(a => a.type === AdjustmentType.TAX)
-            .reduce((amount, a) => amount + a.amount, 0);
-        return this.unitPrice * this.quantity + taxAdjustments;
+        return (this.unitPriceWithPromotions + this.unitTax) * this.quantity;
     }
 
     @Calculated()
     get adjustments(): Adjustment[] {
         if (this.items) {
-            return this.items.reduce(
-                (adjustments, i) => [...adjustments, ...i.pendingAdjustments],
-                [] as Adjustment[],
-            );
+            return this.items[0].pendingAdjustments;
         }
         return [];
+    }
+
+    get unitTax(): number {
+        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
+        return taxAdjustment ? taxAdjustment.amount : 0;
+    }
+
+    /**
+     * Clears Adjustments from all OrderItems of the given type. If no type
+     * is specified, then all adjustments are removed.
+     */
+    clearAdjustments(type?: AdjustmentType) {
+        this.items.forEach(item => {
+            if (!type) {
+                item.pendingAdjustments = [];
+            } else {
+                item.pendingAdjustments = item.pendingAdjustments.filter(a => a.type !== type);
+            }
+        });
     }
 }

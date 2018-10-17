@@ -6,13 +6,15 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
-import { AdjustmentActionDefinition, AdjustmentConditionDefinition } from './adjustment/adjustment-types';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { defaultConfig } from './default-config';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
+import { PromotionAction } from './promotion/promotion-action';
+import { PromotionCondition } from './promotion/promotion-condition';
+import { RoundingStrategy } from './rounding-strategy/rounding-strategy';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 export interface AuthOptions {
@@ -89,6 +91,11 @@ export interface VendureConfig {
      */
     authOptions: AuthOptions;
     /**
+     * Defines the strategy used in rounding fractions of cents when performing
+     * calculations of moneytary amounts.
+     */
+    roundingStrategy?: RoundingStrategy;
+    /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
      * entities via the API. The default uses a simple auto-increment integer
@@ -115,15 +122,13 @@ export interface VendureConfig {
      */
     dbConnectionOptions: ConnectionOptions;
     /**
-     * An array of adjustment conditions which can be used to construct AdjustmentSources
-     * (promotions, taxes and shipping).
+     * An array of conditions which can be used to construct Promotions
      */
-    adjustmentConditions?: AdjustmentConditionDefinition[];
+    promotionConditions?: Array<PromotionCondition<any>>;
     /**
-     * An array of adjustment actions which can be used to construct AdjustmentSources
-     * (promotions, taxes and shipping).
+     * An array of actions which can be used to construct Promotions
      */
-    adjustmentActions?: AdjustmentActionDefinition[];
+    promotionActions?: Array<PromotionAction<any>>;
     /**
      * Defines custom fields which can be used to extend the built-in entities.
      */

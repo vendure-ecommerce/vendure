@@ -23,6 +23,10 @@ export class TaxRateService {
 
     constructor(@InjectConnection() private connection: Connection) {}
 
+    async initTaxRates() {
+        return this.updateActiveTaxRates();
+    }
+
     findAll(options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
         return buildListQuery(this.connection, TaxRate, options, ['category', 'zone', 'customerGroup'])
             .getManyAndCount()
@@ -81,10 +85,7 @@ export class TaxRateService {
         return assertFound(this.findOne(taxRate.id));
     }
 
-    async getActiveTaxRates(): Promise<TaxRate[]> {
-        if (!this.activeTaxRates.length) {
-            await this.updateActiveTaxRates();
-        }
+    getActiveTaxRates(): TaxRate[] {
         return this.activeTaxRates;
     }
 

@@ -15,6 +15,7 @@ export const testConfig: VendureConfig = {
     port: 3050,
     apiPath: API_PATH,
     cors: true,
+    defaultChannelToken: 'e2e-default-channel',
     authOptions: {
         sessionSecret: 'some-secret',
         tokenMethod: 'bearer',

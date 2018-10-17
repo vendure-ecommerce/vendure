@@ -11,6 +11,7 @@ import { PaginatedList } from 'shared/shared-types';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { TaxRateService } from '../../service/providers/tax-rate.service';
 import { Allow } from '../common/auth-guard';
+import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
 import { Ctx } from '../common/request-context.decorator';
 
@@ -32,12 +33,14 @@ export class TaxRateResolver {
 
     @Mutation()
     @Allow(Permission.CreateSettings)
+    @Decode('categoryId', 'zoneId', 'customerGroupId')
     async createTaxRate(@Args() args: CreateTaxRateMutationArgs): Promise<TaxRate> {
         return this.taxRateService.create(args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
+    @Decode('categoryId', 'zoneId', 'customerGroupId')
     async updateTaxRate(@Args() args: UpdateTaxRateMutationArgs): Promise<TaxRate> {
         return this.taxRateService.update(args.input);
     }

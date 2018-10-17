@@ -11,5 +11,5 @@ export abstract class AdjustmentSource extends VendureEntity {
     }
 
     abstract test(...args: any[]): boolean;
-    abstract apply(...args: any[]): Adjustment;
+    abstract apply(...args: any[]): Adjustment | undefined;
 }

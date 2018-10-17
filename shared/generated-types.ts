@@ -1045,7 +1045,12 @@ export interface CreatePromotionInput {
 
 export interface AdjustmentOperationInput {
     code: string;
-    arguments: string[];
+    arguments: AdjustmentOperationInputArg[];
+}
+
+export interface AdjustmentOperationInputArg {
+    name: string;
+    value: string;
 }
 
 export interface UpdatePromotionInput {

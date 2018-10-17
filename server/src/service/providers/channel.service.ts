@@ -28,7 +28,7 @@ export class ChannelService {
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        this.allChannels = await this.findAll();
+        await this.updateAllChannels();
     }
 
     /**
@@ -89,7 +89,7 @@ export class ChannelService {
             );
         }
         const newChannel = await this.connection.getRepository(Channel).save(channel);
-        this.allChannels.push(channel);
+        await this.updateAllChannels();
         return channel;
     }
 
@@ -117,6 +117,7 @@ export class ChannelService {
             );
         }
         await this.connection.getRepository(Channel).save(updatedChannel);
+        await this.updateAllChannels();
         return assertFound(this.findOne(channel.id));
     }
 
@@ -143,5 +144,9 @@ export class ChannelService {
             defaultChannel.token = defaultChannelToken;
             await this.connection.manager.save(defaultChannel);
         }
+    }
+
+    private async updateAllChannels() {
+        this.allChannels = await this.findAll();
     }
 }
