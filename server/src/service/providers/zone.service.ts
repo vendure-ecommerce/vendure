@@ -13,7 +13,7 @@ import { Connection } from 'typeorm';
 import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
-import { I18nError } from '../../i18n/i18n-error';
+import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
 import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class ZoneService {
     }
 
     async update(input: UpdateZoneInput): Promise<Zone> {
-        const zone = await this.getZoneOrThrow(input.id);
+        const zone = await getEntityOrThrow(this.connection, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(Zone).save(updatedZone);
         return assertFound(this.findOne(zone.id));
@@ -50,7 +50,7 @@ export class ZoneService {
 
     async addMembersToZone(input: AddMembersToZoneMutationArgs): Promise<Zone> {
         const countries = await this.getCountriesFromIds(input.memberIds);
-        const zone = await this.getZoneOrThrow(input.zoneId);
+        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
         await this.connection.getRepository(Zone).save(zone);
@@ -58,17 +58,9 @@ export class ZoneService {
     }
 
     async removeMembersFromZone(input: RemoveMembersFromZoneMutationArgs): Promise<Zone> {
-        const zone = await this.getZoneOrThrow(input.zoneId);
+        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));
         await this.connection.getRepository(Zone).save(zone);
-        return zone;
-    }
-
-    private async getZoneOrThrow(id: ID): Promise<Zone> {
-        const zone = await this.findOne(id);
-        if (!zone) {
-            throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Zone', id });
-        }
         return zone;
     }
 

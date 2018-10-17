@@ -20,10 +20,5 @@
         <vdr-form-field [label]="'common.name' | translate" for="name">
             <input id="name" type="text" formControlName="name">
         </vdr-form-field>
-        <vdr-form-field [label]="'settings.tax-rate' | translate" for="name">
-            <vdr-affixed-input suffix="%">
-                <input id="name" type="number" step="0.1" min="0" max="100" formControlName="taxRate">
-            </vdr-affixed-input>
-        </vdr-form-field>
     </section>
 </form>

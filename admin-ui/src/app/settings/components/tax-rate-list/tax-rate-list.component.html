@@ -1,0 +1,35 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'settings.create-new-tax-rate' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="items$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.tax-category' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.zone' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.tax-rate' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-taxRate="item">
+        <td class="left">{{ taxRate.id }}</td>
+        <td class="left">{{ taxRate.name }}</td>
+        <td class="left">{{ taxRate.category.name }}</td>
+        <td class="left">{{ taxRate.zone.name }}</td>
+        <td class="left">{{ taxRate.value }}%</td>
+        <td class="right">
+            <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
+                                  [linkTo]="['./', taxRate.id]">
+            </vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

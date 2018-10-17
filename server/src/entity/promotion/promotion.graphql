@@ -1,0 +1,47 @@
+type Promotion implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    name: String!
+    enabled: Boolean!
+    conditions: [AdjustmentOperation!]!
+    actions: [AdjustmentOperation!]!
+}
+
+
+type AdjustmentArg {
+    name: String!
+    type: String!
+    value: String
+}
+
+type AdjustmentOperation {
+    code: String!
+    args: [AdjustmentArg!]!
+    description: String!
+}
+
+input AdjustmentOperationInputArg {
+    name: String!
+    value: String!
+}
+
+input AdjustmentOperationInput {
+    code: String!
+    arguments: [AdjustmentOperationInputArg!]!
+}
+
+input CreatePromotionInput {
+    name: String!
+    enabled: Boolean!
+    conditions: [AdjustmentOperationInput!]!
+    actions: [AdjustmentOperationInput!]!
+}
+
+input UpdatePromotionInput {
+    id: ID!
+    name: String
+    enabled: Boolean
+    conditions: [AdjustmentOperationInput!]
+    actions: [AdjustmentOperationInput!]
+}

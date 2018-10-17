@@ -1,0 +1,24 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'settings.create-new-channel' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="channels$ | async">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-channel="item">
+        <td class="left">{{ channel.id }}</td>
+        <td class="left">{{ channel.code }}</td>
+        <td class="right">
+            <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
+                                  [linkTo]="['./', channel.id]">
+            </vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

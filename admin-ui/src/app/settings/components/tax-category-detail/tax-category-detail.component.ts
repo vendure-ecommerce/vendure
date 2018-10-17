@@ -5,11 +5,10 @@ import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import {
     AdjustmentOperation,
-    AdjustmentSource,
-    AdjustmentType,
-    CreateAdjustmentSourceInput,
+    CreateTaxCategoryInput,
     LanguageCode,
-    UpdateAdjustmentSourceInput,
+    TaxCategory,
+    UpdateTaxCategoryInput,
 } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
@@ -24,9 +23,9 @@ import { ServerConfigService } from '../../../data/server-config';
     styleUrls: ['./tax-category-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSource.Fragment>
+export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.Fragment>
     implements OnInit, OnDestroy {
-    taxCategory$: Observable<AdjustmentSource.Fragment>;
+    taxCategory$: Observable<TaxCategory.Fragment>;
     taxCategoryForm: FormGroup;
 
     private taxCondition: AdjustmentOperation;
@@ -51,12 +50,6 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
     ngOnInit() {
         this.init();
         this.taxCategory$ = this.entity$;
-        const allOperations$ = this.dataService.adjustmentSource
-            .getAdjustmentOperations(AdjustmentType.TAX)
-            .single$.subscribe(data => {
-                this.taxCondition = data.adjustmentOperations.conditions[0];
-                this.taxAction = data.adjustmentOperations.actions[0];
-            });
     }
 
     ngOnDestroy() {
@@ -72,15 +65,15 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
             return;
         }
         const formValue = this.taxCategoryForm.value;
-        const input = this.createAdjustmentSourceInput(formValue.name, formValue.taxRate);
-        this.dataService.adjustmentSource.createTaxCategory(input).subscribe(
+        const input = { name: formValue.name } as CreateTaxCategoryInput;
+        this.dataService.settings.createTaxCategory(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxCategory',
                 });
                 this.taxCategoryForm.markAsPristine();
                 this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createAdjustmentSource.id], { relativeTo: this.route });
+                this.router.navigate(['../', data.createTaxCategory.id], { relativeTo: this.route });
             },
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {
@@ -99,12 +92,11 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
             .pipe(
                 take(1),
                 mergeMap(taxCategory => {
-                    const input = this.createAdjustmentSourceInput(
-                        formValue.name,
-                        formValue.taxRate,
-                        taxCategory.id,
-                    );
-                    return this.dataService.adjustmentSource.updatePromotion(input);
+                    const input = {
+                        id: taxCategory.id,
+                        name: formValue.name,
+                    } as UpdateTaxCategoryInput;
+                    return this.dataService.settings.updateTaxCategory(input);
                 }),
             )
             .subscribe(
@@ -123,47 +115,12 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<AdjustmentSo
             );
     }
 
-    private createAdjustmentSourceInput(name: string, taxRate: number): CreateAdjustmentSourceInput;
-    private createAdjustmentSourceInput(
-        name: string,
-        taxRate: number,
-        id: string,
-    ): UpdateAdjustmentSourceInput;
-    private createAdjustmentSourceInput(
-        name: string,
-        taxRate: number,
-        id?: string,
-    ): CreateAdjustmentSourceInput | UpdateAdjustmentSourceInput {
-        const input = {
-            name,
-            conditions: [
-                {
-                    code: this.taxCondition.code,
-                    arguments: [],
-                },
-            ],
-            actions: [
-                {
-                    code: this.taxAction.code,
-                    arguments: [taxRate.toString()],
-                },
-            ],
-        };
-        if (id !== undefined) {
-            return { ...input, id };
-        } else {
-            return { ...input, type: AdjustmentType.TAX, enabled: true } as CreateAdjustmentSourceInput;
-        }
-    }
-
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: AdjustmentSource.Fragment, languageCode: LanguageCode): void {
-        const action = entity.actions[0];
+    protected setFormValues(entity: TaxCategory.Fragment, languageCode: LanguageCode): void {
         this.taxCategoryForm.patchValue({
             name: entity.name,
-            taxRate: action ? action.args[0].value : 0,
         });
     }
 }

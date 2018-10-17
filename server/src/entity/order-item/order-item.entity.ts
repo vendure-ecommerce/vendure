@@ -1,11 +1,9 @@
-import { DeepPartial, ID } from 'shared/shared-types';
+import { Adjustment } from 'shared/generated-types';
+import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Adjustment } from '../adjustment-source/adjustment-source.entity';
-import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
-import { Order } from '../order/order.entity';
-import { ProductVariant } from '../product-variant/product-variant.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 
 @Entity()
 export class OrderItem extends VendureEntity {
@@ -13,32 +11,8 @@ export class OrderItem extends VendureEntity {
         super(input);
     }
 
-    @ManyToOne(type => ProductVariant)
-    productVariant: ProductVariant;
+    @ManyToOne(type => OrderLine, line => line.items, { onDelete: 'CASCADE' })
+    line: OrderLine;
 
-    @Column('varchar') taxCategoryId: ID;
-
-    @ManyToOne(type => Asset)
-    featuredAsset: Asset;
-
-    /**
-     * Corresponds to the priceBeforeTax value of the associated ProductVariant.
-     */
-    @Column() unitPriceBeforeTax: number;
-
-    /**
-     * Corresponds to the price value of the associated ProductVariant.
-     */
-    @Column() unitPrice: number;
-
-    @Column() quantity: number;
-
-    @Column() totalPriceBeforeAdjustment: number;
-
-    @Column() totalPrice: number;
-
-    @Column('simple-json') adjustments: Adjustment[];
-
-    @ManyToOne(type => Order, order => order.items)
-    order: Order;
+    @Column('simple-json') pendingAdjustments: Adjustment[];
 }

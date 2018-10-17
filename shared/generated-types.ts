@@ -29,24 +29,23 @@ export type Json = any;
 
 export type Upload = any;
 
-export interface Node {
-    id: string;
-}
-
 export interface PaginatedList {
     items: Node[];
     totalItems: number;
 }
 
+export interface Node {
+    id: string;
+}
+
 export interface Query {
-    adjustmentSource?: AdjustmentSource | null;
-    adjustmentSources: AdjustmentSourceList;
-    adjustmentOperations: AdjustmentOperations;
     administrators: AdministratorList;
     administrator?: Administrator | null;
     assets: AssetList;
     asset?: Asset | null;
     me?: CurrentUser | null;
+    channels: Channel[];
+    channel?: Channel | null;
     config: Config;
     countries: CountryList;
     country?: Country | null;
@@ -63,47 +62,20 @@ export interface Query {
     productOptionGroup?: ProductOptionGroup | null;
     products: ProductList;
     product?: Product | null;
+    promotion?: Promotion | null;
+    promotions: PromotionList;
+    adjustmentOperations: AdjustmentOperations;
     roles: RoleList;
     role?: Role | null;
+    taxCategories: TaxCategory[];
+    taxCategory?: TaxCategory | null;
+    taxRates: TaxRateList;
+    taxRate?: TaxRate | null;
     zones: Zone[];
     zone?: Zone | null;
     networkStatus: NetworkStatus;
     userStatus: UserStatus;
     uiState: UiState;
-}
-
-export interface AdjustmentSource extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    name: string;
-    type: AdjustmentType;
-    enabled: boolean;
-    conditions: AdjustmentOperation[];
-    actions: AdjustmentOperation[];
-}
-
-export interface AdjustmentOperation {
-    type: AdjustmentType;
-    code: string;
-    args: AdjustmentArg[];
-    description: string;
-}
-
-export interface AdjustmentArg {
-    name: string;
-    type: string;
-    value?: string | null;
-}
-
-export interface AdjustmentSourceList extends PaginatedList {
-    items: AdjustmentSource[];
-    totalItems: number;
-}
-
-export interface AdjustmentOperations {
-    conditions: AdjustmentOperation[];
-    actions: AdjustmentOperation[];
 }
 
 export interface AdministratorList extends PaginatedList {
@@ -134,6 +106,8 @@ export interface User extends Node {
 
 export interface Role extends Node {
     id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
     code: string;
     description: string;
     permissions: Permission[];
@@ -146,6 +120,24 @@ export interface Channel extends Node {
     updatedAt: DateTime;
     code: string;
     token: string;
+    defaultTaxZone?: Zone | null;
+    defaultShippingZone?: Zone | null;
+    defaultLanguageCode: LanguageCode;
+}
+
+export interface Zone extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    members: Country[];
+}
+
+export interface Country extends Node {
+    id: string;
+    code: string;
+    name: string;
+    enabled: boolean;
 }
 
 export interface AssetList extends PaginatedList {
@@ -176,13 +168,6 @@ export interface Config {
 export interface CountryList extends PaginatedList {
     items: Country[];
     totalItems: number;
-}
-
-export interface Country extends Node {
-    id: string;
-    code: string;
-    name: string;
-    enabled: boolean;
 }
 
 export interface CustomerGroup extends Node {
@@ -287,21 +272,23 @@ export interface Order extends Node {
     updatedAt: DateTime;
     code: string;
     customer?: Customer | null;
-    items: OrderItem[];
-    adjustments: Adjustment[];
+    lines: OrderLine[];
+    totalPriceBeforeTax: number;
     totalPrice: number;
 }
 
-export interface OrderItem extends Node {
+export interface OrderLine extends Node {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
     productVariant: ProductVariant;
-    adjustments: Adjustment[];
     featuredAsset?: Asset | null;
     unitPrice: number;
+    unitPriceWithTax: number;
     quantity: number;
+    items: OrderItem[];
     totalPrice: number;
+    adjustments: Adjustment[];
     order: Order;
 }
 
@@ -312,19 +299,33 @@ export interface ProductVariant extends Node {
     languageCode: LanguageCode;
     sku: string;
     name: string;
-    priceBeforeTax: number;
     price: number;
-    taxCategory: ProductTaxCategory;
+    priceWithTax: number;
+    taxRateApplied?: TaxRate | null;
+    taxCategory: TaxCategory;
     options: ProductOption[];
     facetValues: FacetValue[];
     translations: ProductVariantTranslation[];
     customFields?: Json | null;
 }
 
-export interface ProductTaxCategory {
+export interface TaxRate extends Node {
     id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
     name: string;
-    taxRate: number;
+    enabled: boolean;
+    value: number;
+    category: TaxCategory;
+    zone: Zone;
+    customerGroup?: CustomerGroup | null;
+}
+
+export interface TaxCategory extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
 }
 
 export interface ProductOption extends Node {
@@ -354,8 +355,15 @@ export interface ProductVariantTranslation {
     name: string;
 }
 
+export interface OrderItem extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export interface Adjustment {
-    adjustmentSourceId: string;
+    adjustmentSource: string;
+    type: AdjustmentType;
     description: string;
     amount: number;
 }
@@ -427,17 +435,46 @@ export interface ProductCustomFields {
     nickname?: string | null;
 }
 
+export interface Promotion extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    enabled: boolean;
+    conditions: AdjustmentOperation[];
+    actions: AdjustmentOperation[];
+}
+
+export interface AdjustmentOperation {
+    code: string;
+    args: AdjustmentArg[];
+    description: string;
+}
+
+export interface AdjustmentArg {
+    name: string;
+    type: string;
+    value?: string | null;
+}
+
+export interface PromotionList extends PaginatedList {
+    items: Promotion[];
+    totalItems: number;
+}
+
+export interface AdjustmentOperations {
+    conditions: AdjustmentOperation[];
+    actions: AdjustmentOperation[];
+}
+
 export interface RoleList extends PaginatedList {
     items: Role[];
     totalItems: number;
 }
 
-export interface Zone extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    name: string;
-    members: Country[];
+export interface TaxRateList extends PaginatedList {
+    items: TaxRate[];
+    totalItems: number;
 }
 
 export interface NetworkStatus {
@@ -455,8 +492,6 @@ export interface UiState {
 }
 
 export interface Mutation {
-    createAdjustmentSource: AdjustmentSource;
-    updateAdjustmentSource: AdjustmentSource;
     createAdministrator: Administrator;
     updateAdministrator: Administrator;
     assignRoleToAdministrator: Administrator;
@@ -464,6 +499,7 @@ export interface Mutation {
     login: LoginResult;
     logout: boolean;
     createChannel: Channel;
+    updateChannel: Channel;
     createCountry: Country;
     updateCountry: Country;
     createCustomerGroup: CustomerGroup;
@@ -488,8 +524,14 @@ export interface Mutation {
     generateVariantsForProduct: Product;
     updateProductVariants: (ProductVariant | null)[];
     applyFacetValuesToProductVariants: ProductVariant[];
+    createPromotion: Promotion;
+    updatePromotion: Promotion;
     createRole: Role;
     updateRole: Role;
+    createTaxCategory: TaxCategory;
+    updateTaxCategory: TaxCategory;
+    createTaxRate: TaxRate;
+    updateTaxRate: TaxRate;
     createZone: Zone;
     updateZone: Zone;
     addMembersToZone: Zone;
@@ -503,44 +545,6 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
-}
-
-export interface AdjustmentSourceListOptions {
-    take?: number | null;
-    skip?: number | null;
-    sort?: AdjustmentSourceSortParameter | null;
-    filter?: AdjustmentSourceFilterParameter | null;
-}
-
-export interface AdjustmentSourceSortParameter {
-    id?: SortOrder | null;
-    createdAt?: SortOrder | null;
-    updatedAt?: SortOrder | null;
-    name?: SortOrder | null;
-}
-
-export interface AdjustmentSourceFilterParameter {
-    name?: StringOperators | null;
-    createdAt?: DateOperators | null;
-    updatedAt?: DateOperators | null;
-    type?: StringOperators | null;
-}
-
-export interface StringOperators {
-    eq?: string | null;
-    contains?: string | null;
-}
-
-export interface DateOperators {
-    eq?: DateTime | null;
-    before?: DateTime | null;
-    after?: DateTime | null;
-    between?: DateRange | null;
-}
-
-export interface DateRange {
-    start: DateTime;
-    end: DateTime;
 }
 
 export interface AdministratorListOptions {
@@ -565,6 +569,23 @@ export interface AdministratorFilterParameter {
     emailAddress?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
+}
+
+export interface StringOperators {
+    eq?: string | null;
+    contains?: string | null;
+}
+
+export interface DateOperators {
+    eq?: DateTime | null;
+    before?: DateTime | null;
+    after?: DateTime | null;
+    between?: DateRange | null;
+}
+
+export interface DateRange {
+    start: DateTime;
+    end: DateTime;
 }
 
 export interface AssetListOptions {
@@ -719,6 +740,27 @@ export interface ProductFilterParameter {
     nickname?: StringOperators | null;
 }
 
+export interface PromotionListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: PromotionSortParameter | null;
+    filter?: PromotionFilterParameter | null;
+}
+
+export interface PromotionSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    name?: SortOrder | null;
+}
+
+export interface PromotionFilterParameter {
+    name?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+    type?: StringOperators | null;
+}
+
 export interface RoleListOptions {
     take?: number | null;
     skip?: number | null;
@@ -741,25 +783,27 @@ export interface RoleFilterParameter {
     updatedAt?: DateOperators | null;
 }
 
-export interface CreateAdjustmentSourceInput {
-    name: string;
-    type: AdjustmentType;
-    enabled: boolean;
-    conditions: AdjustmentOperationInput[];
-    actions: AdjustmentOperationInput[];
+export interface TaxRateListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: TaxRateSortParameter | null;
+    filter?: TaxRateFilterParameter | null;
 }
 
-export interface AdjustmentOperationInput {
-    code: string;
-    arguments: string[];
+export interface TaxRateSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    name?: SortOrder | null;
+    enabled?: SortOrder | null;
 }
 
-export interface UpdateAdjustmentSourceInput {
-    id: string;
-    name?: string | null;
-    enabled?: boolean | null;
-    conditions?: AdjustmentOperationInput[] | null;
-    actions?: AdjustmentOperationInput[] | null;
+export interface TaxRateFilterParameter {
+    code?: StringOperators | null;
+    name?: StringOperators | null;
+    enabled?: BooleanOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
 }
 
 export interface CreateAdministratorInput {
@@ -781,6 +825,23 @@ export interface UpdateAdministratorInput {
 
 export interface CreateAssetInput {
     file: Upload;
+}
+
+export interface CreateChannelInput {
+    code: string;
+    token: string;
+    defaultLanguageCode: LanguageCode;
+    defaultTaxZoneId?: string | null;
+    defaultShippingZoneId?: string | null;
+}
+
+export interface UpdateChannelInput {
+    id: string;
+    code?: string | null;
+    token?: string | null;
+    defaultLanguageCode?: LanguageCode | null;
+    defaultTaxZoneId?: string | null;
+    defaultShippingZoneId?: string | null;
 }
 
 export interface CreateCountryInput {
@@ -964,7 +1025,6 @@ export interface UpdateProductVariantInput {
     translations?: ProductVariantTranslationInput[] | null;
     sku?: string | null;
     taxCategoryId?: string | null;
-    priceBeforeTax?: number | null;
     price?: number | null;
     customFields?: Json | null;
 }
@@ -974,6 +1034,31 @@ export interface ProductVariantTranslationInput {
     languageCode: LanguageCode;
     name?: string | null;
     customFields?: Json | null;
+}
+
+export interface CreatePromotionInput {
+    name: string;
+    enabled: boolean;
+    conditions: AdjustmentOperationInput[];
+    actions: AdjustmentOperationInput[];
+}
+
+export interface AdjustmentOperationInput {
+    code: string;
+    arguments: AdjustmentOperationInputArg[];
+}
+
+export interface AdjustmentOperationInputArg {
+    name: string;
+    value: string;
+}
+
+export interface UpdatePromotionInput {
+    id: string;
+    name?: string | null;
+    enabled?: boolean | null;
+    conditions?: AdjustmentOperationInput[] | null;
+    actions?: AdjustmentOperationInput[] | null;
 }
 
 export interface CreateRoleInput {
@@ -989,6 +1074,34 @@ export interface UpdateRoleInput {
     permissions?: Permission[] | null;
 }
 
+export interface CreateTaxCategoryInput {
+    name: string;
+}
+
+export interface UpdateTaxCategoryInput {
+    id: string;
+    name?: string | null;
+}
+
+export interface CreateTaxRateInput {
+    name: string;
+    enabled: boolean;
+    value: number;
+    categoryId: string;
+    zoneId: string;
+    customerGroupId?: string | null;
+}
+
+export interface UpdateTaxRateInput {
+    id: string;
+    name?: string | null;
+    value?: number | null;
+    enabled?: boolean | null;
+    categoryId?: string | null;
+    zoneId?: string | null;
+    customerGroupId?: string | null;
+}
+
 export interface CreateZoneInput {
     name: string;
     memberIds?: string[] | null;
@@ -1002,7 +1115,6 @@ export interface UpdateZoneInput {
 export interface CreateProductVariantInput {
     translations: ProductVariantTranslationInput[];
     sku: string;
-    priceBeforeTax?: number | null;
     price?: number | null;
     taxCategoryId: string;
     optionCodes?: string[] | null;
@@ -1029,16 +1141,6 @@ export interface ProductOptionTranslationInput {
     name?: string | null;
     customFields?: Json | null;
 }
-export interface AdjustmentSourceQueryArgs {
-    id: string;
-}
-export interface AdjustmentSourcesQueryArgs {
-    type: AdjustmentType;
-    options?: AdjustmentSourceListOptions | null;
-}
-export interface AdjustmentOperationsQueryArgs {
-    type: AdjustmentType;
-}
 export interface AdministratorsQueryArgs {
     options?: AdministratorListOptions | null;
 }
@@ -1049,6 +1151,9 @@ export interface AssetsQueryArgs {
     options?: AssetListOptions | null;
 }
 export interface AssetQueryArgs {
+    id: string;
+}
+export interface ChannelQueryArgs {
     id: string;
 }
 export interface CountriesQueryArgs {
@@ -1096,20 +1201,29 @@ export interface ProductQueryArgs {
     id: string;
     languageCode?: LanguageCode | null;
 }
+export interface PromotionQueryArgs {
+    id: string;
+}
+export interface PromotionsQueryArgs {
+    options?: PromotionListOptions | null;
+}
 export interface RolesQueryArgs {
     options?: RoleListOptions | null;
 }
 export interface RoleQueryArgs {
     id: string;
 }
-export interface ZoneQueryArgs {
+export interface TaxCategoryQueryArgs {
     id: string;
 }
-export interface CreateAdjustmentSourceMutationArgs {
-    input: CreateAdjustmentSourceInput;
+export interface TaxRatesQueryArgs {
+    options?: TaxRateListOptions | null;
 }
-export interface UpdateAdjustmentSourceMutationArgs {
-    input: UpdateAdjustmentSourceInput;
+export interface TaxRateQueryArgs {
+    id: string;
+}
+export interface ZoneQueryArgs {
+    id: string;
 }
 export interface CreateAdministratorMutationArgs {
     input: CreateAdministratorInput;
@@ -1130,7 +1244,10 @@ export interface LoginMutationArgs {
     rememberMe?: boolean | null;
 }
 export interface CreateChannelMutationArgs {
-    code: string;
+    input: CreateChannelInput;
+}
+export interface UpdateChannelMutationArgs {
+    input: UpdateChannelInput;
 }
 export interface CreateCountryMutationArgs {
     input: CreateCountryInput;
@@ -1216,11 +1333,29 @@ export interface ApplyFacetValuesToProductVariantsMutationArgs {
     facetValueIds: string[];
     productVariantIds: string[];
 }
+export interface CreatePromotionMutationArgs {
+    input: CreatePromotionInput;
+}
+export interface UpdatePromotionMutationArgs {
+    input: UpdatePromotionInput;
+}
 export interface CreateRoleMutationArgs {
     input: CreateRoleInput;
 }
 export interface UpdateRoleMutationArgs {
     input: UpdateRoleInput;
+}
+export interface CreateTaxCategoryMutationArgs {
+    input: CreateTaxCategoryInput;
+}
+export interface UpdateTaxCategoryMutationArgs {
+    input: UpdateTaxCategoryInput;
+}
+export interface CreateTaxRateMutationArgs {
+    input: CreateTaxRateInput;
+}
+export interface UpdateTaxRateMutationArgs {
+    input: UpdateTaxRateInput;
 }
 export interface CreateZoneMutationArgs {
     input: CreateZoneInput;
@@ -1242,12 +1377,6 @@ export interface SetAsLoggedInMutationArgs {
 }
 export interface SetUiLanguageMutationArgs {
     languageCode?: LanguageCode | null;
-}
-
-export enum AdjustmentType {
-    TAX = 'TAX',
-    PROMOTION = 'PROMOTION',
-    SHIPPING = 'SHIPPING',
 }
 
 export enum SortOrder {
@@ -1284,12 +1413,6 @@ export enum Permission {
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
     DeleteSettings = 'DeleteSettings',
-}
-
-export enum AssetType {
-    IMAGE = 'IMAGE',
-    VIDEO = 'VIDEO',
-    BINARY = 'BINARY',
 }
 
 export enum LanguageCode {
@@ -1479,16 +1602,29 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export enum AssetType {
+    IMAGE = 'IMAGE',
+    VIDEO = 'VIDEO',
+    BINARY = 'BINARY',
+}
+
+export enum AdjustmentType {
+    TAX = 'TAX',
+    PROMOTION = 'PROMOTION',
+    REFUND = 'REFUND',
+    TAX_REFUND = 'TAX_REFUND',
+    PROMOTION_REFUND = 'PROMOTION_REFUND',
+}
+
 export namespace QueryResolvers {
     export interface Resolvers<Context = any> {
-        adjustmentSource?: AdjustmentSourceResolver<AdjustmentSource | null, any, Context>;
-        adjustmentSources?: AdjustmentSourcesResolver<AdjustmentSourceList, any, Context>;
-        adjustmentOperations?: AdjustmentOperationsResolver<AdjustmentOperations, any, Context>;
         administrators?: AdministratorsResolver<AdministratorList, any, Context>;
         administrator?: AdministratorResolver<Administrator | null, any, Context>;
         assets?: AssetsResolver<AssetList, any, Context>;
         asset?: AssetResolver<Asset | null, any, Context>;
         me?: MeResolver<CurrentUser | null, any, Context>;
+        channels?: ChannelsResolver<Channel[], any, Context>;
+        channel?: ChannelResolver<Channel | null, any, Context>;
         config?: ConfigResolver<Config, any, Context>;
         countries?: CountriesResolver<CountryList, any, Context>;
         country?: CountryResolver<Country | null, any, Context>;
@@ -1505,43 +1641,20 @@ export namespace QueryResolvers {
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
         products?: ProductsResolver<ProductList, any, Context>;
         product?: ProductResolver<Product | null, any, Context>;
+        promotion?: PromotionResolver<Promotion | null, any, Context>;
+        promotions?: PromotionsResolver<PromotionList, any, Context>;
+        adjustmentOperations?: AdjustmentOperationsResolver<AdjustmentOperations, any, Context>;
         roles?: RolesResolver<RoleList, any, Context>;
         role?: RoleResolver<Role | null, any, Context>;
+        taxCategories?: TaxCategoriesResolver<TaxCategory[], any, Context>;
+        taxCategory?: TaxCategoryResolver<TaxCategory | null, any, Context>;
+        taxRates?: TaxRatesResolver<TaxRateList, any, Context>;
+        taxRate?: TaxRateResolver<TaxRate | null, any, Context>;
         zones?: ZonesResolver<Zone[], any, Context>;
         zone?: ZoneResolver<Zone | null, any, Context>;
         networkStatus?: NetworkStatusResolver<NetworkStatus, any, Context>;
         userStatus?: UserStatusResolver<UserStatus, any, Context>;
         uiState?: UiStateResolver<UiState, any, Context>;
-    }
-
-    export type AdjustmentSourceResolver<R = AdjustmentSource | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context,
-        AdjustmentSourceArgs
-    >;
-    export interface AdjustmentSourceArgs {
-        id: string;
-    }
-
-    export type AdjustmentSourcesResolver<R = AdjustmentSourceList, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context,
-        AdjustmentSourcesArgs
-    >;
-    export interface AdjustmentSourcesArgs {
-        type: AdjustmentType;
-        options?: AdjustmentSourceListOptions | null;
-    }
-
-    export type AdjustmentOperationsResolver<
-        R = AdjustmentOperations,
-        Parent = any,
-        Context = any
-    > = Resolver<R, Parent, Context, AdjustmentOperationsArgs>;
-    export interface AdjustmentOperationsArgs {
-        type: AdjustmentType;
     }
 
     export type AdministratorsResolver<R = AdministratorList, Parent = any, Context = any> = Resolver<
@@ -1589,6 +1702,17 @@ export namespace QueryResolvers {
         Parent,
         Context
     >;
+    export type ChannelsResolver<R = Channel[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ChannelResolver<R = Channel | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ChannelArgs
+    >;
+    export interface ChannelArgs {
+        id: string;
+    }
+
     export type ConfigResolver<R = Config, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CountriesResolver<R = CountryList, Parent = any, Context = any> = Resolver<
         R,
@@ -1735,6 +1859,31 @@ export namespace QueryResolvers {
         languageCode?: LanguageCode | null;
     }
 
+    export type PromotionResolver<R = Promotion | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        PromotionArgs
+    >;
+    export interface PromotionArgs {
+        id: string;
+    }
+
+    export type PromotionsResolver<R = PromotionList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        PromotionsArgs
+    >;
+    export interface PromotionsArgs {
+        options?: PromotionListOptions | null;
+    }
+
+    export type AdjustmentOperationsResolver<
+        R = AdjustmentOperations,
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
     export type RolesResolver<R = RoleList, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -1752,6 +1901,41 @@ export namespace QueryResolvers {
         RoleArgs
     >;
     export interface RoleArgs {
+        id: string;
+    }
+
+    export type TaxCategoriesResolver<R = TaxCategory[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TaxCategoryResolver<R = TaxCategory | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxCategoryArgs
+    >;
+    export interface TaxCategoryArgs {
+        id: string;
+    }
+
+    export type TaxRatesResolver<R = TaxRateList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxRatesArgs
+    >;
+    export interface TaxRatesArgs {
+        options?: TaxRateListOptions | null;
+    }
+
+    export type TaxRateResolver<R = TaxRate | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TaxRateArgs
+    >;
+    export interface TaxRateArgs {
         id: string;
     }
 
@@ -1777,94 +1961,6 @@ export namespace QueryResolvers {
         Context
     >;
     export type UiStateResolver<R = UiState, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace AdjustmentSourceResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        type?: TypeResolver<AdjustmentType, any, Context>;
-        enabled?: EnabledResolver<boolean, any, Context>;
-        conditions?: ConditionsResolver<AdjustmentOperation[], any, Context>;
-        actions?: ActionsResolver<AdjustmentOperation[], any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ConditionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type ActionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
-export namespace AdjustmentOperationResolvers {
-    export interface Resolvers<Context = any> {
-        type?: TypeResolver<AdjustmentType, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        args?: ArgsResolver<AdjustmentArg[], any, Context>;
-        description?: DescriptionResolver<string, any, Context>;
-    }
-
-    export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ArgsResolver<R = AdjustmentArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace AdjustmentArgResolvers {
-    export interface Resolvers<Context = any> {
-        name?: NameResolver<string, any, Context>;
-        type?: TypeResolver<string, any, Context>;
-        value?: ValueResolver<string | null, any, Context>;
-    }
-
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace AdjustmentSourceListResolvers {
-    export interface Resolvers<Context = any> {
-        items?: ItemsResolver<AdjustmentSource[], any, Context>;
-        totalItems?: TotalItemsResolver<number, any, Context>;
-    }
-
-    export type ItemsResolver<R = AdjustmentSource[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace AdjustmentOperationsResolvers {
-    export interface Resolvers<Context = any> {
-        conditions?: ConditionsResolver<AdjustmentOperation[], any, Context>;
-        actions?: ActionsResolver<AdjustmentOperation[], any, Context>;
-    }
-
-    export type ConditionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type ActionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace AdministratorListResolvers {
@@ -1934,6 +2030,8 @@ export namespace UserResolvers {
 export namespace RoleResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
         permissions?: PermissionsResolver<Permission[], any, Context>;
@@ -1941,6 +2039,8 @@ export namespace RoleResolvers {
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PermissionsResolver<R = Permission[], Parent = any, Context = any> = Resolver<
@@ -1958,6 +2058,9 @@ export namespace ChannelResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         token?: TokenResolver<string, any, Context>;
+        defaultTaxZone?: DefaultTaxZoneResolver<Zone | null, any, Context>;
+        defaultShippingZone?: DefaultShippingZoneResolver<Zone | null, any, Context>;
+        defaultLanguageCode?: DefaultLanguageCodeResolver<LanguageCode, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -1965,6 +2068,51 @@ export namespace ChannelResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TokenResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DefaultTaxZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DefaultShippingZoneResolver<R = Zone | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DefaultLanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace ZoneResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        members?: MembersResolver<Country[], any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type MembersResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace CountryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace AssetListResolvers {
@@ -2033,20 +2181,6 @@ export namespace CountryListResolvers {
 
     export type ItemsResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace CountryResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        enabled?: EnabledResolver<boolean, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace CustomerGroupResolvers {
@@ -2344,8 +2478,8 @@ export namespace OrderResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
-        items?: ItemsResolver<OrderItem[], any, Context>;
-        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        lines?: LinesResolver<OrderLine[], any, Context>;
+        totalPriceBeforeTax?: TotalPriceBeforeTaxResolver<number, any, Context>;
         totalPrice?: TotalPriceResolver<number, any, Context>;
     }
 
@@ -2358,8 +2492,8 @@ export namespace OrderResolvers {
         Parent,
         Context
     >;
-    export type ItemsResolver<R = OrderItem[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
+    export type LinesResolver<R = OrderLine[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalPriceBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2367,17 +2501,19 @@ export namespace OrderResolvers {
     export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace OrderItemResolvers {
+export namespace OrderLineResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         productVariant?: ProductVariantResolver<ProductVariant, any, Context>;
-        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         unitPrice?: UnitPriceResolver<number, any, Context>;
+        unitPriceWithTax?: UnitPriceWithTaxResolver<number, any, Context>;
         quantity?: QuantityResolver<number, any, Context>;
+        items?: ItemsResolver<OrderItem[], any, Context>;
         totalPrice?: TotalPriceResolver<number, any, Context>;
+        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
         order?: OrderResolver<Order, any, Context>;
     }
 
@@ -2389,19 +2525,25 @@ export namespace OrderItemResolvers {
         Parent,
         Context
     >;
-    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
     export type FeaturedAssetResolver<R = Asset | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
     export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UnitPriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type QuantityResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ItemsResolver<R = OrderItem[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type OrderResolver<R = Order, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
@@ -2413,9 +2555,10 @@ export namespace ProductVariantResolvers {
         languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
         sku?: SkuResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
-        priceBeforeTax?: PriceBeforeTaxResolver<number, any, Context>;
         price?: PriceResolver<number, any, Context>;
-        taxCategory?: TaxCategoryResolver<ProductTaxCategory, any, Context>;
+        priceWithTax?: PriceWithTaxResolver<number, any, Context>;
+        taxRateApplied?: TaxRateAppliedResolver<TaxRate | null, any, Context>;
+        taxCategory?: TaxCategoryResolver<TaxCategory, any, Context>;
         options?: OptionsResolver<ProductOption[], any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductVariantTranslation[], any, Context>;
@@ -2432,13 +2575,14 @@ export namespace ProductVariantResolvers {
     >;
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type PriceBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+    export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type PriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TaxRateAppliedResolver<R = TaxRate | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
-    export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TaxCategoryResolver<R = ProductTaxCategory, Parent = any, Context = any> = Resolver<
+    export type TaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2465,16 +2609,46 @@ export namespace ProductVariantResolvers {
     >;
 }
 
-export namespace ProductTaxCategoryResolvers {
+export namespace TaxRateResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         name?: NameResolver<string, any, Context>;
-        taxRate?: TaxRateResolver<number, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+        value?: ValueResolver<number, any, Context>;
+        category?: CategoryResolver<TaxCategory, any, Context>;
+        zone?: ZoneResolver<Zone, any, Context>;
+        customerGroup?: CustomerGroupResolver<CustomerGroup | null, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TaxRateResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValueResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CustomerGroupResolver<R = CustomerGroup | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace TaxCategoryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace ProductOptionResolvers {
@@ -2551,18 +2725,32 @@ export namespace ProductVariantTranslationResolvers {
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace OrderItemResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace AdjustmentResolvers {
     export interface Resolvers<Context = any> {
-        adjustmentSourceId?: AdjustmentSourceIdResolver<string, any, Context>;
+        adjustmentSource?: AdjustmentSourceResolver<string, any, Context>;
+        type?: TypeResolver<AdjustmentType, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
         amount?: AmountResolver<number, any, Context>;
     }
 
-    export type AdjustmentSourceIdResolver<R = string, Parent = any, Context = any> = Resolver<
+    export type AdjustmentSourceResolver<R = string, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
+    export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
@@ -2769,6 +2957,86 @@ export namespace ProductCustomFieldsResolvers {
     >;
 }
 
+export namespace PromotionResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+        conditions?: ConditionsResolver<AdjustmentOperation[], any, Context>;
+        actions?: ActionsResolver<AdjustmentOperation[], any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ConditionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ActionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace AdjustmentOperationResolvers {
+    export interface Resolvers<Context = any> {
+        code?: CodeResolver<string, any, Context>;
+        args?: ArgsResolver<AdjustmentArg[], any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+    }
+
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ArgsResolver<R = AdjustmentArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace AdjustmentArgResolvers {
+    export interface Resolvers<Context = any> {
+        name?: NameResolver<string, any, Context>;
+        type?: TypeResolver<string, any, Context>;
+        value?: ValueResolver<string | null, any, Context>;
+    }
+
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace PromotionListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<Promotion[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = Promotion[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace AdjustmentOperationsResolvers {
+    export interface Resolvers<Context = any> {
+        conditions?: ConditionsResolver<AdjustmentOperation[], any, Context>;
+        actions?: ActionsResolver<AdjustmentOperation[], any, Context>;
+    }
+
+    export type ConditionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ActionsResolver<R = AdjustmentOperation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
 export namespace RoleListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<Role[], any, Context>;
@@ -2779,20 +3047,14 @@ export namespace RoleListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace ZoneResolvers {
+export namespace TaxRateListResolvers {
     export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        members?: MembersResolver<Country[], any, Context>;
+        items?: ItemsResolver<TaxRate[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
     }
 
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type MembersResolver<R = Country[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ItemsResolver<R = TaxRate[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace NetworkStatusResolvers {
@@ -2833,8 +3095,6 @@ export namespace UiStateResolvers {
 
 export namespace MutationResolvers {
     export interface Resolvers<Context = any> {
-        createAdjustmentSource?: CreateAdjustmentSourceResolver<AdjustmentSource, any, Context>;
-        updateAdjustmentSource?: UpdateAdjustmentSourceResolver<AdjustmentSource, any, Context>;
         createAdministrator?: CreateAdministratorResolver<Administrator, any, Context>;
         updateAdministrator?: UpdateAdministratorResolver<Administrator, any, Context>;
         assignRoleToAdministrator?: AssignRoleToAdministratorResolver<Administrator, any, Context>;
@@ -2842,6 +3102,7 @@ export namespace MutationResolvers {
         login?: LoginResolver<LoginResult, any, Context>;
         logout?: LogoutResolver<boolean, any, Context>;
         createChannel?: CreateChannelResolver<Channel, any, Context>;
+        updateChannel?: UpdateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
         updateCountry?: UpdateCountryResolver<Country, any, Context>;
         createCustomerGroup?: CreateCustomerGroupResolver<CustomerGroup, any, Context>;
@@ -2870,8 +3131,14 @@ export namespace MutationResolvers {
             any,
             Context
         >;
+        createPromotion?: CreatePromotionResolver<Promotion, any, Context>;
+        updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
+        createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
+        updateTaxCategory?: UpdateTaxCategoryResolver<TaxCategory, any, Context>;
+        createTaxRate?: CreateTaxRateResolver<TaxRate, any, Context>;
+        updateTaxRate?: UpdateTaxRateResolver<TaxRate, any, Context>;
         createZone?: CreateZoneResolver<Zone, any, Context>;
         updateZone?: UpdateZoneResolver<Zone, any, Context>;
         addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
@@ -2881,26 +3148,6 @@ export namespace MutationResolvers {
         setAsLoggedIn?: SetAsLoggedInResolver<UserStatus, any, Context>;
         setAsLoggedOut?: SetAsLoggedOutResolver<UserStatus, any, Context>;
         setUiLanguage?: SetUiLanguageResolver<LanguageCode | null, any, Context>;
-    }
-
-    export type CreateAdjustmentSourceResolver<R = AdjustmentSource, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context,
-        CreateAdjustmentSourceArgs
-    >;
-    export interface CreateAdjustmentSourceArgs {
-        input: CreateAdjustmentSourceInput;
-    }
-
-    export type UpdateAdjustmentSourceResolver<R = AdjustmentSource, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context,
-        UpdateAdjustmentSourceArgs
-    >;
-    export interface UpdateAdjustmentSourceArgs {
-        input: UpdateAdjustmentSourceInput;
     }
 
     export type CreateAdministratorResolver<R = Administrator, Parent = any, Context = any> = Resolver<
@@ -2964,7 +3211,17 @@ export namespace MutationResolvers {
         CreateChannelArgs
     >;
     export interface CreateChannelArgs {
-        code: string;
+        input: CreateChannelInput;
+    }
+
+    export type UpdateChannelResolver<R = Channel, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateChannelArgs
+    >;
+    export interface UpdateChannelArgs {
+        input: UpdateChannelInput;
     }
 
     export type CreateCountryResolver<R = Country, Parent = any, Context = any> = Resolver<
@@ -3215,6 +3472,26 @@ export namespace MutationResolvers {
         productVariantIds: string[];
     }
 
+    export type CreatePromotionResolver<R = Promotion, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreatePromotionArgs
+    >;
+    export interface CreatePromotionArgs {
+        input: CreatePromotionInput;
+    }
+
+    export type UpdatePromotionResolver<R = Promotion, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdatePromotionArgs
+    >;
+    export interface UpdatePromotionArgs {
+        input: UpdatePromotionInput;
+    }
+
     export type CreateRoleResolver<R = Role, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3233,6 +3510,46 @@ export namespace MutationResolvers {
     >;
     export interface UpdateRoleArgs {
         input: UpdateRoleInput;
+    }
+
+    export type CreateTaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateTaxCategoryArgs
+    >;
+    export interface CreateTaxCategoryArgs {
+        input: CreateTaxCategoryInput;
+    }
+
+    export type UpdateTaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateTaxCategoryArgs
+    >;
+    export interface UpdateTaxCategoryArgs {
+        input: UpdateTaxCategoryInput;
+    }
+
+    export type CreateTaxRateResolver<R = TaxRate, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateTaxRateArgs
+    >;
+    export interface CreateTaxRateArgs {
+        input: CreateTaxRateInput;
+    }
+
+    export type UpdateTaxRateResolver<R = TaxRate, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateTaxRateArgs
+    >;
+    export interface UpdateTaxRateArgs {
+        input: UpdateTaxRateInput;
     }
 
     export type CreateZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
@@ -3320,86 +3637,6 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace GetAdjustmentSourceList {
-    export type Variables = {
-        type: AdjustmentType;
-        options?: AdjustmentSourceListOptions | null;
-    };
-
-    export type Query = {
-        __typename?: 'Query';
-        adjustmentSources: AdjustmentSources;
-    };
-
-    export type AdjustmentSources = {
-        __typename?: 'AdjustmentSourceList';
-        items: Items[];
-        totalItems: number;
-    };
-
-    export type Items = AdjustmentSource.Fragment;
-}
-
-export namespace GetAdjustmentSource {
-    export type Variables = {
-        id: string;
-    };
-
-    export type Query = {
-        __typename?: 'Query';
-        adjustmentSource?: AdjustmentSource | null;
-    };
-
-    export type AdjustmentSource = AdjustmentSource.Fragment;
-}
-
-export namespace GetAdjustmentOperations {
-    export type Variables = {
-        type: AdjustmentType;
-    };
-
-    export type Query = {
-        __typename?: 'Query';
-        adjustmentOperations: AdjustmentOperations;
-    };
-
-    export type AdjustmentOperations = {
-        __typename?: 'AdjustmentOperations';
-        actions: Actions[];
-        conditions: Conditions[];
-    };
-
-    export type Actions = AdjustmentOperation.Fragment;
-
-    export type Conditions = AdjustmentOperation.Fragment;
-}
-
-export namespace CreateAdjustmentSource {
-    export type Variables = {
-        input: CreateAdjustmentSourceInput;
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        createAdjustmentSource: CreateAdjustmentSource;
-    };
-
-    export type CreateAdjustmentSource = AdjustmentSource.Fragment;
-}
-
-export namespace UpdateAdjustmentSource {
-    export type Variables = {
-        input: UpdateAdjustmentSourceInput;
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        updateAdjustmentSource: UpdateAdjustmentSource;
-    };
-
-    export type UpdateAdjustmentSource = AdjustmentSource.Fragment;
 }
 
 export namespace GetAdministrators {
@@ -4045,6 +4282,83 @@ export namespace CreateAssets {
     export type CreateAssets = Asset.Fragment;
 }
 
+export namespace GetPromotionList {
+    export type Variables = {
+        options?: PromotionListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        promotions: Promotions;
+    };
+
+    export type Promotions = {
+        __typename?: 'PromotionList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = Promotion.Fragment;
+}
+
+export namespace GetPromotion {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        promotion?: Promotion | null;
+    };
+
+    export type Promotion = Promotion.Fragment;
+}
+
+export namespace GetAdjustmentOperations {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        adjustmentOperations: AdjustmentOperations;
+    };
+
+    export type AdjustmentOperations = {
+        __typename?: 'AdjustmentOperations';
+        actions: Actions[];
+        conditions: Conditions[];
+    };
+
+    export type Actions = AdjustmentOperation.Fragment;
+
+    export type Conditions = AdjustmentOperation.Fragment;
+}
+
+export namespace CreatePromotion {
+    export type Variables = {
+        input: CreatePromotionInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createPromotion: CreatePromotion;
+    };
+
+    export type CreatePromotion = Promotion.Fragment;
+}
+
+export namespace UpdatePromotion {
+    export type Variables = {
+        input: UpdatePromotionInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updatePromotion: UpdatePromotion;
+    };
+
+    export type UpdatePromotion = Promotion.Fragment;
+}
+
 export namespace GetCountryList {
     export type Variables = {
         options?: CountryListOptions | null;
@@ -4181,39 +4495,162 @@ export namespace RemoveMembersFromZone {
     export type RemoveMembersFromZone = Zone.Fragment;
 }
 
-export namespace AdjustmentOperation {
-    export type Fragment = {
-        __typename?: 'AdjustmentOperation';
-        args: Args[];
-        code: string;
-        description: string;
-        type: AdjustmentType;
+export namespace GetTaxCategories {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        taxCategories: TaxCategories[];
     };
 
-    export type Args = {
-        __typename?: 'AdjustmentArg';
-        name: string;
-        type: string;
-        value?: string | null;
-    };
+    export type TaxCategories = TaxCategory.Fragment;
 }
 
-export namespace AdjustmentSource {
-    export type Fragment = {
-        __typename?: 'AdjustmentSource';
+export namespace GetTaxCategory {
+    export type Variables = {
         id: string;
-        createdAt: DateTime;
-        updatedAt: DateTime;
-        name: string;
-        type: AdjustmentType;
-        enabled: boolean;
-        conditions: Conditions[];
-        actions: Actions[];
     };
 
-    export type Conditions = AdjustmentOperation.Fragment;
+    export type Query = {
+        __typename?: 'Query';
+        taxCategory?: TaxCategory | null;
+    };
 
-    export type Actions = AdjustmentOperation.Fragment;
+    export type TaxCategory = TaxCategory.Fragment;
+}
+
+export namespace CreateTaxCategory {
+    export type Variables = {
+        input: CreateTaxCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createTaxCategory: CreateTaxCategory;
+    };
+
+    export type CreateTaxCategory = TaxCategory.Fragment;
+}
+
+export namespace UpdateTaxCategory {
+    export type Variables = {
+        input: UpdateTaxCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateTaxCategory: UpdateTaxCategory;
+    };
+
+    export type UpdateTaxCategory = TaxCategory.Fragment;
+}
+
+export namespace GetTaxRateList {
+    export type Variables = {
+        options?: TaxRateListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        taxRates: TaxRates;
+    };
+
+    export type TaxRates = {
+        __typename?: 'TaxRateList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = TaxRate.Fragment;
+}
+
+export namespace GetTaxRate {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        taxRate?: TaxRate | null;
+    };
+
+    export type TaxRate = TaxRate.Fragment;
+}
+
+export namespace CreateTaxRate {
+    export type Variables = {
+        input: CreateTaxRateInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createTaxRate: CreateTaxRate;
+    };
+
+    export type CreateTaxRate = TaxRate.Fragment;
+}
+
+export namespace UpdateTaxRate {
+    export type Variables = {
+        input: UpdateTaxRateInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateTaxRate: UpdateTaxRate;
+    };
+
+    export type UpdateTaxRate = TaxRate.Fragment;
+}
+
+export namespace GetChannels {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        channels: Channels[];
+    };
+
+    export type Channels = Channel.Fragment;
+}
+
+export namespace GetChannel {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        channel?: Channel | null;
+    };
+
+    export type Channel = Channel.Fragment;
+}
+
+export namespace CreateChannel {
+    export type Variables = {
+        input: CreateChannelInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createChannel: CreateChannel;
+    };
+
+    export type CreateChannel = Channel.Fragment;
+}
+
+export namespace UpdateChannel {
+    export type Variables = {
+        input: UpdateChannelInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateChannel: UpdateChannel;
+    };
+
+    export type UpdateChannel = Channel.Fragment;
 }
 
 export namespace Administrator {
@@ -4346,7 +4783,8 @@ export namespace ProductVariant {
         languageCode: LanguageCode;
         name: string;
         price: number;
-        priceBeforeTax: number;
+        priceWithTax: number;
+        taxRateApplied?: TaxRateApplied | null;
         taxCategory: TaxCategory;
         sku: string;
         options: Options[];
@@ -4354,11 +4792,17 @@ export namespace ProductVariant {
         translations: Translations[];
     };
 
-    export type TaxCategory = {
-        __typename?: 'ProductTaxCategory';
+    export type TaxRateApplied = {
+        __typename?: 'TaxRate';
         id: string;
         name: string;
-        taxRate: number;
+        value: number;
+    };
+
+    export type TaxCategory = {
+        __typename?: 'TaxCategory';
+        id: string;
+        name: string;
     };
 
     export type Options = {
@@ -4453,6 +4897,39 @@ export namespace ProductOptionGroup {
     };
 }
 
+export namespace AdjustmentOperation {
+    export type Fragment = {
+        __typename?: 'AdjustmentOperation';
+        args: Args[];
+        code: string;
+        description: string;
+    };
+
+    export type Args = {
+        __typename?: 'AdjustmentArg';
+        name: string;
+        type: string;
+        value?: string | null;
+    };
+}
+
+export namespace Promotion {
+    export type Fragment = {
+        __typename?: 'Promotion';
+        id: string;
+        createdAt: DateTime;
+        updatedAt: DateTime;
+        name: string;
+        enabled: boolean;
+        conditions: Conditions[];
+        actions: Actions[];
+    };
+
+    export type Conditions = AdjustmentOperation.Fragment;
+
+    export type Actions = AdjustmentOperation.Fragment;
+}
+
 export namespace Country {
     export type Fragment = {
         __typename?: 'Country';
@@ -4472,4 +4949,67 @@ export namespace Zone {
     };
 
     export type Members = Country.Fragment;
+}
+
+export namespace TaxCategory {
+    export type Fragment = {
+        __typename?: 'TaxCategory';
+        id: string;
+        name: string;
+    };
+}
+
+export namespace TaxRate {
+    export type Fragment = {
+        __typename?: 'TaxRate';
+        id: string;
+        name: string;
+        enabled: boolean;
+        value: number;
+        category: Category;
+        zone: Zone;
+        customerGroup?: CustomerGroup | null;
+    };
+
+    export type Category = {
+        __typename?: 'TaxCategory';
+        id: string;
+        name: string;
+    };
+
+    export type Zone = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+    };
+
+    export type CustomerGroup = {
+        __typename?: 'CustomerGroup';
+        id: string;
+        name: string;
+    };
+}
+
+export namespace Channel {
+    export type Fragment = {
+        __typename?: 'Channel';
+        id: string;
+        code: string;
+        token: string;
+        defaultLanguageCode: LanguageCode;
+        defaultShippingZone?: DefaultShippingZone | null;
+        defaultTaxZone?: DefaultTaxZone | null;
+    };
+
+    export type DefaultShippingZone = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+    };
+
+    export type DefaultTaxZone = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+    };
 }

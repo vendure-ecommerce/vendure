@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateChannelInput, UpdateChannelInput } from 'shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
+import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ChannelAware } from '../../common/types/common-types';
+import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
+import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
+import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
+import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
 export class ChannelService {
@@ -22,7 +28,7 @@ export class ChannelService {
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        this.allChannels = await this.findAll();
+        await this.updateAllChannels();
     }
 
     /**
@@ -38,8 +44,12 @@ export class ChannelService {
     /**
      * Given a channel token, returns the corresponding Channel if it exists.
      */
-    getChannelFromToken(token: string): Channel | undefined {
-        return this.allChannels.find(channel => channel.token === token);
+    getChannelFromToken(token: string): Channel {
+        const channel = this.allChannels.find(c => c.token === token);
+        if (!channel) {
+            throw new I18nError(`error.channel-not-found`, { token });
+        }
+        return channel;
     }
 
     /**
@@ -55,17 +65,60 @@ export class ChannelService {
     }
 
     findAll(): Promise<Channel[]> {
-        return this.connection.getRepository(Channel).find();
+        return this.connection
+            .getRepository(Channel)
+            .find({ relations: ['defaultShippingZone', 'defaultTaxZone'] });
     }
 
-    async create(code: string): Promise<Channel> {
-        const channel = new Channel({
-            code,
-            defaultLanguageCode: DEFAULT_LANGUAGE_CODE,
-        });
+    findOne(id: ID): Promise<Channel | undefined> {
+        return this.connection
+            .getRepository(Channel)
+            .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
+    }
+
+    async create(input: CreateChannelInput): Promise<Channel> {
+        const channel = new Channel(input);
+        if (input.defaultTaxZoneId) {
+            channel.defaultTaxZone = await getEntityOrThrow(this.connection, Zone, input.defaultTaxZoneId);
+        }
+        if (input.defaultShippingZoneId) {
+            channel.defaultShippingZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultShippingZoneId,
+            );
+        }
         const newChannel = await this.connection.getRepository(Channel).save(channel);
-        this.allChannels.push(channel);
+        await this.updateAllChannels();
         return channel;
+    }
+
+    async update(input: UpdateChannelInput): Promise<Channel> {
+        const channel = await this.findOne(input.id);
+        if (!channel) {
+            throw new I18nError(`error.entity-with-id-not-found`, {
+                entityName: 'Channel',
+                id: input.id,
+            });
+        }
+        const updatedChannel = patchEntity(channel, input);
+        if (input.defaultTaxZoneId) {
+            updatedChannel.defaultTaxZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultTaxZoneId,
+            );
+        }
+        if (input.defaultShippingZoneId) {
+            updatedChannel.defaultShippingZone = await getEntityOrThrow(
+                this.connection,
+                Zone,
+                input.defaultShippingZoneId,
+            );
+        }
+        await this.connection.getRepository(Channel).save(updatedChannel);
+        await this.updateAllChannels();
+        return assertFound(this.findOne(channel.id));
     }
 
     /**
@@ -91,5 +144,9 @@ export class ChannelService {
             defaultChannel.token = defaultChannelToken;
             await this.connection.manager.save(defaultChannel);
         }
+    }
+
+    private async updateAllChannels() {
+        this.allChannels = await this.findAll();
     }
 }

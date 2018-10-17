@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { AdjustmentSource } from 'shared/generated-types';
+import { Promotion } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -28,7 +28,7 @@ export const marketingRoutes: Route[] = [
 ];
 
 export function promotionBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<AdjustmentSource.Fragment>({
+    return detailBreadcrumb<Promotion.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.promotions',

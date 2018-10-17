@@ -7,11 +7,13 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
-import { AdjustmentActionDefinition, AdjustmentConditionDefinition } from './adjustment/adjustment-types';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { PromotionAction } from './promotion/promotion-action';
+import { PromotionCondition } from './promotion/promotion-condition';
+import { RoundingStrategy } from './rounding-strategy/rounding-strategy';
 import { AuthOptions, getConfig, VendureConfig } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
@@ -57,6 +59,10 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.cors;
     }
 
+    get roundingStrategy(): RoundingStrategy {
+        return this.activeConfig.roundingStrategy;
+    }
+
     get entityIdStrategy(): EntityIdStrategy {
         return this.activeConfig.entityIdStrategy;
     }
@@ -81,12 +87,12 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.uploadMaxFileSize;
     }
 
-    get adjustmentConditions(): AdjustmentConditionDefinition[] {
-        return this.activeConfig.adjustmentConditions;
+    get promotionConditions(): PromotionCondition[] {
+        return this.activeConfig.promotionConditions;
     }
 
-    get adjustmentActions(): AdjustmentActionDefinition[] {
-        return this.activeConfig.adjustmentActions;
+    get promotionActions(): PromotionAction[] {
+        return this.activeConfig.promotionActions;
     }
 
     get customFields(): CustomFields {

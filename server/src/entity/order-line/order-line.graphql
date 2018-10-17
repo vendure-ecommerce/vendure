@@ -1,0 +1,15 @@
+type OrderLine implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    featuredAsset: Asset
+    unitPrice: Int!
+    unitPriceWithPromotions: Int!
+    unitPriceWithTax: Int!
+    quantity: Int!
+    items: [OrderItem!]!
+    totalPrice: Int!
+    adjustments: [Adjustment!]!
+    order: Order!
+}

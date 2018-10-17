@@ -4,10 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import {
-    AdjustmentSource,
     CreateProductInput,
     LanguageCode,
     ProductWithVariants,
+    TaxCategory,
     UpdateProductInput,
     UpdateProductVariantInput,
 } from 'shared/generated-types';
@@ -34,7 +34,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     implements OnInit, OnDestroy {
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
-    taxCategories$: Observable<AdjustmentSource.Fragment[]>;
+    taxCategories$: Observable<TaxCategory.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
@@ -69,9 +69,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
-        this.taxCategories$ = this.dataService.adjustmentSource
+        this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.adjustmentSources.items);
+            .mapSingle(data => data.taxCategories);
     }
 
     ngOnDestroy() {
@@ -245,7 +245,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     sku: variant.sku,
                     name: variantTranslation ? variantTranslation.name : '',
                     price: variant.price,
-                    priceBeforeTax: variant.priceBeforeTax,
+                    priceWithTax: variant.priceWithTax,
                     taxCategoryId: variant.taxCategory.id,
                 };
 

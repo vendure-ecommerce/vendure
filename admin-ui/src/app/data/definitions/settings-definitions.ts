@@ -112,3 +112,159 @@ export const REMOVE_MEMBERS_FROM_ZONE = gql`
     }
     ${ZONE_FRAGMENT}
 `;
+
+export const TAX_CATEGORY_FRAGMENT = gql`
+    fragment TaxCategory on TaxCategory {
+        id
+        name
+    }
+`;
+
+export const GET_TAX_CATEGORIES = gql`
+    query GetTaxCategories {
+        taxCategories {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const GET_TAX_CATEGORY = gql`
+    query GetTaxCategory($id: ID!) {
+        taxCategory(id: $id) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const CREATE_TAX_CATEGORY = gql`
+    mutation CreateTaxCategory($input: CreateTaxCategoryInput!) {
+        createTaxCategory(input: $input) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const UPDATE_TAX_CATEGORY = gql`
+    mutation UpdateTaxCategory($input: UpdateTaxCategoryInput!) {
+        updateTaxCategory(input: $input) {
+            ...TaxCategory
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
+
+export const TAX_RATE_FRAGMENT = gql`
+    fragment TaxRate on TaxRate {
+        id
+        name
+        enabled
+        value
+        category {
+            id
+            name
+        }
+        zone {
+            id
+            name
+        }
+        customerGroup {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_TAX_RATE_LIST = gql`
+    query GetTaxRateList($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                ...TaxRate
+            }
+            totalItems
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const GET_TAX_RATE = gql`
+    query GetTaxRate($id: ID!) {
+        taxRate(id: $id) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const CREATE_TAX_RATE = gql`
+    mutation CreateTaxRate($input: CreateTaxRateInput!) {
+        createTaxRate(input: $input) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const UPDATE_TAX_RATE = gql`
+    mutation UpdateTaxRate($input: UpdateTaxRateInput!) {
+        updateTaxRate(input: $input) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
+
+export const CHANNEL_FRAGMENT = gql`
+    fragment Channel on Channel {
+        id
+        code
+        token
+        defaultLanguageCode
+        defaultShippingZone {
+            id
+            name
+        }
+        defaultTaxZone {
+            id
+            name
+        }
+    }
+`;
+
+export const GET_CHANNELS = gql`
+    query GetChannels {
+        channels {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const GET_CHANNEL = gql`
+    query GetChannel($id: ID!) {
+        channel(id: $id) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const CREATE_CHANNEL = gql`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const UPDATE_CHANNEL = gql`
+    mutation UpdateChannel($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;

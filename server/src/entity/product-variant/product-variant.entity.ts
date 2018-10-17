@@ -1,4 +1,4 @@
-import { DeepPartial, HasCustomFields, ID } from 'shared/shared-types';
+import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -7,6 +7,8 @@ import { CustomProductVariantFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { TaxCategory } from '../tax-category/tax-category.entity';
+import { TaxRate } from '../tax-rate/tax-rate.entity';
 
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
@@ -32,18 +34,17 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     price: number;
 
     /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
+     * Calculated at run-time
      */
-    priceBeforeTax: number;
+    priceWithTax?: number;
 
     /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
+     * Calculated at run-time
      */
-    taxCategory: {
-        id: ID;
-        name: string;
-        taxRate: number;
-    };
+    taxRateApplied?: TaxRate;
+
+    @ManyToOne(type => TaxCategory)
+    taxCategory: TaxCategory;
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];

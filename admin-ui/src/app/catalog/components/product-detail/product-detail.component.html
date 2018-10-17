@@ -74,7 +74,7 @@
                                        [productVariantsFormArray]="productForm.get('variants')"
                                        [taxCategories]="taxCategories$ | async"
                                        #productVariantsList>
-                <button class="btn btn-sm btn-secondary" (click)="selectFacetValue(productVariantsList.selectedCountryIds)">
+                <button class="btn btn-sm btn-secondary" (click)="selectFacetValue(productVariantsList.selectedVariantIds)">
                     {{ 'catalog.apply-facets' | translate }}
                 </button>
             </vdr-product-variants-list>

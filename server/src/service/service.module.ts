@@ -5,8 +5,6 @@ import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
-import { AdjustmentApplicatorService } from './providers/adjustment-applicator.service';
-import { AdjustmentSourceService } from './providers/adjustment-source.service';
 import { AdministratorService } from './providers/administrator.service';
 import { AssetService } from './providers/asset.service';
 import { AuthService } from './providers/auth.service';
@@ -22,11 +20,14 @@ import { ProductOptionGroupService } from './providers/product-option-group.serv
 import { ProductOptionService } from './providers/product-option.service';
 import { ProductVariantService } from './providers/product-variant.service';
 import { ProductService } from './providers/product.service';
+import { PromotionService } from './providers/promotion.service';
 import { RoleService } from './providers/role.service';
+import { TaxCategoryService } from './providers/tax-category.service';
+import { TaxRateService } from './providers/tax-rate.service';
 import { ZoneService } from './providers/zone.service';
 
 const exportedProviders = [
-    AdjustmentSourceService,
+    PromotionService,
     AdministratorService,
     AssetService,
     AuthService,
@@ -42,6 +43,8 @@ const exportedProviders = [
     ProductService,
     ProductVariantService,
     RoleService,
+    TaxCategoryService,
+    TaxRateService,
     ZoneService,
 ];
 
@@ -54,12 +57,7 @@ const exportedProviders = [
  */
 @Module({
     imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
-    providers: [
-        ...exportedProviders,
-        PasswordService,
-        TranslationUpdaterService,
-        AdjustmentApplicatorService,
-    ],
+    providers: [...exportedProviders, PasswordService, TranslationUpdaterService],
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {
@@ -67,11 +65,13 @@ export class ServiceModule implements OnModuleInit {
         private channelService: ChannelService,
         private roleService: RoleService,
         private administratorService: AdministratorService,
+        private taxRateService: TaxRateService,
     ) {}
 
     async onModuleInit() {
         await this.channelService.initChannels();
         await this.roleService.initRoles();
         await this.administratorService.initAdministrators();
+        await this.taxRateService.initTaxRates();
     }
 }

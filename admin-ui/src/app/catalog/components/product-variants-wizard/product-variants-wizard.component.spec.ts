@@ -8,6 +8,7 @@ import { AffixedInputComponent } from '../../../shared/components/affixed-input/
 import { ChipComponent } from '../../../shared/components/chip/chip.component';
 import { CurrencyInputComponent } from '../../../shared/components/currency-input/currency-input.component';
 import { SelectToggleComponent } from '../../../shared/components/select-toggle/select-toggle.component';
+import { BackgroundColorFromDirective } from '../../../shared/directives/background-color-from.directive';
 import { CreateOptionGroupFormComponent } from '../create-option-group-form/create-option-group-form.component';
 import { SelectOptionGroupComponent } from '../select-option-group/select-option-group.component';
 
@@ -28,6 +29,7 @@ describe('ProductVariantsWizardComponent', () => {
                 ChipComponent,
                 CurrencyInputComponent,
                 AffixedInputComponent,
+                BackgroundColorFromDirective,
             ],
             providers: [{ provide: NotificationService, useClass: MockNotificationService }],
         }).compileComponents();

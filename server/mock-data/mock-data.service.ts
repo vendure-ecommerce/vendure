@@ -4,27 +4,28 @@ import gql from 'graphql-tag';
 import * as path from 'path';
 import {
     AddOptionGroupToProduct,
-    AdjustmentSource,
-    AdjustmentType,
     Asset,
-    Country,
+    Channel,
     CreateAddressInput,
-    CreateAdjustmentSource,
+    CreateChannel,
     CreateCountry,
     CreateCustomerInput,
     CreateFacet,
     CreateFacetValueWithFacetInput,
     CreateProduct,
     CreateProductOptionGroup,
+    CreateTaxRate,
     CreateZone,
     GenerateProductVariants,
+    GetChannels,
     LanguageCode,
     ProductTranslationInput,
     ProductVariant,
+    UpdateChannel,
     UpdateProductVariants,
+    Zone,
 } from 'shared/generated-types';
 
-import { CREATE_ADJUSTMENT_SOURCE } from '../../admin-ui/src/app/data/definitions/adjustment-source-definitions';
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -33,13 +34,18 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { CREATE_COUNTRY, CREATE_ZONE } from '../../admin-ui/src/app/data/definitions/settings-definitions';
-import { taxAction } from '../src/config/adjustment/required-adjustment-actions';
-import { taxCondition } from '../src/config/adjustment/required-adjustment-conditions';
-import { Channel } from '../src/entity/channel/channel.entity';
+import {
+    CREATE_CHANNEL,
+    CREATE_COUNTRY,
+    CREATE_TAX_RATE,
+    CREATE_ZONE,
+    GET_CHANNELS,
+    UPDATE_CHANNEL,
+} from '../../admin-ui/src/app/data/definitions/settings-definitions';
 import { Customer } from '../src/entity/customer/customer.entity';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
+import TaxCategory = ProductVariant.TaxCategory;
 
 // tslint:disable:no-console
 /**
@@ -53,25 +59,26 @@ export class MockDataService {
         faker.seed(1);
     }
 
-    async populateChannels(channelCodes: string[]): Promise<Channel[]> {
-        const channels: Channel[] = [];
+    async populateChannels(channelCodes: string[]): Promise<Channel.Fragment[]> {
+        const channels: Channel.Fragment[] = [];
         for (const code of channelCodes) {
-            const channel = await this.client.query<any>(gql`
-                mutation {
-                    createChannel(code: "${code}") {
-                        id
-                        code
-                        token
-                    }
-                }
-            `);
+            const channel = await this.client.query<CreateChannel.Mutation, CreateChannel.Variables>(
+                CREATE_CHANNEL,
+                {
+                    input: {
+                        code,
+                        token: `${code}_token`,
+                        defaultLanguageCode: LanguageCode.en,
+                    },
+                },
+            );
             channels.push(channel.createChannel);
             this.log(`Created Channel: ${channel.createChannel.code}`);
         }
         return channels;
     }
 
-    async populateCountries() {
+    async populateCountries(): Promise<Zone.Fragment[]> {
         const countriesFile = await fs.readFile(
             path.join(__dirname, 'data-sources', 'countries.json'),
             'utf8',
@@ -94,15 +101,38 @@ export class MockDataService {
             }
             zones[country.region].push(result.createCountry.id);
         }
+
+        const createdZones: Zone.Fragment[] = [];
         for (const [name, memberIds] of Object.entries(zones)) {
-            await this.client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
+            const result = await this.client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
                 input: {
                     name,
                     memberIds,
                 },
             });
+            createdZones.push(result.createZone);
         }
         this.log(`Created ${countries.length} Countries in ${Object.keys(zones).length} Zones`);
+        return createdZones;
+    }
+
+    async setChannelDefaultZones(zones: Zone.Fragment[]) {
+        const defaultZone = zones.find(z => z.name === 'UK');
+        if (!defaultZone) {
+            this.log(`Default zone could not be found`);
+            return;
+        }
+        const result = await this.client.query<GetChannels.Query>(GET_CHANNELS);
+        for (const channel of result.channels) {
+            await this.client.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                input: {
+                    id: channel.id,
+                    defaultTaxZoneId: defaultZone.id,
+                    defaultShippingZoneId: defaultZone.id,
+                },
+            });
+        }
+        this.log(`Set default zones for ${result.channels.length} Channels`);
     }
 
     async populateOptions(): Promise<string> {
@@ -141,42 +171,44 @@ export class MockDataService {
             });
     }
 
-    async populateTaxCategories() {
-        const taxCategories = [
-            { name: 'Standard Tax', rate: 20 },
-            { name: 'Reduced Tax', rate: 5 },
-            { name: 'Zero Tax', rate: 0 },
-        ];
+    async populateTaxCategories(zones: Zone.Fragment[]) {
+        const taxCategories = [{ name: 'Standard Tax' }, { name: 'Reduced Tax' }, { name: 'Zero Tax' }];
 
-        const results: AdjustmentSource.Fragment[] = [];
+        const createdTaxCategories: TaxCategory[] = [];
 
         for (const category of taxCategories) {
-            const result = await this.client.query<
-                CreateAdjustmentSource.Mutation,
-                CreateAdjustmentSource.Variables
-            >(CREATE_ADJUSTMENT_SOURCE, {
+            const result = await this.client.query(
+                gql`
+                    mutation($input: CreateTaxCategoryInput!) {
+                        createTaxCategory(input: $input) {
+                            id
+                        }
+                    }
+                `,
+                {
+                    input: {
+                        name: category.name,
+                    },
+                },
+            );
+            createdTaxCategories.push(result.createTaxCategory);
+        }
+        this.log(`Created ${createdTaxCategories.length} tax categories`);
+
+        // create tax rates
+        for (const zone of zones) {
+            await this.client.query<CreateTaxRate.Mutation, CreateTaxRate.Variables>(CREATE_TAX_RATE, {
                 input: {
-                    name: category.name,
-                    type: AdjustmentType.TAX,
+                    name: `Standard Tax for ${zone.name}`,
                     enabled: true,
-                    conditions: [
-                        {
-                            code: taxCondition.code,
-                            arguments: [],
-                        },
-                    ],
-                    actions: [
-                        {
-                            code: taxAction.code,
-                            arguments: [category.rate.toString()],
-                        },
-                    ],
+                    value: 20,
+                    categoryId: createdTaxCategories[0].id,
+                    zoneId: zone.id,
                 },
             });
-            results.push(result.createAdjustmentSource);
         }
-        this.log(`Created ${results.length} tax categories`);
-        return results;
+
+        return createdTaxCategories;
     }
 
     async populateCustomers(count: number = 5): Promise<any> {
@@ -244,7 +276,7 @@ export class MockDataService {
         const fileNames = await fs.readdir(path.join(__dirname, 'assets'));
         const filePaths = fileNames.map(fileName => path.join(__dirname, 'assets', fileName));
         return this.client.uploadAssets(filePaths).then(response => {
-            console.log(`Created ${response.createAssets.length} Assets`);
+            this.log(`Created ${response.createAssets.length} Assets`);
             return response.createAssets;
         });
     }
@@ -253,7 +285,7 @@ export class MockDataService {
         count: number = 5,
         optionGroupId: string,
         assets: Asset[],
-        taxCategories: AdjustmentSource.Fragment[],
+        taxCategories: TaxCategory[],
     ): Promise<any> {
         for (let i = 0; i < count; i++) {
             const query = CREATE_PRODUCT;
@@ -377,7 +409,7 @@ export class MockDataService {
 
     private async makeProductVariant(
         productId: string,
-        taxCategory: AdjustmentSource.Fragment,
+        taxCategory: TaxCategory,
     ): Promise<GenerateProductVariants.Mutation> {
         const query = GENERATE_PRODUCT_VARIANTS;
         return this.client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(query, {

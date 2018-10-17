@@ -14,30 +14,36 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { createTranslatable } from '../helpers/create-translatable';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
 
-import { AdjustmentSourceService } from './adjustment-source.service';
+import { TaxCategoryService } from './tax-category.service';
+import { TaxRateService } from './tax-rate.service';
 
 @Injectable()
 export class ProductVariantService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private taxCategoryService: TaxCategoryService,
+        private taxRateService: TaxRateService,
         private translationUpdaterService: TranslationUpdaterService,
-        private adjustmentSourceService: AdjustmentSourceService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
-        const relations = ['product', 'product.featuredAsset'];
+        const relations = ['product', 'product.featuredAsset', 'taxCategory'];
         return this.connection
             .getRepository(ProductVariant)
             .findOne(productVariantId, { relations })
             .then(result => {
                 if (result) {
-                    return translateDeep(this.applyChannelPrice(result, ctx.channelId), ctx.languageCode);
+                    return translateDeep(
+                        this.applyChannelPriceAndTax(result, ctx.channelId, ctx.channel.defaultTaxZone),
+                        ctx.languageCode,
+                    );
                 }
             });
     }
@@ -55,6 +61,7 @@ export class ProductVariantService {
                 variant.options = selectedOptions;
             }
             variant.product = product;
+            variant.taxCategory = { id: input.taxCategoryId } as any;
         });
         return await save(this.connection, input, {
             channelId: ctx.channelId,
@@ -67,17 +74,26 @@ export class ProductVariantService {
             ProductVariant,
             ProductVariantTranslation,
             this.translationUpdaterService,
+            async updatedVariant => {
+                if (input.taxCategoryId) {
+                    const taxCategory = await this.taxCategoryService.findOne(input.taxCategoryId);
+                    if (taxCategory) {
+                        updatedVariant.taxCategory = taxCategory;
+                    }
+                }
+            },
         );
         await save(this.connection, input, { channelId: ctx.channelId, taxCategoryId: input.taxCategoryId });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: ['options', 'facetValues'],
+                relations: ['options', 'facetValues', 'taxCategory'],
             }),
         );
-        return translateDeep(this.applyChannelPrice(variant, ctx.channelId), DEFAULT_LANGUAGE_CODE, [
-            'options',
-            'facetValues',
-        ]);
+        return translateDeep(
+            this.applyChannelPriceAndTax(variant, ctx.channelId, ctx.channel.defaultTaxZone),
+            DEFAULT_LANGUAGE_CODE,
+            ['options', 'facetValues'],
+        );
     }
 
     async generateVariantsForProduct(
@@ -101,9 +117,8 @@ export class ProductVariantService {
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
 
-        const taxCategoryId =
-            defaultTaxCategoryId ||
-            (await this.adjustmentSourceService.getDefaultTaxCategory()).id.toString();
+        // TODO: how to handle default tax category?
+        const taxCategoryId = defaultTaxCategoryId || '1';
 
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {
@@ -132,7 +147,7 @@ export class ProductVariantService {
         facetValues: FacetValue[],
     ): Promise<Array<Translated<ProductVariant>>> {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(productVariantIds, {
-            relations: ['options', 'facetValues'],
+            relations: ['options', 'facetValues', 'taxCategory'],
         });
 
         const notFoundIds = productVariantIds.filter(id => !variants.find(v => idsAreEqual(v.id, id)));
@@ -152,28 +167,33 @@ export class ProductVariantService {
         }
 
         return variants.map(v =>
-            translateDeep(this.applyChannelPrice(v, ctx.channelId), DEFAULT_LANGUAGE_CODE, [
-                'options',
-                'facetValues',
-            ]),
+            translateDeep(
+                this.applyChannelPriceAndTax(v, ctx.channelId, ctx.channel.defaultTaxZone),
+                DEFAULT_LANGUAGE_CODE,
+                ['options', 'facetValues'],
+            ),
         );
     }
 
     /**
      * Populates the `price` field with the price for the specified channel.
      */
-    applyChannelPrice(variant: ProductVariant, channelId: ID): ProductVariant {
+    applyChannelPriceAndTax(variant: ProductVariant, channelId: ID, taxZone: Zone): ProductVariant {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, channelId));
         if (!channelPrice) {
             throw new I18nError(`error.no-price-found-for-channel`);
         }
         variant.price = channelPrice.price;
-        variant.priceBeforeTax = channelPrice.priceBeforeTax;
-        variant.taxCategory = {
-            id: channelPrice.taxCategory.id,
-            name: channelPrice.taxCategory.name,
-            taxRate: channelPrice.taxCategory.getTaxCategoryRate() || 0,
-        };
+
+        const applicableTaxRate = this.taxRateService
+            .getActiveTaxRates()
+            .find(r => r.test(taxZone, variant.taxCategory));
+        if (applicableTaxRate) {
+            variant.priceWithTax = variant.price + applicableTaxRate.getTax(variant.price);
+            variant.taxRateApplied = applicableTaxRate;
+        } else {
+            variant.priceWithTax = variant.price;
+        }
         return variant;
     }
 

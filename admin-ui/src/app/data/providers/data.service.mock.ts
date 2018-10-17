@@ -30,16 +30,12 @@ export function spyObservable(name: string, returnValue: any = {}): jasmine.Spy 
 }
 
 export class MockDataService implements DataServiceMock {
-    adjustmentSource = {
+    promotion = {
         getPromotions: spyQueryResult('getPromotions'),
         getPromotion: spyQueryResult('getPromotion'),
-        getTaxCategories: spyQueryResult('getTaxCategories'),
-        getTaxCategory: spyQueryResult('getTaxCategory'),
         getAdjustmentOperations: spyQueryResult('getAdjustmentOperations'),
         createPromotion: spyObservable('createPromotion'),
         updatePromotion: spyObservable('updatePromotion'),
-        createTaxCategory: spyObservable('createTaxCategory'),
-        updateTaxCategory: spyObservable('updateTaxCategory'),
     };
     administrator = {
         getAdministrators: spyQueryResult('getAdministrators'),
@@ -103,5 +99,17 @@ export class MockDataService implements DataServiceMock {
         updateZone: spyObservable('updateZone'),
         addMembersToZone: spyObservable('addMembersToZone'),
         removeMembersFromZone: spyObservable('removeMembersFromZone'),
+        getTaxCategories: spyQueryResult('getTaxCategories'),
+        getTaxCategory: spyQueryResult('getTaxCategory'),
+        createTaxCategory: spyObservable('createTaxCategory'),
+        updateTaxCategory: spyObservable('updateTaxCategory'),
+        getTaxRates: spyQueryResult('getTaxRates'),
+        getTaxRate: spyQueryResult('getTaxRate'),
+        createTaxRate: spyObservable('createTaxRate'),
+        updateTaxRate: spyObservable('updateTaxRate'),
+        getChannels: spyQueryResult('getChannels'),
+        getChannel: spyQueryResult('getChannel'),
+        createChannel: spyObservable('createChannel'),
+        updateChannel: spyObservable('updateChannel'),
     };
 }

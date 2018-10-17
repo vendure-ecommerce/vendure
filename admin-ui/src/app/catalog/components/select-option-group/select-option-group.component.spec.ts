@@ -6,6 +6,7 @@ import { DataService } from '../../../data/providers/data.service';
 import { MockDataService } from '../../../data/providers/data.service.mock';
 import { ChipComponent } from '../../../shared/components/chip/chip.component';
 import { SelectToggleComponent } from '../../../shared/components/select-toggle/select-toggle.component';
+import { BackgroundColorFromDirective } from '../../../shared/directives/background-color-from.directive';
 
 import { SelectOptionGroupComponent } from './select-option-group.component';
 
@@ -16,7 +17,12 @@ describe('SelectOptionGroupComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [ReactiveFormsModule, TestingCommonModule],
-            declarations: [SelectOptionGroupComponent, SelectToggleComponent, ChipComponent],
+            declarations: [
+                SelectOptionGroupComponent,
+                SelectToggleComponent,
+                ChipComponent,
+                BackgroundColorFromDirective,
+            ],
             providers: [{ provide: DataService, useClass: MockDataService }],
         }).compileComponents();
     }));

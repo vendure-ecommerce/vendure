@@ -5,6 +5,7 @@
   "breadcrumb": {
     "administrators": "Administrators",
     "assets": "Assets",
+    "channels": "Channels",
     "countries": "Countries",
     "dashboard": "Dashboard",
     "facets": "Facets",
@@ -12,7 +13,8 @@
     "products": "Products",
     "promotions": "Promotions",
     "roles": "Roles",
-    "tax-categories": "Tax categories"
+    "tax-categories": "Tax categories",
+    "tax-rates": "Tax rates"
   },
   "catalog": {
     "add-asset": "Add asset",
@@ -46,7 +48,6 @@
     "option-group-options-tooltip": "Enter each option on a new line in the default language ({ defaultLanguage })",
     "original-asset-size": "Source size",
     "price": "Price",
-    "price-before-tax": "Price before tax",
     "product": "Product",
     "product-name": "Product name",
     "product-option-groups": "Option groups",
@@ -113,6 +114,7 @@
     "assets": "Assets",
     "catalog": "Catalog",
     "categories": "Categories",
+    "channels": "Channels",
     "countries": "Countries",
     "facets": "Facets",
     "marketing": "Marketing",
@@ -122,7 +124,8 @@
     "roles": "Roles",
     "sales": "Sales",
     "settings": "Settings",
-    "tax-categories": "Tax categories"
+    "tax-categories": "Tax categories",
+    "tax-rates": "Tax Rates"
   },
   "order": {
     "create-new-order": "Create new order"
@@ -133,11 +136,15 @@
     "administrator": "Administrator",
     "catalog": "Catalog",
     "create": "Create",
+    "create-new-channel": "Create new channel",
     "create-new-country": "Create new country",
     "create-new-role": "Create new role",
     "create-new-tax-category": "Create tax category",
+    "create-new-tax-rate": "Create new tax rate",
     "create-zone": "Create zone",
     "customer": "Customer",
+    "default-shipping-zone": "Default shipping zone",
+    "default-tax-zone": "Default tax zone",
     "delete": "Delete",
     "description": "Description",
     "email-address": "Email address",
@@ -146,6 +153,7 @@
     "order": "Order",
     "password": "Password",
     "permissions": "Permissions",
+    "rate": "Rate",
     "read": "Read",
     "remove-countries-from-zone": "Remove countries from zone...",
     "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
@@ -153,6 +161,7 @@
     "roles": "Roles",
     "section": "Section",
     "select-zone": "Select zone",
+    "tax-category": "Tax category",
     "tax-rate": "Tax rate",
     "update": "Update",
     "zone": "Zone"

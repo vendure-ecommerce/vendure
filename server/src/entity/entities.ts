@@ -1,5 +1,4 @@
 import { Address } from './address/address.entity';
-import { AdjustmentSource } from './adjustment-source/adjustment-source.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
@@ -11,6 +10,7 @@ import { FacetValue } from './facet-value/facet-value.entity';
 import { FacetTranslation } from './facet/facet-translation.entity';
 import { Facet } from './facet/facet.entity';
 import { OrderItem } from './order-item/order-item.entity';
+import { OrderLine } from './order-line/order-line.entity';
 import { Order } from './order/order.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from './product-option-group/product-option-group.entity';
@@ -21,10 +21,13 @@ import { ProductVariantTranslation } from './product-variant/product-variant-tra
 import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
+import { Promotion } from './promotion/promotion.entity';
 import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { TaxCategory } from './tax-category/tax-category.entity';
+import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
 import { Zone } from './zone/zone.entity';
 
@@ -33,7 +36,6 @@ import { Zone } from './zone/zone.entity';
  */
 export const coreEntitiesMap = {
     Address,
-    AdjustmentSource,
     Administrator,
     AnonymousSession,
     Asset,
@@ -47,6 +49,7 @@ export const coreEntitiesMap = {
     FacetValue,
     FacetValueTranslation,
     Order,
+    OrderLine,
     OrderItem,
     Product,
     ProductOption,
@@ -57,8 +60,11 @@ export const coreEntitiesMap = {
     ProductVariant,
     ProductVariantPrice,
     ProductVariantTranslation,
+    Promotion,
     Role,
     Session,
+    TaxCategory,
+    TaxRate,
     User,
     Zone,
 };

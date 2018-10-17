@@ -3,6 +3,21 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
+enum AdjustmentType {
+    TAX
+    PROMOTION
+    REFUND
+    TAX_REFUND
+    PROMOTION_REFUND
+}
+
+type Adjustment {
+    adjustmentSource: String!
+    type: AdjustmentType!
+    description: String!
+    amount: Int!
+}
+
 interface PaginatedList {
     items: [Node!]!
     totalItems: Int!
