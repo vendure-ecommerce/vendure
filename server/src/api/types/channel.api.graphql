@@ -1,6 +1,7 @@
 type Query {
     channels: [Channel!]!
     channel(id: ID!): Channel
+    activeChannel: Channel!
 }
 
 type Mutation {

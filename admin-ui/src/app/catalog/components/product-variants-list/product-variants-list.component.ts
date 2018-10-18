@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormArray, FormControl } from '@angular/forms';
+import { FormArray } from '@angular/forms';
 import { ProductWithVariants, TaxCategory } from 'shared/generated-types';
 
 @Component({

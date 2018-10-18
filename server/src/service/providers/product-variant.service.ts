@@ -9,11 +9,13 @@ import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { createTranslatable } from '../helpers/create-translatable';
@@ -41,7 +43,7 @@ export class ProductVariantService {
             .then(result => {
                 if (result) {
                     return translateDeep(
-                        this.applyChannelPriceAndTax(result, ctx.channelId, ctx.channel.defaultTaxZone),
+                        this.applyChannelPriceAndTax(result, ctx.channel, ctx.channel.defaultTaxZone),
                         ctx.languageCode,
                     );
                 }
@@ -90,7 +92,7 @@ export class ProductVariantService {
             }),
         );
         return translateDeep(
-            this.applyChannelPriceAndTax(variant, ctx.channelId, ctx.channel.defaultTaxZone),
+            this.applyChannelPriceAndTax(variant, ctx.channel, ctx.channel.defaultTaxZone),
             DEFAULT_LANGUAGE_CODE,
             ['options', 'facetValues'],
         );
@@ -168,7 +170,7 @@ export class ProductVariantService {
 
         return variants.map(v =>
             translateDeep(
-                this.applyChannelPriceAndTax(v, ctx.channelId, ctx.channel.defaultTaxZone),
+                this.applyChannelPriceAndTax(v, ctx.channel, ctx.channel.defaultTaxZone),
                 DEFAULT_LANGUAGE_CODE,
                 ['options', 'facetValues'],
             ),
@@ -178,22 +180,39 @@ export class ProductVariantService {
     /**
      * Populates the `price` field with the price for the specified channel.
      */
-    applyChannelPriceAndTax(variant: ProductVariant, channelId: ID, taxZone: Zone): ProductVariant {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, channelId));
+    applyChannelPriceAndTax(variant: ProductVariant, channel: Channel, taxZone: Zone): ProductVariant {
+        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, channel.id));
         if (!channelPrice) {
             throw new I18nError(`error.no-price-found-for-channel`);
         }
-        variant.price = channelPrice.price;
+        const applicableTaxRate = this.taxRateService.getApplicableTaxRate(taxZone, variant.taxCategory);
 
-        const applicableTaxRate = this.taxRateService
-            .getActiveTaxRates()
-            .find(r => r.test(taxZone, variant.taxCategory));
-        if (applicableTaxRate) {
-            variant.priceWithTax = variant.price + applicableTaxRate.getTax(variant.price);
-            variant.taxRateApplied = applicableTaxRate;
+        if (channel.pricesIncludeTax) {
+            const isDefaultZone = taxZone.id === channel.defaultTaxZone.id;
+            if (isDefaultZone) {
+                const grossPrice = channelPrice.price;
+                variant.priceIncludesTax = true;
+                variant.price = grossPrice;
+                variant.priceWithTax = grossPrice;
+            } else {
+                const taxRateForDefaultZone = this.taxRateService.getApplicableTaxRate(
+                    channel.defaultTaxZone,
+                    variant.taxCategory,
+                );
+                const grossPriceInDefaultZone = channelPrice.price;
+                const netPrice =
+                    grossPriceInDefaultZone - taxRateForDefaultZone.taxComponentOf(grossPriceInDefaultZone);
+                variant.price = netPrice;
+                variant.priceIncludesTax = false;
+                variant.priceWithTax = netPrice + applicableTaxRate.taxPayableOn(netPrice);
+            }
         } else {
-            variant.priceWithTax = variant.price;
+            const netPrice = channelPrice.price;
+            variant.price = netPrice;
+            variant.priceIncludesTax = false;
+            variant.priceWithTax = netPrice + applicableTaxRate.taxPayableOn(netPrice);
         }
+        variant.taxRateApplied = applicableTaxRate;
         return variant;
     }
 

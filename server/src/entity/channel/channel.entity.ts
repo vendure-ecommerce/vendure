@@ -28,6 +28,8 @@ export class Channel extends VendureEntity {
     @ManyToOne(type => Zone)
     defaultShippingZone: Zone;
 
+    @Column() pricesIncludeTax: boolean;
+
     private generateToken(): string {
         const randomString = () =>
             Math.random()

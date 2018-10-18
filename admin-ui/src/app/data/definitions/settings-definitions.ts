@@ -221,6 +221,7 @@ export const CHANNEL_FRAGMENT = gql`
         id
         code
         token
+        pricesIncludeTax
         defaultLanguageCode
         defaultShippingZone {
             id
@@ -245,6 +246,15 @@ export const GET_CHANNELS = gql`
 export const GET_CHANNEL = gql`
     query GetChannel($id: ID!) {
         channel(id: $id) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
+
+export const GET_ACTIVE_CHANNEL = gql`
+    query GetActiveChannel {
+        activeChannel {
             ...Channel
         }
     }

@@ -6,8 +6,9 @@ type ProductVariant implements Node {
     sku: String!
     name: String!
     price: Int!
+    priceIncludesTax: Boolean!
     priceWithTax: Int!
-    taxRateApplied: TaxRate
+    taxRateApplied: TaxRate!
     taxCategory: TaxCategory!
     options: [ProductOption!]!
     facetValues: [FacetValue!]!

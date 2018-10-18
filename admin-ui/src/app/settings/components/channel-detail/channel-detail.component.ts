@@ -35,6 +35,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         this.channelForm = this.formBuilder.group({
             code: ['', Validators.required],
             token: ['', Validators.required],
+            pricesIncludeTax: [false],
             defaultShippingZoneId: [''],
             defaultTaxZoneId: [''],
         });
@@ -60,6 +61,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         const formValue = this.channelForm.value;
         const input = {
             code: formValue.code,
+            pricesIncludeTax: formValue.pricesIncludeTax,
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
         } as CreateChannelInput;
@@ -92,6 +94,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                     const input = {
                         id: channel.id,
                         code: formValue.code,
+                        pricesIncludeTax: formValue.pricesIncludeTax,
                         defaultShippingZoneId: formValue.defaultShippingZoneId,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
                     } as UpdateChannelInput;
@@ -121,6 +124,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         this.channelForm.patchValue({
             code: entity.code,
             token: entity.token,
+            pricesIncludeTax: entity.pricesIncludeTax,
             defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
             defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
         });

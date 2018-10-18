@@ -35,10 +35,17 @@ export class TaxRate extends AdjustmentSource {
     customerGroup?: CustomerGroup;
 
     /**
-     * Returns the tax applicable to the given price.
+     * Returns the tax component of a given gross price.
      */
-    getTax(price: number): number {
-        return this.round(price * (this.value / 100));
+    taxComponentOf(grossPrice: number): number {
+        return this.round(grossPrice - grossPrice / ((100 + this.value) / 100));
+    }
+
+    /**
+     * Returns the tax applicable to the given net price.
+     */
+    taxPayableOn(netPrice: number): number {
+        return this.round(netPrice * (this.value / 100));
     }
 
     apply(price: number): Adjustment {
@@ -46,7 +53,7 @@ export class TaxRate extends AdjustmentSource {
             type: this.type,
             adjustmentSource: this.getSourceId(),
             description: this.name,
-            amount: this.getTax(price),
+            amount: this.taxPayableOn(price),
         };
     }
 

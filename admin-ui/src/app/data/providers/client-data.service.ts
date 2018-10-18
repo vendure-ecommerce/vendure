@@ -18,7 +18,7 @@ import {
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
-} from '../definitions/local-definitions';
+} from '../definitions/client-definitions';
 
 import { BaseDataService } from './base-data.service';
 

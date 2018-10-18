@@ -67,6 +67,7 @@ export class MockDataService {
                 {
                     input: {
                         code,
+                        pricesIncludeTax: true,
                         token: `${code}_token`,
                         defaultLanguageCode: LanguageCode.en,
                     },

@@ -22,6 +22,7 @@ import { ProductVariantsListComponent } from './components/product-variants-list
 import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
 import { SelectOptionGroupDialogComponent } from './components/select-option-group-dialog/select-option-group-dialog.component';
 import { SelectOptionGroupComponent } from './components/select-option-group/select-option-group.component';
+import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 
@@ -47,6 +48,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         ProductAssetsComponent,
         AssetPickerDialogComponent,
         AssetFileInputComponent,
+        VariantPriceDetailComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,

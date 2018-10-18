@@ -20,6 +20,12 @@
         <vdr-form-field [label]="'common.code' | translate" for="code">
             <input id="code" type="text" formControlName="code">
         </vdr-form-field>
+        <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
+            <div class="toggle-switch">
+                <input type="checkbox" id="pricesIncludeTax" formControlName="pricesIncludeTax">
+                <label for="pricesIncludeTax"></label>
+            </div>
+        </vdr-form-field>
         <vdr-form-field [label]="'settings.default-tax-zone' | translate" for="defaultTaxZoneId">
             <select clrSelect name="defaultTaxZoneId"
                     formControlName="defaultTaxZoneId">

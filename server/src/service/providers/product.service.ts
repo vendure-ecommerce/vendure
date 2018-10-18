@@ -170,7 +170,7 @@ export class ProductService {
         product.variants = product.variants.map(variant => {
             return this.productVariantService.applyChannelPriceAndTax(
                 variant,
-                ctx.channelId,
+                ctx.channel,
                 ctx.channel.defaultTaxZone,
             );
         });

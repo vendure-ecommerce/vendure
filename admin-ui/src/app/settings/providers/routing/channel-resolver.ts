@@ -17,6 +17,7 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
                 id: '',
                 code: '',
                 token: '',
+                pricesIncludeTax: false,
                 defaultLanguageCode: getDefaultLanguage(),
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,

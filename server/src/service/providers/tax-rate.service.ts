@@ -20,6 +20,12 @@ export class TaxRateService {
      * per request.
      */
     private activeTaxRates: TaxRate[] = [];
+    private readonly defaultTaxRate = new TaxRate({
+        value: 0,
+        enabled: true,
+        name: 'No configured tax rate',
+        id: '0',
+    });
 
     constructor(@InjectConnection() private connection: Connection) {}
 
@@ -87,6 +93,11 @@ export class TaxRateService {
 
     getActiveTaxRates(): TaxRate[] {
         return this.activeTaxRates;
+    }
+
+    getApplicableTaxRate(zone: Zone, taxCategory: TaxCategory): TaxRate {
+        const rate = this.getActiveTaxRates().find(r => r.test(zone, taxCategory));
+        return rate || this.defaultTaxRate;
     }
 
     private async updateActiveTaxRates() {

@@ -29,6 +29,12 @@ export class ChannelResolver {
         return this.channelService.findOne(args.id);
     }
 
+    @Query()
+    @Allow(Permission.Public)
+    async activeChannel(@Ctx() ctx: RequestContext): Promise<Channel> {
+        return ctx.channel;
+    }
+
     @Mutation()
     @Allow(Permission.SuperAdmin)
     @Decode('defaultTaxZoneId', 'defaultShippingZoneId')

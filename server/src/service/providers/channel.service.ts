@@ -137,6 +137,7 @@ export class ChannelService {
             const newDefaultChannel = new Channel({
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: DEFAULT_LANGUAGE_CODE,
+                pricesIncludeTax: false,
                 token: defaultChannelToken,
             });
             await this.connection.manager.save(newDefaultChannel);

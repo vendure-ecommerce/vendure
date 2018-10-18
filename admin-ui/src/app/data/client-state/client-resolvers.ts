@@ -9,7 +9,7 @@ import {
     SetUiLanguage,
 } from 'shared/generated-types';
 
-import { GET_NEWTORK_STATUS } from '../definitions/local-definitions';
+import { GET_NEWTORK_STATUS } from '../definitions/client-definitions';
 
 export type ResolverContext = {
     cache: InMemoryCache;

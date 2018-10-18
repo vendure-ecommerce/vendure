@@ -10,6 +10,7 @@ import {
     CreateTaxRateInput,
     CreateZone,
     CreateZoneInput,
+    GetActiveChannel,
     GetChannel,
     GetChannels,
     GetCountry,
@@ -40,6 +41,7 @@ import {
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
+    GET_ACTIVE_CHANNEL,
     GET_CHANNEL,
     GET_CHANNELS,
     GET_COUNTRY,
@@ -190,6 +192,12 @@ export class SettingsDataService {
         return this.baseDataService.query<GetChannel.Query, GetChannel.Variables>(GET_CHANNEL, {
             id,
         });
+    }
+
+    getActiveChannel() {
+        return this.baseDataService.query<GetActiveChannel.Query, GetActiveChannel.Variables>(
+            GET_ACTIVE_CHANNEL,
+        );
     }
 
     createChannel(input: CreateChannelInput) {

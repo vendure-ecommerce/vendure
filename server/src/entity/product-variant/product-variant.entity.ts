@@ -36,12 +36,17 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     /**
      * Calculated at run-time
      */
-    priceWithTax?: number;
+    priceIncludesTax: boolean;
 
     /**
      * Calculated at run-time
      */
-    taxRateApplied?: TaxRate;
+    priceWithTax: number;
+
+    /**
+     * Calculated at run-time
+     */
+    taxRateApplied: TaxRate;
 
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;

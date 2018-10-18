@@ -46,6 +46,7 @@ export interface Query {
     me?: CurrentUser | null;
     channels: Channel[];
     channel?: Channel | null;
+    activeChannel: Channel;
     config: Config;
     countries: CountryList;
     country?: Country | null;
@@ -123,6 +124,7 @@ export interface Channel extends Node {
     defaultTaxZone?: Zone | null;
     defaultShippingZone?: Zone | null;
     defaultLanguageCode: LanguageCode;
+    pricesIncludeTax: boolean;
 }
 
 export interface Zone extends Node {
@@ -284,6 +286,7 @@ export interface OrderLine extends Node {
     productVariant: ProductVariant;
     featuredAsset?: Asset | null;
     unitPrice: number;
+    unitPriceWithPromotions: number;
     unitPriceWithTax: number;
     quantity: number;
     items: OrderItem[];
@@ -300,8 +303,9 @@ export interface ProductVariant extends Node {
     sku: string;
     name: string;
     price: number;
+    priceIncludesTax: boolean;
     priceWithTax: number;
-    taxRateApplied?: TaxRate | null;
+    taxRateApplied: TaxRate;
     taxCategory: TaxCategory;
     options: ProductOption[];
     facetValues: FacetValue[];
@@ -831,6 +835,7 @@ export interface CreateChannelInput {
     code: string;
     token: string;
     defaultLanguageCode: LanguageCode;
+    pricesIncludeTax: boolean;
     defaultTaxZoneId?: string | null;
     defaultShippingZoneId?: string | null;
 }
@@ -840,6 +845,7 @@ export interface UpdateChannelInput {
     code?: string | null;
     token?: string | null;
     defaultLanguageCode?: LanguageCode | null;
+    pricesIncludeTax?: boolean | null;
     defaultTaxZoneId?: string | null;
     defaultShippingZoneId?: string | null;
 }
@@ -1625,6 +1631,7 @@ export namespace QueryResolvers {
         me?: MeResolver<CurrentUser | null, any, Context>;
         channels?: ChannelsResolver<Channel[], any, Context>;
         channel?: ChannelResolver<Channel | null, any, Context>;
+        activeChannel?: ActiveChannelResolver<Channel, any, Context>;
         config?: ConfigResolver<Config, any, Context>;
         countries?: CountriesResolver<CountryList, any, Context>;
         country?: CountryResolver<Country | null, any, Context>;
@@ -1713,6 +1720,11 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type ActiveChannelResolver<R = Channel, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type ConfigResolver<R = Config, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CountriesResolver<R = CountryList, Parent = any, Context = any> = Resolver<
         R,
@@ -2061,6 +2073,7 @@ export namespace ChannelResolvers {
         defaultTaxZone?: DefaultTaxZoneResolver<Zone | null, any, Context>;
         defaultShippingZone?: DefaultShippingZoneResolver<Zone | null, any, Context>;
         defaultLanguageCode?: DefaultLanguageCodeResolver<LanguageCode, any, Context>;
+        pricesIncludeTax?: PricesIncludeTaxResolver<boolean, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2079,6 +2092,11 @@ export namespace ChannelResolvers {
         Context
     >;
     export type DefaultLanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PricesIncludeTaxResolver<R = boolean, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2509,6 +2527,7 @@ export namespace OrderLineResolvers {
         productVariant?: ProductVariantResolver<ProductVariant, any, Context>;
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         unitPrice?: UnitPriceResolver<number, any, Context>;
+        unitPriceWithPromotions?: UnitPriceWithPromotionsResolver<number, any, Context>;
         unitPriceWithTax?: UnitPriceWithTaxResolver<number, any, Context>;
         quantity?: QuantityResolver<number, any, Context>;
         items?: ItemsResolver<OrderItem[], any, Context>;
@@ -2531,6 +2550,11 @@ export namespace OrderLineResolvers {
         Context
     >;
     export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UnitPriceWithPromotionsResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type UnitPriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2556,8 +2580,9 @@ export namespace ProductVariantResolvers {
         sku?: SkuResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
         price?: PriceResolver<number, any, Context>;
+        priceIncludesTax?: PriceIncludesTaxResolver<boolean, any, Context>;
         priceWithTax?: PriceWithTaxResolver<number, any, Context>;
-        taxRateApplied?: TaxRateAppliedResolver<TaxRate | null, any, Context>;
+        taxRateApplied?: TaxRateAppliedResolver<TaxRate, any, Context>;
         taxCategory?: TaxCategoryResolver<TaxCategory, any, Context>;
         options?: OptionsResolver<ProductOption[], any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
@@ -2576,8 +2601,13 @@ export namespace ProductVariantResolvers {
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type PriceIncludesTaxResolver<R = boolean, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type PriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TaxRateAppliedResolver<R = TaxRate | null, Parent = any, Context = any> = Resolver<
+    export type TaxRateAppliedResolver<R = TaxRate, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3809,106 +3839,6 @@ export namespace GetCurrentUser {
     export type Me = CurrentUser.Fragment;
 }
 
-export namespace GetServerConfig {
-    export type Variables = {};
-
-    export type Query = {
-        __typename?: 'Query';
-        config: Config;
-    };
-
-    export type Config = {
-        __typename?: 'Config';
-        customFields?: Json | null;
-    };
-}
-
-export namespace CreateFacet {
-    export type Variables = {
-        input: CreateFacetInput;
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        createFacet: CreateFacet;
-    };
-
-    export type CreateFacet = FacetWithValues.Fragment;
-}
-
-export namespace UpdateFacet {
-    export type Variables = {
-        input: UpdateFacetInput;
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        updateFacet: UpdateFacet;
-    };
-
-    export type UpdateFacet = FacetWithValues.Fragment;
-}
-
-export namespace CreateFacetValues {
-    export type Variables = {
-        input: CreateFacetValueInput[];
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        createFacetValues: CreateFacetValues[];
-    };
-
-    export type CreateFacetValues = FacetValue.Fragment;
-}
-
-export namespace UpdateFacetValues {
-    export type Variables = {
-        input: UpdateFacetValueInput[];
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        updateFacetValues: UpdateFacetValues[];
-    };
-
-    export type UpdateFacetValues = FacetValue.Fragment;
-}
-
-export namespace GetFacetList {
-    export type Variables = {
-        options?: FacetListOptions | null;
-        languageCode?: LanguageCode | null;
-    };
-
-    export type Query = {
-        __typename?: 'Query';
-        facets: Facets;
-    };
-
-    export type Facets = {
-        __typename?: 'FacetList';
-        items: Items[];
-        totalItems: number;
-    };
-
-    export type Items = FacetWithValues.Fragment;
-}
-
-export namespace GetFacetWithValues {
-    export type Variables = {
-        id: string;
-        languageCode?: LanguageCode | null;
-    };
-
-    export type Query = {
-        __typename?: 'Query';
-        facet?: Facet | null;
-    };
-
-    export type Facet = FacetWithValues.Fragment;
-}
-
 export namespace RequestStarted {
     export type Variables = {};
 
@@ -4015,6 +3945,106 @@ export namespace GetUiState {
         __typename?: 'UiState';
         language: LanguageCode;
     };
+}
+
+export namespace GetServerConfig {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        config: Config;
+    };
+
+    export type Config = {
+        __typename?: 'Config';
+        customFields?: Json | null;
+    };
+}
+
+export namespace CreateFacet {
+    export type Variables = {
+        input: CreateFacetInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createFacet: CreateFacet;
+    };
+
+    export type CreateFacet = FacetWithValues.Fragment;
+}
+
+export namespace UpdateFacet {
+    export type Variables = {
+        input: UpdateFacetInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateFacet: UpdateFacet;
+    };
+
+    export type UpdateFacet = FacetWithValues.Fragment;
+}
+
+export namespace CreateFacetValues {
+    export type Variables = {
+        input: CreateFacetValueInput[];
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createFacetValues: CreateFacetValues[];
+    };
+
+    export type CreateFacetValues = FacetValue.Fragment;
+}
+
+export namespace UpdateFacetValues {
+    export type Variables = {
+        input: UpdateFacetValueInput[];
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateFacetValues: UpdateFacetValues[];
+    };
+
+    export type UpdateFacetValues = FacetValue.Fragment;
+}
+
+export namespace GetFacetList {
+    export type Variables = {
+        options?: FacetListOptions | null;
+        languageCode?: LanguageCode | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        facets: Facets;
+    };
+
+    export type Facets = {
+        __typename?: 'FacetList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = FacetWithValues.Fragment;
+}
+
+export namespace GetFacetWithValues {
+    export type Variables = {
+        id: string;
+        languageCode?: LanguageCode | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        facet?: Facet | null;
+    };
+
+    export type Facet = FacetWithValues.Fragment;
 }
 
 export namespace GetOrderList {
@@ -4627,6 +4657,17 @@ export namespace GetChannel {
     export type Channel = Channel.Fragment;
 }
 
+export namespace GetActiveChannel {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        activeChannel: ActiveChannel;
+    };
+
+    export type ActiveChannel = Channel.Fragment;
+}
+
 export namespace CreateChannel {
     export type Variables = {
         input: CreateChannelInput;
@@ -4783,8 +4824,9 @@ export namespace ProductVariant {
         languageCode: LanguageCode;
         name: string;
         price: number;
+        priceIncludesTax: boolean;
         priceWithTax: number;
-        taxRateApplied?: TaxRateApplied | null;
+        taxRateApplied: TaxRateApplied;
         taxCategory: TaxCategory;
         sku: string;
         options: Options[];
@@ -4996,6 +5038,7 @@ export namespace Channel {
         id: string;
         code: string;
         token: string;
+        pricesIncludeTax: boolean;
         defaultLanguageCode: LanguageCode;
         defaultShippingZone?: DefaultShippingZone | null;
         defaultTaxZone?: DefaultTaxZone | null;
