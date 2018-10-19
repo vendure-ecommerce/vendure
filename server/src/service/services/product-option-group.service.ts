@@ -14,16 +14,14 @@ import { assertFound } from '../../common/utils';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 
-import { createTranslatable } from '../helpers/create-translatable';
-import { translateDeep } from '../helpers/translate-entity';
-import { TranslationUpdaterService } from '../helpers/translation-updater.service';
-import { updateTranslatable } from '../helpers/update-translatable';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class ProductOptionGroupService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private translationUpdaterService: TranslationUpdaterService,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     findAll(lang: LanguageCode, filterTerm?: string): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -49,18 +47,20 @@ export class ProductOptionGroupService {
     }
 
     async create(input: CreateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
-        const save = createTranslatable(ProductOptionGroup, ProductOptionGroupTranslation);
-        const group = await save(this.connection, input);
+        const group = await this.translatableSaver.create({
+            input,
+            entityType: ProductOptionGroup,
+            translationType: ProductOptionGroupTranslation,
+        });
         return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(input: UpdateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
-        const save = updateTranslatable(
-            ProductOptionGroup,
-            ProductOptionGroupTranslation,
-            this.translationUpdaterService,
-        );
-        const group = await save(this.connection, input);
+        const group = await this.translatableSaver.update({
+            input,
+            entityType: ProductOptionGroup,
+            translationType: ProductOptionGroupTranslation,
+        });
         return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
     }
 }

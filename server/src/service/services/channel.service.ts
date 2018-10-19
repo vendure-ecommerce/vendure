@@ -13,8 +13,8 @@ import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
-import { patchEntity } from '../helpers/patch-entity';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class ChannelService {

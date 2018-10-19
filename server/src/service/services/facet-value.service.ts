@@ -16,16 +16,14 @@ import { FacetValueTranslation } from '../../entity/facet-value/facet-value-tran
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 
-import { createTranslatable } from '../helpers/create-translatable';
-import { translateDeep } from '../helpers/translate-entity';
-import { TranslationUpdaterService } from '../helpers/translation-updater.service';
-import { updateTranslatable } from '../helpers/update-translatable';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class FacetValueService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private translationUpdaterService: TranslationUpdaterService,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
@@ -48,14 +46,21 @@ export class FacetValueService {
         facet: Facet,
         input: CreateFacetValueInput | CreateFacetValueWithFacetInput,
     ): Promise<Translated<FacetValue>> {
-        const save = createTranslatable(FacetValue, FacetValueTranslation, fv => (fv.facet = facet));
-        const facetValue = await save(this.connection, input);
+        const facetValue = await this.translatableSaver.create({
+            input,
+            entityType: FacetValue,
+            translationType: FacetValueTranslation,
+            beforeSave: fv => (fv.facet = facet),
+        });
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(input: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
-        const save = updateTranslatable(FacetValue, FacetValueTranslation, this.translationUpdaterService);
-        const facetValue = await save(this.connection, input);
+        const facetValue = await this.translatableSaver.update({
+            input,
+            entityType: FacetValue,
+            translationType: FacetValueTranslation,
+        });
         return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
     }
 }

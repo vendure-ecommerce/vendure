@@ -13,8 +13,8 @@ import { Connection } from 'typeorm';
 import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
-import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
-import { patchEntity } from '../helpers/patch-entity';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class ZoneService {

@@ -11,17 +11,15 @@ import { assertFound } from '../../common/utils';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 
-import { createTranslatable } from '../helpers/create-translatable';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { translateDeep } from '../helpers/translate-entity';
-import { TranslationUpdaterService } from '../helpers/translation-updater.service';
-import { updateTranslatable } from '../helpers/update-translatable';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class FacetService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private translationUpdaterService: TranslationUpdaterService,
+        private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -52,14 +50,20 @@ export class FacetService {
     }
 
     async create(input: CreateFacetInput): Promise<Translated<Facet>> {
-        const save = createTranslatable(Facet, FacetTranslation);
-        const facet = await save(this.connection, input);
+        const facet = await this.translatableSaver.create({
+            input,
+            entityType: Facet,
+            translationType: FacetTranslation,
+        });
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 
     async update(input: UpdateFacetInput): Promise<Translated<Facet>> {
-        const save = updateTranslatable(Facet, FacetTranslation, this.translationUpdaterService);
-        const facet = await save(this.connection, input);
+        const facet = await this.translatableSaver.update({
+            input,
+            entityType: Facet,
+            translationType: FacetTranslation,
+        });
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
     }
 }

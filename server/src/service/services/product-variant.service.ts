@@ -9,20 +9,15 @@ import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
-import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { createTranslatable } from '../helpers/create-translatable';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
-import { translateDeep } from '../helpers/translate-entity';
-import { TranslationUpdaterService } from '../helpers/translation-updater.service';
-import { updateTranslatable } from '../helpers/update-translatable';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
@@ -34,7 +29,7 @@ export class ProductVariantService {
         private taxCategoryService: TaxCategoryService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
-        private translationUpdaterService: TranslationUpdaterService,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -54,28 +49,33 @@ export class ProductVariantService {
         product: Product,
         input: CreateProductVariantInput,
     ): Promise<ProductVariant> {
-        const save = createTranslatable(ProductVariant, ProductVariantTranslation, async variant => {
-            const { optionCodes } = input;
-            if (optionCodes && optionCodes.length) {
-                const options = await this.connection.getRepository(ProductOption).find();
-                const selectedOptions = options.filter(og => optionCodes.includes(og.code));
-                variant.options = selectedOptions;
-            }
-            variant.product = product;
-            variant.taxCategory = { id: input.taxCategoryId } as any;
-        });
-        return await save(this.connection, input, {
-            channelId: ctx.channelId,
-            taxCategoryId: input.taxCategoryId,
+        return await this.translatableSaver.create({
+            input,
+            entityType: ProductVariant,
+            translationType: ProductVariantTranslation,
+            beforeSave: async variant => {
+                const { optionCodes } = input;
+                if (optionCodes && optionCodes.length) {
+                    const options = await this.connection.getRepository(ProductOption).find();
+                    const selectedOptions = options.filter(og => optionCodes.includes(og.code));
+                    variant.options = selectedOptions;
+                }
+                variant.product = product;
+                variant.taxCategory = { id: input.taxCategoryId } as any;
+            },
+            typeOrmSubscriberData: {
+                channelId: ctx.channelId,
+                taxCategoryId: input.taxCategoryId,
+            },
         });
     }
 
     async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
-        const save = updateTranslatable(
-            ProductVariant,
-            ProductVariantTranslation,
-            this.translationUpdaterService,
-            async updatedVariant => {
+        await this.translatableSaver.update({
+            input,
+            entityType: ProductVariant,
+            translationType: ProductVariantTranslation,
+            beforeSave: async updatedVariant => {
                 if (input.taxCategoryId) {
                     const taxCategory = await this.taxCategoryService.findOne(input.taxCategoryId);
                     if (taxCategory) {
@@ -83,8 +83,11 @@ export class ProductVariantService {
                     }
                 }
             },
-        );
-        await save(this.connection, input, { channelId: ctx.channelId, taxCategoryId: input.taxCategoryId });
+            typeOrmSubscriberData: {
+                channelId: ctx.channelId,
+                taxCategoryId: input.taxCategoryId,
+            },
+        });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
                 relations: ['options', 'facetValues', 'taxCategory'],

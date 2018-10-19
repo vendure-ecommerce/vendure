@@ -10,9 +10,9 @@ import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { patchEntity } from '../helpers/patch-entity';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 export class TaxRateService {
     /**

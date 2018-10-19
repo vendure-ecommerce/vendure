@@ -14,7 +14,7 @@ import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
-import { translateDeep } from '../helpers/translate-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ProductVariantService } from './product-variant.service';
 

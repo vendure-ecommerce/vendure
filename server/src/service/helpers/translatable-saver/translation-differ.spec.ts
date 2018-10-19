@@ -1,11 +1,11 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import { TranslationInput } from '../../common/types/locale-types';
-import { ProductTranslation } from '../../entity/product/product-translation.entity';
-import { Product } from '../../entity/product/product.entity';
-import { MockEntityManager } from '../../testing/connection.mock';
+import { TranslationInput } from '../../../common/types/locale-types';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
+import { MockEntityManager } from '../../../testing/connection.mock';
 
-import { TranslationUpdater } from './translation-updater';
+import { TranslationDiffer } from './translation-differ';
 
 describe('TranslationUpdater', () => {
     describe('diff()', () => {
@@ -48,7 +48,7 @@ describe('TranslationUpdater', () => {
                 },
             ];
 
-            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
                 existing,
                 updated,
             );
@@ -70,7 +70,7 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
                 existing,
                 updated,
             );
@@ -92,7 +92,7 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationUpdater(ProductTranslation as any, entityManager).diff(
+            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
                 existing,
                 updated,
             );

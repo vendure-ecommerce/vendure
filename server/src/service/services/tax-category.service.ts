@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 import { assertFound } from '../../common/utils';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { patchEntity } from '../helpers/patch-entity';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class TaxCategoryService {

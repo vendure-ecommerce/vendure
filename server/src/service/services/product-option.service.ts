@@ -11,12 +11,15 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 
-import { createTranslatable } from '../helpers/create-translatable';
-import { translateDeep } from '../helpers/translate-entity';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class ProductOptionService {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private translatableSaver: TranslatableSaver,
+    ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<ProductOption>>> {
         return this.connection.manager
@@ -38,8 +41,12 @@ export class ProductOptionService {
         group: ProductOptionGroup,
         input: CreateProductOptionInput,
     ): Promise<Translated<ProductOption>> {
-        const save = createTranslatable(ProductOption, ProductOptionTranslation, po => (po.group = group));
-        const option = await save(this.connection, input);
+        const option = await this.translatableSaver.create({
+            input,
+            entityType: ProductOption,
+            translationType: ProductOptionTranslation,
+            beforeSave: po => (po.group = group),
+        });
         return assertFound(this.findOne(option.id, DEFAULT_LANGUAGE_CODE));
     }
 }

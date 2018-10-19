@@ -1,9 +1,9 @@
 import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
-import { Translatable, Translation, TranslationInput } from '../../common/types/locale-types';
-import { foundIn, not } from '../../common/utils';
-import { I18nError } from '../../i18n/i18n-error';
+import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
+import { foundIn, not } from '../../../common/utils';
+import { I18nError } from '../../../i18n/i18n-error';
 
 export interface TranslationContructor<T> {
     new (input?: DeepPartial<TranslationInput<T>> | DeepPartial<Translation<T>>): Translation<T>;
@@ -17,7 +17,7 @@ export interface TranslationDiff<T> {
 /**
  * This class is to be used when performing an update on a Translatable entity.
  */
-export class TranslationUpdater<Entity extends Translatable> {
+export class TranslationDiffer<Entity extends Translatable> {
     constructor(private translationCtor: TranslationContructor<Entity>, private manager: EntityManager) {}
 
     /**

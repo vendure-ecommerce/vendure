@@ -1,4 +1,4 @@
-import { VendureEntity } from '../../entity/base/base.entity';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 export type InputPatch<T> = { [K in keyof T]?: T[K] | null };
 

@@ -9,7 +9,7 @@ import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { patchEntity } from '../helpers/patch-entity';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class CountryService {

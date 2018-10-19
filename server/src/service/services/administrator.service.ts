@@ -11,7 +11,7 @@ import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
-import { patchEntity } from '../helpers/patch-entity';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { RoleService } from './role.service';
 

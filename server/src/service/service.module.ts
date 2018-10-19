@@ -8,7 +8,7 @@ import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builde
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
-import { TranslationUpdaterService } from './helpers/translation-updater.service';
+import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { AdministratorService } from './services/administrator.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
@@ -63,7 +63,7 @@ const exportedProviders = [
     providers: [
         ...exportedProviders,
         PasswordCiper,
-        TranslationUpdaterService,
+        TranslatableSaver,
         TaxCalculator,
         OrderCalculator,
         ListQueryBuilder,

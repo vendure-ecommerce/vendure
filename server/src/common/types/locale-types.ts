@@ -1,7 +1,7 @@
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldsObject, ID } from 'shared/shared-types';
 
-import { TranslatableRelationsKeys } from '../../service/helpers/translate-entity';
+import { TranslatableRelationsKeys } from '../../service/helpers/utils/translate-entity';
 
 import { UnwrappedArray } from './common-types';
 

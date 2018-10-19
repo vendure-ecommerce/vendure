@@ -19,7 +19,7 @@ import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { patchEntity } from '../helpers/patch-entity';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 

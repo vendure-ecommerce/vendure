@@ -1,12 +1,12 @@
 import { LanguageCode } from 'shared/generated-types';
 
-import { Translatable, Translation } from '../../common/types/locale-types';
-import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
-import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { ProductTranslation } from '../../entity/product/product-translation.entity';
-import { Product } from '../../entity/product/product.entity';
+import { Translatable, Translation } from '../../../common/types/locale-types';
+import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
 
 import { translateDeep, translateEntity } from './translate-entity';
 

@@ -13,8 +13,8 @@ import { Connection } from 'typeorm';
 import { assertFound } from '../../common/utils';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
-import { patchEntity } from '../helpers/patch-entity';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class CustomerGroupService {

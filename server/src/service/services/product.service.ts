@@ -12,11 +12,9 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { createTranslatable } from '../helpers/create-translatable';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { translateDeep } from '../helpers/translate-entity';
-import { TranslationUpdaterService } from '../helpers/translation-updater.service';
-import { updateTranslatable } from '../helpers/update-translatable';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -27,12 +25,12 @@ import { TaxRateService } from './tax-rate.service';
 export class ProductService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private translationUpdaterService: TranslationUpdaterService,
         private channelService: ChannelService,
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     findAll(
@@ -95,17 +93,24 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
-        const save = createTranslatable(Product, ProductTranslation, async p => {
-            this.channelService.assignToChannels(p, ctx);
+        const product = await this.translatableSaver.create({
+            input,
+            entityType: Product,
+            translationType: ProductTranslation,
+            beforeSave: async p => {
+                this.channelService.assignToChannels(p, ctx);
+            },
         });
-        const product = await save(this.connection, input);
         await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
-        const save = updateTranslatable(Product, ProductTranslation, this.translationUpdaterService);
-        const product = await save(this.connection, input);
+        const product = await this.translatableSaver.update({
+            input,
+            entityType: Product,
+            translationType: ProductTranslation,
+        });
         await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }

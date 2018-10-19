@@ -1,8 +1,8 @@
 import { ID, Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { VendureEntity } from '../../entity/base/base.entity';
-import { I18nError } from '../../i18n/i18n-error';
+import { VendureEntity } from '../../../entity/base/base.entity';
+import { I18nError } from '../../../i18n/i18n-error';
 
 /**
  * Attempts to find an entity of the given type and id, and throws an error if not found.
