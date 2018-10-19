@@ -5,6 +5,7 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
+import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
 
 /**
@@ -48,6 +49,12 @@ export class RequestContext {
 
     get session(): Session | undefined {
         return this._session;
+    }
+
+    get activeTaxZone(): Zone {
+        // TODO: This will vary depending on Customer data available -
+        // a customer with a billing address in another zone will alter the value etc.
+        return this.channel.defaultTaxZone;
     }
 
     /**

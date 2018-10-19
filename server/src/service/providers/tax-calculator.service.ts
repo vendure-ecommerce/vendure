@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import { RequestContext } from '../../api/common/request-context';
+import { idsAreEqual } from '../../common/utils';
 import { Channel } from '../../entity/channel/channel.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
@@ -18,26 +20,25 @@ export interface TaxCalculationResult {
 export class TaxCalculatorService {
     constructor(private taxRateService: TaxRateService) {}
 
-    calculate(
-        inputPrice: number,
-        taxRate: TaxRate,
-        channel: Channel,
-        zone: Zone,
-        taxCategory: TaxCategory,
-    ): TaxCalculationResult {
+    /**
+     * Given a price and TacxCategory, this method calculates the applicable tax rate and returns the adjusted
+     * price along with other contextual information.
+     */
+    calculate(inputPrice: number, taxCategory: TaxCategory, ctx: RequestContext): TaxCalculationResult {
         let price = 0;
         let priceWithTax = 0;
         let priceWithoutTax = 0;
         let priceIncludesTax = false;
+        const taxRate = this.taxRateService.getApplicableTaxRate(ctx.activeTaxZone, taxCategory);
 
-        if (channel.pricesIncludeTax) {
-            const isDefaultZone = zone.id === channel.defaultTaxZone.id;
+        if (ctx.channel.pricesIncludeTax) {
+            const isDefaultZone = idsAreEqual(ctx.activeTaxZone.id, ctx.channel.defaultTaxZone.id);
             const taxRateForDefaultZone = this.taxRateService.getApplicableTaxRate(
-                channel.defaultTaxZone,
+                ctx.channel.defaultTaxZone,
                 taxCategory,
             );
-
             priceWithoutTax = taxRateForDefaultZone.netPriceOf(inputPrice);
+
             if (isDefaultZone) {
                 priceIncludesTax = true;
                 price = inputPrice;
@@ -50,6 +51,7 @@ export class TaxCalculatorService {
             const netPrice = inputPrice;
             price = netPrice;
             priceWithTax = netPrice + taxRate.taxPayableOn(netPrice);
+            priceWithoutTax = netPrice;
         }
 
         return {

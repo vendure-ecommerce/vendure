@@ -44,10 +44,7 @@ export class ProductVariantService {
             .findOne(productVariantId, { relations })
             .then(result => {
                 if (result) {
-                    return translateDeep(
-                        this.applyChannelPriceAndTax(result, ctx.channel, ctx.channel.defaultTaxZone),
-                        ctx.languageCode,
-                    );
+                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
                 }
             });
     }
@@ -93,11 +90,10 @@ export class ProductVariantService {
                 relations: ['options', 'facetValues', 'taxCategory'],
             }),
         );
-        return translateDeep(
-            this.applyChannelPriceAndTax(variant, ctx.channel, ctx.channel.defaultTaxZone),
-            DEFAULT_LANGUAGE_CODE,
-            ['options', 'facetValues'],
-        );
+        return translateDeep(this.applyChannelPriceAndTax(variant, ctx), DEFAULT_LANGUAGE_CODE, [
+            'options',
+            'facetValues',
+        ]);
     }
 
     async generateVariantsForProduct(
@@ -171,36 +167,32 @@ export class ProductVariantService {
         }
 
         return variants.map(v =>
-            translateDeep(
-                this.applyChannelPriceAndTax(v, ctx.channel, ctx.channel.defaultTaxZone),
-                DEFAULT_LANGUAGE_CODE,
-                ['options', 'facetValues'],
-            ),
+            translateDeep(this.applyChannelPriceAndTax(v, ctx), DEFAULT_LANGUAGE_CODE, [
+                'options',
+                'facetValues',
+            ]),
         );
     }
 
     /**
      * Populates the `price` field with the price for the specified channel.
      */
-    applyChannelPriceAndTax(variant: ProductVariant, channel: Channel, taxZone: Zone): ProductVariant {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, channel.id));
+    applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
+        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
             throw new I18nError(`error.no-price-found-for-channel`);
         }
-        const applicableTaxRate = this.taxRateService.getApplicableTaxRate(taxZone, variant.taxCategory);
+        const applicableTaxRate = this.taxRateService.getApplicableTaxRate(
+            ctx.activeTaxZone,
+            variant.taxCategory,
+        );
 
         const {
             price,
             priceIncludesTax,
             priceWithTax,
             priceWithoutTax,
-        } = this.taxCalculatorService.calculate(
-            channelPrice.price,
-            applicableTaxRate,
-            channel,
-            taxZone,
-            variant.taxCategory,
-        );
+        } = this.taxCalculatorService.calculate(channelPrice.price, variant.taxCategory, ctx);
 
         variant.price = price;
         variant.priceIncludesTax = priceIncludesTax;

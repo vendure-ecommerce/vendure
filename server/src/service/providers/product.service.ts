@@ -168,11 +168,7 @@ export class ProductService {
      */
     private applyPriceAndTaxToVariants<T extends Product>(product: T, ctx: RequestContext): T {
         product.variants = product.variants.map(variant => {
-            return this.productVariantService.applyChannelPriceAndTax(
-                variant,
-                ctx.channel,
-                ctx.channel.defaultTaxZone,
-            );
+            return this.productVariantService.applyChannelPriceAndTax(variant, ctx);
         });
         return product;
     }

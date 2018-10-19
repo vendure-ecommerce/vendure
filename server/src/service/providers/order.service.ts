@@ -221,13 +221,7 @@ export class OrderService {
                 priceIncludesTax,
                 priceWithTax,
                 priceWithoutTax,
-            } = this.taxCalculatorService.calculate(
-                line.unitPrice,
-                applicableTaxRate,
-                ctx.channel,
-                activeZone,
-                line.taxCategory,
-            );
+            } = this.taxCalculatorService.calculate(line.unitPrice, line.taxCategory, ctx);
 
             line.unitPriceIncludesTax = priceIncludesTax;
             line.includedTaxRate = applicableTaxRate.value;
