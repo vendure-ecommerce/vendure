@@ -19,11 +19,15 @@ import { buildListQuery } from '../helpers/build-list-query';
 import { translateDeep } from '../helpers/translate-entity';
 
 import { ProductVariantService } from './product-variant.service';
+import { TaxCalculatorService } from './tax-calculator.service';
+import { TaxRateService } from './tax-rate.service';
 
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
+        private taxRateService: TaxRateService,
+        private taxCalculatorService: TaxCalculatorService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -77,12 +81,7 @@ export class OrderService {
         let orderLine = order.lines.find(line => idsAreEqual(line.productVariant.id, productVariantId));
 
         if (!orderLine) {
-            const newLine = new OrderLine({
-                productVariant,
-                taxCategory: productVariant.taxCategory,
-                featuredAsset: productVariant.product.featuredAsset,
-                unitPrice: productVariant.price,
-            });
+            const newLine = this.createOrderLineFromVariant(productVariant);
             orderLine = await this.connection.getRepository(OrderLine).save(newLine);
             order.lines.push(orderLine);
             await this.connection.getRepository(Order).save(order);
@@ -158,6 +157,17 @@ export class OrderService {
         return orderItem;
     }
 
+    private createOrderLineFromVariant(productVariant: ProductVariant): OrderLine {
+        return new OrderLine({
+            productVariant,
+            taxCategory: productVariant.taxCategory,
+            featuredAsset: productVariant.product.featuredAsset,
+            unitPrice: productVariant.price,
+            unitPriceIncludesTax: productVariant.priceIncludesTax,
+            includedTaxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
+        });
+    }
+
     /**
      * Throws if quantity is negative.
      */
@@ -180,30 +190,50 @@ export class OrderService {
         const promotions = await this.connection.getRepository(Promotion).find({ where: { enabled: true } });
 
         order.clearAdjustments();
-        // First apply taxes to the non-discounted prices
-        this.applyTaxes(order, taxRates, activeZone);
-        // Then test and apply promotions
-        this.applyPromotions(order, promotions);
-        // Finally, re-calculate taxes because the promotions may have
-        // altered the unit prices, which in turn will alter the tax payable.
-        this.applyTaxes(order, taxRates, activeZone);
+        if (order.lines.length) {
+            // First apply taxes to the non-discounted prices
+            this.applyTaxes(order, taxRates, activeZone, ctx);
+            // Then test and apply promotions
+            this.applyPromotions(order, promotions);
+            // Finally, re-calculate taxes because the promotions may have
+            // altered the unit prices, which in turn will alter the tax payable.
+            this.applyTaxes(order, taxRates, activeZone, ctx);
+        } else {
+            this.calculateOrderTotals(order);
+        }
 
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
+        await this.connection.getRepository(OrderLine).save(order.lines);
         return order;
     }
 
     /**
      * Applies the correct TaxRate to each OrderItem in the order.
      */
-    private applyTaxes(order: Order, taxRates: TaxRate[], activeZone: Zone) {
+    private applyTaxes(order: Order, taxRates: TaxRate[], activeZone: Zone, ctx: RequestContext) {
         for (const line of order.lines) {
-            const applicableTaxRate = taxRates.find(taxRate => taxRate.test(activeZone, line.taxCategory));
-
             line.clearAdjustments(AdjustmentType.TAX);
 
-            for (const item of line.items) {
-                if (applicableTaxRate) {
+            const applicableTaxRate = this.taxRateService.getApplicableTaxRate(activeZone, line.taxCategory);
+            const {
+                price,
+                priceIncludesTax,
+                priceWithTax,
+                priceWithoutTax,
+            } = this.taxCalculatorService.calculate(
+                line.unitPrice,
+                applicableTaxRate,
+                ctx.channel,
+                activeZone,
+                line.taxCategory,
+            );
+
+            line.unitPriceIncludesTax = priceIncludesTax;
+            line.includedTaxRate = applicableTaxRate.value;
+
+            if (!priceIncludesTax) {
+                for (const item of line.items) {
                     item.pendingAdjustments = item.pendingAdjustments.concat(
                         applicableTaxRate.apply(line.unitPriceWithPromotions),
                     );

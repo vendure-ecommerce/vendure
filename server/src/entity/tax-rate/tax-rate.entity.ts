@@ -42,10 +42,24 @@ export class TaxRate extends AdjustmentSource {
     }
 
     /**
+     * Given a gross (tax-inclusive) price, returns the net price.
+     */
+    netPriceOf(grossPrice: number): number {
+        return grossPrice - this.taxComponentOf(grossPrice);
+    }
+
+    /**
      * Returns the tax applicable to the given net price.
      */
     taxPayableOn(netPrice: number): number {
         return this.round(netPrice * (this.value / 100));
+    }
+
+    /**
+     * Given a net price, return the gross price (net + tax)
+     */
+    grossPriceOf(netPrice: number): number {
+        return netPrice + this.taxPayableOn(netPrice);
     }
 
     apply(price: number): Adjustment {

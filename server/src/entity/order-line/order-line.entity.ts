@@ -27,6 +27,10 @@ export class OrderLine extends VendureEntity {
 
     @Column() unitPrice: number;
 
+    @Column() unitPriceIncludesTax: boolean;
+
+    @Column() includedTaxRate: number;
+
     @OneToMany(type => OrderItem, item => item.line)
     items: OrderItem[];
 
@@ -43,7 +47,11 @@ export class OrderLine extends VendureEntity {
 
     @Calculated()
     get unitPriceWithTax(): number {
-        return this.unitPriceWithPromotions + this.unitTax;
+        if (this.unitPriceIncludesTax) {
+            return this.unitPriceWithPromotions;
+        } else {
+            return this.unitPriceWithPromotions + this.unitTax;
+        }
     }
 
     @Calculated()
@@ -53,7 +61,7 @@ export class OrderLine extends VendureEntity {
 
     @Calculated()
     get totalPrice(): number {
-        return (this.unitPriceWithPromotions + this.unitTax) * this.quantity;
+        return this.unitPriceWithTax * this.quantity;
     }
 
     @Calculated()
@@ -65,8 +73,15 @@ export class OrderLine extends VendureEntity {
     }
 
     get unitTax(): number {
-        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-        return taxAdjustment ? taxAdjustment.amount : 0;
+        if (this.unitPriceIncludesTax) {
+            return Math.round(
+                this.unitPriceWithPromotions -
+                    this.unitPriceWithPromotions / ((100 + this.includedTaxRate) / 100),
+            );
+        } else {
+            const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
+            return taxAdjustment ? taxAdjustment.amount : 0;
+        }
     }
 
     /**

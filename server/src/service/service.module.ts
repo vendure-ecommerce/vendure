@@ -22,6 +22,7 @@ import { ProductVariantService } from './providers/product-variant.service';
 import { ProductService } from './providers/product.service';
 import { PromotionService } from './providers/promotion.service';
 import { RoleService } from './providers/role.service';
+import { TaxCalculatorService } from './providers/tax-calculator.service';
 import { TaxCategoryService } from './providers/tax-category.service';
 import { TaxRateService } from './providers/tax-rate.service';
 import { ZoneService } from './providers/zone.service';
@@ -57,7 +58,7 @@ const exportedProviders = [
  */
 @Module({
     imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
-    providers: [...exportedProviders, PasswordService, TranslationUpdaterService],
+    providers: [...exportedProviders, PasswordService, TranslationUpdaterService, TaxCalculatorService],
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {

@@ -23,6 +23,7 @@ import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
 
+import { TaxCalculatorService } from './tax-calculator.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
 
@@ -32,6 +33,7 @@ export class ProductVariantService {
         @InjectConnection() private connection: Connection,
         private taxCategoryService: TaxCategoryService,
         private taxRateService: TaxRateService,
+        private taxCalculatorService: TaxCalculatorService,
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
@@ -187,31 +189,22 @@ export class ProductVariantService {
         }
         const applicableTaxRate = this.taxRateService.getApplicableTaxRate(taxZone, variant.taxCategory);
 
-        if (channel.pricesIncludeTax) {
-            const isDefaultZone = taxZone.id === channel.defaultTaxZone.id;
-            if (isDefaultZone) {
-                const grossPrice = channelPrice.price;
-                variant.priceIncludesTax = true;
-                variant.price = grossPrice;
-                variant.priceWithTax = grossPrice;
-            } else {
-                const taxRateForDefaultZone = this.taxRateService.getApplicableTaxRate(
-                    channel.defaultTaxZone,
-                    variant.taxCategory,
-                );
-                const grossPriceInDefaultZone = channelPrice.price;
-                const netPrice =
-                    grossPriceInDefaultZone - taxRateForDefaultZone.taxComponentOf(grossPriceInDefaultZone);
-                variant.price = netPrice;
-                variant.priceIncludesTax = false;
-                variant.priceWithTax = netPrice + applicableTaxRate.taxPayableOn(netPrice);
-            }
-        } else {
-            const netPrice = channelPrice.price;
-            variant.price = netPrice;
-            variant.priceIncludesTax = false;
-            variant.priceWithTax = netPrice + applicableTaxRate.taxPayableOn(netPrice);
-        }
+        const {
+            price,
+            priceIncludesTax,
+            priceWithTax,
+            priceWithoutTax,
+        } = this.taxCalculatorService.calculate(
+            channelPrice.price,
+            applicableTaxRate,
+            channel,
+            taxZone,
+            variant.taxCategory,
+        );
+
+        variant.price = price;
+        variant.priceIncludesTax = priceIncludesTax;
+        variant.priceWithTax = priceWithTax;
         variant.taxRateApplied = applicableTaxRate;
         return variant;
     }
