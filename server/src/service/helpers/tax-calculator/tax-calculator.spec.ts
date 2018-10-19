@@ -1,102 +1,27 @@
 import { Test } from '@nestjs/testing';
-import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
-import { RequestContext } from '../../../api/common/request-context';
-import { Channel } from '../../../entity/channel/channel.entity';
-import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
-import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
-import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 
 import { TaxCalculator } from './tax-calculator';
+import {
+    createRequestContext,
+    MockConnection,
+    taxCategoryReduced,
+    taxCategoryStandard,
+    taxRateDefaultReduced,
+    taxRateDefaultStandard,
+    taxRateOtherReduced,
+    taxRateOtherStandard,
+    zoneDefault,
+    zoneOther,
+    zoneWithNoTaxRate,
+} from './tax-calculator-test-fixtures';
 
 describe('TaxCalculator', () => {
     let taxCalculator: TaxCalculator;
     const inputPrice = 6543;
-    const taxCategoryStandard = new TaxCategory({
-        id: 'taxCategoryStandard',
-        name: 'Standard Tax',
-    });
-    const taxCategoryReduced = new TaxCategory({
-        id: 'taxCategoryReduced',
-        name: 'Reduced Tax',
-    });
-    const zoneDefault = new Zone({
-        id: 'zoneDefault',
-        name: 'Default Zone',
-    });
-    const zoneOther = new Zone({
-        id: 'zoneOther',
-        name: 'Other Zone',
-    });
-    const zoneWithNoTaxRate = new Zone({
-        id: 'zoneWithNoTaxRate',
-        name: 'Zone for which no TaxRate is configured',
-    });
-    const taxRateDefaultStandard = new TaxRate({
-        id: 'taxRateDefaultStandard',
-        value: 20,
-        enabled: true,
-        zone: zoneDefault,
-        category: taxCategoryStandard,
-    });
-    const taxRateDefaultReduced = new TaxRate({
-        id: 'taxRateDefaultReduced',
-        value: 10,
-        enabled: true,
-        zone: zoneDefault,
-        category: taxCategoryReduced,
-    });
-    const taxRateOtherStandard = new TaxRate({
-        id: 'taxRateOtherStandard',
-        value: 15,
-        enabled: true,
-        zone: zoneOther,
-        category: taxCategoryStandard,
-    });
-    const taxRateOtherReduced = new TaxRate({
-        id: 'taxRateOtherReduced',
-        value: 5,
-        enabled: true,
-        zone: zoneOther,
-        category: taxCategoryReduced,
-    });
-
-    class MockConnection {
-        getRepository() {
-            return {
-                find() {
-                    return Promise.resolve([
-                        taxRateDefaultStandard,
-                        taxRateDefaultReduced,
-                        taxRateOtherStandard,
-                        taxRateOtherReduced,
-                    ]);
-                },
-            };
-        }
-    }
-
-    function createRequestContext(pricesIncludeTax: boolean, activeTaxZone: Zone): RequestContext {
-        const channel = new Channel({
-            defaultTaxZone: zoneDefault,
-            pricesIncludeTax,
-        });
-        const ctx = new RequestContext({
-            channel,
-            authorizedAsOwnerOnly: false,
-            languageCode: LanguageCode.en,
-            isAuthorized: true,
-            session: {} as any,
-        });
-        // TODO: Hack until we implement the other ways of
-        // calculating the activeTaxZone (customer billing address etc)
-        delete Object.getPrototypeOf(ctx).activeTaxZone;
-        (ctx as any).activeTaxZone = activeTaxZone;
-        return ctx;
-    }
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
