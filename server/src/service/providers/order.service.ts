@@ -1,5 +1,4 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { AdjustmentType } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -12,22 +11,18 @@ import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
-import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
 import { translateDeep } from '../helpers/translate-entity';
 
+import { OrderCalculatorService } from './order-calculator.service';
 import { ProductVariantService } from './product-variant.service';
-import { TaxCalculatorService } from './tax-calculator.service';
-import { TaxRateService } from './tax-rate.service';
 
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
-        private taxRateService: TaxRateService,
-        private taxCalculatorService: TaxCalculatorService,
+        private orderCalculatorService: OrderCalculatorService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -115,14 +110,14 @@ export class OrderService {
             orderLine.items = orderLine.items.slice(0, quantity);
         }
         await this.connection.getRepository(OrderLine).save(orderLine);
-        return this.applyAdjustments(ctx, order);
+        return this.applyTaxesAndPromotions(ctx, order);
     }
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
-        const updatedOrder = await this.applyAdjustments(ctx, order);
+        const updatedOrder = await this.applyTaxesAndPromotions(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
         return updatedOrder;
     }
@@ -177,100 +172,12 @@ export class OrderService {
         }
     }
 
-    // TODO: Refactor the mail calculation logic out into a more testable service.
-    private async applyAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
-        const activeZone = ctx.channel.defaultTaxZone;
-        const taxRates = await this.connection.getRepository(TaxRate).find({
-            where: {
-                enabled: true,
-                zone: activeZone,
-            },
-            relations: ['category', 'zone', 'customerGroup'],
-        });
+    private async applyTaxesAndPromotions(ctx: RequestContext, order: Order): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({ where: { enabled: true } });
-
-        order.clearAdjustments();
-        if (order.lines.length) {
-            // First apply taxes to the non-discounted prices
-            this.applyTaxes(order, taxRates, activeZone, ctx);
-            // Then test and apply promotions
-            this.applyPromotions(order, promotions);
-            // Finally, re-calculate taxes because the promotions may have
-            // altered the unit prices, which in turn will alter the tax payable.
-            this.applyTaxes(order, taxRates, activeZone, ctx);
-        } else {
-            this.calculateOrderTotals(order);
-        }
-
+        order = this.orderCalculatorService.applyTaxesAndPromotions(ctx, order, promotions);
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);
         return order;
-    }
-
-    /**
-     * Applies the correct TaxRate to each OrderItem in the order.
-     */
-    private applyTaxes(order: Order, taxRates: TaxRate[], activeZone: Zone, ctx: RequestContext) {
-        for (const line of order.lines) {
-            line.clearAdjustments(AdjustmentType.TAX);
-
-            const applicableTaxRate = this.taxRateService.getApplicableTaxRate(activeZone, line.taxCategory);
-            const {
-                price,
-                priceIncludesTax,
-                priceWithTax,
-                priceWithoutTax,
-            } = this.taxCalculatorService.calculate(line.unitPrice, line.taxCategory, ctx);
-
-            line.unitPriceIncludesTax = priceIncludesTax;
-            line.includedTaxRate = applicableTaxRate.value;
-
-            if (!priceIncludesTax) {
-                for (const item of line.items) {
-                    item.pendingAdjustments = item.pendingAdjustments.concat(
-                        applicableTaxRate.apply(line.unitPriceWithPromotions),
-                    );
-                }
-            }
-            this.calculateOrderTotals(order);
-        }
-    }
-
-    /**
-     * Applies any eligible promotions to each OrderItem in the order.
-     */
-    private applyPromotions(order: Order, promotions: Promotion[]) {
-        for (const line of order.lines) {
-            const applicablePromotions = promotions.filter(p => p.test(order));
-
-            line.clearAdjustments(AdjustmentType.PROMOTION);
-
-            for (const item of line.items) {
-                if (applicablePromotions) {
-                    for (const promotion of applicablePromotions) {
-                        const adjustment = promotion.apply(item, line);
-                        if (adjustment) {
-                            item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
-                        }
-                    }
-                }
-            }
-            this.calculateOrderTotals(order);
-        }
-    }
-
-    private calculateOrderTotals(order: Order) {
-        let totalPrice = 0;
-        let totalTax = 0;
-
-        for (const line of order.lines) {
-            totalPrice += line.totalPrice;
-            totalTax += line.unitTax * line.quantity;
-        }
-        const totalPriceBeforeTax = totalPrice - totalTax;
-
-        order.totalPriceBeforeTax = totalPriceBeforeTax;
-        order.totalPrice = totalPrice;
     }
 }

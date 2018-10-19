@@ -14,6 +14,7 @@ import { CustomerGroupService } from './providers/customer-group.service';
 import { CustomerService } from './providers/customer.service';
 import { FacetValueService } from './providers/facet-value.service';
 import { FacetService } from './providers/facet.service';
+import { OrderCalculatorService } from './providers/order-calculator.service';
 import { OrderService } from './providers/order.service';
 import { PasswordService } from './providers/password.service';
 import { ProductOptionGroupService } from './providers/product-option-group.service';
@@ -58,7 +59,13 @@ const exportedProviders = [
  */
 @Module({
     imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
-    providers: [...exportedProviders, PasswordService, TranslationUpdaterService, TaxCalculatorService],
+    providers: [
+        ...exportedProviders,
+        PasswordService,
+        TranslationUpdaterService,
+        TaxCalculatorService,
+        OrderCalculatorService,
+    ],
     exports: exportedProviders,
 })
 export class ServiceModule implements OnModuleInit {
