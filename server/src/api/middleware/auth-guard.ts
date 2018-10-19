@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, ReflectMetadata } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request, Response } from 'express';
@@ -8,26 +8,10 @@ import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';
 import { AuthService } from '../../service/services/auth.service';
 
-import { extractAuthToken } from './extract-auth-token';
-import { REQUEST_CONTEXT_KEY, RequestContextService } from './request-context.service';
-import { setAuthToken } from './set-auth-token';
-
-export const PERMISSIONS_METADATA_KEY = '__permissions__';
-
-/**
- * Attatches metadata to the resolver defining which permissions are required to execute the
- * operation.
- *
- * @example
- * ```
- *  @Allow(Permission.SuperAdmin)
- *  @Query()
- *  getAdministrators() {
- *      // ...
- *  }
- * ```
- */
-export const Allow = (...permissions: Permission[]) => ReflectMetadata(PERMISSIONS_METADATA_KEY, permissions);
+import { extractAuthToken } from '../common/extract-auth-token';
+import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
+import { setAuthToken } from '../common/set-auth-token';
+import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 
 /**
  * A guard which checks for the existence of a valid session token in the request and if found,

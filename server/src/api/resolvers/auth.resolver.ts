@@ -7,11 +7,11 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
-import { Allow } from '../common/auth-guard';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
 import { setAuthToken } from '../common/set-auth-token';
+import { Allow } from '../decorators/allow.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Auth')
 export class AuthResolver {

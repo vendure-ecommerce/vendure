@@ -1,6 +1,6 @@
 import { Context } from '@nestjs/graphql';
 
-import { REQUEST_CONTEXT_KEY } from './request-context.service';
+import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
 
 /**
  * Resolver param decorator which extracts the RequestContext from the incoming

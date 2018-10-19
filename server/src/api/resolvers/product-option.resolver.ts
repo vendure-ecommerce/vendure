@@ -12,9 +12,9 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../service/services/product-option.service';
-import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
+import { Allow } from '../decorators/allow.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {

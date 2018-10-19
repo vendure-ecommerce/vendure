@@ -1,34 +1,20 @@
-import { ExecutionContext, Injectable, NestInterceptor, ReflectMetadata } from '@nestjs/common';
+import { ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ConfigService } from '../../config/config.service';
+import { DECODE_METADATA_KEY } from '../decorators/decode.decorator';
 
-import { IdCodec } from './id-codec';
-
-const DECODE_METADATA_KEY = '__decode__';
-
-/**
- * Attatches metadata to the resolver defining which keys are ids which need to be decoded.
- * By default, all keys named "id" will be implicitly decoded, but some operations have ID arguments
- * which are not named "id", e.g. assignRoleToAdministrator, where there are 2 ID arguments passed.
- *
- * @example
- * ```
- *  @Query()
- *  @Decode('administratorId', 'roleId')
- *  assignRoleToAdministrator(@Args() args) {
- *      // ...
- *  }
- * ```
- */
-export const Decode = (...transformKeys: string[]) => ReflectMetadata(DECODE_METADATA_KEY, transformKeys);
+import { IdCodec } from '../common/id-codec';
 
 /**
  * This interceptor automatically decodes incoming requests and encodes outgoing requests so that any
  * ID values are transformed correctly as per the configured EntityIdStrategy.
+ *
+ * ID values are defined as properties with the name "id", or properties with names matching any
+ * arguments passed to the {@link Decode} decorator.
  */
 @Injectable()
 export class IdInterceptor implements NestInterceptor {

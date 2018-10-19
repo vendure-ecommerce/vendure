@@ -10,9 +10,9 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { PromotionService } from '../../service/services/promotion.service';
-import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
+import { Allow } from '../decorators/allow.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Promotion')
 export class PromotionResolver {

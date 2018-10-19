@@ -8,10 +8,10 @@ import {
 
 import { Channel } from '../../entity/channel/channel.entity';
 import { ChannelService } from '../../service/services/channel.service';
-import { Allow } from '../common/auth-guard';
-import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
+import { Allow } from '../decorators/allow.decorator';
+import { Decode } from '../decorators/decode.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Channel')
 export class ChannelResolver {

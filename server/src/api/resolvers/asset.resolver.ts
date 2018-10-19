@@ -9,7 +9,7 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Asset } from '../../entity/asset/asset.entity';
 import { AssetService } from '../../service/services/asset.service';
-import { Allow } from '../common/auth-guard';
+import { Allow } from '../decorators/allow.decorator';
 
 @Resolver('Assets')
 export class AssetResolver {

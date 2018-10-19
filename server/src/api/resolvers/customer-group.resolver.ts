@@ -10,10 +10,10 @@ import {
 
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { CustomerGroupService } from '../../service/services/customer-group.service';
-import { Allow } from '../common/auth-guard';
-import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
+import { Allow } from '../decorators/allow.decorator';
+import { Decode } from '../decorators/decode.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('CustomerGroup')
 export class CustomerGroupResolver {

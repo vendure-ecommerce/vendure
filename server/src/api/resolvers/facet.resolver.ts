@@ -17,9 +17,9 @@ import { Facet } from '../../entity/facet/facet.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/services/facet-value.service';
 import { FacetService } from '../../service/services/facet.service';
-import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
-import { Ctx } from '../common/request-context.decorator';
+import { Allow } from '../decorators/allow.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Facet')
 export class FacetResolver {

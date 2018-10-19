@@ -7,11 +7,11 @@ import { ConfigModule } from '../config/config.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
-import { AssetInterceptor } from './common/asset-interceptor';
-import { AuthGuard } from './common/auth-guard';
-import { GraphqlConfigService } from './common/graphql-config.service';
-import { IdInterceptor } from './common/id-interceptor';
 import { RequestContextService } from './common/request-context.service';
+import { GraphqlConfigService } from './config/graphql-config.service';
+import { AssetInterceptor } from './middleware/asset-interceptor';
+import { AuthGuard } from './middleware/auth-guard';
+import { IdInterceptor } from './middleware/id-interceptor';
 import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
