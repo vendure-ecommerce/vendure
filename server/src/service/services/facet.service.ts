@@ -11,8 +11,8 @@ import { assertFound } from '../../common/utils';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 
-import { buildListQuery } from '../helpers/build-list-query';
 import { createTranslatable } from '../helpers/create-translatable';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
@@ -22,6 +22,7 @@ export class FacetService {
     constructor(
         @InjectConnection() private connection: Connection,
         private translationUpdaterService: TranslationUpdaterService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findAll(
@@ -30,7 +31,8 @@ export class FacetService {
     ): Promise<PaginatedList<Translated<Facet>>> {
         const relations = ['values'];
 
-        return buildListQuery(this.connection, Facet, options, relations)
+        return this.listQueryBuilder
+            .build(Facet, options, relations)
             .getManyAndCount()
             .then(([facets, totalItems]) => {
                 const items = facets.map(facet => translateDeep(facet, lang, ['values']));

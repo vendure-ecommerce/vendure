@@ -14,14 +14,18 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { Role } from '../../entity/role/role.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/patch-entity';
 
 import { ChannelService } from './channel.service';
 
 @Injectable()
 export class RoleService {
-    constructor(@InjectConnection() private connection: Connection, private channelService: ChannelService) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
     async initRoles() {
         await this.ensureSuperAdminRoleExists();
@@ -29,7 +33,8 @@ export class RoleService {
     }
 
     findAll(options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
-        return buildListQuery(this.connection, Role, options, ['channels'])
+        return this.listQueryBuilder
+            .build(Role, options, ['channels'])
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

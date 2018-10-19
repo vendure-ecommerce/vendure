@@ -18,7 +18,7 @@ import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -38,13 +38,15 @@ export class PromotionService {
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {
         this.availableConditions = this.configService.promotionConditions;
         this.availableActions = this.configService.promotionActions;
     }
 
     findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
-        return buildListQuery(this.connection, Promotion, options)
+        return this.listQueryBuilder
+            .build(Promotion, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

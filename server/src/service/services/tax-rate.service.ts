@@ -10,8 +10,8 @@ import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
 import { getEntityOrThrow } from '../helpers/get-entity-or-throw';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/patch-entity';
 
 export class TaxRateService {
@@ -27,14 +27,18 @@ export class TaxRateService {
         id: '0',
     });
 
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
     async initTaxRates() {
         return this.updateActiveTaxRates();
     }
 
     findAll(options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
-        return buildListQuery(this.connection, TaxRate, options, ['category', 'zone', 'customerGroup'])
+        return this.listQueryBuilder
+            .build(TaxRate, options, ['category', 'zone', 'customerGroup'])
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

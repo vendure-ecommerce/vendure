@@ -1,6 +1,6 @@
-import { FilterParameter } from '../../common/types/common-types';
-import { ProductTranslation } from '../../entity/product/product-translation.entity';
-import { Product } from '../../entity/product/product.entity';
+import { FilterParameter } from '../../../common/types/common-types';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
 
 import { parseFilterParams } from './parse-filter-params';
 import { MockConnection } from './parse-sort-params.spec';

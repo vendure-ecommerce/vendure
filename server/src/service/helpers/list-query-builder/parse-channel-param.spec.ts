@@ -1,6 +1,6 @@
-import { Channel } from '../../entity/channel/channel.entity';
-import { Customer } from '../../entity/customer/customer.entity';
-import { Product } from '../../entity/product/product.entity';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { Customer } from '../../../entity/customer/customer.entity';
+import { Product } from '../../../entity/product/product.entity';
 
 import { parseChannelParam } from './parse-channel-param';
 import { MockConnection } from './parse-sort-params.spec';

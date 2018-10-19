@@ -8,15 +8,19 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/patch-entity';
 
 @Injectable()
 export class CountryService {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
     findAll(options?: ListQueryOptions<Country>): Promise<PaginatedList<Country>> {
-        return buildListQuery(this.connection, Country, options)
+        return this.listQueryBuilder
+            .build(Country, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

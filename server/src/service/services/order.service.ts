@@ -12,7 +12,7 @@ import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { translateDeep } from '../helpers/translate-entity';
 
@@ -23,10 +23,12 @@ export class OrderService {
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
         private orderCalculator: OrderCalculator,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
-        return buildListQuery(this.connection, Order, options, ['lines', 'lines.productVariant', 'customer'])
+        return this.listQueryBuilder
+            .build(Order, options, ['lines', 'lines.productVariant', 'customer'])
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {

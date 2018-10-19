@@ -8,12 +8,15 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Asset } from '../../entity/asset/asset.entity';
-
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
 @Injectable()
 export class AssetService {
-    constructor(@InjectConnection() private connection: Connection, private configService: ConfigService) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
     findOne(id: ID): Promise<Asset | undefined> {
         return this.connection.getRepository(Asset).findOne(id);
@@ -24,7 +27,8 @@ export class AssetService {
     }
 
     findAll(options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
-        return buildListQuery(this.connection, Asset, options)
+        return this.listQueryBuilder
+            .build(Asset, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

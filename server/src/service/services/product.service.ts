@@ -12,8 +12,8 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
 import { createTranslatable } from '../helpers/create-translatable';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
@@ -32,6 +32,7 @@ export class ProductService {
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
         private taxRateService: TaxRateService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findAll(
@@ -49,7 +50,8 @@ export class ProductService {
             'channels',
         ];
 
-        return buildListQuery(this.connection, Product, options, relations, ctx.channelId)
+        return this.listQueryBuilder
+            .build(Product, options, relations, ctx.channelId)
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products

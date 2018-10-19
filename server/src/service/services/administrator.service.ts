@@ -9,7 +9,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/patch-entity';
 
@@ -19,6 +19,7 @@ import { RoleService } from './role.service';
 export class AdministratorService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private listQueryBuilder: ListQueryBuilder,
         private passwordCipher: PasswordCiper,
         private roleService: RoleService,
     ) {}
@@ -28,7 +29,8 @@ export class AdministratorService {
     }
 
     findAll(options?: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
-        return buildListQuery(this.connection, Administrator, options, ['user', 'user.roles'])
+        return this.listQueryBuilder
+            .build(Administrator, options, ['user', 'user.roles'])
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

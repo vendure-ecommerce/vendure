@@ -9,7 +9,7 @@ import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { buildListQuery } from '../helpers/build-list-query';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
 import { RoleService } from './role.service';
@@ -20,10 +20,12 @@ export class CustomerService {
         @InjectConnection() private connection: Connection,
         private passwordCipher: PasswordCiper,
         private roleService: RoleService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
-        return buildListQuery(this.connection, Customer, options)
+        return this.listQueryBuilder
+            .build(Customer, options)
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }

@@ -8,6 +8,7 @@ import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
+import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 
 import { TaxCalculator } from './tax-calculator';
 
@@ -99,7 +100,12 @@ describe('TaxCalculator', () => {
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
-            providers: [TaxCalculator, TaxRateService, { provide: Connection, useClass: MockConnection }],
+            providers: [
+                TaxCalculator,
+                TaxRateService,
+                { provide: Connection, useClass: MockConnection },
+                { provide: ListQueryBuilder, useValue: {} },
+            ],
         }).compile();
 
         taxCalculator = module.get(TaxCalculator);

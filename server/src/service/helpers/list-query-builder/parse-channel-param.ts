@@ -1,7 +1,7 @@
 import { ID, Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
-import { VendureEntity } from '../../entity/base/base.entity';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { WhereCondition } from './parse-filter-params';
 

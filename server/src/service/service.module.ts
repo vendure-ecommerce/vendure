@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
+import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
@@ -65,6 +66,7 @@ const exportedProviders = [
         TranslationUpdaterService,
         TaxCalculator,
         OrderCalculator,
+        ListQueryBuilder,
     ],
     exports: exportedProviders,
 })
