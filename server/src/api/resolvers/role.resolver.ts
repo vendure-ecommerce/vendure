@@ -9,7 +9,7 @@ import {
 import { PaginatedList } from 'shared/shared-types';
 
 import { Role } from '../../entity/role/role.entity';
-import { RoleService } from '../../service/providers/role.service';
+import { RoleService } from '../../service/services/role.service';
 import { Allow } from '../common/auth-guard';
 
 @Resolver('Roles')

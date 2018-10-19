@@ -7,7 +7,7 @@ import {
 } from 'shared/generated-types';
 
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
-import { TaxCategoryService } from '../../service/providers/tax-category.service';
+import { TaxCategoryService } from '../../service/services/tax-category.service';
 import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
 import { Ctx } from '../common/request-context.decorator';

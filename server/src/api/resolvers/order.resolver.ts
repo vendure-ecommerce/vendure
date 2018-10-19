@@ -11,8 +11,8 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Order } from '../../entity/order/order.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { AuthService } from '../../service/providers/auth.service';
-import { OrderService } from '../../service/providers/order.service';
+import { AuthService } from '../../service/services/auth.service';
+import { OrderService } from '../../service/services/order.service';
 import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';

@@ -10,7 +10,7 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { CustomerService } from '../../service/providers/customer.service';
+import { CustomerService } from '../../service/services/customer.service';
 import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 

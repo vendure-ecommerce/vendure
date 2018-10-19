@@ -6,7 +6,7 @@ import { Permission } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';
-import { AuthService } from '../../service/providers/auth.service';
+import { AuthService } from '../../service/services/auth.service';
 
 import { extractAuthToken } from './extract-auth-token';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from './request-context.service';

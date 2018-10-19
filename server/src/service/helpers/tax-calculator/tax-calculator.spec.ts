@@ -2,17 +2,17 @@ import { Test } from '@nestjs/testing';
 import { LanguageCode } from 'shared/generated-types';
 import { Connection } from 'typeorm';
 
-import { RequestContext } from '../../api/common/request-context';
-import { Channel } from '../../entity/channel/channel.entity';
-import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
-import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { Zone } from '../../entity/zone/zone.entity';
+import { RequestContext } from '../../../api/common/request-context';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
+import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
+import { Zone } from '../../../entity/zone/zone.entity';
+import { TaxRateService } from '../../services/tax-rate.service';
 
-import { TaxCalculatorService } from './tax-calculator.service';
-import { TaxRateService } from './tax-rate.service';
+import { TaxCalculator } from './tax-calculator';
 
-describe('TaxCalculatorService', () => {
-    let taxCalculatorService: TaxCalculatorService;
+describe('TaxCalculator', () => {
+    let taxCalculator: TaxCalculator;
     const inputPrice = 6543;
     const taxCategoryStandard = new TaxCategory({
         id: 'taxCategoryStandard',
@@ -99,14 +99,10 @@ describe('TaxCalculatorService', () => {
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
-            providers: [
-                TaxCalculatorService,
-                TaxRateService,
-                { provide: Connection, useClass: MockConnection },
-            ],
+            providers: [TaxCalculator, TaxRateService, { provide: Connection, useClass: MockConnection }],
         }).compile();
 
-        taxCalculatorService = module.get(TaxCalculatorService);
+        taxCalculator = module.get(TaxCalculator);
         const taxRateService = module.get(TaxRateService);
         await taxRateService.initTaxRates();
     });
@@ -114,7 +110,7 @@ describe('TaxCalculatorService', () => {
     describe('with prices which do not include tax', () => {
         it('standard tax, default zone', () => {
             const ctx = createRequestContext(false, zoneDefault);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryStandard, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -126,7 +122,7 @@ describe('TaxCalculatorService', () => {
 
         it('reduced tax, default zone', () => {
             const ctx = createRequestContext(false, zoneDefault);
-            const result = taxCalculatorService.calculate(6543, taxCategoryReduced, ctx);
+            const result = taxCalculator.calculate(6543, taxCategoryReduced, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -138,7 +134,7 @@ describe('TaxCalculatorService', () => {
 
         it('standard tax, other zone', () => {
             const ctx = createRequestContext(false, zoneOther);
-            const result = taxCalculatorService.calculate(6543, taxCategoryStandard, ctx);
+            const result = taxCalculator.calculate(6543, taxCategoryStandard, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -150,7 +146,7 @@ describe('TaxCalculatorService', () => {
 
         it('reduced tax, other zone', () => {
             const ctx = createRequestContext(false, zoneOther);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryReduced, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -162,7 +158,7 @@ describe('TaxCalculatorService', () => {
 
         it('standard tax, unconfigured zone', () => {
             const ctx = createRequestContext(false, zoneWithNoTaxRate);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryReduced, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -176,7 +172,7 @@ describe('TaxCalculatorService', () => {
     describe('with prices which include tax', () => {
         it('standard tax, default zone', () => {
             const ctx = createRequestContext(true, zoneDefault);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryStandard, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -188,7 +184,7 @@ describe('TaxCalculatorService', () => {
 
         it('reduced tax, default zone', () => {
             const ctx = createRequestContext(true, zoneDefault);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryReduced, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, ctx);
 
             expect(result).toEqual({
                 price: inputPrice,
@@ -200,7 +196,7 @@ describe('TaxCalculatorService', () => {
 
         it('standard tax, other zone', () => {
             const ctx = createRequestContext(true, zoneOther);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryStandard, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, ctx);
 
             expect(result).toEqual({
                 price: taxRateDefaultStandard.netPriceOf(inputPrice),
@@ -214,7 +210,7 @@ describe('TaxCalculatorService', () => {
 
         it('reduced tax, other zone', () => {
             const ctx = createRequestContext(true, zoneOther);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryReduced, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, ctx);
 
             expect(result).toEqual({
                 price: taxRateDefaultReduced.netPriceOf(inputPrice),
@@ -226,7 +222,7 @@ describe('TaxCalculatorService', () => {
 
         it('standard tax, unconfigured zone', () => {
             const ctx = createRequestContext(true, zoneWithNoTaxRate);
-            const result = taxCalculatorService.calculate(inputPrice, taxCategoryStandard, ctx);
+            const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, ctx);
 
             expect(result).toEqual({
                 price: taxRateDefaultStandard.netPriceOf(inputPrice),

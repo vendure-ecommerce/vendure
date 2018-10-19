@@ -9,7 +9,7 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
-import { ChannelService } from '../../service/providers/channel.service';
+import { ChannelService } from '../../service/services/channel.service';
 
 import { RequestContext } from './request-context';
 

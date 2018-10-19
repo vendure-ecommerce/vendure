@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { RequestContext } from '../../api/common/request-context';
-import { idsAreEqual } from '../../common/utils';
-import { Channel } from '../../entity/channel/channel.entity';
-import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
-import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { Zone } from '../../entity/zone/zone.entity';
+import { RequestContext } from '../../../api/common/request-context';
+import { idsAreEqual } from '../../../common/utils';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
+import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
+import { Zone } from '../../../entity/zone/zone.entity';
 
-import { TaxRateService } from './tax-rate.service';
+import { TaxRateService } from '../../services/tax-rate.service';
 
 export interface TaxCalculationResult {
     price: number;
@@ -17,7 +17,7 @@ export interface TaxCalculationResult {
 }
 
 @Injectable()
-export class TaxCalculatorService {
+export class TaxCalculator {
     constructor(private taxRateService: TaxRateService) {}
 
     /**

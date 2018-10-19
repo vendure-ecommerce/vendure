@@ -10,15 +10,15 @@ import { Customer } from '../../entity/customer/customer.entity';
 import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
+import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
-import { PasswordService } from './password.service';
 import { RoleService } from './role.service';
 
 @Injectable()
 export class CustomerService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private passwordService: PasswordService,
+        private passwordCipher: PasswordCiper,
         private roleService: RoleService,
     ) {}
 
@@ -45,7 +45,7 @@ export class CustomerService {
 
         if (password) {
             const user = new User();
-            user.passwordHash = await this.passwordService.hash(password);
+            user.passwordHash = await this.passwordCipher.hash(password);
             user.identifier = input.emailAddress;
             user.roles = [await this.roleService.getCustomerRole()];
             const createdUser = await this.connection.manager.save(user);

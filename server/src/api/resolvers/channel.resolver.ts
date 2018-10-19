@@ -7,7 +7,7 @@ import {
 } from 'shared/generated-types';
 
 import { Channel } from '../../entity/channel/channel.entity';
-import { ChannelService } from '../../service/providers/channel.service';
+import { ChannelService } from '../../service/services/channel.service';
 import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';

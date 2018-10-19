@@ -5,8 +5,8 @@ import { LoginMutationArgs, LoginResult, Permission } from 'shared/generated-typ
 import { ConfigService } from '../../config/config.service';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
-import { AuthService } from '../../service/providers/auth.service';
-import { ChannelService } from '../../service/providers/channel.service';
+import { AuthService } from '../../service/services/auth.service';
+import { ChannelService } from '../../service/services/channel.service';
 import { Allow } from '../common/auth-guard';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { RequestContext } from '../common/request-context';

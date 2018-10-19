@@ -11,7 +11,7 @@ import {
 import { PaginatedList } from 'shared/shared-types';
 
 import { Administrator } from '../../entity/administrator/administrator.entity';
-import { AdministratorService } from '../../service/providers/administrator.service';
+import { AdministratorService } from '../../service/services/administrator.service';
 import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 

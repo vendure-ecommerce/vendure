@@ -10,16 +10,16 @@ import { Administrator } from '../../entity/administrator/administrator.entity';
 import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
+import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/patch-entity';
 
-import { PasswordService } from './password.service';
 import { RoleService } from './role.service';
 
 @Injectable()
 export class AdministratorService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private passwordService: PasswordService,
+        private passwordCipher: PasswordCiper,
         private roleService: RoleService,
     ) {}
 
@@ -46,7 +46,7 @@ export class AdministratorService {
         const administrator = new Administrator(input);
 
         const user = new User();
-        user.passwordHash = await this.passwordService.hash(input.password);
+        user.passwordHash = await this.passwordCipher.hash(input.password);
         user.identifier = input.emailAddress;
 
         const createdUser = await this.connection.manager.save(user);
@@ -71,7 +71,7 @@ export class AdministratorService {
         await this.connection.manager.save(administrator);
 
         if (input.password) {
-            administrator.user.passwordHash = await this.passwordService.hash(input.password);
+            administrator.user.passwordHash = await this.passwordCipher.hash(input.password);
         }
         if (input.roleIds) {
             administrator.user.roles = [];

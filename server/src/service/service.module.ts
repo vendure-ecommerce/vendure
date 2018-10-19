@@ -4,29 +4,29 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
 
+import { OrderCalculator } from './helpers/order-calculator/order-calculator';
+import { PasswordCiper } from './helpers/password-cipher/password-ciper';
+import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslationUpdaterService } from './helpers/translation-updater.service';
-import { AdministratorService } from './providers/administrator.service';
-import { AssetService } from './providers/asset.service';
-import { AuthService } from './providers/auth.service';
-import { ChannelService } from './providers/channel.service';
-import { CountryService } from './providers/country.service';
-import { CustomerGroupService } from './providers/customer-group.service';
-import { CustomerService } from './providers/customer.service';
-import { FacetValueService } from './providers/facet-value.service';
-import { FacetService } from './providers/facet.service';
-import { OrderCalculatorService } from './providers/order-calculator.service';
-import { OrderService } from './providers/order.service';
-import { PasswordService } from './providers/password.service';
-import { ProductOptionGroupService } from './providers/product-option-group.service';
-import { ProductOptionService } from './providers/product-option.service';
-import { ProductVariantService } from './providers/product-variant.service';
-import { ProductService } from './providers/product.service';
-import { PromotionService } from './providers/promotion.service';
-import { RoleService } from './providers/role.service';
-import { TaxCalculatorService } from './providers/tax-calculator.service';
-import { TaxCategoryService } from './providers/tax-category.service';
-import { TaxRateService } from './providers/tax-rate.service';
-import { ZoneService } from './providers/zone.service';
+import { AdministratorService } from './services/administrator.service';
+import { AssetService } from './services/asset.service';
+import { AuthService } from './services/auth.service';
+import { ChannelService } from './services/channel.service';
+import { CountryService } from './services/country.service';
+import { CustomerGroupService } from './services/customer-group.service';
+import { CustomerService } from './services/customer.service';
+import { FacetValueService } from './services/facet-value.service';
+import { FacetService } from './services/facet.service';
+import { OrderService } from './services/order.service';
+import { ProductOptionGroupService } from './services/product-option-group.service';
+import { ProductOptionService } from './services/product-option.service';
+import { ProductVariantService } from './services/product-variant.service';
+import { ProductService } from './services/product.service';
+import { PromotionService } from './services/promotion.service';
+import { RoleService } from './services/role.service';
+import { TaxCategoryService } from './services/tax-category.service';
+import { TaxRateService } from './services/tax-rate.service';
+import { ZoneService } from './services/zone.service';
 
 const exportedProviders = [
     PromotionService,
@@ -61,10 +61,10 @@ const exportedProviders = [
     imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
     providers: [
         ...exportedProviders,
-        PasswordService,
+        PasswordCiper,
         TranslationUpdaterService,
-        TaxCalculatorService,
-        OrderCalculatorService,
+        TaxCalculator,
+        OrderCalculator,
     ],
     exports: exportedProviders,
 })

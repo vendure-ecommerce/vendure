@@ -13,16 +13,16 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { buildListQuery } from '../helpers/build-list-query';
+import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { translateDeep } from '../helpers/translate-entity';
 
-import { OrderCalculatorService } from './order-calculator.service';
 import { ProductVariantService } from './product-variant.service';
 
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
-        private orderCalculatorService: OrderCalculatorService,
+        private orderCalculator: OrderCalculator,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -174,7 +174,7 @@ export class OrderService {
 
     private async applyTaxesAndPromotions(ctx: RequestContext, order: Order): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({ where: { enabled: true } });
-        order = this.orderCalculatorService.applyTaxesAndPromotions(ctx, order, promotions);
+        order = this.orderCalculator.applyTaxesAndPromotions(ctx, order, promotions);
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);

@@ -12,7 +12,7 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
-import { PasswordService } from './password.service';
+import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
 /**
  * The AuthService manages both authenticated and anonymous sessions.
@@ -22,7 +22,7 @@ export class AuthService {
     private readonly sessionDurationInMs;
 
     constructor(
-        private passwordService: PasswordService,
+        private passwordCipher: PasswordCiper,
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
     ) {
@@ -34,7 +34,7 @@ export class AuthService {
      */
     async authenticate(identifier: string, password: string): Promise<AuthenticatedSession> {
         const user = await this.getUserFromIdentifier(identifier);
-        const passwordMatches = await this.passwordService.check(password, user.passwordHash);
+        const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }

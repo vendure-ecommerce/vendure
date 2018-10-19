@@ -10,7 +10,7 @@ import { PaginatedList } from 'shared/shared-types';
 
 import { Country } from '../../entity/country/country.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { CountryService } from '../../service/providers/country.service';
+import { CountryService } from '../../service/services/country.service';
 import { Allow } from '../common/auth-guard';
 import { RequestContext } from '../common/request-context';
 import { Ctx } from '../common/request-context.decorator';

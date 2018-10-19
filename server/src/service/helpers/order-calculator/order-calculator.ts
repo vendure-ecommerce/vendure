@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { AdjustmentType } from 'shared/generated-types';
 
-import { RequestContext } from '../../api/common/request-context';
-import { Order } from '../../entity/order/order.entity';
-import { Promotion } from '../../entity/promotion/promotion.entity';
-import { Zone } from '../../entity/zone/zone.entity';
+import { RequestContext } from '../../../api/common/request-context';
+import { Order } from '../../../entity/order/order.entity';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
+import { Zone } from '../../../entity/zone/zone.entity';
 
-import { TaxCalculatorService } from './tax-calculator.service';
-import { TaxRateService } from './tax-rate.service';
+import { TaxRateService } from '../../services/tax-rate.service';
+import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 @Injectable()
-export class OrderCalculatorService {
-    constructor(private taxRateService: TaxRateService, private taxCalculatorService: TaxCalculatorService) {}
+export class OrderCalculator {
+    constructor(private taxRateService: TaxRateService, private taxCalculator: TaxCalculator) {}
 
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
@@ -41,12 +41,11 @@ export class OrderCalculatorService {
             line.clearAdjustments(AdjustmentType.TAX);
 
             const applicableTaxRate = this.taxRateService.getApplicableTaxRate(activeZone, line.taxCategory);
-            const {
-                price,
-                priceIncludesTax,
-                priceWithTax,
-                priceWithoutTax,
-            } = this.taxCalculatorService.calculate(line.unitPrice, line.taxCategory, ctx);
+            const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
+                line.unitPrice,
+                line.taxCategory,
+                ctx,
+            );
 
             line.unitPriceIncludesTax = priceIncludesTax;
             line.includedTaxRate = applicableTaxRate.value;

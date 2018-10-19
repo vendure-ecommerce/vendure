@@ -19,11 +19,11 @@ import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { createTranslatable } from '../helpers/create-translatable';
+import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { translateDeep } from '../helpers/translate-entity';
 import { TranslationUpdaterService } from '../helpers/translation-updater.service';
 import { updateTranslatable } from '../helpers/update-translatable';
 
-import { TaxCalculatorService } from './tax-calculator.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
 
@@ -33,7 +33,7 @@ export class ProductVariantService {
         @InjectConnection() private connection: Connection,
         private taxCategoryService: TaxCategoryService,
         private taxRateService: TaxRateService,
-        private taxCalculatorService: TaxCalculatorService,
+        private taxCalculator: TaxCalculator,
         private translationUpdaterService: TranslationUpdaterService,
     ) {}
 
@@ -187,12 +187,11 @@ export class ProductVariantService {
             variant.taxCategory,
         );
 
-        const {
-            price,
-            priceIncludesTax,
-            priceWithTax,
-            priceWithoutTax,
-        } = this.taxCalculatorService.calculate(channelPrice.price, variant.taxCategory, ctx);
+        const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
+            channelPrice.price,
+            variant.taxCategory,
+            ctx,
+        );
 
         variant.price = price;
         variant.priceIncludesTax = priceIncludesTax;

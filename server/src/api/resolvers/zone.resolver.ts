@@ -9,7 +9,7 @@ import {
 } from 'shared/generated-types';
 
 import { Zone } from '../../entity/zone/zone.entity';
-import { ZoneService } from '../../service/providers/zone.service';
+import { ZoneService } from '../../service/services/zone.service';
 import { Allow } from '../common/auth-guard';
 import { Decode } from '../common/id-interceptor';
 import { RequestContext } from '../common/request-context';

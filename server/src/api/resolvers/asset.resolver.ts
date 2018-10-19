@@ -8,7 +8,7 @@ import {
 import { PaginatedList } from 'shared/shared-types';
 
 import { Asset } from '../../entity/asset/asset.entity';
-import { AssetService } from '../../service/providers/asset.service';
+import { AssetService } from '../../service/services/asset.service';
 import { Allow } from '../common/auth-guard';
 
 @Resolver('Assets')
