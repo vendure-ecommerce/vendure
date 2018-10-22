@@ -16,6 +16,7 @@ export const minimumOrderAmount = new PromotionCondition({
             return order.totalPriceBeforeTax >= args.amount;
         }
     },
+    priorityValue: 10,
 });
 
 export const dateRange = new PromotionCondition({

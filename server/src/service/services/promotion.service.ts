@@ -94,6 +94,7 @@ export class PromotionService {
             enabled: input.enabled,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
+            priorityScore: this.calculatePriorityScore(input),
         });
         this.channelService.assignToChannels(adjustmentSource, ctx);
         const newAdjustmentSource = await this.connection.manager.save(adjustmentSource);
@@ -118,7 +119,8 @@ export class PromotionService {
         if (input.actions) {
             updatedAdjustmentSource.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
-        await this.connection.manager.save(updatedAdjustmentSource);
+        (adjustmentSource.priorityScore = this.calculatePriorityScore(input)),
+            await this.connection.manager.save(updatedAdjustmentSource);
         await this.updatePromotions();
         return assertFound(this.findOne(updatedAdjustmentSource.id));
     }
@@ -143,6 +145,16 @@ export class PromotionService {
             }),
         };
         return output;
+    }
+
+    private calculatePriorityScore(input: CreatePromotionInput | UpdatePromotionInput): number {
+        const conditions = input.conditions
+            ? input.conditions.map(c => this.getAdjustmentOperationByCode('condition', c.code))
+            : [];
+        const actions = input.actions
+            ? input.actions.map(c => this.getAdjustmentOperationByCode('action', c.code))
+            : [];
+        return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
     }
 
     private getAdjustmentOperationByCode(

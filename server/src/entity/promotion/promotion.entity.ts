@@ -38,6 +38,21 @@ export class Promotion extends AdjustmentSource {
 
     @Column('simple-json') actions: AdjustmentOperation[];
 
+    /**
+     * The PriorityScore is used to determine the sequence in which multiple promotions are tested
+     * on a given order. A higher number moves the Promotion towards the end of the sequence.
+     *
+     * The score is derived from the sum of the priorityValues of the PromotionConditions and
+     * PromotionActions comprising this Promotion.
+     *
+     * An example illustrating the need for a priority is this:
+     *
+     * Consider 2 Promotions, 1) buy 1 get one free and 2) 10% off when order total is over $50.
+     * If Promotion 2 is evaluated prior to Promotion 1, then it can trigger the 10% discount even
+     * if the subsequent application of Promotion 1 brings the order total down to way below $50.
+     */
+    @Column() priorityScore: number;
+
     apply(orderItem: OrderItem, orderLine: OrderLine): Adjustment | undefined {
         let amount = 0;
 

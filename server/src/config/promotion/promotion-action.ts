@@ -19,6 +19,7 @@ export class PromotionAction<T extends PromotionActionArgs = {}> {
     readonly code: string;
     readonly args: PromotionActionArgs;
     readonly description: string;
+    readonly priorityValue: number;
     private readonly executeFn: ExecutePromotionActionFn<T>;
 
     constructor(config: {
@@ -26,11 +27,13 @@ export class PromotionAction<T extends PromotionActionArgs = {}> {
         execute: ExecutePromotionActionFn<T>;
         code: string;
         description: string;
+        priorityValue?: number;
     }) {
         this.code = config.code;
         this.description = config.description;
         this.args = config.args;
         this.executeFn = config.execute;
+        this.priorityValue = config.priorityValue || 0;
     }
 
     execute(orderItem: OrderItem, orderLine: OrderLine, args: AdjustmentArg[]) {

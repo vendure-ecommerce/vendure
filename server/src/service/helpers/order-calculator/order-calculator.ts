@@ -70,17 +70,19 @@ export class OrderCalculator {
 
             line.clearAdjustments(AdjustmentType.PROMOTION);
 
-            for (const item of line.items) {
-                if (applicablePromotions) {
-                    for (const promotion of applicablePromotions) {
-                        const adjustment = promotion.apply(item, line);
-                        if (adjustment) {
-                            item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+            for (const promotion of applicablePromotions) {
+                if (promotion.test(order)) {
+                    for (const item of line.items) {
+                        if (applicablePromotions) {
+                            const adjustment = promotion.apply(item, line);
+                            if (adjustment) {
+                                item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+                            }
                         }
                     }
                 }
+                this.calculateOrderTotals(order);
             }
-            this.calculateOrderTotals(order);
         }
     }
 

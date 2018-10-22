@@ -18,4 +18,19 @@ export const itemPercentageDiscount = new PromotionAction({
     description: 'Discount every item by { discount }%',
 });
 
-export const defaultPromotionActions = [orderPercentageDiscount, itemPercentageDiscount];
+export const buy1Get1Free = new PromotionAction({
+    code: 'buy_1_get_1_free',
+    args: {},
+    execute(orderItem, orderLine, args) {
+        if (orderLine.quantity >= 2) {
+            const lineIndex = orderLine.items.indexOf(orderItem) + 1;
+            if (lineIndex % 2 === 0) {
+                return -orderLine.unitPrice;
+            }
+        }
+        return 0;
+    },
+    description: 'Discount every item by { discount }%',
+});
+
+export const defaultPromotionActions = [orderPercentageDiscount, itemPercentageDiscount, buy1Get1Free];
