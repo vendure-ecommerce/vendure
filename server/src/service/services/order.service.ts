@@ -43,14 +43,18 @@ export class OrderService {
             relations: [
                 'lines',
                 'lines.productVariant',
+                'lines.productVariant.taxCategory',
                 'lines.featuredAsset',
                 'lines.items',
                 'lines.taxCategory',
             ],
         });
         if (order) {
-            order.lines.forEach(item => {
-                item.productVariant = translateDeep(item.productVariant, ctx.languageCode);
+            order.lines.forEach(line => {
+                line.productVariant = translateDeep(
+                    this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
+                    ctx.languageCode,
+                );
             });
             return order;
         }
@@ -100,10 +104,14 @@ export class OrderService {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
+            const productVariant = orderLine.productVariant;
             for (let i = currentQuantity; i < quantity; i++) {
                 const orderItem = await this.connection.getRepository(OrderItem).save(
                     new OrderItem({
+                        unitPrice: productVariant.price,
                         pendingAdjustments: [],
+                        unitPriceIncludesTax: productVariant.priceIncludesTax,
+                        taxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
                     }),
                 );
                 orderLine.items.push(orderItem);
@@ -159,9 +167,6 @@ export class OrderService {
             productVariant,
             taxCategory: productVariant.taxCategory,
             featuredAsset: productVariant.product.featuredAsset,
-            unitPrice: productVariant.price,
-            unitPriceIncludesTax: productVariant.priceIncludesTax,
-            includedTaxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
         });
     }
 
@@ -175,7 +180,10 @@ export class OrderService {
     }
 
     private async applyTaxesAndPromotions(ctx: RequestContext, order: Order): Promise<Order> {
-        const promotions = await this.connection.getRepository(Promotion).find({ where: { enabled: true } });
+        const promotions = await this.connection.getRepository(Promotion).find({
+            where: { enabled: true },
+            order: { priorityScore: 'ASC' },
+        });
         order = this.orderCalculator.applyTaxesAndPromotions(ctx, order, promotions);
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());

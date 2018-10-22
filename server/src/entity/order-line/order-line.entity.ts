@@ -25,12 +25,6 @@ export class OrderLine extends VendureEntity {
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @Column() unitPrice: number;
-
-    @Column() unitPriceIncludesTax: boolean;
-
-    @Column() includedTaxRate: number;
-
     @OneToMany(type => OrderItem, item => item.line)
     items: OrderItem[];
 
@@ -38,20 +32,13 @@ export class OrderLine extends VendureEntity {
     order: Order;
 
     @Calculated()
-    get unitPriceWithPromotions(): number {
-        const firstItemPromotionTotal = this.items[0].pendingAdjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
-            .reduce((total, a) => total + a.amount, 0);
-        return this.unitPrice + firstItemPromotionTotal;
+    get unitPrice(): number {
+        return this.items ? this.items[0].unitPrice : 0;
     }
 
     @Calculated()
     get unitPriceWithTax(): number {
-        if (this.unitPriceIncludesTax) {
-            return this.unitPriceWithPromotions;
-        } else {
-            return this.unitPriceWithPromotions + this.unitTax;
-        }
+        return this.items ? this.items[0].unitPriceWithTax : 0;
     }
 
     @Calculated()
@@ -61,27 +48,40 @@ export class OrderLine extends VendureEntity {
 
     @Calculated()
     get totalPrice(): number {
-        return this.unitPriceWithTax * this.quantity;
+        return this.items.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
     }
 
     @Calculated()
     get adjustments(): Adjustment[] {
         if (this.items) {
-            return this.items[0].pendingAdjustments;
+            return this.items.reduce(
+                (adjustments, item) => [...adjustments, ...item.adjustments],
+                [] as Adjustment[],
+            );
         }
         return [];
     }
 
-    get unitTax(): number {
-        if (this.unitPriceIncludesTax) {
-            return Math.round(
-                this.unitPriceWithPromotions -
-                    this.unitPriceWithPromotions / ((100 + this.includedTaxRate) / 100),
-            );
-        } else {
-            const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-            return taxAdjustment ? taxAdjustment.amount : 0;
-        }
+    get lineTax(): number {
+        return this.items.reduce((total, item) => total + item.unitTax, 0);
+    }
+
+    /**
+     * Sets whether the unitPrice of each OrderItem in the line includes tax.
+     */
+    setUnitPriceIncludesTax(includesTax: boolean) {
+        this.items.forEach(item => {
+            item.unitPriceIncludesTax = includesTax;
+        });
+    }
+
+    /**
+     * Sets the tax rate being applied to each Orderitem in this line.
+     */
+    setTaxRate(taxRate: number) {
+        this.items.forEach(item => {
+            item.taxRate = taxRate;
+        });
     }
 
     /**
@@ -89,12 +89,6 @@ export class OrderLine extends VendureEntity {
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
-        this.items.forEach(item => {
-            if (!type) {
-                item.pendingAdjustments = [];
-            } else {
-                item.pendingAdjustments = item.pendingAdjustments.filter(a => a.type !== type);
-            }
-        });
+        this.items.forEach(item => item.clearAdjustments(type));
     }
 }

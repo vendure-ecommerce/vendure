@@ -47,13 +47,13 @@ export class OrderCalculator {
                 ctx,
             );
 
-            line.unitPriceIncludesTax = priceIncludesTax;
-            line.includedTaxRate = applicableTaxRate.value;
+            line.setUnitPriceIncludesTax(priceIncludesTax);
+            line.setTaxRate(applicableTaxRate.value);
 
             if (!priceIncludesTax) {
                 for (const item of line.items) {
                     item.pendingAdjustments = item.pendingAdjustments.concat(
-                        applicableTaxRate.apply(line.unitPriceWithPromotions),
+                        applicableTaxRate.apply(item.unitPriceWithPromotions),
                     );
                 }
             }
@@ -90,7 +90,7 @@ export class OrderCalculator {
 
         for (const line of order.lines) {
             totalPrice += line.totalPrice;
-            totalTax += line.unitTax * line.quantity;
+            totalTax += line.lineTax;
         }
         const totalPriceBeforeTax = totalPrice - totalTax;
 

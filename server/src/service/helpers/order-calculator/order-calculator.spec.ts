@@ -45,9 +45,13 @@ describe('OrderCalculator', () => {
         const lines = orderConfig.lines.map(
             ({ unitPrice, taxCategory, quantity }) =>
                 new OrderLine({
-                    unitPrice,
                     taxCategory,
-                    items: Array.from({ length: quantity }).map(() => new OrderItem()),
+                    items: Array.from({ length: quantity }).map(
+                        () =>
+                            new OrderItem({
+                                unitPrice,
+                            }),
+                    ),
                 }),
         );
 
