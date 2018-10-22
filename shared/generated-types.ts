@@ -275,8 +275,11 @@ export interface Order extends Node {
     code: string;
     customer?: Customer | null;
     lines: OrderLine[];
-    totalPriceBeforeTax: number;
-    totalPrice: number;
+    adjustments: Adjustment[];
+    subTotalBeforeTax: number;
+    subTotal: number;
+    totalBeforeTax: number;
+    total: number;
 }
 
 export interface OrderLine extends Node {
@@ -286,7 +289,6 @@ export interface OrderLine extends Node {
     productVariant: ProductVariant;
     featuredAsset?: Asset | null;
     unitPrice: number;
-    unitPriceWithPromotions: number;
     unitPriceWithTax: number;
     quantity: number;
     items: OrderItem[];
@@ -363,6 +365,11 @@ export interface OrderItem extends Node {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    unitPrice: number;
+    unitPriceWithTax: number;
+    unitPriceIncludesTax: boolean;
+    taxRate: number;
+    adjustments: Adjustment[];
 }
 
 export interface Adjustment {
@@ -2497,8 +2504,11 @@ export namespace OrderResolvers {
         code?: CodeResolver<string, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         lines?: LinesResolver<OrderLine[], any, Context>;
-        totalPriceBeforeTax?: TotalPriceBeforeTaxResolver<number, any, Context>;
-        totalPrice?: TotalPriceResolver<number, any, Context>;
+        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        subTotalBeforeTax?: SubTotalBeforeTaxResolver<number, any, Context>;
+        subTotal?: SubTotalResolver<number, any, Context>;
+        totalBeforeTax?: TotalBeforeTaxResolver<number, any, Context>;
+        total?: TotalResolver<number, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2511,12 +2521,23 @@ export namespace OrderResolvers {
         Context
     >;
     export type LinesResolver<R = OrderLine[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TotalPriceBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
-    export type TotalPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type SubTotalBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type SubTotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace OrderLineResolvers {
@@ -2527,7 +2548,6 @@ export namespace OrderLineResolvers {
         productVariant?: ProductVariantResolver<ProductVariant, any, Context>;
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         unitPrice?: UnitPriceResolver<number, any, Context>;
-        unitPriceWithPromotions?: UnitPriceWithPromotionsResolver<number, any, Context>;
         unitPriceWithTax?: UnitPriceWithTaxResolver<number, any, Context>;
         quantity?: QuantityResolver<number, any, Context>;
         items?: ItemsResolver<OrderItem[], any, Context>;
@@ -2550,11 +2570,6 @@ export namespace OrderLineResolvers {
         Context
     >;
     export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UnitPriceWithPromotionsResolver<R = number, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
     export type UnitPriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2760,11 +2775,33 @@ export namespace OrderItemResolvers {
         id?: IdResolver<string, any, Context>;
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        unitPrice?: UnitPriceResolver<number, any, Context>;
+        unitPriceWithTax?: UnitPriceWithTaxResolver<number, any, Context>;
+        unitPriceIncludesTax?: UnitPriceIncludesTaxResolver<boolean, any, Context>;
+        taxRate?: TaxRateResolver<number, any, Context>;
+        adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UnitPriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UnitPriceWithTaxResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type UnitPriceIncludesTaxResolver<R = boolean, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TaxRateResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace AdjustmentResolvers {

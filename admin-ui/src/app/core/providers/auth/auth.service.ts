@@ -68,7 +68,7 @@ export class AuthService {
         return this.dataService.auth.checkLoggedIn().single$.pipe(
             mergeMap(result => {
                 if (!result.me) {
-                    return of(false);
+                    return of(false) as any;
                 }
                 this.setChannelToken(result.me.channelTokens[0]);
                 return this.dataService.client.loginSuccess(result.me.identifier);
