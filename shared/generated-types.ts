@@ -1418,10 +1418,6 @@ export enum Permission {
     ReadOrder = 'ReadOrder',
     UpdateOrder = 'UpdateOrder',
     DeleteOrder = 'DeleteOrder',
-    CreateAdjustmentSource = 'CreateAdjustmentSource',
-    ReadAdjustmentSource = 'ReadAdjustmentSource',
-    UpdateAdjustmentSource = 'UpdateAdjustmentSource',
-    DeleteAdjustmentSource = 'DeleteAdjustmentSource',
     CreateSettings = 'CreateSettings',
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
@@ -4908,6 +4904,7 @@ export namespace OrderWithLines {
         __typename?: 'ProductVariant';
         id: string;
         name: string;
+        sku: string;
     };
 
     export type Items = {

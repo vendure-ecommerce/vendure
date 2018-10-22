@@ -29,11 +29,6 @@ enum Permission {
     UpdateOrder
     DeleteOrder
 
-    CreateAdjustmentSource
-    ReadAdjustmentSource
-    UpdateAdjustmentSource
-    DeleteAdjustmentSource
-
     CreateSettings
     ReadSettings
     UpdateSettings
