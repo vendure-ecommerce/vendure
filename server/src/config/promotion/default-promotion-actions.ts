@@ -1,15 +1,15 @@
-import { PromotionAction } from './promotion-action';
+import { PromotionAction, PromotionItemAction, PromotionOrderAction } from './promotion-action';
 
-export const orderPercentageDiscount = new PromotionAction({
+export const orderPercentageDiscount = new PromotionOrderAction({
     code: 'order_percentage_discount',
     args: { discount: 'percentage' },
-    execute(orderItem, orderLine, args) {
-        return -orderLine.unitPrice * (args.discount / 100);
+    execute(order, args) {
+        return -order.subTotal * (args.discount / 100);
     },
     description: 'Discount order by { discount }%',
 });
 
-export const itemPercentageDiscount = new PromotionAction({
+export const itemPercentageDiscount = new PromotionItemAction({
     code: 'item_percentage_discount',
     args: { discount: 'percentage' },
     execute(orderItem, orderLine, args) {
@@ -18,7 +18,7 @@ export const itemPercentageDiscount = new PromotionAction({
     description: 'Discount every item by { discount }%',
 });
 
-export const buy1Get1Free = new PromotionAction({
+export const buy1Get1Free = new PromotionItemAction({
     code: 'buy_1_get_1_free',
     args: {},
     execute(orderItem, orderLine, args) {

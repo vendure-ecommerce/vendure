@@ -64,8 +64,9 @@ export class OrderService {
         const newOrder = new Order({
             code: generatePublicId(),
             lines: [],
-            totalPrice: 0,
-            totalPriceBeforeTax: 0,
+            pendingAdjustments: [],
+            subTotal: 0,
+            subTotalBeforeTax: 0,
         });
         return this.connection.getRepository(Order).save(newOrder);
     }

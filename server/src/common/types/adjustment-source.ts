@@ -1,5 +1,4 @@
 import { Adjustment, AdjustmentType } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 

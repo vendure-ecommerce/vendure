@@ -84,6 +84,16 @@ export class OrderCalculator {
                 this.calculateOrderTotals(order);
             }
         }
+        const applicableOrderPromotions = promotions.filter(p => p.test(order));
+        if (applicableOrderPromotions.length) {
+            for (const promotion of applicableOrderPromotions) {
+                const adjustment = promotion.apply(order);
+                if (adjustment) {
+                    order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
+                }
+            }
+            this.calculateOrderTotals(order);
+        }
     }
 
     private calculateOrderTotals(order: Order) {
@@ -96,7 +106,7 @@ export class OrderCalculator {
         }
         const totalPriceBeforeTax = totalPrice - totalTax;
 
-        order.totalPriceBeforeTax = totalPriceBeforeTax;
-        order.totalPrice = totalPrice;
+        order.subTotalBeforeTax = totalPriceBeforeTax;
+        order.subTotal = totalPrice;
     }
 }

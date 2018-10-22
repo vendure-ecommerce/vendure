@@ -11,9 +11,9 @@ export const minimumOrderAmount = new PromotionCondition({
     },
     check(order, args) {
         if (args.taxInclusive) {
-            return order.totalPrice >= args.amount;
+            return order.subTotal >= args.amount;
         } else {
-            return order.totalPriceBeforeTax >= args.amount;
+            return order.subTotalBeforeTax >= args.amount;
         }
     },
     priorityValue: 10,

@@ -15,7 +15,7 @@ import {
     GET_PROMOTION_LIST,
     UPDATE_PROMOTION,
 } from '../../admin-ui/src/app/data/definitions/promotion-definitions';
-import { PromotionAction } from '../src/config/promotion/promotion-action';
+import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
 import { TestClient } from './test-client';
@@ -140,7 +140,7 @@ function generateTestCondition(code: string): PromotionCondition<any> {
 }
 
 function generateTestAction(code: string): PromotionAction<any> {
-    return new PromotionAction({
+    return new PromotionOrderAction({
         code,
         description: `description for ${code}`,
         args: { percentage: 'percentage' },

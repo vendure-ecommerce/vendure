@@ -75,7 +75,7 @@ export class OrderItem extends VendureEntity {
     }
 
     get promotionAdjustmentsTotal(): number {
-        return this.pendingAdjustments
+        return this.adjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
     }

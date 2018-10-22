@@ -3,7 +3,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { AdjustmentSource } from '../../common/types/adjustment-source';
-import { PromotionAction } from '../../config/promotion/promotion-action';
+import { PromotionItemAction, PromotionOrderAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { getConfig } from '../../config/vendure-config';
 import { Channel } from '../channel/channel.entity';
@@ -15,7 +15,7 @@ import { Order } from '../order/order.entity';
 export class Promotion extends AdjustmentSource {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
-    private readonly allActions: { [code: string]: PromotionAction } = {};
+    private readonly allActions: { [code: string]: PromotionItemAction | PromotionOrderAction } = {};
 
     constructor(input?: DeepPartial<Promotion>) {
         super(input);
@@ -53,12 +53,22 @@ export class Promotion extends AdjustmentSource {
      */
     @Column() priorityScore: number;
 
-    apply(orderItem: OrderItem, orderLine: OrderLine): Adjustment | undefined {
+    apply(order: Order): Adjustment | undefined;
+    apply(orderItem: OrderItem, orderLine: OrderLine): Adjustment | undefined;
+    apply(orderItemOrOrder: OrderItem | Order, orderLine?: OrderLine): Adjustment | undefined {
         let amount = 0;
 
         for (const action of this.actions) {
             const promotionAction = this.allActions[action.code];
-            amount += Math.round(promotionAction.execute(orderItem, orderLine, action.args));
+            if (this.isItemAction(promotionAction)) {
+                if (orderItemOrOrder instanceof OrderItem && orderLine) {
+                    amount += Math.round(promotionAction.execute(orderItemOrOrder, orderLine, action.args));
+                }
+            } else {
+                if (orderItemOrOrder instanceof Order) {
+                    amount += Math.round(promotionAction.execute(orderItemOrOrder, action.args));
+                }
+            }
         }
         if (amount !== 0) {
             return {
@@ -78,5 +88,9 @@ export class Promotion extends AdjustmentSource {
             }
         }
         return true;
+    }
+
+    private isItemAction(value: PromotionItemAction | PromotionOrderAction): value is PromotionItemAction {
+        return value instanceof PromotionItemAction;
     }
 }

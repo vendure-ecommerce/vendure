@@ -68,8 +68,8 @@ describe('OrderCalculator', () => {
             });
             orderCalculator.applyTaxesAndPromotions(ctx, order, []);
 
-            expect(order.totalPrice).toBe(148);
-            expect(order.totalPriceBeforeTax).toBe(123);
+            expect(order.subTotal).toBe(148);
+            expect(order.subTotalBeforeTax).toBe(123);
         });
 
         it('single line with taxes not included, multiple items', () => {
@@ -79,8 +79,8 @@ describe('OrderCalculator', () => {
             });
             orderCalculator.applyTaxesAndPromotions(ctx, order, []);
 
-            expect(order.totalPrice).toBe(444);
-            expect(order.totalPriceBeforeTax).toBe(369);
+            expect(order.subTotal).toBe(444);
+            expect(order.subTotalBeforeTax).toBe(369);
         });
 
         it('single line with taxes included', () => {
@@ -90,21 +90,21 @@ describe('OrderCalculator', () => {
             });
             orderCalculator.applyTaxesAndPromotions(ctx, order, []);
 
-            expect(order.totalPrice).toBe(123);
-            expect(order.totalPriceBeforeTax).toBe(102);
+            expect(order.subTotal).toBe(123);
+            expect(order.subTotalBeforeTax).toBe(102);
         });
 
         it('resets totals when lines array is empty', () => {
             const ctx = createRequestContext(true, zoneDefault);
             const order = createOrder({
                 lines: [],
-                totalPrice: 148,
-                totalPriceBeforeTax: 123,
+                subTotal: 148,
+                subTotalBeforeTax: 123,
             });
             orderCalculator.applyTaxesAndPromotions(ctx, order, []);
 
-            expect(order.totalPrice).toBe(0);
-            expect(order.totalPriceBeforeTax).toBe(0);
+            expect(order.subTotal).toBe(0);
+            expect(order.subTotalBeforeTax).toBe(0);
         });
     });
 });

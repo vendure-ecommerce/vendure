@@ -5,6 +5,9 @@ type Order implements Node {
     code: String!
     customer: Customer
     lines: [OrderLine!]!
-    totalPriceBeforeTax: Int!
-    totalPrice: Int!
+    adjustments: [Adjustment!]!
+    subTotalBeforeTax: Int!
+    subTotal: Int!
+    totalBeforeTax: Int!
+    total: Int!
 }
