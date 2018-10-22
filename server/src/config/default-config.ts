@@ -10,7 +10,6 @@ import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storag
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
-import { HalfUpRoundingStrategy } from './rounding-strategy/half-up-rounding-strategy';
 import { VendureConfig } from './vendure-config';
 
 /**
@@ -33,7 +32,6 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         sessionDuration: '7d',
     },
     apiPath: API_PATH,
-    roundingStrategy: new HalfUpRoundingStrategy(),
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetNamingStrategy: new DefaultAssetNamingStrategy(),
     assetStorageStrategy: new NoAssetStorageStrategy(),

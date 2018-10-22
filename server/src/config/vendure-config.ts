@@ -14,7 +14,6 @@ import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
-import { RoundingStrategy } from './rounding-strategy/rounding-strategy';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 export interface AuthOptions {
@@ -90,11 +89,6 @@ export interface VendureConfig {
      * Configuration for authorization.
      */
     authOptions: AuthOptions;
-    /**
-     * Defines the strategy used in rounding fractions of cents when performing
-     * calculations of moneytary amounts.
-     */
-    roundingStrategy?: RoundingStrategy;
     /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing

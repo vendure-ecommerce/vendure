@@ -16,7 +16,6 @@ export class Promotion extends AdjustmentSource {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: { [code: string]: PromotionAction } = {};
-    private readonly round: (input: number) => number;
 
     constructor(input?: DeepPartial<Promotion>) {
         super(input);
@@ -25,7 +24,6 @@ export class Promotion extends AdjustmentSource {
             {},
         );
         this.allActions = getConfig().promotionActions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
-        this.round = getConfig().roundingStrategy.round;
     }
 
     @Column() name: string;
@@ -45,7 +43,7 @@ export class Promotion extends AdjustmentSource {
 
         for (const action of this.actions) {
             const promotionAction = this.allActions[action.code];
-            amount += this.round(promotionAction.execute(orderItem, orderLine, action.args));
+            amount += Math.round(promotionAction.execute(orderItem, orderLine, action.args));
         }
         if (amount !== 0) {
             return {

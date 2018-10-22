@@ -13,7 +13,6 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
-import { RoundingStrategy } from './rounding-strategy/rounding-strategy';
 import { AuthOptions, getConfig, VendureConfig } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
@@ -57,10 +56,6 @@ export class ConfigService implements VendureConfig {
 
     get cors(): boolean | CorsOptions {
         return this.activeConfig.cors;
-    }
-
-    get roundingStrategy(): RoundingStrategy {
-        return this.activeConfig.roundingStrategy;
     }
 
     get entityIdStrategy(): EntityIdStrategy {
