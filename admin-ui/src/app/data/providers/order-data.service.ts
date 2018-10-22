@@ -1,7 +1,6 @@
-import { GetOrderList } from 'shared/generated-types';
+import { GetOrder, GetOrderList } from 'shared/generated-types';
 
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
-import { GET_ORDERS_LIST } from '../definitions/order-definitions';
+import { GET_ORDER, GET_ORDERS_LIST } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
 
@@ -15,5 +14,9 @@ export class OrderDataService {
                 skip,
             },
         });
+    }
+
+    getOrder(id: string) {
+        return this.baseDataService.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id });
     }
 }

@@ -1,0 +1,71 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<div *ngIf="entity$ | async as order">
+
+    <div class="order-info">
+        <div class="order-code">{{ 'order.order-code' | translate }}: {{ order.code }}</div>
+        <div class="created">{{ 'common.created' | translate }}: {{ order.createdAt | date:'medium' }}</div>
+        <div class="updated">{{ 'common.updated' | translate }}: {{ order.updatedAt | date:'medium' }}</div>
+    </div>
+
+    <table class="order-lines table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>{{ 'order.product-name' | translate }}</th>
+            <th>{{ 'order.product-sku' | translate }}</th>
+            <th>{{ 'order.unit-price' | translate }}</th>
+            <th>{{ 'order.quantity' | translate }}</th>
+            <th>{{ 'order.total' | translate }}</th>
+        </tr>
+        </thead>
+        <tr *ngFor="let line of order.lines"
+             class="order-line">
+            <td class="thumb">
+                <img [src]="line.featuredAsset.preview + '?preset=tiny'">
+            </td>
+            <td class="name">
+                {{ line.productVariant.name }}
+            </td>
+            <td class="sku">
+                {{ line.productVariant.sku }}
+            </td>
+            <td class="unit-price">
+                {{ line.unitPriceWithTax / 100 | currency }}
+            </td>
+            <td class="quantity">
+                {{ line.quantity }}
+            </td>
+            <td class="total">
+                {{ line.totalPrice / 100 | currency }}
+            </td>
+        </tr>
+        <tr class="sub-total">
+            <td class="left">{{ 'order.sub-total' | translate }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ order.subTotal / 100 | currency }}</td>
+        </tr>
+        <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
+            <td colspan="5" class="left">{{ adjustment.description  }}</td>
+            <td>{{ adjustment.amount / 100 | currency }}</td>
+        </tr>
+        <tr class="total">
+            <td class="left">{{ 'order.total' | translate }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ order.total / 100 | currency }}</td>
+        </tr>
+    </table>
+
+</div>

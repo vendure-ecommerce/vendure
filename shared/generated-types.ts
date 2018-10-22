@@ -4103,6 +4103,19 @@ export namespace GetOrderList {
     export type Items = Order.Fragment;
 }
 
+export namespace GetOrder {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        order?: Order | null;
+    };
+
+    export type Order = OrderWithLines.Fragment;
+}
+
 export namespace UpdateProduct {
     export type Variables = {
         input: UpdateProductInput;
@@ -4824,6 +4837,16 @@ export namespace FacetWithValues {
     export type Values = FacetValue.Fragment;
 }
 
+export namespace Adjustment {
+    export type Fragment = {
+        __typename?: 'Adjustment';
+        adjustmentSource: string;
+        amount: number;
+        description: string;
+        type: AdjustmentType;
+    };
+}
+
 export namespace Order {
     export type Fragment = {
         __typename?: 'Order';
@@ -4831,6 +4854,7 @@ export namespace Order {
         createdAt: DateTime;
         updatedAt: DateTime;
         code: string;
+        total: number;
         customer?: Customer | null;
     };
 
@@ -4839,6 +4863,63 @@ export namespace Order {
         firstName: string;
         lastName: string;
     };
+}
+
+export namespace OrderWithLines {
+    export type Fragment = {
+        __typename?: 'Order';
+        id: string;
+        createdAt: DateTime;
+        updatedAt: DateTime;
+        code: string;
+        customer?: Customer | null;
+        lines: Lines[];
+        adjustments: Adjustments[];
+        subTotal: number;
+        subTotalBeforeTax: number;
+        totalBeforeTax: number;
+        total: number;
+    };
+
+    export type Customer = {
+        __typename?: 'Customer';
+        firstName: string;
+        lastName: string;
+    };
+
+    export type Lines = {
+        __typename?: 'OrderLine';
+        id: string;
+        featuredAsset?: FeaturedAsset | null;
+        productVariant: ProductVariant;
+        unitPrice: number;
+        unitPriceWithTax: number;
+        quantity: number;
+        items: Items[];
+        totalPrice: number;
+    };
+
+    export type FeaturedAsset = {
+        __typename?: 'Asset';
+        preview: string;
+    };
+
+    export type ProductVariant = {
+        __typename?: 'ProductVariant';
+        id: string;
+        name: string;
+    };
+
+    export type Items = {
+        __typename?: 'OrderItem';
+        id: string;
+        unitPrice: number;
+        unitPriceIncludesTax: boolean;
+        unitPriceWithTax: number;
+        taxRate: number;
+    };
+
+    export type Adjustments = Adjustment.Fragment;
 }
 
 export namespace Asset {

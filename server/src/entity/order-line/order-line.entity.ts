@@ -48,7 +48,9 @@ export class OrderLine extends VendureEntity {
 
     @Calculated()
     get totalPrice(): number {
-        return this.items.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
+        return this.items
+            ? this.items.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0)
+            : 0;
     }
 
     @Calculated()

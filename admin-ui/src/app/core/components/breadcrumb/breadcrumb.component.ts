@@ -136,7 +136,7 @@ export class BreadcrumbComponent implements OnDestroy {
         if (clone[0] === '../') {
             clone[0] = segmentPaths.slice(0, -1).join('/');
         }
-        return clone;
+        return clone.filter(segment => segment !== '');
     }
 }
 

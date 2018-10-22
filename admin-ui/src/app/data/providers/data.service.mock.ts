@@ -59,6 +59,7 @@ export class MockDataService implements DataServiceMock {
     };
     order = {
         getOrders: spyQueryResult('getOrders'),
+        getOrder: spyQueryResult('getOrder'),
     };
     product = {
         getProducts: spyQueryResult('getProducts'),

@@ -75,6 +75,7 @@
     "code": "Code",
     "confirm": "Confirm",
     "create": "Create",
+    "created": "Created",
     "created-at": "Created at",
     "edit": "Edit",
     "edit-field": "Edit field",
@@ -94,6 +95,7 @@
     "remember-me": "Remember me",
     "remove": "Remove",
     "update": "Update",
+    "updated": "Updated",
     "updated-at": "Updated at",
     "username": "Username"
   },
@@ -131,7 +133,14 @@
     "tax-rates": "Tax Rates"
   },
   "order": {
-    "create-new-order": "Create new order"
+    "create-new-order": "Create new order",
+    "order-code": "Order code",
+    "product-name": "Product name",
+    "product-sku": "SKU",
+    "quantity": "Quantity",
+    "sub-total": "Sub total",
+    "total": "Total",
+    "unit-price": "Unit price"
   },
   "settings": {
     "add-countries-to-zone": "Add countries to zone...",
