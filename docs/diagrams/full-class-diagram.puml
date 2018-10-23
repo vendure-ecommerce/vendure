@@ -53,7 +53,12 @@ class ProductVariantPrice {
     value: number
     currencyCode: CurrencyCode
 }
-class Order
+class Order {
+    lines: OrderLine[]
+}
+class OrderLine {
+    items: OrderItem[]
+}
 class OrderItem {
     order: Order
     productVariant: ProductVariant
@@ -64,7 +69,6 @@ class Adjustment {
 }
 enum AdjustmentType {
     Tax
-    Shipping
     Promotion
 }
 class AdjustmentSource {
@@ -96,8 +100,9 @@ ProductVariant o-- "0..*" Asset
 Facet *-- "1..*" FacetValue
 Category o-- "1..*" FacetValue
 Customer *-- "0..*" Order
-OrderItem - ProductVariant
-Order *-- OrderItem
+OrderLine - ProductVariant
+Order *-- OrderLine
+OrderLine *-- OrderItem
 Order -- Channel
 OrderItem o-- Adjustment
 Order o-- Adjustment
