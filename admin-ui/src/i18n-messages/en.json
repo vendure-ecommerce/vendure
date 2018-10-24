@@ -7,6 +7,7 @@
     "assets": "Assets",
     "channels": "Channels",
     "countries": "Countries",
+    "customers": "Customers",
     "dashboard": "Dashboard",
     "facets": "Facets",
     "orders": "Orders",
@@ -99,6 +100,16 @@
     "updated-at": "Updated at",
     "username": "Username"
   },
+  "customer": {
+    "create-new-customer": "Create new customer",
+    "customer-type": "Customer type",
+    "email-address": "Email address",
+    "firstName": "First name",
+    "guest": "Guest",
+    "lastName": "Last name",
+    "name": "Name",
+    "registered": "Registered"
+  },
   "error": {
     "401-unauthorized": "Invalid login. Please try again",
     "403-forbidden": "Your session has expired. Please log in",
@@ -121,6 +132,7 @@
     "categories": "Categories",
     "channels": "Channels",
     "countries": "Countries",
+    "customers": "Customers",
     "facets": "Facets",
     "marketing": "Marketing",
     "orders": "Orders",

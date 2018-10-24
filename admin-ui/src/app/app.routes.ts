@@ -24,6 +24,10 @@ export const routes: Route[] = [
                 loadChildren: './catalog/catalog.module#CatalogModule',
             },
             {
+                path: 'customer',
+                loadChildren: './customer/customer.module#CustomerModule',
+            },
+            {
                 path: 'orders',
                 loadChildren: './order/order.module#OrderModule',
             },

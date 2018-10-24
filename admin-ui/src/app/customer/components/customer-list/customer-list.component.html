@@ -1,0 +1,38 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'customer.create-new-customer' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table [items]="items$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                [currentPage]="currentPage$ | async"
+                (pageChange)="setPageNumber($event)"
+                (itemsPerPageChange)="setItemsPerPage($event)">
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'customer.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'customer.email-address' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'customer.customer-type' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-customer="item">
+        <td class="left">{{ customer.id }}</td>
+        <td class="left">{{ customer.firstName }} {{ customer.lastName }}</td>
+        <td class="left">{{ customer.emailAddress }}</td>
+        <td class="left">
+            <vdr-chip *ngIf="customer.user.id">
+                <clr-icon shape="check-circle" class="registered-user-icon"></clr-icon> {{ 'customer.registered' | translate }}
+            </vdr-chip>
+            <vdr-chip *ngIf="!customer.user.id">{{ 'customer.guest' | translate }}</vdr-chip>
+        </td>
+        <td class="right">
+            <vdr-table-row-action iconShape="edit"
+                                  [label]="'common.edit' | translate"
+                                  [linkTo]="['./', customer.id]">
+            </vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

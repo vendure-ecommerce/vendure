@@ -4019,6 +4019,50 @@ export namespace GetServerConfig {
     };
 }
 
+export namespace GetCustomerList {
+    export type Variables = {
+        options: CustomerListOptions;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        customers: Customers;
+    };
+
+    export type Customers = {
+        __typename?: 'CustomerList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = {
+        __typename?: 'Customer';
+        id: string;
+        firstName: string;
+        lastName: string;
+        emailAddress: string;
+        user?: User | null;
+    };
+
+    export type User = {
+        __typename?: 'User';
+        id: string;
+    };
+}
+
+export namespace GetCustomer {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        customer?: Customer | null;
+    };
+
+    export type Customer = Customer.Fragment;
+}
+
 export namespace CreateFacet {
     export type Variables = {
         input: CreateFacetInput;
@@ -4816,6 +4860,24 @@ export namespace CurrentUser {
         id: string;
         identifier: string;
         channelTokens: string[];
+    };
+}
+
+export namespace Customer {
+    export type Fragment = {
+        __typename?: 'Customer';
+        id: string;
+        firstName: string;
+        lastName: string;
+        emailAddress: string;
+        user?: User | null;
+    };
+
+    export type User = {
+        __typename?: 'User';
+        id: string;
+        identifier: string;
+        lastLogin?: string | null;
     };
 }
 
