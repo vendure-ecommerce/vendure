@@ -34,6 +34,15 @@ describe('Orders', () => {
             expect(client.getAuthToken()).toBe('');
         });
 
+        it('activeOrder() creates and returns a new order in the default state', async () => {
+            const result = await client.query(GET_ACTIVE_ORDER);
+            expect(result.activeOrder).toEqual({ id: 'T_1', state: 'AddingItems' });
+        });
+
+        it('activeOrder() creates an anonymous session', () => {
+            expect(client.getAuthToken()).not.toBe('');
+        });
+
         it('addItemToOrder() creates a new Order with an item', async () => {
             const result = await client.query(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
@@ -45,10 +54,6 @@ describe('Orders', () => {
             expect(result.addItemToOrder.lines[0].productVariant.id).toBe('T_1');
             expect(result.addItemToOrder.lines[0].id).toBe('T_1');
             firstOrderItemId = result.addItemToOrder.lines[0].id;
-        });
-
-        it('addItemToOrder() creates an anonymous session', () => {
-            expect(client.getAuthToken()).not.toBe('');
         });
 
         it('addItemToOrder() errors with an invalid productVariantId', async () => {
@@ -154,6 +159,47 @@ describe('Orders', () => {
                 );
             }
         });
+
+        it('nextOrderStates() returns next valid states', async () => {
+            const result = await client.query(gql`
+                query {
+                    nextOrderStates
+                }
+            `);
+
+            expect(result.nextOrderStates).toEqual(['ArrangingShipping']);
+        });
+
+        it('transitionOrderToState() throws for an invalid state', async () => {
+            try {
+                await client.query(gql`
+                    mutation {
+                        transitionOrderToState(state: "Completed") {
+                            id
+                            state
+                        }
+                    }
+                `);
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`Cannot transition Order from "AddingItems" to "Completed"`),
+                );
+            }
+        });
+
+        it('transitionOrderToState() transitions Order to the next valid state', async () => {
+            const result = await client.query(gql`
+                mutation {
+                    transitionOrderToState(state: "ArrangingShipping") {
+                        id
+                        state
+                    }
+                }
+            `);
+
+            expect(result.transitionOrderToState).toEqual({ id: 'T_1', state: 'ArrangingShipping' });
+        });
     });
 
     describe('as authenticated user', () => {
@@ -171,6 +217,11 @@ describe('Orders', () => {
             `);
             const customer: Customer = result.customer;
             await client.asUserWithCredentials(customer.emailAddress, 'test');
+        });
+
+        it('activeOrder() creates and returns a new order in the default state', async () => {
+            const result = await client.query(GET_ACTIVE_ORDER);
+            expect(result.activeOrder).toEqual({ id: 'T_2', state: 'AddingItems' });
         });
 
         it('addItemToOrder() creates a new Order with an item', async () => {
@@ -219,6 +270,16 @@ describe('Orders', () => {
             expect(result2.removeItemFromOrder.lines.length).toBe(1);
             expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
+
+        it('nextOrderStates() returns next valid states', async () => {
+            const result = await client.query(gql`
+                query {
+                    nextOrderStates
+                }
+            `);
+
+            expect(result.nextOrderStates).toEqual(['ArrangingShipping']);
+        });
     });
 });
 
@@ -231,6 +292,15 @@ const TEST_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
+        }
+    }
+`;
+
+const GET_ACTIVE_ORDER = gql`
+    query {
+        activeOrder {
+            id
+            state
         }
     }
 `;

@@ -181,6 +181,23 @@ so that any specific constraints can be imposed on the inputted data in a consis
 a custom-made form input to set the value in the admin UI. For example, a "location" field could use a visual map interface
 to set the coordiantes of a point. This would probably be a post-1.0 feature.
 
+### Orders Process
+
+The orders process is governed by a finite state machine which allows each Order to transition only from one valid state
+to another, as defined by the [OrderState definitions](server/src/service/helpers/order-state-machine/order-state.ts):
+
+```TypeScript
+export type OrderState =
+    | 'AddingItems'
+    | 'ArrangingShipping'
+    | 'ArrangingPayment'
+    | 'OrderComplete'
+    | 'Cancelled';
+```
+
+This process can augmented with extra states according to the needs of the business, and these states are defined
+in the `orderProcessOptions` property of the VendureConfig object which is used to bootstrap Vendure. Additional
+logic can also be defined which will be executed on transition from one state to another.
 
 ## License
 
