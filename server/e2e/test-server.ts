@@ -74,7 +74,7 @@ export class TestServer {
     private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         const appModule = await import('../src/app.module');
-        const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
+        const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
         await app.listen(config.port);
         return app;
     }
