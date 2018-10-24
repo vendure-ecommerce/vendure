@@ -20,13 +20,13 @@
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-customer="item">
         <td class="left">{{ customer.id }}</td>
-        <td class="left">{{ customer.firstName }} {{ customer.lastName }}</td>
+        <td class="left">{{ customer.title }} {{ customer.firstName }} {{ customer.lastName }}</td>
         <td class="left">{{ customer.emailAddress }}</td>
         <td class="left">
-            <vdr-chip *ngIf="customer.user.id">
+            <vdr-chip *ngIf="customer.user?.id">
                 <clr-icon shape="check-circle" class="registered-user-icon"></clr-icon> {{ 'customer.registered' | translate }}
             </vdr-chip>
-            <vdr-chip *ngIf="!customer.user.id">{{ 'customer.guest' | translate }}</vdr-chip>
+            <vdr-chip *ngIf="!customer.user?.id">{{ 'customer.guest' | translate }}</vdr-chip>
         </td>
         <td class="right">
             <vdr-table-row-action iconShape="edit"

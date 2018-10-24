@@ -15,6 +15,9 @@ export class Customer extends VendureEntity implements HasCustomFields {
         super(input);
     }
 
+    @Column({ nullable: true })
+    title: string;
+
     @Column() firstName: string;
 
     @Column() lastName: string;

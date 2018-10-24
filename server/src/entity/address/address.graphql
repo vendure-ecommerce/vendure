@@ -28,3 +28,18 @@ input CreateAddressInput {
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean
 }
+
+input UpdateAddressInput {
+    id: ID!
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    phoneNumber: String
+    defaultShippingAddress: Boolean
+    defaultBillingAddress: Boolean
+}

@@ -18,11 +18,20 @@
 
 <form class="form" [formGroup]="customerForm" >
     <section class="form-block">
-        <vdr-form-field [label]="'customer.firstName' | translate" for="firstName" [readOnlyToggle]="true">
+        <vdr-form-field [label]="'customer.title' | translate" for="title" [readOnlyToggle]="!(isNew$ | async)">
+            <input id="title" type="text" formControlName="title">
+        </vdr-form-field>
+        <vdr-form-field [label]="'customer.first-name' | translate" for="firstName" [readOnlyToggle]="!(isNew$ | async)">
             <input id="firstName" type="text" formControlName="firstName">
         </vdr-form-field>
-        <vdr-form-field [label]="'customer.lastName' | translate" for="lastName" [readOnlyToggle]="true">
+        <vdr-form-field [label]="'customer.last-name' | translate" for="lastName" [readOnlyToggle]="!(isNew$ | async)">
             <input id="lastName" type="text" formControlName="lastName">
+        </vdr-form-field>
+        <vdr-form-field [label]="'customer.email-address' | translate" for="emailAddress" [readOnlyToggle]="!(isNew$ | async)">
+            <input id="emailAddress" type="text" formControlName="emailAddress">
+        </vdr-form-field>
+        <vdr-form-field [label]="'customer.password' | translate" for="password" *ngIf="isNew$ | async">
+            <input id="password" type="password" formControlName="password">
         </vdr-form-field>
 
         <section formGroupName="customFields" *ngIf="customFields.length">

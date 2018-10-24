@@ -104,11 +104,13 @@
     "create-new-customer": "Create new customer",
     "customer-type": "Customer type",
     "email-address": "Email address",
-    "firstName": "First name",
+    "first-name": "First name",
     "guest": "Guest",
-    "lastName": "Last name",
+    "last-name": "Last name",
     "name": "Name",
-    "registered": "Registered"
+    "password": "Password",
+    "registered": "Registered",
+    "title": "Title"
   },
   "error": {
     "401-unauthorized": "Invalid login. Please try again",

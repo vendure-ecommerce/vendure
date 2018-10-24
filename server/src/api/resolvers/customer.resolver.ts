@@ -5,6 +5,8 @@ import {
     CustomerQueryArgs,
     CustomersQueryArgs,
     Permission,
+    UpdateCustomerAddressMutationArgs,
+    UpdateCustomerMutationArgs,
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
@@ -44,10 +46,24 @@ export class CustomerResolver {
     }
 
     @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async updateCustomer(@Args() args: UpdateCustomerMutationArgs): Promise<Customer> {
+        const { input } = args;
+        return this.customerService.update(input);
+    }
+
+    @Mutation()
     @Allow(Permission.CreateCustomer)
     @Decode('customerId')
     async createCustomerAddress(@Args() args: CreateCustomerAddressMutationArgs): Promise<Address> {
         const { customerId, input } = args;
         return this.customerService.createAddress(customerId, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async updateCustomerAddress(@Args() args: UpdateCustomerAddressMutationArgs): Promise<Address> {
+        const { input } = args;
+        return this.customerService.updateAddress(input);
     }
 }

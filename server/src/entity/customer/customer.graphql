@@ -2,6 +2,7 @@ type Customer implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    title: String
     firstName: String!
     lastName: String!
     phoneNumber: String
@@ -11,8 +12,18 @@ type Customer implements Node {
 }
 
 input CreateCustomerInput {
+    title: String
     firstName: String!
     lastName: String!
     phoneNumber: String
     emailAddress: String!
+}
+
+input UpdateCustomerInput {
+    id: ID!
+    title: String
+    firstName: String
+    lastName: String
+    phoneNumber: String
+    emailAddress: String
 }

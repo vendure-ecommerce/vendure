@@ -33,6 +33,9 @@ export class MockDataService implements DataServiceMock {
     customer = {
         getCustomerList: spyQueryResult('getCustomerList'),
         getCustomer: spyQueryResult('getCustomer'),
+        createCustomer: spyObservable('createCustomer'),
+        updateCustomer: spyObservable('updateCustomer'),
+        updateCustomerAddress: spyObservable('updateCustomerAddress'),
     };
     promotion = {
         getPromotions: spyQueryResult('getPromotions'),

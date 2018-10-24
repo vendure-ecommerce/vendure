@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
+import { GetCustomerList } from 'shared/generated-types';
 
-import { Customer } from '../src/entity/customer/customer.entity';
-import { OrderLine } from '../src/entity/order-line/order-line.entity';
+import { GET_CUSTOMER_LIST } from '../../admin-ui/src/app/data/definitions/customer-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
@@ -207,15 +207,15 @@ describe('Orders', () => {
 
         beforeAll(async () => {
             await client.asSuperAdmin();
-            const result = await client.query(gql`
-                query {
-                    customer(id: "T_1") {
-                        id
-                        emailAddress
-                    }
-                }
-            `);
-            const customer: Customer = result.customer;
+            const result = await client.query<GetCustomerList.Query, GetCustomerList.Variables>(
+                GET_CUSTOMER_LIST,
+                {
+                    options: {
+                        take: 1,
+                    },
+                },
+            );
+            const customer = result.customers.items[0];
             await client.asUserWithCredentials(customer.emailAddress, 'test');
         });
 

@@ -1,6 +1,6 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
 
@@ -23,7 +23,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
 
     init() {
         this.entity$ = this.route.data.pipe(switchMap(data => data.entity));
-        this.isNew$ = this.entity$.pipe(map(entity => entity.id === ''));
+        this.isNew$ = this.entity$.pipe(
+            map(entity => entity.id === ''),
+            shareReplay(1),
+        );
         this.languageCode$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('lang')),
             map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),

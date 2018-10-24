@@ -189,6 +189,7 @@ export interface Customer extends Node {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    title?: string | null;
     firstName: string;
     lastName: string;
     phoneNumber?: string | null;
@@ -520,7 +521,9 @@ export interface Mutation {
     addCustomersToGroup: CustomerGroup;
     removeCustomersFromGroup: CustomerGroup;
     createCustomer: Customer;
+    updateCustomer: Customer;
     createCustomerAddress: Address;
+    updateCustomerAddress: Address;
     createFacet: Facet;
     updateFacet: Facet;
     createFacetValues: FacetValue[];
@@ -884,6 +887,7 @@ export interface UpdateCustomerGroupInput {
 }
 
 export interface CreateCustomerInput {
+    title?: string | null;
     firstName: string;
     lastName: string;
     phoneNumber?: string | null;
@@ -891,7 +895,33 @@ export interface CreateCustomerInput {
     customFields?: Json | null;
 }
 
+export interface UpdateCustomerInput {
+    id: string;
+    title?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phoneNumber?: string | null;
+    emailAddress?: string | null;
+    customFields?: Json | null;
+}
+
 export interface CreateAddressInput {
+    fullName?: string | null;
+    company?: string | null;
+    streetLine1?: string | null;
+    streetLine2?: string | null;
+    city?: string | null;
+    province?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+    phoneNumber?: string | null;
+    defaultShippingAddress?: boolean | null;
+    defaultBillingAddress?: boolean | null;
+    customFields?: Json | null;
+}
+
+export interface UpdateAddressInput {
+    id: string;
     fullName?: string | null;
     company?: string | null;
     streetLine1?: string | null;
@@ -1289,9 +1319,15 @@ export interface CreateCustomerMutationArgs {
     input: CreateCustomerInput;
     password?: string | null;
 }
+export interface UpdateCustomerMutationArgs {
+    input: UpdateCustomerInput;
+}
 export interface CreateCustomerAddressMutationArgs {
     customerId: string;
     input: CreateAddressInput;
+}
+export interface UpdateCustomerAddressMutationArgs {
+    input: UpdateAddressInput;
 }
 export interface CreateFacetMutationArgs {
     input: CreateFacetInput;
@@ -2245,6 +2281,7 @@ export namespace CustomerResolvers {
         id?: IdResolver<string, any, Context>;
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        title?: TitleResolver<string | null, any, Context>;
         firstName?: FirstNameResolver<string, any, Context>;
         lastName?: LastNameResolver<string, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
@@ -2257,6 +2294,7 @@ export namespace CustomerResolvers {
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TitleResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type FirstNameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type LastNameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
@@ -3187,7 +3225,9 @@ export namespace MutationResolvers {
         addCustomersToGroup?: AddCustomersToGroupResolver<CustomerGroup, any, Context>;
         removeCustomersFromGroup?: RemoveCustomersFromGroupResolver<CustomerGroup, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
+        updateCustomer?: UpdateCustomerResolver<Customer, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
+        updateCustomerAddress?: UpdateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
         updateFacet?: UpdateFacetResolver<Facet, any, Context>;
         createFacetValues?: CreateFacetValuesResolver<FacetValue[], any, Context>;
@@ -3375,6 +3415,16 @@ export namespace MutationResolvers {
         password?: string | null;
     }
 
+    export type UpdateCustomerResolver<R = Customer, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateCustomerArgs
+    >;
+    export interface UpdateCustomerArgs {
+        input: UpdateCustomerInput;
+    }
+
     export type CreateCustomerAddressResolver<R = Address, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3384,6 +3434,16 @@ export namespace MutationResolvers {
     export interface CreateCustomerAddressArgs {
         customerId: string;
         input: CreateAddressInput;
+    }
+
+    export type UpdateCustomerAddressResolver<R = Address, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateCustomerAddressArgs
+    >;
+    export interface UpdateCustomerAddressArgs {
+        input: UpdateAddressInput;
     }
 
     export type CreateFacetResolver<R = Facet, Parent = any, Context = any> = Resolver<
@@ -4038,6 +4098,7 @@ export namespace GetCustomerList {
     export type Items = {
         __typename?: 'Customer';
         id: string;
+        title?: string | null;
         firstName: string;
         lastName: string;
         emailAddress: string;
@@ -4061,6 +4122,46 @@ export namespace GetCustomer {
     };
 
     export type Customer = Customer.Fragment;
+}
+
+export namespace CreateCustomer {
+    export type Variables = {
+        input: CreateCustomerInput;
+        password?: string | null;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createCustomer: CreateCustomer;
+    };
+
+    export type CreateCustomer = Customer.Fragment;
+}
+
+export namespace UpdateCustomer {
+    export type Variables = {
+        input: UpdateCustomerInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateCustomer: UpdateCustomer;
+    };
+
+    export type UpdateCustomer = Customer.Fragment;
+}
+
+export namespace UpdateCustomerAddress {
+    export type Variables = {
+        input: UpdateAddressInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateCustomerAddress: UpdateCustomerAddress;
+    };
+
+    export type UpdateCustomerAddress = Address.Fragment;
 }
 
 export namespace CreateFacet {
@@ -4863,14 +4964,34 @@ export namespace CurrentUser {
     };
 }
 
+export namespace Address {
+    export type Fragment = {
+        __typename?: 'Address';
+        id: string;
+        fullName?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+        defaultShippingAddress?: boolean | null;
+        defaultBillingAddress?: boolean | null;
+    };
+}
+
 export namespace Customer {
     export type Fragment = {
         __typename?: 'Customer';
         id: string;
+        title?: string | null;
         firstName: string;
         lastName: string;
+        phoneNumber?: string | null;
         emailAddress: string;
         user?: User | null;
+        addresses?: Addresses[] | null;
     };
 
     export type User = {
@@ -4879,6 +5000,8 @@ export namespace Customer {
         identifier: string;
         lastLogin?: string | null;
     };
+
+    export type Addresses = Address.Fragment;
 }
 
 export namespace FacetValue {
