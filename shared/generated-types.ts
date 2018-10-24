@@ -4875,6 +4875,7 @@ export namespace Order {
         createdAt: DateTime;
         updatedAt: DateTime;
         code: string;
+        state: string;
         total: number;
         customer?: Customer | null;
     };
@@ -4893,6 +4894,7 @@ export namespace OrderWithLines {
         createdAt: DateTime;
         updatedAt: DateTime;
         code: string;
+        state: string;
         customer?: Customer | null;
         lines: Lines[];
         adjustments: Adjustments[];

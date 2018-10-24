@@ -15,6 +15,7 @@ export const ORDER_FRAGMENT = gql`
         createdAt
         updatedAt
         code
+        state
         total
         customer {
             firstName
@@ -29,6 +30,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         createdAt
         updatedAt
         code
+        state
         customer {
             firstName
             lastName

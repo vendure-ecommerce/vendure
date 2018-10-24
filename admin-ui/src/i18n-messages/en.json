@@ -138,6 +138,7 @@
     "product-name": "Product name",
     "product-sku": "SKU",
     "quantity": "Quantity",
+    "state": "State",
     "sub-total": "Sub total",
     "total": "Total",
     "unit-price": "Unit price"

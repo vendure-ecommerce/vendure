@@ -8,11 +8,31 @@
 
 <div *ngIf="entity$ | async as order">
 
-    <div class="order-info">
-        <div class="order-code">{{ 'order.order-code' | translate }}: {{ order.code }}</div>
-        <div class="created">{{ 'common.created' | translate }}: {{ order.createdAt | date:'medium' }}</div>
-        <div class="updated">{{ 'common.updated' | translate }}: {{ order.updatedAt | date:'medium' }}</div>
+    <div class="clr-row">
+        <div class="clr-col-md-4">
+            <table class="table table-vertical">
+                <tbody>
+                <tr>
+                    <th>{{ 'order.order-code' | translate }}</th>
+                    <td>{{ order.code }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'order.state' | translate }}</th>
+                    <td>{{ order.state }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'common.created' | translate }}</th>
+                    <td>{{ order.createdAt | date:'medium' }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'common.updated' | translate }}</th>
+                    <td>{{ order.updatedAt | date:'medium' }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+
 
     <table class="order-lines table">
         <thead>
