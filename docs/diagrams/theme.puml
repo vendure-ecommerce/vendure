@@ -3,16 +3,40 @@
 !define LINE    #1a3164
 !define BACKGROUND #b9cefc
 !define BORDER  #e58e26
+!define BLUE  #4067af
+!define BLUE_LIGHT  #c6dbff
 
 ' Base Setting
 skinparam Shadowing false
-skinparam backgroundColor #f4f3f1-#edf3ff
+skinparam backgroundColor #fff
 skinparam ComponentStyle uml2
+skinparam TitleFontSize 18
+skinparam Padding 3
+
 skinparam Default {
   FontName  'Impact'
   FontColor BLACK
   FontSize  14
   FontStyle plain
+}
+
+skinparam Class {
+  BackgroundColor BLUE_LIGHT
+  BorderColor BLACK
+}
+
+skinparam Activity {
+  FontColor white
+  AttributeFontColor white
+  BackgroundColor BLUE
+  BorderColor BLACK
+  ArrowColor #222266
+}
+
+skinparam ActivityDiamond {
+  BackgroundColor BLUE_LIGHT
+  BorderColor BLACK
+  FontColor BLACK
 }
 
 skinparam Sequence {
@@ -24,6 +48,13 @@ skinparam Sequence {
   BorderColor BORDER
   BackgroundColor BACKGROUND
 }
+
+skinparam State {
+  FontStyle bold
+  BackgroundColor BLUE_LIGHT
+  BorderColor BLACK
+}
+
 skinparam Participant {
   BackgroundColor BLACK
   BorderColor BORDER

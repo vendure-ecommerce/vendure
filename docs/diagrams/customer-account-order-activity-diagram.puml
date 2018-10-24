@@ -1,0 +1,37 @@
+' This diagram illustrates how Customer accounts are handled
+@startuml
+!include theme.puml
+title Customer Account & Order Handling
+start
+:Anonymous;
+if (Has existing account?) then (yes)
+    if (Log in?) then (no)
+    else (yes)
+     stop
+    endif
+else (no)
+    if (Create account?) then (no)
+    else (yes)
+        #66aa66:Create authenticated Customer;
+        stop
+    endif
+endif
+:Create anonymous Order;
+:ArrangingShipping;
+if (Has existing account?) then (yes)
+    :Complete Order;
+    stop
+else (no)
+    if (Guest Customer exists\nwith matching email?) then (no)
+        #98a966:Create guest Customer;
+    else (yes)
+        #98a966:Fetch guest Customer;
+    endif
+    :Associate guest Customer\nwith Order;
+endif
+:Complete Order;
+if (Create account?) then (yes)
+    #66aa66:Create authenticated Customer;
+endif
+stop
+@enduml
