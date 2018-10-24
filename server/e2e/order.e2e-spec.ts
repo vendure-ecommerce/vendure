@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { Customer } from '../src/entity/customer/customer.entity';
 import { OrderLine } from '../src/entity/order-line/order-line.entity';
 
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -16,7 +17,7 @@ describe('Orders', () => {
             customerCount: 1,
         });
         await client.init();
-    }, 60000);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();

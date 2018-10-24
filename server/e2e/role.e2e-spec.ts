@@ -9,6 +9,7 @@ import {
     UPDATE_ROLE,
 } from '../../admin-ui/src/app/data/definitions/administrator-definitions';
 
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -24,7 +25,7 @@ describe('Role resolver', () => {
             customerCount: 1,
         });
         await client.init();
-    }, 60000);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();

@@ -18,6 +18,7 @@ import {
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -49,7 +50,7 @@ describe('Promotion resolver', () => {
             },
         );
         await client.init();
-    }, 60000);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();

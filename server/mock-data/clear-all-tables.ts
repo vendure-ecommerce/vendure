@@ -1,6 +1,5 @@
-import { ConnectionOptions, createConnection, getSqljsManager } from 'typeorm';
+import { ConnectionOptions, createConnection } from 'typeorm';
 
-import { TEST_CONNECTION_NAME } from '../e2e/config/test-config';
 import { isTestEnvironment } from '../e2e/test-utils';
 
 // tslint:disable:no-console
