@@ -3,6 +3,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';
@@ -15,6 +16,8 @@ export class Order extends VendureEntity {
     }
 
     @Column() code: string;
+
+    @Column('varchar') state: OrderState;
 
     @ManyToOne(type => Customer)
     customer: Customer;

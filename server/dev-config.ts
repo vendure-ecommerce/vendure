@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { API_PATH, API_PORT } from 'shared/shared-constants';
 
-import { VendureConfig } from './src/config/vendure-config';
+import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
 import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/default-asset-server-plugin';
 
 /**
@@ -25,6 +25,7 @@ export const devConfig: VendureConfig = {
         password: '',
         database: 'vendure-dev',
     },
+    orderProcessOptions: {} as OrderProcessOptions<any>,
     customFields: {
         Facet: [{ name: 'searchable', type: 'boolean' }],
         FacetValue: [{ name: 'link', type: 'string' }, { name: 'available', type: 'boolean' }],

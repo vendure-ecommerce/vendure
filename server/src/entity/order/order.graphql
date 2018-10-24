@@ -3,6 +3,7 @@ type Order implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     code: String!
+    state: String!
     customer: Customer
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!

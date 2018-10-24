@@ -58,6 +58,7 @@ export interface Query {
     facet?: Facet | null;
     order?: Order | null;
     activeOrder?: Order | null;
+    nextOrderStates: string[];
     orders: OrderList;
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
@@ -273,6 +274,7 @@ export interface Order extends Node {
     createdAt: DateTime;
     updatedAt: DateTime;
     code: string;
+    state: string;
     customer?: Customer | null;
     lines: OrderLine[];
     adjustments: Adjustment[];
@@ -526,6 +528,7 @@ export interface Mutation {
     addItemToOrder?: Order | null;
     removeItemFromOrder?: Order | null;
     adjustItemQuantity?: Order | null;
+    transitionOrderToState?: Order | null;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -1313,6 +1316,9 @@ export interface AdjustItemQuantityMutationArgs {
     orderItemId: string;
     quantity: number;
 }
+export interface TransitionOrderToStateMutationArgs {
+    state: string;
+}
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
 }
@@ -1646,6 +1652,7 @@ export namespace QueryResolvers {
         facet?: FacetResolver<Facet | null, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
         activeOrder?: ActiveOrderResolver<Order | null, any, Context>;
+        nextOrderStates?: NextOrderStatesResolver<string[], any, Context>;
         orders?: OrdersResolver<OrderList, any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
@@ -1817,6 +1824,11 @@ export namespace QueryResolvers {
     }
 
     export type ActiveOrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NextOrderStatesResolver<R = string[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2498,6 +2510,7 @@ export namespace OrderResolvers {
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
+        state?: StateResolver<string, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         lines?: LinesResolver<OrderLine[], any, Context>;
         adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
@@ -2511,6 +2524,7 @@ export namespace OrderResolvers {
     export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CustomerResolver<R = Customer | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3181,6 +3195,7 @@ export namespace MutationResolvers {
         addItemToOrder?: AddItemToOrderResolver<Order | null, any, Context>;
         removeItemFromOrder?: RemoveItemFromOrderResolver<Order | null, any, Context>;
         adjustItemQuantity?: AdjustItemQuantityResolver<Order | null, any, Context>;
+        transitionOrderToState?: TransitionOrderToStateResolver<Order | null, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -3441,6 +3456,16 @@ export namespace MutationResolvers {
     export interface AdjustItemQuantityArgs {
         orderItemId: string;
         quantity: number;
+    }
+
+    export type TransitionOrderToStateResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        TransitionOrderToStateArgs
+    >;
+    export interface TransitionOrderToStateArgs {
+        state: string;
     }
 
     export type CreateProductOptionGroupResolver<

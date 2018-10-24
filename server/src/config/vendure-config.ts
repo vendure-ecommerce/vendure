@@ -1,10 +1,14 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { RequestHandler } from 'express';
+import { Observable } from 'rxjs';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
+import { Transitions } from '../common/finite-state-machine';
 import { ReadOnlyRequired } from '../common/types/common-types';
+import { Order } from '../entity/order/order.entity';
+import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
@@ -55,6 +59,31 @@ export interface AuthOptions {
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
      */
     sessionDuration?: string | number;
+}
+
+export interface OrderProcessOptions<T extends string> {
+    /**
+     * Define how the custom states fit in with the default order
+     * state transitions.
+     */
+    transtitions?: Partial<Transitions<T | OrderState>>;
+    /**
+     * Define logic to run before a state tranition takes place. Returning
+     * false will prevent the transition from going ahead.
+     */
+    onTransitionStart?(
+        fromState: T,
+        toState: T,
+        data: { order: Order },
+    ): boolean | Promise<boolean> | Observable<boolean> | void;
+    /**
+     * Define logic to run after a state transition has taken place.
+     */
+    onTransitionEnd?(fromState: T, toState: T, data: { order: Order }): void;
+    /**
+     * Define a custom error handler function for transition errors.
+     */
+    onError?(fromState: T, toState: T, message?: string): void;
 }
 
 export interface VendureConfig {
@@ -127,6 +156,10 @@ export interface VendureConfig {
      * Defines custom fields which can be used to extend the built-in entities.
      */
     customFields?: CustomFields;
+    /**
+     * Defines custom states in the order process finite state machine.
+     */
+    orderProcessOptions?: OrderProcessOptions<any>;
     /**
      * The max file size in bytes for uploaded assets.
      */

@@ -42,6 +42,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     uploadMaxFileSize: 20971520,
     promotionConditions: defaultPromotionConditions,
     promotionActions: defaultPromotionActions,
+    orderProcessOptions: {},
     customFields: {
         Address: [],
         Customer: [],

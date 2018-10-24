@@ -6,6 +6,7 @@ import { getConfig } from '../config/vendure-config';
 
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
+import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
@@ -66,6 +67,7 @@ const exportedProviders = [
         TranslatableSaver,
         TaxCalculator,
         OrderCalculator,
+        OrderStateMachine,
         ListQueryBuilder,
     ],
     exports: exportedProviders,

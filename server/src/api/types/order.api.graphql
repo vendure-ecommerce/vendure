@@ -1,6 +1,7 @@
 type Query {
     order(id: ID!): Order
     activeOrder: Order
+    nextOrderStates: [String!]!
     orders(options: OrderListOptions): OrderList!
 }
 
@@ -8,6 +9,7 @@ type Mutation {
     addItemToOrder(productVariantId: ID!, quantity: Int!): Order
     removeItemFromOrder(orderItemId: ID!): Order
     adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
+    transitionOrderToState(state: String!): Order
 }
 
 type OrderList implements PaginatedList {

@@ -14,6 +14,8 @@ import { Promotion } from '../../entity/promotion/promotion.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
+import { OrderState } from '../helpers/order-state-machine/order-state';
+import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ProductVariantService } from './product-variant.service';
@@ -23,6 +25,7 @@ export class OrderService {
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
         private orderCalculator: OrderCalculator,
+        private orderStateMachine: OrderStateMachine,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -63,6 +66,7 @@ export class OrderService {
     create(): Promise<Order> {
         const newOrder = new Order({
             code: generatePublicId(),
+            state: this.orderStateMachine.getInitialState(),
             lines: [],
             pendingAdjustments: [],
             subTotal: 0,
@@ -131,6 +135,17 @@ export class OrderService {
         const updatedOrder = await this.applyTaxesAndPromotions(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
         return updatedOrder;
+    }
+
+    getNextOrderStates(order: Order): OrderState[] {
+        return this.orderStateMachine.getNextStates(order);
+    }
+
+    async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.orderStateMachine.transition(order, state);
+        await this.connection.getRepository(Order).save(order);
+        return order;
     }
 
     private async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {

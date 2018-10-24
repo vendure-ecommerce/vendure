@@ -6,11 +6,13 @@ import {
     OrdersQueryArgs,
     Permission,
     RemoveItemFromOrderMutationArgs,
+    TransitionOrderToStateMutationArgs,
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
 import { Order } from '../../entity/order/order.entity';
 import { I18nError } from '../../i18n/i18n-error';
+import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { AuthService } from '../../service/services/auth.service';
 import { OrderService } from '../../service/services/order.service';
 import { RequestContext } from '../common/request-context';
@@ -53,6 +55,28 @@ export class OrderResolver {
             } else {
                 return;
             }
+        }
+    }
+
+    @Query()
+    @Allow(Permission.Owner)
+    async nextOrderStates(@Ctx() ctx: RequestContext): Promise<string[]> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            return this.orderService.getNextOrderStates(sessionOrder);
+        }
+        return [];
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async transitionOrderToState(
+        @Ctx() ctx: RequestContext,
+        @Args() args: TransitionOrderToStateMutationArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            return this.orderService.transitionToState(ctx, sessionOrder.id, args.state as OrderState);
         }
     }
 
