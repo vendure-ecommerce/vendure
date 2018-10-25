@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { LoginMutationArgs, LoginResult, Permission } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
-import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
@@ -26,12 +25,14 @@ export class AuthResolver {
      * the user data and returns the token either in a cookie or in the response body.
      */
     @Mutation()
+    @Allow(Permission.Public)
     async login(
         @Args() args: LoginMutationArgs,
+        @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        const session = await this.authService.authenticate(args.username, args.password);
+        const session = await this.authService.authenticate(ctx, args.username, args.password);
         setAuthToken({
             req,
             res,
@@ -45,6 +46,7 @@ export class AuthResolver {
     }
 
     @Mutation()
+    @Allow(Permission.Public)
     async logout(@Context('req') req: Request, @Context('res') res: Response): Promise<boolean> {
         const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
@@ -67,8 +69,8 @@ export class AuthResolver {
     @Query()
     @Allow(Permission.Authenticated)
     async me(@Ctx() ctx: RequestContext) {
-        const sessionUser = (ctx.session as AuthenticatedSession).user;
-        const user = sessionUser && (await this.authService.getUserById(sessionUser.id));
+        const userId = ctx.activeUserId;
+        const user = userId && (await this.authService.getUserById(userId));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 

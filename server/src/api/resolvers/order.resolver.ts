@@ -62,7 +62,7 @@ export class OrderResolver {
     @Allow(Permission.Owner)
     async nextOrderStates(@Ctx() ctx: RequestContext): Promise<string[]> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.getOrderFromContext(ctx, true);
             return this.orderService.getNextOrderStates(sessionOrder);
         }
         return [];
@@ -75,7 +75,7 @@ export class OrderResolver {
         @Args() args: TransitionOrderToStateMutationArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.getOrderFromContext(ctx, true);
             return this.orderService.transitionToState(ctx, sessionOrder.id, args.state as OrderState);
         }
     }
@@ -87,7 +87,7 @@ export class OrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: AddItemToOrderMutationArgs,
     ): Promise<Order> {
-        const order = await this.getOrderFromContext(ctx);
+        const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity);
     }
 
@@ -98,7 +98,7 @@ export class OrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: AdjustItemQuantityMutationArgs,
     ): Promise<Order> {
-        const order = await this.getOrderFromContext(ctx);
+        const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.adjustItemQuantity(ctx, order.id, args.orderItemId, args.quantity);
     }
 
@@ -109,18 +109,32 @@ export class OrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: RemoveItemFromOrderMutationArgs,
     ): Promise<Order> {
-        const order = await this.getOrderFromContext(ctx);
+        const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderItemId);
     }
 
-    private async getOrderFromContext(ctx: RequestContext): Promise<Order> {
+    private async getOrderFromContext(ctx: RequestContext): Promise<Order | undefined>;
+    private async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
+    private async getOrderFromContext(
+        ctx: RequestContext,
+        createIfNotExists = false,
+    ): Promise<Order | undefined> {
         if (!ctx.session) {
             throw new I18nError(`error.no-active-session`);
         }
         let order = ctx.session.activeOrder;
         if (!order) {
-            order = await this.orderService.create();
-            await this.authService.setActiveOrder(ctx.session, order);
+            if (ctx.activeUserId) {
+                order = await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId);
+            }
+
+            if (!order && createIfNotExists) {
+                order = await this.orderService.create(ctx.activeUserId);
+            }
+
+            if (order) {
+                await this.authService.setActiveOrder(ctx.session, order);
+            }
         }
         return order;
     }

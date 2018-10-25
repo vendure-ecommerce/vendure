@@ -19,6 +19,9 @@ export class Order extends VendureEntity {
 
     @Column('varchar') state: OrderState;
 
+    @Column({ default: true })
+    active: boolean;
+
     @ManyToOne(type => Customer)
     customer: Customer;
 

@@ -18,12 +18,14 @@ import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { CustomerService } from './customer.service';
 import { ProductVariantService } from './product-variant.service';
 
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
+        private customerService: CustomerService,
         private orderCalculator: OrderCalculator,
         private orderStateMachine: OrderStateMachine,
         private listQueryBuilder: ListQueryBuilder,
@@ -63,7 +65,22 @@ export class OrderService {
         }
     }
 
-    create(): Promise<Order> {
+    async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
+        const customer = await this.customerService.findOneByUserId(userId);
+        if (customer) {
+            const activeOrder = await this.connection.getRepository(Order).findOne({
+                where: {
+                    customer,
+                    active: true,
+                },
+            });
+            if (activeOrder) {
+                return this.findOne(ctx, activeOrder.id);
+            }
+        }
+    }
+
+    async create(userId?: ID): Promise<Order> {
         const newOrder = new Order({
             code: generatePublicId(),
             state: this.orderStateMachine.getInitialState(),
@@ -72,6 +89,12 @@ export class OrderService {
             subTotal: 0,
             subTotalBeforeTax: 0,
         });
+        if (userId) {
+            const customer = await this.customerService.findOneByUserId(userId);
+            if (customer) {
+                newOrder.customer = customer;
+            }
+        }
         return this.connection.getRepository(Order).save(newOrder);
     }
 

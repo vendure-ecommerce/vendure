@@ -5,14 +5,16 @@ import * as ms from 'ms';
 import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { ConfigService } from '../../config/config.service';
 import { Order } from '../../entity/order/order.entity';
 import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+
+import { OrderService } from './order.service';
 
 /**
  * The AuthService manages both authenticated and anonymous sessions.
@@ -22,9 +24,10 @@ export class AuthService {
     private readonly sessionDurationInMs;
 
     constructor(
-        private passwordCipher: PasswordCiper,
         @InjectConnection() private connection: Connection,
+        private passwordCipher: PasswordCiper,
         private configService: ConfigService,
+        private orderService: OrderService,
     ) {
         this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration);
     }
@@ -32,16 +35,22 @@ export class AuthService {
     /**
      * Authenticates a user's credentials and if okay, creates a new session.
      */
-    async authenticate(identifier: string, password: string): Promise<AuthenticatedSession> {
+    async authenticate(
+        ctx: RequestContext,
+        identifier: string,
+        password: string,
+    ): Promise<AuthenticatedSession> {
         const user = await this.getUserFromIdentifier(identifier);
         const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }
         const token = await this.generateSessionToken();
+        const activeOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const session = new AuthenticatedSession({
             token,
             user,
+            activeOrder,
             expires: this.getExpiryDate(this.sessionDurationInMs),
             invalidated: false,
         });

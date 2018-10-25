@@ -3,10 +3,9 @@ import { ID } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
+import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
-import { User } from '../../entity/user/user.entity';
 import { Zone } from '../../entity/zone/zone.entity';
-import { I18nError } from '../../i18n/i18n-error';
 
 /**
  * The RequestContext is intended to hold information relevant to the current request, which may be
@@ -51,6 +50,14 @@ export class RequestContext {
         return this._session;
     }
 
+    get activeUserId(): ID | undefined {
+        if (this.session) {
+            if (this.isAuthenticatedSession(this.session)) {
+                return this.session.user.id;
+            }
+        }
+    }
+
     get activeTaxZone(): Zone {
         // TODO: This will vary depending on Customer data available -
         // a customer with a billing address in another zone will alter the value etc.
@@ -70,5 +77,9 @@ export class RequestContext {
      */
     get authorizedAsOwnerOnly(): boolean {
         return this._authorizedAsOwnerOnly;
+    }
+
+    private isAuthenticatedSession(session: Session): session is AuthenticatedSession {
+        return session.hasOwnProperty('user');
     }
 }

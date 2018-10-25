@@ -34,9 +34,9 @@ describe('Orders', () => {
             expect(client.getAuthToken()).toBe('');
         });
 
-        it('activeOrder() creates and returns a new order in the default state', async () => {
+        it('activeOrder() returns null before any items have been added', async () => {
             const result = await client.query(GET_ACTIVE_ORDER);
-            expect(result.activeOrder).toEqual({ id: 'T_1', state: 'AddingItems' });
+            expect(result.activeOrder).toBeNull();
         });
 
         it('activeOrder() creates an anonymous session', () => {
@@ -204,6 +204,9 @@ describe('Orders', () => {
 
     describe('as authenticated user', () => {
         let firstOrderItemId: string;
+        let activeOrderId: string;
+        let authenticatedUserEmailAddress: string;
+        const password = 'test';
 
         beforeAll(async () => {
             await client.asSuperAdmin();
@@ -216,12 +219,13 @@ describe('Orders', () => {
                 },
             );
             const customer = result.customers.items[0];
-            await client.asUserWithCredentials(customer.emailAddress, 'test');
+            authenticatedUserEmailAddress = customer.emailAddress;
+            await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
         });
 
-        it('activeOrder() creates and returns a new order in the default state', async () => {
+        it('activeOrder() returns null before any items have been added', async () => {
             const result = await client.query(GET_ACTIVE_ORDER);
-            expect(result.activeOrder).toEqual({ id: 'T_2', state: 'AddingItems' });
+            expect(result.activeOrder).toBeNull();
         });
 
         it('addItemToOrder() creates a new Order with an item', async () => {
@@ -233,6 +237,7 @@ describe('Orders', () => {
             expect(result.addItemToOrder.lines.length).toBe(1);
             expect(result.addItemToOrder.lines[0].quantity).toBe(1);
             expect(result.addItemToOrder.lines[0].productVariant.id).toBe('T_1');
+            activeOrderId = result.addItemToOrder.id;
             firstOrderItemId = result.addItemToOrder.lines[0].id;
         });
 
@@ -279,6 +284,16 @@ describe('Orders', () => {
             `);
 
             expect(result.nextOrderStates).toEqual(['ArrangingShipping']);
+        });
+
+        it('logging out and back in again resumes the last active order', async () => {
+            await client.asAnonymousUser();
+            const result1 = await client.query(GET_ACTIVE_ORDER);
+            expect(result1.activeOrder).toBeNull();
+
+            await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
+            const result2 = await client.query(GET_ACTIVE_ORDER);
+            expect(result2.activeOrder.id).toBe(activeOrderId);
         });
     });
 });
