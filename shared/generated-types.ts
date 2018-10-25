@@ -54,6 +54,7 @@ export interface Query {
     customerGroup?: CustomerGroup | null;
     customers: CustomerList;
     customer?: Customer | null;
+    activeCustomer?: Customer | null;
     facets: FacetList;
     facet?: Facet | null;
     order?: Order | null;
@@ -1684,6 +1685,7 @@ export namespace QueryResolvers {
         customerGroup?: CustomerGroupResolver<CustomerGroup | null, any, Context>;
         customers?: CustomersResolver<CustomerList, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
+        activeCustomer?: ActiveCustomerResolver<Customer | null, any, Context>;
         facets?: FacetsResolver<FacetList, any, Context>;
         facet?: FacetResolver<Facet | null, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
@@ -1827,6 +1829,11 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type ActiveCustomerResolver<R = Customer | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type FacetsResolver<R = FacetList, Parent = any, Context = any> = Resolver<
         R,
         Parent,

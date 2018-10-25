@@ -13,8 +13,10 @@ import { PaginatedList } from 'shared/shared-types';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/services/customer.service';
+import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
 import { Decode } from '../decorators/decode.decorator';
+import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Customer')
 export class CustomerResolver {
@@ -30,6 +32,15 @@ export class CustomerResolver {
     @Allow(Permission.ReadCustomer)
     async customer(@Args() args: CustomerQueryArgs): Promise<Customer | undefined> {
         return this.customerService.findOne(args.id);
+    }
+
+    @Query()
+    @Allow(Permission.Owner)
+    async activeCustomer(@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
+        const userId = ctx.activeUserId;
+        if (userId) {
+            return this.customerService.findOneByUserId(userId);
+        }
     }
 
     @ResolveProperty()

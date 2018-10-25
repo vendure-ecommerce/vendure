@@ -1,6 +1,7 @@
 type Query {
     customers(options: CustomerListOptions): CustomerList!
     customer(id: ID!): Customer
+    activeCustomer: Customer
 }
 
 type Mutation {

@@ -38,8 +38,16 @@ export class CustomerService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(userId: ID): Promise<Customer | undefined> {
-        return this.connection.manager.findOne(Customer, userId);
+    findOne(id: ID): Promise<Customer | undefined> {
+        return this.connection.getRepository(Customer).findOne(id);
+    }
+
+    findOneByUserId(userId: ID): Promise<Customer | undefined> {
+        return this.connection.getRepository(Customer).findOne({
+            where: {
+                user: { id: userId },
+            },
+        });
     }
 
     findAddressesByCustomerId(customerId: ID): Promise<Address[]> {
