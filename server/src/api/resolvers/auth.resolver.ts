@@ -52,7 +52,7 @@ export class AuthResolver {
         if (!token) {
             return false;
         }
-        await this.authService.invalidateSessionByToken(token);
+        await this.authService.deleteSessionByToken(token);
         setAuthToken({
             req,
             res,

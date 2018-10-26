@@ -16,6 +16,7 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { defaultConfig } from './default-config';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
+import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
@@ -84,6 +85,19 @@ export interface OrderProcessOptions<T extends string> {
      * Define a custom error handler function for transition errors.
      */
     onError?(fromState: T, toState: T, message?: string): void;
+}
+
+export interface OrderMergeOptions {
+    /**
+     * Defines the strategy used to merge a guest Order and an existing Order when
+     * signing in.
+     */
+    mergeStrategy: OrderMergeStrategy;
+    /**
+     * Defines the strategy used to merge a guest Order and an existing Order when
+     * signing in as part of the checkout flow.
+     */
+    checkoutMergeStrategy: OrderMergeStrategy;
 }
 
 export interface VendureConfig {
@@ -160,6 +174,11 @@ export interface VendureConfig {
      * Defines custom states in the order process finite state machine.
      */
     orderProcessOptions?: OrderProcessOptions<any>;
+    /**
+     * Define the strategies governing how Orders are merged when an existing
+     * Customer signs in.
+     */
+    orderMergeOptions?: OrderMergeOptions;
     /**
      * The max file size in bytes for uploaded assets.
      */

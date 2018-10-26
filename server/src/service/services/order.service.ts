@@ -11,9 +11,11 @@ import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
+import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
+import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -28,6 +30,7 @@ export class OrderService {
         private customerService: CustomerService,
         private orderCalculator: OrderCalculator,
         private orderStateMachine: OrderStateMachine,
+        private orderMerger: OrderMerger,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -168,6 +171,35 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         await this.orderStateMachine.transition(order, state);
         await this.connection.getRepository(Order).save(order);
+        return order;
+    }
+
+    /**
+     * When a guest user with an anonymous Order signs in and has an existing Order associated with that Customer,
+     * we need to reconcile the contents of the two orders.
+     */
+    async mergeOrders(
+        ctx: RequestContext,
+        user: User,
+        guestOrder?: Order,
+        existingOrder?: Order,
+    ): Promise<Order | undefined> {
+        const mergeResult = await this.orderMerger.merge(guestOrder, existingOrder);
+        const { orderToDelete, linesToInsert } = mergeResult;
+        let { order } = mergeResult;
+        if (orderToDelete) {
+            await this.connection.getRepository(Order).delete(orderToDelete.id);
+        }
+        if (order && linesToInsert) {
+            for (const line of linesToInsert) {
+                order = await this.addItemToOrder(ctx, order.id, line.productVariantId, line.quantity);
+            }
+        }
+        const customer = await this.customerService.findOneByUserId(user.id);
+        if (order && customer) {
+            order.customer = customer;
+            await this.connection.getRepository(Order).save(order);
+        }
         return order;
     }
 

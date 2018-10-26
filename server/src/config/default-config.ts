@@ -8,6 +8,8 @@ import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asse
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strategy';
+import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
 import { VendureConfig } from './vendure-config';
@@ -43,6 +45,10 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     promotionConditions: defaultPromotionConditions,
     promotionActions: defaultPromotionActions,
     orderProcessOptions: {},
+    orderMergeOptions: {
+        mergeStrategy: new MergeOrdersStrategy(),
+        checkoutMergeStrategy: new UseGuestStrategy(),
+    },
     customFields: {
         Address: [],
         Customer: [],

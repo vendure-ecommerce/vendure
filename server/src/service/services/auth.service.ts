@@ -45,17 +45,11 @@ export class AuthService {
         if (!passwordMatches) {
             throw new UnauthorizedException();
         }
-        const token = await this.generateSessionToken();
-        const activeOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
-        const session = new AuthenticatedSession({
-            token,
-            user,
-            activeOrder,
-            expires: this.getExpiryDate(this.sessionDurationInMs),
-            invalidated: false,
-        });
-        await this.invalidateUserSessions(user);
-        // save the new session
+        await this.deleteSessionsByUser(user);
+        if (ctx.session && ctx.session.activeOrder) {
+            await this.deleteSessionsByActiveOrder(ctx.session && ctx.session.activeOrder);
+        }
+        const session = await this.createNewAuthenticatedSession(ctx, user);
         const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
         return newSession;
     }
@@ -96,28 +90,55 @@ export class AuthService {
     }
 
     /**
-     * Invalidates all existing sessions for the given user.
+     * Deletes all existing sessions for the given user.
      */
-    async invalidateUserSessions(user: User): Promise<void> {
-        await this.connection.getRepository(AuthenticatedSession).update({ user }, { invalidated: true });
+    async deleteSessionsByUser(user: User): Promise<void> {
+        await this.connection.getRepository(AuthenticatedSession).delete({ user });
     }
 
     /**
-     * Invalidates all sessions for the user associated with the given session token.
+     * Deletes all existing sessions with the given activeOrder.
      */
-    async invalidateSessionByToken(token: string): Promise<void> {
+    async deleteSessionsByActiveOrder(activeOrder: Order): Promise<void> {
+        await this.connection.getRepository(Session).delete({ activeOrder });
+    }
+
+    /**
+     * Deletes all sessions for the user associated with the given session token.
+     */
+    async deleteSessionByToken(token: string): Promise<void> {
         const session = await this.connection.getRepository(AuthenticatedSession).findOne({
             where: { token },
             relations: ['user'],
         });
         if (session) {
-            return this.invalidateUserSessions(session.user);
+            return this.deleteSessionsByUser(session.user);
         }
     }
 
     async getUserById(userId: ID): Promise<User | undefined> {
         return this.connection.getRepository(User).findOne(userId, {
             relations: ['roles', 'roles.channels'],
+        });
+    }
+
+    private async createNewAuthenticatedSession(
+        ctx: RequestContext,
+        user: User,
+    ): Promise<AuthenticatedSession> {
+        const token = await this.generateSessionToken();
+        const guestOrder =
+            ctx.session && ctx.session.activeOrder
+                ? await this.orderService.findOne(ctx, ctx.session.activeOrder.id)
+                : undefined;
+        const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
+        const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
+        return new AuthenticatedSession({
+            token,
+            user,
+            activeOrder,
+            expires: this.getExpiryDate(this.sessionDurationInMs),
+            invalidated: false,
         });
     }
 

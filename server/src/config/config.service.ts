@@ -13,7 +13,13 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
-import { AuthOptions, getConfig, OrderProcessOptions, VendureConfig } from './vendure-config';
+import {
+    AuthOptions,
+    getConfig,
+    OrderMergeOptions,
+    OrderProcessOptions,
+    VendureConfig,
+} from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 @Injectable()
@@ -88,6 +94,10 @@ export class ConfigService implements VendureConfig {
 
     get promotionActions(): PromotionAction[] {
         return this.activeConfig.promotionActions;
+    }
+
+    get orderMergeOptions(): OrderMergeOptions {
+        return this.activeConfig.orderMergeOptions;
     }
 
     get orderProcessOptions(): OrderProcessOptions<any> {

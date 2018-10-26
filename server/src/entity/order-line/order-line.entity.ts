@@ -28,7 +28,7 @@ export class OrderLine extends VendureEntity {
     @OneToMany(type => OrderItem, item => item.line)
     items: OrderItem[];
 
-    @ManyToOne(type => Order, order => order.lines)
+    @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
 
     @Calculated()
