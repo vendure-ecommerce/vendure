@@ -12,6 +12,8 @@ import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strateg
 import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
+import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
+import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { VendureConfig } from './vendure-config';
 
 /**
@@ -47,6 +49,10 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
         promotionActions: defaultPromotionActions,
+    },
+    shippingOptions: {
+        shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
+        shippingCalculators: [defaultShippingCalculator],
     },
     orderProcessOptions: {},
     orderMergeOptions: {

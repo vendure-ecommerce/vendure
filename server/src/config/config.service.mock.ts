@@ -21,6 +21,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     };
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
+    shippingOptions = {};
     promotionOptions = {
         promotionConditions: [],
         promotionActions: [],

@@ -139,11 +139,11 @@ export interface ShippingOptions {
     /**
      * An array of available ShippingEligibilityCheckers for use in configuring ShippingMethods
      */
-    shippingEligibilityCheckers?: ShippingEligibilityChecker[];
+    shippingEligibilityCheckers?: Array<ShippingEligibilityChecker<any>>;
     /**
      * An array of available ShippingCalculator for use in configuring ShippingMethods
      */
-    shippingCalculators?: ShippingCalculator[];
+    shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
 export interface VendureConfig {

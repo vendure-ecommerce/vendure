@@ -15,6 +15,7 @@ import {
     OrderMergeOptions,
     OrderProcessOptions,
     PromotionOptions,
+    ShippingOptions,
     VendureConfig,
 } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
@@ -75,6 +76,10 @@ export class ConfigService implements VendureConfig {
 
     get promotionOptions(): PromotionOptions {
         return this.activeConfig.promotionOptions;
+    }
+
+    get shippingOptions(): ShippingOptions {
+        return this.activeConfig.shippingOptions;
     }
 
     get orderMergeOptions(): OrderMergeOptions {

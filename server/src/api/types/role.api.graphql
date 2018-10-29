@@ -6,7 +6,7 @@ type Query {
 type Mutation {
   "Create a new Role"
   createRole(input: CreateRoleInput!): Role!
-  "Update an existing new Role"
+  "Update an existing Role"
   updateRole(input: UpdateRoleInput!): Role!
 }
 

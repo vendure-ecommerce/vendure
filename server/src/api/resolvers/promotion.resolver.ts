@@ -36,6 +36,7 @@ export class PromotionResolver {
     @Query()
     @Allow(Permission.ReadSettings)
     adjustmentOperations(@Ctx() ctx: RequestContext) {
+        // TODO: split this into 2 queries, one for PromotionConditions and one for PromotionActions
         return this.promotionService.getAdjustmentOperations();
     }
 

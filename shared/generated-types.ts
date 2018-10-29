@@ -70,6 +70,8 @@ export interface Query {
     adjustmentOperations: AdjustmentOperations;
     roles: RoleList;
     role?: Role | null;
+    shippingMethods: ShippingMethodList;
+    shippingMethod?: ShippingMethod | null;
     taxCategories: TaxCategory[];
     taxCategory?: TaxCategory | null;
     taxRates: TaxRateList;
@@ -487,6 +489,21 @@ export interface RoleList extends PaginatedList {
     totalItems: number;
 }
 
+export interface ShippingMethodList extends PaginatedList {
+    items: ShippingMethod[];
+    totalItems: number;
+}
+
+export interface ShippingMethod extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    code: string;
+    description: string;
+    checker: AdjustmentOperation;
+    calculator: AdjustmentOperation;
+}
+
 export interface TaxRateList extends PaginatedList {
     items: TaxRate[];
     totalItems: number;
@@ -546,6 +563,8 @@ export interface Mutation {
     updatePromotion: Promotion;
     createRole: Role;
     updateRole: Role;
+    createShippingMethod: ShippingMethod;
+    updateShippingMethod: ShippingMethod;
     createTaxCategory: TaxCategory;
     updateTaxCategory: TaxCategory;
     createTaxRate: TaxRate;
@@ -795,6 +814,28 @@ export interface RoleSortParameter {
 }
 
 export interface RoleFilterParameter {
+    code?: StringOperators | null;
+    description?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
+export interface ShippingMethodListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: ShippingMethodSortParameter | null;
+    filter?: ShippingMethodFilterParameter | null;
+}
+
+export interface ShippingMethodSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    code?: SortOrder | null;
+    description?: SortOrder | null;
+}
+
+export interface ShippingMethodFilterParameter {
     code?: StringOperators | null;
     description?: StringOperators | null;
     createdAt?: DateOperators | null;
@@ -1121,6 +1162,21 @@ export interface UpdateRoleInput {
     permissions?: Permission[] | null;
 }
 
+export interface CreateShippingMethodInput {
+    code: string;
+    description: string;
+    checker: AdjustmentOperationInput;
+    calculator: AdjustmentOperationInput;
+}
+
+export interface UpdateShippingMethodInput {
+    id: string;
+    code?: string | null;
+    description?: string | null;
+    checker?: AdjustmentOperationInput | null;
+    calculator?: AdjustmentOperationInput | null;
+}
+
 export interface CreateTaxCategoryInput {
     name: string;
 }
@@ -1258,6 +1314,12 @@ export interface RolesQueryArgs {
     options?: RoleListOptions | null;
 }
 export interface RoleQueryArgs {
+    id: string;
+}
+export interface ShippingMethodsQueryArgs {
+    options?: ShippingMethodListOptions | null;
+}
+export interface ShippingMethodQueryArgs {
     id: string;
 }
 export interface TaxCategoryQueryArgs {
@@ -1400,6 +1462,12 @@ export interface CreateRoleMutationArgs {
 }
 export interface UpdateRoleMutationArgs {
     input: UpdateRoleInput;
+}
+export interface CreateShippingMethodMutationArgs {
+    input: CreateShippingMethodInput;
+}
+export interface UpdateShippingMethodMutationArgs {
+    input: UpdateShippingMethodInput;
 }
 export interface CreateTaxCategoryMutationArgs {
     input: CreateTaxCategoryInput;
@@ -1701,6 +1769,8 @@ export namespace QueryResolvers {
         adjustmentOperations?: AdjustmentOperationsResolver<AdjustmentOperations, any, Context>;
         roles?: RolesResolver<RoleList, any, Context>;
         role?: RoleResolver<Role | null, any, Context>;
+        shippingMethods?: ShippingMethodsResolver<ShippingMethodList, any, Context>;
+        shippingMethod?: ShippingMethodResolver<ShippingMethod | null, any, Context>;
         taxCategories?: TaxCategoriesResolver<TaxCategory[], any, Context>;
         taxCategory?: TaxCategoryResolver<TaxCategory | null, any, Context>;
         taxRates?: TaxRatesResolver<TaxRateList, any, Context>;
@@ -1971,6 +2041,26 @@ export namespace QueryResolvers {
         RoleArgs
     >;
     export interface RoleArgs {
+        id: string;
+    }
+
+    export type ShippingMethodsResolver<R = ShippingMethodList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ShippingMethodsArgs
+    >;
+    export interface ShippingMethodsArgs {
+        options?: ShippingMethodListOptions | null;
+    }
+
+    export type ShippingMethodResolver<R = ShippingMethod | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ShippingMethodArgs
+    >;
+    export interface ShippingMethodArgs {
         id: string;
     }
 
@@ -3169,6 +3259,48 @@ export namespace RoleListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace ShippingMethodListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<ShippingMethod[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = ShippingMethod[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace ShippingMethodResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+        checker?: CheckerResolver<AdjustmentOperation, any, Context>;
+        calculator?: CalculatorResolver<AdjustmentOperation, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CheckerResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CalculatorResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
 export namespace TaxRateListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<TaxRate[], any, Context>;
@@ -3260,6 +3392,8 @@ export namespace MutationResolvers {
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
+        createShippingMethod?: CreateShippingMethodResolver<ShippingMethod, any, Context>;
+        updateShippingMethod?: UpdateShippingMethodResolver<ShippingMethod, any, Context>;
         createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
         updateTaxCategory?: UpdateTaxCategoryResolver<TaxCategory, any, Context>;
         createTaxRate?: CreateTaxRateResolver<TaxRate, any, Context>;
@@ -3665,6 +3799,26 @@ export namespace MutationResolvers {
     >;
     export interface UpdateRoleArgs {
         input: UpdateRoleInput;
+    }
+
+    export type CreateShippingMethodResolver<R = ShippingMethod, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateShippingMethodArgs
+    >;
+    export interface CreateShippingMethodArgs {
+        input: CreateShippingMethodInput;
+    }
+
+    export type UpdateShippingMethodResolver<R = ShippingMethod, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateShippingMethodArgs
+    >;
+    export interface UpdateShippingMethodArgs {
+        input: UpdateShippingMethodInput;
     }
 
     export type CreateTaxCategoryResolver<R = TaxCategory, Parent = any, Context = any> = Resolver<

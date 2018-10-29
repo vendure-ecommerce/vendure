@@ -26,6 +26,7 @@ import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { ShippingMethod } from './shipping-method/shipping-method.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
@@ -63,6 +64,7 @@ export const coreEntitiesMap = {
     Promotion,
     Role,
     Session,
+    ShippingMethod,
     TaxCategory,
     TaxRate,
     User,
