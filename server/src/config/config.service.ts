@@ -7,17 +7,14 @@ import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
-import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
-import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
-import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
-import { PromotionAction } from './promotion/promotion-action';
-import { PromotionCondition } from './promotion/promotion-condition';
 import {
+    AssetOptions,
     AuthOptions,
     getConfig,
     OrderMergeOptions,
     OrderProcessOptions,
+    PromotionOptions,
     VendureConfig,
 } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
@@ -68,32 +65,16 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.entityIdStrategy;
     }
 
-    get assetNamingStrategy(): AssetNamingStrategy {
-        return this.activeConfig.assetNamingStrategy;
-    }
-
-    get assetStorageStrategy(): AssetStorageStrategy {
-        return this.activeConfig.assetStorageStrategy;
-    }
-
-    get assetPreviewStrategy(): AssetPreviewStrategy {
-        return this.activeConfig.assetPreviewStrategy;
+    get assetOptions(): AssetOptions {
+        return this.activeConfig.assetOptions;
     }
 
     get dbConnectionOptions(): ConnectionOptions {
         return this.activeConfig.dbConnectionOptions;
     }
 
-    get uploadMaxFileSize(): number {
-        return this.activeConfig.uploadMaxFileSize;
-    }
-
-    get promotionConditions(): PromotionCondition[] {
-        return this.activeConfig.promotionConditions;
-    }
-
-    get promotionActions(): PromotionAction[] {
-        return this.activeConfig.promotionActions;
+    get promotionOptions(): PromotionOptions {
+        return this.activeConfig.promotionOptions;
     }
 
     get orderMergeOptions(): OrderMergeOptions {

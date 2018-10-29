@@ -1,5 +1,6 @@
 import { API_PATH } from 'shared/shared-constants';
 
+import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
 import { VendureConfig } from '../../src/config/vendure-config';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
@@ -32,8 +33,12 @@ export const testConfig: VendureConfig = {
         autoSave: false,
         logging: false,
     },
+    promotionOptions: {},
     customFields: {},
     entityIdStrategy: new TestingEntityIdStrategy(),
-    assetStorageStrategy: new TestingAssetStorageStrategy(),
-    assetPreviewStrategy: new TestingAssetPreviewStrategy(),
+    assetOptions: {
+        assetNamingStrategy: new DefaultAssetNamingStrategy(),
+        assetStorageStrategy: new TestingAssetStorageStrategy(),
+        assetPreviewStrategy: new TestingAssetPreviewStrategy(),
+    },
 };

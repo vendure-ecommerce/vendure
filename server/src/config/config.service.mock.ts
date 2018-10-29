@@ -14,13 +14,17 @@ export class MockConfigService implements MockClass<ConfigService> {
     defaultLanguageCode: jest.Mock<any>;
     roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
-    assetNamingStrategy = {} as any;
-    assetStorageStrategy = {} as any;
-    assetPreviewStrategy = {} as any;
+    assetOptions = {
+        assetNamingStrategy: {} as any,
+        assetStorageStrategy: {} as any,
+        assetPreviewStrategy: {} as any,
+    };
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
-    promotionConditions = [];
-    promotionActions = [];
+    promotionOptions = {
+        promotionConditions: [],
+        promotionActions: [],
+    };
     orderMergeOptions = {};
     orderProcessOptions = {};
     customFields = {};

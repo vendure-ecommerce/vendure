@@ -17,9 +17,11 @@ export class AssetInterceptor implements NestInterceptor {
     private readonly toAbsoluteUrl: AssetStorageStrategy['toAbsoluteUrl'] | undefined;
 
     constructor(private configService: ConfigService) {
-        const { assetStorageStrategy } = this.configService;
-        if (assetStorageStrategy.toAbsoluteUrl) {
-            this.toAbsoluteUrl = assetStorageStrategy.toAbsoluteUrl.bind(assetStorageStrategy);
+        const { assetOptions } = this.configService;
+        if (assetOptions.assetStorageStrategy.toAbsoluteUrl) {
+            this.toAbsoluteUrl = assetOptions.assetStorageStrategy.toAbsoluteUrl.bind(
+                assetOptions.assetStorageStrategy,
+            );
         }
     }
 

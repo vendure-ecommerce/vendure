@@ -40,8 +40,8 @@ export class PromotionService {
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
     ) {
-        this.availableConditions = this.configService.promotionConditions;
-        this.availableActions = this.configService.promotionActions;
+        this.availableConditions = this.configService.promotionOptions.promotionConditions || [];
+        this.availableActions = this.configService.promotionOptions.promotionActions || [];
     }
 
     findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {

@@ -45,8 +45,10 @@ describe('Promotion resolver', () => {
                 customerCount: 1,
             },
             {
-                promotionConditions: [promoCondition, promoCondition2],
-                promotionActions: [promoAction],
+                promotionOptions: {
+                    promotionConditions: [promoCondition, promoCondition2],
+                    promotionActions: [promoAction],
+                },
             },
         );
         await client.init();

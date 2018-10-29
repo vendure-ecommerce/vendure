@@ -19,6 +19,8 @@ import { mergeConfig } from './merge-config';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
+import { ShippingCalculator } from './shipping-method/shipping-calculator';
+import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 export interface AuthOptions {
@@ -100,6 +102,50 @@ export interface OrderMergeOptions {
     checkoutMergeStrategy: OrderMergeStrategy;
 }
 
+export interface AssetOptions {
+    /**
+     * Defines how asset files and preview images are named before being saved.
+     */
+    assetNamingStrategy: AssetNamingStrategy;
+    /**
+     * Defines the strategy used for storing uploaded binary files. By default files are
+     * persisted to the local file system.
+     */
+    assetStorageStrategy: AssetStorageStrategy;
+    /**
+     * Defines the strategy used for creating preview images of uploaded assets. The default
+     * strategy resizes images based on maximum dimensions and outputs a sensible default
+     * preview image for other file types.
+     */
+    assetPreviewStrategy: AssetPreviewStrategy;
+    /**
+     * The max file size in bytes for uploaded assets.
+     */
+    uploadMaxFileSize?: number;
+}
+
+export interface PromotionOptions {
+    /**
+     * An array of conditions which can be used to construct Promotions
+     */
+    promotionConditions?: Array<PromotionCondition<any>>;
+    /**
+     * An array of actions which can be used to construct Promotions
+     */
+    promotionActions?: Array<PromotionAction<any>>;
+}
+
+export interface ShippingOptions {
+    /**
+     * An array of available ShippingEligibilityCheckers for use in configuring ShippingMethods
+     */
+    shippingEligibilityCheckers?: ShippingEligibilityChecker[];
+    /**
+     * An array of available ShippingCalculator for use in configuring ShippingMethods
+     */
+    shippingCalculators?: ShippingCalculator[];
+}
+
 export interface VendureConfig {
     /**
      * The name of the property which contains the token of the
@@ -133,6 +179,10 @@ export interface VendureConfig {
      */
     authOptions: AuthOptions;
     /**
+     * Configuration for the handling of Assets.
+     */
+    assetOptions?: AssetOptions;
+    /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
      * entities via the API. The default uses a simple auto-increment integer
@@ -140,32 +190,17 @@ export interface VendureConfig {
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
-     * Defines how asset files and preview images are named before being saved.
-     */
-    assetNamingStrategy?: AssetNamingStrategy;
-    /**
-     * Defines the strategy used for storing uploaded binary files. By default files are
-     * persisted to the local file system.
-     */
-    assetStorageStrategy?: AssetStorageStrategy;
-    /**
-     * Defines the strategy used for creating preview images of uploaded assets. The default
-     * strategy resizes images based on maximum dimensions and outputs a sensible default
-     * preview image for other file types.
-     */
-    assetPreviewStrategy?: AssetPreviewStrategy;
-    /**
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
     /**
-     * An array of conditions which can be used to construct Promotions
+     * Configures the Conditions and Actions available when creating Promotions.
      */
-    promotionConditions?: Array<PromotionCondition<any>>;
+    promotionOptions?: PromotionOptions;
     /**
-     * An array of actions which can be used to construct Promotions
+     * Configures the available checkers and calculators for ShippingMethods.
      */
-    promotionActions?: Array<PromotionAction<any>>;
+    shippingOptions?: ShippingOptions;
     /**
      * Defines custom fields which can be used to extend the built-in entities.
      */
@@ -179,10 +214,6 @@ export interface VendureConfig {
      * Customer signs in.
      */
     orderMergeOptions?: OrderMergeOptions;
-    /**
-     * The max file size in bytes for uploaded assets.
-     */
-    uploadMaxFileSize?: number;
     /**
      * Custom Express middleware for the server.
      */

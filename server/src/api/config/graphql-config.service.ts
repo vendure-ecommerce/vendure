@@ -40,7 +40,7 @@ export class GraphqlConfigService implements GqlOptionsFactory {
                 Upload: GraphQLUpload,
             },
             uploads: {
-                maxFileSize: this.configService.uploadMaxFileSize,
+                maxFileSize: this.configService.assetOptions.uploadMaxFileSize,
             },
             playground: true,
             debug: true,

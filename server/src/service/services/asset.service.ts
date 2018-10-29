@@ -38,7 +38,8 @@ export class AssetService {
 
     async create(input: CreateAssetInput): Promise<Asset> {
         const { stream, filename, mimetype, encoding } = await input.file;
-        const { assetPreviewStrategy, assetStorageStrategy } = this.configService;
+        const { assetOptions } = this.configService;
+        const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(filename);
         const previewFileName = await this.getPreviewFileName(sourceFileName);
 
@@ -62,16 +63,16 @@ export class AssetService {
     }
 
     private async getSourceFileName(fileName: string): Promise<string> {
-        const { assetNamingStrategy } = this.configService;
+        const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
-            assetNamingStrategy.generateSourceFileName(name, conflict),
+            assetOptions.assetNamingStrategy.generateSourceFileName(name, conflict),
         );
     }
 
     private async getPreviewFileName(fileName: string): Promise<string> {
-        const { assetNamingStrategy } = this.configService;
+        const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
-            assetNamingStrategy.generatePreviewFileName(name, conflict),
+            assetOptions.assetNamingStrategy.generatePreviewFileName(name, conflict),
         );
     }
 
@@ -79,11 +80,11 @@ export class AssetService {
         inputFileName: string,
         generateNameFn: (fileName: string, conflictName?: string) => string,
     ): Promise<string> {
-        const { assetStorageStrategy } = this.configService;
+        const { assetOptions } = this.configService;
         let outputFileName: string | undefined;
         do {
             outputFileName = generateNameFn(inputFileName, outputFileName);
-        } while (await assetStorageStrategy.fileExists(outputFileName));
+        } while (await assetOptions.assetStorageStrategy.fileExists(outputFileName));
         return outputFileName;
     }
 }

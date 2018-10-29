@@ -19,11 +19,10 @@ export class Promotion extends AdjustmentSource {
 
     constructor(input?: DeepPartial<Promotion>) {
         super(input);
-        this.allConditions = getConfig().promotionConditions.reduce(
-            (hash, o) => ({ ...hash, [o.code]: o }),
-            {},
-        );
-        this.allActions = getConfig().promotionActions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
+        const conditions = getConfig().promotionOptions.promotionConditions || [];
+        const actions = getConfig().promotionOptions.promotionActions || [];
+        this.allConditions = conditions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
+        this.allActions = actions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
 
     @Column() name: string;

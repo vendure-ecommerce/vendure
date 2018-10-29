@@ -44,11 +44,11 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
     init(config: Required<VendureConfig>) {
         this.createAssetServer();
         this.assetStorage = new DefaultAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
-        config.assetPreviewStrategy = new DefaultAssetPreviewStrategy({
+        config.assetOptions.assetPreviewStrategy = new DefaultAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth,
             maxHeight: this.options.previewMaxHeight,
         });
-        config.assetStorageStrategy = this.assetStorage;
+        config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.middleware.push({
             handler: this.createProxyHandler(),
             route: this.options.route,

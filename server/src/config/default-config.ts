@@ -35,15 +35,19 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),
-    assetNamingStrategy: new DefaultAssetNamingStrategy(),
-    assetStorageStrategy: new NoAssetStorageStrategy(),
-    assetPreviewStrategy: new NoAssetPreviewStrategy(),
+    assetOptions: {
+        assetNamingStrategy: new DefaultAssetNamingStrategy(),
+        assetStorageStrategy: new NoAssetStorageStrategy(),
+        assetPreviewStrategy: new NoAssetPreviewStrategy(),
+        uploadMaxFileSize: 20971520,
+    },
     dbConnectionOptions: {
         type: 'mysql',
     },
-    uploadMaxFileSize: 20971520,
-    promotionConditions: defaultPromotionConditions,
-    promotionActions: defaultPromotionActions,
+    promotionOptions: {
+        promotionConditions: defaultPromotionConditions,
+        promotionActions: defaultPromotionActions,
+    },
     orderProcessOptions: {},
     orderMergeOptions: {
         mergeStrategy: new MergeOrdersStrategy(),
