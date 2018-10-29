@@ -1,14 +1,13 @@
-import { Adjustment, AdjustmentArg } from 'shared/generated-types';
+import { AdjustmentArg } from 'shared/generated-types';
 
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { AdjustmentArgs, argsArrayToHash, ArgumentValues } from '../common/adjustments';
 
 export type PromotionActionArgType = 'percentage' | 'money';
-export type PromotionActionArgs = {
-    [name: string]: PromotionActionArgType;
-};
-export type ArgumentValues<T extends PromotionActionArgs> = { [K in keyof T]: number };
+export type PromotionActionArgs = AdjustmentArgs<PromotionActionArgType>;
+
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
@@ -44,16 +43,6 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}> {
         this.args = config.args;
         this.priorityValue = config.priorityValue || 0;
     }
-
-    protected argsArrayToHash(args: AdjustmentArg[]): ArgumentValues<T> {
-        const output: ArgumentValues<T> = {} as any;
-        for (const arg of args) {
-            if (arg.value != null) {
-                output[arg.name] = Number.parseInt(arg.value || '', 10);
-            }
-        }
-        return output;
-    }
 }
 
 /**
@@ -67,7 +56,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
     }
 
     execute(orderItem: OrderItem, orderLine: OrderLine, args: AdjustmentArg[]) {
-        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args));
+        return this.executeFn(orderItem, orderLine, argsArrayToHash(args));
     }
 }
 
@@ -82,6 +71,6 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
     }
 
     execute(order: Order, args: AdjustmentArg[]) {
-        return this.executeFn(order, this.argsArrayToHash(args));
+        return this.executeFn(order, argsArrayToHash(args));
     }
 }

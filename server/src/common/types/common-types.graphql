@@ -18,6 +18,28 @@ type Adjustment {
     amount: Int!
 }
 
+type AdjustmentArg {
+    name: String!
+    type: String!
+    value: String
+}
+
+type AdjustmentOperation {
+    code: String!
+    args: [AdjustmentArg!]!
+    description: String!
+}
+
+input AdjustmentOperationInputArg {
+    name: String!
+    value: String!
+}
+
+input AdjustmentOperationInput {
+    code: String!
+    arguments: [AdjustmentOperationInputArg!]!
+}
+
 interface PaginatedList {
     items: [Node!]!
     totalItems: Int!
