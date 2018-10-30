@@ -16,7 +16,7 @@
 <form class="form" [formGroup]="roleForm" >
     <section class="form-block">
         <label>{{ 'settings.role' | translate }}</label>
-        <vdr-form-field [label]="'settings.description' | translate" for="description">
+        <vdr-form-field [label]="'common.description' | translate" for="description">
             <input id="description" type="text" formControlName="description" (input)="updateCode($event.target.value)">
         </vdr-form-field>
         <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">

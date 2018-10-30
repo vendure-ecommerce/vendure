@@ -2,7 +2,7 @@
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
-            {{ 'settings.create-new-role' | translate }}
+            {{ 'settings.create-new-shipping-method' | translate }}
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
@@ -13,25 +13,16 @@
                 [currentPage]="currentPage$ | async"
                 (pageChange)="setPageNumber($event)"
                 (itemsPerPageChange)="setItemsPerPage($event)">
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.permissions' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
-    <ng-template let-role="item">
-        <td class="left">{{ role.id }}</td>
-        <td class="left">{{ role.code }}</td>
-        <td class="left">{{ role.description }}</td>
-        <td class="left">
-            <ng-container *ngIf="!isDefaultRole(role)">
-                <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
-            </ng-container>
-        </td>
+    <ng-template let-shippingMethod="item">
+        <td class="left">{{ shippingMethod.code }}</td>
+        <td class="left">{{ shippingMethod.description }}</td>
         <td class="right">
-            <vdr-table-row-action [disabled]="isDefaultRole(role)"
-                                  iconShape="edit"
+            <vdr-table-row-action iconShape="edit"
                                   [label]="'common.edit' | translate"
-                                  [linkTo]="['./', role.id]">
+                                  [linkTo]="['./', shippingMethod.id]">
             </vdr-table-row-action>
         </td>
     </ng-template>

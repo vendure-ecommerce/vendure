@@ -97,6 +97,13 @@
                 </li>
                 <li>
                     <a class="nav-link"
+                       [routerLink]="['/settings', 'shipping-methods']"
+                       routerLinkActive="active">
+                        <clr-icon shape="truck" size="20"></clr-icon>{{ 'nav.shipping-methods' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link"
                        [routerLink]="['/settings', 'tax-categories']"
                        routerLinkActive="active">
                         <clr-icon shape="view-list" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}

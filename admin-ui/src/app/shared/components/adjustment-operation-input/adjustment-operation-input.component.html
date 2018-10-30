@@ -1,8 +1,8 @@
-<div class="card">
+<div class="card" *ngIf="operation">
     <div class="card-block">
         {{ interpolateDescription() }}
     </div>
-    <div class="card-block">
+    <div class="card-block" *ngIf="operation.args?.length">
         <form clrForm
               [formGroup]="form"
               *ngIf="operation"

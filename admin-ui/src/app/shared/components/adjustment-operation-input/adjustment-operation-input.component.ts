@@ -89,7 +89,9 @@ export class AdjustmentOperationInputComponent
     }
 
     writeValue(value: any): void {
-        this.form.patchValue(value);
+        if (value) {
+            this.form.patchValue(value);
+        }
     }
 
     private createForm() {
@@ -97,9 +99,12 @@ export class AdjustmentOperationInputComponent
             this.subscription.unsubscribe();
         }
         this.form = new FormGroup({});
-        for (const arg of this.operation.args) {
-            this.form.addControl(arg.name, new FormControl(arg.value, Validators.required));
+        if (this.operation.args) {
+            for (const arg of this.operation.args) {
+                this.form.addControl(arg.name, new FormControl(arg.value, Validators.required));
+            }
         }
+
         this.subscription = this.form.valueChanges.subscribe(value => {
             if (this.onChange) {
                 this.onChange({

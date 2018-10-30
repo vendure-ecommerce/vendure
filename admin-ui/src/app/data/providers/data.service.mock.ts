@@ -6,7 +6,7 @@ import { DataService } from './data.service';
 
 export type DataServiceSectionMock<T> = { [K in keyof T]: jasmine.Spy };
 
-export type DataServiceMock = { [K in keyof DataService]: DataServiceSectionMock<DataService[K]> };
+export type DataServiceMock = { [K in keyof DataService]?: DataServiceSectionMock<DataService[K]> };
 
 export type MockQueryResult = { [K in keyof QueryResult<any>]: any };
 

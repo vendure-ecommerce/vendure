@@ -72,6 +72,8 @@ export interface Query {
     role?: Role | null;
     shippingMethods: ShippingMethodList;
     shippingMethod?: ShippingMethod | null;
+    shippingEligibilityCheckers: AdjustmentOperation[];
+    shippingCalculators: AdjustmentOperation[];
     taxCategories: TaxCategory[];
     taxCategory?: TaxCategory | null;
     taxRates: TaxRateList;
@@ -1771,6 +1773,12 @@ export namespace QueryResolvers {
         role?: RoleResolver<Role | null, any, Context>;
         shippingMethods?: ShippingMethodsResolver<ShippingMethodList, any, Context>;
         shippingMethod?: ShippingMethodResolver<ShippingMethod | null, any, Context>;
+        shippingEligibilityCheckers?: ShippingEligibilityCheckersResolver<
+            AdjustmentOperation[],
+            any,
+            Context
+        >;
+        shippingCalculators?: ShippingCalculatorsResolver<AdjustmentOperation[], any, Context>;
         taxCategories?: TaxCategoriesResolver<TaxCategory[], any, Context>;
         taxCategory?: TaxCategoryResolver<TaxCategory | null, any, Context>;
         taxRates?: TaxRatesResolver<TaxRateList, any, Context>;
@@ -2064,6 +2072,16 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type ShippingEligibilityCheckersResolver<
+        R = AdjustmentOperation[],
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
+    export type ShippingCalculatorsResolver<
+        R = AdjustmentOperation[],
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
     export type TaxCategoriesResolver<R = TaxCategory[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -5071,6 +5089,78 @@ export namespace UpdateChannel {
     export type UpdateChannel = Channel.Fragment;
 }
 
+export namespace GetShippingMethodList {
+    export type Variables = {
+        options?: ShippingMethodListOptions | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        shippingMethods: ShippingMethods;
+    };
+
+    export type ShippingMethods = {
+        __typename?: 'ShippingMethodList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = ShippingMethod.Fragment;
+}
+
+export namespace GetShippingMethod {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        shippingMethod?: ShippingMethod | null;
+    };
+
+    export type ShippingMethod = ShippingMethod.Fragment;
+}
+
+export namespace GetShippingMethodOperations {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        shippingEligibilityCheckers: ShippingEligibilityCheckers[];
+        shippingCalculators: ShippingCalculators[];
+    };
+
+    export type ShippingEligibilityCheckers = AdjustmentOperation.Fragment;
+
+    export type ShippingCalculators = AdjustmentOperation.Fragment;
+}
+
+export namespace CreateShippingMethod {
+    export type Variables = {
+        input: CreateShippingMethodInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createShippingMethod: CreateShippingMethod;
+    };
+
+    export type CreateShippingMethod = ShippingMethod.Fragment;
+}
+
+export namespace UpdateShippingMethod {
+    export type Variables = {
+        input: UpdateShippingMethodInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateShippingMethod: UpdateShippingMethod;
+    };
+
+    export type UpdateShippingMethod = ShippingMethod.Fragment;
+}
+
 export namespace Administrator {
     export type Fragment = {
         __typename?: 'Administrator';
@@ -5543,4 +5633,21 @@ export namespace Channel {
         id: string;
         name: string;
     };
+}
+
+export namespace ShippingMethod {
+    export type Fragment = {
+        __typename?: 'ShippingMethod';
+        id: string;
+        createdAt: DateTime;
+        updatedAt: DateTime;
+        code: string;
+        description: string;
+        checker: Checker;
+        calculator: Calculator;
+    };
+
+    export type Checker = AdjustmentOperation.Fragment;
+
+    export type Calculator = AdjustmentOperation.Fragment;
 }

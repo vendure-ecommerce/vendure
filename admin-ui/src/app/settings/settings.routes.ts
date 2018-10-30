@@ -1,5 +1,13 @@
 import { Route } from '@angular/router';
-import { Administrator, Channel, Country, Role, TaxCategory, TaxRate } from 'shared/generated-types';
+import {
+    Administrator,
+    Channel,
+    Country,
+    Role,
+    ShippingMethod,
+    TaxCategory,
+    TaxRate,
+} from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -13,6 +21,8 @@ import { CountryDetailComponent } from './components/country-detail/country-deta
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
+import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
+import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
 import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
@@ -21,6 +31,7 @@ import { AdministratorResolver } from './providers/routing/administrator-resolve
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
+import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 
@@ -109,6 +120,21 @@ export const settingsRoutes: Route[] = [
             breadcrumb: countryBreadcrumb,
         },
     },
+    {
+        path: 'shipping-methods',
+        component: ShippingMethodListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.shipping-methods'),
+        },
+    },
+    {
+        path: 'shipping-methods/:id',
+        component: ShippingMethodDetailComponent,
+        resolve: createResolveData(ShippingMethodResolver),
+        data: {
+            breadcrumb: shippingMethodBreadcrumb,
+        },
+    },
 ];
 
 export function administratorBreadcrumb(data: any, params: any) {
@@ -168,5 +194,15 @@ export function countryBreadcrumb(data: any, params: any) {
         breadcrumbKey: 'breadcrumb.countries',
         getName: promotion => promotion.name,
         route: 'countries',
+    });
+}
+
+export function shippingMethodBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<ShippingMethod.Fragment>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.shipping-methods',
+        getName: method => method.description,
+        route: 'shipping-methods',
     });
 }

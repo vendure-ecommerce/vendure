@@ -12,6 +12,8 @@ import { CountryListComponent } from './components/country-list/country-list.com
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
+import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
+import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
 import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
@@ -21,6 +23,7 @@ import { AdministratorResolver } from './providers/routing/administrator-resolve
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
+import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 import { settingsRoutes } from './settings.routes';
@@ -42,6 +45,8 @@ import { settingsRoutes } from './settings.routes';
         TaxRateDetailComponent,
         ChannelListComponent,
         ChannelDetailComponent,
+        ShippingMethodListComponent,
+        ShippingMethodDetailComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
     providers: [
@@ -51,6 +56,7 @@ import { settingsRoutes } from './settings.routes';
         CountryResolver,
         TaxRateResolver,
         ChannelResolver,
+        ShippingMethodResolver,
     ],
 })
 export class SettingsModule {}

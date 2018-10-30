@@ -137,5 +137,11 @@
       }
     }
   },
-  "defaultProject": "vendure-admin"
+  "defaultProject": "vendure-admin",
+  "schematics": {
+    "@schematics/angular:component": {
+      "spec": false,
+      "changeDetection": "OnPush"
+    }
+  }
 }

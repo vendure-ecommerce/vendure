@@ -10,6 +10,7 @@ import { OrderDataService } from './order-data.service';
 import { ProductDataService } from './product-data.service';
 import { PromotionDataService } from './promotion-data.service';
 import { SettingsDataService } from './settings-data.service';
+import { ShippingMethodDataService } from './shipping-method-data.service';
 
 @Injectable()
 export class DataService {
@@ -22,6 +23,7 @@ export class DataService {
     order: OrderDataService;
     settings: SettingsDataService;
     customer: CustomerDataService;
+    shippingMethod: ShippingMethodDataService;
 
     constructor(baseDataService: BaseDataService) {
         this.promotion = new PromotionDataService(baseDataService);
@@ -33,5 +35,6 @@ export class DataService {
         this.order = new OrderDataService(baseDataService);
         this.settings = new SettingsDataService(baseDataService);
         this.customer = new CustomerDataService(baseDataService);
+        this.shippingMethod = new ShippingMethodDataService(baseDataService);
     }
 }
