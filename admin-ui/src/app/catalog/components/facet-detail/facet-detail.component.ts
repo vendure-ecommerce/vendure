@@ -82,10 +82,6 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         }
     }
 
-    setLanguage(code: LanguageCode) {
-        this.setQueryParam('lang', code);
-    }
-
     customFieldIsSet(name: string): boolean {
         return !!this.facetForm.get(['facet', 'customFields', name]);
     }
@@ -272,9 +268,15 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         facetFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): any {
-        return createUpdatedTranslatable(facet, facetFormGroup.value, this.customFields, languageCode, {
+        return createUpdatedTranslatable({
+            translatable: facet,
+            updatedFields: facetFormGroup.value,
+            customFieldConfig: this.customFields,
             languageCode,
-            name: facet.name || '',
+            defaultTranslation: {
+                languageCode,
+                name: facet.name || '',
+            },
         });
     }
 
@@ -300,12 +302,12 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         }
         return dirtyValues
             .map((value, i) => {
-                return createUpdatedTranslatable(
-                    value,
-                    dirtyValueValues[i],
-                    this.customValueFields,
+                return createUpdatedTranslatable({
+                    translatable: value,
+                    updatedFields: dirtyValueValues[i],
+                    customFieldConfig: this.customValueFields,
                     languageCode,
-                );
+                });
             })
             .filter(notNullOrUndefined);
     }

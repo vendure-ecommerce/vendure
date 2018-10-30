@@ -50,6 +50,7 @@ export interface Query {
     config: Config;
     countries: CountryList;
     country?: Country | null;
+    availableCountries: Country[];
     customerGroups: CustomerGroup[];
     customerGroup?: CustomerGroup | null;
     customers: CustomerList;
@@ -143,9 +144,19 @@ export interface Zone extends Node {
 
 export interface Country extends Node {
     id: string;
+    languageCode: LanguageCode;
     code: string;
     name: string;
     enabled: boolean;
+    translations: CountryTranslation[];
+}
+
+export interface CountryTranslation {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    name: string;
 }
 
 export interface AssetList extends PaginatedList {
@@ -909,14 +920,20 @@ export interface UpdateChannelInput {
 
 export interface CreateCountryInput {
     code: string;
-    name: string;
+    translations: CountryTranslationInput[];
     enabled: boolean;
+}
+
+export interface CountryTranslationInput {
+    id?: string | null;
+    languageCode: LanguageCode;
+    name?: string | null;
 }
 
 export interface UpdateCountryInput {
     id: string;
     code?: string | null;
-    name?: string | null;
+    translations?: CountryTranslationInput[] | null;
     enabled?: boolean | null;
 }
 
@@ -1751,6 +1768,7 @@ export namespace QueryResolvers {
         config?: ConfigResolver<Config, any, Context>;
         countries?: CountriesResolver<CountryList, any, Context>;
         country?: CountryResolver<Country | null, any, Context>;
+        availableCountries?: AvailableCountriesResolver<Country[], any, Context>;
         customerGroups?: CustomerGroupsResolver<CustomerGroup[], any, Context>;
         customerGroup?: CustomerGroupResolver<CustomerGroup | null, any, Context>;
         customers?: CustomersResolver<CustomerList, any, Context>;
@@ -1872,6 +1890,11 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type AvailableCountriesResolver<R = Country[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type CustomerGroupsResolver<R = CustomerGroup[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2288,15 +2311,47 @@ export namespace ZoneResolvers {
 export namespace CountryResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
         code?: CodeResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
         enabled?: EnabledResolver<boolean, any, Context>;
+        translations?: TranslationsResolver<CountryTranslation[], any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TranslationsResolver<R = CountryTranslation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace CountryTranslationResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        name?: NameResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace AssetListResolvers {
@@ -5557,6 +5612,14 @@ export namespace Country {
         code: string;
         name: string;
         enabled: boolean;
+        translations: Translations[];
+    };
+
+    export type Translations = {
+        __typename?: 'CountryTranslation';
+        id: string;
+        languageCode: LanguageCode;
+        name: string;
     };
 }
 

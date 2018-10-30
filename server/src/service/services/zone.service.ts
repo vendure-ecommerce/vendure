@@ -10,58 +10,82 @@ import { ID } from 'shared/shared-types';
 import { unique } from 'shared/unique';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class ZoneService {
     constructor(@InjectConnection() private connection: Connection) {}
 
-    findAll(): Promise<Zone[]> {
-        return this.connection.getRepository(Zone).find({
-            relations: ['members'],
-        });
+    findAll(ctx: RequestContext): Promise<Zone[]> {
+        return this.connection
+            .getRepository(Zone)
+            .find({
+                relations: ['members'],
+            })
+            .then(zones => {
+                zones.forEach(
+                    zone =>
+                        (zone.members = zone.members.map(country =>
+                            translateDeep(country, ctx.languageCode),
+                        )),
+                );
+                return zones;
+            });
     }
 
-    findOne(zoneId: ID): Promise<Zone | undefined> {
-        return this.connection.getRepository(Zone).findOne(zoneId, {
-            relations: ['members'],
-        });
+    findOne(ctx: RequestContext, zoneId: ID): Promise<Zone | undefined> {
+        return this.connection
+            .getRepository(Zone)
+            .findOne(zoneId, {
+                relations: ['members'],
+            })
+            .then(zone => {
+                if (zone) {
+                    zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
+                    return zone;
+                }
+            });
     }
 
-    async create(input: CreateZoneInput): Promise<Zone> {
+    async create(ctx: RequestContext, input: CreateZoneInput): Promise<Zone> {
         const zone = new Zone(input);
         if (input.memberIds) {
             zone.members = await this.getCountriesFromIds(input.memberIds);
         }
         const newZone = await this.connection.getRepository(Zone).save(zone);
-        return assertFound(this.findOne(newZone.id));
+        return assertFound(this.findOne(ctx, newZone.id));
     }
 
-    async update(input: UpdateZoneInput): Promise<Zone> {
+    async update(ctx: RequestContext, input: UpdateZoneInput): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(Zone).save(updatedZone);
-        return assertFound(this.findOne(zone.id));
+        return assertFound(this.findOne(ctx, zone.id));
     }
 
-    async addMembersToZone(input: AddMembersToZoneMutationArgs): Promise<Zone> {
+    async addMembersToZone(ctx: RequestContext, input: AddMembersToZoneMutationArgs): Promise<Zone> {
         const countries = await this.getCountriesFromIds(input.memberIds);
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
         await this.connection.getRepository(Zone).save(zone);
-        return zone;
+        return assertFound(this.findOne(ctx, zone.id));
     }
 
-    async removeMembersFromZone(input: RemoveMembersFromZoneMutationArgs): Promise<Zone> {
+    async removeMembersFromZone(
+        ctx: RequestContext,
+        input: RemoveMembersFromZoneMutationArgs,
+    ): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));
         await this.connection.getRepository(Zone).save(zone);
-        return zone;
+        return assertFound(this.findOne(ctx, zone.id));
     }
 
     private getCountriesFromIds(ids: ID[]): Promise<Country[]> {

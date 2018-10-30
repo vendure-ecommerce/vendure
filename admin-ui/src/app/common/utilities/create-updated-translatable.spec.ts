@@ -23,7 +23,11 @@ describe('createUpdatedTranslatable()', () => {
 
     it('returns a clone', () => {
         const formValue = {};
-        const result = createUpdatedTranslatable(product, formValue, [], LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            languageCode: LanguageCode.en,
+        });
 
         expect(result).not.toBe(product);
     });
@@ -32,9 +36,14 @@ describe('createUpdatedTranslatable()', () => {
         const formValue = {
             name: 'New Name AA',
         };
-        const result = createUpdatedTranslatable(product, formValue, [], LanguageCode.aa, {
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
             languageCode: LanguageCode.aa,
-            name: product.name || '',
+            defaultTranslation: {
+                languageCode: LanguageCode.aa,
+                name: product.name || '',
+            },
         });
 
         expect(result.translations[2]).toEqual({
@@ -48,7 +57,11 @@ describe('createUpdatedTranslatable()', () => {
             image: 'new-image.jpg',
         };
 
-        const result = createUpdatedTranslatable(product, formValue, [], LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            languageCode: LanguageCode.en,
+        });
 
         if (!result) {
             fail('Expected result to be truthy');
@@ -63,7 +76,11 @@ describe('createUpdatedTranslatable()', () => {
             name: 'New Name EN',
         };
 
-        const result = createUpdatedTranslatable(product, formValue, [], LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            languageCode: LanguageCode.en,
+        });
 
         if (!result) {
             fail('Expected result to be truthy');
@@ -73,6 +90,25 @@ describe('createUpdatedTranslatable()', () => {
         expect(result.translations).not.toBe(product.translations);
         expect(result.translations[0]!.name).toBe('New Name EN');
         expect(result.translations[1]!.name).toBe('Old Name DE');
+    });
+
+    it('omits the customFields property if the customFieldConfig is not defined', () => {
+        const formValue = {
+            name: 'New Name EN',
+        };
+
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            languageCode: LanguageCode.en,
+        });
+
+        if (!result) {
+            fail('Expected result to be truthy');
+            return;
+        }
+
+        expect(result.customFields).toBeUndefined();
     });
 
     it('updates custom fields correctly', () => {
@@ -93,7 +129,12 @@ describe('createUpdatedTranslatable()', () => {
             },
         };
 
-        const result = createUpdatedTranslatable(product, formValue, customFieldConfig, LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            customFieldConfig,
+            languageCode: LanguageCode.en,
+        });
 
         if (!result) {
             fail('Expected result to be truthy');
@@ -121,7 +162,12 @@ describe('createUpdatedTranslatable()', () => {
             },
         };
 
-        const result = createUpdatedTranslatable(product, formValue, customFieldConfig, LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            customFieldConfig,
+            languageCode: LanguageCode.en,
+        });
 
         if (!result) {
             fail('Expected result to be truthy');
@@ -155,7 +201,12 @@ describe('createUpdatedTranslatable()', () => {
             },
         };
 
-        const result = createUpdatedTranslatable(product, formValue, customFieldConfig, LanguageCode.en);
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            customFieldConfig,
+            languageCode: LanguageCode.en,
+        });
 
         expect(result.customFields.a).toBe(false);
         expect(result.customFields.b).toBe(0);

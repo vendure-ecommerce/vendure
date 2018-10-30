@@ -14,6 +14,7 @@ import {
     CreateFacetValueWithFacetInput,
     CreateProduct,
     CreateProductOptionGroup,
+    CreateShippingMethod,
     CreateTaxRate,
     CreateZone,
     GenerateProductVariants,
@@ -42,6 +43,9 @@ import {
     GET_CHANNELS,
     UPDATE_CHANNEL,
 } from '../../admin-ui/src/app/data/definitions/settings-definitions';
+import { CREATE_SHIPPING_METHOD } from '../../admin-ui/src/app/data/definitions/shipping-definitions';
+import { defaultShippingCalculator } from '../src/config/shipping-method/default-shipping-calculator';
+import { defaultShippingEligibilityChecker } from '../src/config/shipping-method/default-shipping-eligibility-checker';
 import { Customer } from '../src/entity/customer/customer.entity';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
@@ -92,7 +96,7 @@ export class MockDataService {
                 {
                     input: {
                         code: country['alpha-2'],
-                        name: country.name,
+                        translations: [{ languageCode: LanguageCode.en, name: country.name }],
                         enabled: true,
                     },
                 },
@@ -210,6 +214,45 @@ export class MockDataService {
         }
 
         return createdTaxCategories;
+    }
+
+    async populateShippingMethods() {
+        await this.client.query<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
+            CREATE_SHIPPING_METHOD,
+            {
+                input: {
+                    code: 'standard-flat-rate',
+                    description: 'Standard Shipping',
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [{ name: 'rate', value: '500' }],
+                    },
+                },
+            },
+        );
+        this.log(`Created standard ShippingMethod`);
+        await this.client.query<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
+            CREATE_SHIPPING_METHOD,
+            {
+                input: {
+                    code: 'express-flat-rate',
+                    description: 'Express Shipping',
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [{ name: 'rate', value: '1000' }],
+                    },
+                },
+            },
+        );
+        this.log(`Created express ShippingMethod`);
     }
 
     async populateCustomers(count: number = 5): Promise<any> {

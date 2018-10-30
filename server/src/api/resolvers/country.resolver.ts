@@ -8,8 +8,8 @@ import {
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
+import { Translated } from '../../common/types/locale-types';
 import { Country } from '../../entity/country/country.entity';
-import { Facet } from '../../entity/facet/facet.entity';
 import { CountryService } from '../../service/services/country.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
@@ -21,25 +21,56 @@ export class CountryResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    countries(@Ctx() ctx: RequestContext, @Args() args: CountriesQueryArgs): Promise<PaginatedList<Country>> {
-        return this.countryService.findAll(args.options || undefined);
+    countries(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CountriesQueryArgs,
+    ): Promise<PaginatedList<Translated<Country>>> {
+        return this.countryService.findAll(ctx, args.options || undefined);
+    }
+
+    @Query()
+    @Allow(Permission.Public)
+    availableCountries(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CountriesQueryArgs,
+    ): Promise<Array<Translated<Country>>> {
+        return this.countryService
+            .findAll(ctx, {
+                filter: {
+                    enabled: {
+                        eq: true,
+                    },
+                },
+                skip: 0,
+                take: 99999,
+            })
+            .then(data => data.items);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    async country(@Ctx() ctx: RequestContext, @Args() args: CountryQueryArgs): Promise<Country | undefined> {
-        return this.countryService.findOne(args.id);
+    async country(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CountryQueryArgs,
+    ): Promise<Translated<Country> | undefined> {
+        return this.countryService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    async createCountry(@Args() args: CreateCountryMutationArgs): Promise<Country> {
-        return this.countryService.create(args.input);
+    async createCountry(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CreateCountryMutationArgs,
+    ): Promise<Translated<Country>> {
+        return this.countryService.create(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateCountry(@Args() args: UpdateCountryMutationArgs): Promise<Country> {
-        return this.countryService.update(args.input);
+    async updateCountry(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateCountryMutationArgs,
+    ): Promise<Translated<Country>> {
+        return this.countryService.update(ctx, args.input);
     }
 }

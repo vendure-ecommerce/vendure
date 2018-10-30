@@ -78,10 +78,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.destroy();
     }
 
-    setLanguage(code: LanguageCode) {
-        this.setQueryParam('lang', code);
-    }
-
     customFieldIsSet(name: string): boolean {
         return !!this.productForm.get(['product', 'customFields', name]);
     }
@@ -269,18 +265,18 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
-        const updatedProduct = createUpdatedTranslatable(
-            product,
-            productFormGroup.value,
-            this.customFields,
+        const updatedProduct = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: productFormGroup.value,
+            customFieldConfig: this.customFields,
             languageCode,
-            {
+            defaultTranslation: {
                 languageCode,
                 name: product.name || '',
                 slug: product.slug || '',
                 description: product.description || '',
             },
-        );
+        });
         return { ...updatedProduct, ...this.assetChanges } as UpdateProductInput | CreateProductInput;
     }
 
@@ -304,12 +300,12 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         }
         return dirtyVariants
             .map((variant, i) => {
-                const updated = createUpdatedTranslatable(
-                    variant,
-                    dirtyVariantValues[i],
-                    this.customVariantFields,
+                const updated = createUpdatedTranslatable({
+                    translatable: variant,
+                    updatedFields: dirtyVariantValues[i],
+                    customFieldConfig: this.customVariantFields,
                     languageCode,
-                ) as UpdateProductVariantInput;
+                }) as UpdateProductVariantInput;
                 updated.taxCategoryId = dirtyVariantValues[i].taxCategoryId;
                 return updated;
             })

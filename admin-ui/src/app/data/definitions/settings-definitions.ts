@@ -6,6 +6,11 @@ export const COUNTRY_FRAGMENT = gql`
         code
         name
         enabled
+        translations {
+            id
+            languageCode
+            name
+        }
     }
 `;
 

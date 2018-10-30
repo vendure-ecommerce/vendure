@@ -1,13 +1,29 @@
 type Country implements Node {
     id: ID!
+    languageCode: LanguageCode!
     code: String!
     name: String!
     enabled: Boolean!
+    translations: [CountryTranslation!]!
+}
+
+type CountryTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+}
+
+input CountryTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String
 }
 
 input CreateCountryInput {
     code: String!
-    name: String!
+    translations: [CountryTranslationInput!]!
     enabled: Boolean!
 }
 
@@ -15,6 +31,6 @@ input CreateCountryInput {
 input UpdateCountryInput {
     id: ID!
     code: String
-    name: String
+    translations: [CountryTranslationInput!]
     enabled: Boolean
 }

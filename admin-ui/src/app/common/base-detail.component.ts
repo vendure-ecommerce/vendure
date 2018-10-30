@@ -44,6 +44,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
         this.destroy$.complete();
     }
 
+    setLanguage(code: LanguageCode) {
+        this.setQueryParam('lang', code);
+    }
+
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
 
     protected getCustomFieldConfig(key: keyof CustomFields): CustomFieldConfig[] {

@@ -9,7 +9,7 @@ import { patchEntity } from '../utils/patch-entity';
 
 import { TranslationDiffer } from './translation-differ';
 
-export interface CreateTranslatableOptions<T> {
+export interface CreateTranslatableOptions<T extends Translatable> {
     entityType: Type<T>;
     translationType: Type<Translation<T>>;
     input: TranslatedInput<T>;
@@ -17,7 +17,7 @@ export interface CreateTranslatableOptions<T> {
     typeOrmSubscriberData?: any;
 }
 
-export interface UpdateTranslatableOptions<T> extends CreateTranslatableOptions<T> {
+export interface UpdateTranslatableOptions<T extends Translatable> extends CreateTranslatableOptions<T> {
     input: TranslatedInput<T> & { id: ID };
 }
 

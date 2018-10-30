@@ -1,13 +1,14 @@
 type Query {
-  countries(options: CountryListOptions): CountryList!
-  country(id: ID!): Country
+    countries(options: CountryListOptions): CountryList!
+    country(id: ID!): Country
+    availableCountries: [Country!]!
 }
 
 type Mutation {
-  "Create a new Country"
-  createCountry(input: CreateCountryInput!): Country!
-  "Update an existing Country"
-  updateCountry(input: UpdateCountryInput!): Country!
+    "Create a new Country"
+    createCountry(input: CreateCountryInput!): Country!
+    "Update an existing Country"
+    updateCountry(input: UpdateCountryInput!): Country!
 }
 
 type CountryList implements PaginatedList {

@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { Country, CreateCountryInput, UpdateCountryInput } from 'shared/generated-types';
+import { Country, CreateCountryInput, LanguageCode, UpdateCountryInput } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
+import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -16,8 +17,9 @@ import { ServerConfigService } from '../../../data/server-config';
     templateUrl: './country-detail.component.html',
     styleUrls: ['./country-detail.component.scss'],
 })
-export class CountryDetailComponent extends BaseDetailComponent<Country> implements OnInit, OnDestroy {
-    country$: Observable<Country>;
+export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment>
+    implements OnInit, OnDestroy {
+    country$: Observable<Country.Fragment>;
     countryForm: FormGroup;
 
     constructor(
@@ -47,42 +49,55 @@ export class CountryDetailComponent extends BaseDetailComponent<Country> impleme
     }
 
     create() {
-        const formValue = this.countryForm.value;
-        const country: CreateCountryInput = {
-            code: formValue.code,
-            name: formValue.name,
-            enabled: formValue.enabled,
-        };
-        this.dataService.settings.createCountry(country).subscribe(
-            data => {
-                this.notificationService.success(_('common.notify-create-success'), {
-                    entity: 'Country',
-                });
-                this.countryForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createCountry.id], { relativeTo: this.route });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-create-error'), {
-                    entity: 'Country',
-                });
-            },
-        );
+        if (!this.countryForm.dirty) {
+            return;
+        }
+        combineLatest(this.country$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([country, languageCode]) => {
+                    const formValue = this.countryForm.value;
+                    const input: CreateCountryInput = createUpdatedTranslatable({
+                        translatable: country,
+                        updatedFields: formValue,
+                        languageCode,
+                        defaultTranslation: {
+                            name: formValue.name,
+                            languageCode,
+                        },
+                    });
+                    return this.dataService.settings.createCountry(input);
+                }),
+            )
+            .subscribe(
+                data => {
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'Country',
+                    });
+                    this.countryForm.markAsPristine();
+                    this.changeDetector.markForCheck();
+                    this.router.navigate(['../', data.createCountry.id], { relativeTo: this.route });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'Country',
+                    });
+                },
+            );
     }
 
     save() {
-        this.country$
+        combineLatest(this.country$, this.languageCode$)
             .pipe(
                 take(1),
-                mergeMap(({ id }) => {
+                mergeMap(([country, languageCode]) => {
                     const formValue = this.countryForm.value;
-                    const country: UpdateCountryInput = {
-                        id,
-                        code: formValue.code,
-                        name: formValue.name,
-                        enabled: formValue.enabled,
-                    };
-                    return this.dataService.settings.updateCountry(country);
+                    const input: UpdateCountryInput = createUpdatedTranslatable({
+                        translatable: country,
+                        updatedFields: formValue,
+                        languageCode,
+                    });
+                    return this.dataService.settings.updateCountry(input);
                 }),
             )
             .subscribe(
@@ -101,11 +116,14 @@ export class CountryDetailComponent extends BaseDetailComponent<Country> impleme
             );
     }
 
-    protected setFormValues(country: Country): void {
-        this.countryForm.patchValue({
-            code: country.code,
-            name: country.name,
-            enabled: country.enabled,
-        });
+    protected setFormValues(country: Country, languageCode: LanguageCode): void {
+        const currentTranslation = country.translations.find(t => t.languageCode === languageCode);
+        if (currentTranslation) {
+            this.countryForm.patchValue({
+                code: country.code,
+                name: currentTranslation.name,
+                enabled: country.enabled,
+            });
+        }
     }
 }

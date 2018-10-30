@@ -22,39 +22,45 @@ export class ZoneResolver {
     @Query()
     @Allow(Permission.ReadSettings)
     zones(@Ctx() ctx: RequestContext): Promise<Zone[]> {
-        return this.zoneService.findAll();
+        return this.zoneService.findAll(ctx);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
     async zone(@Ctx() ctx: RequestContext, @Args() args: ZoneQueryArgs): Promise<Zone | undefined> {
-        return this.zoneService.findOne(args.id);
+        return this.zoneService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
     @Decode('memberIds')
-    async createZone(@Args() args: CreateZoneMutationArgs): Promise<Zone> {
-        return this.zoneService.create(args.input);
+    async createZone(@Ctx() ctx: RequestContext, @Args() args: CreateZoneMutationArgs): Promise<Zone> {
+        return this.zoneService.create(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateZone(@Args() args: UpdateZoneMutationArgs): Promise<Zone> {
-        return this.zoneService.update(args.input);
-    }
-
-    @Mutation()
-    @Allow(Permission.UpdateSettings)
-    @Decode('zoneId', 'memberIds')
-    async addMembersToZone(@Args() args: AddMembersToZoneMutationArgs): Promise<Zone> {
-        return this.zoneService.addMembersToZone(args);
+    async updateZone(@Ctx() ctx: RequestContext, @Args() args: UpdateZoneMutationArgs): Promise<Zone> {
+        return this.zoneService.update(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
     @Decode('zoneId', 'memberIds')
-    async removeMembersFromZone(@Args() args: RemoveMembersFromZoneMutationArgs): Promise<Zone> {
-        return this.zoneService.removeMembersFromZone(args);
+    async addMembersToZone(
+        @Ctx() ctx: RequestContext,
+        @Args() args: AddMembersToZoneMutationArgs,
+    ): Promise<Zone> {
+        return this.zoneService.addMembersToZone(ctx, args);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateSettings)
+    @Decode('zoneId', 'memberIds')
+    async removeMembersFromZone(
+        @Ctx() ctx: RequestContext,
+        @Args() args: RemoveMembersFromZoneMutationArgs,
+    ): Promise<Zone> {
+        return this.zoneService.removeMembersFromZone(ctx, args);
     }
 }

@@ -8,18 +8,23 @@ import {
 } from 'shared/shared-types';
 import { assertNever } from 'shared/shared-utils';
 
+export interface TranslatableUpdateOptions<T extends { translations: any[] } & MayHaveCustomFields> {
+    translatable: T;
+    updatedFields: { [key: string]: any };
+    languageCode: LanguageCode;
+    customFieldConfig?: CustomFieldConfig[];
+    defaultTranslation?: Partial<T['translations'][number]>;
+}
+
 /**
  * When updating an entity which has translations, the value from the form will pertain to the current
  * languageCode. This function ensures that the "translations" array is correctly set based on the
  * existing languages and the updated values in the specified language.
  */
 export function createUpdatedTranslatable<T extends { translations: any[] } & MayHaveCustomFields>(
-    translatable: T,
-    updatedFields: { [key: string]: any },
-    customFieldConfig: CustomFieldConfig[],
-    languageCode: LanguageCode,
-    defaultTranslation?: Partial<T['translations'][number]>,
+    options: TranslatableUpdateOptions<T>,
 ): T {
+    const { translatable, updatedFields, languageCode, customFieldConfig, defaultTranslation } = options;
     const currentTranslation =
         translatable.translations.find(t => t.languageCode === languageCode) || defaultTranslation;
     const index = translatable.translations.indexOf(currentTranslation);
@@ -41,8 +46,10 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
     const newTranslatable = {
         ...(patchObject(translatable, updatedFields) as any),
         ...{ translations: translatable.translations.slice() },
-        customFields: newCustomFields,
     };
+    if (customFieldConfig) {
+        newTranslatable.customFields = newCustomFields;
+    }
     if (index !== -1) {
         newTranslatable.translations.splice(index, 1, newTranslation);
     } else {

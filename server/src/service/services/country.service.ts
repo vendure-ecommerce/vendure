@@ -4,46 +4,62 @@ import { CreateCountryInput, UpdateCountryInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { patchEntity } from '../helpers/utils/patch-entity';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
 export class CountryService {
     constructor(
         @InjectConnection() private connection: Connection,
         private listQueryBuilder: ListQueryBuilder,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
-    findAll(options?: ListQueryOptions<Country>): Promise<PaginatedList<Country>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Country>,
+    ): Promise<PaginatedList<Translated<Country>>> {
         return this.listQueryBuilder
             .build(Country, options)
             .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+            .then(([countries, totalItems]) => {
+                const items = countries.map(country => translateDeep(country, ctx.languageCode));
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
-    findOne(countryId: ID): Promise<Country | undefined> {
-        return this.connection.getRepository(Country).findOne(countryId);
+    findOne(ctx: RequestContext, countryId: ID): Promise<Translated<Country> | undefined> {
+        return this.connection
+            .getRepository(Country)
+            .findOne(countryId)
+            .then(country => country && translateDeep(country, ctx.languageCode));
     }
 
-    async create(input: CreateCountryInput): Promise<Country> {
-        const country = new Country(input);
-        return this.connection.getRepository(Country).save(country);
+    async create(ctx: RequestContext, input: CreateCountryInput): Promise<Translated<Country>> {
+        const country = await this.translatableSaver.create({
+            input,
+            entityType: Country,
+            translationType: CountryTranslation,
+        });
+        return assertFound(this.findOne(ctx, country.id));
     }
 
-    async update(input: UpdateCountryInput): Promise<Country> {
-        const country = await this.findOne(input.id);
-        if (!country) {
-            throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Country', id: input.id });
-        }
-        const updatedCountry = patchEntity(country, input);
-        await this.connection.getRepository(Country).save(updatedCountry);
-        return assertFound(this.findOne(country.id));
+    async update(ctx: RequestContext, input: UpdateCountryInput): Promise<Translated<Country>> {
+        const country = await this.translatableSaver.update({
+            input,
+            entityType: Country,
+            translationType: CountryTranslation,
+        });
+        return assertFound(this.findOne(ctx, country.id));
     }
 }

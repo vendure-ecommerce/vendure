@@ -10,7 +10,7 @@ import { Facet } from './facet.entity';
 
 @Entity()
 export class FacetTranslation extends VendureEntity implements Translation<Facet>, HasCustomFields {
-    constructor(input?: DeepPartial<Translation<Facet>>) {
+    constructor(input?: DeepPartial<Translation<FacetTranslation>>) {
         super(input);
     }
 

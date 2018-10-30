@@ -2,6 +2,7 @@ import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
+import { CountryTranslation } from './country/country-translation.entity';
 import { Country } from './country/country.entity';
 import { CustomerGroup } from './customer-group/customer-group.entity';
 import { Customer } from './customer/customer.entity';
@@ -43,6 +44,7 @@ export const coreEntitiesMap = {
     AuthenticatedSession,
     Channel,
     Country,
+    CountryTranslation,
     Customer,
     CustomerGroup,
     Facet,

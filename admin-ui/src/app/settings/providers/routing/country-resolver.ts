@@ -17,6 +17,7 @@ export class CountryResolver extends BaseEntityResolver<Country.Fragment> {
                 code: '',
                 name: '',
                 enabled: false,
+                translations: [],
             },
             id => this.dataService.settings.getCountry(id).mapStream(data => data.country),
         );

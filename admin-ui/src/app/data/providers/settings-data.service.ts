@@ -33,6 +33,7 @@ import {
     UpdateZone,
     UpdateZoneInput,
 } from 'shared/generated-types';
+import { pick } from 'shared/pick';
 
 import {
     ADD_MEMBERS_TO_ZONE,
@@ -79,13 +80,13 @@ export class SettingsDataService {
 
     createCountry(input: CreateCountryInput) {
         return this.baseDataService.mutate<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
-            input,
+            input: pick(input, ['code', 'enabled', 'translations']),
         });
     }
 
     updateCountry(input: UpdateCountryInput) {
         return this.baseDataService.mutate<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
-            input,
+            input: pick(input, ['id', 'code', 'enabled', 'translations']),
         });
     }
 

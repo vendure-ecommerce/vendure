@@ -40,6 +40,7 @@ export async function populate(
     }
     const zones = await mockDataService.populateCountries();
     await mockDataService.setChannelDefaultZones(zones);
+    await mockDataService.populateShippingMethods();
     const assets = await mockDataService.populateAssets();
     const optionGroupId = await mockDataService.populateOptions();
     const taxCategories = await mockDataService.populateTaxCategories(zones);
