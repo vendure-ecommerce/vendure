@@ -22,7 +22,7 @@
 <form class="form" [formGroup]="facetForm" >
     <section class="form-block" formGroupName="facet">
         <label>{{ 'catalog.facet' | translate }}</label>
-        <vdr-form-field [label]="'catalog.name' | translate" for="name">
+        <vdr-form-field [label]="'common.name' | translate" for="name">
             <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)">
         </vdr-form-field>
         <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
@@ -46,7 +46,7 @@
         <table class="facet-values-list table" formArrayName="values" *ngIf="0 < getValuesFormArray().length">
             <thead>
             <tr>
-                <th>{{ 'catalog.name' | translate }}</th>
+                <th>{{ 'common.name' | translate }}</th>
                 <th>{{ 'common.code' | translate }}</th>
                 <ng-container *ngFor="let customField of customValueFields">
                     <th>{{ customField.name }}</th>
