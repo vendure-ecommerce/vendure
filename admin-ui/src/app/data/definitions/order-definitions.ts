@@ -9,6 +9,20 @@ export const ADJUSTMENT_FRAGMENT = gql`
     }
 `;
 
+export const SHIPPING_ADDRESS_FRAGMENT = gql`
+    fragment ShippingAddress on ShippingAddress {
+        fullName
+        company
+        streetLine1
+        streetLine2
+        city
+        province
+        postalCode
+        country
+        phoneNumber
+    }
+`;
+
 export const ORDER_FRAGMENT = gql`
     fragment Order on Order {
         id
@@ -18,6 +32,7 @@ export const ORDER_FRAGMENT = gql`
         state
         total
         customer {
+            id
             firstName
             lastName
         }
@@ -32,6 +47,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         code
         state
         customer {
+            id
             firstName
             lastName
         }
@@ -63,9 +79,15 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         subTotal
         subTotalBeforeTax
         totalBeforeTax
+        shipping
+        shippingMethod
+        shippingAddress {
+            ...ShippingAddress
+        }
         total
     }
     ${ADJUSTMENT_FRAGMENT}
+    ${SHIPPING_ADDRESS_FRAGMENT}
 `;
 
 export const GET_ORDERS_LIST = gql`

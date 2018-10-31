@@ -1,0 +1,7 @@
+<clr-icon shape="user" [class.is-solid]="customer"></clr-icon>
+<div *ngIf="customer">
+    <a [routerLink]="['/customer', 'customers', customer.id]">
+        {{ customer.firstName }} {{ customer.lastName }}
+    </a>
+</div>
+<div *ngIf="!customer">{{ 'common.guest' | translate }}</div>

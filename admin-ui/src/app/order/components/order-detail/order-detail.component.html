@@ -31,6 +31,26 @@
                 </tbody>
             </table>
         </div>
+        <div class="clr-col-md-4">
+            <table class="table table-vertical">
+                <tbody>
+                <tr>
+                    <th>{{ 'order.customer' | translate }}</th>
+                    <td>
+                        <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ 'order.shipping-address' | translate }}</th>
+                    <td>
+                        <div class="address-line" *ngFor="let line of getShippingAddressLines(order.shippingAddress)">
+                            {{ line }}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 
@@ -46,7 +66,7 @@
         </tr>
         </thead>
         <tr *ngFor="let line of order.lines"
-             class="order-line">
+            class="order-line">
             <td class="thumb">
                 <img [src]="line.featuredAsset.preview + '?preset=tiny'">
             </td>
@@ -77,6 +97,12 @@
         <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
             <td colspan="5" class="left">{{ adjustment.description  }}</td>
             <td>{{ adjustment.amount / 100 | currency }}</td>
+        </tr>
+        <tr class="shipping">
+            <td class="left">{{ 'order.shipping' | translate }}</td>
+            <td>{{ order.shippingMethod }}</td>
+            <td colspan="3"></td>
+            <td>{{ order.shipping / 100 | currency }}</td>
         </tr>
         <tr class="total">
             <td class="left">{{ 'order.total' | translate }}</td>

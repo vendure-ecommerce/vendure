@@ -5505,6 +5505,21 @@ export namespace Adjustment {
     };
 }
 
+export namespace ShippingAddress {
+    export type Fragment = {
+        __typename?: 'ShippingAddress';
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    };
+}
+
 export namespace Order {
     export type Fragment = {
         __typename?: 'Order';
@@ -5538,11 +5553,15 @@ export namespace OrderWithLines {
         subTotal: number;
         subTotalBeforeTax: number;
         totalBeforeTax: number;
+        shipping: number;
+        shippingMethod?: string | null;
+        shippingAddress?: ShippingAddress | null;
         total: number;
     };
 
     export type Customer = {
         __typename?: 'Customer';
+        id: string;
         firstName: string;
         lastName: string;
     };
@@ -5581,6 +5600,8 @@ export namespace OrderWithLines {
     };
 
     export type Adjustments = Adjustment.Fragment;
+
+    export type ShippingAddress = ShippingAddress.Fragment;
 }
 
 export namespace Asset {

@@ -18,6 +18,7 @@ import { PercentageSuffixInputComponent } from './components/affixed-input/perce
 import { ChipComponent } from './components/chip/chip.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
+import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
@@ -57,6 +58,7 @@ const DECLARATIONS = [
     BackgroundColorFromDirective,
     ChipComponent,
     CurrencyInputComponent,
+    CustomerLabelComponent,
     CustomFieldControlComponent,
     DataTableComponent,
     DataTableColumnComponent,

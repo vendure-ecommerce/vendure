@@ -25,6 +25,13 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
         this.destroy();
     }
 
+    getShippingAddressLines(shippingAddress?: { [key: string]: string }): string[] {
+        if (!shippingAddress) {
+            return [];
+        }
+        return Object.values(shippingAddress).filter(val => val !== 'ShippingAddress');
+    }
+
     protected setFormValues(entity: Order.Fragment): void {
         // empty
     }

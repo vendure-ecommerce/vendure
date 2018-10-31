@@ -52,6 +52,7 @@ export class OrderService {
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
         const order = await this.connection.getRepository(Order).findOne(orderId, {
             relations: [
+                'customer',
                 'lines',
                 'lines.productVariant',
                 'lines.productVariant.taxCategory',
