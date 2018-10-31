@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import {
     CreateCustomerAddressMutationArgs,
     CreateCustomerMutationArgs,
@@ -10,6 +10,7 @@ import {
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
+import { idsAreEqual } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/services/customer.service';
@@ -44,8 +45,16 @@ export class CustomerResolver {
     }
 
     @ResolveProperty()
-    @Allow(Permission.ReadCustomer)
-    async addresses(customer: Customer): Promise<Address[]> {
+    @Allow(Permission.ReadCustomer, Permission.Owner)
+    async addresses(
+        @Ctx() ctx: RequestContext,
+        @Parent() customer: Customer,
+    ): Promise<Address[] | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            if (customer.user && !idsAreEqual(customer.user.id, ctx.activeUserId)) {
+                return;
+            }
+        }
         return this.customerService.findAddressesByCustomerId(customer.id);
     }
 
