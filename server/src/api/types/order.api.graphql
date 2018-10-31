@@ -10,6 +10,7 @@ type Mutation {
     removeItemFromOrder(orderItemId: ID!): Order
     adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
     transitionOrderToState(state: String!): Order
+    setOrderShippingAddress(input: CreateAddressInput!): Order
 }
 
 type OrderList implements PaginatedList {

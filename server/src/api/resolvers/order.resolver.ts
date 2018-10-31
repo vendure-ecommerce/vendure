@@ -2,10 +2,12 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AddItemToOrderMutationArgs,
     AdjustItemQuantityMutationArgs,
+    CreateAddressInput,
     OrderQueryArgs,
     OrdersQueryArgs,
     Permission,
     RemoveItemFromOrderMutationArgs,
+    SetOrderShippingAddressMutationArgs,
     TransitionOrderToStateMutationArgs,
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
@@ -50,8 +52,23 @@ export class OrderResolver {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
-                const order = await this.orderService.findOne(ctx, sessionOrder.id);
-                return order;
+                return this.orderService.findOne(ctx, sessionOrder.id);
+            } else {
+                return;
+            }
+        }
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async setOrderShippingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: SetOrderShippingAddressMutationArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.setShippingAddress(ctx, sessionOrder.id, args.input);
             } else {
                 return;
             }

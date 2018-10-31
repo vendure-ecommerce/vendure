@@ -5,10 +5,25 @@ type Order implements Node {
     code: String!
     state: String!
     customer: Customer
+    shippingAddress: ShippingAddress
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
     subTotalBeforeTax: Int!
     subTotal: Int!
+    shipping: Int!
+    shippingMethod: String
     totalBeforeTax: Int!
     total: Int!
+}
+
+type ShippingAddress {
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    phoneNumber: String
 }

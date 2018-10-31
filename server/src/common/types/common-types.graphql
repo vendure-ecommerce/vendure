@@ -6,9 +6,11 @@ scalar Upload
 enum AdjustmentType {
     TAX
     PROMOTION
+    SHIPPING
     REFUND
     TAX_REFUND
     PROMOTION_REFUND
+    SHIPPING_REFUND
 }
 
 type Adjustment {

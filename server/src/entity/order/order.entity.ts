@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from 'shared/generated-types';
+import { Adjustment, AdjustmentType, ShippingAddress } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -30,18 +30,26 @@ export class Order extends VendureEntity {
 
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
+    @Column('simple-json') shippingAddress: ShippingAddress;
+
     @Column() subTotalBeforeTax: number;
 
     @Column() subTotal: number;
 
+    @Column({ nullable: true })
+    shippingMethod: string;
+
+    @Column({ default: 0 })
+    shipping: number;
+
     @Calculated()
     get totalBeforeTax(): number {
-        return this.subTotalBeforeTax + this.promotionAdjustmentsTotal;
+        return this.subTotalBeforeTax + this.promotionAdjustmentsTotal + (this.shipping || 0);
     }
 
     @Calculated()
     get total(): number {
-        return this.subTotal + this.promotionAdjustmentsTotal;
+        return this.subTotal + this.promotionAdjustmentsTotal + (this.shipping || 0);
     }
 
     @Calculated()

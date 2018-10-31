@@ -1,4 +1,5 @@
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateAddressInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -88,6 +89,7 @@ export class OrderService {
             code: generatePublicId(),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
+            shippingAddress: {},
             pendingAdjustments: [],
             subTotal: 0,
             subTotalBeforeTax: 0,
@@ -151,20 +153,27 @@ export class OrderService {
             orderLine.items = orderLine.items.slice(0, quantity);
         }
         await this.connection.getRepository(OrderLine).save(orderLine);
-        return this.applyTaxesAndPromotions(ctx, order);
+        return this.applyPriceAdjustments(ctx, order);
     }
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
-        const updatedOrder = await this.applyTaxesAndPromotions(ctx, order);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
         return updatedOrder;
     }
 
     getNextOrderStates(order: Order): OrderState[] {
         return this.orderStateMachine.getNextStates(order);
+    }
+
+    async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        order.shippingAddress = input;
+        await this.applyPriceAdjustments(ctx, order);
+        return this.connection.getRepository(Order).save(order);
     }
 
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
@@ -250,12 +259,15 @@ export class OrderService {
         }
     }
 
-    private async applyTaxesAndPromotions(ctx: RequestContext, order: Order): Promise<Order> {
+    /**
+     * Applies promotions, taxes and shipping to the Order.
+     */
+    private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
             order: { priorityScore: 'ASC' },
         });
-        order = this.orderCalculator.applyTaxesAndPromotions(ctx, order, promotions);
+        order = this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);

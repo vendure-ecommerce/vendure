@@ -9,6 +9,7 @@ import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
+import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { AdministratorService } from './services/administrator.service';
@@ -73,6 +74,7 @@ const exportedProviders = [
         OrderStateMachine,
         OrderMerger,
         ListQueryBuilder,
+        ShippingCalculator,
     ],
     exports: exportedProviders,
 })
@@ -82,6 +84,7 @@ export class ServiceModule implements OnModuleInit {
         private roleService: RoleService,
         private administratorService: AdministratorService,
         private taxRateService: TaxRateService,
+        private shippingMethodService: ShippingMethodService,
     ) {}
 
     async onModuleInit() {
@@ -89,5 +92,6 @@ export class ServiceModule implements OnModuleInit {
         await this.roleService.initRoles();
         await this.administratorService.initAdministrators();
         await this.taxRateService.initTaxRates();
+        await this.shippingMethodService.initShippingMethods();
     }
 }

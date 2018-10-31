@@ -5,28 +5,33 @@ import { RequestContext } from '../../../api/common/request-context';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
-
 import { TaxRateService } from '../../services/tax-rate.service';
+import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 @Injectable()
 export class OrderCalculator {
-    constructor(private taxRateService: TaxRateService, private taxCalculator: TaxCalculator) {}
+    constructor(
+        private taxRateService: TaxRateService,
+        private taxCalculator: TaxCalculator,
+        private shippingCalculator: ShippingCalculator,
+    ) {}
 
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
      */
-    applyTaxesAndPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]): Order {
+    applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[]): Order {
         const activeZone = ctx.channel.defaultTaxZone;
         order.clearAdjustments();
         if (order.lines.length) {
             // First apply taxes to the non-discounted prices
-            this.applyTaxes(order, activeZone, ctx);
+            this.applyTaxes(ctx, order, activeZone);
             // Then test and apply promotions
             this.applyPromotions(order, promotions);
             // Finally, re-calculate taxes because the promotions may have
             // altered the unit prices, which in turn will alter the tax payable.
-            this.applyTaxes(order, activeZone, ctx);
+            this.applyTaxes(ctx, order, activeZone);
+            this.applyShipping(ctx, order);
         } else {
             this.calculateOrderTotals(order);
         }
@@ -36,7 +41,7 @@ export class OrderCalculator {
     /**
      * Applies the correct TaxRate to each OrderItem in the order.
      */
-    private applyTaxes(order: Order, activeZone: Zone, ctx: RequestContext) {
+    private applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         for (const line of order.lines) {
             line.clearAdjustments(AdjustmentType.TAX);
 
@@ -93,6 +98,14 @@ export class OrderCalculator {
                 }
             }
             this.calculateOrderTotals(order);
+        }
+    }
+
+    private applyShipping(ctx: RequestContext, order: Order) {
+        const results = this.shippingCalculator.getEligibleShippingMethods(ctx, order);
+        if (results && results.length) {
+            order.shipping = results[0].price;
+            order.shippingMethod = results[0].method.description;
         }
     }
 

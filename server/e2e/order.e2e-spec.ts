@@ -167,7 +167,7 @@ describe('Orders', () => {
                 }
             `);
 
-            expect(result.nextOrderStates).toEqual(['ArrangingShipping']);
+            expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
         });
 
         it('transitionOrderToState() throws for an invalid state', async () => {
@@ -191,14 +191,14 @@ describe('Orders', () => {
         it('transitionOrderToState() transitions Order to the next valid state', async () => {
             const result = await client.query(gql`
                 mutation {
-                    transitionOrderToState(state: "ArrangingShipping") {
+                    transitionOrderToState(state: "ArrangingPayment") {
                         id
                         state
                     }
                 }
             `);
 
-            expect(result.transitionOrderToState).toEqual({ id: 'T_1', state: 'ArrangingShipping' });
+            expect(result.transitionOrderToState).toEqual({ id: 'T_1', state: 'ArrangingPayment' });
         });
     });
 
@@ -283,7 +283,7 @@ describe('Orders', () => {
                 }
             `);
 
-            expect(result.nextOrderStates).toEqual(['ArrangingShipping']);
+            expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
         });
 
         it('logging out and back in again resumes the last active order', async () => {

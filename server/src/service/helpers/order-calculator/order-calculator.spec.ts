@@ -8,6 +8,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
+import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 import {
     createRequestContext,
@@ -27,6 +28,7 @@ describe('OrderCalculator', () => {
                 OrderCalculator,
                 TaxCalculator,
                 TaxRateService,
+                { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
                 { provide: Connection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
             ],
@@ -66,7 +68,7 @@ describe('OrderCalculator', () => {
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
-            orderCalculator.applyTaxesAndPromotions(ctx, order, []);
+            orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(148);
             expect(order.subTotalBeforeTax).toBe(123);
@@ -77,7 +79,7 @@ describe('OrderCalculator', () => {
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 3 }],
             });
-            orderCalculator.applyTaxesAndPromotions(ctx, order, []);
+            orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(444);
             expect(order.subTotalBeforeTax).toBe(369);
@@ -88,7 +90,7 @@ describe('OrderCalculator', () => {
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
-            orderCalculator.applyTaxesAndPromotions(ctx, order, []);
+            orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(123);
             expect(order.subTotalBeforeTax).toBe(102);
@@ -101,7 +103,7 @@ describe('OrderCalculator', () => {
                 subTotal: 148,
                 subTotalBeforeTax: 123,
             });
-            orderCalculator.applyTaxesAndPromotions(ctx, order, []);
+            orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(0);
             expect(order.subTotalBeforeTax).toBe(0);

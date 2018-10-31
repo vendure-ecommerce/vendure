@@ -3,6 +3,7 @@ import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { AdjustmentSource } from '../../common/types/adjustment-source';
+import { ChannelAware } from '../../common/types/common-types';
 import { PromotionItemAction, PromotionOrderAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { getConfig } from '../../config/vendure-config';
@@ -12,7 +13,7 @@ import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
 
 @Entity()
-export class Promotion extends AdjustmentSource {
+export class Promotion extends AdjustmentSource implements ChannelAware {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: { [code: string]: PromotionItemAction | PromotionOrderAction } = {};

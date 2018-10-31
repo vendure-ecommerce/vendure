@@ -15,6 +15,7 @@ import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
+import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -26,6 +27,7 @@ import { ChannelService } from './channel.service';
 export class ShippingMethodService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
     shippingCalculators: ShippingCalculator[];
+    private activeShippingMethods: ShippingMethod[];
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -36,6 +38,10 @@ export class ShippingMethodService {
         this.shippingEligibilityCheckers =
             this.configService.shippingOptions.shippingEligibilityCheckers || [];
         this.shippingCalculators = this.configService.shippingOptions.shippingCalculators || [];
+    }
+
+    async initShippingMethods() {
+        await this.updateActiveShippingMethods();
     }
 
     findAll(options?: ListQueryOptions<ShippingMethod>): Promise<PaginatedList<ShippingMethod>> {
@@ -62,7 +68,9 @@ export class ShippingMethodService {
             calculator: this.parseOperationArgs(input.calculator, this.getCalculator(input.calculator.code)),
         });
         shippingMethod.channels = [this.channelService.getDefaultChannel()];
-        return this.connection.manager.save(shippingMethod);
+        const newShippingMethod = await this.connection.manager.save(shippingMethod);
+        await this.updateActiveShippingMethods();
+        return assertFound(this.findOne(newShippingMethod.id));
     }
 
     async update(input: UpdateShippingMethodInput): Promise<ShippingMethod> {
@@ -83,10 +91,11 @@ export class ShippingMethodService {
         if (input.calculator) {
             updatedShippingMethod.calculator = this.parseOperationArgs(
                 input.calculator,
-                this.getChecker(input.calculator.code),
+                this.getCalculator(input.calculator.code),
             );
         }
         await this.connection.manager.save(updatedShippingMethod);
+        await this.updateActiveShippingMethods();
         return assertFound(this.findOne(shippingMethod.id));
     }
 
@@ -96,6 +105,10 @@ export class ShippingMethodService {
 
     getShippingCalculators(): AdjustmentOperation[] {
         return this.shippingCalculators.map(this.toAdjustmentOperation);
+    }
+
+    getActiveShippingMethods(channel: Channel): ShippingMethod[] {
+        return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
     }
 
     private toAdjustmentOperation(source: ShippingCalculator | ShippingEligibilityChecker) {
@@ -141,5 +154,11 @@ export class ShippingMethodService {
             throw new I18nError(`error.shipping-calculator-with-code-not-found`, { code });
         }
         return match;
+    }
+
+    private async updateActiveShippingMethods() {
+        this.activeShippingMethods = await this.connection.getRepository(ShippingMethod).find({
+            relations: ['channels'],
+        });
     }
 }

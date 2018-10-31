@@ -293,12 +293,27 @@ export interface Order extends Node {
     code: string;
     state: string;
     customer?: Customer | null;
+    shippingAddress?: ShippingAddress | null;
     lines: OrderLine[];
     adjustments: Adjustment[];
     subTotalBeforeTax: number;
     subTotal: number;
+    shipping: number;
+    shippingMethod?: string | null;
     totalBeforeTax: number;
     total: number;
+}
+
+export interface ShippingAddress {
+    fullName?: string | null;
+    company?: string | null;
+    streetLine1?: string | null;
+    streetLine2?: string | null;
+    city?: string | null;
+    province?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+    phoneNumber?: string | null;
 }
 
 export interface OrderLine extends Node {
@@ -563,6 +578,7 @@ export interface Mutation {
     removeItemFromOrder?: Order | null;
     adjustItemQuantity?: Order | null;
     transitionOrderToState?: Order | null;
+    setOrderShippingAddress?: Order | null;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -1437,6 +1453,9 @@ export interface AdjustItemQuantityMutationArgs {
 export interface TransitionOrderToStateMutationArgs {
     state: string;
 }
+export interface SetOrderShippingAddressMutationArgs {
+    input: CreateAddressInput;
+}
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
 }
@@ -1750,9 +1769,11 @@ export enum AssetType {
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
+    SHIPPING = 'SHIPPING',
     REFUND = 'REFUND',
     TAX_REFUND = 'TAX_REFUND',
     PROMOTION_REFUND = 'PROMOTION_REFUND',
+    SHIPPING_REFUND = 'SHIPPING_REFUND',
 }
 
 export namespace QueryResolvers {
@@ -2720,10 +2741,13 @@ export namespace OrderResolvers {
         code?: CodeResolver<string, any, Context>;
         state?: StateResolver<string, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
+        shippingAddress?: ShippingAddressResolver<ShippingAddress | null, any, Context>;
         lines?: LinesResolver<OrderLine[], any, Context>;
         adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
         subTotalBeforeTax?: SubTotalBeforeTaxResolver<number, any, Context>;
         subTotal?: SubTotalResolver<number, any, Context>;
+        shipping?: ShippingResolver<number, any, Context>;
+        shippingMethod?: ShippingMethodResolver<string | null, any, Context>;
         totalBeforeTax?: TotalBeforeTaxResolver<number, any, Context>;
         total?: TotalResolver<number, any, Context>;
     }
@@ -2734,6 +2758,11 @@ export namespace OrderResolvers {
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CustomerResolver<R = Customer | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ShippingAddressResolver<R = ShippingAddress | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2750,12 +2779,74 @@ export namespace OrderResolvers {
         Context
     >;
     export type SubTotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ShippingResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ShippingMethodResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type TotalBeforeTaxResolver<R = number, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
     export type TotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace ShippingAddressResolvers {
+    export interface Resolvers<Context = any> {
+        fullName?: FullNameResolver<string | null, any, Context>;
+        company?: CompanyResolver<string | null, any, Context>;
+        streetLine1?: StreetLine1Resolver<string | null, any, Context>;
+        streetLine2?: StreetLine2Resolver<string | null, any, Context>;
+        city?: CityResolver<string | null, any, Context>;
+        province?: ProvinceResolver<string | null, any, Context>;
+        postalCode?: PostalCodeResolver<string | null, any, Context>;
+        country?: CountryResolver<string | null, any, Context>;
+        phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
+    }
+
+    export type FullNameResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CompanyResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type StreetLine1Resolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type StreetLine2Resolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CityResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProvinceResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PostalCodeResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CountryResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace OrderLineResolvers {
@@ -3448,6 +3539,7 @@ export namespace MutationResolvers {
         removeItemFromOrder?: RemoveItemFromOrderResolver<Order | null, any, Context>;
         adjustItemQuantity?: AdjustItemQuantityResolver<Order | null, any, Context>;
         transitionOrderToState?: TransitionOrderToStateResolver<Order | null, any, Context>;
+        setOrderShippingAddress?: SetOrderShippingAddressResolver<Order | null, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -3740,6 +3832,16 @@ export namespace MutationResolvers {
     >;
     export interface TransitionOrderToStateArgs {
         state: string;
+    }
+
+    export type SetOrderShippingAddressResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        SetOrderShippingAddressArgs
+    >;
+    export interface SetOrderShippingAddressArgs {
+        input: CreateAddressInput;
     }
 
     export type CreateProductOptionGroupResolver<
