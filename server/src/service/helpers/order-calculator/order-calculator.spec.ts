@@ -63,47 +63,47 @@ describe('OrderCalculator', () => {
     }
 
     describe('taxes only', () => {
-        it('single line with taxes not included', () => {
+        it('single line with taxes not included', async () => {
             const ctx = createRequestContext(false, zoneDefault);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
-            orderCalculator.applyPriceAdjustments(ctx, order, []);
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(148);
             expect(order.subTotalBeforeTax).toBe(123);
         });
 
-        it('single line with taxes not included, multiple items', () => {
+        it('single line with taxes not included, multiple items', async () => {
             const ctx = createRequestContext(false, zoneDefault);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 3 }],
             });
-            orderCalculator.applyPriceAdjustments(ctx, order, []);
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(444);
             expect(order.subTotalBeforeTax).toBe(369);
         });
 
-        it('single line with taxes included', () => {
+        it('single line with taxes included', async () => {
             const ctx = createRequestContext(true, zoneDefault);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
-            orderCalculator.applyPriceAdjustments(ctx, order, []);
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(123);
             expect(order.subTotalBeforeTax).toBe(102);
         });
 
-        it('resets totals when lines array is empty', () => {
+        it('resets totals when lines array is empty', async () => {
             const ctx = createRequestContext(true, zoneDefault);
             const order = createOrder({
                 lines: [],
                 subTotal: 148,
                 subTotalBeforeTax: 123,
             });
-            orderCalculator.applyPriceAdjustments(ctx, order, []);
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(0);
             expect(order.subTotalBeforeTax).toBe(0);

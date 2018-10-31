@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { AdjustmentType } from 'shared/generated-types';
+import { ID } from 'shared/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
+import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
@@ -20,7 +23,12 @@ export class OrderCalculator {
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
      */
-    applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[]): Order {
+    async applyPriceAdjustments(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+        preferredShippingMethod?: ID,
+    ): Promise<Order> {
         const activeZone = ctx.channel.defaultTaxZone;
         order.clearAdjustments();
         if (order.lines.length) {
@@ -31,7 +39,7 @@ export class OrderCalculator {
             // Finally, re-calculate taxes because the promotions may have
             // altered the unit prices, which in turn will alter the tax payable.
             this.applyTaxes(ctx, order, activeZone);
-            this.applyShipping(ctx, order);
+            await this.applyShipping(ctx, order, preferredShippingMethod);
         } else {
             this.calculateOrderTotals(order);
         }
@@ -101,11 +109,18 @@ export class OrderCalculator {
         }
     }
 
-    private applyShipping(ctx: RequestContext, order: Order) {
-        const results = this.shippingCalculator.getEligibleShippingMethods(ctx, order);
+    private async applyShipping(ctx: RequestContext, order: Order, preferredShippingMethod?: ID) {
+        const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         if (results && results.length) {
-            order.shipping = results[0].price;
-            order.shippingMethod = results[0].method.description;
+            let selected: { method: ShippingMethod; price: number } | undefined;
+            if (preferredShippingMethod) {
+                selected = results.find(r => idsAreEqual(r.method.id, preferredShippingMethod));
+            }
+            if (!selected) {
+                selected = results[0];
+            }
+            order.shipping = selected.price;
+            order.shippingMethod = selected.method.description;
         }
     }
 

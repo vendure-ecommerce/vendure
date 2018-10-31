@@ -36,10 +36,10 @@ export class ShippingMethod extends AdjustmentSource implements ChannelAware {
     @JoinTable()
     channels: Channel[];
 
-    apply(order: Order): Adjustment | undefined {
+    async apply(order: Order): Promise<Adjustment | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const amount = calculator.calculate(order, this.calculator.args);
+            const amount = await calculator.calculate(order, this.calculator.args);
             return {
                 amount,
                 type: this.type,
@@ -49,7 +49,7 @@ export class ShippingMethod extends AdjustmentSource implements ChannelAware {
         }
     }
 
-    test(order: Order): boolean {
+    async test(order: Order): Promise<boolean> {
         const checker = this.allCheckers[this.checker.code];
         if (checker) {
             return checker.check(order, this.checker.args);

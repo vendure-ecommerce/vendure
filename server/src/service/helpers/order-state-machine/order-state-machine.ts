@@ -35,9 +35,9 @@ export class OrderStateMachine {
      * Specific business logic to be executed on Order state transitions.
      */
     private onTransitionStart(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
-        if (toState === 'ArrangingShipping') {
+        if (toState === 'ArrangingPayment') {
             if (data.order.lines.length === 0) {
-                return `error.cannot-transition-to-shipping-when-order-is-empty`;
+                return `error.cannot-transition-to-payment-when-order-is-empty`;
             }
         }
     }

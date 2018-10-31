@@ -1,5 +1,5 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAddressInput } from 'shared/generated-types';
+import { CreateAddressInput, ShippingMethodQuote } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -19,6 +19,7 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
+import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CustomerService } from './customer.service';
@@ -30,6 +31,7 @@ export class OrderService {
         private productVariantService: ProductVariantService,
         private customerService: CustomerService,
         private orderCalculator: OrderCalculator,
+        private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
         private listQueryBuilder: ListQueryBuilder,
@@ -172,7 +174,22 @@ export class OrderService {
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.shippingAddress = input;
-        await this.applyPriceAdjustments(ctx, order);
+        return this.connection.getRepository(Order).save(order);
+    }
+
+    async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
+        return eligibleMethods.map(result => ({
+            shippingMethodId: result.method.id as string,
+            price: result.price,
+            description: result.method.description,
+        }));
+    }
+
+    async setShippingMethod(ctx: RequestContext, orderId: ID, shippingMethodId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.applyPriceAdjustments(ctx, order, shippingMethodId);
         return this.connection.getRepository(Order).save(order);
     }
 
@@ -262,12 +279,21 @@ export class OrderService {
     /**
      * Applies promotions, taxes and shipping to the Order.
      */
-    private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
+    private async applyPriceAdjustments(
+        ctx: RequestContext,
+        order: Order,
+        preferredShippingMethod?: ID,
+    ): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
             order: { priorityScore: 'ASC' },
         });
-        order = this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
+        order = await this.orderCalculator.applyPriceAdjustments(
+            ctx,
+            order,
+            promotions,
+            preferredShippingMethod,
+        );
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);

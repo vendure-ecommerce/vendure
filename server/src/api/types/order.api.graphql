@@ -3,6 +3,7 @@ type Query {
     activeOrder: Order
     nextOrderStates: [String!]!
     orders(options: OrderListOptions): OrderList!
+    eligibleShippingMethods: [ShippingMethodQuote!]!
 }
 
 type Mutation {
@@ -11,11 +12,18 @@ type Mutation {
     adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
     transitionOrderToState(state: String!): Order
     setOrderShippingAddress(input: CreateAddressInput!): Order
+    setOrderShippingMethod(shippingMethodId: ID!): Order
 }
 
 type OrderList implements PaginatedList {
     items: [Order!]!
     totalItems: Int!
+}
+
+type ShippingMethodQuote {
+    shippingMethodId: ID!
+    price: Int!
+    description: String!
 }
 
 input OrderListOptions {

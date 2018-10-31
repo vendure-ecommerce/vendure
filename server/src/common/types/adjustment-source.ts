@@ -9,6 +9,6 @@ export abstract class AdjustmentSource extends VendureEntity {
         return `${this.type}:${this.id}`;
     }
 
-    abstract test(...args: any[]): boolean;
-    abstract apply(...args: any[]): Adjustment | undefined;
+    abstract test(...args: any[]): boolean | Promise<boolean>;
+    abstract apply(...args: any[]): Adjustment | undefined | Promise<Adjustment | undefined>;
 }

@@ -14,23 +14,21 @@ export class ShippingCalculator {
      * Returns an array of each eligible ShippingMethod for the given Order and sorts them by
      * price, with the cheapest first.
      */
-    getEligibleShippingMethods(
+    async getEligibleShippingMethods(
         ctx: RequestContext,
         order: Order,
-    ): Array<{ method: ShippingMethod; price: number }> {
+    ): Promise<Array<{ method: ShippingMethod; price: number }>> {
         const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
-        return shippingMethods
-            .filter(sm => sm.test(order))
-            .map(sm => {
-                const adjustment = sm.apply(order);
-                if (adjustment) {
-                    return {
-                        method: sm,
-                        price: adjustment.amount,
-                    };
-                }
-            })
-            .filter(notNullOrUndefined)
-            .sort((a, b) => a.price - b.price);
+        const methodsPromiseArray = shippingMethods.filter(async sm => await sm.test(order)).map(async sm => {
+            const adjustment = await sm.apply(order);
+            if (adjustment) {
+                return {
+                    method: sm,
+                    price: adjustment.amount,
+                };
+            }
+        });
+        const methods = await Promise.all(methodsPromiseArray);
+        return methods.filter(notNullOrUndefined).sort((a, b) => a.price - b.price);
     }
 }

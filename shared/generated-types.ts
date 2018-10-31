@@ -62,6 +62,7 @@ export interface Query {
     activeOrder?: Order | null;
     nextOrderStates: string[];
     orders: OrderList;
+    eligibleShippingMethods: ShippingMethodQuote[];
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
     products: ProductList;
@@ -418,6 +419,12 @@ export interface OrderList extends PaginatedList {
     totalItems: number;
 }
 
+export interface ShippingMethodQuote {
+    shippingMethodId: string;
+    price: number;
+    description: string;
+}
+
 export interface ProductOptionGroup extends Node {
     id: string;
     createdAt: DateTime;
@@ -579,6 +586,7 @@ export interface Mutation {
     adjustItemQuantity?: Order | null;
     transitionOrderToState?: Order | null;
     setOrderShippingAddress?: Order | null;
+    setOrderShippingMethod?: Order | null;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -1456,6 +1464,9 @@ export interface TransitionOrderToStateMutationArgs {
 export interface SetOrderShippingAddressMutationArgs {
     input: CreateAddressInput;
 }
+export interface SetOrderShippingMethodMutationArgs {
+    shippingMethodId: string;
+}
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
 }
@@ -1801,6 +1812,7 @@ export namespace QueryResolvers {
         activeOrder?: ActiveOrderResolver<Order | null, any, Context>;
         nextOrderStates?: NextOrderStatesResolver<string[], any, Context>;
         orders?: OrdersResolver<OrderList, any, Context>;
+        eligibleShippingMethods?: EligibleShippingMethodsResolver<ShippingMethodQuote[], any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
         products?: ProductsResolver<ProductList, any, Context>;
@@ -2008,6 +2020,11 @@ export namespace QueryResolvers {
         options?: OrderListOptions | null;
     }
 
+    export type EligibleShippingMethodsResolver<
+        R = ShippingMethodQuote[],
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
     export type ProductOptionGroupsResolver<R = ProductOptionGroup[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3141,6 +3158,22 @@ export namespace OrderListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace ShippingMethodQuoteResolvers {
+    export interface Resolvers<Context = any> {
+        shippingMethodId?: ShippingMethodIdResolver<string, any, Context>;
+        price?: PriceResolver<number, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+    }
+
+    export type ShippingMethodIdResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace ProductOptionGroupResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -3540,6 +3573,7 @@ export namespace MutationResolvers {
         adjustItemQuantity?: AdjustItemQuantityResolver<Order | null, any, Context>;
         transitionOrderToState?: TransitionOrderToStateResolver<Order | null, any, Context>;
         setOrderShippingAddress?: SetOrderShippingAddressResolver<Order | null, any, Context>;
+        setOrderShippingMethod?: SetOrderShippingMethodResolver<Order | null, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -3842,6 +3876,16 @@ export namespace MutationResolvers {
     >;
     export interface SetOrderShippingAddressArgs {
         input: CreateAddressInput;
+    }
+
+    export type SetOrderShippingMethodResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        SetOrderShippingMethodArgs
+    >;
+    export interface SetOrderShippingMethodArgs {
+        shippingMethodId: string;
     }
 
     export type CreateProductOptionGroupResolver<

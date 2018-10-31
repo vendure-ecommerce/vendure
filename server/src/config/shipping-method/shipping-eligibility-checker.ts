@@ -8,7 +8,7 @@ export type ShippingEligibilityCheckerArgs = AdjustmentArgs<ShippingEligibilityC
 export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
     order: Order,
     args: ArgumentValues<T>,
-) => boolean;
+) => boolean | Promise<boolean>;
 
 export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}> {
     readonly code: string;

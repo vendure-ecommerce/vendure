@@ -8,6 +8,8 @@ import {
     Permission,
     RemoveItemFromOrderMutationArgs,
     SetOrderShippingAddressMutationArgs,
+    SetOrderShippingMethodMutationArgs,
+    ShippingMethodQuote,
     TransitionOrderToStateMutationArgs,
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
@@ -71,6 +73,33 @@ export class OrderResolver {
                 return this.orderService.setShippingAddress(ctx, sessionOrder.id, args.input);
             } else {
                 return;
+            }
+        }
+    }
+
+    @Query()
+    @Allow(Permission.Owner)
+    async eligibleShippingMethods(@Ctx() ctx: RequestContext): Promise<ShippingMethodQuote[]> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.getEligibleShippingMethods(ctx, sessionOrder.id);
+            }
+        }
+        return [];
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    @Decode('shippingMethodId')
+    async setOrderShippingMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: SetOrderShippingMethodMutationArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.setShippingMethod(ctx, sessionOrder.id, args.shippingMethodId);
             }
         }
     }

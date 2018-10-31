@@ -8,7 +8,7 @@ export type ShippingCalculatorArgs = AdjustmentArgs<ShippingCalculatorArgType>;
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
     args: ArgumentValues<T>,
-) => number;
+) => number | Promise<number>;
 
 export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
     readonly code: string;
@@ -23,7 +23,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
         this.calculateFn = config.calculate;
     }
 
-    calculate(order: Order, args: AdjustmentArg[]): number {
+    calculate(order: Order, args: AdjustmentArg[]): number | Promise<number> {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
