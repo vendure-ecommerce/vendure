@@ -54,7 +54,19 @@ export class AuthGuard implements CanActivate {
     ): Promise<Session | undefined> {
         const authToken = extractAuthToken(req, this.configService.authOptions.tokenMethod);
         if (authToken) {
-            return await this.authService.validateSession(authToken);
+            const session = await this.authService.validateSession(authToken);
+            if (!session) {
+                // if there is a token but it cannot be validated to a Session,
+                // then the token is no longer valid and should be unset.
+                setAuthToken({
+                    req,
+                    res,
+                    authOptions: this.configService.authOptions,
+                    rememberMe: false,
+                    authToken: '',
+                });
+            }
+            return session;
         } else if (hasOwnerPermission) {
             const session = await this.authService.createAnonymousSession();
             setAuthToken({
