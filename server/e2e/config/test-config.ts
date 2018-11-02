@@ -36,6 +36,9 @@ export const testConfig: VendureConfig = {
     promotionOptions: {},
     customFields: {},
     entityIdStrategy: new TestingEntityIdStrategy(),
+    paymentOptions: {
+        paymentMethodHandlers: [],
+    },
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new TestingAssetStorageStrategy(),

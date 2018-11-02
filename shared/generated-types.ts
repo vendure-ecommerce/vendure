@@ -63,6 +63,8 @@ export interface Query {
     nextOrderStates: string[];
     orders: OrderList;
     eligibleShippingMethods: ShippingMethodQuote[];
+    paymentMethods: PaymentMethodList;
+    paymentMethod?: PaymentMethod | null;
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
     products: ProductList;
@@ -425,6 +427,26 @@ export interface ShippingMethodQuote {
     description: string;
 }
 
+export interface PaymentMethodList extends PaginatedList {
+    items: PaymentMethod[];
+    totalItems: number;
+}
+
+export interface PaymentMethod extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    code: string;
+    enabled: boolean;
+    configArgs: ConfigArg[];
+}
+
+export interface ConfigArg {
+    name: string;
+    type: string;
+    value?: string | null;
+}
+
 export interface ProductOptionGroup extends Node {
     id: string;
     createdAt: DateTime;
@@ -501,12 +523,6 @@ export interface AdjustmentOperation {
     code: string;
     args: ConfigArg[];
     description: string;
-}
-
-export interface ConfigArg {
-    name: string;
-    type: string;
-    value?: string | null;
 }
 
 export interface PromotionList extends PaginatedList {
@@ -587,6 +603,7 @@ export interface Mutation {
     transitionOrderToState?: Order | null;
     setOrderShippingAddress?: Order | null;
     setOrderShippingMethod?: Order | null;
+    updatePaymentMethod: PaymentMethod;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -619,6 +636,17 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
+}
+
+export interface Payment extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    method: string;
+    amount: number;
+    state: string;
+    transactionId?: string | null;
+    metadata?: Json | null;
 }
 
 export interface AdministratorListOptions {
@@ -778,6 +806,26 @@ export interface OrderSortParameter {
 }
 
 export interface OrderFilterParameter {
+    code?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
+export interface PaymentMethodListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: PaymentMethodSortParameter | null;
+    filter?: PaymentMethodFilterParameter | null;
+}
+
+export interface PaymentMethodSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    code?: SortOrder | null;
+}
+
+export interface PaymentMethodFilterParameter {
     code?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
@@ -1086,6 +1134,18 @@ export interface UpdateFacetValueCustomFieldsInput {
     available?: boolean | null;
 }
 
+export interface UpdatePaymentMethodInput {
+    id: string;
+    code?: string | null;
+    enabled?: boolean | null;
+    configArgs?: ConfigArgInput[] | null;
+}
+
+export interface ConfigArgInput {
+    name: string;
+    value: string;
+}
+
 export interface CreateProductOptionGroupInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
@@ -1177,11 +1237,6 @@ export interface CreatePromotionInput {
 export interface AdjustmentOperationInput {
     code: string;
     arguments: ConfigArgInput[];
-}
-
-export interface ConfigArgInput {
-    name: string;
-    value: string;
 }
 
 export interface UpdatePromotionInput {
@@ -1331,6 +1386,12 @@ export interface OrderQueryArgs {
 export interface OrdersQueryArgs {
     options?: OrderListOptions | null;
 }
+export interface PaymentMethodsQueryArgs {
+    options?: PaymentMethodListOptions | null;
+}
+export interface PaymentMethodQueryArgs {
+    id: string;
+}
 export interface ProductOptionGroupsQueryArgs {
     languageCode?: LanguageCode | null;
     filterTerm?: string | null;
@@ -1466,6 +1527,9 @@ export interface SetOrderShippingAddressMutationArgs {
 }
 export interface SetOrderShippingMethodMutationArgs {
     shippingMethodId: string;
+}
+export interface UpdatePaymentMethodMutationArgs {
+    input: UpdatePaymentMethodInput;
 }
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
@@ -1813,6 +1877,8 @@ export namespace QueryResolvers {
         nextOrderStates?: NextOrderStatesResolver<string[], any, Context>;
         orders?: OrdersResolver<OrderList, any, Context>;
         eligibleShippingMethods?: EligibleShippingMethodsResolver<ShippingMethodQuote[], any, Context>;
+        paymentMethods?: PaymentMethodsResolver<PaymentMethodList, any, Context>;
+        paymentMethod?: PaymentMethodResolver<PaymentMethod | null, any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
         products?: ProductsResolver<ProductList, any, Context>;
@@ -2025,6 +2091,26 @@ export namespace QueryResolvers {
         Parent = any,
         Context = any
     > = Resolver<R, Parent, Context>;
+    export type PaymentMethodsResolver<R = PaymentMethodList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        PaymentMethodsArgs
+    >;
+    export interface PaymentMethodsArgs {
+        options?: PaymentMethodListOptions | null;
+    }
+
+    export type PaymentMethodResolver<R = PaymentMethod | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        PaymentMethodArgs
+    >;
+    export interface PaymentMethodArgs {
+        id: string;
+    }
+
     export type ProductOptionGroupsResolver<R = ProductOptionGroup[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3174,6 +3260,54 @@ export namespace ShippingMethodQuoteResolvers {
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace PaymentMethodListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<PaymentMethod[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = PaymentMethod[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace PaymentMethodResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        enabled?: EnabledResolver<boolean, any, Context>;
+        configArgs?: ConfigArgsResolver<ConfigArg[], any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type EnabledResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ConfigArgsResolver<R = ConfigArg[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace ConfigArgResolvers {
+    export interface Resolvers<Context = any> {
+        name?: NameResolver<string, any, Context>;
+        type?: TypeResolver<string, any, Context>;
+        value?: ValueResolver<string | null, any, Context>;
+    }
+
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace ProductOptionGroupResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -3406,18 +3540,6 @@ export namespace AdjustmentOperationResolvers {
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace ConfigArgResolvers {
-    export interface Resolvers<Context = any> {
-        name?: NameResolver<string, any, Context>;
-        type?: TypeResolver<string, any, Context>;
-        value?: ValueResolver<string | null, any, Context>;
-    }
-
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
 export namespace PromotionListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<Promotion[], any, Context>;
@@ -3574,6 +3696,7 @@ export namespace MutationResolvers {
         transitionOrderToState?: TransitionOrderToStateResolver<Order | null, any, Context>;
         setOrderShippingAddress?: SetOrderShippingAddressResolver<Order | null, any, Context>;
         setOrderShippingMethod?: SetOrderShippingMethodResolver<Order | null, any, Context>;
+        updatePaymentMethod?: UpdatePaymentMethodResolver<PaymentMethod, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -3888,6 +4011,16 @@ export namespace MutationResolvers {
         shippingMethodId: string;
     }
 
+    export type UpdatePaymentMethodResolver<R = PaymentMethod, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdatePaymentMethodArgs
+    >;
+    export interface UpdatePaymentMethodArgs {
+        input: UpdatePaymentMethodInput;
+    }
+
     export type CreateProductOptionGroupResolver<
         R = ProductOptionGroup,
         Parent = any,
@@ -4165,6 +4298,32 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace PaymentResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        method?: MethodResolver<string, any, Context>;
+        amount?: AmountResolver<number, any, Context>;
+        state?: StateResolver<string, any, Context>;
+        transactionId?: TransactionIdResolver<string | null, any, Context>;
+        metadata?: MetadataResolver<Json | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type MethodResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TransactionIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type MetadataResolver<R = Json | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace GetAdministrators {

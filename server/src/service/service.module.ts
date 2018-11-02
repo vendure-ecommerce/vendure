@@ -22,6 +22,7 @@ import { CustomerService } from './services/customer.service';
 import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
 import { OrderService } from './services/order.service';
+import { PaymentMethodService } from './services/payment-method.service';
 import { ProductOptionGroupService } from './services/product-option-group.service';
 import { ProductOptionService } from './services/product-option.service';
 import { ProductVariantService } from './services/product-variant.service';
@@ -45,6 +46,7 @@ const exportedProviders = [
     FacetService,
     FacetValueService,
     OrderService,
+    PaymentMethodService,
     ProductOptionService,
     ProductOptionGroupService,
     ProductService,
@@ -85,6 +87,7 @@ export class ServiceModule implements OnModuleInit {
         private administratorService: AdministratorService,
         private taxRateService: TaxRateService,
         private shippingMethodService: ShippingMethodService,
+        private paymentMethodService: PaymentMethodService,
     ) {}
 
     async onModuleInit() {
@@ -93,5 +96,6 @@ export class ServiceModule implements OnModuleInit {
         await this.administratorService.initAdministrators();
         await this.taxRateService.initTaxRates();
         await this.shippingMethodService.initShippingMethods();
+        await this.paymentMethodService.initPaymentMethods();
     }
 }

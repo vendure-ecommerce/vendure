@@ -22,6 +22,7 @@ import { CustomerGroupResolver } from './resolvers/customer-group.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
 import { FacetResolver } from './resolvers/facet.resolver';
 import { OrderResolver } from './resolvers/order.resolver';
+import { PaymentMethodResolver } from './resolvers/payment-method.resolver';
 import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
 import { PromotionResolver } from './resolvers/promotion.resolver';
@@ -43,6 +44,7 @@ const exportedProviders = [
     CustomerResolver,
     CustomerGroupResolver,
     OrderResolver,
+    PaymentMethodResolver,
     ProductOptionResolver,
     ProductResolver,
     RoleResolver,

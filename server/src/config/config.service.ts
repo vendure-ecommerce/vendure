@@ -14,6 +14,7 @@ import {
     getConfig,
     OrderMergeOptions,
     OrderProcessOptions,
+    PaymentOptions,
     PromotionOptions,
     ShippingOptions,
     VendureConfig,
@@ -88,6 +89,10 @@ export class ConfigService implements VendureConfig {
 
     get orderProcessOptions(): OrderProcessOptions<any> {
         return this.activeConfig.orderProcessOptions;
+    }
+
+    get paymentOptions(): PaymentOptions {
+        return this.activeConfig.paymentOptions;
     }
 
     get customFields(): CustomFields {

@@ -59,6 +59,9 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
     },
+    paymentOptions: {
+        paymentMethodHandlers: [],
+    },
     customFields: {
         Address: [],
         Customer: [],

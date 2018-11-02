@@ -17,6 +17,7 @@ import { defaultConfig } from './default-config';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
+import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
@@ -146,6 +147,13 @@ export interface ShippingOptions {
     shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
+export interface PaymentOptions {
+    /**
+     * An array of payment methods with which to process payments.
+     */
+    paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
+}
+
 export interface VendureConfig {
     /**
      * The name of the property which contains the token of the
@@ -214,6 +222,10 @@ export interface VendureConfig {
      * Customer signs in.
      */
     orderMergeOptions?: OrderMergeOptions;
+    /**
+     * Configures available payment processing methods.
+     */
+    paymentOptions: PaymentOptions;
     /**
      * Custom Express middleware for the server.
      */

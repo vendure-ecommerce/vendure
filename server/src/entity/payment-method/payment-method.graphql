@@ -1,0 +1,15 @@
+type PaymentMethod implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    code: String!
+    enabled: Boolean!
+    configArgs: [ConfigArg!]!
+}
+
+input UpdatePaymentMethodInput {
+    id: ID!
+    code: String
+    enabled: Boolean
+    configArgs: [ConfigArgInput!]
+}
