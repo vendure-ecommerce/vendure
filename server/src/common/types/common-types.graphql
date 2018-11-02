@@ -20,7 +20,7 @@ type Adjustment {
     amount: Int!
 }
 
-type AdjustmentArg {
+type ConfigArg {
     name: String!
     type: String!
     value: String
@@ -28,18 +28,18 @@ type AdjustmentArg {
 
 type AdjustmentOperation {
     code: String!
-    args: [AdjustmentArg!]!
+    args: [ConfigArg!]!
     description: String!
 }
 
-input AdjustmentOperationInputArg {
+input ConfigArgInput {
     name: String!
     value: String!
 }
 
 input AdjustmentOperationInput {
     code: String!
-    arguments: [AdjustmentOperationInputArg!]!
+    arguments: [ConfigArgInput!]!
 }
 
 interface PaginatedList {

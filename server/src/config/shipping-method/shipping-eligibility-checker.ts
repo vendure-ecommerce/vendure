@@ -1,13 +1,13 @@
-import { AdjustmentArg } from 'shared/generated-types';
+import { ConfigArg } from 'shared/generated-types';
 
 import { Order } from '../../entity/order/order.entity';
-import { AdjustmentArgs, argsArrayToHash, ArgumentValues } from '../common/adjustments';
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type ShippingEligibilityCheckerArgType = 'int' | 'money' | 'string' | 'boolean';
-export type ShippingEligibilityCheckerArgs = AdjustmentArgs<ShippingEligibilityCheckerArgType>;
+export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
     order: Order,
-    args: ArgumentValues<T>,
+    args: ConfigArgValues<T>,
 ) => boolean | Promise<boolean>;
 
 export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}> {
@@ -28,7 +28,7 @@ export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs
         this.checkFn = config.check;
     }
 
-    check(order: Order, args: AdjustmentArg[]) {
+    check(order: Order, args: ConfigArg[]) {
         return this.checkFn(order, argsArrayToHash(args));
     }
 }

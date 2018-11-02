@@ -1,13 +1,13 @@
-import { AdjustmentArg } from 'shared/generated-types';
+import { ConfigArg } from 'shared/generated-types';
 
 import { Order } from '../../entity/order/order.entity';
-import { AdjustmentArgs, argsArrayToHash, ArgumentValues } from '../common/adjustments';
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type PromotionConditionArgType = 'int' | 'money' | 'string' | 'datetime' | 'boolean';
-export type PromotionConditionArgs = AdjustmentArgs<PromotionConditionArgType>;
+export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
     order: Order,
-    args: ArgumentValues<T>,
+    args: ConfigArgValues<T>,
 ) => boolean;
 
 export class PromotionCondition<T extends PromotionConditionArgs = {}> {
@@ -31,7 +31,7 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> {
         this.priorityValue = config.priorityValue || 0;
     }
 
-    check(order: Order, args: AdjustmentArg[]) {
+    check(order: Order, args: ConfigArg[]) {
         return this.checkFn(order, argsArrayToHash<T>(args));
     }
 }

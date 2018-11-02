@@ -499,11 +499,11 @@ export interface Promotion extends Node {
 
 export interface AdjustmentOperation {
     code: string;
-    args: AdjustmentArg[];
+    args: ConfigArg[];
     description: string;
 }
 
-export interface AdjustmentArg {
+export interface ConfigArg {
     name: string;
     type: string;
     value?: string | null;
@@ -1176,10 +1176,10 @@ export interface CreatePromotionInput {
 
 export interface AdjustmentOperationInput {
     code: string;
-    arguments: AdjustmentOperationInputArg[];
+    arguments: ConfigArgInput[];
 }
 
-export interface AdjustmentOperationInputArg {
+export interface ConfigArgInput {
     name: string;
     value: string;
 }
@@ -3397,16 +3397,16 @@ export namespace PromotionResolvers {
 export namespace AdjustmentOperationResolvers {
     export interface Resolvers<Context = any> {
         code?: CodeResolver<string, any, Context>;
-        args?: ArgsResolver<AdjustmentArg[], any, Context>;
+        args?: ArgsResolver<ConfigArg[], any, Context>;
         description?: DescriptionResolver<string, any, Context>;
     }
 
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ArgsResolver<R = AdjustmentArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ArgsResolver<R = ConfigArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace AdjustmentArgResolvers {
+export namespace ConfigArgResolvers {
     export interface Resolvers<Context = any> {
         name?: NameResolver<string, any, Context>;
         type?: TypeResolver<string, any, Context>;
@@ -5534,6 +5534,7 @@ export namespace Order {
 
     export type Customer = {
         __typename?: 'Customer';
+        id: string;
         firstName: string;
         lastName: string;
     };
@@ -5748,7 +5749,7 @@ export namespace AdjustmentOperation {
     };
 
     export type Args = {
-        __typename?: 'AdjustmentArg';
+        __typename?: 'ConfigArg';
         name: string;
         type: string;
         value?: string | null;

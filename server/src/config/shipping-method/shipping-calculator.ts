@@ -1,13 +1,13 @@
-import { AdjustmentArg } from 'shared/generated-types';
+import { ConfigArg } from 'shared/generated-types';
 
 import { Order } from '../../entity/order/order.entity';
-import { AdjustmentArgs, argsArrayToHash, ArgumentValues } from '../common/adjustments';
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type ShippingCalculatorArgType = 'int' | 'money' | 'string' | 'boolean';
-export type ShippingCalculatorArgs = AdjustmentArgs<ShippingCalculatorArgType>;
+export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
-    args: ArgumentValues<T>,
+    args: ConfigArgValues<T>,
 ) => number | Promise<number>;
 
 export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
@@ -23,7 +23,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
         this.calculateFn = config.calculate;
     }
 
-    calculate(order: Order, args: AdjustmentArg[]): number | Promise<number> {
+    calculate(order: Order, args: ConfigArg[]): number | Promise<number> {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }

@@ -1,21 +1,21 @@
-import { AdjustmentArg } from 'shared/generated-types';
+import { ConfigArg } from 'shared/generated-types';
 
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
-import { AdjustmentArgs, argsArrayToHash, ArgumentValues } from '../common/adjustments';
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type PromotionActionArgType = 'percentage' | 'money';
-export type PromotionActionArgs = AdjustmentArgs<PromotionActionArgType>;
+export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
-    args: ArgumentValues<T>,
+    args: ConfigArgValues<T>,
 ) => number;
 export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
     order: Order,
-    args: ArgumentValues<T>,
+    args: ConfigArgValues<T>,
 ) => number;
 
 export interface PromotionActionConfig<T extends PromotionActionArgs> {
@@ -55,7 +55,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
         this.executeFn = config.execute;
     }
 
-    execute(orderItem: OrderItem, orderLine: OrderLine, args: AdjustmentArg[]) {
+    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
         return this.executeFn(orderItem, orderLine, argsArrayToHash(args));
     }
 }
@@ -70,7 +70,7 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
         this.executeFn = config.execute;
     }
 
-    execute(order: Order, args: AdjustmentArg[]) {
+    execute(order: Order, args: ConfigArg[]) {
         return this.executeFn(order, argsArrayToHash(args));
     }
 }
