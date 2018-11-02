@@ -3,7 +3,6 @@ import { NgModule, Provider } from '@angular/core';
 import { ClarityModule } from '@clr/angular';
 
 import { DataService } from '../app/data/providers/data.service';
-import { MockDataService } from '../app/data/providers/data.service.mock';
 import { FormFieldControlDirective } from '../app/shared/components/form-field/form-field-control.directive';
 import { FormFieldComponent } from '../app/shared/components/form-field/form-field.component';
 
@@ -11,7 +10,7 @@ import { MockTranslatePipe } from './translate.pipe.mock';
 
 const DECLARATIONS = [MockTranslatePipe, FormFieldComponent, FormFieldControlDirective];
 
-const PROVIDERS: Provider[] = [{ provide: DataService, useClass: MockDataService }];
+const PROVIDERS: Provider[] = [{ provide: DataService, useValue: {} }];
 
 /**
  * This module is for use in unit testing, and provides common directives and providers
