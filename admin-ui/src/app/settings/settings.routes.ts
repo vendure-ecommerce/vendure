@@ -19,6 +19,8 @@ import { ChannelDetailComponent } from './components/channel-detail/channel-deta
 import { ChannelListComponent } from './components/channel-list/channel-list.component';
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
+import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
+import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
@@ -30,6 +32,7 @@ import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.c
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
+import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
@@ -135,6 +138,21 @@ export const settingsRoutes: Route[] = [
             breadcrumb: shippingMethodBreadcrumb,
         },
     },
+    {
+        path: 'payment-methods',
+        component: PaymentMethodListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.payment-methods'),
+        },
+    },
+    {
+        path: 'payment-methods/:id',
+        component: PaymentMethodDetailComponent,
+        resolve: createResolveData(PaymentMethodResolver),
+        data: {
+            breadcrumb: paymentMethodBreadcrumb,
+        },
+    },
 ];
 
 export function administratorBreadcrumb(data: any, params: any) {
@@ -204,5 +222,15 @@ export function shippingMethodBreadcrumb(data: any, params: any) {
         breadcrumbKey: 'breadcrumb.shipping-methods',
         getName: method => method.description,
         route: 'shipping-methods',
+    });
+}
+
+export function paymentMethodBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<ShippingMethod.Fragment>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.payment-methods',
+        getName: method => method.code,
+        route: 'payment-methods',
     });
 }

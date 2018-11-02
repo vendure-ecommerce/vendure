@@ -5449,6 +5449,51 @@ export namespace UpdateChannel {
     export type UpdateChannel = Channel.Fragment;
 }
 
+export namespace GetPaymentMethodList {
+    export type Variables = {
+        options: PaymentMethodListOptions;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        paymentMethods: PaymentMethods;
+    };
+
+    export type PaymentMethods = {
+        __typename?: 'PaymentMethodList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = PaymentMethod.Fragment;
+}
+
+export namespace GetPaymentMethod {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        paymentMethod?: PaymentMethod | null;
+    };
+
+    export type PaymentMethod = PaymentMethod.Fragment;
+}
+
+export namespace UpdatePaymentMethod {
+    export type Variables = {
+        input: UpdatePaymentMethodInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updatePaymentMethod: UpdatePaymentMethod;
+    };
+
+    export type UpdatePaymentMethod = PaymentMethod.Fragment;
+}
+
 export namespace GetShippingMethodList {
     export type Variables = {
         options?: ShippingMethodListOptions | null;
@@ -6022,6 +6067,23 @@ export namespace Channel {
         __typename?: 'Zone';
         id: string;
         name: string;
+    };
+}
+
+export namespace PaymentMethod {
+    export type Fragment = {
+        __typename?: 'PaymentMethod';
+        id: string;
+        code: string;
+        enabled: boolean;
+        configArgs: ConfigArgs[];
+    };
+
+    export type ConfigArgs = {
+        __typename?: 'ConfigArg';
+        name: string;
+        type: string;
+        value?: string | null;
     };
 }
 

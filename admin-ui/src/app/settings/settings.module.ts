@@ -9,6 +9,8 @@ import { ChannelDetailComponent } from './components/channel-detail/channel-deta
 import { ChannelListComponent } from './components/channel-list/channel-list.component';
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
+import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
+import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
@@ -22,6 +24,7 @@ import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/z
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
+import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
@@ -47,6 +50,8 @@ import { settingsRoutes } from './settings.routes';
         ChannelDetailComponent,
         ShippingMethodListComponent,
         ShippingMethodDetailComponent,
+        PaymentMethodListComponent,
+        PaymentMethodDetailComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
     providers: [
@@ -57,6 +62,7 @@ import { settingsRoutes } from './settings.routes';
         TaxRateResolver,
         ChannelResolver,
         ShippingMethodResolver,
+        PaymentMethodResolver,
     ],
 })
 export class SettingsModule {}

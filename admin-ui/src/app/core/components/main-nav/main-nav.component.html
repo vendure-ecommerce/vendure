@@ -104,6 +104,13 @@
                 </li>
                 <li>
                     <a class="nav-link"
+                       [routerLink]="['/settings', 'payment-methods']"
+                       routerLinkActive="active">
+                        <clr-icon shape="credit-card" size="20"></clr-icon>{{ 'nav.payment-methods' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link"
                        [routerLink]="['/settings', 'tax-categories']"
                        routerLinkActive="active">
                         <clr-icon shape="view-list" size="20"></clr-icon>{{ 'nav.tax-categories' | translate }}

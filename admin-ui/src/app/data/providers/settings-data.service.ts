@@ -15,6 +15,8 @@ import {
     GetChannels,
     GetCountry,
     GetCountryList,
+    GetPaymentMethod,
+    GetPaymentMethodList,
     GetTaxCategories,
     GetTaxCategory,
     GetTaxRate,
@@ -26,6 +28,8 @@ import {
     UpdateChannelInput,
     UpdateCountry,
     UpdateCountryInput,
+    UpdatePaymentMethod,
+    UpdatePaymentMethodInput,
     UpdateTaxCategory,
     UpdateTaxCategoryInput,
     UpdateTaxRate,
@@ -47,6 +51,8 @@ import {
     GET_CHANNELS,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
+    GET_PAYMENT_METHOD,
+    GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
     GET_TAX_CATEGORY,
     GET_TAX_RATE,
@@ -55,6 +61,7 @@ import {
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
+    UPDATE_PAYMENT_METHOD,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
     UPDATE_ZONE,
@@ -211,5 +218,35 @@ export class SettingsDataService {
         return this.baseDataService.mutate<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
             input,
         });
+    }
+
+    getPaymentMethods(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetPaymentMethodList.Query, GetPaymentMethodList.Variables>(
+            GET_PAYMENT_METHOD_LIST,
+            {
+                options: {
+                    skip,
+                    take,
+                },
+            },
+        );
+    }
+
+    getPaymentMethod(id: string) {
+        return this.baseDataService.query<GetPaymentMethod.Query, GetPaymentMethod.Variables>(
+            GET_PAYMENT_METHOD,
+            {
+                id,
+            },
+        );
+    }
+
+    updatePaymentMethod(input: UpdatePaymentMethodInput) {
+        return this.baseDataService.mutate<UpdatePaymentMethod.Mutation, UpdatePaymentMethod.Variables>(
+            UPDATE_PAYMENT_METHOD,
+            {
+                input,
+            },
+        );
     }
 }

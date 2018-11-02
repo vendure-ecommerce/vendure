@@ -283,3 +283,46 @@ export const UPDATE_CHANNEL = gql`
     }
     ${CHANNEL_FRAGMENT}
 `;
+
+export const PAYMENT_METHOD_FRAGMENT = gql`
+    fragment PaymentMethod on PaymentMethod {
+        id
+        code
+        enabled
+        configArgs {
+            name
+            type
+            value
+        }
+    }
+`;
+
+export const GET_PAYMENT_METHOD_LIST = gql`
+    query GetPaymentMethodList($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                ...PaymentMethod
+            }
+            totalItems
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const GET_PAYMENT_METHOD = gql`
+    query GetPaymentMethod($id: ID!) {
+        paymentMethod(id: $id) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const UPDATE_PAYMENT_METHOD = gql`
+    mutation UpdatePaymentMethod($input: UpdatePaymentMethodInput!) {
+        updatePaymentMethod(input: $input) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
