@@ -89,6 +89,14 @@ export class AuthService {
         return this.connection.getRepository(Session).save(session);
     }
 
+    async unsetActiveOrder<T extends Session>(session: T): Promise<T> {
+        if (session.activeOrder) {
+            session.activeOrder = null;
+            return this.connection.getRepository(Session).save(session);
+        }
+        return session;
+    }
+
     /**
      * Deletes all existing sessions for the given user.
      */

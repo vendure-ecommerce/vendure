@@ -295,10 +295,12 @@ export interface Order extends Node {
     updatedAt: DateTime;
     code: string;
     state: string;
+    active: boolean;
     customer?: Customer | null;
     shippingAddress?: ShippingAddress | null;
     lines: OrderLine[];
     adjustments: Adjustment[];
+    payments?: Payment[] | null;
     subTotalBeforeTax: number;
     subTotal: number;
     shipping: number;
@@ -414,6 +416,17 @@ export interface Adjustment {
     type: AdjustmentType;
     description: string;
     amount: number;
+}
+
+export interface Payment extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    method: string;
+    amount: number;
+    state: string;
+    transactionId?: string | null;
+    metadata?: Json | null;
 }
 
 export interface OrderList extends PaginatedList {
@@ -603,6 +616,7 @@ export interface Mutation {
     transitionOrderToState?: Order | null;
     setOrderShippingAddress?: Order | null;
     setOrderShippingMethod?: Order | null;
+    addPaymentToOrder?: Order | null;
     updatePaymentMethod: PaymentMethod;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
@@ -636,17 +650,6 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
-}
-
-export interface Payment extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    method: string;
-    amount: number;
-    state: string;
-    transactionId?: string | null;
-    metadata?: Json | null;
 }
 
 export interface AdministratorListOptions {
@@ -1134,6 +1137,11 @@ export interface UpdateFacetValueCustomFieldsInput {
     available?: boolean | null;
 }
 
+export interface PaymentInput {
+    method: string;
+    metadata: Json;
+}
+
 export interface UpdatePaymentMethodInput {
     id: string;
     code?: string | null;
@@ -1527,6 +1535,9 @@ export interface SetOrderShippingAddressMutationArgs {
 }
 export interface SetOrderShippingMethodMutationArgs {
     shippingMethodId: string;
+}
+export interface AddPaymentToOrderMutationArgs {
+    input: PaymentInput;
 }
 export interface UpdatePaymentMethodMutationArgs {
     input: UpdatePaymentMethodInput;
@@ -2843,10 +2854,12 @@ export namespace OrderResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         code?: CodeResolver<string, any, Context>;
         state?: StateResolver<string, any, Context>;
+        active?: ActiveResolver<boolean, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         shippingAddress?: ShippingAddressResolver<ShippingAddress | null, any, Context>;
         lines?: LinesResolver<OrderLine[], any, Context>;
         adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
+        payments?: PaymentsResolver<Payment[] | null, any, Context>;
         subTotalBeforeTax?: SubTotalBeforeTaxResolver<number, any, Context>;
         subTotal?: SubTotalResolver<number, any, Context>;
         shipping?: ShippingResolver<number, any, Context>;
@@ -2860,6 +2873,7 @@ export namespace OrderResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ActiveResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CustomerResolver<R = Customer | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -2872,6 +2886,11 @@ export namespace OrderResolvers {
     >;
     export type LinesResolver<R = OrderLine[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AdjustmentsResolver<R = Adjustment[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PaymentsResolver<R = Payment[] | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3232,6 +3251,32 @@ export namespace AdjustmentResolvers {
     export type TypeResolver<R = AdjustmentType, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace PaymentResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        method?: MethodResolver<string, any, Context>;
+        amount?: AmountResolver<number, any, Context>;
+        state?: StateResolver<string, any, Context>;
+        transactionId?: TransactionIdResolver<string | null, any, Context>;
+        metadata?: MetadataResolver<Json | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type MethodResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TransactionIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type MetadataResolver<R = Json | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace OrderListResolvers {
@@ -3696,6 +3741,7 @@ export namespace MutationResolvers {
         transitionOrderToState?: TransitionOrderToStateResolver<Order | null, any, Context>;
         setOrderShippingAddress?: SetOrderShippingAddressResolver<Order | null, any, Context>;
         setOrderShippingMethod?: SetOrderShippingMethodResolver<Order | null, any, Context>;
+        addPaymentToOrder?: AddPaymentToOrderResolver<Order | null, any, Context>;
         updatePaymentMethod?: UpdatePaymentMethodResolver<PaymentMethod, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
@@ -4011,6 +4057,16 @@ export namespace MutationResolvers {
         shippingMethodId: string;
     }
 
+    export type AddPaymentToOrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        AddPaymentToOrderArgs
+    >;
+    export interface AddPaymentToOrderArgs {
+        input: PaymentInput;
+    }
+
     export type UpdatePaymentMethodResolver<R = PaymentMethod, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4298,32 +4354,6 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace PaymentResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        method?: MethodResolver<string, any, Context>;
-        amount?: AmountResolver<number, any, Context>;
-        state?: StateResolver<string, any, Context>;
-        transactionId?: TransactionIdResolver<string | null, any, Context>;
-        metadata?: MetadataResolver<Json | null, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type MethodResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type AmountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type StateResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TransactionIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type MetadataResolver<R = Json | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace GetAdministrators {
@@ -5752,6 +5782,7 @@ export namespace OrderWithLines {
         updatedAt: DateTime;
         code: string;
         state: string;
+        active: boolean;
         customer?: Customer | null;
         lines: Lines[];
         adjustments: Adjustments[];

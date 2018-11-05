@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ShippingMethod } from 'entity/shipping-method/shipping-method.entity';
 import {
     AdjustmentOperation,
     CreateShippingMethodMutationArgs,
@@ -10,6 +9,7 @@ import {
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
+import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ShippingMethodService } from '../../service/services/shipping-method.service';
 import { Allow } from '../decorators/allow.decorator';
 

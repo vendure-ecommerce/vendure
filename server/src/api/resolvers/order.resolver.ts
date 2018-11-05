@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AddItemToOrderMutationArgs,
+    AddPaymentToOrderMutationArgs,
     AdjustItemQuantityMutationArgs,
     OrderQueryArgs,
     OrdersQueryArgs,
@@ -158,6 +159,27 @@ export class OrderResolver {
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderItemId);
     }
 
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async addPaymentToOrder(@Ctx() ctx: RequestContext, @Args() args: AddPaymentToOrderMutationArgs) {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                const order = await this.orderService.addPaymentToOrder(ctx, sessionOrder.id, args.input);
+
+                if (
+                    order.active === false &&
+                    ctx.session &&
+                    ctx.session.activeOrder &&
+                    ctx.session.activeOrder.id === sessionOrder.id
+                ) {
+                    await this.authService.unsetActiveOrder(ctx.session);
+                }
+                return order;
+            }
+        }
+    }
+
     private async getOrderFromContext(ctx: RequestContext): Promise<Order | undefined>;
     private async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
     private async getOrderFromContext(
@@ -170,7 +192,7 @@ export class OrderResolver {
         let order = ctx.session.activeOrder;
         if (!order) {
             if (ctx.activeUserId) {
-                order = await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId);
+                order = (await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId)) || null;
             }
 
             if (!order && createIfNotExists) {
@@ -181,6 +203,6 @@ export class OrderResolver {
                 await this.authService.setActiveOrder(ctx.session, order);
             }
         }
-        return order;
+        return order || undefined;
     }
 }

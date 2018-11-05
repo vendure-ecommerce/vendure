@@ -18,5 +18,5 @@ export abstract class Session extends VendureEntity {
     @Column() invalidated: boolean;
 
     @ManyToOne(type => Order)
-    activeOrder?: Order;
+    activeOrder: Order | null;
 }

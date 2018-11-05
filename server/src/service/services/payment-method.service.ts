@@ -13,7 +13,10 @@ import {
     PaymentMethodArgType,
     PaymentMethodHandler,
 } from '../../config/payment-method/payment-method-handler';
+import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
+import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -60,6 +63,20 @@ export class PaymentMethodService {
             }
         }
         return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);
+    }
+
+    async createPayment(order: Order, method: string, metadata: PaymentMetadata): Promise<Payment> {
+        const paymentMethod = await this.connection.getRepository(PaymentMethod).findOne({
+            where: {
+                code: method,
+                enabled: true,
+            },
+        });
+        if (!paymentMethod) {
+            throw new I18nError(`error.payment-method-not-found`, { method });
+        }
+        const payment = await paymentMethod.createPayment(order, metadata);
+        return this.connection.getRepository(Payment).save(payment);
     }
 
     private async ensurePaymentMethodsExist() {

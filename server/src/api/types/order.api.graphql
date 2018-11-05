@@ -13,6 +13,7 @@ type Mutation {
     transitionOrderToState(state: String!): Order
     setOrderShippingAddress(input: CreateAddressInput!): Order
     setOrderShippingMethod(shippingMethodId: ID!): Order
+    addPaymentToOrder(input: PaymentInput!): Order
 }
 
 type OrderList implements PaginatedList {
@@ -24,6 +25,11 @@ type ShippingMethodQuote {
     shippingMethodId: ID!
     price: Int!
     description: String!
+}
+
+input PaymentInput {
+    method: String!
+    metadata: JSON!
 }
 
 input OrderListOptions {

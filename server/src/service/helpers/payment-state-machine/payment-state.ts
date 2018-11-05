@@ -1,7 +1,6 @@
-import { Payment } from 'entity/payment/payment.entity';
-
 import { Transitions } from '../../../common/finite-state-machine';
 import { Order } from '../../../entity/order/order.entity';
+import { Payment } from '../../../entity/payment/payment.entity';
 
 /**
  * These are the default states of the Order process. They can be augmented via

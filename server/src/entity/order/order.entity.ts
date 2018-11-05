@@ -8,6 +8,7 @@ import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
+import { Payment } from '../payment/payment.entity';
 
 @Entity()
 export class Order extends VendureEntity {
@@ -31,6 +32,9 @@ export class Order extends VendureEntity {
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
     @Column('simple-json') shippingAddress: ShippingAddress;
+
+    @OneToMany(type => Payment, payment => payment.order)
+    payments: Payment[];
 
     @Column() subTotalBeforeTax: number;
 

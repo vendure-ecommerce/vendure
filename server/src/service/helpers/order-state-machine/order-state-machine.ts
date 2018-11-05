@@ -42,6 +42,15 @@ export class OrderStateMachine {
         }
     }
 
+    /**
+     * Specific business logic to be executed after Order state transition completes.
+     */
+    private onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
+        if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
+            data.order.active = false;
+        }
+    }
+
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {
         const {
             transtitions,
@@ -68,6 +77,7 @@ export class OrderStateMachine {
                 if (typeof onTransitionEnd === 'function') {
                     return onTransitionEnd(fromState, toState, data);
                 }
+                return this.onTransitionEnd(fromState, toState, data);
             },
             onError: (fromState, toState, message) => {
                 if (typeof onError === 'function') {

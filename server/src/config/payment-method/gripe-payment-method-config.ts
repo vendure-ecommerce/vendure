@@ -1,8 +1,4 @@
-import { PaymentMetadata } from 'entity/payment/payment.entity';
-
-import { Order } from '../../entity/order/order.entity';
-
-import { PaymentMethodHandler } from './payment-method-handler';
+import { PaymentConfig, PaymentMethodHandler } from './payment-method-handler';
 
 const gripeSDK = {
     charges: {
@@ -26,7 +22,7 @@ export const gripePaymentHandler = new PaymentMethodHandler({
     args: {
         apiKey: 'string',
     },
-    createPayment: async (order, args, metadata) => {
+    createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
         try {
             const result = await gripeSDK.charges.create({
                 apiKey: args.apiKey,

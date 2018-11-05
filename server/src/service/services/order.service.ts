@@ -1,5 +1,5 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAddressInput, ShippingMethodQuote } from 'shared/generated-types';
+import { CreateAddressInput, PaymentInput, ShippingMethodQuote } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
@@ -23,6 +23,7 @@ import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calc
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CustomerService } from './customer.service';
+import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
 
 export class OrderService {
@@ -34,6 +35,7 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
+        private paymentMethodService: PaymentMethodService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -198,6 +200,25 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         await this.orderStateMachine.transition(order, state);
         await this.connection.getRepository(Order).save(order);
+        return order;
+    }
+
+    async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const payment = await this.paymentMethodService.createPayment(order, input.method, input.metadata);
+        if (order.payments) {
+            order.payments.push(payment);
+        } else {
+            order.payments = [payment];
+        }
+        await this.connection.getRepository(Order).save(order);
+        const orderTotalCovered = order.payments.reduce((sum, p) => sum + p.amount, 0) === order.total;
+        if (orderTotalCovered && order.payments.every(p => p.state === 'Settled')) {
+            return this.transitionToState(ctx, orderId, 'PaymentSettled');
+        }
+        if (orderTotalCovered && order.payments.every(p => p.state === 'Authorized')) {
+            return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
+        }
         return order;
     }
 

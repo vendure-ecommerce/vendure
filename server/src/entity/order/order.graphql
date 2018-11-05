@@ -4,10 +4,12 @@ type Order implements Node {
     updatedAt: DateTime!
     code: String!
     state: String!
+    active: Boolean!
     customer: Customer
     shippingAddress: ShippingAddress
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
+    payments: [Payment!]
     subTotalBeforeTax: Int!
     subTotal: Int!
     shipping: Int!

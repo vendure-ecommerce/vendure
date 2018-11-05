@@ -1,8 +1,8 @@
-import { Payment, PaymentMetadata } from 'entity/payment/payment.entity';
 import { ConfigArg } from 'shared/generated-types';
 
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';
+import { PaymentMetadata } from '../../entity/payment/payment.entity';
 import {
     PaymentState,
     PaymentTransitionData,
@@ -64,10 +64,10 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = {}> {
 
     async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
         const paymentConfig = await this.createPaymentFn(order, argsArrayToHash(args), metadata);
-        return new Payment({
+        return {
             method: this.code,
             ...paymentConfig,
-        });
+        };
     }
 
     onStateTransitionStart(
