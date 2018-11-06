@@ -305,7 +305,7 @@ export interface Order extends Node {
     subTotalBeforeTax: number;
     subTotal: number;
     shipping: number;
-    shippingMethod?: string | null;
+    shippingMethod?: ShippingMethod | null;
     totalBeforeTax: number;
     total: number;
 }
@@ -430,13 +430,35 @@ export interface Payment extends Node {
     metadata?: Json | null;
 }
 
+export interface ShippingMethod extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    code: string;
+    description: string;
+    checker: AdjustmentOperation;
+    calculator: AdjustmentOperation;
+}
+
+export interface AdjustmentOperation {
+    code: string;
+    args: ConfigArg[];
+    description: string;
+}
+
+export interface ConfigArg {
+    name: string;
+    type: string;
+    value?: string | null;
+}
+
 export interface OrderList extends PaginatedList {
     items: Order[];
     totalItems: number;
 }
 
 export interface ShippingMethodQuote {
-    shippingMethodId: string;
+    id: string;
     price: number;
     description: string;
 }
@@ -453,12 +475,6 @@ export interface PaymentMethod extends Node {
     code: string;
     enabled: boolean;
     configArgs: ConfigArg[];
-}
-
-export interface ConfigArg {
-    name: string;
-    type: string;
-    value?: string | null;
 }
 
 export interface ProductOptionGroup extends Node {
@@ -533,12 +549,6 @@ export interface Promotion extends Node {
     actions: AdjustmentOperation[];
 }
 
-export interface AdjustmentOperation {
-    code: string;
-    args: ConfigArg[];
-    description: string;
-}
-
 export interface PromotionList extends PaginatedList {
     items: Promotion[];
     totalItems: number;
@@ -557,16 +567,6 @@ export interface RoleList extends PaginatedList {
 export interface ShippingMethodList extends PaginatedList {
     items: ShippingMethod[];
     totalItems: number;
-}
-
-export interface ShippingMethod extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    code: string;
-    description: string;
-    checker: AdjustmentOperation;
-    calculator: AdjustmentOperation;
 }
 
 export interface TaxRateList extends PaginatedList {
@@ -2878,7 +2878,7 @@ export namespace OrderResolvers {
         subTotalBeforeTax?: SubTotalBeforeTaxResolver<number, any, Context>;
         subTotal?: SubTotalResolver<number, any, Context>;
         shipping?: ShippingResolver<number, any, Context>;
-        shippingMethod?: ShippingMethodResolver<string | null, any, Context>;
+        shippingMethod?: ShippingMethodResolver<ShippingMethod | null, any, Context>;
         totalBeforeTax?: TotalBeforeTaxResolver<number, any, Context>;
         total?: TotalResolver<number, any, Context>;
     }
@@ -2917,7 +2917,7 @@ export namespace OrderResolvers {
     >;
     export type SubTotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ShippingResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ShippingMethodResolver<R = string | null, Parent = any, Context = any> = Resolver<
+    export type ShippingMethodResolver<R = ShippingMethod | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3294,6 +3294,58 @@ export namespace PaymentResolvers {
     export type MetadataResolver<R = Json | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace ShippingMethodResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+        checker?: CheckerResolver<AdjustmentOperation, any, Context>;
+        calculator?: CalculatorResolver<AdjustmentOperation, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CheckerResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CalculatorResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace AdjustmentOperationResolvers {
+    export interface Resolvers<Context = any> {
+        code?: CodeResolver<string, any, Context>;
+        args?: ArgsResolver<ConfigArg[], any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+    }
+
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ArgsResolver<R = ConfigArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace ConfigArgResolvers {
+    export interface Resolvers<Context = any> {
+        name?: NameResolver<string, any, Context>;
+        type?: TypeResolver<string, any, Context>;
+        value?: ValueResolver<string | null, any, Context>;
+    }
+
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace OrderListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<Order[], any, Context>;
@@ -3306,16 +3358,12 @@ export namespace OrderListResolvers {
 
 export namespace ShippingMethodQuoteResolvers {
     export interface Resolvers<Context = any> {
-        shippingMethodId?: ShippingMethodIdResolver<string, any, Context>;
+        id?: IdResolver<string, any, Context>;
         price?: PriceResolver<number, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
     }
 
-    export type ShippingMethodIdResolver<R = string, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
@@ -3354,18 +3402,6 @@ export namespace PaymentMethodResolvers {
         Parent,
         Context
     >;
-}
-
-export namespace ConfigArgResolvers {
-    export interface Resolvers<Context = any> {
-        name?: NameResolver<string, any, Context>;
-        type?: TypeResolver<string, any, Context>;
-        value?: ValueResolver<string | null, any, Context>;
-    }
-
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TypeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace ProductOptionGroupResolvers {
@@ -3588,18 +3624,6 @@ export namespace PromotionResolvers {
     >;
 }
 
-export namespace AdjustmentOperationResolvers {
-    export interface Resolvers<Context = any> {
-        code?: CodeResolver<string, any, Context>;
-        args?: ArgsResolver<ConfigArg[], any, Context>;
-        description?: DescriptionResolver<string, any, Context>;
-    }
-
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ArgsResolver<R = ConfigArg[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
 export namespace PromotionListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<Promotion[], any, Context>;
@@ -3650,34 +3674,6 @@ export namespace ShippingMethodListResolvers {
         Context
     >;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace ShippingMethodResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        description?: DescriptionResolver<string, any, Context>;
-        checker?: CheckerResolver<AdjustmentOperation, any, Context>;
-        calculator?: CalculatorResolver<AdjustmentOperation, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CheckerResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type CalculatorResolver<R = AdjustmentOperation, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace TaxRateListResolvers {
@@ -5805,7 +5801,7 @@ export namespace OrderWithLines {
         subTotalBeforeTax: number;
         totalBeforeTax: number;
         shipping: number;
-        shippingMethod?: string | null;
+        shippingMethod?: ShippingMethod | null;
         shippingAddress?: ShippingAddress | null;
         payments?: Payments[] | null;
         total: number;
@@ -5852,6 +5848,13 @@ export namespace OrderWithLines {
     };
 
     export type Adjustments = Adjustment.Fragment;
+
+    export type ShippingMethod = {
+        __typename?: 'ShippingMethod';
+        id: string;
+        code: string;
+        description: string;
+    };
 
     export type ShippingAddress = ShippingAddress.Fragment;
 

@@ -12,6 +12,7 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../service/services/product-option.service';
+import { IdCodecService } from '../common/id-codec.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
 import { Ctx } from '../decorators/request-context.decorator';
@@ -21,6 +22,7 @@ export class ProductOptionResolver {
     constructor(
         private productOptionGroupService: ProductOptionGroupService,
         private productOptionService: ProductOptionService,
+        private idCodecService: IdCodecService,
     ) {}
 
     @Query()
@@ -47,7 +49,8 @@ export class ProductOptionResolver {
         if (optionGroup.options) {
             return Promise.resolve(optionGroup.options);
         }
-        const group = await this.productOptionGroupService.findOne(optionGroup.id, optionGroup.languageCode);
+        const id = this.idCodecService.decode(optionGroup.id);
+        const group = await this.productOptionGroupService.findOne(id, optionGroup.languageCode);
         return group ? group.options : [];
     }
 

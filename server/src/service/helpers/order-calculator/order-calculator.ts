@@ -23,12 +23,7 @@ export class OrderCalculator {
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
      */
-    async applyPriceAdjustments(
-        ctx: RequestContext,
-        order: Order,
-        promotions: Promotion[],
-        preferredShippingMethod?: ID,
-    ): Promise<Order> {
+    async applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[]): Promise<Order> {
         const activeZone = ctx.channel.defaultTaxZone;
         order.clearAdjustments();
         if (order.lines.length) {
@@ -39,7 +34,7 @@ export class OrderCalculator {
             // Finally, re-calculate taxes because the promotions may have
             // altered the unit prices, which in turn will alter the tax payable.
             this.applyTaxes(ctx, order, activeZone);
-            await this.applyShipping(ctx, order, preferredShippingMethod);
+            await this.applyShipping(ctx, order);
         } else {
             this.calculateOrderTotals(order);
         }
@@ -109,18 +104,16 @@ export class OrderCalculator {
         }
     }
 
-    private async applyShipping(ctx: RequestContext, order: Order, preferredShippingMethod?: ID) {
+    private async applyShipping(ctx: RequestContext, order: Order) {
         const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        if (results && results.length) {
+        const currentShippingMethod = order.shippingMethod;
+        if (results && results.length && currentShippingMethod) {
             let selected: { method: ShippingMethod; price: number } | undefined;
-            if (preferredShippingMethod) {
-                selected = results.find(r => idsAreEqual(r.method.id, preferredShippingMethod));
-            }
+            selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
             if (!selected) {
                 selected = results[0];
             }
             order.shipping = selected.price;
-            order.shippingMethod = selected.method.description;
         }
     }
 

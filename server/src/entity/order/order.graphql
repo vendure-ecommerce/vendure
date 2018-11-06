@@ -13,7 +13,7 @@ type Order implements Node {
     subTotalBeforeTax: Int!
     subTotal: Int!
     shipping: Int!
-    shippingMethod: String
+    shippingMethod: ShippingMethod
     totalBeforeTax: Int!
     total: Int!
 }

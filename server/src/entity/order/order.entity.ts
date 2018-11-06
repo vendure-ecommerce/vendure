@@ -1,14 +1,16 @@
 import { Adjustment, AdjustmentType, ShippingAddress } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { DeepPartial, ID } from 'shared/shared-types';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { idType } from '../../config/vendure-config';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
+import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
 @Entity()
 export class Order extends VendureEntity {
@@ -40,8 +42,11 @@ export class Order extends VendureEntity {
 
     @Column() subTotal: number;
 
-    @Column({ nullable: true })
-    shippingMethod: string;
+    @Column({ type: idType(), nullable: true })
+    shippingMethodId: ID | null;
+
+    @ManyToOne(type => ShippingMethod)
+    shippingMethod: ShippingMethod | null;
 
     @Column({ default: 0 })
     shipping: number;

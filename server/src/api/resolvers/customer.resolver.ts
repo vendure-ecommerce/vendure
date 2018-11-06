@@ -14,6 +14,7 @@ import { idsAreEqual } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerService } from '../../service/services/customer.service';
+import { IdCodecService } from '../common/id-codec.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
 import { Decode } from '../decorators/decode.decorator';
@@ -21,7 +22,7 @@ import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Customer')
 export class CustomerResolver {
-    constructor(private customerService: CustomerService) {}
+    constructor(private customerService: CustomerService, private idCodecService: IdCodecService) {}
 
     @Query()
     @Allow(Permission.ReadCustomer)
@@ -51,11 +52,13 @@ export class CustomerResolver {
         @Parent() customer: Customer,
     ): Promise<Address[] | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            if (customer.user && !idsAreEqual(customer.user.id, ctx.activeUserId)) {
+            const userId = customer.user && this.idCodecService.decode(customer.user.id);
+            if (userId && !idsAreEqual(userId, ctx.activeUserId)) {
                 return;
             }
         }
-        return this.customerService.findAddressesByCustomerId(customer.id);
+        const customerId = this.idCodecService.decode(customer.id);
+        return this.customerService.findAddressesByCustomerId(customerId);
     }
 
     @Mutation()

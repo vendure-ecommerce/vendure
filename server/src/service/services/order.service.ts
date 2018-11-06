@@ -135,6 +135,7 @@ export class OrderService {
     ): Promise<Order> {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
+        this.assertAddingItemsState(order);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
         let orderLine = order.lines.find(line => idsAreEqual(line.productVariant.id, productVariantId));
 
@@ -155,6 +156,7 @@ export class OrderService {
     ): Promise<Order> {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
+        this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         const currentQuantity = orderLine.quantity;
         if (currentQuantity < quantity) {
@@ -182,6 +184,7 @@ export class OrderService {
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
@@ -203,7 +206,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         return eligibleMethods.map(result => ({
-            shippingMethodId: result.method.id as string,
+            id: result.method.id as string,
             price: result.price,
             description: result.method.description,
         }));
@@ -211,7 +214,15 @@ export class OrderService {
 
     async setShippingMethod(ctx: RequestContext, orderId: ID, shippingMethodId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, order, shippingMethodId);
+        this.assertAddingItemsState(order);
+        const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
+        const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
+        if (!selectedMethod) {
+            throw new I18nError(`error.shipping-method-unavailable`);
+        }
+        order.shippingMethod = selectedMethod.method;
+        await this.connection.getRepository(Order).save(order);
+        await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(Order).save(order);
     }
 
@@ -224,6 +235,9 @@ export class OrderService {
 
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        if (order.state !== 'ArrangingPayment') {
+            throw new I18nError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
+        }
         const payment = await this.paymentMethodService.createPayment(order, input.method, input.metadata);
         if (order.payments) {
             order.payments.push(payment);
@@ -318,23 +332,23 @@ export class OrderService {
     }
 
     /**
+     * Throws if the Order is not in the "AddingItems" state.
+     */
+    private assertAddingItemsState(order: Order) {
+        if (order.state !== 'AddingItems') {
+            throw new I18nError(`error.order-contents-may-only-be-modified-in-addingitems-state`);
+        }
+    }
+
+    /**
      * Applies promotions, taxes and shipping to the Order.
      */
-    private async applyPriceAdjustments(
-        ctx: RequestContext,
-        order: Order,
-        preferredShippingMethod?: ID,
-    ): Promise<Order> {
+    private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
             order: { priorityScore: 'ASC' },
         });
-        order = await this.orderCalculator.applyPriceAdjustments(
-            ctx,
-            order,
-            promotions,
-            preferredShippingMethod,
-        );
+        order = await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
         await this.connection.getRepository(Order).save(order);
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);

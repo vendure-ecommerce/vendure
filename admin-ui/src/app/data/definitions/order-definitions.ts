@@ -81,7 +81,11 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         subTotalBeforeTax
         totalBeforeTax
         shipping
-        shippingMethod
+        shippingMethod {
+            id
+            code
+            description
+        }
         shippingAddress {
             ...ShippingAddress
         }

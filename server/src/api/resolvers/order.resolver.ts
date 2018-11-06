@@ -20,6 +20,8 @@ import { I18nError } from '../../i18n/i18n-error';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { AuthService } from '../../service/services/auth.service';
 import { OrderService } from '../../service/services/order.service';
+import { ShippingMethodService } from '../../service/services/shipping-method.service';
+import { IdCodecService } from '../common/id-codec.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
 import { Decode } from '../decorators/decode.decorator';
@@ -27,7 +29,12 @@ import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Order')
 export class OrderResolver {
-    constructor(private orderService: OrderService, private authService: AuthService) {}
+    constructor(
+        private orderService: OrderService,
+        private shippingMethodService: ShippingMethodService,
+        private authService: AuthService,
+        private idCodecService: IdCodecService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -51,7 +58,20 @@ export class OrderResolver {
 
     @ResolveProperty()
     async payments(@Parent() order: Order) {
-        return this.orderService.getOrderPayments(order.id);
+        const orderId = this.idCodecService.decode(order.id);
+        return this.orderService.getOrderPayments(orderId);
+    }
+
+    @ResolveProperty()
+    async shippingMethod(@Parent() order: Order) {
+        if (order.shippingMethodId) {
+            // Does not need to be decoded because it is an internal property
+            // which is never exposed to the outside world.
+            const shippingMethodId = order.shippingMethodId;
+            return this.shippingMethodService.findOne(shippingMethodId);
+        } else {
+            return null;
+        }
     }
 
     @Query()
@@ -77,6 +97,8 @@ export class OrderResolver {
             const order = await this.orderService.findOneByCode(ctx, args.code);
             if (order && order.customer.user && order.customer.user.id === ctx.activeUserId) {
                 return this.orderService.findOne(ctx, order.id);
+            } else {
+                throw new I18nError(`error.forbidden`);
             }
         }
     }

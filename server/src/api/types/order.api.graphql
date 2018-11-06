@@ -23,7 +23,7 @@ type OrderList implements PaginatedList {
 }
 
 type ShippingMethodQuote {
-    shippingMethodId: ID!
+    id: ID!
     price: Int!
     description: String!
 }
