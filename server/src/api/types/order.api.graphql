@@ -1,6 +1,7 @@
 type Query {
     order(id: ID!): Order
     activeOrder: Order
+    orderByCode(code: String!): Order
     nextOrderStates: [String!]!
     orders(options: OrderListOptions): OrderList!
     eligibleShippingMethods: [ShippingMethodQuote!]!

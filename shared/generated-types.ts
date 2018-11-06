@@ -60,6 +60,7 @@ export interface Query {
     facet?: Facet | null;
     order?: Order | null;
     activeOrder?: Order | null;
+    orderByCode?: Order | null;
     nextOrderStates: string[];
     orders: OrderList;
     eligibleShippingMethods: ShippingMethodQuote[];
@@ -1391,6 +1392,9 @@ export interface FacetQueryArgs {
 export interface OrderQueryArgs {
     id: string;
 }
+export interface OrderByCodeQueryArgs {
+    code: string;
+}
 export interface OrdersQueryArgs {
     options?: OrderListOptions | null;
 }
@@ -1885,6 +1889,7 @@ export namespace QueryResolvers {
         facet?: FacetResolver<Facet | null, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
         activeOrder?: ActiveOrderResolver<Order | null, any, Context>;
+        orderByCode?: OrderByCodeResolver<Order | null, any, Context>;
         nextOrderStates?: NextOrderStatesResolver<string[], any, Context>;
         orders?: OrdersResolver<OrderList, any, Context>;
         eligibleShippingMethods?: EligibleShippingMethodsResolver<ShippingMethodQuote[], any, Context>;
@@ -2082,6 +2087,16 @@ export namespace QueryResolvers {
         Parent,
         Context
     >;
+    export type OrderByCodeResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        OrderByCodeArgs
+    >;
+    export interface OrderByCodeArgs {
+        code: string;
+    }
+
     export type NextOrderStatesResolver<R = string[], Parent = any, Context = any> = Resolver<
         R,
         Parent,

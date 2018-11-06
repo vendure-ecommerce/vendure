@@ -75,6 +75,16 @@ export class OrderService {
         }
     }
 
+    async findOneByCode(ctx: RequestContext, orderCode: string): Promise<Order | undefined> {
+        const order = await this.connection.getRepository(Order).findOne({
+            relations: ['customer'],
+            where: {
+                code: orderCode,
+            },
+        });
+        return order;
+    }
+
     getOrderPayments(orderId: ID): Promise<Payment[]> {
         return this.connection.getRepository(Payment).find({
             where: {

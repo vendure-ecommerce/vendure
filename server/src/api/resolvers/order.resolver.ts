@@ -3,6 +3,7 @@ import {
     AddItemToOrderMutationArgs,
     AddPaymentToOrderMutationArgs,
     AdjustItemQuantityMutationArgs,
+    OrderByCodeQueryArgs,
     OrderQueryArgs,
     OrdersQueryArgs,
     Permission,
@@ -62,6 +63,20 @@ export class OrderResolver {
                 return this.orderService.findOne(ctx, sessionOrder.id);
             } else {
                 return;
+            }
+        }
+    }
+
+    @Query()
+    @Allow(Permission.Owner)
+    async orderByCode(
+        @Ctx() ctx: RequestContext,
+        @Args() args: OrderByCodeQueryArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const order = await this.orderService.findOneByCode(ctx, args.code);
+            if (order && order.customer.user && order.customer.user.id === ctx.activeUserId) {
+                return this.orderService.findOne(ctx, order.id);
             }
         }
     }
