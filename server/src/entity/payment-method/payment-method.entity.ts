@@ -26,7 +26,7 @@ export class PaymentMethod extends VendureEntity {
         if (!handler) {
             throw new I18nError(`error.no-payment-handler-with-code`, { code: this.code });
         }
-        const result = await handler.createPayment(order, this.configArgs, metadata);
+        const result = await handler.createPayment(order, this.configArgs, metadata || {});
         return new Payment(result);
     }
 }
