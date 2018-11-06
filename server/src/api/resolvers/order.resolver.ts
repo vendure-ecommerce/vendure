@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import {
     AddItemToOrderMutationArgs,
     AddPaymentToOrderMutationArgs,
@@ -46,6 +46,11 @@ export class OrderResolver {
             }
         }
         return order;
+    }
+
+    @ResolveProperty()
+    async payments(@Parent() order: Order) {
+        return this.orderService.getOrderPayments(order.id);
     }
 
     @Query()

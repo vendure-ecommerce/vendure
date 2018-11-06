@@ -10,6 +10,7 @@ import { idsAreEqual } from '../../common/utils';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { User } from '../../entity/user/user.entity';
@@ -72,6 +73,14 @@ export class OrderService {
             });
             return order;
         }
+    }
+
+    getOrderPayments(orderId: ID): Promise<Payment[]> {
+        return this.connection.getRepository(Payment).find({
+            where: {
+                order: { id: orderId } as any,
+            },
+        });
     }
 
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {

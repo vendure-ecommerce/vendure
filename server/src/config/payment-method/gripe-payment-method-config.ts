@@ -33,7 +33,9 @@ export const gripePaymentHandler = new PaymentMethodHandler({
                 amount: order.total,
                 state: 'Settled' as 'Settled',
                 transactionId: result.id.toString(),
-                metadata,
+                metadata: {
+                    sampleMetadata: 'some arbitrary values',
+                },
             };
         } catch (err) {
             return {
