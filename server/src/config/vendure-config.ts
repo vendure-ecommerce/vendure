@@ -254,3 +254,18 @@ export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
 export function getConfig(): ReadOnlyRequired<VendureConfig> {
     return activeConfig;
 }
+
+/**
+ * Returns the type argument to be passed to the PrimaryGeneratedColumn() decorator
+ * of the base VendureEntity.
+ */
+export function primaryKeyType(): any {
+    return activeConfig.entityIdStrategy.primaryKeyType;
+}
+
+/**
+ * Returns the DB data type of ID columns based on the configured primaryKeyType
+ */
+export function idType(): 'int' | 'varchar' {
+    return activeConfig.entityIdStrategy.primaryKeyType === 'increment' ? 'int' : 'varchar';
+}

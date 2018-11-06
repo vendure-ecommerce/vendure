@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
-import { QueryResolvers } from 'shared/generated-types';
 
 import { ConfigModule } from '../config/config.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
+import { IdCodecService } from './common/id-codec.service';
 import { RequestContextService } from './common/request-context.service';
 import { GraphqlConfigService } from './config/graphql-config.service';
 import { AssetInterceptor } from './middleware/asset-interceptor';
@@ -70,6 +70,7 @@ const exportedProviders = [
     providers: [
         ...exportedProviders,
         RequestContextService,
+        IdCodecService,
         {
             provide: APP_GUARD,
             useClass: AuthGuard,

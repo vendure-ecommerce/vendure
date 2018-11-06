@@ -4,10 +4,8 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ConfigService } from '../../config/config.service';
+import { IdCodecService } from '../common/id-codec.service';
 import { DECODE_METADATA_KEY } from '../decorators/decode.decorator';
-
-import { IdCodec } from '../common/id-codec';
 
 /**
  * This interceptor automatically decodes incoming requests and encodes outgoing requests so that any
@@ -18,17 +16,13 @@ import { IdCodec } from '../common/id-codec';
  */
 @Injectable()
 export class IdInterceptor implements NestInterceptor {
-    private codec: IdCodec;
-
-    constructor(private configService: ConfigService, private readonly reflector: Reflector) {
-        this.codec = new IdCodec(this.configService.entityIdStrategy);
-    }
+    constructor(private idCodecService: IdCodecService, private readonly reflector: Reflector) {}
 
     intercept(context: ExecutionContext, call$: Observable<any>): Observable<any> {
         const args = GqlExecutionContext.create(context).getArgs();
         const transformKeys = this.reflector.get<string[]>(DECODE_METADATA_KEY, context.getHandler());
 
-        Object.assign(args, this.codec.decode(args, transformKeys));
-        return call$.pipe(map(data => this.codec.encode(data)));
+        Object.assign(args, this.idCodecService.decode(args, transformKeys));
+        return call$.pipe(map(data => this.idCodecService.encode(data)));
     }
 }
