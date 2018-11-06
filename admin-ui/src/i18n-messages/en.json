@@ -152,9 +152,12 @@
     "tax-rates": "Tax Rates"
   },
   "order": {
+    "amount": "Amount",
     "create-new-order": "Create new order",
     "customer": "Customer",
     "order-code": "Order code",
+    "payment-metadata": "Payment metadata",
+    "payment-method": "Payment method",
     "product-name": "Product name",
     "product-sku": "SKU",
     "quantity": "Quantity",
@@ -163,6 +166,7 @@
     "state": "State",
     "sub-total": "Sub total",
     "total": "Total",
+    "transaction-id": "Transaction ID",
     "unit-price": "Unit price"
   },
   "settings": {

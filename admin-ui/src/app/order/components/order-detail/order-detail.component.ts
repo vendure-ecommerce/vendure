@@ -32,6 +32,10 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
         return Object.values(shippingAddress).filter(val => val !== 'ShippingAddress');
     }
 
+    getPaymentMetadata(payment: OrderWithLines.Payments) {
+        return Object.entries(payment.metadata);
+    }
+
     protected setFormValues(entity: Order.Fragment): void {
         // empty
     }

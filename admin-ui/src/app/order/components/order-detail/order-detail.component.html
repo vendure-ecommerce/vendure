@@ -51,6 +51,42 @@
                 </tbody>
             </table>
         </div>
+        <div class="clr-col-md-4" *ngIf="order.payments && order.payments.length">
+            <table class="table table-vertical">
+                <tbody>
+                <ng-container *ngFor="let payment of order.payments">
+                    <tr>
+                        <th>{{ 'order.payment-method' | translate }}</th>
+                        <td>
+                            {{ payment.method }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'order.amount' | translate }}</th>
+                        <td>
+                            {{ payment.amount }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'order.transaction-id' | translate }}</th>
+                        <td>
+                            {{ payment.transactionId }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'order.payment-metadata' | translate }}</th>
+                        <td>
+                            <ul>
+                                <li *ngFor="let entry of getPaymentMetadata(payment)">
+                                    <strong>{{ entry[0] }}</strong>: {{ entry[1] }}
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-container>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 

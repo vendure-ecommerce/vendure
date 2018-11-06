@@ -5792,6 +5792,7 @@ export namespace OrderWithLines {
         shipping: number;
         shippingMethod?: string | null;
         shippingAddress?: ShippingAddress | null;
+        payments?: Payments[] | null;
         total: number;
     };
 
@@ -5838,6 +5839,15 @@ export namespace OrderWithLines {
     export type Adjustments = Adjustment.Fragment;
 
     export type ShippingAddress = ShippingAddress.Fragment;
+
+    export type Payments = {
+        __typename?: 'Payment';
+        id: string;
+        amount: number;
+        method: string;
+        state: string;
+        metadata?: Json | null;
+    };
 }
 
 export namespace Asset {

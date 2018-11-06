@@ -46,6 +46,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         updatedAt
         code
         state
+        active
         customer {
             id
             firstName
@@ -83,6 +84,13 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         shippingMethod
         shippingAddress {
             ...ShippingAddress
+        }
+        payments {
+            id
+            amount
+            method
+            state
+            metadata
         }
         total
     }
