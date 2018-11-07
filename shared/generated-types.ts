@@ -251,7 +251,7 @@ export interface Facet extends Node {
     code: string;
     values: FacetValue[];
     translations: FacetTranslation[];
-    customFields?: FacetCustomFields | null;
+    customFields?: Json | null;
 }
 
 export interface FacetValue extends Node {
@@ -262,7 +262,7 @@ export interface FacetValue extends Node {
     name: string;
     code: string;
     translations: FacetValueTranslation[];
-    customFields?: FacetValueCustomFields | null;
+    customFields?: Json | null;
 }
 
 export interface FacetValueTranslation {
@@ -273,21 +273,12 @@ export interface FacetValueTranslation {
     name: string;
 }
 
-export interface FacetValueCustomFields {
-    link?: string | null;
-    available?: boolean | null;
-}
-
 export interface FacetTranslation {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
     languageCode: LanguageCode;
     name: string;
-}
-
-export interface FacetCustomFields {
-    searchable?: boolean | null;
 }
 
 export interface Order extends Node {
@@ -515,7 +506,7 @@ export interface Product extends Node {
     variants: ProductVariant[];
     optionGroups: ProductOptionGroup[];
     translations: ProductTranslation[];
-    customFields?: ProductCustomFields | null;
+    customFields?: Json | null;
 }
 
 export interface ProductTranslation {
@@ -526,17 +517,6 @@ export interface ProductTranslation {
     name: string;
     slug: string;
     description: string;
-    customFields?: ProductTranslationCustomFields | null;
-}
-
-export interface ProductTranslationCustomFields {
-    nickname?: string | null;
-}
-
-export interface ProductCustomFields {
-    infoUrl?: string | null;
-    downloadable?: boolean | null;
-    nickname?: string | null;
 }
 
 export interface Promotion extends Node {
@@ -784,7 +764,6 @@ export interface FacetSortParameter {
     updatedAt?: SortOrder | null;
     name?: SortOrder | null;
     code?: SortOrder | null;
-    searchable?: SortOrder | null;
 }
 
 export interface FacetFilterParameter {
@@ -792,7 +771,6 @@ export interface FacetFilterParameter {
     code?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
-    searchable?: BooleanOperators | null;
 }
 
 export interface OrderListOptions {
@@ -850,9 +828,6 @@ export interface ProductSortParameter {
     slug?: SortOrder | null;
     description?: SortOrder | null;
     image?: SortOrder | null;
-    infoUrl?: SortOrder | null;
-    downloadable?: SortOrder | null;
-    nickname?: SortOrder | null;
 }
 
 export interface ProductFilterParameter {
@@ -861,9 +836,6 @@ export interface ProductFilterParameter {
     description?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
-    infoUrl?: StringOperators | null;
-    downloadable?: BooleanOperators | null;
-    nickname?: StringOperators | null;
 }
 
 export interface PromotionListOptions {
@@ -1077,7 +1049,7 @@ export interface CreateFacetInput {
     code: string;
     translations: FacetTranslationInput[];
     values?: CreateFacetValueWithFacetInput[] | null;
-    customFields?: CreateFacetCustomFieldsInput | null;
+    customFields?: Json | null;
 }
 
 export interface FacetTranslationInput {
@@ -1099,43 +1071,25 @@ export interface FacetValueTranslationInput {
     customFields?: Json | null;
 }
 
-export interface CreateFacetCustomFieldsInput {
-    searchable?: boolean | null;
-}
-
 export interface UpdateFacetInput {
     id: string;
     code?: string | null;
     translations?: FacetTranslationInput[] | null;
-    customFields?: UpdateFacetCustomFieldsInput | null;
-}
-
-export interface UpdateFacetCustomFieldsInput {
-    searchable?: boolean | null;
+    customFields?: Json | null;
 }
 
 export interface CreateFacetValueInput {
     facetId: string;
     code: string;
     translations: FacetValueTranslationInput[];
-    customFields?: CreateFacetValueCustomFieldsInput | null;
-}
-
-export interface CreateFacetValueCustomFieldsInput {
-    link?: string | null;
-    available?: boolean | null;
+    customFields?: Json | null;
 }
 
 export interface UpdateFacetValueInput {
     id: string;
     code?: string | null;
     translations?: FacetValueTranslationInput[] | null;
-    customFields?: UpdateFacetValueCustomFieldsInput | null;
-}
-
-export interface UpdateFacetValueCustomFieldsInput {
-    link?: string | null;
-    available?: boolean | null;
+    customFields?: Json | null;
 }
 
 export interface PaymentInput {
@@ -1186,7 +1140,7 @@ export interface CreateProductInput {
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
     translations: ProductTranslationInput[];
-    customFields?: CreateProductCustomFieldsInput | null;
+    customFields?: Json | null;
 }
 
 export interface ProductTranslationInput {
@@ -1195,16 +1149,7 @@ export interface ProductTranslationInput {
     name?: string | null;
     slug?: string | null;
     description?: string | null;
-    customFields?: ProductTranslationCustomFieldsInput | null;
-}
-
-export interface ProductTranslationCustomFieldsInput {
-    nickname?: string | null;
-}
-
-export interface CreateProductCustomFieldsInput {
-    infoUrl?: string | null;
-    downloadable?: boolean | null;
+    customFields?: Json | null;
 }
 
 export interface UpdateProductInput {
@@ -1212,12 +1157,7 @@ export interface UpdateProductInput {
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
     translations?: ProductTranslationInput[] | null;
-    customFields?: UpdateProductCustomFieldsInput | null;
-}
-
-export interface UpdateProductCustomFieldsInput {
-    infoUrl?: string | null;
-    downloadable?: boolean | null;
+    customFields?: Json | null;
 }
 
 export interface UpdateProductVariantInput {
@@ -2736,7 +2676,7 @@ export namespace FacetResolvers {
         code?: CodeResolver<string, any, Context>;
         values?: ValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<FacetTranslation[], any, Context>;
-        customFields?: CustomFieldsResolver<FacetCustomFields | null, any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2755,7 +2695,7 @@ export namespace FacetResolvers {
         Parent,
         Context
     >;
-    export type CustomFieldsResolver<R = FacetCustomFields | null, Parent = any, Context = any> = Resolver<
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -2771,7 +2711,7 @@ export namespace FacetValueResolvers {
         name?: NameResolver<string, any, Context>;
         code?: CodeResolver<string, any, Context>;
         translations?: TranslationsResolver<FacetValueTranslation[], any, Context>;
-        customFields?: CustomFieldsResolver<FacetValueCustomFields | null, any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -2789,11 +2729,11 @@ export namespace FacetValueResolvers {
         Parent,
         Context
     >;
-    export type CustomFieldsResolver<
-        R = FacetValueCustomFields | null,
-        Parent = any,
-        Context = any
-    > = Resolver<R, Parent, Context>;
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace FacetValueTranslationResolvers {
@@ -2816,20 +2756,6 @@ export namespace FacetValueTranslationResolvers {
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace FacetValueCustomFieldsResolvers {
-    export interface Resolvers<Context = any> {
-        link?: LinkResolver<string | null, any, Context>;
-        available?: AvailableResolver<boolean | null, any, Context>;
-    }
-
-    export type LinkResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type AvailableResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
 export namespace FacetTranslationResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -2848,18 +2774,6 @@ export namespace FacetTranslationResolvers {
         Context
     >;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace FacetCustomFieldsResolvers {
-    export interface Resolvers<Context = any> {
-        searchable?: SearchableResolver<boolean | null, any, Context>;
-    }
-
-    export type SearchableResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace OrderResolvers {
@@ -3488,7 +3402,7 @@ export namespace ProductResolvers {
         variants?: VariantsResolver<ProductVariant[], any, Context>;
         optionGroups?: OptionGroupsResolver<ProductOptionGroup[], any, Context>;
         translations?: TranslationsResolver<ProductTranslation[], any, Context>;
-        customFields?: CustomFieldsResolver<ProductCustomFields | null, any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -3523,7 +3437,7 @@ export namespace ProductResolvers {
         Parent,
         Context
     >;
-    export type CustomFieldsResolver<R = ProductCustomFields | null, Parent = any, Context = any> = Resolver<
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3539,7 +3453,6 @@ export namespace ProductTranslationResolvers {
         name?: NameResolver<string, any, Context>;
         slug?: SlugResolver<string, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
-        customFields?: CustomFieldsResolver<ProductTranslationCustomFields | null, any, Context>;
     }
 
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
@@ -3553,47 +3466,6 @@ export namespace ProductTranslationResolvers {
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type SlugResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CustomFieldsResolver<
-        R = ProductTranslationCustomFields | null,
-        Parent = any,
-        Context = any
-    > = Resolver<R, Parent, Context>;
-}
-
-export namespace ProductTranslationCustomFieldsResolvers {
-    export interface Resolvers<Context = any> {
-        nickname?: NicknameResolver<string | null, any, Context>;
-    }
-
-    export type NicknameResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
-export namespace ProductCustomFieldsResolvers {
-    export interface Resolvers<Context = any> {
-        infoUrl?: InfoUrlResolver<string | null, any, Context>;
-        downloadable?: DownloadableResolver<boolean | null, any, Context>;
-        nickname?: NicknameResolver<string | null, any, Context>;
-    }
-
-    export type InfoUrlResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type DownloadableResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type NicknameResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace PromotionResolvers {

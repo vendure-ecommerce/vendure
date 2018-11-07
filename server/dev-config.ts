@@ -31,15 +31,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [fakePalPaymentHandler, gripePaymentHandler],
     },
-    customFields: {
-        Facet: [{ name: 'searchable', type: 'boolean' }],
-        FacetValue: [{ name: 'link', type: 'string' }, { name: 'available', type: 'boolean' }],
-        Product: [
-            { name: 'infoUrl', type: 'string' },
-            { name: 'downloadable', type: 'boolean' },
-            { name: 'nickname', type: 'localeString' },
-        ],
-    },
+    customFields: {},
     plugins: [
         new DefaultAssetServerPlugin({
             route: 'assets',
