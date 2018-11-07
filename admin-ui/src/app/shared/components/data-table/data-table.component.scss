@@ -1,5 +1,11 @@
 @import "variables";
 
+thead th {
+    position: sticky;
+    top: 24px;
+    z-index: 1;
+}
+
 .table-footer {
     display: flex;
     align-items: baseline;

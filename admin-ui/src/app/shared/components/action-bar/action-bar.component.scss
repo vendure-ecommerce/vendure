@@ -1,4 +1,12 @@
+@import "variables";
+
 :host {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    background-color: $color-grey-1;
+    position: sticky;
+    top: -24px;
+    z-index: 5;
+    border-bottom: 1px solid $color-grey-3;
 }

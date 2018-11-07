@@ -24,19 +24,17 @@
     <div class="clr-row">
         <div class="clr-col">
     <section class="form-block" formGroupName="product">
-        <label>{{ 'catalog.product' | translate }}</label>
         <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
             <input id="name" type="text" formControlName="name" (input)="updateSlug($event.target.value)">
         </vdr-form-field>
         <vdr-form-field [label]="'catalog.slug' | translate" for="slug">
             <input id="slug" type="text" formControlName="slug">
         </vdr-form-field>
-        <vdr-form-field [label]="'common.description' | translate" for="description">
-            <textarea id="description" formControlName="description"></textarea>
-        </vdr-form-field>
+        <vdr-rich-text-editor formControlName="description"
+                              [label]="'common.description' | translate"></vdr-rich-text-editor>
 
         <section formGroupName="customFields" *ngIf="customFields.length">
-            <label>{{ 'catalog.custom-fields' }}</label>
+            <label>{{ 'common.custom-fields' | translate }}</label>
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control *ngIf="customFieldIsSet(customField.name)"
                                           [customFieldsFormGroup]="productForm.get(['product', 'customFields'])"

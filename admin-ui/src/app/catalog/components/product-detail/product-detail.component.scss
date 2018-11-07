@@ -1,5 +1,13 @@
 @import "variables";
 
+:host {
+    ::ng-deep {
+        trix-toolbar {
+            top: 24px;
+        }
+    }
+}
+
 .option-groups-list {
 
 }
