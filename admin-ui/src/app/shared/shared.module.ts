@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
@@ -31,6 +31,7 @@ import { DialogComponentOutletComponent } from './components/modal-dialog/dialog
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
@@ -76,6 +77,7 @@ const DECLARATIONS = [
     DialogTitleDirective,
     SelectToggleComponent,
     LanguageSelectorComponent,
+    RichTextEditorComponent,
 ];
 
 @NgModule({
@@ -90,5 +92,6 @@ const DECLARATIONS = [
         ModalService,
     ],
     entryComponents: [ModalDialogComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

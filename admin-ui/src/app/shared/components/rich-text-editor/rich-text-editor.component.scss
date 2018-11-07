@@ -1,0 +1,31 @@
+@import "variables";
+
+:host {
+    display: block;
+    max-width: 710px;
+    margin-bottom: .5rem;
+}
+
+trix-editor {
+    background-color: white;
+    min-height: 128px;
+    border: 2px solid $color-grey-3;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: $color-focused;
+    }
+}
+
+::ng-deep trix-toolbar {
+    background-color: $color-grey-2;
+    padding: 12px 12px 0;
+    position: sticky;
+    top: -24px;
+}
+
+label {
+    color: #000;
+    font-size: .541667rem;
+    margin: 0 0 .5rem;
+}

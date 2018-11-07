@@ -30,9 +30,12 @@
             "styles": [
               "./node_modules/@clr/icons/clr-icons.min.css",
               "./node_modules/@clr/ui/clr-ui.min.css",
-              "src/styles/styles.scss"
+              "src/styles/styles.scss",
+              "./node_modules/trix/dist/trix.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "./node_modules/trix/dist/trix-core.js"
+            ],
             "stylePreprocessorOptions": {
               "includePaths": ["./src/styles"]
             },
