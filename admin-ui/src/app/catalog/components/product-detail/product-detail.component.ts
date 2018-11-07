@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +25,8 @@ import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
+export type TabName = 'details' | 'variants';
+
 @Component({
     selector: 'vdr-product-detail',
     templateUrl: './product-detail.component.html',
@@ -32,6 +35,7 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
 })
 export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants.Fragment>
     implements OnInit, OnDestroy {
+    activeTab$: Observable<TabName>;
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
     taxCategories$: Observable<TaxCategory.Fragment[]>;
@@ -48,6 +52,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
+        private location: Location,
     ) {
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Product');
@@ -72,10 +77,19 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
             .mapSingle(data => data.taxCategories);
+        this.activeTab$ = this.route.queryParamMap.pipe(map(qpm => qpm.get('tab') as any));
     }
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    navigateToTab(tabName: TabName) {
+        this.router.navigate(['./'], {
+            queryParams: { tab: tabName },
+            relativeTo: this.route,
+            queryParamsHandling: 'merge',
+        });
     }
 
     customFieldIsSet(name: string): boolean {

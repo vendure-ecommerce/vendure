@@ -51,7 +51,7 @@
     "price": "Price",
     "price-includes-tax-at": "Price includes tax at { rate }%",
     "price-with-tax-in-default-zone": "Price with { rate }% tax: { price }",
-    "product": "Product",
+    "product-details": "Product details",
     "product-name": "Product name",
     "product-option-groups": "Option groups",
     "product-variants": "Product variants",
