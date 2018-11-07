@@ -3,7 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { Channel, CreateChannelInput, LanguageCode, UpdateChannelInput, Zone } from 'shared/generated-types';
+import {
+    Channel,
+    CreateChannelInput,
+    GetZones,
+    LanguageCode,
+    UpdateChannelInput,
+} from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -19,7 +25,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment>
     implements OnInit, OnDestroy {
-    zones$: Observable<Zone.Fragment[]>;
+    zones$: Observable<GetZones.Zones[]>;
     channelForm: FormGroup;
 
     constructor(
