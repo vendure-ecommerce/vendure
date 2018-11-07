@@ -44,6 +44,23 @@ export class ProductVariantService {
             });
     }
 
+    getVariantsByProductId(ctx: RequestContext, productId: ID): Promise<Array<Translated<ProductVariant>>> {
+        return this.connection
+            .getRepository(ProductVariant)
+            .find({
+                where: {
+                    product: { id: productId } as any,
+                },
+                relations: ['options', 'facetValues', 'taxCategory'],
+            })
+            .then(variants =>
+                variants.map(variant => {
+                    const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
+                    return translateDeep(variantWithPrices, ctx.languageCode, ['options', 'facetValues']);
+                }),
+            );
+    }
+
     async create(
         ctx: RequestContext,
         product: Product,

@@ -37,31 +37,15 @@ export class ProductService {
         ctx: RequestContext,
         options?: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const relations = [
-            'featuredAsset',
-            'assets',
-            'variants',
-            'optionGroups',
-            'variants.options',
-            'variants.facetValues',
-            'variants.taxCategory',
-            'channels',
-        ];
+        const relations = ['featuredAsset', 'assets', 'optionGroups', 'channels'];
 
         return this.listQueryBuilder
             .build(Product, options, relations, ctx.channelId)
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
-                const items = products
-                    .map(product =>
-                        translateDeep(product, ctx.languageCode, [
-                            'optionGroups',
-                            'variants',
-                            ['variants', 'options'],
-                            ['variants', 'facetValues'],
-                        ]),
-                    )
-                    .map(product => this.applyPriceAndTaxToVariants(product, ctx));
+                const items = products.map(product =>
+                    translateDeep(product, ctx.languageCode, ['optionGroups']),
+                );
                 return {
                     items,
                     totalItems,
@@ -70,26 +54,12 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const relations = [
-            'featuredAsset',
-            'assets',
-            'variants',
-            'optionGroups',
-            'variants.options',
-            'variants.facetValues',
-            'variants.taxCategory',
-        ];
+        const relations = ['featuredAsset', 'assets', 'optionGroups'];
         const product = await this.connection.manager.findOne(Product, productId, { relations });
         if (!product) {
             return;
         }
-        const translated = translateDeep(product, ctx.languageCode, [
-            'optionGroups',
-            'variants',
-            ['variants', 'options'],
-            ['variants', 'facetValues'],
-        ]);
-        return this.applyPriceAndTaxToVariants(translated, ctx);
+        return translateDeep(product, ctx.languageCode, ['optionGroups']);
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
@@ -165,19 +135,6 @@ export class ProductService {
             }
             await this.connection.manager.save(product);
         }
-    }
-
-    /**
-     * The price of a ProductVariant depends on the current channel and the priceWithTax further
-     * depends on the currently-active zone and applicable TaxRates.
-     * This method uses the RequestContext to determine these values and apply them to each
-     * ProductVariant of the given Product.
-     */
-    private applyPriceAndTaxToVariants<T extends Product>(product: T, ctx: RequestContext): T {
-        product.variants = product.variants.map(variant => {
-            return this.productVariantService.applyChannelPriceAndTax(variant, ctx);
-        });
-        return product;
     }
 
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {
