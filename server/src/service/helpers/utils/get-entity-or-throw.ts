@@ -1,5 +1,5 @@
 import { ID, Type } from 'shared/shared-types';
-import { Connection } from 'typeorm';
+import { Connection, FindOneOptions } from 'typeorm';
 
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { I18nError } from '../../../i18n/i18n-error';
@@ -11,8 +11,9 @@ export async function getEntityOrThrow<T extends VendureEntity>(
     connection: Connection,
     entityType: Type<T>,
     id: ID,
+    findOptions?: FindOneOptions<T>,
 ): Promise<T> {
-    const entity = await connection.getRepository(entityType).findOne(id);
+    const entity = await connection.getRepository(entityType).findOne(id, findOptions);
     if (!entity) {
         throw new I18nError(`error.entity-with-id-not-found`, {
             entityName: entityType.name,

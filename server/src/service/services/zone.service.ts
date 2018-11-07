@@ -71,7 +71,7 @@ export class ZoneService {
 
     async addMembersToZone(ctx: RequestContext, input: AddMembersToZoneMutationArgs): Promise<Zone> {
         const countries = await this.getCountriesFromIds(input.memberIds);
-        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
         await this.connection.getRepository(Zone).save(zone);
@@ -82,7 +82,7 @@ export class ZoneService {
         ctx: RequestContext,
         input: RemoveMembersFromZoneMutationArgs,
     ): Promise<Zone> {
-        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+        const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));
         await this.connection.getRepository(Zone).save(zone);
         return assertFound(this.findOne(ctx, zone.id));
