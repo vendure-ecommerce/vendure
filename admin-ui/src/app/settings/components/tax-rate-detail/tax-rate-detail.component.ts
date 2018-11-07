@@ -6,11 +6,11 @@ import { mergeMap, take } from 'rxjs/operators';
 import {
     CreateTaxRateInput,
     CustomerGroup,
+    GetZones,
     LanguageCode,
     TaxCategory,
     TaxRate,
     UpdateTaxRateInput,
-    Zone,
 } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
@@ -28,7 +28,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment>
     implements OnInit, OnDestroy {
     taxCategories$: Observable<TaxCategory.Fragment[]>;
-    zones$: Observable<Zone.Fragment[]>;
+    zones$: Observable<GetZones.Zones[]>;
     groups$: Observable<CustomerGroup[]>;
     taxRateForm: FormGroup;
 

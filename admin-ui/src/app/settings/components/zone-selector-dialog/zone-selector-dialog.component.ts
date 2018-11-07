@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Zone } from 'shared/generated-types';
+import { Component } from '@angular/core';
+import { GetZones } from 'shared/generated-types';
 
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
@@ -8,10 +8,10 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     templateUrl: './zone-selector-dialog.component.html',
     styleUrls: ['./zone-selector-dialog.component.scss'],
 })
-export class ZoneSelectorDialogComponent implements Dialog<Zone.Fragment | { name: string }> {
-    allZones: Zone.Fragment[];
+export class ZoneSelectorDialogComponent implements Dialog<GetZones.Zones | { name: string }> {
+    allZones: GetZones.Zones[];
     canCreateNewZone = false;
-    resolveWith: (result?: Zone.Fragment | { name: string }) => void;
+    resolveWith: (result?: GetZones.Zones | { name: string }) => void;
     selected: any;
 
     onChange(e) {

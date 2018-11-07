@@ -18,12 +18,14 @@ export const GET_COUNTRY_LIST = gql`
     query GetCountryList($options: CountryListOptions) {
         countries(options: $options) {
             items {
-                ...Country
+                id
+                code
+                name
+                enabled
             }
             totalItems
         }
     }
-    ${COUNTRY_FRAGMENT}
 `;
 
 export const GET_COUNTRY = gql`
@@ -67,10 +69,15 @@ export const ZONE_FRAGMENT = gql`
 export const GET_ZONES = gql`
     query GetZones {
         zones {
-            ...Zone
+            id
+            name
+            members {
+                id
+                name
+                code
+            }
         }
     }
-    ${ZONE_FRAGMENT}
 `;
 
 export const GET_ZONE = gql`

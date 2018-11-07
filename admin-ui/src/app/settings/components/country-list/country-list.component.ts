@@ -1,17 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, take, tap } from 'rxjs/operators';
-import { Country, Zone } from 'shared/generated-types';
+import { Country, GetCountryList, GetZones, Zone } from 'shared/generated-types';
 
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ZoneSelectorDialogComponent } from '../zone-selector-dialog/zone-selector-dialog.component';
-
-export interface CountryWithZones extends Country.Fragment {
-    zones: Zone.Fragment[];
-}
 
 @Component({
     selector: 'vdr-country-list',
@@ -20,11 +16,11 @@ export interface CountryWithZones extends Country.Fragment {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryListComponent implements OnInit, OnDestroy {
-    countriesWithZones$: Observable<CountryWithZones[]>;
-    zones$: Observable<Zone.Fragment[]>;
+    countriesWithZones$: Observable<Array<GetCountryList.Items & { zones: GetZones.Zones[] }>>;
+    zones$: Observable<GetZones.Zones[]>;
 
     selectedCountryIds: string[] = [];
-    private countries: Country.Fragment[] = [];
+    private countries: GetCountryList.Items[] = [];
     private destroy$ = new Subject();
 
     constructor(

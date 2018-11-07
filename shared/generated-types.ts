@@ -5201,7 +5201,13 @@ export namespace GetCountryList {
         totalItems: number;
     };
 
-    export type Items = Country.Fragment;
+    export type Items = {
+        __typename?: 'Country';
+        id: string;
+        code: string;
+        name: string;
+        enabled: boolean;
+    };
 }
 
 export namespace GetCountry {
@@ -5251,7 +5257,19 @@ export namespace GetZones {
         zones: Zones[];
     };
 
-    export type Zones = Zone.Fragment;
+    export type Zones = {
+        __typename?: 'Zone';
+        id: string;
+        name: string;
+        members: Members[];
+    };
+
+    export type Members = {
+        __typename?: 'Country';
+        id: string;
+        name: string;
+        code: string;
+    };
 }
 
 export namespace GetZone {
