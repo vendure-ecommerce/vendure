@@ -1,4 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import * as ms from 'ms';
 import {
     AddItemToOrderMutationArgs,
     AddPaymentToOrderMutationArgs,
@@ -98,16 +99,27 @@ export class OrderResolver {
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const order = await this.orderService.findOneByCode(ctx, args.code);
-            if (
-                order &&
-                order.customer &&
-                order.customer.user &&
-                order.customer.user.id === ctx.activeUserId
-            ) {
-                return this.orderService.findOne(ctx, order.id);
-            } else {
-                throw new I18nError(`error.forbidden`);
+
+            if (order) {
+                // For guest Customers, allow access to the Order for the following
+                // time period
+                const anonymousAccessLimit = ms('2h');
+                const orderPlaced = order.orderPlacedAt ? +order.orderPlacedAt : 0;
+                const activeUserMatches = !!(
+                    order &&
+                    order.customer &&
+                    order.customer.user &&
+                    order.customer.user.id === ctx.activeUserId
+                );
+                const now = +new Date();
+                const isWithinAnonymousAccessLimit = now - orderPlaced < anonymousAccessLimit;
+                if (activeUserMatches || isWithinAnonymousAccessLimit) {
+                    return this.orderService.findOne(ctx, order.id);
+                }
             }
+            // We throw even if the order does not exist, since giving a different response
+            // opens the door to an enumeration attack to find valid order codes.
+            throw new I18nError(`error.forbidden`);
         }
     }
 

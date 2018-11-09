@@ -51,6 +51,7 @@ export class OrderStateMachine {
     private onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
             data.order.active = false;
+            data.order.orderPlacedAt = new Date();
         }
     }
 

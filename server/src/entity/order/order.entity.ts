@@ -25,6 +25,9 @@ export class Order extends VendureEntity {
     @Column({ default: true })
     active: boolean;
 
+    @Column({ nullable: true })
+    orderPlacedAt?: Date;
+
     @ManyToOne(type => Customer)
     customer?: Customer;
 
