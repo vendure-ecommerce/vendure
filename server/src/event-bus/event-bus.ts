@@ -32,11 +32,11 @@ export class EventBus {
      * to unsubscribe the handler from the event.
      */
     subscribe<T extends VendureEvent>(type: Type<T>, handler: EventHandler<T>): UnsubscribeFn {
-        const handlers = this.subscriberMap.get(type) || [];
+        const handlers = this.subscriberMap.get(type as any) || [];
         if (!handlers.includes(handler)) {
             handlers.push(handler);
         }
-        this.subscriberMap.set(type, handlers);
-        return () => this.subscriberMap.set(type, handlers.filter(h => h !== handler));
+        this.subscriberMap.set(type as any, handlers);
+        return () => this.subscriberMap.set(type as any, handlers.filter(h => h !== handler));
     }
 }
