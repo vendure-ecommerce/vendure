@@ -33,6 +33,7 @@ describe('Orders', () => {
 
     describe('as anonymous user', () => {
         let firstOrderItemId: string;
+        let createdCustomerId: string;
 
         beforeAll(async () => {
             await client.asAnonymousUser();
@@ -189,7 +190,52 @@ describe('Orders', () => {
             }
         });
 
-        it('transitionOrderToState transitions Order to the next valid state', async () => {
+        it('attempting to transition to ArrangingPayment throws when Order has no Customer', async () => {
+            try {
+                await client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(
+                        `Cannot transition Order to the "ArrangingShipping" state without Customer details`,
+                    ),
+                );
+            }
+        });
+
+        it('setCustomerForOrder creates a new Customer and associates it with the Order', async () => {
+            const result = await client.query(SET_CUSTOMER, {
+                input: {
+                    emailAddress: 'test@test.com',
+                    firstName: 'Test',
+                    lastName: 'Person',
+                },
+            });
+
+            const customer = result.setCustomerForOrder.customer;
+            expect(customer.firstName).toBe('Test');
+            expect(customer.lastName).toBe('Person');
+            expect(customer.emailAddress).toBe('test@test.com');
+            createdCustomerId = customer.id;
+        });
+
+        it('setCustomerForOrder updates the existing customer if Customer already set', async () => {
+            const result = await client.query(SET_CUSTOMER, {
+                input: {
+                    emailAddress: 'test@test.com',
+                    firstName: 'Changed',
+                    lastName: 'Person',
+                },
+            });
+
+            const customer = result.setCustomerForOrder.customer;
+            expect(customer.firstName).toBe('Changed');
+            expect(customer.lastName).toBe('Person');
+            expect(customer.emailAddress).toBe('test@test.com');
+            expect(customer.id).toBe(createdCustomerId);
+        });
+
+        it('can transition to ArrangingPayment once Customer has been set', async () => {
             const result = await client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
 
             expect(result.transitionOrderToState).toEqual({ id: 'T_1', state: 'ArrangingPayment' });
@@ -499,39 +545,37 @@ describe('Orders', () => {
         });
 
         describe('orderByCode', () => {
-            it('works for own Order', async () => {
-                const result = await client.query(GET_ORDER_BY_CODE, {
-                    code: activeOrder.code,
+            describe('immediately after Order is placed', () => {
+                it('works when authenticated', async () => {
+                    const result = await client.query(GET_ORDER_BY_CODE, {
+                        code: activeOrder.code,
+                    });
+
+                    expect(result.orderByCode.id).toBe(activeOrder.id);
                 });
 
-                expect(result.orderByCode.id).toBe(activeOrder.id);
-            });
-
-            it("throws error for another user's Order", async () => {
-                authenticatedUserEmailAddress = customers[1].emailAddress;
-                await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
-
-                try {
-                    await client.query(GET_ORDER_BY_CODE, {
+                it('works when anonymous', async () => {
+                    await client.asAnonymousUser();
+                    const result = await client.query(GET_ORDER_BY_CODE, {
                         code: activeOrder.code,
                     });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(expect.stringContaining(`This action is forbidden`));
-                }
-            });
 
-            it('throws error when not logged in', async () => {
-                await client.asAnonymousUser();
+                    expect(result.orderByCode.id).toBe(activeOrder.id);
+                });
 
-                try {
-                    await client.query(GET_ORDER_BY_CODE, {
-                        code: activeOrder.code,
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(expect.stringContaining(`This action is forbidden`));
-                }
+                it(`throws error for another user's Order`, async () => {
+                    authenticatedUserEmailAddress = customers[1].emailAddress;
+                    await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
+
+                    try {
+                        await client.query(GET_ORDER_BY_CODE, {
+                            code: activeOrder.code,
+                        });
+                        fail('Should have thrown');
+                    } catch (err) {
+                        expect(err.message).toEqual(expect.stringContaining(`This action is forbidden`));
+                    }
+                });
             });
         });
     });
@@ -693,6 +737,20 @@ const ADD_PAYMENT = gql`
         }
     }
     ${TEST_ORDER_FRAGMENT}
+`;
+
+const SET_CUSTOMER = gql`
+    mutation SetCustomerForOrder($input: CreateCustomerInput!) {
+        setCustomerForOrder(input: $input) {
+            id
+            customer {
+                id
+                emailAddress
+                firstName
+                lastName
+            }
+        }
+    }
 `;
 
 const GET_ORDER_BY_CODE = gql`

@@ -113,7 +113,10 @@ export class OrderResolver {
                 );
                 const now = +new Date();
                 const isWithinAnonymousAccessLimit = now - orderPlaced < anonymousAccessLimit;
-                if (activeUserMatches || isWithinAnonymousAccessLimit) {
+                if (
+                    (ctx.activeUserId && activeUserMatches) ||
+                    (!ctx.activeUserId && isWithinAnonymousAccessLimit)
+                ) {
                     return this.orderService.findOne(ctx, order.id);
                 }
             }
