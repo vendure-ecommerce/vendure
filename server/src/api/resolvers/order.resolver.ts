@@ -8,6 +8,7 @@ import {
     OrdersQueryArgs,
     Permission,
     RemoveItemFromOrderMutationArgs,
+    SetCustomerForOrderMutationArgs,
     SetOrderShippingAddressMutationArgs,
     SetOrderShippingMethodMutationArgs,
     ShippingMethodQuote,
@@ -19,6 +20,7 @@ import { Order } from '../../entity/order/order.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { AuthService } from '../../service/services/auth.service';
+import { CustomerService } from '../../service/services/customer.service';
 import { OrderService } from '../../service/services/order.service';
 import { ShippingMethodService } from '../../service/services/shipping-method.service';
 import { IdCodecService } from '../common/id-codec.service';
@@ -32,6 +34,7 @@ export class OrderResolver {
     constructor(
         private orderService: OrderService,
         private shippingMethodService: ShippingMethodService,
+        private customerService: CustomerService,
         private authService: AuthService,
         private idCodecService: IdCodecService,
     ) {}
@@ -95,7 +98,12 @@ export class OrderResolver {
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const order = await this.orderService.findOneByCode(ctx, args.code);
-            if (order && order.customer.user && order.customer.user.id === ctx.activeUserId) {
+            if (
+                order &&
+                order.customer &&
+                order.customer.user &&
+                order.customer.user.id === ctx.activeUserId
+            ) {
                 return this.orderService.findOne(ctx, order.id);
             } else {
                 throw new I18nError(`error.forbidden`);
@@ -218,6 +226,18 @@ export class OrderResolver {
                     await this.authService.unsetActiveOrder(ctx.session);
                 }
                 return order;
+            }
+        }
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async setCustomerForOrder(@Ctx() ctx: RequestContext, @Args() args: SetCustomerForOrderMutationArgs) {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                const customer = await this.customerService.createOrUpdate(args.input);
+                return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
             }
         }
     }

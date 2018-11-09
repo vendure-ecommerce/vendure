@@ -3,6 +3,7 @@
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-to-shipping-when-order-is-empty": "Cannot transition Order to the ArrangingShipping state when it is empty",
+    "cannot-transition-to-payment-without-customer": "Cannot transition Order to the ArrangingShipping without Customer details",
     "channel-not-found":  "No channel with the token \"{ token }\" exists",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } with the id '{ id }' could be found",

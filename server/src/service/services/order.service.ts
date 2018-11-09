@@ -7,6 +7,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { Customer } from '../../entity/customer/customer.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -253,6 +254,15 @@ export class OrderService {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
+    }
+
+    async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        if (order.customer) {
+            throw new I18nError(`error.order-already-has-customer`);
+        }
+        order.customer = customer;
+        return this.connection.getRepository(Order).save(order);
     }
 
     /**

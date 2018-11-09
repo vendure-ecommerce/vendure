@@ -26,7 +26,7 @@ export class Order extends VendureEntity {
     active: boolean;
 
     @ManyToOne(type => Customer)
-    customer: Customer;
+    customer?: Customer;
 
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];

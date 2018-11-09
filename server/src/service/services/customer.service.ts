@@ -10,7 +10,7 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, normalizeEmailAddress } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { User } from '../../entity/user/user.entity';
@@ -59,7 +59,18 @@ export class CustomerService {
     }
 
     async create(input: CreateCustomerInput, password?: string): Promise<Customer> {
+        input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
+
+        const existing = await this.connection.getRepository(Customer).findOne({
+            where: {
+                emailAddress: input.emailAddress,
+            },
+        });
+
+        if (existing) {
+            throw new I18nError(`error.email-address-must-be-unique`);
+        }
 
         if (password) {
             const user = new User();
@@ -78,6 +89,25 @@ export class CustomerService {
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(Customer).save(customer);
         return assertFound(this.findOne(customer.id));
+    }
+
+    /**
+     * For guest checkouts, we assume that a matching email address is the same customer.
+     */
+    async createOrUpdate(input: CreateCustomerInput): Promise<Customer> {
+        input.emailAddress = normalizeEmailAddress(input.emailAddress);
+        let customer: Customer;
+        const existing = await this.connection.getRepository(Customer).findOne({
+            where: {
+                emailAddress: input.emailAddress,
+            },
+        });
+        if (existing) {
+            customer = patchEntity(existing, input);
+        } else {
+            customer = new Customer(input);
+        }
+        return this.connection.getRepository(Customer).save(customer);
     }
 
     async createAddress(customerId: string, input: CreateAddressInput): Promise<Address> {

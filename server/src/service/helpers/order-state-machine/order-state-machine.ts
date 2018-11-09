@@ -39,6 +39,9 @@ export class OrderStateMachine {
             if (data.order.lines.length === 0) {
                 return `error.cannot-transition-to-payment-when-order-is-empty`;
             }
+            if (!data.order.customer) {
+                return `error.cannot-transition-to-payment-without-customer`;
+            }
         }
     }
 

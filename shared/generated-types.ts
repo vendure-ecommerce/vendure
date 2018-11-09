@@ -598,6 +598,7 @@ export interface Mutation {
     setOrderShippingAddress?: Order | null;
     setOrderShippingMethod?: Order | null;
     addPaymentToOrder?: Order | null;
+    setCustomerForOrder?: Order | null;
     updatePaymentMethod: PaymentMethod;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
@@ -1482,6 +1483,9 @@ export interface SetOrderShippingMethodMutationArgs {
 }
 export interface AddPaymentToOrderMutationArgs {
     input: PaymentInput;
+}
+export interface SetCustomerForOrderMutationArgs {
+    input: CreateCustomerInput;
 }
 export interface UpdatePaymentMethodMutationArgs {
     input: UpdatePaymentMethodInput;
@@ -3625,6 +3629,7 @@ export namespace MutationResolvers {
         setOrderShippingAddress?: SetOrderShippingAddressResolver<Order | null, any, Context>;
         setOrderShippingMethod?: SetOrderShippingMethodResolver<Order | null, any, Context>;
         addPaymentToOrder?: AddPaymentToOrderResolver<Order | null, any, Context>;
+        setCustomerForOrder?: SetCustomerForOrderResolver<Order | null, any, Context>;
         updatePaymentMethod?: UpdatePaymentMethodResolver<PaymentMethod, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
@@ -3948,6 +3953,16 @@ export namespace MutationResolvers {
     >;
     export interface AddPaymentToOrderArgs {
         input: PaymentInput;
+    }
+
+    export type SetCustomerForOrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        SetCustomerForOrderArgs
+    >;
+    export interface SetCustomerForOrderArgs {
+        input: CreateCustomerInput;
     }
 
     export type UpdatePaymentMethodResolver<R = PaymentMethod, Parent = any, Context = any> = Resolver<

@@ -15,6 +15,7 @@ type Mutation {
     setOrderShippingAddress(input: CreateAddressInput!): Order
     setOrderShippingMethod(shippingMethodId: ID!): Order
     addPaymentToOrder(input: PaymentInput!): Order
+    setCustomerForOrder(input: CreateCustomerInput!): Order
 }
 
 type OrderList implements PaginatedList {
