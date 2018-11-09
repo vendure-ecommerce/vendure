@@ -32,6 +32,12 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [fakePalPaymentHandler, gripePaymentHandler],
     },
     customFields: {},
+    emailOptions: {
+        transport: {
+            type: 'file',
+            outputPath: path.join(__dirname, 'test-emails'),
+        },
+    },
     plugins: [
         new DefaultAssetServerPlugin({
             route: 'assets',

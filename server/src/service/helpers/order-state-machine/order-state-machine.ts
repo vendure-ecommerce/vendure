@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { FSM, StateMachineConfig, Transitions } from '../../../common/finite-state-machine';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
+import { EventBus } from '../../../event-bus/event-bus';
+import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
 import { I18nError } from '../../../i18n/i18n-error';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
@@ -12,7 +15,7 @@ export class OrderStateMachine {
     private readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'AddingItems';
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private eventBus: EventBus) {
         this.config = this.initConfig();
     }
 
@@ -25,9 +28,9 @@ export class OrderStateMachine {
         return fsm.getNextStates();
     }
 
-    async transition(order: Order, state: OrderState) {
+    async transition(ctx: RequestContext, order: Order, state: OrderState) {
         const fsm = new FSM(this.config, order.state);
-        await fsm.transitionTo(state, { order });
+        await fsm.transitionTo(state, { ctx, order });
         order.state = state;
     }
 
@@ -53,6 +56,7 @@ export class OrderStateMachine {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
         }
+        this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
     }
 
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {

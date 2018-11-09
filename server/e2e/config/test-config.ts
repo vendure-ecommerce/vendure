@@ -39,6 +39,11 @@ export const testConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
+    emailOptions: {
+        transport: {
+            type: 'none',
+        },
+    },
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new TestingAssetStorageStrategy(),

@@ -25,6 +25,26 @@ skinparam Class {
   BorderColor BLACK
 }
 
+skinparam Component {
+  ArrowColor LINE
+  BorderColor BLACK
+  BackgroundColor BACKGROUND
+}
+
+skinparam Note {
+  ArrowThickness 2
+  ArrowColor LINE
+  ActorBorderThickness 1
+  LifeLineBorderColor GREEN
+  BorderColor #666666
+  BackgroundColor #eeeeee
+}
+
+skinparam Interface {
+  BorderColor BLACK
+  BackgroundColor BLUE
+}
+
 skinparam Activity {
   FontColor white
   AttributeFontColor white

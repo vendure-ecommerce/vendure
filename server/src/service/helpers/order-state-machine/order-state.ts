@@ -1,3 +1,4 @@
+import { RequestContext } from '../../../api/common/request-context';
 import { Transitions } from '../../../common/finite-state-machine';
 import { Order } from '../../../entity/order/order.entity';
 
@@ -35,5 +36,6 @@ export const orderStateTransitions: Transitions<OrderState> = {
 };
 
 export interface OrderTransitionData {
+    ctx: RequestContext;
     order: Order;
 }

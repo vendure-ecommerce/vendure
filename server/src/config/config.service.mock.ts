@@ -27,6 +27,7 @@ export class MockConfigService implements MockClass<ConfigService> {
         promotionActions: [],
     };
     paymentOptions: {};
+    emailOptions: {};
     orderMergeOptions = {};
     orderProcessOptions = {};
     customFields = {};

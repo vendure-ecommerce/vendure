@@ -229,7 +229,7 @@ export class OrderService {
 
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        await this.orderStateMachine.transition(order, state);
+        await this.orderStateMachine.transition(ctx, order, state);
         await this.connection.getRepository(Order).save(order);
         return order;
     }
@@ -258,7 +258,7 @@ export class OrderService {
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        if (order.customer) {
+        if (order.customer && !idsAreEqual(order.customer.id, customer.id)) {
             throw new I18nError(`error.order-already-has-customer`);
         }
         order.customer = customer;

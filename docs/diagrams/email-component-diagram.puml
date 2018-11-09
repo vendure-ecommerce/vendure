@@ -1,0 +1,44 @@
+@startuml
+!include theme.puml
+title Transactional Email Handling
+
+cloud "Vendure Server" as VS
+cloud "Email Templates" as ET
+node Event
+note right of Event
+    OrderStateTransitionEvent
+    AccountCreatedEvent
+    EmailAddressVerifiedEvent
+    etc.
+end note
+package EmailEventHandlers {
+    [OrderCompletedHandler]
+    [AccountCreatedHandler]
+}
+node EmailContext
+note right of EmailContext
+    new EmailContext({
+        type: 'order-receipt',
+        recipient: 'user@example.com',
+        data: { ... }
+    })
+end note
+node GeneratedEmail
+note right of GeneratedEmail
+    new GeneratedEmail({
+        ...EmailContext,
+        body: 'Dear Joe Smith...',
+    )
+end note
+
+VS --> Event
+Event -> OrderCompletedHandler
+Event --> AccountCreatedHandler
+OrderCompletedHandler --> EmailContext
+AccountCreatedHandler --> EmailContext
+EmailContext --> [EmailGenerator]
+[EmailGenerator] -left- ET
+[EmailGenerator] --> GeneratedEmail
+GeneratedEmail --> [EmailTransport]
+
+@enduml

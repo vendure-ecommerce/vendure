@@ -14,6 +14,8 @@ import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strate
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { defaultConfig } from './default-config';
+import { EmailGenerator, EmailTypes } from './email/email-options';
+import { EmailTransportOptions } from './email/email-transport-options';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { mergeConfig } from './merge-config';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
@@ -147,6 +149,21 @@ export interface ShippingOptions {
     shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
+export interface EmailOptions<EmailType extends string> {
+    /**
+     * Configuration for the creation and templating of each email type
+     */
+    emailTypes?: EmailTypes<EmailType>;
+    /**
+     * The EmailGenerator uses the EmailContext and template to generate the email body
+     */
+    generator?: EmailGenerator;
+    /**
+     * Configuration for the transport (email sending) method
+     */
+    transport: EmailTransportOptions;
+}
+
 export interface PaymentOptions {
     /**
      * An array of payment methods with which to process payments.
@@ -226,6 +243,10 @@ export interface VendureConfig {
      * Configures available payment processing methods.
      */
     paymentOptions: PaymentOptions;
+    /**
+     * Configures the handling of transactional emails.
+     */
+    emailOptions: EmailOptions<any>;
     /**
      * Custom Express middleware for the server.
      */

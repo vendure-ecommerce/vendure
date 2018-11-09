@@ -3,10 +3,12 @@ import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields } from 'shared/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
+import { defaultEmailTypes } from '../email/default-email-types';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { NoopEmailGenerator } from './email/noop-email-generator';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strategy';
 import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
@@ -61,6 +63,13 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     paymentOptions: {
         paymentMethodHandlers: [],
+    },
+    emailOptions: {
+        emailTypes: defaultEmailTypes,
+        generator: new NoopEmailGenerator(),
+        transport: {
+            type: 'none',
+        },
     },
     customFields: {
         Address: [],

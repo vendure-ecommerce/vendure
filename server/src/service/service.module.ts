@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ConfigModule } from '../config/config.module';
 import { getConfig } from '../config/vendure-config';
+import { EventBusModule } from '../event-bus/event-bus.module';
 
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
@@ -66,7 +67,7 @@ const exportedProviders = [
  * into a format suitable for the service layer logic.
  */
 @Module({
-    imports: [ConfigModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
+    imports: [ConfigModule, EventBusModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
     providers: [
         ...exportedProviders,
         PasswordCiper,

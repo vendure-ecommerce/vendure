@@ -11,6 +11,7 @@ import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import {
     AssetOptions,
     AuthOptions,
+    EmailOptions,
     getConfig,
     OrderMergeOptions,
     OrderProcessOptions,
@@ -93,6 +94,10 @@ export class ConfigService implements VendureConfig {
 
     get paymentOptions(): PaymentOptions {
         return this.activeConfig.paymentOptions;
+    }
+
+    get emailOptions(): Required<EmailOptions<any>> {
+        return this.activeConfig.emailOptions as Required<EmailOptions<any>>;
     }
 
     get customFields(): CustomFields {

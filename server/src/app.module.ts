@@ -7,12 +7,13 @@ import * as ms from 'ms';
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { EmailModule } from './email/email.module';
 import { validateCustomFieldsConfig } from './entity/custom-entity-fields';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule],
+    imports: [ConfigModule, I18nModule, ApiModule, EmailModule],
 })
 export class AppModule implements NestModule {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}
