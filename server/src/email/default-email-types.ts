@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { LanguageCode } from 'shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
@@ -23,8 +24,9 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
         templates: {
             defaultChannel: {
                 defaultLanguage: {
-                    subject: data => `Your order receipt`,
-                    templatePath: 'awd',
+                    templateContext: emailContext => ({ order: emailContext.event.order }),
+                    subject: `Your order receipt for {{ order.code }}`,
+                    templatePath: path.join(__dirname, 'templates', 'order-receipt', 'order-receipt.hbs'),
                 },
             },
         },

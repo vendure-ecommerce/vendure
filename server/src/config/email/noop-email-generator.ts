@@ -2,8 +2,11 @@ import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
 
 import { EmailGenerator } from './email-options';
 
+/**
+ * Simply passes through the subject and template content without modification.
+ */
 export class NoopEmailGenerator implements EmailGenerator {
-    generate(context: EmailContext): GeneratedEmailContext | Promise<GeneratedEmailContext> {
-        return new GeneratedEmailContext(context, 'email subject', 'email subject');
+    generate(subject: string, template: string, context: EmailContext): GeneratedEmailContext {
+        return new GeneratedEmailContext(context, subject, template);
     }
 }

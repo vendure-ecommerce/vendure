@@ -9,7 +9,7 @@ import { assertNever } from 'shared/shared-utils';
 import * as Stream from 'stream';
 
 import { ConfigService } from '../config/config.service';
-import { EmailTypeConfig } from '../config/email/email-options';
+import { EmailTypeConfig, TemplateConfig } from '../config/email/email-options';
 import { FileTransportOptions } from '../config/email/email-transport-options';
 import { EventBus } from '../event-bus/event-bus';
 import { VendureEvent } from '../event-bus/vendure-event';
@@ -53,9 +53,32 @@ export class TransactionalEmailService {
                 type,
                 event,
             });
-            const generatedEmailContext = await generator.generate(emailContext);
+            const templateConfig = this.getTemplateConfig(type, emailContext);
+            const templateContents = await this.loadTemplateContents(templateConfig.templatePath);
+            const templateContext = templateConfig.templateContext(emailContext);
+            const generatedEmailContext = await generator.generate(
+                templateConfig.subject,
+                templateContents,
+                templateContext,
+            );
             await this.send(generatedEmailContext);
         }
+    }
+
+    /**
+     * Returns the corresponding TemplateConfig based on the channelCode and languageCode of the
+     * EmailContext object.
+     */
+    private getTemplateConfig(type: string, context: EmailContext): TemplateConfig {
+        const { emailTypes } = this.configService.emailOptions;
+        const typeConfig = emailTypes[type].templates;
+        const channelConfig = typeConfig[context.channelCode] || typeConfig.defaultChannel;
+        const languageConfig = channelConfig[context.languageCode] || channelConfig.defaultLanguage;
+        return languageConfig;
+    }
+
+    private loadTemplateContents(filePath: string): Promise<string> {
+        return fs.readFile(filePath, 'utf-8');
     }
 
     private async send(email: GeneratedEmailContext) {

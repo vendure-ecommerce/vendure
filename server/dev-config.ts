@@ -4,6 +4,7 @@ import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { fakePalPaymentHandler } from './src/config/payment-method/fakepal-payment-method-config';
 import { gripePaymentHandler } from './src/config/payment-method/gripe-payment-method-config';
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
+import { HandlebarsMjmlGenerator } from './src/email/handlebars-mjml-generator';
 import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/default-asset-server-plugin';
 
 /**
@@ -33,6 +34,7 @@ export const devConfig: VendureConfig = {
     },
     customFields: {},
     emailOptions: {
+        generator: new HandlebarsMjmlGenerator(),
         transport: {
             type: 'file',
             outputPath: path.join(__dirname, 'test-emails'),

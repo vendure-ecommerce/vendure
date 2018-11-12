@@ -1,0 +1,30 @@
+<mjml>
+    <mj-body>
+
+        <!-- Company Header -->
+        <mj-section background-color="#f0f0f0"></mj-section>
+
+        <!-- Image Header -->
+        <mj-section background-color="#f0f0f0"></mj-section>
+
+        <!-- Introduction Text -->
+        <mj-section background-color="#fafafa">
+            <mj-column width="400">
+
+                <mj-text font-style="italic"
+                         font-size="20px"
+                         font-family="Helvetica Neue"
+                         color="#626262">Order Receipt</mj-text>
+
+                <mj-text color="#525252">
+                    Hello {{ order.customer.firstName }} {{ order.customer.lastName }}! Thanks for your order.
+                </mj-text>
+
+                <mj-button background-color="#F45E43"
+                           href="#">Learn more</mj-button>
+
+            </mj-column>
+        </mj-section>
+
+    </mj-body>
+</mjml>
