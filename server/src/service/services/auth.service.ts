@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as crypto from 'crypto';
 import * as ms from 'ms';
-import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -17,7 +16,7 @@ import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { OrderService } from './order.service';
 
 /**
- * The AuthService manages both authenticated and anonymous sessions.
+ * The AuthService manages both authenticated and anonymous Sessions.
  */
 @Injectable()
 export class AuthService {
@@ -122,12 +121,6 @@ export class AuthService {
         if (session) {
             return this.deleteSessionsByUser(session.user);
         }
-    }
-
-    async getUserById(userId: ID): Promise<User | undefined> {
-        return this.connection.getRepository(User).findOne(userId, {
-            relations: ['roles', 'roles.channels'],
-        });
     }
 
     private async createNewAuthenticatedSession(

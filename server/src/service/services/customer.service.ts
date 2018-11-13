@@ -13,21 +13,18 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, normalizeEmailAddress } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { User } from '../../entity/user/user.entity';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
-import { RoleService } from './role.service';
+import { UserService } from './user.service';
 
 @Injectable()
 export class CustomerService {
     constructor(
         @InjectConnection() private connection: Connection,
-        private passwordCipher: PasswordCiper,
-        private roleService: RoleService,
+        private userService: UserService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -73,14 +70,8 @@ export class CustomerService {
         }
 
         if (password) {
-            const user = new User();
-            user.passwordHash = await this.passwordCipher.hash(password);
-            user.identifier = input.emailAddress;
-            user.roles = [await this.roleService.getCustomerRole()];
-            const createdUser = await this.connection.manager.save(user);
-            customer.user = createdUser;
+            customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
         }
-
         return this.connection.getRepository(Customer).save(customer);
     }
 

@@ -33,6 +33,7 @@ import { RoleService } from './services/role.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
+import { UserService } from './services/user.service';
 import { ZoneService } from './services/zone.service';
 
 const exportedProviders = [
@@ -56,6 +57,7 @@ const exportedProviders = [
     ShippingMethodService,
     TaxCategoryService,
     TaxRateService,
+    UserService,
     ZoneService,
 ];
 

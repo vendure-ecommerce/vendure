@@ -6,6 +6,7 @@ import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
+import { UserService } from '../../service/services/user.service';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { RequestContext } from '../common/request-context';
 import { setAuthToken } from '../common/set-auth-token';
@@ -16,6 +17,7 @@ import { Ctx } from '../decorators/request-context.decorator';
 export class AuthResolver {
     constructor(
         private authService: AuthService,
+        private userService: UserService,
         private channelService: ChannelService,
         private configService: ConfigService,
     ) {}
@@ -70,7 +72,7 @@ export class AuthResolver {
     @Allow(Permission.Authenticated)
     async me(@Ctx() ctx: RequestContext) {
         const userId = ctx.activeUserId;
-        const user = userId && (await this.authService.getUserById(userId));
+        const user = userId && (await this.userService.getUserById(userId));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 

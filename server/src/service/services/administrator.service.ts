@@ -14,6 +14,7 @@ import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { RoleService } from './role.service';
+import { UserService } from './user.service';
 
 @Injectable()
 export class AdministratorService {
@@ -21,6 +22,7 @@ export class AdministratorService {
         @InjectConnection() private connection: Connection,
         private listQueryBuilder: ListQueryBuilder,
         private passwordCipher: PasswordCiper,
+        private userService: UserService,
         private roleService: RoleService,
     ) {}
 
@@ -46,14 +48,7 @@ export class AdministratorService {
 
     async create(input: CreateAdministratorInput): Promise<Administrator> {
         const administrator = new Administrator(input);
-
-        const user = new User();
-        user.passwordHash = await this.passwordCipher.hash(input.password);
-        user.identifier = input.emailAddress;
-
-        const createdUser = await this.connection.manager.save(user);
-        administrator.user = createdUser;
-
+        administrator.user = await this.userService.createAdminUser(input.emailAddress, input.password);
         let createdAdministrator = await this.connection.manager.save(administrator);
         for (const roleId of input.roleIds) {
             createdAdministrator = await this.assignRole(createdAdministrator.id, roleId);
