@@ -391,3 +391,4 @@ server/e2e/__data__/*
 server/assets
 !server/e2e/__data__/.gitkeep
 server/test-emails
+server/src/email/preview

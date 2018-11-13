@@ -52,7 +52,7 @@ export function configEmailType<T extends string, E extends VendureEvent = Vendu
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     generate(
         subject: string,
-        template: string,
+        body: string,
         context: EmailContext<T, E>,
     ): GeneratedEmailContext<T, E> | Promise<GeneratedEmailContext<T, E>>;
 }

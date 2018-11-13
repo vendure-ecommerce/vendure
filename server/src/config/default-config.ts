@@ -3,7 +3,6 @@ import { API_PATH, API_PORT } from 'shared/shared-constants';
 import { CustomFields } from 'shared/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
-import { defaultEmailTypes } from '../email/default-email-types';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -65,7 +64,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         paymentMethodHandlers: [],
     },
     emailOptions: {
-        emailTypes: defaultEmailTypes,
+        emailTypes: {},
         generator: new NoopEmailGenerator(),
         transport: {
             type: 'none',

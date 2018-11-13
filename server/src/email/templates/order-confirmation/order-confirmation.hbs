@@ -1,0 +1,91 @@
+{{> header title="Order Receipt" }}
+
+<mj-section background-color="#fafafa">
+    <mj-column>
+
+        <mj-text font-style="italic"
+                 font-size="20px"
+                 font-family="Helvetica Neue"
+                 color="#626262">Order Confirmation</mj-text>
+
+        <mj-text color="#525252">
+            Dear {{ order.customer.firstName }} {{ order.customer.lastName }},
+        </mj-text>
+        <mj-text color="#525252">
+            Thank you for your order!
+        </mj-text>
+
+    </mj-column>
+</mj-section>
+
+<mj-section background-color="#568feb" padding-bottom="15px" padding-top="15">
+    <mj-column>
+        <mj-text align="center" color="#FFF" font-size="15px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="20"><strong>Order Code</strong></mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10">{{ order.code }}</mj-text>
+    </mj-column>
+    <mj-column>
+        <mj-text align="center" color="#FFF" font-size="15px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="20"><strong>Order Date</strong></mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10">{{ formatDate order.orderPlacedAt }}</mj-text>
+    </mj-column>
+    <mj-column>
+        <mj-text align="center" color="#FFF" font-size="15px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="20"><strong>Total Price</strong></mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10">${{ formatMoney order.total }}</mj-text>
+    </mj-column>
+</mj-section>
+
+
+<mj-section background-color="#f5f5f5">
+    <mj-column>
+        <mj-text>
+            {{#with order.shippingAddress }}
+                <h3>Shipping To: {{ fullName }}</h3>
+                <ul class="address">
+                    {{#if company}}<li>{{ company }}</li>{{/if}}
+                    {{#if streetLine1}}<li>{{ streetLine1 }}</li>{{/if}}
+                    {{#if streetLine2}}<li>{{ streetLine2 }}</li>{{/if}}
+                    {{#if city}}<li>{{ city }}</li>{{/if}}
+                    {{#if province}}<li>{{ province }}</li>{{/if}}
+                    {{#if postalCode}}<li>{{ postalCode }}</li>{{/if}}
+                    {{#if country}}<li>{{ country }}</li>{{/if}}
+                    {{#if phoneNumber}}<li>{{ phoneNumber }}</li>{{/if}}
+                </ul>
+            {{/with}}
+        </mj-text>
+    </mj-column>
+</mj-section>
+
+<mj-section>
+    <mj-column>
+        <mj-text>
+            <h3>Order Summary:</h3>
+        </mj-text>
+        <mj-table cellpadding="6px">
+            {{#each order.lines }}
+                <tr class="order-row">
+                    <td>
+                        <img alt="{{ productVariant.name }}"
+                             style="width: 50px; height: 50px;"
+                             src="{{ featuredAsset.preview }}?w=50&h=50" />
+                    </td>
+                    <td>{{ quantity }} x {{ productVariant.name }}</td>
+                    <td>{{ productVariant.quantity }}</td>
+                    <td>${{ formatMoney totalPrice }}</td>
+                </tr>
+            {{/each}}
+            <tr class="order-row">
+                <td colspan="3">Sub-total:</td>
+                <td>${{ formatMoney order.subTotal }}</td>
+            </tr>
+            <tr class="order-row">
+                <td colspan="3">Shipping ({{ order.shippingMethod.description }}):</td>
+                <td>${{ formatMoney order.shipping }}</td>
+            </tr>
+            <tr class="order-row total-row">
+                <td colspan="3">Total:</td>
+                <td>${{ formatMoney order.total }}</td>
+            </tr>
+        </mj-table>
+    </mj-column>
+</mj-section>
+
+{{> footer }}

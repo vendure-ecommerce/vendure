@@ -6,10 +6,10 @@ import { configEmailType, EmailTypes } from '../config/email/email-options';
 
 import { OrderStateTransitionEvent } from '../event-bus/events/order-state-transition-event';
 
-export type DefaultEmailType = 'order-receipt';
+export type DefaultEmailType = 'order-confirmation';
 
 export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
-    'order-receipt': configEmailType({
+    'order-confirmation': configEmailType({
         triggerEvent: OrderStateTransitionEvent,
         createContext: e => {
             const customer = e.order.customer;
@@ -25,8 +25,13 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
             defaultChannel: {
                 defaultLanguage: {
                     templateContext: emailContext => ({ order: emailContext.event.order }),
-                    subject: `Your order receipt for {{ order.code }}`,
-                    templatePath: path.join(__dirname, 'templates', 'order-receipt', 'order-receipt.hbs'),
+                    subject: `Order confirmation for #{{ order.code }}`,
+                    templatePath: path.join(
+                        __dirname,
+                        'templates',
+                        'order-confirmation',
+                        'order-confirmation.hbs',
+                    ),
                 },
             },
         },

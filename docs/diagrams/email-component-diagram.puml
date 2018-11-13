@@ -18,7 +18,7 @@ package EmailEventHandlers {
 node EmailContext
 note right of EmailContext
     new EmailContext({
-        type: 'order-receipt',
+        type: 'order-confirmation',
         recipient: 'user@example.com',
         data: { ... }
     })
