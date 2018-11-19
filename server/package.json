@@ -14,7 +14,7 @@
     "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
     "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch --runInBand",
     "build": "rimraf dist && tsc -p tsconfig.build.json && gulp",
-    "generate-test-email": "node -r ts-node/register -r tsconfig-paths/register src/email/generate-test-email.ts"
+    "generate-email-preview": "node -r ts-node/register -r tsconfig-paths/register src/email/preview/generate-email-preview.ts"
   },
   "main": "dist/index.js",
   "files": [

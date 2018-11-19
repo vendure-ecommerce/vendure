@@ -1,66 +1,21 @@
-import * as fs from 'fs-extra';
-import * as opn from 'opn';
-import * as path from 'path';
 import { LanguageCode } from 'shared/generated-types';
 
-import { RequestContext } from '../api/common/request-context';
-import { NoopEmailGenerator } from '../config/email/noop-email-generator';
-import { EmailOptions } from '../config/vendure-config';
-import { Channel } from '../entity/channel/channel.entity';
-import { Customer } from '../entity/customer/customer.entity';
-import { OrderItem } from '../entity/order-item/order-item.entity';
-import { OrderLine } from '../entity/order-line/order-line.entity';
-import { Order } from '../entity/order/order.entity';
-import { ProductVariant } from '../entity/product-variant/product-variant.entity';
-import { OrderStateTransitionEvent } from '../event-bus/events/order-state-transition-event';
+import { RequestContext } from '../../api/common/request-context';
+import { Channel } from '../../entity/channel/channel.entity';
+import { Customer } from '../../entity/customer/customer.entity';
+import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { User } from '../../entity/user/user.entity';
+import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
+import { defaultEmailTypes } from '../default-email-types';
+import { EmailContext } from '../email-context';
 
-import { defaultEmailTypes } from './default-email-types';
-import { EmailContext } from './email-context';
-import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
-import { TemplateLoader } from './template-loader';
-// tslint:disable:no-console
-
-const generator = new HandlebarsMjmlGenerator(path.join(__dirname, 'templates', 'partials'));
-const emailOptions: EmailOptions<any> = {
-    emailTypes: defaultEmailTypes,
-    generator: new NoopEmailGenerator(),
-    transport: {
-        type: 'none',
-    },
-};
-const loader = new TemplateLoader({ emailOptions } as any);
-
-const emailType = process.argv[2];
-if (!emailType) {
-    failWith(`Please specify an emailType as the first argument. Example: order-confirmation`);
-}
-
-// tslint:disable-next-line
-generateEmail(emailType);
-
-/**
- * Generates an .html file for the emailType specified as the first argument to the script.
- */
-async function generateEmail(type: string) {
-    let emailContext: EmailContext | undefined;
-    switch (type) {
-        case 'order-confirmation':
-            emailContext = getOrderReceiptContext();
-    }
-    if (!emailContext) {
-        failWith(`Could not create a context for type "${type}"`);
-        return;
-    }
-    const { subject, body, templateContext } = await loader.loadTemplate(type, emailContext);
-    const generatedEmailContext = await generator.generate(subject, body, templateContext);
-
-    const previewDir = path.join(__dirname, 'preview');
-    await fs.ensureDir(previewDir);
-    await fs.writeFile(path.join(previewDir, `${type}.html`), generatedEmailContext.body);
-    await opn(path.join(previewDir, `${type}.html`));
-}
-
-function getOrderReceiptContext(): EmailContext<'order-confirmation', OrderStateTransitionEvent> | undefined {
+export function getOrderReceiptContext():
+    | EmailContext<'order-confirmation', OrderStateTransitionEvent>
+    | undefined {
     const event = new OrderStateTransitionEvent(
         'ArrangingPayment',
         'PaymentSettled',
@@ -76,6 +31,7 @@ function getOrderReceiptContext(): EmailContext<'order-confirmation', OrderState
                 id: '3',
                 firstName: 'Horacio',
                 lastName: 'Franecki',
+                emailAddress: 'Horacio.Franecki23@hotmail.com',
             }),
             lines: [
                 new OrderLine({
@@ -153,6 +109,27 @@ function getOrderReceiptContext(): EmailContext<'order-confirmation', OrderState
     }
 }
 
+export function getEmailVerificationContext():
+    | EmailContext<'email-verification', AccountRegistrationEvent>
+    | undefined {
+    const event = new AccountRegistrationEvent(
+        createRequestContext(),
+        new User({
+            verified: false,
+            verificationToken: 'MjAxOC0xMS0xM1QxNToxNToxNC42ODda_US2U6UK1WZC7NDAX',
+            identifier: 'Rhoda_Ebert@yahoo.com',
+        }),
+    );
+    const contextConfig = defaultEmailTypes['email-verification'].createContext(event);
+    if (contextConfig) {
+        return new EmailContext({
+            ...contextConfig,
+            type: 'email-verification',
+            event,
+        });
+    }
+}
+
 function createRequestContext(): RequestContext {
     return new RequestContext({
         languageCode: LanguageCode.en,
@@ -161,9 +138,4 @@ function createRequestContext(): RequestContext {
         authorizedAsOwnerOnly: true,
         channel: new Channel(),
     });
-}
-
-function failWith(message: string) {
-    console.error(message);
-    process.exit(1);
 }
