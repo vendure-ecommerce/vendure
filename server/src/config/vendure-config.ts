@@ -65,6 +65,17 @@ export interface AuthOptions {
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
      */
     sessionDuration?: string | number;
+    /**
+     * Determines whether new User accounts require verification of their email address.
+     */
+    requireVerification?: boolean;
+    /**
+     * Sets the length of time that a verification token is valid for.
+     *
+     * Expressed as a string describing a time span
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+     */
+    verificationTokenDuration?: string | number;
 }
 
 export interface OrderProcessOptions<T extends string> {

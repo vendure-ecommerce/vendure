@@ -1,11 +1,18 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request, Response } from 'express';
-import { LoginMutationArgs, LoginResult, Permission } from 'shared/generated-types';
+import {
+    LoginMutationArgs,
+    LoginResult,
+    Permission,
+    RegisterCustomerAccountMutationArgs,
+    VerifyCustomerEmailAddressMutationArgs,
+} from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
+import { CustomerService } from '../../service/services/customer.service';
 import { UserService } from '../../service/services/user.service';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { RequestContext } from '../common/request-context';
@@ -19,6 +26,7 @@ export class AuthResolver {
         private authService: AuthService,
         private userService: UserService,
         private channelService: ChannelService,
+        private customerService: CustomerService,
         private configService: ConfigService,
     ) {}
 
@@ -34,17 +42,7 @@ export class AuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        const session = await this.authService.authenticate(ctx, args.username, args.password);
-        setAuthToken({
-            req,
-            res,
-            authOptions: this.configService.authOptions,
-            rememberMe: args.rememberMe || false,
-            authToken: session.token,
-        });
-        return {
-            user: this.publiclyAccessibleUser(session.user),
-        };
+        return await this.createAuthenticatedSession(ctx, args, req, res);
     }
 
     @Mutation()
@@ -65,6 +63,44 @@ export class AuthResolver {
         return true;
     }
 
+    @Mutation()
+    @Allow(Permission.Public)
+    async registerCustomerAccount(
+        @Ctx() ctx: RequestContext,
+        @Args() args: RegisterCustomerAccountMutationArgs,
+    ) {
+        return this.customerService
+            .registerCustomerAccount(ctx, args.emailAddress, args.password)
+            .then(() => true);
+    }
+
+    @Mutation()
+    @Allow(Permission.Public)
+    async verifyCustomerEmailAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: VerifyCustomerEmailAddressMutationArgs,
+        @Context('req') req: Request,
+        @Context('res') res: Response,
+    ) {
+        const customer = await this.customerService.verifyCustomerEmailAddress(
+            ctx,
+            args.token,
+            args.password,
+        );
+        if (customer && customer.user) {
+            return this.createAuthenticatedSession(
+                ctx,
+                {
+                    username: customer.user.identifier,
+                    password: args.password,
+                    rememberMe: true,
+                },
+                req,
+                res,
+            );
+        }
+    }
+
     /**
      * Returns information about the current authenticated user.
      */
@@ -74,6 +110,28 @@ export class AuthResolver {
         const userId = ctx.activeUserId;
         const user = userId && (await this.userService.getUserById(userId));
         return user ? this.publiclyAccessibleUser(user) : null;
+    }
+
+    /**
+     * Creates an authenticated session and sets the session token.
+     */
+    private async createAuthenticatedSession(
+        ctx: RequestContext,
+        args: LoginMutationArgs,
+        req: Request,
+        res: Response,
+    ) {
+        const session = await this.authService.authenticate(ctx, args.username, args.password);
+        setAuthToken({
+            req,
+            res,
+            authOptions: this.configService.authOptions,
+            rememberMe: args.rememberMe || false,
+            authToken: session.token,
+        });
+        return {
+            user: this.publiclyAccessibleUser(session.user),
+        };
     }
 
     /**

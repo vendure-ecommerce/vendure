@@ -9,10 +9,13 @@ import {
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, normalizeEmailAddress } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
 import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -26,6 +29,7 @@ export class CustomerService {
         @InjectConnection() private connection: Connection,
         private userService: UserService,
         private listQueryBuilder: ListQueryBuilder,
+        private eventBus: EventBus,
     ) {}
 
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
@@ -75,6 +79,33 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
+    async registerCustomerAccount(
+        ctx: RequestContext,
+        emailAddress: string,
+        password: string,
+    ): Promise<Customer> {
+        const customer = await this.createOrUpdate({ emailAddress });
+        const user = await this.userService.createCustomerUser(emailAddress, password);
+        customer.user = user;
+        await this.connection.getRepository(Customer).save(customer);
+        if (!user.verified) {
+            this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
+        }
+        return customer;
+    }
+
+    async verifyCustomerEmailAddress(
+        ctx: RequestContext,
+        verificationToken: string,
+        password: string,
+    ): Promise<Customer | undefined> {
+        const user = await this.userService.verifyUserByToken(verificationToken, password);
+        if (user) {
+            const customer = await this.findOneByUserId(user.id);
+            return customer;
+        }
+    }
+
     async update(input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
         const updatedCustomer = patchEntity(customer, input);
@@ -85,7 +116,7 @@ export class CustomerService {
     /**
      * For guest checkouts, we assume that a matching email address is the same customer.
      */
-    async createOrUpdate(input: CreateCustomerInput): Promise<Customer> {
+    async createOrUpdate(input: Partial<CreateCustomerInput> & { emailAddress: string }): Promise<Customer> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         let customer: Customer;
         const existing = await this.connection.getRepository(Customer).findOne({

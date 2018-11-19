@@ -5,6 +5,10 @@ type Query {
 type Mutation {
     login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
+    "Register a Customer account with the given credentials"
+    registerCustomerAccount(emailAddress: String!, password: String!): Boolean!
+    "Verify a Customer email address with the token sent to that address"
+    verifyCustomerEmailAddress(token: String!, password: String!): LoginResult!
 }
 
 type LoginResult {

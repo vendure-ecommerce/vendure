@@ -16,6 +16,12 @@ export class User extends VendureEntity implements HasCustomFields {
 
     @Column() passwordHash: string;
 
+    @Column({ default: false })
+    verified: boolean;
+
+    @Column({ type: 'varchar', nullable: true })
+    verificationToken: string | null;
+
     @ManyToMany(type => Role)
     @JoinTable()
     roles: Role[];

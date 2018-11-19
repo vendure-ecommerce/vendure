@@ -56,7 +56,12 @@ export class EmailModule implements OnModuleInit {
                 type,
                 emailContext,
             );
-            const generatedEmailContext = await generator.generate(subject, body, templateContext);
+            const generatedEmailContext = await generator.generate(
+                subject,
+                body,
+                templateContext,
+                emailContext,
+            );
             await this.emailSender.send(generatedEmailContext, transport);
         }
     }

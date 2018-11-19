@@ -49,6 +49,20 @@ export class UserService {
         return this.connection.manager.save(user);
     }
 
+    async verifyUserByToken(verificationToken: string, password: string): Promise<User | undefined> {
+        const user = await this.connection.getRepository(User).findOne({
+            where: { verificationToken },
+        });
+        if (user && this.passwordCipher.check(password, user.passwordHash)) {
+            if (this.verifyVerificationToken(verificationToken)) {
+                user.verificationToken = null;
+                user.verified = true;
+                await this.connection.getRepository(User).save(user);
+                return user;
+            }
+        }
+    }
+
     /**
      * Generates a verification token which encodes the time of generation and concatenates it with a
      * random id.
@@ -64,7 +78,7 @@ export class UserService {
      * Checks the age of the verification token to see if it falls within the token duration
      * as specified in the VendureConfig.
      */
-    verifyVerificationToken(token: string): boolean {
+    private verifyVerificationToken(token: string): boolean {
         const duration = ms(this.configService.authOptions.verificationTokenDuration);
         const [generatedOn] = token.split('_');
         const dateString = Buffer.from(generatedOn, 'base64').toString();

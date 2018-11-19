@@ -35,6 +35,8 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         sessionSecret: 'session-secret',
         authTokenHeaderKey: 'vendure-auth-token',
         sessionDuration: '7d',
+        requireVerification: true,
+        verificationTokenDuration: '7d',
     },
     apiPath: API_PATH,
     entityIdStrategy: new AutoIncrementIdStrategy(),

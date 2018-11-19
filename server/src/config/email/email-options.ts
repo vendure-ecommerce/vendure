@@ -53,6 +53,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
     generate(
         subject: string,
         body: string,
-        context: EmailContext<T, E>,
+        templateContext: any,
+        emailContext: EmailContext<T, E>,
     ): GeneratedEmailContext<T, E> | Promise<GeneratedEmailContext<T, E>>;
 }

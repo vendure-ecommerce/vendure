@@ -18,13 +18,18 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    generate(subject: string, template: string, context: EmailContext): GeneratedEmailContext {
+    generate(
+        subject: string,
+        template: string,
+        templateContext: any,
+        emailContext: EmailContext,
+    ): GeneratedEmailContext {
         const compiledTemplate = Handlebars.compile(template);
         const compiledSubject = Handlebars.compile(subject);
-        const subjectResult = compiledSubject(context);
-        const mjml = compiledTemplate(context);
+        const subjectResult = compiledSubject(templateContext);
+        const mjml = compiledTemplate(templateContext);
         const bodyResult = mjml2html(mjml);
-        return new GeneratedEmailContext(context, subjectResult, bodyResult.html);
+        return new GeneratedEmailContext(emailContext, subjectResult, bodyResult.html);
     }
 
     private registerPartials(partialsPath: string) {
