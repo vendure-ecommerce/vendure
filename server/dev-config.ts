@@ -39,6 +39,7 @@ export const devConfig: VendureConfig = {
         generator: new HandlebarsMjmlGenerator(path.join(__dirname, 'src', 'email', 'templates', 'partials')),
         transport: {
             type: 'file',
+            raw: false,
             outputPath: path.join(__dirname, 'test-emails'),
         },
     },

@@ -8,7 +8,7 @@ import { normalizeString } from 'shared/normalize-string';
 import { assertNever } from 'shared/shared-utils';
 import { Stream } from 'stream';
 
-import { EmailTransportOptions } from '../config/email/email-transport-options';
+import { EmailTransportOptions, FileTransportOptions } from '../config/email/email-transport-options';
 
 import { GeneratedEmailContext } from './email-context';
 
@@ -30,16 +30,16 @@ export class EmailSender {
                 return;
                 break;
             case 'file':
-                transporter = createTransport({
-                    streamTransport: true,
-                });
-                const result = await this.sendMail(email, transporter);
                 const fileName = normalizeString(
-                    `${new Date().toISOString()} ${result.envelope.to[0]} ${email.subject}`,
+                    `${new Date().toISOString()} ${email.recipient} ${email.subject}`,
                     '_',
                 );
                 const filePath = path.join(options.outputPath, fileName);
-                await this.writeToFile(filePath, result);
+                if (options.raw) {
+                    await this.sendFileRaw(email, filePath);
+                } else {
+                    await this.sendFileHtml(email, filePath);
+                }
                 break;
             case 'sendmail':
                 transporter = createTransport({
@@ -70,7 +70,57 @@ export class EmailSender {
         });
     }
 
-    private async writeToFile(filePath: string, info: StreamTransportInfo): Promise<string> {
+    private async sendFileHtml(email: GeneratedEmailContext, pathWithoutExt: string) {
+        const content = `<html>
+            <head>
+                <title>${email.subject}</title>
+                <style>
+                    body {
+                        display: flex;
+                        flex-direction: column;
+                        font-family: Helvetica, Arial, sans-serif;
+                    }
+                    iframe {
+                        flex: 1;
+                        border: 1px solid #aaa;
+                    }
+                </style>
+            </head>
+            <body>
+            <div class="metadata">
+                <table>
+                    <tr>
+                        <td>Recipient:</td>
+                        <td>${email.recipient}</td>
+                    </tr>
+                    <tr>
+                        <td>Subject:</td>
+                        <td>${email.subject}</td>
+                    </tr>
+                    <tr>
+                        <td>Date:</td>
+                        <td>${new Date().toLocaleString()}</td>
+                    </tr>
+                </table>
+            </div>
+            <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
+            </body>
+            </html>
+        `;
+
+        await fs.writeFile(pathWithoutExt + '.html', content);
+    }
+
+    private async sendFileRaw(email: GeneratedEmailContext, pathWithoutExt: string) {
+        const transporter = createTransport({
+            streamTransport: true,
+            buffer: true,
+        });
+        const result = await this.sendMail(email, transporter);
+        await this.writeStreamToFile(pathWithoutExt + '.txt', result);
+    }
+
+    private async writeStreamToFile(filePath: string, info: StreamTransportInfo): Promise<string> {
         const writeStream = fs.createWriteStream(filePath);
         return new Promise<string>((resolve, reject) => {
             writeStream.on('open', () => {

@@ -28,6 +28,9 @@ export interface SMTPTransportOptions {
     authMethod?: string;
 }
 
+/**
+ * Uses the local Sendmail program to send the email.
+ */
 export interface SendmailTransportOptions {
     type: 'sendmail';
     /** path to the sendmail command (defaults to ‘sendmail’) */
@@ -36,11 +39,20 @@ export interface SendmailTransportOptions {
     newline?: string;
 }
 
+/**
+ * Outputs the email as an HTML file for development purposes.
+ */
 export interface FileTransportOptions {
     type: 'file';
+    /** The directory in which the emails will be saved */
     outputPath: string;
+    /** When set to true, a raw text file will be output rather than an HTML file */
+    raw: boolean;
 }
 
+/**
+ * Does nothing with the generated email. Mainly intended for use in testing.
+ */
 export interface NoopTransportOptions {
     type: 'none';
 }
