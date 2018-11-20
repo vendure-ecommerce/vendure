@@ -1,6 +1,8 @@
 /**
  * A subset of the SMTP transport options of Nodemailer (https://nodemailer.com/smtp/)
  */
+import { GeneratedEmailContext } from '../../email/email-context';
+
 export interface SMTPTransportOptions {
     type: 'smtp';
     /** the hostname or IP address to connect to (defaults to ‘localhost’) */
@@ -51,14 +53,23 @@ export interface FileTransportOptions {
 }
 
 /**
- * Does nothing with the generated email. Mainly intended for use in testing.
+ * Does nothing with the generated email. Mainly intended for use in testing where we don't care about the email transport.
  */
 export interface NoopTransportOptions {
     type: 'none';
+}
+
+/**
+ * Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
+ */
+export interface TestingTransportOptions {
+    type: 'testing';
+    onSend: (context: GeneratedEmailContext) => void;
 }
 
 export type EmailTransportOptions =
     | SMTPTransportOptions
     | SendmailTransportOptions
     | FileTransportOptions
-    | NoopTransportOptions;
+    | NoopTransportOptions
+    | TestingTransportOptions;

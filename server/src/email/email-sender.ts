@@ -57,6 +57,9 @@ export class EmailSender {
                 } as SMTPTransport.Options);
                 await this.sendMail(email, transporter);
                 break;
+            case 'testing':
+                options.onSend(email);
+                break;
             default:
                 return assertNever(options);
         }
@@ -71,7 +74,7 @@ export class EmailSender {
     }
 
     private async sendFileHtml(email: GeneratedEmailContext, pathWithoutExt: string) {
-        const content = `<html>
+        const content = `<html lang="en">
             <head>
                 <title>${email.subject}</title>
                 <style>
