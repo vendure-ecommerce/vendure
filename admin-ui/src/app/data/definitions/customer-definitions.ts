@@ -27,6 +27,7 @@ export const CUSTOMER_FRAGMENT = gql`
         user {
             id
             identifier
+            verified
             lastLogin
         }
         addresses {
@@ -47,6 +48,7 @@ export const GET_CUSTOMER_LIST = gql`
                 emailAddress
                 user {
                     id
+                    verified
                 }
             }
             totalItems

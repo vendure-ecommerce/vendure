@@ -114,7 +114,8 @@
     "name": "Name",
     "password": "Password",
     "registered": "Registered",
-    "title": "Title"
+    "title": "Title",
+    "verified": "Verified"
   },
   "error": {
     "401-unauthorized": "Invalid login. Please try again",

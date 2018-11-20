@@ -4632,6 +4632,7 @@ export namespace GetCustomerList {
     export type User = {
         __typename?: 'User';
         id: string;
+        verified: boolean;
     };
 }
 
@@ -5657,6 +5658,7 @@ export namespace Customer {
         __typename?: 'User';
         id: string;
         identifier: string;
+        verified: boolean;
         lastLogin?: string | null;
     };
 
