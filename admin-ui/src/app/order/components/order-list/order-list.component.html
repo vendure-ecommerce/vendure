@@ -1,18 +1,22 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <!--<a class="btn btn-primary" [routerLink]="['./create']">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'order.create-new-order' | translate }}
-        </a>-->
+        <!--
+            <a class="btn btn-primary" [routerLink]="['./create']">
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'order.create-new-order' | translate }}
+            </a>
+        -->
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="items$ | async"
-                [itemsPerPage]="itemsPerPage$ | async"
-                [totalItems]="totalItems$ | async"
-                [currentPage]="currentPage$ | async"
-                (pageChange)="setPageNumber($event)"
-                (itemsPerPageChange)="setItemsPerPage($event)">
+<vdr-data-table
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
@@ -23,17 +27,16 @@
     <ng-template let-order="item">
         <td class="left">{{ order.id }}</td>
         <td class="left">{{ order.code }}</td>
-        <td class="left">
-            <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
-        </td>
+        <td class="left"><vdr-customer-label [customer]="order.customer"></vdr-customer-label></td>
         <td class="left">{{ order.state }}</td>
         <td class="left">{{ order.total / 100 | currency }}</td>
-        <td class="left">{{ order.updatedAt | date:'medium' }}</td>
+        <td class="left">{{ order.updatedAt | date: 'medium' }}</td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', order.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', order.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

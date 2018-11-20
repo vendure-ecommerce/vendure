@@ -1,23 +1,31 @@
-<input type="text"
-       class="filter-input"
-       [placeholder]="'catalog.filter-by-group-name' | translate"
-       [formControl]="filterInput">
+<input
+    type="text"
+    class="filter-input"
+    [placeholder]="'catalog.filter-by-group-name' | translate"
+    [formControl]="filterInput"
+/>
 <div class="group-list">
-    <div class="group" *ngFor="let group of optionGroups$ | async">
-        <vdr-select-toggle [selected]="isSelected(group)"
-                           (selectedChange)="selectGroup.emit(group)"></vdr-select-toggle>
+    <div class="group" *ngFor="let group of (optionGroups$ | async)">
+        <vdr-select-toggle
+            [selected]="isSelected(group)"
+            (selectedChange)="selectGroup.emit(group)"
+        ></vdr-select-toggle>
         <div class="name-code">
             <div class="name">{{ group.name }}</div>
             <div class="code">{{ group.code }}</div>
         </div>
         <div class="options">
-            <vdr-chip class="option" *ngFor="let option of group.options | slice:0:truncateOptionsTo">
+            <vdr-chip class="option" *ngFor="let option of (group.options | slice: 0:truncateOptionsTo)">
                 {{ option.name }}
             </vdr-chip>
             <div *ngIf="optionsTruncated(group)">
                 <clr-signpost>
                     <a clrSignpostTrigger>
-                        (+ {{ 'catalog.truncated-options-count' | translate: { count: optionsTrucatedCount(group) } }})
+                        (+
+                        {{
+                            'catalog.truncated-options-count'
+                                | translate: { count: optionsTrucatedCount(group) }
+                        }})
                     </a>
                     <clr-signpost-content [clrPosition]="'bottom-middle'" *clrIfOpen>
                         <ul class="full-options-list">
@@ -31,7 +39,5 @@
 </div>
 <h5>{{ 'catalog.selected-option-groups' | translate }}:</h5>
 <div class="selected-groups">
-    <vdr-chip *ngFor="let selectedGroup of selectedGroups">
-        {{ selectedGroup.code }}
-    </vdr-chip>
+    <vdr-chip *ngFor="let selectedGroup of selectedGroups">{{ selectedGroup.code }}</vdr-chip>
 </div>

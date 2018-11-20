@@ -43,67 +43,56 @@ describe('NotificationService:', () => {
 
         let fixture: ComponentFixture<TestComponent>;
 
-        beforeEach(
-            fakeAsync(() => {
-                fixture = TestBed.createComponent(TestComponent);
-                tick();
-                fixture.detectChanges();
-            }),
-        );
+        beforeEach(fakeAsync(() => {
+            fixture = TestBed.createComponent(TestComponent);
+            tick();
+            fixture.detectChanges();
+        }));
 
-        it(
-            'should insert notify next to OverlayHost',
-            fakeAsync(() => {
-                const instance: TestComponent = fixture.componentInstance;
+        it('should insert notify next to OverlayHost', fakeAsync(() => {
+            const instance: TestComponent = fixture.componentInstance;
 
-                instance.notificationService.notify({ message: 'test' });
-                fixture.detectChanges();
-                tick();
+            instance.notificationService.notify({ message: 'test' });
+            fixture.detectChanges();
+            tick();
 
-                expect(fixture.nativeElement.querySelector('vdr-notification')).not.toBeNull();
-                runDismissTimers();
-            }),
-        );
+            expect(fixture.nativeElement.querySelector('vdr-notification')).not.toBeNull();
+            runDismissTimers();
+        }));
 
-        it(
-            'should bind the message',
-            fakeAsync(() => {
-                const instance: TestComponent = fixture.componentInstance;
+        it('should bind the message', fakeAsync(() => {
+            const instance: TestComponent = fixture.componentInstance;
 
-                instance.notificationService.notify({ message: 'test' });
-                tick();
-                fixture.detectChanges();
+            instance.notificationService.notify({ message: 'test' });
+            tick();
+            fixture.detectChanges();
 
-                expect(fixture.nativeElement.querySelector('.notification-wrapper').innerHTML).toContain(
-                    'test',
-                );
-                runDismissTimers();
-            }),
-        );
+            expect(fixture.nativeElement.querySelector('.notification-wrapper').innerHTML).toContain('test');
+            runDismissTimers();
+        }));
 
-        it(
-            'should dismiss after duration elapses',
-            fakeAsync(() => {
-                const instance: TestComponent = fixture.componentInstance;
+        it('should dismiss after duration elapses', fakeAsync(() => {
+            const instance: TestComponent = fixture.componentInstance;
 
-                instance.notificationService.notify({
-                    message: 'test',
-                    duration: 1000,
-                });
-                tick();
-                fixture.detectChanges();
-                expect(fixture.nativeElement.querySelector('vdr-notification')).not.toBeNull();
+            instance.notificationService.notify({
+                message: 'test',
+                duration: 1000,
+            });
+            tick();
+            fixture.detectChanges();
+            expect(fixture.nativeElement.querySelector('vdr-notification')).not.toBeNull();
 
-                runDismissTimers();
+            runDismissTimers();
 
-                expect(fixture.nativeElement.querySelector('vdr-notification')).toBeNull();
-            }),
-        );
+            expect(fixture.nativeElement.querySelector('vdr-notification')).toBeNull();
+        }));
     });
 });
 
 @Component({
-    template: `<vdr-overlay-host></vdr-overlay-host>`,
+    template: `
+        <vdr-overlay-host></vdr-overlay-host>
+    `,
 })
 class TestComponent {
     constructor(public notificationService: NotificationService) {}

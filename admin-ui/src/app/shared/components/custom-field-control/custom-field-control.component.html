@@ -1,22 +1,25 @@
-<vdr-form-field [label]="label"
-                [for]="customField.name">
-    <input *ngIf="customField.type === 'string' || customField.type === 'localeString'"
-           type="text"
-           [id]="customField.name"
-           [formControl]="formGroup.get(customField.name)">
-    <input *ngIf="customField.type === 'int' || customField.type === 'float'"
-           type="number"
-           [id]="customField.name"
-           [formControl]="formGroup.get(customField.name)">
-    <div *ngIf="customField.type === 'boolean'"
-         class="toggle-switch">
-        <input type="checkbox"
-               [id]="customField.name"
-               [formControl]="formGroup.get(customField.name)">
-        <label [for]="customField.name"></label></div>
-    <input *ngIf="customField.type === 'datetime'"
-           type="date"
-           [id]="customField.name"
-           [formControl]="formGroup.get(customField.name)"
-           clrDate>
+<vdr-form-field [label]="label" [for]="customField.name">
+    <input
+        *ngIf="customField.type === 'string' || customField.type === 'localeString'"
+        type="text"
+        [id]="customField.name"
+        [formControl]="formGroup.get(customField.name)"
+    />
+    <input
+        *ngIf="customField.type === 'int' || customField.type === 'float'"
+        type="number"
+        [id]="customField.name"
+        [formControl]="formGroup.get(customField.name)"
+    />
+    <div *ngIf="customField.type === 'boolean'" class="toggle-switch">
+        <input type="checkbox" [id]="customField.name" [formControl]="formGroup.get(customField.name)" />
+        <label [for]="customField.name"></label>
+    </div>
+    <input
+        *ngIf="customField.type === 'datetime'"
+        type="date"
+        [id]="customField.name"
+        [formControl]="formGroup.get(customField.name)"
+        clrDate
+    />
 </vdr-form-field>

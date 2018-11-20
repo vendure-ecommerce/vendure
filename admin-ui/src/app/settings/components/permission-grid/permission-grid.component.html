@@ -7,14 +7,16 @@
         <th>{{ 'settings.delete' | translate }}</th>
     </tr>
     <tbody>
-    <tr *ngFor="let section of gridData">
-        <td>{{ section.label | translate }}</td>
-        <td *ngFor="let permission of section.permissions">
-            <vdr-select-toggle size="small"
-                               [disabled]="readonly"
-                               [selected]="permissions[permission]"
-                               (selectedChange)="setPermission(permission, $event)"></vdr-select-toggle>
-        </td>
-    </tr>
+        <tr *ngFor="let section of gridData">
+            <td>{{ section.label | translate }}</td>
+            <td *ngFor="let permission of section.permissions">
+                <vdr-select-toggle
+                    size="small"
+                    [disabled]="readonly"
+                    [selected]="permissions[permission]"
+                    (selectedChange)="setPermission(permission, $event)"
+                ></vdr-select-toggle>
+            </td>
+        </tr>
     </tbody>
 </table>

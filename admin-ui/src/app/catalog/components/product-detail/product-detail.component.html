@@ -1,93 +1,120 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <vdr-language-selector [availableLanguageCodes]="availableLanguages$ | async"
-                               [currentLanguageCode]="languageCode$ | async"
-                               (languageCodeChange)="setLanguage($event)"></vdr-language-selector>
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="languageCode$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
     </vdr-ab-left>
 
-
     <vdr-ab-right>
-        <button class="btn btn-primary"
-                *ngIf="isNew$ | async; else updateButton"
-                (click)="create()"
-                [disabled]="productForm.invalid || productForm.pristine">{{ 'common.create' | translate }}</button>
+        <button
+            class="btn btn-primary"
+            *ngIf="(isNew$ | async); else: updateButton"
+            (click)="create()"
+            [disabled]="productForm.invalid || productForm.pristine"
+        >
+            {{ 'common.create' | translate }}
+        </button>
         <ng-template #updateButton>
-            <button class="btn btn-primary"
-                    (click)="save()"
-                    [disabled]="(productForm.invalid || productForm.pristine) && !assetsChanged()">{{ 'common.update' | translate }}</button>
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="(productForm.invalid || productForm.pristine) && !assetsChanged()"
+            >
+                {{ 'common.update' | translate }}
+            </button>
         </ng-template>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="productForm" *ngIf="product$ | async as product">
-
+<form class="form" [formGroup]="productForm" *ngIf="(product$ | async) as product">
     <clr-tabs>
         <clr-tab>
-            <button clrTabLink  (click)="navigateToTab('details')">{{ 'catalog.product-details' | translate }}</button>
+            <button clrTabLink (click)="navigateToTab('details')">
+                {{ 'catalog.product-details' | translate }}
+            </button>
             <clr-tab-content *clrIfActive="(activeTab$ | async) === 'details'">
                 <div class="clr-row">
                     <div class="clr-col">
                         <section class="form-block" formGroupName="product">
                             <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
-                                <input id="name" type="text" formControlName="name" (input)="updateSlug($event.target.value)">
+                                <input
+                                    id="name"
+                                    type="text"
+                                    formControlName="name"
+                                    (input)="updateSlug($event.target.value)"
+                                />
                             </vdr-form-field>
                             <vdr-form-field [label]="'catalog.slug' | translate" for="slug">
-                                <input id="slug" type="text" formControlName="slug">
+                                <input id="slug" type="text" formControlName="slug" />
                             </vdr-form-field>
-                            <vdr-rich-text-editor formControlName="description"
-                                                  [label]="'common.description' | translate"></vdr-rich-text-editor>
+                            <vdr-rich-text-editor
+                                formControlName="description"
+                                [label]="'common.description' | translate"
+                            ></vdr-rich-text-editor>
 
                             <section formGroupName="customFields" *ngIf="customFields.length">
                                 <label>{{ 'common.custom-fields' | translate }}</label>
                                 <ng-container *ngFor="let customField of customFields">
-                                    <vdr-custom-field-control *ngIf="customFieldIsSet(customField.name)"
-                                                              [customFieldsFormGroup]="productForm.get(['product', 'customFields'])"
-                                                              [customField]="customField"></vdr-custom-field-control>
+                                    <vdr-custom-field-control
+                                        *ngIf="customFieldIsSet(customField.name)"
+                                        [customFieldsFormGroup]="productForm.get(['product', 'customFields'])"
+                                        [customField]="customField"
+                                    ></vdr-custom-field-control>
                                 </ng-container>
                             </section>
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
-                        <vdr-product-assets [assets]="product.assets"
-                                            [featuredAsset]="product.featuredAsset"
-                                            (change)="assetChanges = $event"></vdr-product-assets>
+                        <vdr-product-assets
+                            [assets]="product.assets"
+                            [featuredAsset]="product.featuredAsset"
+                            (change)="assetChanges = $event"
+                        ></vdr-product-assets>
                     </div>
                 </div>
             </clr-tab-content>
         </clr-tab>
         <clr-tab>
-            <button clrTabLink (click)="navigateToTab('variants')">{{ 'catalog.product-variants' | translate }}</button>
+            <button clrTabLink (click)="navigateToTab('variants')">
+                {{ 'catalog.product-variants' | translate }}
+            </button>
             <clr-tab-content *clrIfActive="(activeTab$ | async) === 'variants'">
                 <section class="form-block" *ngIf="!(isNew$ | async)">
-                    <vdr-generate-product-variants *ngIf="(variants$ | async)?.length === 0; else variants"
-                                                   [product]="product"></vdr-generate-product-variants>
+                    <vdr-generate-product-variants
+                        *ngIf="(variants$ | async)?.length === 0; else: variants"
+                        [product]="product"
+                    ></vdr-generate-product-variants>
 
                     <ng-template #variants>
-                        <vdr-form-item *ngIf="product?.optionGroups.length"
-                                       [label]="'catalog.product-option-groups' | translate">
+                        <vdr-form-item
+                            *ngIf="product?.optionGroups.length"
+                            [label]="'catalog.product-option-groups' | translate"
+                        >
                             <div class="option-groups-list">
-                                <div *ngFor="let optionGroup of product?.optionGroups"
-                                     class="option-group">
+                                <div *ngFor="let optionGroup of product?.optionGroups" class="option-group">
                                     <vdr-chip>{{ optionGroup.name }} ({{ optionGroup.code }})</vdr-chip>
                                 </div>
                             </div>
                         </vdr-form-item>
 
-                        <vdr-product-variants-list [variants]="variants$ | async"
-                                                   [productVariantsFormArray]="productForm.get('variants')"
-                                                   [taxCategories]="taxCategories$ | async"
-                                                   #productVariantsList>
-                            <button class="btn btn-sm btn-secondary" (click)="selectFacetValue(productVariantsList.selectedVariantIds)">
+                        <vdr-product-variants-list
+                            [variants]="variants$ | async"
+                            [productVariantsFormArray]="productForm.get('variants')"
+                            [taxCategories]="taxCategories$ | async"
+                            #productVariantsList
+                        >
+                            <button
+                                class="btn btn-sm btn-secondary"
+                                (click)="selectFacetValue(productVariantsList.selectedVariantIds)"
+                            >
                                 {{ 'catalog.apply-facets' | translate }}
                             </button>
                         </vdr-product-variants-list>
                     </ng-template>
-
                 </section>
             </clr-tab-content>
         </clr-tab>
     </clr-tabs>
-
-
-
 </form>

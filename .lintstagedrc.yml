@@ -3,6 +3,9 @@ linters:
     - yarn lint:admin-ui
     - yarn format
     - git add
+  admin-ui/**/*.html:
+    - yarn format
+    - git add
   server/**/*.ts:
     - yarn lint:server
     - yarn format

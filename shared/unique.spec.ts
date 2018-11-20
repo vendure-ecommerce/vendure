@@ -1,7 +1,6 @@
 import { unique } from './unique';
 
 describe('unique()', () => {
-
     it('works with primitive values', () => {
         expect(unique([1, 1, 2, 3, 2, 6, 4, 2])).toEqual([1, 2, 3, 6, 4]);
         expect(unique(['a', 'f', 'g', 'f', 'y'])).toEqual(['a', 'f', 'g', 'y']);

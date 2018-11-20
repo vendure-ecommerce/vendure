@@ -7,12 +7,14 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="items$ | async"
-                [itemsPerPage]="itemsPerPage$ | async"
-                [totalItems]="totalItems$ | async"
-                [currentPage]="currentPage$ | async"
-                (pageChange)="setPageNumber($event)"
-                (itemsPerPageChange)="setItemsPerPage($event)">
+<vdr-data-table
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.first-name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.last-name' | translate }}</vdr-dt-column>
@@ -24,10 +26,11 @@
         <td class="left">{{ administrator.lastName }}</td>
         <td class="left">{{ administrator.emailAddress }}</td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', administrator.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', administrator.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

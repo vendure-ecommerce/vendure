@@ -1,10 +1,11 @@
-<ng-select [items]="facetValues$ | async"
-           [addTag]="true"
-           [hideSelected]="true"
-           groupBy="facetName"
-           bindValue="value"
-           multiple="true"
-           appendTo="body"
-           bindLabel="name"
-           (change)="onChange($event)">
-</ng-select>
+<ng-select
+    [items]="facetValues$ | async"
+    [addTag]="true"
+    [hideSelected]="true"
+    groupBy="facetName"
+    bindValue="value"
+    multiple="true"
+    appendTo="body"
+    bindLabel="name"
+    (change)="onChange($event)"
+></ng-select>

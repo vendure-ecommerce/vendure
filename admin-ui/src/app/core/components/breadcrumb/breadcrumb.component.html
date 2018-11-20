@@ -1,6 +1,6 @@
 <nav role="navigation">
     <ul class="breadcrumbs">
-        <li *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last">
+        <li *ngFor="let breadcrumb of (breadcrumbs$ | async); let isLast = last">
             <a [routerLink]="breadcrumb.link" *ngIf="!isLast">{{ breadcrumb.label | translate }}</a>
             <ng-container *ngIf="isLast">{{ breadcrumb.label | translate }}</ng-container>
         </li>

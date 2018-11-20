@@ -3,7 +3,6 @@ import { omit } from './omit';
 declare const File: any;
 
 describe('omit()', () => {
-
     it('returns a new object', () => {
         const obj = { foo: 1, bar: 2 };
         expect(omit(obj, ['bar'])).not.toBe(obj);
@@ -15,15 +14,20 @@ describe('omit()', () => {
     });
 
     it('works with deeply-nested objects', () => {
-        expect(omit({
-            name: {
-                first: 'joe',
-                last: 'smith',
-            },
-            address: {
-                number: 12,
-            },
-        }, ['address'])).toEqual({
+        expect(
+            omit(
+                {
+                    name: {
+                        first: 'joe',
+                        last: 'smith',
+                    },
+                    address: {
+                        number: 12,
+                    },
+                },
+                ['address'],
+            ),
+        ).toEqual({
             name: {
                 first: 'joe',
                 last: 'smith',
@@ -32,7 +36,6 @@ describe('omit()', () => {
     });
 
     describe('recursive', () => {
-
         it('returns a new object', () => {
             const obj = { foo: 1, bar: 2 };
             expect(omit(obj, ['bar'], true)).not.toBe(obj);
@@ -84,42 +87,23 @@ describe('omit()', () => {
             };
             const expected = {
                 foo: 1,
-                bar: [
-                    { good: true },
-                    {},
-                ],
+                bar: [{ good: true }, {}],
             };
 
             expect(omit(input, ['bad'], true)).toEqual(expected);
         });
 
         it('works top-level array', () => {
-            const input = [
-                { foo: 1 },
-                { bad: true },
-                { bar: 2 },
-            ];
-            const expected = [
-                { foo: 1 },
-                {},
-                { bar: 2 },
-            ];
+            const input = [{ foo: 1 }, { bad: true }, { bar: 2 }];
+            const expected = [{ foo: 1 }, {}, { bar: 2 }];
 
             expect(omit(input, ['bad'], true)).toEqual(expected);
         });
 
         it('preserves File objects', () => {
             const file = new File([], 'foo');
-            const input = [
-                { foo: 1 },
-                { bad: true },
-                { bar: file },
-            ];
-            const expected = [
-                { foo: 1 },
-                {},
-                { bar: file },
-            ];
+            const input = [{ foo: 1 }, { bad: true }, { bar: file }];
+            const expected = [{ foo: 1 }, {}, { bar: file }];
 
             expect(omit(input, ['bad'], true)).toEqual(expected);
         });

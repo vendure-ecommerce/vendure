@@ -19,15 +19,17 @@ export class ShippingCalculator {
         order: Order,
     ): Promise<Array<{ method: ShippingMethod; price: number }>> {
         const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
-        const methodsPromiseArray = shippingMethods.filter(async sm => await sm.test(order)).map(async sm => {
-            const adjustment = await sm.apply(order);
-            if (adjustment) {
-                return {
-                    method: sm,
-                    price: adjustment.amount,
-                };
-            }
-        });
+        const methodsPromiseArray = shippingMethods
+            .filter(async sm => await sm.test(order))
+            .map(async sm => {
+                const adjustment = await sm.apply(order);
+                if (adjustment) {
+                    return {
+                        method: sm,
+                        price: adjustment.amount,
+                    };
+                }
+            });
         const methods = await Promise.all(methodsPromiseArray);
         return methods.filter(notNullOrUndefined).sort((a, b) => a.price - b.price);
     }

@@ -9,12 +9,16 @@ export class ActionBarComponent {}
 
 @Component({
     selector: 'vdr-ab-left',
-    template: `<ng-content></ng-content>`,
+    template: `
+        <ng-content></ng-content>
+    `,
 })
 export class ActionBarLeftComponent {}
 
 @Component({
     selector: 'vdr-ab-right',
-    template: `<ng-content></ng-content>`,
+    template: `
+        <ng-content></ng-content>
+    `,
 })
 export class ActionBarRightComponent {}

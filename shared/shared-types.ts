@@ -1,4 +1,5 @@
 // tslint:disable:no-shadowed-variable
+// prettier-ignore
 /**
  * A recursive implementation of the Partial<T> type.
  * Source: https://stackoverflow.com/a/49936686/772859
@@ -15,7 +16,9 @@ export type DeepPartial<T> = {
 /**
  * A type representing the type rather than instance of a class.
  */
-export interface Type<T> extends Function { new (...args: any[]): T; }
+export interface Type<T> extends Function {
+    new (...args: any[]): T;
+}
 
 /**
  * A type describing the shape of a paginated list response

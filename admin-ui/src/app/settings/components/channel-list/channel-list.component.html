@@ -15,10 +15,11 @@
         <td class="left">{{ channel.id }}</td>
         <td class="left">{{ channel.code }}</td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', channel.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', channel.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

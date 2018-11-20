@@ -1,52 +1,54 @@
 <div class="card" *ngIf="operation">
-    <div class="card-block">
-        {{ interpolateDescription() }}
-    </div>
+    <div class="card-block">{{ interpolateDescription() }}</div>
     <div class="card-block" *ngIf="operation.args?.length">
-        <form clrForm
-              [formGroup]="form"
-              *ngIf="operation"
-              class="operation-inputs">
-
+        <form clrForm [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <clr-input-container *ngFor="let arg of operation.args">
                 <label>{{ arg.name | titlecase }}</label>
-                <div *ngIf="arg.type === 'boolean'"
-                     clrInput
-                     class="checkbox" >
-                    <input type="checkbox"
-                           [formControlName]="arg.name"
-                           [id]="arg.name">
+                <div *ngIf="arg.type === 'boolean'" clrInput class="checkbox">
+                    <input type="checkbox" [formControlName]="arg.name" [id]="arg.name" />
                     <label [for]="arg.name"></label>
                 </div>
-                <input *ngIf="arg.type === 'int'"
-                       clrInput [name]="arg.name"
-                       type="number"
-                       step="1"
-                       [formControlName]="arg.name">
-                <input *ngIf="arg.type === 'string'"
-                       clrInput [name]="arg.name"
-                       type="text"
-                       [formControlName]="arg.name">
-                <input *ngIf="arg.type === 'datetime'"
-                       clrInput [name]="arg.name"
-                       type="date"
-                       [formControlName]="arg.name">
-                <vdr-currency-input *ngIf="arg.type === 'money'"
-                                    clrInput
-                                    [formControlName]="arg.name"></vdr-currency-input>
-                <vdr-percentage-suffix-input *ngIf="arg.type === 'percentage'"
-                                             [formControlName]="arg.name"
-                                             clrInput></vdr-percentage-suffix-input>
+                <input
+                    *ngIf="arg.type === 'int'"
+                    clrInput
+                    [name]="arg.name"
+                    type="number"
+                    step="1"
+                    [formControlName]="arg.name"
+                />
+                <input
+                    *ngIf="arg.type === 'string'"
+                    clrInput
+                    [name]="arg.name"
+                    type="text"
+                    [formControlName]="arg.name"
+                />
+                <input
+                    *ngIf="arg.type === 'datetime'"
+                    clrInput
+                    [name]="arg.name"
+                    type="date"
+                    [formControlName]="arg.name"
+                />
+                <vdr-currency-input
+                    *ngIf="arg.type === 'money'"
+                    clrInput
+                    [formControlName]="arg.name"
+                ></vdr-currency-input>
+                <vdr-percentage-suffix-input
+                    *ngIf="arg.type === 'percentage'"
+                    [formControlName]="arg.name"
+                    clrInput
+                ></vdr-percentage-suffix-input>
 
                 <clr-control-error>{{ 'error.this-field-is-required' | translate }}</clr-control-error>
             </clr-input-container>
-
         </form>
     </div>
     <div class="card-footer">
-        <button class="btn btn-sm btn-link btn-warning"
-                (click)="remove.emit(operation)">
-            <clr-icon shape="times"></clr-icon> {{ 'common.remove' | translate }}
+        <button class="btn btn-sm btn-link btn-warning" (click)="remove.emit(operation)">
+            <clr-icon shape="times"></clr-icon>
+            {{ 'common.remove' | translate }}
         </button>
     </div>
 </div>

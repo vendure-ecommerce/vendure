@@ -1,7 +1,6 @@
-<div class="form-group"
-    [class.no-label]="!label">
-    <label *ngIf="label"
-           [for]="for">{{ label }}
+<div class="form-group" [class.no-label]="!label">
+    <label *ngIf="label" [for]="for">
+        {{ label }}
         <clr-tooltip *ngIf="tooltip">
             <clr-icon clrTooltipTrigger shape="info-circle" size="24"></clr-icon>
             <clr-tooltip-content clrPosition="top-right" clrSize="lg" *clrIfOpen>
@@ -9,24 +8,26 @@
             </clr-tooltip-content>
         </clr-tooltip>
     </label>
-    <label [for]="for"
-           aria-haspopup="true"
-           role="tooltip"
-           [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
-           class="tooltip tooltip-validation tooltip-sm tooltip-top-left">
+    <label
+        [for]="for"
+        aria-haspopup="true"
+        role="tooltip"
+        [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
+        class="tooltip tooltip-validation tooltip-sm tooltip-top-left"
+    >
         <div class="input-row">
             <ng-content></ng-content>
-            <button *ngIf="readOnlyToggle"
-                    type="button"
-                    [disabled]="!isReadOnly"
-                    [title]="'common.edit-field' | translate"
-                    class="btn btn-icon btn-sm edit-button"
-                    (click)="setReadOnly(false)">
+            <button
+                *ngIf="readOnlyToggle"
+                type="button"
+                [disabled]="!isReadOnly"
+                [title]="'common.edit-field' | translate"
+                class="btn btn-icon btn-sm edit-button"
+                (click)="setReadOnly(false)"
+            >
                 <clr-icon shape="edit"></clr-icon>
             </button>
         </div>
-        <span class="tooltip-content">
-            {{ label }} is required.
-        </span>
+        <span class="tooltip-content">{{ label }} is required.</span>
     </label>
 </div>

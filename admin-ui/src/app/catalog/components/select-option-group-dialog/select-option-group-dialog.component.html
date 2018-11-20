@@ -1,10 +1,10 @@
 <ng-template vdrDialogTitle>{{ 'catalog.select-option-group' | translate }}</ng-template>
 
-<vdr-select-option-group [selectedGroups]="existingOptionGroups"
-                         (selectGroup)="selectGroup($event)"></vdr-select-option-group>
+<vdr-select-option-group
+    [selectedGroups]="existingOptionGroups"
+    (selectGroup)="selectGroup($event)"
+></vdr-select-option-group>
 
 <ng-template vdrDialogButtons>
-    <button type="button"
-            class="btn"
-            (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
 </ng-template>

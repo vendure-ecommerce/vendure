@@ -13,6 +13,7 @@ export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: T;
 };
 
+// prettier-ignore
 /**
  * Represents the ConfigArgs once they have been coerced into JavaScript values for use
  * in business logic.

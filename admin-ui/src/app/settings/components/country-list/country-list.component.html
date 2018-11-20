@@ -1,10 +1,12 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <div *ngIf="selectedCountryIds.length">
-            <button class="btn btn-sm"
-                    (click)="addCountriesToZone()">{{ 'settings.add-countries-to-zone' | translate }}</button>
-            <button class="btn btn-sm"
-                    (click)="removeCountriesFromZone()">{{ 'settings.remove-countries-from-zone' | translate }}</button>
+            <button class="btn btn-sm" (click)="addCountriesToZone()">
+                {{ 'settings.add-countries-to-zone' | translate }}
+            </button>
+            <button class="btn btn-sm" (click)="removeCountriesFromZone()">
+                {{ 'settings.remove-countries-from-zone' | translate }}
+            </button>
         </div>
     </vdr-ab-left>
 
@@ -16,11 +18,13 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="countriesWithZones$ | async"
-                [allSelected]="areAllSelected()"
-                [isRowSelectedFn]="isCountrySelected"
-                (rowSelectChange)="toggleSelectCountry($event)"
-                (allSelectChange)="toggleSelectAll()">
+<vdr-data-table
+    [items]="countriesWithZones$ | async"
+    [allSelected]="areAllSelected()"
+    [isRowSelectedFn]="isCountrySelected"
+    (rowSelectChange)="toggleSelectCountry($event)"
+    (allSelectChange)="toggleSelectAll()"
+>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.zone' | translate }}</vdr-dt-column>
@@ -30,18 +34,20 @@
         <td class="left">{{ country.code }}</td>
         <td class="left">{{ country.name }}</td>
         <td class="left">
-            <vdr-chip *ngFor="let zone of country.zones"
-                      [colorFrom]="zone.id">{{ zone.name }}</vdr-chip>
+            <vdr-chip *ngFor="let zone of country.zones" [colorFrom]="zone.id">{{ zone.name }}</vdr-chip>
         </td>
         <td class="left">
-            <clr-icon [class.enabled]="country.enabled"
-                      [attr.shape]="country.enabled ? 'check' : 'times'"></clr-icon>
+            <clr-icon
+                [class.enabled]="country.enabled"
+                [attr.shape]="country.enabled ? 'check' : 'times'"
+            ></clr-icon>
         </td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', country.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', country.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

@@ -11,7 +11,7 @@ const SCHEMA_OUTPUT_FILE = path.join(__dirname, '../schema.json');
 // tslint:disable:no-console
 
 downloadIntrospectionSchema(SCHEMA_OUTPUT_FILE)
-    .then((downloaded) => {
+    .then(downloaded => {
         if (!downloaded) {
             console.log('Attempting to generate types from existing schema.json...');
         }
@@ -19,15 +19,17 @@ downloadIntrospectionSchema(SCHEMA_OUTPUT_FILE)
             schema: SCHEMA_OUTPUT_FILE,
             clientSchema: path.join(__dirname, 'client-schema.ts'),
             template: 'typescript',
-            out: path.join(__dirname,  '../shared/generated-types.ts'),
+            out: path.join(__dirname, '../shared/generated-types.ts'),
             overwrite: true,
             args: [CLIENT_QUERY_FILES],
         });
     })
-    .then(result => {
+    .then(
+        result => {
             process.exit(0);
         },
         err => {
             console.error(err);
             process.exit(1);
-        });
+        },
+    );

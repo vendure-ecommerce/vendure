@@ -1,34 +1,35 @@
 <div class="login-wrapper">
     <form class="login">
-        <label class="title">
-            <img src="/assets/cube-logo-300px.png">
-        </label>
+        <label class="title"><img src="/assets/cube-logo-300px.png" /></label>
         <div class="login-group">
-            <input class="username"
-                   type="text"
-                   name="username"
-                   id="login_username"
-                   [(ngModel)]="username"
-                   [placeholder]="'common.username' | translate">
-            <input class="password"
-                   name="password"
-                   type="password"
-                   id="login_password"
-                   [(ngModel)]="password"
-                   [placeholder]="'common.password' | translate">
+            <input
+                class="username"
+                type="text"
+                name="username"
+                id="login_username"
+                [(ngModel)]="username"
+                [placeholder]="'common.username' | translate"
+            />
+            <input
+                class="password"
+                name="password"
+                type="password"
+                id="login_password"
+                [(ngModel)]="password"
+                [placeholder]="'common.password' | translate"
+            />
             <div class="checkbox">
-                <input type="checkbox"
-                       id="rememberme"
-                       name="rememberme"
-                       [(ngModel)]="rememberMe">
-                <label for="rememberme">
-                    {{ 'common.remember-me' | translate }}
-                </label>
+                <input type="checkbox" id="rememberme" name="rememberme" [(ngModel)]="rememberMe" />
+                <label for="rememberme">{{ 'common.remember-me' | translate }}</label>
             </div>
-            <button type="submit"
-                    class="btn btn-primary"
-                    (click)="logIn()"
-                    [disabled]="!username || !password">{{ 'common.login' | translate }}</button>
+            <button
+                type="submit"
+                class="btn btn-primary"
+                (click)="logIn()"
+                [disabled]="!username || !password"
+            >
+                {{ 'common.login' | translate }}
+            </button>
         </div>
     </form>
 </div>

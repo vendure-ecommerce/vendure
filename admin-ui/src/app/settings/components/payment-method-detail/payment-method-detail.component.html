@@ -1,30 +1,37 @@
 <vdr-action-bar>
-    <vdr-ab-left>
-    </vdr-ab-left>
+    <vdr-ab-left></vdr-ab-left>
 
     <vdr-ab-right>
-        <button class="btn btn-primary"
-                *ngIf="isNew$ | async; else updateButton"
-                (click)="create()"
-                [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid">{{ 'common.create' | translate }}</button>
+        <button
+            class="btn btn-primary"
+            *ngIf="(isNew$ | async); else: updateButton"
+            (click)="create()"
+            [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid"
+        >
+            {{ 'common.create' | translate }}
+        </button>
         <ng-template #updateButton>
-            <button class="btn btn-primary"
-                    (click)="save()"
-                    [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid">{{ 'common.update' | translate }}</button>
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid"
+            >
+                {{ 'common.update' | translate }}
+            </button>
         </ng-template>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="paymentMethodForm" >
+<form class="form" [formGroup]="paymentMethodForm">
     <section class="form-block">
         <vdr-form-field [label]="'common.code' | translate" for="code">
-            <input id="code" type="text" formControlName="code">
+            <input id="code" type="text" formControlName="code" />
         </vdr-form-field>
     </section>
     <section class="form-block">
         <vdr-form-field [label]="'common.enabled' | translate" for="description">
             <div class="toggle-switch">
-                <input type="checkbox" id="enabled" formControlName="enabled">
+                <input type="checkbox" id="enabled" formControlName="enabled" />
                 <label for="enabled"></label>
             </div>
         </vdr-form-field>
@@ -35,14 +42,14 @@
             <label>{{ 'settings.payment-method-config-options' | translate }}</label>
             <section class="form-block" *ngFor="let arg of (entity$ | async).configArgs">
                 <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="arg.type === 'string'">
-                    <input [id]="arg.name" type="text" [formControlName]="arg.name" >
+                    <input [id]="arg.name" type="text" [formControlName]="arg.name" />
                 </vdr-form-field>
                 <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="arg.type === 'int'">
-                    <input [id]="arg.name" type="number" [formControlName]="arg.name" >
+                    <input [id]="arg.name" type="number" [formControlName]="arg.name" />
                 </vdr-form-field>
                 <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="arg.type === 'boolean'">
                     <div class="toggle-switch" *ngIf="arg.type === 'boolean'">
-                        <input type="checkbox" [id]="arg.name" [formControlName]="arg.name">
+                        <input type="checkbox" [id]="arg.name" [formControlName]="arg.name" />
                         <label [for]="arg.name"></label>
                     </div>
                 </vdr-form-field>

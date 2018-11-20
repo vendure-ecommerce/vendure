@@ -1,14 +1,13 @@
-<vdr-action-bar>
-    <vdr-ab-right>
-    </vdr-ab-right>
-</vdr-action-bar>
+<vdr-action-bar><vdr-ab-right></vdr-ab-right></vdr-action-bar>
 
-<vdr-data-table [items]="items$ | async"
-                [itemsPerPage]="itemsPerPage$ | async"
-                [totalItems]="totalItems$ | async"
-                [currentPage]="currentPage$ | async"
-                (pageChange)="setPageNumber($event)"
-                (itemsPerPageChange)="setItemsPerPage($event)">
+<vdr-data-table
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
@@ -16,10 +15,11 @@
         <td class="left">{{ paymentMethod.code }}</td>
         <td class="left">{{ paymentMethod.enabled }}</td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', paymentMethod.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', paymentMethod.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

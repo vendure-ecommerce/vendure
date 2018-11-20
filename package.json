@@ -6,7 +6,7 @@
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
     "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
-    "format": "prettier --write",
+    "format": "prettier --write --html-whitespace-sensitivity ignore",
     "lint:server": "cd server && yarn lint --fix",
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
     "precommit": "lint-staged",
@@ -21,7 +21,7 @@
     "graphql-tools": "^4.0.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.0",
-    "prettier": "^1.13.7",
+    "prettier": "^1.15.2",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.3"

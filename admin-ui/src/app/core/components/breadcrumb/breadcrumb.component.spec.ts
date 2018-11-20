@@ -439,14 +439,16 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
     selector: 'test-root-component',
     template: `
         <vdr-breadcrumb></vdr-breadcrumb>
-        <router-outlet></router-outlet>`,
+        <router-outlet></router-outlet>
+    `,
 })
 class TestParentComponent {}
 
 @Component({
     selector: 'test-child-component',
     template: `
-        <vdr-breadcrumb></vdr-breadcrumb>`,
+        <vdr-breadcrumb></vdr-breadcrumb>
+    `,
 })
 class TestChildComponent {}
 

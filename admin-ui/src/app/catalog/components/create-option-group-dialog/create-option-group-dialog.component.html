@@ -1,18 +1,21 @@
 <ng-template vdrDialogTitle>{{ 'catalog.create-new-option-group' | translate }}</ng-template>
 
-<vdr-create-option-group-form #createOptionGroupForm
-                              [productId]="productId"
-                              [productName]="productName"></vdr-create-option-group-form>
+<vdr-create-option-group-form
+    #createOptionGroupForm
+    [productId]="productId"
+    [productName]="productName"
+></vdr-create-option-group-form>
 
 <ng-template vdrDialogButtons>
-    <button type="button"
-            class="btn"
-            (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button type="submit"
-            (click)="createOptionGroup()"
-            class="btn btn-primary"
-            [disabled]="createOptionGroupForm.optionGroupForm.invalid || createOptionGroupForm.optionGroupForm.pristine">
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button
+        type="submit"
+        (click)="createOptionGroup()"
+        class="btn btn-primary"
+        [disabled]="
+            createOptionGroupForm.optionGroupForm.invalid || createOptionGroupForm.optionGroupForm.pristine
+        "
+    >
         {{ 'catalog.create-group' | translate }}
     </button>
 </ng-template>
-

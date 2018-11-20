@@ -17,26 +17,31 @@ export function downloadIntrospectionSchema(outputFilePath: string): Promise<boo
     const body = JSON.stringify({ query: introspectionQuery });
 
     return new Promise((resolve, reject) => {
-        const request = http.request({
-            method: 'post',
-            host: 'localhost',
-            port: API_PORT,
-            path: '/' + API_PATH,
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': Buffer.byteLength(body),
+        const request = http.request(
+            {
+                method: 'post',
+                host: 'localhost',
+                port: API_PORT,
+                path: '/' + API_PATH,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(body),
+                },
             },
-        }, response => {
-            const outputFile = fs.createWriteStream(outputFilePath);
-            response.pipe(outputFile);
-            response.on('end', () => resolve(true));
-            response.on('error', reject);
-        });
+            response => {
+                const outputFile = fs.createWriteStream(outputFilePath);
+                response.pipe(outputFile);
+                response.on('end', () => resolve(true));
+                response.on('error', reject);
+            },
+        );
         request.write(body);
         request.end();
         request.on('error', (err: any) => {
             if (err.code === 'ECONNREFUSED') {
-                console.error(`ERROR: Could not connect to the Vendure server at http://localhost:${API_PORT}/${API_PATH}`);
+                console.error(
+                    `ERROR: Could not connect to the Vendure server at http://localhost:${API_PORT}/${API_PATH}`,
+                );
                 resolve(false);
             }
             reject(err);

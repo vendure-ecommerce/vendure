@@ -8,22 +8,33 @@
 
     <clr-wizard-page>
         <ng-template clrPageTitle>{{ 'catalog.create-new-option-group' | translate }}</ng-template>
-        <vdr-create-option-group-form #createOptionGroupForm
-                                      [productName]="product?.name"
-                                      [productId]="product?.id"></vdr-create-option-group-form>
-        <button (click)="createOptionGroup()"
-                class="btn btn-primary"
-                [disabled]="createOptionGroupForm.optionGroupForm.invalid || createOptionGroupForm.optionGroupForm.pristine">
+        <vdr-create-option-group-form
+            #createOptionGroupForm
+            [productName]="product?.name"
+            [productId]="product?.id"
+        ></vdr-create-option-group-form>
+        <button
+            (click)="createOptionGroup()"
+            class="btn btn-primary"
+            [disabled]="
+                createOptionGroupForm.optionGroupForm.invalid ||
+                createOptionGroupForm.optionGroupForm.pristine
+            "
+        >
             {{ 'catalog.create-group' | translate }}
         </button>
     </clr-wizard-page>
 
-    <clr-wizard-page (clrWizardPageOnLoad)="selectOptionGroup.refresh()"
-                     [clrWizardPageNextDisabled]="selectedOptionGroups.length < 1">
+    <clr-wizard-page
+        (clrWizardPageOnLoad)="selectOptionGroup.refresh()"
+        [clrWizardPageNextDisabled]="selectedOptionGroups.length < 1"
+    >
         <ng-template clrPageTitle>{{ 'catalog.select-option-group' | translate }}</ng-template>
-        <vdr-select-option-group #selectOptionGroup
-                                 [selectedGroups]="selectedOptionGroups"
-                                 (selectGroup)="toggleSelectedGroup($event)"></vdr-select-option-group>
+        <vdr-select-option-group
+            #selectOptionGroup
+            [selectedGroups]="selectedOptionGroups"
+            (selectGroup)="toggleSelectedGroup($event)"
+        ></vdr-select-option-group>
     </clr-wizard-page>
 
     <clr-wizard-page>
@@ -32,12 +43,10 @@
             <vdr-currency-input [(ngModel)]="defaultPrice"></vdr-currency-input>
         </vdr-form-field>
         <vdr-form-field [label]="'catalog.default-sku'">
-            <input type="text" [(ngModel)]="defaultSku">
+            <input type="text" [(ngModel)]="defaultSku" />
         </vdr-form-field>
         <h4>{{ 'catalog.selected-option-groups' | translate }}:</h4>
-        <vdr-chip *ngFor="let selectedGroup of selectedOptionGroups">
-            {{ selectedGroup.code }}
-        </vdr-chip>
+        <vdr-chip *ngFor="let selectedGroup of selectedOptionGroups">{{ selectedGroup.code }}</vdr-chip>
         <h5>{{ 'catalog.confirm-generate-product-variants' | translate: { count: getVariantCount() } }}</h5>
         <ol class="list">
             <li *ngFor="let item of productVariantPreviewList">{{ item }}</li>

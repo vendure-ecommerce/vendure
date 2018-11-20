@@ -7,12 +7,14 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table [items]="items$ | async"
-                [itemsPerPage]="itemsPerPage$ | async"
-                [totalItems]="totalItems$ | async"
-                [currentPage]="currentPage$ | async"
-                (pageChange)="setPageNumber($event)"
-                (itemsPerPageChange)="setItemsPerPage($event)">
+<vdr-data-table
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
     <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
@@ -26,10 +28,11 @@
             <vdr-chip *ngFor="let value of facet.values">{{ value.name }}</vdr-chip>
         </td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', facet.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', facet.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

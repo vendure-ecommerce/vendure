@@ -1,14 +1,18 @@
 <form class="form" [formGroup]="optionGroupForm">
     <section class="form-block">
         <vdr-form-field [label]="'catalog.option-group-name' | translate" for="name">
-            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)">
+            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)" />
         </vdr-form-field>
         <vdr-form-field [label]="'catalog.option-group-code' | translate" for="code" [readOnlyToggle]="true">
-            <input id="code" type="text" formControlName="code">
+            <input id="code" type="text" formControlName="code" />
         </vdr-form-field>
-        <vdr-form-field [label]="'catalog.option-group-options-label' | translate"
-                        [tooltip]="'catalog.option-group-options-tooltip' | translate: { defaultLanguage: defaultLanguage }"
-                        for="options">
+        <vdr-form-field
+            [label]="'catalog.option-group-options-label' | translate"
+            [tooltip]="
+                'catalog.option-group-options-tooltip' | translate: { defaultLanguage: defaultLanguage }
+            "
+            for="options"
+        >
             <textarea id="options" type="text" formControlName="options" rows="10"></textarea>
         </vdr-form-field>
     </section>

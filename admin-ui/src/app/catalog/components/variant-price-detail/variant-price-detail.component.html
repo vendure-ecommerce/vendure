@@ -1,7 +1,10 @@
 <label class="clr-control-label">{{ 'catalog.taxes' | translate }}</label>
 <div *ngIf="priceIncludesTax">
-    {{ 'catalog.price-includes-tax-at' | translate : { rate: (taxRate$ | async) } }}
+    {{ 'catalog.price-includes-tax-at' | translate: { rate: taxRate$ | async } }}
 </div>
 <div *ngIf="!priceIncludesTax">
-    {{ 'catalog.price-with-tax-in-default-zone' | translate: { price: (grossPrice$ | async | currency), rate: (taxRate$ | async) } }}
+    {{
+        'catalog.price-with-tax-in-default-zone'
+            | translate: { price: grossPrice$ | async | currency, rate: taxRate$ | async }
+    }}
 </div>

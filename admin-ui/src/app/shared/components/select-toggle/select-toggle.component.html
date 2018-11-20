@@ -1,10 +1,12 @@
-<div class="toggle"
-     [class.disabled]="disabled"
-     [class.small]="size === 'small'"
-     [attr.tabindex]="disabled ? null : 0"
-     [class.selected]="selected"
-     (keydown.enter)="selectedChange.emit(!selected)"
-     (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
-     (click)="selectedChange.emit(!selected)">
+<div
+    class="toggle"
+    [class.disabled]="disabled"
+    [class.small]="size === 'small'"
+    [attr.tabindex]="disabled ? null : 0"
+    [class.selected]="selected"
+    (keydown.enter)="selectedChange.emit(!selected)"
+    (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
+    (click)="selectedChange.emit(!selected)"
+>
     <clr-icon shape="check" [attr.size]="size === 'small' ? 16 : 32"></clr-icon>
 </div>

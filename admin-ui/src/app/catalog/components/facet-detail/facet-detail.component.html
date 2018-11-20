@@ -1,88 +1,101 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <vdr-language-selector [availableLanguageCodes]="availableLanguages$ | async"
-                               [currentLanguageCode]="languageCode$ | async"
-                               (languageCodeChange)="setLanguage($event)"></vdr-language-selector>
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="languageCode$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
     </vdr-ab-left>
 
-
     <vdr-ab-right>
-        <button class="btn btn-primary"
-                *ngIf="isNew$ | async; else updateButton"
-                (click)="create()"
-                [disabled]="facetForm.invalid || facetForm.pristine">{{ 'common.create' | translate }}</button>
+        <button
+            class="btn btn-primary"
+            *ngIf="(isNew$ | async); else: updateButton"
+            (click)="create()"
+            [disabled]="facetForm.invalid || facetForm.pristine"
+        >
+            {{ 'common.create' | translate }}
+        </button>
         <ng-template #updateButton>
-            <button class="btn btn-primary"
-                    (click)="save()"
-                    [disabled]="facetForm.invalid || facetForm.pristine">{{ 'common.update' | translate }}</button>
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="facetForm.invalid || facetForm.pristine"
+            >
+                {{ 'common.update' | translate }}
+            </button>
         </ng-template>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="facetForm" >
+<form class="form" [formGroup]="facetForm">
     <section class="form-block" formGroupName="facet">
         <label>{{ 'catalog.facet' | translate }}</label>
         <vdr-form-field [label]="'common.name' | translate" for="name">
-            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)">
+            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)" />
         </vdr-form-field>
         <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
-            <input id="code" type="text" formControlName="code">
+            <input id="code" type="text" formControlName="code" />
         </vdr-form-field>
 
         <section formGroupName="customFields" *ngIf="customFields.length">
             <label>{{ 'catalog.custom-fields' }}</label>
             <ng-container *ngFor="let customField of customFields">
-                <vdr-custom-field-control *ngIf="customFieldIsSet(customField.name)"
-                                          [customFieldsFormGroup]="facetForm.get(['facet', 'customFields'])"
-                                          [customField]="customField"></vdr-custom-field-control>
+                <vdr-custom-field-control
+                    *ngIf="customFieldIsSet(customField.name)"
+                    [customFieldsFormGroup]="facetForm.get(['facet', 'customFields'])"
+                    [customField]="customField"
+                ></vdr-custom-field-control>
             </ng-container>
         </section>
     </section>
 
     <section class="form-block" *ngIf="!(isNew$ | async)">
-
         <label>{{ 'catalog.facet-values' | translate }}</label>
 
         <table class="facet-values-list table" formArrayName="values" *ngIf="0 < getValuesFormArray().length">
             <thead>
-            <tr>
-                <th>{{ 'common.name' | translate }}</th>
-                <th>{{ 'common.code' | translate }}</th>
-                <ng-container *ngFor="let customField of customValueFields">
-                    <th>{{ customField.name }}</th>
-                </ng-container>
-            </tr>
+                <tr>
+                    <th>{{ 'common.name' | translate }}</th>
+                    <th>{{ 'common.code' | translate }}</th>
+                    <ng-container *ngFor="let customField of customValueFields">
+                        <th>{{ customField.name }}</th>
+                    </ng-container>
+                </tr>
             </thead>
             <tbody>
-            <tr class="variant"
-                *ngFor="let value of getValuesFormArray().controls; let i = index"
-                [formGroupName]="i">
-                <td>
-                    <input type="text" formControlName="name" (input)="updateValueCode($event.target.value, i)">
-                </td>
-                <td>
-                    <input type="text" formControlName="code" readonly>
-                </td>
-                <ng-container *ngFor="let customField of customValueFields">
+                <tr
+                    class="variant"
+                    *ngFor="let value of getValuesFormArray().controls; let i = index"
+                    [formGroupName]="i"
+                >
                     <td>
-                        <vdr-custom-field-control *ngIf="customValueFieldIsSet(i, customField.name)"
-                                                  [showLabel]="false"
-                                                  [customFieldsFormGroup]="facetForm.get(['values', i, 'customFields'])"
-                                                  [customField]="customField"></vdr-custom-field-control>
+                        <input
+                            type="text"
+                            formControlName="name"
+                            (input)="updateValueCode($event.target.value, i)"
+                        />
                     </td>
-                </ng-container>
-            </tr>
+                    <td><input type="text" formControlName="code" readonly /></td>
+                    <ng-container *ngFor="let customField of customValueFields">
+                        <td>
+                            <vdr-custom-field-control
+                                *ngIf="customValueFieldIsSet(i, customField.name)"
+                                [showLabel]="false"
+                                [customFieldsFormGroup]="facetForm.get(['values', i, 'customFields'])"
+                                [customField]="customField"
+                            ></vdr-custom-field-control>
+                        </td>
+                    </ng-container>
+                </tr>
             </tbody>
         </table>
 
         <div>
-            <button type="button"
-                    class="btn btn-primary"
-                    (click)="addFacetValue()">
+            <button type="button" class="btn btn-primary" (click)="addFacetValue()">
                 <clr-icon shape="add"></clr-icon>
                 {{ 'catalog.add-facet-value' | translate }}
             </button>
         </div>
-
     </section>
 </form>

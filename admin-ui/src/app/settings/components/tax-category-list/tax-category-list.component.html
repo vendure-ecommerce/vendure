@@ -15,10 +15,11 @@
         <td class="left">{{ taxCategory.id }}</td>
         <td class="left">{{ taxCategory.name }}</td>
         <td class="right">
-            <vdr-table-row-action iconShape="edit"
-                                  [label]="'common.edit' | translate"
-                                  [linkTo]="['./', taxCategory.id]">
-            </vdr-table-row-action>
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', taxCategory.id]"
+            ></vdr-table-row-action>
         </td>
     </ng-template>
 </vdr-data-table>

@@ -17,13 +17,15 @@ import { getDefaultCurrency } from '../../../common/utilities/get-default-curren
     ],
     template: `
         <vdr-affixed-input suffix="%">
-            <input type="number"
-                   step="1"
-                   [value]="_value"
-                   [disabled]="disabled"
-                   [readonly]="readonly"
-                   (input)="onInput($event.target.value)"
-                   (focus)="onTouch()">
+            <input
+                type="number"
+                step="1"
+                [value]="_value"
+                [disabled]="disabled"
+                [readonly]="readonly"
+                (input)="onInput($event.target.value)"
+                (focus)="onTouch()"
+            />
         </vdr-affixed-input>
     `,
     providers: [
