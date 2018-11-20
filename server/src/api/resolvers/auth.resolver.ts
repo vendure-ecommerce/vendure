@@ -10,6 +10,7 @@ import {
 
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
+import { I18nError } from '../../i18n/i18n-error';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
@@ -69,9 +70,7 @@ export class AuthResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: RegisterCustomerAccountMutationArgs,
     ) {
-        return this.customerService
-            .registerCustomerAccount(ctx, args.emailAddress, args.password)
-            .then(() => true);
+        return this.customerService.registerCustomerAccount(ctx, args.input).then(() => true);
     }
 
     @Mutation()
@@ -98,6 +97,8 @@ export class AuthResolver {
                 req,
                 res,
             );
+        } else {
+            throw new I18nError(`error.verification-token-not-recognized`);
         }
     }
 

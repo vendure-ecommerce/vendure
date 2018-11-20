@@ -6,7 +6,7 @@ type Mutation {
     login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
     "Register a Customer account with the given credentials"
-    registerCustomerAccount(emailAddress: String!, password: String!): Boolean!
+    registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
     "Verify a Customer email address with the token sent to that address"
     verifyCustomerEmailAddress(token: String!, password: String!): LoginResult!
 }
@@ -19,4 +19,12 @@ type CurrentUser {
     id: ID!
     identifier: String!
     channelTokens: [String!]!
+}
+
+input RegisterCustomerInput {
+    emailAddress: String!
+    title: String
+    firstName: String
+    lastName: String
+    password: String!
 }

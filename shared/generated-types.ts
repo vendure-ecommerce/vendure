@@ -950,6 +950,14 @@ export interface CreateAssetInput {
     file: Upload;
 }
 
+export interface RegisterCustomerInput {
+    emailAddress: string;
+    title?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    password: string;
+}
+
 export interface CreateChannelInput {
     code: string;
     token: string;
@@ -1412,8 +1420,7 @@ export interface LoginMutationArgs {
     rememberMe?: boolean | null;
 }
 export interface RegisterCustomerAccountMutationArgs {
-    emailAddress: string;
-    password: string;
+    input: RegisterCustomerInput;
 }
 export interface VerifyCustomerEmailAddressMutationArgs {
     token: string;
@@ -3738,8 +3745,7 @@ export namespace MutationResolvers {
         RegisterCustomerAccountArgs
     >;
     export interface RegisterCustomerAccountArgs {
-        emailAddress: string;
-        password: string;
+        input: RegisterCustomerInput;
     }
 
     export type VerifyCustomerEmailAddressResolver<R = LoginResult, Parent = any, Context = any> = Resolver<

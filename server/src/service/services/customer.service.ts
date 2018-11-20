@@ -3,6 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateAddressInput,
     CreateCustomerInput,
+    RegisterCustomerInput,
     UpdateAddressInput,
     UpdateCustomerInput,
 } from 'shared/generated-types';
@@ -79,13 +80,14 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
-    async registerCustomerAccount(
-        ctx: RequestContext,
-        emailAddress: string,
-        password: string,
-    ): Promise<Customer> {
-        const customer = await this.createOrUpdate({ emailAddress });
-        const user = await this.userService.createCustomerUser(emailAddress, password);
+    async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<Customer> {
+        const customer = await this.createOrUpdate({
+            emailAddress: input.emailAddress,
+            title: input.title || '',
+            firstName: input.firstName || '',
+            lastName: input.lastName || '',
+        });
+        const user = await this.userService.createCustomerUser(input.emailAddress, input.password);
         customer.user = user;
         await this.connection.getRepository(Customer).save(customer);
         if (!user.verified) {

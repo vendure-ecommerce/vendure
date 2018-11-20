@@ -36,7 +36,8 @@ export class UserService {
         }
         user.passwordHash = await this.passwordCipher.hash(password);
         user.identifier = identifier;
-        user.roles = [await this.roleService.getCustomerRole()];
+        const customerRole = await this.roleService.getCustomerRole();
+        user.roles = [customerRole];
         return this.connection.manager.save(user);
     }
 
@@ -53,8 +54,9 @@ export class UserService {
         const user = await this.connection.getRepository(User).findOne({
             where: { verificationToken },
         });
-        if (user && this.passwordCipher.check(password, user.passwordHash)) {
-            if (this.verifyVerificationToken(verificationToken)) {
+        if (user) {
+            const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
+            if (passwordMatches && this.verifyVerificationToken(verificationToken)) {
                 user.verificationToken = null;
                 user.verified = true;
                 await this.connection.getRepository(User).save(user);

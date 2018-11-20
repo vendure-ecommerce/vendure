@@ -5,6 +5,7 @@
     "cannot-transition-to-shipping-when-order-is-empty": "Cannot transition Order to the \"ArrangingShipping\" state when it is empty",
     "cannot-transition-to-payment-without-customer": "Cannot transition Order to the \"ArrangingShipping\" state without Customer details",
     "channel-not-found":  "No channel with the token \"{ token }\" exists",
+    "email-address-not-verified": "Please verify this email address before logging in",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } with the id '{ id }' could be found",
     "forbidden": "This action is forbidden",
@@ -12,6 +13,7 @@
     "order-contents-may-only-be-modified-in-addingitems-state": "Order contents may only be modified when in the \"AddingItems\" state",
     "order-does-not-contain-line-with-id": "This order does not contain an OrderLine with the id { id }",
     "order-item-quantity-must-be-positive": "{ quantity } is not a valid quantity for an OrderItem",
-    "payment-may-only-be-added-in-arrangingpayment-state": "A Payment may only be added when Order is in \"ArrangingPayment\" state"
+    "payment-may-only-be-added-in-arrangingpayment-state": "A Payment may only be added when Order is in \"ArrangingPayment\" state",
+    "verification-token-not-recognized": "Verification token not recognized"
   }
 }

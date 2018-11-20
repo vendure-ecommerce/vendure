@@ -11,6 +11,7 @@ import { AnonymousSession } from '../../entity/session/anonymous-session.entity'
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
+import { I18nError } from '../../i18n/i18n-error';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
 import { OrderService } from './order.service';
@@ -43,6 +44,9 @@ export class AuthService {
         const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
         if (!passwordMatches) {
             throw new UnauthorizedException();
+        }
+        if (this.configService.authOptions.requireVerification && !user.verified) {
+            throw new I18nError(`error.email-address-not-verified`);
         }
         await this.deleteSessionsByUser(user);
         if (ctx.session && ctx.session.activeOrder) {
