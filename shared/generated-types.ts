@@ -111,6 +111,7 @@ export interface User extends Node {
     updatedAt: DateTime;
     identifier: string;
     passwordHash: string;
+    verified: boolean;
     roles: Role[];
     lastLogin?: string | null;
     customFields?: Json | null;
@@ -2319,6 +2320,7 @@ export namespace UserResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         identifier?: IdentifierResolver<string, any, Context>;
         passwordHash?: PasswordHashResolver<string, any, Context>;
+        verified?: VerifiedResolver<boolean, any, Context>;
         roles?: RolesResolver<Role[], any, Context>;
         lastLogin?: LastLoginResolver<string | null, any, Context>;
         customFields?: CustomFieldsResolver<Json | null, any, Context>;
@@ -2329,6 +2331,7 @@ export namespace UserResolvers {
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type IdentifierResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PasswordHashResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type VerifiedResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type RolesResolver<R = Role[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type LastLoginResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
