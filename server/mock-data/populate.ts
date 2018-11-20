@@ -27,6 +27,9 @@ export async function populate(
 ): Promise<INestApplication> {
     (config.dbConnectionOptions as any).logging = false;
     const logging = options.logging === undefined ? true : options.logging;
+    const originalRequireVerification = config.authOptions.requireVerification;
+    config.authOptions.requireVerification = false;
+
     setConfig(config);
     await clearAllTables(config.dbConnectionOptions, logging);
     const app = await bootstrapFn(config);
@@ -47,5 +50,7 @@ export async function populate(
     await mockDataService.populateProducts(options.productCount, optionGroupId, assets, taxCategories);
     await mockDataService.populateCustomers(options.customerCount);
     await mockDataService.populateFacets();
+
+    config.authOptions.requireVerification = originalRequireVerification;
     return app;
 }
