@@ -9,6 +9,8 @@ import { OrderStateTransitionEvent } from '../event-bus/events/order-state-trans
 
 export type DefaultEmailType = 'order-confirmation' | 'email-verification';
 
+const SHOPFRONT_URL = 'http://localhost:4201/';
+
 export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
     'order-confirmation': configEmailType({
         triggerEvent: OrderStateTransitionEvent,
@@ -49,7 +51,10 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
         templates: {
             defaultChannel: {
                 defaultLanguage: {
-                    templateContext: emailContext => ({ user: emailContext.event.user }),
+                    templateContext: emailContext => ({
+                        user: emailContext.event.user,
+                        verifyUrl: SHOPFRONT_URL + 'verify',
+                    }),
                     subject: `Please verify your email address`,
                     templatePath: path.join(
                         __dirname,
