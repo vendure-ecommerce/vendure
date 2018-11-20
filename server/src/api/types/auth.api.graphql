@@ -8,7 +8,9 @@ type Mutation {
     "Register a Customer account with the given credentials"
     registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
     "Verify a Customer email address with the token sent to that address"
-    verifyCustomerEmailAddress(token: String!, password: String!): LoginResult!
+    verifyCustomerAccount(token: String!, password: String!): LoginResult!
+    "Regenerate and send a verification token for a new Customer registration"
+    refreshCustomerVerification(emailAddress: String!): Boolean!
 }
 
 type LoginResult {
@@ -26,5 +28,4 @@ input RegisterCustomerInput {
     title: String
     firstName: String
     lastName: String
-    password: String!
 }

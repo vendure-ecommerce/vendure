@@ -1,0 +1,39 @@
+' This diagram illustrates the Customer signup flow
+@startuml
+
+!include theme.puml
+title Customer Account Registration
+start
+GREEN:registerCustomerAccount;
+note left
+    Args:
+    * emailAddress
+    * title?
+    * firstName?
+    * lastName?
+end note
+:create & store new token;
+repeat
+    :Token sent to email address;
+    :Follow link;
+    :Customer creates password;
+    GREEN:verifyCustomerEmailAddress;
+    note left
+        Args:
+        * token
+        * password
+    end note
+    if (token has expired?) then (yes)
+        GREEN:resendVerification;
+        note left
+            Args:
+            * emailAddress
+        end note
+        :create & store new token;
+    else (no)
+    endif
+repeat while (had to re-verify due to expired token?)
+
+:Verified and logged in;
+stop
+@enduml

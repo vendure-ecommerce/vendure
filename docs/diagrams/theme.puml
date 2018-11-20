@@ -3,6 +3,7 @@
 !define LINE    #1a3164
 !define BACKGROUND #b9cefc
 !define BORDER  #e58e26
+!define GREEN   #66aa66
 !define BLUE  #4067af
 !define BLUE_LIGHT  #c6dbff
 

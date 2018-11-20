@@ -59,13 +59,20 @@ export class TestServer {
      * Populates an .sqlite database file based on the PopulateOptions.
      */
     private async populateInitialData(testingConfig: VendureConfig, options: PopulateOptions): Promise<void> {
+        // Make some specific modifications to the config for the population to work correctly
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
+        const originalRequireVerification = testingConfig.authOptions.requireVerification;
+        testingConfig.authOptions.requireVerification = false;
+
         const app = await populate(testingConfig, this.bootstrapForTesting, {
             logging: false,
             ...options,
         });
         await app.close();
+
+        // Revert the config back to its initial state
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
+        testingConfig.authOptions.requireVerification = originalRequireVerification;
     }
 
     /**

@@ -26,7 +26,16 @@ export class UserService {
         });
     }
 
-    async createCustomerUser(identifier: string, password: string): Promise<User> {
+    async getUserByEmailAddress(emailAddress: string): Promise<User | undefined> {
+        return this.connection.getRepository(User).findOne({
+            where: {
+                identifier: emailAddress,
+            },
+            relations: ['roles', 'roles.channels'],
+        });
+    }
+
+    async createCustomerUser(identifier: string, password?: string): Promise<User> {
         const user = new User();
         if (this.configService.authOptions.requireVerification) {
             user.verificationToken = this.generateVerificationToken();
@@ -34,7 +43,11 @@ export class UserService {
         } else {
             user.verified = true;
         }
-        user.passwordHash = await this.passwordCipher.hash(password);
+        if (password) {
+            user.passwordHash = await this.passwordCipher.hash(password);
+        } else {
+            user.passwordHash = '';
+        }
         user.identifier = identifier;
         const customerRole = await this.roleService.getCustomerRole();
         user.roles = [customerRole];
@@ -50,13 +63,19 @@ export class UserService {
         return this.connection.manager.save(user);
     }
 
+    async setVerificationToken(user: User): Promise<User> {
+        user.verificationToken = this.generateVerificationToken();
+        user.verified = false;
+        return this.connection.manager.save(user);
+    }
+
     async verifyUserByToken(verificationToken: string, password: string): Promise<User | undefined> {
         const user = await this.connection.getRepository(User).findOne({
             where: { verificationToken },
         });
         if (user) {
-            const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
-            if (passwordMatches && this.verifyVerificationToken(verificationToken)) {
+            if (this.verifyVerificationToken(verificationToken)) {
+                user.passwordHash = await this.passwordCipher.hash(password);
                 user.verificationToken = null;
                 user.verified = true;
                 await this.connection.getRepository(User).save(user);

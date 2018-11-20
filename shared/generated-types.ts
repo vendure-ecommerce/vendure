@@ -576,7 +576,8 @@ export interface Mutation {
     login: LoginResult;
     logout: boolean;
     registerCustomerAccount: boolean;
-    verifyCustomerEmailAddress: LoginResult;
+    verifyCustomerAccount: LoginResult;
+    refreshCustomerVerification: boolean;
     createChannel: Channel;
     updateChannel: Channel;
     createCountry: Country;
@@ -955,7 +956,6 @@ export interface RegisterCustomerInput {
     title?: string | null;
     firstName?: string | null;
     lastName?: string | null;
-    password: string;
 }
 
 export interface CreateChannelInput {
@@ -1422,9 +1422,12 @@ export interface LoginMutationArgs {
 export interface RegisterCustomerAccountMutationArgs {
     input: RegisterCustomerInput;
 }
-export interface VerifyCustomerEmailAddressMutationArgs {
+export interface VerifyCustomerAccountMutationArgs {
     token: string;
     password: string;
+}
+export interface RefreshCustomerVerificationMutationArgs {
+    emailAddress: string;
 }
 export interface CreateChannelMutationArgs {
     input: CreateChannelInput;
@@ -3624,7 +3627,8 @@ export namespace MutationResolvers {
         login?: LoginResolver<LoginResult, any, Context>;
         logout?: LogoutResolver<boolean, any, Context>;
         registerCustomerAccount?: RegisterCustomerAccountResolver<boolean, any, Context>;
-        verifyCustomerEmailAddress?: VerifyCustomerEmailAddressResolver<LoginResult, any, Context>;
+        verifyCustomerAccount?: VerifyCustomerAccountResolver<LoginResult, any, Context>;
+        refreshCustomerVerification?: RefreshCustomerVerificationResolver<boolean, any, Context>;
         createChannel?: CreateChannelResolver<Channel, any, Context>;
         updateChannel?: UpdateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
@@ -3748,15 +3752,25 @@ export namespace MutationResolvers {
         input: RegisterCustomerInput;
     }
 
-    export type VerifyCustomerEmailAddressResolver<R = LoginResult, Parent = any, Context = any> = Resolver<
+    export type VerifyCustomerAccountResolver<R = LoginResult, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context,
-        VerifyCustomerEmailAddressArgs
+        VerifyCustomerAccountArgs
     >;
-    export interface VerifyCustomerEmailAddressArgs {
+    export interface VerifyCustomerAccountArgs {
         token: string;
         password: string;
+    }
+
+    export type RefreshCustomerVerificationResolver<R = boolean, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        RefreshCustomerVerificationArgs
+    >;
+    export interface RefreshCustomerVerificationArgs {
+        emailAddress: string;
     }
 
     export type CreateChannelResolver<R = Channel, Parent = any, Context = any> = Resolver<

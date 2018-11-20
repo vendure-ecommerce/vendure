@@ -4,8 +4,9 @@ import {
     LoginMutationArgs,
     LoginResult,
     Permission,
+    RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
-    VerifyCustomerEmailAddressMutationArgs,
+    VerifyCustomerAccountMutationArgs,
 } from 'shared/generated-types';
 
 import { ConfigService } from '../../config/config.service';
@@ -75,9 +76,9 @@ export class AuthResolver {
 
     @Mutation()
     @Allow(Permission.Public)
-    async verifyCustomerEmailAddress(
+    async verifyCustomerAccount(
         @Ctx() ctx: RequestContext,
-        @Args() args: VerifyCustomerEmailAddressMutationArgs,
+        @Args() args: VerifyCustomerAccountMutationArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
     ) {
@@ -100,6 +101,15 @@ export class AuthResolver {
         } else {
             throw new I18nError(`error.verification-token-not-recognized`);
         }
+    }
+
+    @Mutation()
+    @Allow(Permission.Public)
+    async refreshCustomerVerification(
+        @Ctx() ctx: RequestContext,
+        @Args() args: RefreshCustomerVerificationMutationArgs,
+    ) {
+        return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
     }
 
     /**

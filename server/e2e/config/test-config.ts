@@ -25,6 +25,7 @@ export const testConfig: VendureConfig = {
     authOptions: {
         sessionSecret: 'some-secret',
         tokenMethod: 'bearer',
+        requireVerification: true,
     },
     dbConnectionOptions: {
         type: 'sqljs',

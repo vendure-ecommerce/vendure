@@ -87,13 +87,28 @@ export class CustomerService {
             firstName: input.firstName || '',
             lastName: input.lastName || '',
         });
-        const user = await this.userService.createCustomerUser(input.emailAddress, input.password);
+        let user = await this.userService.getUserByEmailAddress(input.emailAddress);
+        if (!user) {
+            user = await this.userService.createCustomerUser(input.emailAddress);
+        } else {
+            user = await this.userService.setVerificationToken(user);
+        }
         customer.user = user;
         await this.connection.getRepository(Customer).save(customer);
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         }
         return customer;
+    }
+
+    async refreshVerificationToken(ctx: RequestContext, emailAddress: string) {
+        const user = await this.userService.getUserByEmailAddress(emailAddress);
+        if (user) {
+            await this.userService.setVerificationToken(user);
+            if (!user.verified) {
+                this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
+            }
+        }
     }
 
     async verifyCustomerEmailAddress(
