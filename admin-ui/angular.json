@@ -146,5 +146,8 @@
       "spec": false,
       "changeDetection": "OnPush"
     }
+  },
+  "cli": {
+    "packageManager": "yarn"
   }
 }

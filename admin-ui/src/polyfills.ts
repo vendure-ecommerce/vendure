@@ -82,8 +82,3 @@ import '@clr/icons/shapes/media-shapes';
 import '@clr/icons/shapes/technology-shapes';
 import '@clr/icons/shapes/travel-shapes';
 import '@webcomponents/custom-elements/custom-elements.min.js';
-// TODO: remove this shim once the newer version of graphql-js is released (14.0.0)
-// and check that the codegen still works (may need to upgrade apollo package).
-// See: https://github.com/graphql/graphql-js/issues/1344
-// and: https://github.com/kripken/emscripten/issues/6653
-(window as any).process = {};
