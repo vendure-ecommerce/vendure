@@ -51,7 +51,7 @@
     "nodemailer": "^4.7.0",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.3.3",
-    "sharp": "^0.20.8",
+    "sharp": "^0.21.0",
     "typeorm": "^0.2.9",
     "typescript": "^3.1.6"
   },
@@ -69,7 +69,7 @@
     "@types/nanoid": "^1.2.0",
     "@types/node": "^10.12.9",
     "@types/nodemailer": "^4.6.5",
-    "@types/sharp": "^0.17.10",
+    "@types/sharp": "^0.21.0",
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",
     "gulp": "^4.0.0",

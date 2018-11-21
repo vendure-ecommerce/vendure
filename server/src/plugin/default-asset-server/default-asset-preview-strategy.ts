@@ -23,20 +23,16 @@ export class DefaultAssetPreviewStrategy implements AssetPreviewStrategy {
             const width = metadata.width || 0;
             const height = metadata.height || 0;
             if (maxWidth < width || maxHeight < height) {
-                return image
-                    .resize(maxWidth, maxHeight)
-                    .max()
-                    .toBuffer();
+                return image.resize(maxWidth, maxHeight, { fit: 'inside' }).toBuffer();
             } else {
                 return data;
             }
         } else {
             return sharp(path.join(__dirname, 'file-icon.png'))
-                .resize(800, 800)
+                .resize(800, 800, { fit: 'outside' })
                 .overlayWith(this.generateMimeTypeOverlay(mimeType), {
                     gravity: sharp.gravity.center,
                 })
-                .min()
                 .toBuffer();
         }
     }
