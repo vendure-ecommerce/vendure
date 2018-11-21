@@ -8,7 +8,7 @@
     "populate": "node -r ts-node/register -r tsconfig-paths/register mock-data/populate-cli.ts",
     "start:dev": "nodemon --config nodemon-debug.json",
     "lint": "tslint --project tsconfig.json -c tslint.json",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
