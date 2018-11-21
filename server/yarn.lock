@@ -55,24 +55,25 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nestjs/common@5.3.6":
-  version "5.3.6"
-  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-5.3.6.tgz#9d91505f47a6d46f5f436a5fa4604c595e4e2c3b"
+"@nestjs/common@5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-5.4.0.tgz#74aa7da0d6931349b0a2cbe813b83ad77c2797ec"
   dependencies:
-    axios "0.17.1"
+    axios "0.18.0"
     cli-color "1.2.0"
     deprecate "1.0.0"
     multer "1.3.0"
     uuid "3.3.2"
 
-"@nestjs/core@5.3.6":
-  version "5.3.6"
-  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-5.3.6.tgz#60a74ce341679b553303d119f6126d1fc3878cfc"
+"@nestjs/core@5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-5.4.0.tgz#0c082ef019b5e435a9330feb3fe0101f3978af4e"
   dependencies:
     "@nuxtjs/opencollective" "0.1.0"
     body-parser "1.18.3"
     cors "2.8.4"
     express "4.16.3"
+    fast-safe-stringify "1.2.0"
     iterare "0.0.8"
     object-hash "1.3.0"
     optional "0.1.4"
@@ -90,9 +91,9 @@
     ts-simple-ast "^14.4.2"
     uuid "3.3.2"
 
-"@nestjs/testing@5.3.8":
-  version "5.3.8"
-  resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-5.3.8.tgz#b99d453e1a0b0a6d3439442347900e39d13d138d"
+"@nestjs/testing@5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-5.4.0.tgz#4728021fc4012243b4dd2ffb4228b59df7770235"
   dependencies:
     deprecate "1.0.0"
     optional "0.1.4"
@@ -766,11 +767,11 @@ aws4@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
 
-axios@0.17.1:
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.17.1.tgz#2d8e3e5d0bdbd7327f91bc814f5c57660f81824d"
+axios@0.18.0:
+  version "0.18.0"
+  resolved "http://registry.npmjs.org/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
   dependencies:
-    follow-redirects "^1.2.5"
+    follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
 
 babel-code-frame@^6.26.0:
@@ -2235,6 +2236,10 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
+fast-safe-stringify@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-1.2.0.tgz#ebd42666fd18fe4f2ba4f0d295065f3f85cade96"
+
 fb-watchman@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fb-watchman/-/fb-watchman-2.0.0.tgz#54e9abf7dfa2f26cd9b1636c588c1afc05de5d58"
@@ -2342,11 +2347,11 @@ follow-redirects@^1.0.0:
   dependencies:
     debug "=3.1.0"
 
-follow-redirects@^1.2.5:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.1.tgz#67a8f14f5a1f67f962c2c46469c79eaec0a90291"
+follow-redirects@^1.3.0:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
   dependencies:
-    debug "^3.1.0"
+    debug "=3.1.0"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"

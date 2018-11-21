@@ -21,10 +21,10 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "@nestjs/common": "5.3.6",
-    "@nestjs/core": "5.3.6",
+    "@nestjs/common": "5.4.0",
+    "@nestjs/core": "5.4.0",
     "@nestjs/graphql": "5.4.0",
-    "@nestjs/testing": "5.3.8",
+    "@nestjs/testing": "5.4.0",
     "@nestjs/typeorm": "^5.2.2",
     "apollo-server-express": "^2.2.2",
     "bcrypt": "^3.0.1",
