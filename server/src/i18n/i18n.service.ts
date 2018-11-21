@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Handler, Request } from 'express';
-import { GraphQLError } from 'graphql-request/dist/src/types';
+import { GraphQLError } from 'graphql';
 import * as i18next from 'i18next';
 import { TranslationFunction } from 'i18next';
 import * as i18nextMiddleware from 'i18next-express-middleware';
@@ -14,10 +14,6 @@ import { I18nError } from './i18n-error';
 
 export interface I18nRequest extends Request {
     t: TranslationFunction;
-}
-
-export interface WrappedGraphQLError extends GraphQLError {
-    originalError: Error;
 }
 
 /**
@@ -53,14 +49,11 @@ export class I18nService {
     }
 
     /**
-     * TODO: reinstate correct error translations once https://github.com/apollographql/apollo-server/issues/1343
-     * is resolved. Currently Apollo Server 2 does not give us access to the Express context, so we cannot get
-     * the "t" function to translate the error message in the language of the current request.
-     * For now we are defaulting to English.
+     * Translates the originalError if it is an instance of I18nError.
      */
-    translateError(error: WrappedGraphQLError) {
+    translateError(req: I18nRequest, error: GraphQLError) {
         const originalError = error.originalError;
-        const t: TranslationFunction = /* req.t */ this.i18n.getFixedT('en');
+        const t: TranslationFunction = req.t;
 
         if (t && originalError instanceof I18nError) {
             let translation = originalError.message;

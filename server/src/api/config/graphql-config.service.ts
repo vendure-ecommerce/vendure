@@ -11,6 +11,7 @@ import * as path from 'path';
 
 import { ConfigService } from '../../config/config.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 
@@ -45,11 +46,7 @@ export class GraphqlConfigService implements GqlOptionsFactory {
             playground: true,
             debug: true,
             context: req => req,
-            // TODO: Need to also pass the Express context object for correct translations.
-            // See https://github.com/apollographql/apollo-server/issues/1343
-            formatError: err => {
-                return this.i18nService.translateError(err);
-            },
+            extensions: [() => new TranslateErrorExtension(this.i18nService)],
             // This is handled by the Express cors plugin
             cors: false,
         };
