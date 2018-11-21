@@ -10,9 +10,8 @@
   },
   "globals": {
     "ts-jest": {
-      "skipBabel": false,
-      "tsConfigFile": "<rootDir>/config/tsconfig.e2e.json",
-      "enableTsDiagnostics": false
+      "tsConfig": "<rootDir>/config/tsconfig.e2e.json",
+      "diagnostics": false
     }
   }
 }
