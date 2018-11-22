@@ -1,8 +1,8 @@
 import { LanguageCode } from 'shared/generated-types';
 
 import { UnwrappedArray } from '../../../common/types/common-types';
-import { I18nError } from '../../../i18n/i18n-error';
 
+import { InternalServerError } from '../../../common/error/errors';
 import { Translatable, Translated } from '../../../common/types/locale-types';
 
 // prettier-ignore
@@ -42,7 +42,7 @@ export function translateEntity<T extends Translatable>(
         translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
 
     if (!translation) {
-        throw new I18nError(`error.entity-has-no-translation-in-language`, {
+        throw new InternalServerError(`error.entity-has-no-translation-in-language`, {
             entityName: translatable.constructor.name,
             languageCode,
         });

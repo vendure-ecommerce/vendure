@@ -4,8 +4,8 @@ import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { I18nError } from '../../../i18n/i18n-error';
 
+import { UserInputError } from '../../../common/error/errors';
 import {
     BooleanOperators,
     DateOperators,
@@ -55,7 +55,7 @@ export function parseFilterParams<T extends VendureEntity>(
                 } else if (translationColumns.find(c => c.propertyName === key)) {
                     fieldName = `${alias}_translations.${key}`;
                 } else {
-                    throw new I18nError('error.invalid-filter-field');
+                    throw new UserInputError('error.invalid-filter-field');
                 }
                 const condition = buildWhereCondition(fieldName, operator as Operator, operand);
                 output.push(condition);

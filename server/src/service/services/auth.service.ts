@@ -1,17 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as crypto from 'crypto';
 import * as ms from 'ms';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { Order } from '../../entity/order/order.entity';
 import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
 import { OrderService } from './order.service';
@@ -43,10 +43,10 @@ export class AuthService {
         const user = await this.getUserFromIdentifier(identifier);
         const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
         if (!passwordMatches) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedError();
         }
         if (this.configService.authOptions.requireVerification && !user.verified) {
-            throw new I18nError(`error.email-address-not-verified`);
+            throw new NotVerifiedError();
         }
         await this.deleteSessionsByUser(user);
         if (ctx.session && ctx.session.activeOrder) {
@@ -153,7 +153,7 @@ export class AuthService {
             relations: ['roles', 'roles.channels'],
         });
         if (!user) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedError();
         }
         return user;
     }

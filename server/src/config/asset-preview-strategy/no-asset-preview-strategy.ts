@@ -1,4 +1,4 @@
-import { I18nError } from '../../i18n/i18n-error';
+import { InternalServerError } from '../../common/error/errors';
 
 import { AssetPreviewStrategy } from './asset-preview-strategy';
 
@@ -7,6 +7,6 @@ import { AssetPreviewStrategy } from './asset-preview-strategy';
  */
 export class NoAssetPreviewStrategy implements AssetPreviewStrategy {
     generatePreviewImage(mimeType: string, data: Buffer): Promise<Buffer> {
-        throw new I18nError('error.no-asset-preview-strategy-configured');
+        throw new InternalServerError('error.no-asset-preview-strategy-configured');
     }
 }

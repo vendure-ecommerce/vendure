@@ -17,8 +17,8 @@ import {
 } from 'shared/generated-types';
 import { PaginatedList } from 'shared/shared-types';
 
+import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { Order } from '../../entity/order/order.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { AuthService } from '../../service/services/auth.service';
 import { CustomerService } from '../../service/services/customer.service';
@@ -122,7 +122,7 @@ export class OrderResolver {
             }
             // We throw even if the order does not exist, since giving a different response
             // opens the door to an enumeration attack to find valid order codes.
-            throw new I18nError(`error.forbidden`);
+            throw new ForbiddenError();
         }
     }
 
@@ -264,7 +264,7 @@ export class OrderResolver {
         createIfNotExists = false,
     ): Promise<Order | undefined> {
         if (!ctx.session) {
-            throw new I18nError(`error.no-active-session`);
+            throw new InternalServerError(`error.no-active-session`);
         }
         let order = ctx.session.activeOrder;
         if (!order) {

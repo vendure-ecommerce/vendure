@@ -3,8 +3,8 @@ import { Connection, OrderByCondition } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { I18nError } from '../../../i18n/i18n-error';
 
+import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
 
 /**
@@ -43,7 +43,7 @@ export function parseSortParams<T extends VendureEntity>(
         } else if (translationColumns.find(c => c.propertyName === key)) {
             output[`${alias}_translations.${key}`] = order;
         } else {
-            throw new I18nError('error.invalid-sort-field', {
+            throw new UserInputError('error.invalid-sort-field', {
                 fieldName: key,
                 validFields: getValidSortFields([...columns, ...translationColumns]),
             });

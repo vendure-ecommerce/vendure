@@ -9,9 +9,9 @@ import {
     VerifyCustomerAccountMutationArgs,
 } from 'shared/generated-types';
 
+import { VerificationTokenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { AuthService } from '../../service/services/auth.service';
 import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
@@ -99,7 +99,7 @@ export class AuthResolver {
                 res,
             );
         } else {
-            throw new I18nError(`error.verification-token-not-recognized`);
+            throw new VerificationTokenError();
         }
     }
 

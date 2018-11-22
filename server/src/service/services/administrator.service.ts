@@ -5,10 +5,10 @@ import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/s
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -59,10 +59,7 @@ export class AdministratorService {
     async update(input: UpdateAdministratorInput): Promise<Administrator> {
         const administrator = await this.findOne(input.id);
         if (!administrator) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'Administrator',
-                id: input.id,
-            });
+            throw new EntityNotFoundError('Administrator', input.id);
         }
         let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.manager.save(administrator);
@@ -86,14 +83,11 @@ export class AdministratorService {
     async assignRole(administratorId: ID, roleId: ID): Promise<Administrator> {
         const administrator = await this.findOne(administratorId);
         if (!administrator) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                id: administratorId,
-                entityName: 'Administrator',
-            });
+            throw new EntityNotFoundError('Administrator', administratorId);
         }
         const role = await this.roleService.findOne(roleId);
         if (!role) {
-            throw new I18nError(`error.entity-with-id-not-found`, { id: roleId, entityName: 'Role' });
+            throw new EntityNotFoundError('Role', roleId);
         }
         administrator.user.roles.push(role);
         await this.connection.manager.save(administrator.user);

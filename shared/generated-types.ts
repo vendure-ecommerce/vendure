@@ -85,6 +85,7 @@ export interface Query {
     taxRate?: TaxRate | null;
     zones: Zone[];
     zone?: Zone | null;
+    temp__?: boolean | null;
     networkStatus: NetworkStatus;
     userStatus: UserStatus;
     uiState: UiState;
@@ -1883,6 +1884,7 @@ export namespace QueryResolvers {
         taxRate?: TaxRateResolver<TaxRate | null, any, Context>;
         zones?: ZonesResolver<Zone[], any, Context>;
         zone?: ZoneResolver<Zone | null, any, Context>;
+        temp__?: TempResolver<boolean | null, any, Context>;
         networkStatus?: NetworkStatusResolver<NetworkStatus, any, Context>;
         userStatus?: UserStatusResolver<UserStatus, any, Context>;
         uiState?: UiStateResolver<UiState, any, Context>;
@@ -2266,6 +2268,7 @@ export namespace QueryResolvers {
         id: string;
     }
 
+    export type TempResolver<R = boolean | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NetworkStatusResolver<R = NetworkStatus, Parent = any, Context = any> = Resolver<
         R,
         Parent,

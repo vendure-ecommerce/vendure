@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { IllegalOperationError } from '../../../common/error/errors';
 import { FSM, StateMachineConfig, Transitions } from '../../../common/finite-state-machine';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
-import { I18nError } from '../../../i18n/i18n-error';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
 
@@ -91,11 +91,10 @@ export class OrderStateMachine {
                 if (typeof onError === 'function') {
                     onError(fromState, toState, message);
                 }
-                if (!message) {
-                    throw new I18nError(`error.cannot-transition-order-from-to`, { fromState, toState });
-                } else {
-                    throw new I18nError(message);
-                }
+                throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {
+                    fromState,
+                    toState,
+                });
             },
         };
     }

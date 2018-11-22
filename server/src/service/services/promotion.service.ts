@@ -11,13 +11,13 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Promotion } from '../../entity/promotion/promotion.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -105,10 +105,7 @@ export class PromotionService {
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
         const adjustmentSource = await this.connection.getRepository(Promotion).findOne(input.id);
         if (!adjustmentSource) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'AdjustmentSource',
-                id: input.id,
-            });
+            throw new EntityNotFoundError('Promotion', input.id);
         }
         const updatedAdjustmentSource = patchEntity(adjustmentSource, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
@@ -165,7 +162,7 @@ export class PromotionService {
             type === 'condition' ? this.availableConditions : this.availableActions;
         const match = available.find(a => a.code === code);
         if (!match) {
-            throw new I18nError(`error.adjustment-operation-with-code-not-found`, { code });
+            throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
         }
         return match;
     }

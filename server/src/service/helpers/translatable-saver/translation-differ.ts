@@ -1,9 +1,9 @@
 import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
+import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
 import { foundIn, not } from '../../../common/utils';
-import { I18nError } from '../../../i18n/i18n-error';
 
 export interface TranslationContructor<T> {
     new (input?: DeepPartial<TranslationInput<T>> | DeepPartial<Translation<T>>): Translation<T>;
@@ -70,7 +70,7 @@ export class TranslationDiffer<Entity extends Translatable> {
                 } catch (err) {
                     const entityName = entity.constructor.name;
                     const id = (entity as any).id || 'undefined';
-                    throw new I18nError('error.entity-with-id-not-found', { entityName, id });
+                    throw new EntityNotFoundError(entityName as any, id);
                 }
                 entity.translations.push(newTranslation);
             }

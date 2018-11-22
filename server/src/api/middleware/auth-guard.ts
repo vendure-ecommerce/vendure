@@ -8,6 +8,7 @@ import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';
 import { AuthService } from '../../service/services/auth.service';
 
+import { ForbiddenError } from '../../common/error/errors';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
 import { setAuthToken } from '../common/set-auth-token';
@@ -43,7 +44,12 @@ export class AuthGuard implements CanActivate {
         if (authDisabled || !permissions || isPublic) {
             return true;
         } else {
-            return requestContext.isAuthorized || requestContext.authorizedAsOwnerOnly;
+            const canActivate = requestContext.isAuthorized || requestContext.authorizedAsOwnerOnly;
+            if (!canActivate) {
+                throw new ForbiddenError();
+            } else {
+                return canActivate;
+            }
         }
     }
 

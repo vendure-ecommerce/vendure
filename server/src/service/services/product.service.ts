@@ -5,13 +5,13 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -93,10 +93,7 @@ export class ProductService {
         const product = await this.getProductWithOptionGroups(productId);
         const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
         if (!optionGroup) {
-            throw new I18nError('error.entity-with-id-not-found', {
-                entityName: 'OptionGroup',
-                id: optionGroupId,
-            });
+            throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
 
         if (Array.isArray(product.optionGroups)) {
@@ -142,7 +139,7 @@ export class ProductService {
             .getRepository(Product)
             .findOne(productId, { relations: ['optionGroups'] });
         if (!product) {
-            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Product', id: productId });
+            throw new EntityNotFoundError('Product', productId);
         }
         return product;
     }

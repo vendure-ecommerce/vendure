@@ -96,6 +96,15 @@ This can be overridden by appending a `lang` query parameter to the url (e.g. `h
 
 All locales in Vendure are represented by 2-character [ISO 639-1 language codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
+Translations for localized strings are located in the [i18n/messages](./server/src/i18n/messages) directory.
+
+### Errors
+
+All errors thrown by the Vendure server can be found in the [errors.ts file](./server/src/common/error/errors.ts). 
+
+All errors extend from `I18nError`, which means that the error messages are localized as described above. Each error type
+has a distinct code which can be used by the front-end client in order to correctly handle the error.
+
 ### Custom Fields
 
 The developer may add custom fields to most of the entities in Vendure, which may contain any data specific to their

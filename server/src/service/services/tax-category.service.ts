@@ -4,9 +4,9 @@ import { CreateTaxCategoryInput, UpdateTaxCategoryInput } from 'shared/generated
 import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { EntityNotFoundError } from '../../common/error/errors';
 import { assertFound } from '../../common/utils';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
@@ -30,10 +30,7 @@ export class TaxCategoryService {
     async update(input: UpdateTaxCategoryInput): Promise<TaxCategory> {
         const taxCategory = await this.findOne(input.id);
         if (!taxCategory) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'TaxCategory',
-                id: input.id,
-            });
+            throw new EntityNotFoundError('TaxCategory', input.id);
         }
         const updatedTaxCategory = patchEntity(taxCategory, input);
         await this.connection.getRepository(TaxCategory).save(updatedTaxCategory);

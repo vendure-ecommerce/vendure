@@ -573,7 +573,11 @@ describe('Orders', () => {
                         });
                         fail('Should have thrown');
                     } catch (err) {
-                        expect(err.message).toEqual(expect.stringContaining(`This action is forbidden`));
+                        expect(err.message).toEqual(
+                            expect.stringContaining(
+                                `You are not currently authorized to perform this action`,
+                            ),
+                        );
                     }
                 });
             });

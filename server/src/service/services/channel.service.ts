@@ -7,12 +7,12 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Zone } from '../../entity/zone/zone.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -47,7 +47,7 @@ export class ChannelService {
     getChannelFromToken(token: string): Channel {
         const channel = this.allChannels.find(c => c.token === token);
         if (!channel) {
-            throw new I18nError(`error.channel-not-found`, { token });
+            throw new InternalServerError(`error.channel-not-found`, { token });
         }
         return channel;
     }
@@ -59,7 +59,7 @@ export class ChannelService {
         const defaultChannel = this.allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
-            throw new I18nError(`error.default-channel-not-found`);
+            throw new InternalServerError(`error.default-channel-not-found`);
         }
         return defaultChannel;
     }
@@ -96,10 +96,7 @@ export class ChannelService {
     async update(input: UpdateChannelInput): Promise<Channel> {
         const channel = await this.findOne(input.id);
         if (!channel) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'Channel',
-                id: input.id,
-            });
+            throw new EntityNotFoundError('Channel', input.id);
         }
         const updatedChannel = patchEntity(channel, input);
         if (input.defaultTaxZoneId) {

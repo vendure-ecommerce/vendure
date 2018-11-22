@@ -4,6 +4,7 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
@@ -15,7 +16,6 @@ import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
@@ -219,7 +219,7 @@ export class OrderService {
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
         if (!selectedMethod) {
-            throw new I18nError(`error.shipping-method-unavailable`);
+            throw new UserInputError(`error.shipping-method-unavailable`);
         }
         order.shippingMethod = selectedMethod.method;
         await this.connection.getRepository(Order).save(order);
@@ -237,7 +237,7 @@ export class OrderService {
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.state !== 'ArrangingPayment') {
-            throw new I18nError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
+            throw new IllegalOperationError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
         }
         const payment = await this.paymentMethodService.createPayment(order, input.method, input.metadata);
         if (order.payments) {
@@ -259,7 +259,7 @@ export class OrderService {
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.customer && !idsAreEqual(order.customer.id, customer.id)) {
-            throw new I18nError(`error.order-already-has-customer`);
+            throw new IllegalOperationError(`error.order-already-has-customer`);
         }
         order.customer = customer;
         return this.connection.getRepository(Order).save(order);
@@ -297,7 +297,7 @@ export class OrderService {
     private async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {
         const order = await this.findOne(ctx, orderId);
         if (!order) {
-            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Order', id: orderId });
+            throw new EntityNotFoundError('Order', orderId);
         }
         return order;
     }
@@ -308,10 +308,7 @@ export class OrderService {
     ): Promise<ProductVariant> {
         const productVariant = await this.productVariantService.findOne(ctx, productVariantId);
         if (!productVariant) {
-            throw new I18nError('error.entity-with-id-not-found', {
-                entityName: 'ProductVariant',
-                id: productVariantId,
-            });
+            throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
         return productVariant;
     }
@@ -319,7 +316,7 @@ export class OrderService {
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
         const orderItem = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderItem) {
-            throw new I18nError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
+            throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
         return orderItem;
     }
@@ -337,7 +334,7 @@ export class OrderService {
      */
     private assertQuantityIsPositive(quantity: number) {
         if (quantity < 0) {
-            throw new I18nError(`error.order-item-quantity-must-be-positive`, { quantity });
+            throw new IllegalOperationError(`error.order-item-quantity-must-be-positive`, { quantity });
         }
     }
 
@@ -346,7 +343,7 @@ export class OrderService {
      */
     private assertAddingItemsState(order: Order) {
         if (order.state !== 'AddingItems') {
-            throw new I18nError(`error.order-contents-may-only-be-modified-in-addingitems-state`);
+            throw new IllegalOperationError(`error.order-contents-may-only-be-modified-in-addingitems-state`);
         }
     }
 

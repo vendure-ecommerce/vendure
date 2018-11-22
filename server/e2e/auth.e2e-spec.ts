@@ -217,7 +217,7 @@ describe('Authorization & permissions', () => {
                 await client.asUserWithCredentials(emailAddress, '');
                 fail('should have thrown');
             } catch (err) {
-                expect(getErrorStatusCode(err)).toBe(401);
+                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
             }
         });
 
@@ -268,26 +268,26 @@ describe('Authorization & permissions', () => {
             const status = await client.queryStatus(operation, variables);
             expect(status).toBe(200);
         } catch (e) {
-            const status = getErrorStatusCode(e);
-            if (!status) {
+            const errorCode = getErrorCode(e);
+            if (!errorCode) {
                 fail(`Unexpected failure: ${e}`);
             } else {
-                fail(`Operation should be allowed, got status ${getErrorStatusCode(e)}`);
+                fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
             }
         }
     }
 
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
-            const status = await client.queryStatus(operation, variables);
-            fail(`Should have thrown with 403 error, got ${status}`);
+            const status = await client.query(operation, variables);
+            fail(`Should have thrown`);
         } catch (e) {
-            expect(getErrorStatusCode(e)).toBe(403);
+            expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
     }
 
-    function getErrorStatusCode(err: any): number {
-        return err.response.errors[0].message.statusCode;
+    function getErrorCode(err: any): string {
+        return err.response.errors[0].extensions.code;
     }
 
     async function createAdministratorWithPermissions(

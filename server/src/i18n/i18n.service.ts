@@ -63,6 +63,9 @@ export class I18nService {
                 translation += ` (Translation format error: ${e.message})`;
             }
             error.message = translation;
+            // We can now safely remove the variables object so that they do not appear in
+            // the error returned by the GraphQL API
+            delete originalError.variables;
         }
 
         return error;

@@ -14,11 +14,11 @@ import {
 import { ID, PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/services/facet-value.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { ProductService } from '../../service/services/product.service';
@@ -149,10 +149,7 @@ export class ProductResolver {
             (facetValueIds as ID[]).map(async facetValueId => {
                 const facetValue = await this.facetValueService.findOne(facetValueId, DEFAULT_LANGUAGE_CODE);
                 if (!facetValue) {
-                    throw new I18nError('error.entity-with-id-not-found', {
-                        entityName: 'FacetValue',
-                        id: facetValueId,
-                    });
+                    throw new EntityNotFoundError('FacetValue', facetValueId);
                 }
                 return facetValue;
             }),

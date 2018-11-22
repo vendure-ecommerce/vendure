@@ -239,15 +239,12 @@
 "@types/i18next-express-middleware@^0.0.33":
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/@types/i18next-express-middleware/-/i18next-express-middleware-0.0.33.tgz#1c5625f123eaae126de3b43626ef9a04bc6ad482"
+  integrity sha512-lXuok/3HcT81FipU00+5W1cRjSpl5y0ImQKV2wxCaRkLfANMBi+T7idOVdhZutsX0OlnR2YxLM1I/NuTvYetoQ==
   dependencies:
     "@types/express" "*"
     "@types/i18next" "*"
 
-"@types/i18next@*":
-  version "8.4.4"
-  resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-8.4.4.tgz#76591ab5974b65910e44b8860202d4f544f39b9d"
-
-"@types/i18next@^11.9.3":
+"@types/i18next@*", "@types/i18next@^11.9.3":
   version "11.9.3"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-11.9.3.tgz#04d84c6539908ad69665d26d8967f942d1638550"
   integrity sha512-snM7bMKy6gt7UYdpjsxycqSCAy0fr2JVPY0B8tJ2vp9bN58cE7C880k20PWFM4KXxQ3KsstKM8DLCawGCIH0tg==

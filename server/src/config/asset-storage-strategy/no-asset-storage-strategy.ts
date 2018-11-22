@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { Stream } from 'stream';
 
-import { I18nError } from '../../i18n/i18n-error';
+import { InternalServerError } from '../../common/error/errors';
 
 import { AssetStorageStrategy } from './asset-storage-strategy';
 
@@ -12,26 +12,26 @@ const errorMessage = 'error.no-asset-storage-strategy-configured';
  */
 export class NoAssetStorageStrategy implements AssetStorageStrategy {
     writeFileFromStream(fileName: string, data: Stream): Promise<string> {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 
     writeFileFromBuffer(fileName: string, data: Buffer): Promise<string> {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 
     readFileToBuffer(identifier: string): Promise<Buffer> {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 
     readFileToStream(identifier: string): Promise<Stream> {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 
     toAbsoluteUrl(request: Request, identifier: string): string {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 
     fileExists(fileName: string): Promise<boolean> {
-        throw new I18nError(errorMessage);
+        throw new InternalServerError(errorMessage);
     }
 }

@@ -7,6 +7,7 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -14,7 +15,6 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -128,7 +128,7 @@ export class ProductVariantService {
         });
 
         if (!product) {
-            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Product', id: productId });
+            throw new EntityNotFoundError('Product', productId);
         }
         const defaultTranslation = product.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
 
@@ -172,10 +172,7 @@ export class ProductVariantService {
 
         const notFoundIds = productVariantIds.filter(id => !variants.find(v => idsAreEqual(v.id, id)));
         if (notFoundIds.length) {
-            throw new I18nError('error.entity-with-id-not-found', {
-                entityName: 'ProductVariant',
-                id: notFoundIds[0],
-            });
+            throw new EntityNotFoundError('ProductVariant', notFoundIds[0]);
         }
         for (const variant of variants) {
             for (const facetValue of facetValues) {
@@ -200,7 +197,7 @@ export class ProductVariantService {
     applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
-            throw new I18nError(`error.no-price-found-for-channel`);
+            throw new InternalServerError(`error.no-price-found-for-channel`);
         }
         const applicableTaxRate = this.taxRateService.getApplicableTaxRate(
             ctx.activeTaxZone,

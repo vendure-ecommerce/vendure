@@ -6,6 +6,7 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { assertNever } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
+import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
 import {
@@ -16,7 +17,6 @@ import {
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -73,7 +73,7 @@ export class PaymentMethodService {
             },
         });
         if (!paymentMethod) {
-            throw new I18nError(`error.payment-method-not-found`, { method });
+            throw new UserInputError(`error.payment-method-not-found`, { method });
         }
         const payment = await paymentMethod.createPayment(order, metadata);
         return this.connection.getRepository(Payment).save(payment);

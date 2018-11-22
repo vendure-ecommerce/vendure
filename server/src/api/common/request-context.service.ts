@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { LanguageCode, Permission } from 'shared/generated-types';
 
+import { NoValidChannelError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ChannelService } from '../../service/services/channel.service';
 
 import { RequestContext } from './request-context';
@@ -56,7 +56,7 @@ export class RequestContextService {
         } else if (req && req.headers && req.headers[tokenKey]) {
             channelToken = req.headers[tokenKey] as string;
         } else {
-            throw new I18nError('error.no-valid-channel-specified');
+            throw new NoValidChannelError();
         }
         return channelToken;
     }

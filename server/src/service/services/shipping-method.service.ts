@@ -10,6 +10,7 @@ import { omit } from 'shared/omit';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -17,7 +18,6 @@ import { ShippingCalculator } from '../../config/shipping-method/shipping-calcul
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -76,10 +76,7 @@ export class ShippingMethodService {
     async update(input: UpdateShippingMethodInput): Promise<ShippingMethod> {
         const shippingMethod = await this.findOne(input.id);
         if (!shippingMethod) {
-            throw new I18nError(`error.entity-with-id-not-found`, {
-                entityName: 'ShippingMethod',
-                id: input.id,
-            });
+            throw new EntityNotFoundError('ShippingMethod', input.id);
         }
         const updatedShippingMethod = patchEntity(shippingMethod, omit(input, ['checker', 'calculator']));
         if (input.checker) {
@@ -143,7 +140,7 @@ export class ShippingMethodService {
     private getChecker(code: string): ShippingEligibilityChecker {
         const match = this.shippingEligibilityCheckers.find(a => a.code === code);
         if (!match) {
-            throw new I18nError(`error.shipping-eligibility-checker-with-code-not-found`, { code });
+            throw new UserInputError(`error.shipping-eligibility-checker-with-code-not-found`, { code });
         }
         return match;
     }
@@ -151,7 +148,7 @@ export class ShippingMethodService {
     private getCalculator(code: string): ShippingCalculator {
         const match = this.shippingCalculators.find(a => a.code === code);
         if (!match) {
-            throw new I18nError(`error.shipping-calculator-with-code-not-found`, { code });
+            throw new UserInputError(`error.shipping-calculator-with-code-not-found`, { code });
         }
         return match;
     }

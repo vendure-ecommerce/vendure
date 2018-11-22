@@ -11,10 +11,10 @@ import {
 import { PaginatedList } from 'shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { FacetValueService } from '../../service/services/facet-value.service';
 import { FacetService } from '../../service/services/facet.service';
 import { RequestContext } from '../common/request-context';
@@ -74,7 +74,7 @@ export class FacetResolver {
         const facetId = input[0].facetId;
         const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
         if (!facet) {
-            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Facet', id: facetId });
+            throw new EntityNotFoundError('Facet', facetId);
         }
         return Promise.all(input.map(facetValue => this.facetValueService.create(facet, facetValue)));
     }

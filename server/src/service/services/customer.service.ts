@@ -11,13 +11,13 @@ import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, normalizeEmailAddress } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -71,7 +71,7 @@ export class CustomerService {
         });
 
         if (existing) {
-            throw new I18nError(`error.email-address-must-be-unique`);
+            throw new InternalServerError(`error.email-address-must-be-unique`);
         }
 
         if (password) {
@@ -155,7 +155,7 @@ export class CustomerService {
         });
 
         if (!customer) {
-            throw new I18nError('error.entity-with-id-not-found', { entityName: 'Customer', id: customerId });
+            throw new EntityNotFoundError('Customer', customerId);
         }
 
         const address = new Address(input);

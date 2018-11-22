@@ -1,6 +1,6 @@
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
 
-import { I18nError } from '../../i18n/i18n-error';
+import { InternalServerError } from '../../common/error/errors';
 
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariant } from './product-variant.entity';
@@ -18,7 +18,7 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
         const { channelId, taxCategoryId } = event.queryRunner.data;
         const price = event.entity.price || 0;
         if (channelId === undefined) {
-            throw new I18nError(`error.channel-id-not-set`);
+            throw new InternalServerError(`error.channel-id-not-set`);
         }
         const variantPrice = new ProductVariantPrice({ price, channelId });
         variantPrice.variant = event.entity;
@@ -33,7 +33,7 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
             },
         });
         if (!variantPrice) {
-            throw new I18nError(`error.could-not-find-product-variant-price`);
+            throw new InternalServerError(`error.could-not-find-product-variant-price`);
         }
 
         variantPrice.price = event.entity.price || 0;

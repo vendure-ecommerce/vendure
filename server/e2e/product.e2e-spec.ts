@@ -383,7 +383,7 @@ describe('Product resolver', () => {
                 fail('Should have thrown');
             } catch (err) {
                 expect(err.message).toEqual(
-                    expect.stringContaining(`No OptionGroup with the id '999' could be found`),
+                    expect.stringContaining(`No ProductOptionGroup with the id '999' could be found`),
                 );
             }
         });

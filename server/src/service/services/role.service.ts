@@ -10,10 +10,10 @@ import {
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { Role } from '../../entity/role/role.entity';
-import { I18nError } from '../../i18n/i18n-error';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -51,7 +51,7 @@ export class RoleService {
     getSuperAdminRole(): Promise<Role> {
         return this.getRoleByCode(SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
-                throw new I18nError(`error.super-admin-role-not-found`);
+                throw new InternalServerError(`error.super-admin-role-not-found`);
             }
             return role;
         });
@@ -60,7 +60,7 @@ export class RoleService {
     getCustomerRole(): Promise<Role> {
         return this.getRoleByCode(CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
-                throw new I18nError(`error.customer-role-not-found`);
+                throw new InternalServerError(`error.customer-role-not-found`);
             }
             return role;
         });
@@ -75,10 +75,10 @@ export class RoleService {
     async update(input: UpdateRoleInput): Promise<Role> {
         const role = await this.findOne(input.id);
         if (!role) {
-            throw new I18nError(`error.entity-with-id-not-found`, { entityName: 'Role', id: input.id });
+            throw new EntityNotFoundError('Role', input.id);
         }
         if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
-            throw new I18nError(`error.cannot-modify-role`, { roleCode: role.code });
+            throw new InternalServerError(`error.cannot-modify-role`, { roleCode: role.code });
         }
         const updatedRole = patchEntity(role, input);
         await this.connection.manager.save(updatedRole);
