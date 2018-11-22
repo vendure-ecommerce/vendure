@@ -118,7 +118,6 @@
     "verified": "Verified"
   },
   "error": {
-    "401-unauthorized": "Invalid login. Please try again",
     "403-forbidden": "Your session has expired. Please log in",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",

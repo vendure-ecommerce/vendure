@@ -69,26 +69,21 @@ export class DefaultInterceptor implements HttpInterceptor {
             // inside the body of the response.
             const graqhQLErrors = response.body.errors;
             if (graqhQLErrors && Array.isArray(graqhQLErrors)) {
-                const firstStatus: number = graqhQLErrors[0].message.statusCode;
-                switch (firstStatus) {
-                    case 401:
-                        this.displayErrorNotification(_(`error.401-unauthorized`));
-                        break;
-                    case 403:
-                        this.authService.logOut().subscribe(() => {
-                            if (!window.location.pathname.includes('login')) {
-                                this.displayErrorNotification(_(`error.403-forbidden`));
-                            }
-                            this.router.navigate(['/login'], {
-                                queryParams: {
-                                    [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
-                                },
-                            });
+                const firstCode: string = graqhQLErrors[0].extensions.code;
+                if (firstCode === 'FORBIDDEN') {
+                    this.authService.logOut().subscribe(() => {
+                        if (!window.location.pathname.includes('login')) {
+                            this.displayErrorNotification(_(`error.403-forbidden`));
+                        }
+                        this.router.navigate(['/login'], {
+                            queryParams: {
+                                [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
+                            },
                         });
-                        break;
-                    default:
-                        const message = graqhQLErrors.map(err => err.message.error).join('\n');
-                        this.displayErrorNotification(message);
+                    });
+                } else {
+                    const message = graqhQLErrors.map(err => err.message).join('\n');
+                    this.displayErrorNotification(message);
                 }
             }
         }
