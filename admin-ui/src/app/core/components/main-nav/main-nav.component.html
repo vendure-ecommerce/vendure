@@ -17,6 +17,12 @@
                     </a>
                 </li>
                 <li>
+                    <a class="nav-link" [routerLink]="['/catalog', 'categories']" routerLinkActive="active">
+                        <clr-icon shape="folder-open" size="20"></clr-icon>
+                        {{ 'nav.categories' | translate }}
+                    </a>
+                </li>
+                <li>
                     <a
                         class="nav-link"
                         [routerLink]="['/catalog', 'assets']"
@@ -25,12 +31,6 @@
                     >
                         <clr-icon shape="image-gallery" size="20"></clr-icon>
                         {{ 'nav.assets' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link">
-                        <clr-icon shape="folder-open" size="20"></clr-icon>
-                        {{ 'nav.categories' | translate }}
                     </a>
                 </li>
             </ul>

@@ -3,16 +3,22 @@ import {
     ApplyFacetValuesToProductVariants,
     CreateAssets,
     CreateProduct,
+    CreateProductCategory,
+    CreateProductCategoryInput,
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     GenerateProductVariants,
     GetAssetList,
+    GetProductCategory,
+    GetProductCategoryList,
     GetProductList,
     GetProductOptionGroups,
     GetProductWithVariants,
     RemoveOptionGroupFromProduct,
     UpdateProduct,
+    UpdateProductCategory,
+    UpdateProductCategoryInput,
     UpdateProductInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -25,14 +31,18 @@ import {
     APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_ASSETS,
     CREATE_PRODUCT,
+    CREATE_PRODUCT_CATEGORY,
     CREATE_PRODUCT_OPTION_GROUP,
     GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
+    GET_PRODUCT_CATEGORY,
+    GET_PRODUCT_CATEGORY_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
+    UPDATE_PRODUCT_CATEGORY,
     UPDATE_PRODUCT_VARIANTS,
 } from '../definitions/product-definitions';
 
@@ -155,5 +165,46 @@ export class ProductDataService {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
             input: files.map(file => ({ file })),
         });
+    }
+
+    getProductCategories(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetProductCategoryList.Query, GetProductCategoryList.Variables>(
+            GET_PRODUCT_CATEGORY_LIST,
+            {
+                options: {
+                    take,
+                    skip,
+                },
+                languageCode: getDefaultLanguage(),
+            },
+        );
+    }
+
+    getProductCategory(id: string) {
+        return this.baseDataService.query<GetProductCategory.Query, GetProductCategory.Variables>(
+            GET_PRODUCT_CATEGORY,
+            {
+                id,
+                languageCode: getDefaultLanguage(),
+            },
+        );
+    }
+
+    createProductCategory(input: CreateProductCategoryInput) {
+        return this.baseDataService.mutate<CreateProductCategory.Mutation, CreateProductCategory.Variables>(
+            CREATE_PRODUCT_CATEGORY,
+            {
+                input: pick(input, ['translations', 'assetIds', 'featuredAssetId', 'customFields']),
+            },
+        );
+    }
+
+    updateProductCategory(input: UpdateProductCategoryInput) {
+        return this.baseDataService.mutate<UpdateProductCategory.Mutation, UpdateProductCategory.Variables>(
+            UPDATE_PRODUCT_CATEGORY,
+            {
+                input: pick(input, ['id', 'translations', 'assetIds', 'featuredAssetId', 'customFields']),
+            },
+        );
     }
 }

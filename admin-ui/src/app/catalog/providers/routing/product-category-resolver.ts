@@ -1,28 +1,26 @@
 import { Injectable } from '@angular/core';
-import { ProductWithVariants } from 'shared/generated-types';
+import { ProductCategory, ProductWithVariants } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
-export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Fragment> {
+export class ProductCategoryResolver extends BaseEntityResolver<ProductCategory.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {
-                __typename: 'Product' as 'Product',
+                __typename: 'ProductCategory' as 'ProductCategory',
                 id: '',
                 languageCode: getDefaultLanguage(),
                 name: '',
-                slug: '',
+                description: '',
                 featuredAsset: null,
                 assets: [],
-                description: '',
                 translations: [],
-                optionGroups: [],
-                variants: [],
+                facetValues: [],
             },
-            id => this.dataService.product.getProduct(id).mapStream(data => data.product),
+            id => this.dataService.product.getProductCategory(id).mapStream(data => data.productCategory),
         );
     }
 }

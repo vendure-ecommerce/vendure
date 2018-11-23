@@ -5,6 +5,7 @@
   "breadcrumb": {
     "administrators": "Administrators",
     "assets": "Assets",
+    "categories": "Categories",
     "channels": "Channels",
     "countries": "Countries",
     "customers": "Customers",
@@ -30,6 +31,7 @@
     "create-new-facet": "Create new facet",
     "create-new-option-group": "Create new option group",
     "create-new-product": "Create new product",
+    "create-new-product-category": "Create new product category",
     "drop-files-to-upload": "Drop files to upload",
     "facet": "Facet",
     "facet-values": "Facet values",

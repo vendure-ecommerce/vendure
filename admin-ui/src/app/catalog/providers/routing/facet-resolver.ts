@@ -5,9 +5,6 @@ import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 
-/**
- * Resolves the id from the path into a Customer entity.
- */
 @Injectable()
 export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> {
     constructor(private dataService: DataService) {

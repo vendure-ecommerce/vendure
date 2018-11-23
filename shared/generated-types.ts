@@ -5291,6 +5291,82 @@ export namespace CreateAssets {
     export type CreateAssets = Asset.Fragment;
 }
 
+export namespace GetProductCategoryList {
+    export type Variables = {
+        options?: ProductCategoryListOptions | null;
+        languageCode?: LanguageCode | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        productCategories: ProductCategories;
+    };
+
+    export type ProductCategories = {
+        __typename?: 'ProductCategoryList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = {
+        __typename?: 'ProductCategory';
+        id: string;
+        name: string;
+        description: string;
+        featuredAsset?: FeaturedAsset | null;
+        facetValues: FacetValues[];
+    };
+
+    export type FeaturedAsset = Asset.Fragment;
+
+    export type FacetValues = {
+        __typename?: 'FacetValue';
+        id: string;
+        code: string;
+        name: string;
+    };
+}
+
+export namespace GetProductCategory {
+    export type Variables = {
+        id: string;
+        languageCode?: LanguageCode | null;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        productCategory?: ProductCategory | null;
+    };
+
+    export type ProductCategory = ProductCategory.Fragment;
+}
+
+export namespace CreateProductCategory {
+    export type Variables = {
+        input: CreateProductCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createProductCategory: CreateProductCategory;
+    };
+
+    export type CreateProductCategory = ProductCategory.Fragment;
+}
+
+export namespace UpdateProductCategory {
+    export type Variables = {
+        input: UpdateProductCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateProductCategory: UpdateProductCategory;
+    };
+
+    export type UpdateProductCategory = ProductCategory.Fragment;
+}
+
 export namespace GetPromotionList {
     export type Variables = {
         options?: PromotionListOptions | null;
@@ -6201,6 +6277,53 @@ export namespace ProductOptionGroup {
 
     export type _Translations = {
         __typename?: 'ProductOptionTranslation';
+        name: string;
+    };
+}
+
+export namespace ProductCategory {
+    export type Fragment = {
+        __typename?: 'ProductCategory';
+        id: string;
+        name: string;
+        description: string;
+        languageCode?: LanguageCode | null;
+        featuredAsset?: FeaturedAsset | null;
+        assets: Assets[];
+        facetValues: FacetValues[];
+        translations: Translations[];
+        parent?: Parent | null;
+        children?: Children[] | null;
+    };
+
+    export type FeaturedAsset = Asset.Fragment;
+
+    export type Assets = Asset.Fragment;
+
+    export type FacetValues = {
+        __typename?: 'FacetValue';
+        id: string;
+        name: string;
+        code: string;
+    };
+
+    export type Translations = {
+        __typename?: 'ProductCategoryTranslation';
+        id: string;
+        languageCode: LanguageCode;
+        name: string;
+        description: string;
+    };
+
+    export type Parent = {
+        __typename?: 'ProductCategory';
+        id: string;
+        name: string;
+    };
+
+    export type Children = {
+        __typename?: 'ProductCategory';
+        id: string;
         name: string;
     };
 }

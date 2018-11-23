@@ -263,3 +263,87 @@ export const CREATE_ASSETS = gql`
     }
     ${ASSET_FRAGMENT}
 `;
+
+export const PRODUCT_CATEGORY_FRAGMENT = gql`
+    fragment ProductCategory on ProductCategory {
+        id
+        name
+        description
+        languageCode
+        featuredAsset {
+            ...Asset
+        }
+        assets {
+            ...Asset
+        }
+        facetValues {
+            id
+            name
+            code
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
+        }
+        parent {
+            id
+            name
+        }
+        children {
+            id
+            name
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const GET_PRODUCT_CATEGORY_LIST = gql`
+    query GetProductCategoryList($options: ProductCategoryListOptions, $languageCode: LanguageCode) {
+        productCategories(languageCode: $languageCode, options: $options) {
+            items {
+                id
+                name
+                description
+                featuredAsset {
+                    ...Asset
+                }
+                facetValues {
+                    id
+                    code
+                    name
+                }
+            }
+            totalItems
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const GET_PRODUCT_CATEGORY = gql`
+    query GetProductCategory($id: ID!, $languageCode: LanguageCode) {
+        productCategory(id: $id, languageCode: $languageCode) {
+            ...ProductCategory
+        }
+    }
+    ${PRODUCT_CATEGORY_FRAGMENT}
+`;
+
+export const CREATE_PRODUCT_CATEGORY = gql`
+    mutation CreateProductCategory($input: CreateProductCategoryInput!) {
+        createProductCategory(input: $input) {
+            ...ProductCategory
+        }
+    }
+    ${PRODUCT_CATEGORY_FRAGMENT}
+`;
+
+export const UPDATE_PRODUCT_CATEGORY = gql`
+    mutation UpdateProductCategory($input: UpdateProductCategoryInput!) {
+        updateProductCategory(input: $input) {
+            ...ProductCategory
+        }
+    }
+    ${PRODUCT_CATEGORY_FRAGMENT}
+`;

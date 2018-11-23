@@ -1,0 +1,34 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <a class="btn btn-primary" [routerLink]="['./create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'catalog.create-new-product-category' | translate }}
+        </a>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-data-table
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.facet-values' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-category="item">
+        <td class="left">{{ category.id }}</td>
+        <td class="left">{{ category.name }}</td>
+        <td class="left">{{ category.facetValues }}</td>
+        <td class="right">
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['./', category.id]"
+            ></vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

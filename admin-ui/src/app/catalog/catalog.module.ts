@@ -16,6 +16,8 @@ import { FacetListComponent } from './components/facet-list/facet-list.component
 import { FacetValueSelectorComponent } from './components/facet-value-selector/facet-value-selector.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
+import { ProductCategoryDetailComponent } from './components/product-category-detail/product-category-detail.component';
+import { ProductCategoryListComponent } from './components/product-category-list/product-category-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -24,6 +26,7 @@ import { SelectOptionGroupDialogComponent } from './components/select-option-gro
 import { SelectOptionGroupComponent } from './components/select-option-group/select-option-group.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 import { FacetResolver } from './providers/routing/facet-resolver';
+import { ProductCategoryResolver } from './providers/routing/product-category-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 
 @NgModule({
@@ -49,6 +52,8 @@ import { ProductResolver } from './providers/routing/product-resolver';
         AssetPickerDialogComponent,
         AssetFileInputComponent,
         VariantPriceDetailComponent,
+        ProductCategoryListComponent,
+        ProductCategoryDetailComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,
@@ -56,6 +61,6 @@ import { ProductResolver } from './providers/routing/product-resolver';
         SelectOptionGroupDialogComponent,
         ApplyFacetDialogComponent,
     ],
-    providers: [ProductResolver, FacetResolver],
+    providers: [ProductResolver, FacetResolver, ProductCategoryResolver],
 })
 export class CatalogModule {}
