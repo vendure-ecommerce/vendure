@@ -15,6 +15,8 @@ import { OrderLine } from './order-line/order-line.entity';
 import { Order } from './order/order.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
+import { ProductCategoryTranslation } from './product-category/product-category-translation.entity';
+import { ProductCategory } from './product-category/product-category.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from './product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from './product-option/product-option-translation.entity';
@@ -59,6 +61,8 @@ export const coreEntitiesMap = {
     Payment,
     PaymentMethod,
     Product,
+    ProductCategory,
+    ProductCategoryTranslation,
     ProductOption,
     ProductOptionGroup,
     ProductOptionGroupTranslation,

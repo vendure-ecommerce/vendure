@@ -78,6 +78,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         Facet: [],
         FacetValue: [],
         Product: [],
+        ProductCategory: [],
         ProductOption: [],
         ProductOptionGroup: [],
         ProductVariant: [],

@@ -66,6 +66,8 @@ export interface Query {
     eligibleShippingMethods: ShippingMethodQuote[];
     paymentMethods: PaymentMethodList;
     paymentMethod?: PaymentMethod | null;
+    productCategories: ProductCategoryList;
+    productCategory?: ProductCategory | null;
     productOptionGroups: ProductOptionGroup[];
     productOptionGroup?: ProductOptionGroup | null;
     products: ProductList;
@@ -470,6 +472,36 @@ export interface PaymentMethod extends Node {
     configArgs: ConfigArg[];
 }
 
+export interface ProductCategoryList extends PaginatedList {
+    items: ProductCategory[];
+    totalItems: number;
+}
+
+export interface ProductCategory extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode?: LanguageCode | null;
+    name: string;
+    description: string;
+    featuredAsset?: Asset | null;
+    assets: Asset[];
+    parent?: ProductCategory | null;
+    children?: ProductCategory[] | null;
+    facetValues: FacetValue[];
+    translations: ProductCategoryTranslation[];
+    customFields?: Json | null;
+}
+
+export interface ProductCategoryTranslation {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    name: string;
+    description: string;
+}
+
 export interface ProductOptionGroup extends Node {
     id: string;
     createdAt: DateTime;
@@ -605,6 +637,8 @@ export interface Mutation {
     addPaymentToOrder?: Order | null;
     setCustomerForOrder?: Order | null;
     updatePaymentMethod: PaymentMethod;
+    createProductCategory: ProductCategory;
+    updateProductCategory: ProductCategory;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -815,6 +849,28 @@ export interface PaymentMethodSortParameter {
 
 export interface PaymentMethodFilterParameter {
     code?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
+export interface ProductCategoryListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: ProductCategorySortParameter | null;
+    filter?: ProductCategoryFilterParameter | null;
+}
+
+export interface ProductCategorySortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    name?: SortOrder | null;
+    description?: SortOrder | null;
+}
+
+export interface ProductCategoryFilterParameter {
+    name?: StringOperators | null;
+    description?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
 }
@@ -1122,6 +1178,29 @@ export interface ConfigArgInput {
     value: string;
 }
 
+export interface CreateProductCategoryInput {
+    featuredAssetId?: string | null;
+    assetIds?: string[] | null;
+    translations: ProductCategoryTranslationInput[];
+    customFields?: Json | null;
+}
+
+export interface ProductCategoryTranslationInput {
+    id?: string | null;
+    languageCode: LanguageCode;
+    name?: string | null;
+    description?: string | null;
+    customFields?: Json | null;
+}
+
+export interface UpdateProductCategoryInput {
+    id: string;
+    featuredAssetId?: string | null;
+    assetIds?: string[] | null;
+    translations: ProductCategoryTranslationInput[];
+    customFields?: Json | null;
+}
+
 export interface CreateProductOptionGroupInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
@@ -1357,6 +1436,14 @@ export interface PaymentMethodsQueryArgs {
 export interface PaymentMethodQueryArgs {
     id: string;
 }
+export interface ProductCategoriesQueryArgs {
+    languageCode?: LanguageCode | null;
+    options?: ProductCategoryListOptions | null;
+}
+export interface ProductCategoryQueryArgs {
+    id: string;
+    languageCode?: LanguageCode | null;
+}
 export interface ProductOptionGroupsQueryArgs {
     languageCode?: LanguageCode | null;
     filterTerm?: string | null;
@@ -1511,6 +1598,12 @@ export interface SetCustomerForOrderMutationArgs {
 }
 export interface UpdatePaymentMethodMutationArgs {
     input: UpdatePaymentMethodInput;
+}
+export interface CreateProductCategoryMutationArgs {
+    input: CreateProductCategoryInput;
+}
+export interface UpdateProductCategoryMutationArgs {
+    input: UpdateProductCategoryInput;
 }
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
@@ -1861,6 +1954,8 @@ export namespace QueryResolvers {
         eligibleShippingMethods?: EligibleShippingMethodsResolver<ShippingMethodQuote[], any, Context>;
         paymentMethods?: PaymentMethodsResolver<PaymentMethodList, any, Context>;
         paymentMethod?: PaymentMethodResolver<PaymentMethod | null, any, Context>;
+        productCategories?: ProductCategoriesResolver<ProductCategoryList, any, Context>;
+        productCategory?: ProductCategoryResolver<ProductCategory | null, any, Context>;
         productOptionGroups?: ProductOptionGroupsResolver<ProductOptionGroup[], any, Context>;
         productOptionGroup?: ProductOptionGroupResolver<ProductOptionGroup | null, any, Context>;
         products?: ProductsResolver<ProductList, any, Context>;
@@ -2102,6 +2197,28 @@ export namespace QueryResolvers {
     >;
     export interface PaymentMethodArgs {
         id: string;
+    }
+
+    export type ProductCategoriesResolver<R = ProductCategoryList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ProductCategoriesArgs
+    >;
+    export interface ProductCategoriesArgs {
+        languageCode?: LanguageCode | null;
+        options?: ProductCategoryListOptions | null;
+    }
+
+    export type ProductCategoryResolver<R = ProductCategory | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ProductCategoryArgs
+    >;
+    export interface ProductCategoryArgs {
+        id: string;
+        languageCode?: LanguageCode | null;
     }
 
     export type ProductOptionGroupsResolver<R = ProductOptionGroup[], Parent = any, Context = any> = Resolver<
@@ -3348,6 +3465,102 @@ export namespace PaymentMethodResolvers {
     >;
 }
 
+export namespace ProductCategoryListResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<ProductCategory[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+    }
+
+    export type ItemsResolver<R = ProductCategory[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace ProductCategoryResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode | null, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+        featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
+        assets?: AssetsResolver<Asset[], any, Context>;
+        parent?: ParentResolver<ProductCategory | null, any, Context>;
+        children?: ChildrenResolver<ProductCategory[] | null, any, Context>;
+        facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
+        translations?: TranslationsResolver<ProductCategoryTranslation[], any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type FeaturedAssetResolver<R = Asset | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type AssetsResolver<R = Asset[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ParentResolver<R = ProductCategory | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ChildrenResolver<R = ProductCategory[] | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type FacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type TranslationsResolver<
+        R = ProductCategoryTranslation[],
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace ProductCategoryTranslationResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace ProductOptionGroupResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -3660,6 +3873,8 @@ export namespace MutationResolvers {
         addPaymentToOrder?: AddPaymentToOrderResolver<Order | null, any, Context>;
         setCustomerForOrder?: SetCustomerForOrderResolver<Order | null, any, Context>;
         updatePaymentMethod?: UpdatePaymentMethodResolver<PaymentMethod, any, Context>;
+        createProductCategory?: CreateProductCategoryResolver<ProductCategory, any, Context>;
+        updateProductCategory?: UpdateProductCategoryResolver<ProductCategory, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -4033,6 +4248,26 @@ export namespace MutationResolvers {
     >;
     export interface UpdatePaymentMethodArgs {
         input: UpdatePaymentMethodInput;
+    }
+
+    export type CreateProductCategoryResolver<R = ProductCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        CreateProductCategoryArgs
+    >;
+    export interface CreateProductCategoryArgs {
+        input: CreateProductCategoryInput;
+    }
+
+    export type UpdateProductCategoryResolver<R = ProductCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateProductCategoryArgs
+    >;
+    export interface UpdateProductCategoryArgs {
+        input: UpdateProductCategoryInput;
     }
 
     export type CreateProductOptionGroupResolver<

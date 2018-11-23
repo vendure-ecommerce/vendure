@@ -1,0 +1,43 @@
+type ProductCategory implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode
+    name: String!
+    description: String!
+    featuredAsset: Asset
+    assets: [Asset!]!
+    parent: ProductCategory
+    children: [ProductCategory!]
+    facetValues: [FacetValue!]!
+    translations: [ProductCategoryTranslation!]!
+}
+
+type ProductCategoryTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    description: String!
+}
+
+input ProductCategoryTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String
+    description: String
+}
+
+input CreateProductCategoryInput {
+    featuredAssetId: ID
+    assetIds: [ID!]
+    translations: [ProductCategoryTranslationInput!]!
+}
+
+input UpdateProductCategoryInput {
+    id: ID!
+    featuredAssetId: ID
+    assetIds: [ID!]
+    translations: [ProductCategoryTranslationInput!]!
+}

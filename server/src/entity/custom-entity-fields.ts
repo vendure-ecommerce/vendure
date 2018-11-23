@@ -24,6 +24,10 @@ export class CustomProductFields {}
 @Entity()
 export class CustomProductFieldsTranslation {}
 @Entity()
+export class CustomProductCategoryFields {}
+@Entity()
+export class CustomProductCategoryFieldsTranslation {}
+@Entity()
 export class CustomProductOptionFields {}
 @Entity()
 export class CustomProductOptionFieldsTranslation {}
@@ -151,6 +155,8 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'ProductCategory', CustomProductCategoryFields);
+    registerCustomFieldsForEntity(config, 'ProductCategory', CustomProductCategoryFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOptionGroup', CustomProductOptionGroupFields);
