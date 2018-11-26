@@ -40,7 +40,7 @@ export class ProductCategoryResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('assetIds', 'featuredAssetId')
+    @Decode('assetIds', 'featuredAssetId', 'parentId')
     async createProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateProductCategoryMutationArgs,

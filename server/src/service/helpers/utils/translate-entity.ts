@@ -121,3 +121,22 @@ function translateLeaf(object: object | undefined, property: string, languageCod
         }
     }
 }
+
+export type TreeNode = { children: TreeNode[] } & Translatable;
+
+/**
+ * Translates a tree structure of Translatable entities
+ */
+export function translateTree<T extends TreeNode>(
+    node: T,
+    languageCode: LanguageCode,
+    translatableRelations: DeepTranslatableRelations<T> = [],
+): Translated<T> {
+    const output = translateDeep(node, languageCode, translatableRelations);
+    if (Array.isArray(output.children)) {
+        output.children = output.children.map(child =>
+            translateTree(child, languageCode, translatableRelations as any),
+        );
+    }
+    return output;
+}

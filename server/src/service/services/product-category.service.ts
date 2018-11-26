@@ -1,14 +1,10 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import {
-    CreateProductCategoryInput,
-    CreateProductInput,
-    UpdateProductCategoryInput,
-    UpdateProductInput,
-} from 'shared/generated-types';
+import { CreateProductCategoryInput, UpdateProductCategoryInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -16,12 +12,14 @@ import { ProductCategoryTranslation } from '../../entity/product-category/produc
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { translateDeep, translateTree } from '../helpers/utils/translate-entity';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 
 export class ProductCategoryService {
+    private rootCategories: { [channelCode: string]: ProductCategory } = {};
+
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
@@ -30,18 +28,18 @@ export class ProductCategoryService {
         private translatableSaver: TranslatableSaver,
     ) {}
 
-    findAll(
+    async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<ProductCategory>,
     ): Promise<PaginatedList<Translated<ProductCategory>>> {
-        const relations = ['featuredAsset', 'assets', 'facetValues', 'channels'];
+        const relations = ['featuredAsset', 'facetValues', 'parent', 'channels'];
 
         return this.listQueryBuilder
-            .build(ProductCategory, options, relations, ctx.channelId)
+            .build(ProductCategory, options, relations, ctx.channelId, { isRoot: false })
             .getManyAndCount()
             .then(async ([productCategories, totalItems]) => {
                 const items = productCategories.map(productCategory =>
-                    translateDeep(productCategory, ctx.languageCode, ['facetValues']),
+                    translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']),
                 );
                 return {
                     items,
@@ -51,14 +49,22 @@ export class ProductCategoryService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<ProductCategory> | undefined> {
-        const relations = ['featuredAsset', 'assets', 'facetValues', 'channels'];
-        const productCategory = await this.connection.manager.findOne(ProductCategory, productId, {
+        const relations = ['featuredAsset', 'assets', 'facetValues', 'channels', 'parent'];
+        const productCategory = await this.connection.getRepository(ProductCategory).findOne(productId, {
             relations,
         });
         if (!productCategory) {
             return;
         }
-        return translateDeep(productCategory, ctx.languageCode, ['facetValues']);
+        return translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']);
+    }
+
+    async getTree(ctx: RequestContext, rootId?: ID): Promise<Translated<ProductCategory> | undefined> {
+        const root = await this.getParentCategory(ctx, rootId);
+        if (root) {
+            const tree = await this.connection.getTreeRepository(ProductCategory).findDescendantsTree(root);
+            return translateTree(tree, ctx.languageCode);
+        }
     }
 
     async create(
@@ -69,7 +75,13 @@ export class ProductCategoryService {
             input,
             entityType: ProductCategory,
             translationType: ProductCategoryTranslation,
-            beforeSave: category => this.channelService.assignToChannels(category, ctx),
+            beforeSave: async category => {
+                await this.channelService.assignToChannels(category, ctx);
+                const parent = await this.getParentCategory(ctx, input.parentId);
+                if (parent) {
+                    category.parent = parent;
+                }
+            },
         });
         await this.saveAssetInputs(productCategory, input);
         return assertFound(this.findOne(ctx, productCategory.id));
@@ -102,5 +114,61 @@ export class ProductCategoryService {
             }
             await this.connection.manager.save(productCategory);
         }
+    }
+
+    private async getParentCategory(
+        ctx: RequestContext,
+        parentId?: ID | null,
+    ): Promise<ProductCategory | undefined> {
+        if (parentId) {
+            return this.connection
+                .getRepository(ProductCategory)
+                .createQueryBuilder('category')
+                .leftJoin('category.channels', 'channel')
+                .where('category.id = :id', { id: parentId })
+                .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+                .getOne();
+        } else {
+            return this.getRootCategory(ctx);
+        }
+    }
+
+    private async getRootCategory(ctx: RequestContext): Promise<ProductCategory> {
+        const cachedRoot = this.rootCategories[ctx.channel.code];
+
+        if (cachedRoot) {
+            return cachedRoot;
+        }
+
+        const existingRoot = await this.connection
+            .getRepository(ProductCategory)
+            .createQueryBuilder('category')
+            .leftJoin('category.channels', 'channel')
+            .where('category.isRoot = :isRoot', { isRoot: true })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getOne();
+
+        if (existingRoot) {
+            this.rootCategories[ctx.channel.code] = existingRoot;
+            return existingRoot;
+        }
+
+        const rootTranslation = await this.connection.getRepository(ProductCategoryTranslation).save(
+            new ProductCategoryTranslation({
+                languageCode: DEFAULT_LANGUAGE_CODE,
+                name: '__root_category__',
+                description: 'The root of the ProductCategory tree.',
+            }),
+        );
+
+        const newRoot = new ProductCategory({
+            isRoot: true,
+            translations: [rootTranslation],
+            channels: [ctx.channel],
+        });
+
+        await this.connection.getRepository(ProductCategory).save(newRoot);
+        this.rootCategories[ctx.channel.code] = newRoot;
+        return newRoot;
     }
 }

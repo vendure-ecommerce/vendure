@@ -1,6 +1,8 @@
 import { LanguageCode } from 'shared/generated-types';
 
 import { Translatable, Translation } from '../../../common/types/locale-types';
+import { ProductCategoryTranslation } from '../../../entity/product-category/product-category-translation.entity';
+import { ProductCategory } from '../../../entity/product-category/product-category.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
@@ -8,7 +10,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 
-import { translateDeep, translateEntity } from './translate-entity';
+import { translateDeep, translateEntity, translateTree } from './translate-entity';
 
 const LANGUAGE_CODE = LanguageCode.en;
 const PRODUCT_NAME_EN = 'English Name';
@@ -253,5 +255,60 @@ describe('translateDeep()', () => {
         expect(result).toHaveProperty('name', PRODUCT_NAME_EN);
         expect(result.variants[0]).toHaveProperty('name', VARIANT_NAME_EN);
         expect(result.variants[0].options[0]).toHaveProperty('name', OPTION_NAME_EN);
+    });
+});
+
+describe('translateTree()', () => {
+    let cat1: ProductCategory;
+    let cat11: ProductCategory;
+    let cat12: ProductCategory;
+    let cat111: ProductCategory;
+
+    beforeEach(() => {
+        cat1 = new ProductCategory({
+            translations: [
+                new ProductCategoryTranslation({
+                    languageCode: LanguageCode.en,
+                    name: 'cat1 en',
+                }),
+            ],
+        });
+        cat11 = new ProductCategory({
+            translations: [
+                new ProductCategoryTranslation({
+                    languageCode: LanguageCode.en,
+                    name: 'cat11 en',
+                }),
+            ],
+        });
+        cat12 = new ProductCategory({
+            translations: [
+                new ProductCategoryTranslation({
+                    languageCode: LanguageCode.en,
+                    name: 'cat12 en',
+                }),
+            ],
+        });
+        cat111 = new ProductCategory({
+            translations: [
+                new ProductCategoryTranslation({
+                    languageCode: LanguageCode.en,
+                    name: 'cat111 en',
+                }),
+            ],
+        });
+
+        cat1.children = [cat11, cat12];
+        cat11.children = [cat111];
+    });
+
+    it('translates all entities in the tree', () => {
+        const result = translateTree(cat1, LanguageCode.en, []);
+
+        expect(result.languageCode).toBe(LanguageCode.en);
+        expect(result.name).toBe('cat1 en');
+        expect(result.children[0].name).toBe('cat11 en');
+        expect(result.children[1].name).toBe('cat12 en');
+        expect(result.children[0].children[0].name).toBe('cat111 en');
     });
 });

@@ -7,7 +7,7 @@ type ProductCategory implements Node {
     description: String!
     featuredAsset: Asset
     assets: [Asset!]!
-    parent: ProductCategory
+    parent: ProductCategory!
     children: [ProductCategory!]
     facetValues: [FacetValue!]!
     translations: [ProductCategoryTranslation!]!
@@ -32,12 +32,14 @@ input ProductCategoryTranslationInput {
 input CreateProductCategoryInput {
     featuredAssetId: ID
     assetIds: [ID!]
+    parentId: ID
     translations: [ProductCategoryTranslationInput!]!
 }
 
 input UpdateProductCategoryInput {
     id: ID!
     featuredAssetId: ID
+    parentId: ID
     assetIds: [ID!]
     translations: [ProductCategoryTranslationInput!]!
 }

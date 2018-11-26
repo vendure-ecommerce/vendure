@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID, Type } from 'shared/shared-types';
-import { Connection, FindManyOptions, SelectQueryBuilder } from 'typeorm';
+import { Connection, FindConditions, FindManyOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { ListQueryOptions } from '../../../common/types/common-types';
@@ -23,6 +23,7 @@ export class ListQueryBuilder {
         options: ListQueryOptions<T> = {},
         relations?: string[],
         channelId?: ID,
+        findConditions?: FindConditions<T>,
     ): SelectQueryBuilder<T> {
         const skip = options.skip;
         let take = options.take;
@@ -37,6 +38,7 @@ export class ListQueryBuilder {
             relations,
             take,
             skip,
+            where: findConditions || {},
         } as FindManyOptions<T>);
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
