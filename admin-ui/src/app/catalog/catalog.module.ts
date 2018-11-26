@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -18,6 +19,8 @@ import { GenerateProductVariantsComponent } from './components/generate-product-
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductCategoryDetailComponent } from './components/product-category-detail/product-category-detail.component';
 import { ProductCategoryListComponent } from './components/product-category-list/product-category-list.component';
+import { ProductCategoryTreeNodeComponent } from './components/product-category-tree/product-category-tree-node.component';
+import { ProductCategoryTreeComponent } from './components/product-category-tree/product-category-tree.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -30,7 +33,7 @@ import { ProductCategoryResolver } from './providers/routing/product-category-re
 import { ProductResolver } from './providers/routing/product-resolver';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
+    imports: [SharedModule, RouterModule.forChild(catalogRoutes), DragDropModule],
     exports: [],
     declarations: [
         ProductListComponent,
@@ -54,6 +57,8 @@ import { ProductResolver } from './providers/routing/product-resolver';
         VariantPriceDetailComponent,
         ProductCategoryListComponent,
         ProductCategoryDetailComponent,
+        ProductCategoryTreeComponent,
+        ProductCategoryTreeNodeComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,

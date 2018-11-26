@@ -486,7 +486,7 @@ export interface ProductCategory extends Node {
     description: string;
     featuredAsset?: Asset | null;
     assets: Asset[];
-    parent?: ProductCategory | null;
+    parent: ProductCategory;
     children?: ProductCategory[] | null;
     facetValues: FacetValue[];
     translations: ProductCategoryTranslation[];
@@ -1181,6 +1181,7 @@ export interface ConfigArgInput {
 export interface CreateProductCategoryInput {
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
+    parentId?: string | null;
     translations: ProductCategoryTranslationInput[];
     customFields?: Json | null;
 }
@@ -1196,6 +1197,7 @@ export interface ProductCategoryTranslationInput {
 export interface UpdateProductCategoryInput {
     id: string;
     featuredAssetId?: string | null;
+    parentId?: string | null;
     assetIds?: string[] | null;
     translations: ProductCategoryTranslationInput[];
     customFields?: Json | null;
@@ -3489,7 +3491,7 @@ export namespace ProductCategoryResolvers {
         description?: DescriptionResolver<string, any, Context>;
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         assets?: AssetsResolver<Asset[], any, Context>;
-        parent?: ParentResolver<ProductCategory | null, any, Context>;
+        parent?: ParentResolver<ProductCategory, any, Context>;
         children?: ChildrenResolver<ProductCategory[] | null, any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductCategoryTranslation[], any, Context>;
@@ -3512,7 +3514,7 @@ export namespace ProductCategoryResolvers {
         Context
     >;
     export type AssetsResolver<R = Asset[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ParentResolver<R = ProductCategory | null, Parent = any, Context = any> = Resolver<
+    export type ParentResolver<R = ProductCategory, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -5315,6 +5317,7 @@ export namespace GetProductCategoryList {
         description: string;
         featuredAsset?: FeaturedAsset | null;
         facetValues: FacetValues[];
+        parent: Parent;
     };
 
     export type FeaturedAsset = Asset.Fragment;
@@ -5324,6 +5327,11 @@ export namespace GetProductCategoryList {
         id: string;
         code: string;
         name: string;
+    };
+
+    export type Parent = {
+        __typename?: 'ProductCategory';
+        id: string;
     };
 }
 
@@ -6292,7 +6300,7 @@ export namespace ProductCategory {
         assets: Assets[];
         facetValues: FacetValues[];
         translations: Translations[];
-        parent?: Parent | null;
+        parent: Parent;
         children?: Children[] | null;
     };
 

@@ -1,4 +1,4 @@
-export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 declare const File: any;
 

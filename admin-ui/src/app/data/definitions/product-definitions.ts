@@ -314,6 +314,9 @@ export const GET_PRODUCT_CATEGORY_LIST = gql`
                     code
                     name
                 }
+                parent {
+                    id
+                }
             }
             totalItems
         }

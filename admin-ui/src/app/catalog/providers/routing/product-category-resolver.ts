@@ -19,6 +19,7 @@ export class ProductCategoryResolver extends BaseEntityResolver<ProductCategory.
                 assets: [],
                 translations: [],
                 facetValues: [],
+                parent: {} as any,
             },
             id => this.dataService.product.getProductCategory(id).mapStream(data => data.productCategory),
         );
