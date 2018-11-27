@@ -43,7 +43,7 @@ export class OrderService {
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, ['lines', 'lines.productVariant', 'customer'])
+            .build(Order, options, { relations: ['lines', 'lines.productVariant', 'customer'] })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {

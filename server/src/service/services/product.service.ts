@@ -40,7 +40,7 @@ export class ProductService {
         const relations = ['featuredAsset', 'assets', 'optionGroups', 'channels'];
 
         return this.listQueryBuilder
-            .build(Product, options, relations, ctx.channelId)
+            .build(Product, options, { relations, channelId: ctx.channelId })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>

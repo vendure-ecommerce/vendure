@@ -46,7 +46,7 @@ export class ShippingMethodService {
 
     findAll(options?: ListQueryOptions<ShippingMethod>): Promise<PaginatedList<ShippingMethod>> {
         return this.listQueryBuilder
-            .build(ShippingMethod, options, ['channels'])
+            .build(ShippingMethod, options, { relations: ['channels'] })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

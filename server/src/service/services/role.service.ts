@@ -34,7 +34,7 @@ export class RoleService {
 
     findAll(options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, ['channels'])
+            .build(Role, options, { relations: ['channels'] })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

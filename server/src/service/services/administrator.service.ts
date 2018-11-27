@@ -32,7 +32,7 @@ export class AdministratorService {
 
     findAll(options?: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
         return this.listQueryBuilder
-            .build(Administrator, options, ['user', 'user.roles'])
+            .build(Administrator, options, { relations: ['user', 'user.roles'] })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

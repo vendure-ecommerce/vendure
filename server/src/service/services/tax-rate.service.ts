@@ -38,7 +38,7 @@ export class TaxRateService {
 
     findAll(options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
         return this.listQueryBuilder
-            .build(TaxRate, options, ['category', 'zone', 'customerGroup'])
+            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'] })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,

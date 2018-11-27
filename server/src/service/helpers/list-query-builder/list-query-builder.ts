@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID, Type } from 'shared/shared-types';
-import { Connection, FindConditions, FindManyOptions, SelectQueryBuilder } from 'typeorm';
+import { Connection, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { ListQueryOptions } from '../../../common/types/common-types';
@@ -10,6 +10,13 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
+
+export type ExtendedListQueryOptions<T extends VendureEntity> = {
+    relations?: string[];
+    channelId?: ID;
+    where?: FindConditions<T>;
+    orderBy?: FindOneOptions<T>['order'];
+};
 
 @Injectable()
 export class ListQueryBuilder {
@@ -21,9 +28,7 @@ export class ListQueryBuilder {
     build<T extends VendureEntity>(
         entity: Type<T>,
         options: ListQueryOptions<T> = {},
-        relations?: string[],
-        channelId?: ID,
-        findConditions?: FindConditions<T>,
+        extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
         const skip = options.skip;
         let take = options.take;
@@ -35,10 +40,10 @@ export class ListQueryBuilder {
 
         const qb = this.connection.createQueryBuilder<T>(entity, entity.name.toLowerCase());
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations,
+            relations: extendedOptions.relations,
             take,
             skip,
-            where: findConditions || {},
+            where: extendedOptions.where || {},
         } as FindManyOptions<T>);
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
@@ -51,8 +56,8 @@ export class ListQueryBuilder {
             }
         });
 
-        if (channelId) {
-            const channelFilter = parseChannelParam(this.connection, entity, channelId);
+        if (extendedOptions.channelId) {
+            const channelFilter = parseChannelParam(this.connection, entity, extendedOptions.channelId);
             if (channelFilter) {
                 qb.andWhere(channelFilter.clause, channelFilter.parameters);
             }
