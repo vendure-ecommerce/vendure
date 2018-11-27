@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreateProductCategoryMutationArgs,
+    MoveProductCategoryMutationArgs,
     Permission,
     ProductCategoriesQueryArgs,
     ProductCategoryQueryArgs,
@@ -58,5 +59,16 @@ export class ProductCategoryResolver {
     ): Promise<Translated<ProductCategory>> {
         const { input } = args;
         return this.productCategoryService.update(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    @Decode('categoryId', 'parentId')
+    async moveProductCategory(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MoveProductCategoryMutationArgs,
+    ): Promise<Translated<ProductCategory>> {
+        const { input } = args;
+        return this.productCategoryService.move(ctx, input);
     }
 }

@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
 import { populate, PopulateOptions } from '../mock-data/populate';
@@ -29,6 +30,9 @@ export class TestServer {
     async init(options: PopulateOptions, customConfig: Partial<VendureConfig> = {}): Promise<void> {
         setTestEnvironment();
         const testingConfig = { ...testConfig, ...customConfig };
+        if (options.logging) {
+            (testingConfig.dbConnectionOptions as Mutable<ConnectionOptions>).logging = true;
+        }
         const dbFilePath = this.getDbFilePath();
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {

@@ -4,6 +4,7 @@ type ProductCategory implements Node {
     updatedAt: DateTime!
     languageCode: LanguageCode
     name: String!
+    position: Int!
     description: String!
     featuredAsset: Asset
     assets: [Asset!]!

@@ -35,7 +35,11 @@ export class ListQueryBuilder {
         if (options.skip !== undefined && options.take === undefined) {
             take = Number.MAX_SAFE_INTEGER;
         }
-        const sort = parseSortParams(this.connection, entity, options.sort);
+        const sort = parseSortParams(
+            this.connection,
+            entity,
+            Object.assign({}, options.sort, extendedOptions.orderBy),
+        );
         const filter = parseFilterParams(this.connection, entity, options.filter);
 
         const qb = this.connection.createQueryBuilder<T>(entity, entity.name.toLowerCase());

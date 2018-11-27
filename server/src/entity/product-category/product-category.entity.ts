@@ -28,8 +28,11 @@ export class ProductCategory extends VendureEntity implements Translatable, HasC
         super(input);
     }
 
-    @Column()
+    @Column({ default: false })
     isRoot: boolean;
+
+    @Column()
+    position: number;
 
     name: LocaleString;
 

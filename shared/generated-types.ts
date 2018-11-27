@@ -483,6 +483,7 @@ export interface ProductCategory extends Node {
     updatedAt: DateTime;
     languageCode?: LanguageCode | null;
     name: string;
+    position: number;
     description: string;
     featuredAsset?: Asset | null;
     assets: Asset[];
@@ -639,6 +640,7 @@ export interface Mutation {
     updatePaymentMethod: PaymentMethod;
     createProductCategory: ProductCategory;
     updateProductCategory: ProductCategory;
+    moveProductCategory: ProductCategory;
     createProductOptionGroup: ProductOptionGroup;
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
@@ -1203,6 +1205,12 @@ export interface UpdateProductCategoryInput {
     customFields?: Json | null;
 }
 
+export interface MoveProductCategoryInput {
+    categoryId: string;
+    parentId: string;
+    index: number;
+}
+
 export interface CreateProductOptionGroupInput {
     code: string;
     translations: ProductOptionGroupTranslationInput[];
@@ -1606,6 +1614,9 @@ export interface CreateProductCategoryMutationArgs {
 }
 export interface UpdateProductCategoryMutationArgs {
     input: UpdateProductCategoryInput;
+}
+export interface MoveProductCategoryMutationArgs {
+    input: MoveProductCategoryInput;
 }
 export interface CreateProductOptionGroupMutationArgs {
     input: CreateProductOptionGroupInput;
@@ -3488,6 +3499,7 @@ export namespace ProductCategoryResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         languageCode?: LanguageCodeResolver<LanguageCode | null, any, Context>;
         name?: NameResolver<string, any, Context>;
+        position?: PositionResolver<number, any, Context>;
         description?: DescriptionResolver<string, any, Context>;
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         assets?: AssetsResolver<Asset[], any, Context>;
@@ -3507,6 +3519,7 @@ export namespace ProductCategoryResolvers {
         Context
     >;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type PositionResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type FeaturedAssetResolver<R = Asset | null, Parent = any, Context = any> = Resolver<
         R,
@@ -3877,6 +3890,7 @@ export namespace MutationResolvers {
         updatePaymentMethod?: UpdatePaymentMethodResolver<PaymentMethod, any, Context>;
         createProductCategory?: CreateProductCategoryResolver<ProductCategory, any, Context>;
         updateProductCategory?: UpdateProductCategoryResolver<ProductCategory, any, Context>;
+        moveProductCategory?: MoveProductCategoryResolver<ProductCategory, any, Context>;
         createProductOptionGroup?: CreateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
@@ -4270,6 +4284,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateProductCategoryArgs {
         input: UpdateProductCategoryInput;
+    }
+
+    export type MoveProductCategoryResolver<R = ProductCategory, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        MoveProductCategoryArgs
+    >;
+    export interface MoveProductCategoryArgs {
+        input: MoveProductCategoryInput;
     }
 
     export type CreateProductOptionGroupResolver<
@@ -5373,6 +5397,19 @@ export namespace UpdateProductCategory {
     };
 
     export type UpdateProductCategory = ProductCategory.Fragment;
+}
+
+export namespace MoveProductCategory {
+    export type Variables = {
+        input: MoveProductCategoryInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        moveProductCategory: MoveProductCategory;
+    };
+
+    export type MoveProductCategory = ProductCategory.Fragment;
 }
 
 export namespace GetPromotionList {

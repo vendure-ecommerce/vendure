@@ -350,3 +350,12 @@ export const UPDATE_PRODUCT_CATEGORY = gql`
     }
     ${PRODUCT_CATEGORY_FRAGMENT}
 `;
+
+export const MOVE_PRODUCT_CATEGORY = gql`
+    mutation MoveProductCategory($input: MoveProductCategoryInput!) {
+        moveProductCategory(input: $input) {
+            ...ProductCategory
+        }
+    }
+    ${PRODUCT_CATEGORY_FRAGMENT}
+`;

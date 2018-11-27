@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductCategory resolver createProductCategory creates a root category 1`] = `
+Object {
+  "assets": Array [
+    Object {
+      "fileSize": 4,
+      "id": "T_1",
+      "mimeType": "image/jpeg",
+      "name": "charles-deluvio-695736-unsplash.jpg",
+      "preview": "test-url/test-assets/charles-deluvio-695736-unsplash__preview.jpg",
+      "source": "test-url/test-assets/charles-deluvio-695736-unsplash.jpg",
+      "type": "IMAGE",
+    },
+    Object {
+      "fileSize": 4,
+      "id": "T_2",
+      "mimeType": "image/jpeg",
+      "name": "chuttersnap-584518-unsplash.jpg",
+      "preview": "test-url/test-assets/chuttersnap-584518-unsplash__preview.jpg",
+      "source": "test-url/test-assets/chuttersnap-584518-unsplash.jpg",
+      "type": "IMAGE",
+    },
+  ],
+  "children": null,
+  "description": "",
+  "facetValues": Array [],
+  "featuredAsset": Object {
+    "fileSize": 4,
+    "id": "T_2",
+    "mimeType": "image/jpeg",
+    "name": "chuttersnap-584518-unsplash.jpg",
+    "preview": "test-url/test-assets/chuttersnap-584518-unsplash__preview.jpg",
+    "source": "test-url/test-assets/chuttersnap-584518-unsplash.jpg",
+    "type": "IMAGE",
+  },
+  "id": "T_2",
+  "languageCode": "en",
+  "name": "Electronics",
+  "parent": Object {
+    "id": "T_1",
+    "name": "__root_category__",
+  },
+  "translations": Array [
+    Object {
+      "description": "",
+      "id": "T_1",
+      "languageCode": "en",
+      "name": "Electronics",
+    },
+  ],
+}
+`;
+
+exports[`ProductCategory resolver updateProductCategory updates the details 1`] = `
+Object {
+  "assets": Array [
+    Object {
+      "fileSize": 4,
+      "id": "T_2",
+      "mimeType": "image/jpeg",
+      "name": "chuttersnap-584518-unsplash.jpg",
+      "preview": "test-url/test-assets/chuttersnap-584518-unsplash__preview.jpg",
+      "source": "test-url/test-assets/chuttersnap-584518-unsplash.jpg",
+      "type": "IMAGE",
+    },
+  ],
+  "children": null,
+  "description": "Apple stuff ",
+  "facetValues": Array [],
+  "featuredAsset": Object {
+    "fileSize": 4,
+    "id": "T_2",
+    "mimeType": "image/jpeg",
+    "name": "chuttersnap-584518-unsplash.jpg",
+    "preview": "test-url/test-assets/chuttersnap-584518-unsplash__preview.jpg",
+    "source": "test-url/test-assets/chuttersnap-584518-unsplash.jpg",
+    "type": "IMAGE",
+  },
+  "id": "T_4",
+  "languageCode": "en",
+  "name": "Apple",
+  "parent": Object {
+    "id": "T_3",
+    "name": "Laptops",
+  },
+  "translations": Array [
+    Object {
+      "description": "Apple stuff ",
+      "id": "T_4",
+      "languageCode": "en",
+      "name": "Apple",
+    },
+  ],
+}
+`;

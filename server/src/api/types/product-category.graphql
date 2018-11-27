@@ -9,6 +9,9 @@ type Mutation {
 
     "Update an existing ProductCategory"
     updateProductCategory(input: UpdateProductCategoryInput!): ProductCategory!
+
+    "Move a ProductCategory to a different parent or index"
+    moveProductCategory(input: MoveProductCategoryInput!): ProductCategory!
 }
 
 type ProductCategoryList implements PaginatedList {
@@ -36,4 +39,10 @@ input ProductCategoryFilterParameter {
     description: StringOperators
     createdAt: DateOperators
     updatedAt: DateOperators
+}
+
+input MoveProductCategoryInput {
+    categoryId: ID!
+    parentId: ID!
+    index: Int!
 }

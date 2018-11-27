@@ -1,17 +1,24 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductCategoryInput, UpdateProductCategoryInput } from 'shared/generated-types';
+import {
+    CreateProductCategoryInput,
+    MoveProductCategoryInput,
+    UpdateProductCategoryInput,
+} from 'shared/generated-types';
+import { ROOT_CATEGORY_NAME } from 'shared/shared-constants';
 import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep, translateTree } from '../helpers/utils/translate-entity';
 
 import { AssetService } from './asset.service';
@@ -35,7 +42,12 @@ export class ProductCategoryService {
         const relations = ['featuredAsset', 'facetValues', 'parent', 'channels'];
 
         return this.listQueryBuilder
-            .build(ProductCategory, options, relations, ctx.channelId, { isRoot: false })
+            .build(ProductCategory, options, {
+                relations,
+                channelId: ctx.channelId,
+                where: { isRoot: false },
+                orderBy: { position: 'ASC' },
+            })
             .getManyAndCount()
             .then(async ([productCategories, totalItems]) => {
                 const items = productCategories.map(productCategory =>
@@ -81,6 +93,7 @@ export class ProductCategoryService {
                 if (parent) {
                     category.parent = parent;
                 }
+                category.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
             },
         });
         await this.saveAssetInputs(productCategory, input);
@@ -100,6 +113,48 @@ export class ProductCategoryService {
         return assertFound(this.findOne(ctx, productCategory.id));
     }
 
+    async move(ctx: RequestContext, input: MoveProductCategoryInput): Promise<Translated<ProductCategory>> {
+        const target = await getEntityOrThrow(this.connection, ProductCategory, input.categoryId, {
+            relations: ['parent'],
+        });
+        const descendants = await this.connection.getTreeRepository(ProductCategory).findDescendants(target);
+
+        if (
+            idsAreEqual(input.parentId, target.id) ||
+            descendants.some(cat => idsAreEqual(input.parentId, cat.id))
+        ) {
+            throw new IllegalOperationError(`error.cannot-move-product-category-into-self`);
+        }
+
+        const siblings = await this.connection
+            .getRepository(ProductCategory)
+            .createQueryBuilder('category')
+            .leftJoin('category.parent', 'parent')
+            .where('parent.id = :id', { id: input.parentId })
+            .orderBy('category.position', 'ASC')
+            .getMany();
+        const normalizedIndex = Math.max(Math.min(input.index, siblings.length), 0);
+
+        if (idsAreEqual(target.parent.id, input.parentId)) {
+            const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.categoryId));
+            if (currentIndex !== normalizedIndex) {
+                siblings.splice(normalizedIndex, 0, siblings.splice(currentIndex, 1)[0]);
+                siblings.forEach((cat, index) => {
+                    cat.position = index;
+                });
+            }
+        } else {
+            target.parent = new ProductCategory({ id: input.parentId });
+            siblings.splice(normalizedIndex, 0, target);
+            siblings.forEach((cat, index) => {
+                cat.position = index;
+            });
+        }
+
+        await this.connection.getRepository(ProductCategory).save(siblings);
+        return assertFound(this.findOne(ctx, input.categoryId));
+    }
+
     private async saveAssetInputs(productCategory: ProductCategory, input: any) {
         if (input.assetIds || input.featuredAssetId) {
             if (input.assetIds) {
@@ -114,6 +169,21 @@ export class ProductCategoryService {
             }
             await this.connection.manager.save(productCategory);
         }
+    }
+
+    /**
+     * Returns the next position value in the given parent category.
+     */
+    async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
+        const parentId = maybeParentId || (await this.getRootCategory(ctx)).id;
+        const result = await this.connection
+            .getRepository(ProductCategory)
+            .createQueryBuilder('category')
+            .leftJoin('category.parent', 'parent')
+            .select('MAX(category.position)', 'index')
+            .where('parent.id = :id', { id: parentId })
+            .getRawOne();
+        return (result.index || 0) + 1;
     }
 
     private async getParentCategory(
@@ -156,13 +226,14 @@ export class ProductCategoryService {
         const rootTranslation = await this.connection.getRepository(ProductCategoryTranslation).save(
             new ProductCategoryTranslation({
                 languageCode: DEFAULT_LANGUAGE_CODE,
-                name: '__root_category__',
+                name: ROOT_CATEGORY_NAME,
                 description: 'The root of the ProductCategory tree.',
             }),
         );
 
         const newRoot = new ProductCategory({
             isRoot: true,
+            position: 0,
             translations: [rootTranslation],
             channels: [ctx.channel],
         });

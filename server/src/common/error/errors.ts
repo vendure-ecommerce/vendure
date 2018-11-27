@@ -17,7 +17,7 @@ export class UserInputError extends I18nError {
 
 export class IllegalOperationError extends I18nError {
     constructor(message: string, variables: { [key: string]: string | number } = {}) {
-        super(message || 'error.cannot-transition-order-from-to', variables, 'ILLEGAL_OPERATION');
+        super(message, variables, 'ILLEGAL_OPERATION');
     }
 }
 
