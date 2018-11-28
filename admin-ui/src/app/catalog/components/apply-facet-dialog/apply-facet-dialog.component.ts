@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FacetValue, ProductOptionGroup } from 'shared/generated-types';
+import { FacetValue, FacetWithValues } from 'shared/generated-types';
 
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
@@ -10,9 +10,10 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApplyFacetDialogComponent implements Dialog<FacetValue[]> {
-    existingOptionGroups: Array<Partial<ProductOptionGroup>>;
     resolveWith: (result?: FacetValue[]) => void;
     selectedValues: FacetValue[] = [];
+    // Provided by caller
+    facets: FacetWithValues.Fragment[];
 
     selectValues() {
         this.resolveWith(this.selectedValues);

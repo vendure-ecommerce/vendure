@@ -1,11 +1,12 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, forkJoin, Observable } from 'rxjs';
+import { map, mergeMap, skip, take, withLatestFrom } from 'rxjs/operators';
 import {
     CreateProductInput,
+    FacetWithValues,
     LanguageCode,
     ProductWithVariants,
     TaxCategory,
@@ -26,6 +27,15 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
 export type TabName = 'details' | 'variants';
+export interface VariantFormValue {
+    sku: string;
+    name: string;
+    price: number;
+    priceIncludesTax: boolean;
+    priceWithTax: number;
+    taxCategoryId: string;
+    facetValueIds: string[];
+}
 
 @Component({
     selector: 'vdr-product-detail',
@@ -43,6 +53,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
 
     constructor(
         route: ActivatedRoute,
@@ -53,6 +64,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         private modalService: ModalService,
         private notificationService: NotificationService,
         private location: Location,
+        private changeDetector: ChangeDetectorRef,
     ) {
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Product');
@@ -118,22 +130,44 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      * Opens a dialog to select FacetValues to apply to the select ProductVariants.
      */
     selectFacetValue(selectedVariantIds: string[]) {
-        this.modalService
-            .fromComponent(ApplyFacetDialogComponent, { size: 'md' })
+        this.dataService.facet
+            .getFacets(9999999, 0)
+            .mapSingle(data => data.facets.items)
+            .subscribe(items => this.facets$.next(items));
+
+        this.facets$
             .pipe(
+                skip(1),
+                take(1),
+                mergeMap(facets =>
+                    this.modalService.fromComponent(ApplyFacetDialogComponent, {
+                        size: 'md',
+                        locals: { facets },
+                    }),
+                ),
                 map(facetValues => facetValues && facetValues.map(v => v.id)),
-                mergeMap(facetValueIds => {
-                    if (facetValueIds) {
-                        return this.dataService.product.applyFacetValuesToProductVariants(
-                            facetValueIds,
-                            selectedVariantIds,
-                        );
-                    } else {
-                        return EMPTY;
-                    }
-                }),
+                withLatestFrom(this.variants$),
             )
-            .subscribe();
+            .subscribe(([facetValueIds, variants]) => {
+                if (facetValueIds) {
+                    for (const variantId of selectedVariantIds) {
+                        const index = variants.findIndex(v => v.id === variantId);
+                        const variant = variants[index];
+                        const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
+                        const uniqueFacetValueIds = Array.from(
+                            new Set([...existingFacetValueIds, ...facetValueIds]),
+                        );
+                        const variantFormGroup = this.productForm.get(['variants', index]);
+                        if (variantFormGroup) {
+                            variantFormGroup.patchValue({
+                                facetValueIds: uniqueFacetValueIds,
+                            });
+                            variantFormGroup.markAsDirty();
+                        }
+                    }
+                    this.changeDetector.markForCheck();
+                }
+            });
     }
 
     create() {
@@ -250,21 +284,28 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             const variantsFormArray = this.productForm.get('variants') as FormArray;
             product.variants.forEach((variant, i) => {
                 const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
-
-                const group = {
+                const facetValueIds = variant.facetValues.map(fv => fv.id);
+                const group: VariantFormValue = {
                     sku: variant.sku,
                     name: variantTranslation ? variantTranslation.name : '',
                     price: variant.price,
                     priceIncludesTax: variant.priceIncludesTax,
                     priceWithTax: variant.priceWithTax,
                     taxCategoryId: variant.taxCategory.id,
+                    facetValueIds,
                 };
 
                 const existing = variantsFormArray.at(i);
                 if (existing) {
                     existing.setValue(group);
                 } else {
-                    variantsFormArray.insert(i, this.formBuilder.group(group));
+                    variantsFormArray.insert(
+                        i,
+                        this.formBuilder.group({
+                            ...group,
+                            facetValueIds: this.formBuilder.control(facetValueIds),
+                        }),
+                    );
                 }
             });
         }
@@ -314,14 +355,16 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         }
         return dirtyVariants
             .map((variant, i) => {
-                const updated = createUpdatedTranslatable({
+                const formValue: VariantFormValue = dirtyVariantValues[i];
+                const result: UpdateProductVariantInput = createUpdatedTranslatable({
                     translatable: variant,
-                    updatedFields: dirtyVariantValues[i],
+                    updatedFields: formValue,
                     customFieldConfig: this.customVariantFields,
                     languageCode,
-                }) as UpdateProductVariantInput;
-                updated.taxCategoryId = dirtyVariantValues[i].taxCategoryId;
-                return updated;
+                });
+                result.taxCategoryId = formValue.taxCategoryId;
+                result.facetValueIds = formValue.facetValueIds;
+                return result;
             })
             .filter(notNullOrUndefined);
     }

@@ -40,6 +40,10 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             id
             code
             name
+            facet {
+                id
+                name
+            }
         }
         translations {
             id

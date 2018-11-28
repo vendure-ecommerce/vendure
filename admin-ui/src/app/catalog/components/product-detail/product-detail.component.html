@@ -101,6 +101,7 @@
 
                         <vdr-product-variants-list
                             [variants]="variants$ | async"
+                            [facets]="facets$ | async"
                             [productVariantsFormArray]="productForm.get('variants')"
                             [taxCategories]="taxCategories$ | async"
                             #productVariantsList

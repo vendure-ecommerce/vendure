@@ -21,8 +21,10 @@
 }
 
 .chip-icon {
-    border-left: 1px solid $color-grey-4;
+    border-left: 1px solid transparentize($color-grey-1, 0.5);
     padding: 0 3px;
+    line-height: 1em;
+    display: flex;
 
     button {
         cursor: pointer;

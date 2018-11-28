@@ -11,6 +11,10 @@ export const FACET_VALUE_FRAGMENT = gql`
             languageCode
             name
         }
+        facet {
+            id
+            name
+        }
     }
 `;
 

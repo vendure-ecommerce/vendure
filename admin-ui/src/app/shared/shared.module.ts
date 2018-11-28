@@ -21,6 +21,7 @@ import { CustomFieldControlComponent } from './components/custom-field-control/c
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
+import { FacetValueChipComponent } from './components/facet-value-chip/facet-value-chip.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
@@ -66,6 +67,7 @@ const DECLARATIONS = [
     ItemsPerPageControlsComponent,
     PaginationControlsComponent,
     TableRowActionComponent,
+    FacetValueChipComponent,
     FileSizePipe,
     FormFieldComponent,
     FormFieldControlDirective,

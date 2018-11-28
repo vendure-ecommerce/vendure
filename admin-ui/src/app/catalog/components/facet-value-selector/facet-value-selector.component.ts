@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs';
-import { FacetValue } from 'shared/generated-types';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FacetValue, FacetWithValues } from 'shared/generated-types';
 
+import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { DataService } from '../../../data/providers/data.service';
 
 export type FacetValueSeletorItem = {
@@ -19,27 +19,19 @@ export type FacetValueSeletorItem = {
 })
 export class FacetValueSelectorComponent implements OnInit {
     @Output() selectedValuesChange = new EventEmitter<FacetValue.Fragment[]>();
+    @Input() facets: FacetWithValues.Fragment[];
 
-    facetValues$: Observable<FacetValueSeletorItem[]>;
+    facetValues: FacetValueSeletorItem[] = [];
     constructor(private dataService: DataService) {}
 
     ngOnInit() {
-        this.facetValues$ = this.dataService.facet.getFacets(9999999, 0).mapSingle(result => {
-            return result.facets.items.reduce(
-                (flattened, facet) => {
-                    return flattened.concat(
-                        facet.values.map(value => {
-                            return {
-                                name: value.name,
-                                facetName: facet.name,
-                                id: value.id,
-                                value,
-                            };
-                        }),
-                    );
-                },
-                [] as FacetValueSeletorItem[],
-            );
+        this.facetValues = flattenFacetValues(this.facets).map(value => {
+            return {
+                name: value.name,
+                facetName: value.facet.name,
+                id: value.id,
+                value,
+            };
         });
     }
 

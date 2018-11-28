@@ -24,9 +24,16 @@
             </div>
             <div class="flex-spacer"></div>
             <div class="facets">
-                <div *ngIf="variant.facetValues.length">{{ 'catalog.facets' | translate }}:</div>
-                <div *ngIf="!variant.facetValues.length">{{ 'catalog.no-facets' | translate }}</div>
-                <vdr-chip *ngFor="let facetValue of variant.facetValues">{{ facetValue.name }}</vdr-chip>
+                <vdr-facet-value-chip
+                    *ngFor="let facetValue of existingFacetValues(i)"
+                    [facetValue]="facetValue"
+                    (remove)="removeFacetValue(i, facetValue.id)"
+                ></vdr-facet-value-chip>
+                <vdr-facet-value-chip
+                    *ngFor="let facetValue of pendingFacetValues(i)"
+                    [facetValue]="facetValue"
+                    (remove)="removeFacetValue(i, facetValue.id)"
+                ></vdr-facet-value-chip>
             </div>
         </div>
         <div class="card-block">
