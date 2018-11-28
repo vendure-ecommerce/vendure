@@ -27,13 +27,15 @@ export class FacetService {
         lang: LanguageCode,
         options?: ListQueryOptions<Facet>,
     ): Promise<PaginatedList<Translated<Facet>>> {
-        const relations = ['values'];
+        const relations = ['values', 'values.facet'];
 
         return this.listQueryBuilder
-            .build(Facet, options, relations)
+            .build(Facet, options, { relations })
             .getManyAndCount()
             .then(([facets, totalItems]) => {
-                const items = facets.map(facet => translateDeep(facet, lang, ['values']));
+                const items = facets.map(facet =>
+                    translateDeep(facet, lang, ['values', ['values', 'facet']]),
+                );
                 return {
                     items,
                     totalItems,
@@ -42,11 +44,11 @@ export class FacetService {
     }
 
     findOne(facetId: ID, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
-        const relations = ['values'];
+        const relations = ['values', 'values.facet'];
 
         return this.connection.manager
             .findOne(Facet, facetId, { relations })
-            .then(facet => facet && translateDeep(facet, lang, ['values']));
+            .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
     async create(input: CreateFacetInput): Promise<Translated<Facet>> {

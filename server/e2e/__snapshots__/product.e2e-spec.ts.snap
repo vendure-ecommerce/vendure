@@ -60,16 +60,28 @@ exports[`Product resolver product mutation variants applyFacetValuesToProductVar
 Array [
   Object {
     "code": "Harris_LLC",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_1",
     "name": "Harris LLC",
   },
   Object {
     "code": "Heathcote_-_Goyette",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_3",
     "name": "Heathcote - Goyette",
   },
   Object {
     "code": "Fisher,_Sporer_and_Bailey",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_5",
     "name": "Fisher, Sporer and Bailey",
   },
@@ -80,16 +92,28 @@ exports[`Product resolver product mutation variants applyFacetValuesToProductVar
 Array [
   Object {
     "code": "Harris_LLC",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_1",
     "name": "Harris LLC",
   },
   Object {
     "code": "Heathcote_-_Goyette",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_3",
     "name": "Heathcote - Goyette",
   },
   Object {
     "code": "Fisher,_Sporer_and_Bailey",
+    "facet": Object {
+      "id": "T_1",
+      "name": "Brand",
+    },
     "id": "T_5",
     "name": "Fisher, Sporer and Bailey",
   },

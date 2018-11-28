@@ -262,7 +262,8 @@ export interface FacetValue extends Node {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-    languageCode?: LanguageCode | null;
+    languageCode: LanguageCode;
+    facet: Facet;
     name: string;
     code: string;
     translations: FacetValueTranslation[];
@@ -1267,6 +1268,7 @@ export interface UpdateProductInput {
 export interface UpdateProductVariantInput {
     id: string;
     translations?: ProductVariantTranslationInput[] | null;
+    facetValueIds?: string[] | null;
     sku?: string | null;
     taxCategoryId?: string | null;
     price?: number | null;
@@ -2869,7 +2871,8 @@ export namespace FacetValueResolvers {
         id?: IdResolver<string, any, Context>;
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        languageCode?: LanguageCodeResolver<LanguageCode | null, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        facet?: FacetResolver<Facet, any, Context>;
         name?: NameResolver<string, any, Context>;
         code?: CodeResolver<string, any, Context>;
         translations?: TranslationsResolver<FacetValueTranslation[], any, Context>;
@@ -2879,11 +2882,12 @@ export namespace FacetValueResolvers {
     export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type LanguageCodeResolver<R = LanguageCode | null, Parent = any, Context = any> = Resolver<
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
+    export type FacetResolver<R = Facet, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TranslationsResolver<R = FacetValueTranslation[], Parent = any, Context = any> = Resolver<
@@ -6030,16 +6034,23 @@ export namespace FacetValue {
     export type Fragment = {
         __typename?: 'FacetValue';
         id: string;
-        languageCode?: LanguageCode | null;
+        languageCode: LanguageCode;
         code: string;
         name: string;
         translations: Translations[];
+        facet: Facet;
     };
 
     export type Translations = {
         __typename?: 'FacetValueTranslation';
         id: string;
         languageCode: LanguageCode;
+        name: string;
+    };
+
+    export type Facet = {
+        __typename?: 'Facet';
+        id: string;
         name: string;
     };
 }
@@ -6248,6 +6259,13 @@ export namespace ProductVariant {
         __typename?: 'FacetValue';
         id: string;
         code: string;
+        name: string;
+        facet: Facet;
+    };
+
+    export type Facet = {
+        __typename?: 'Facet';
+        id: string;
         name: string;
     };
 

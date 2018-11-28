@@ -43,7 +43,7 @@ export class FacetValueService {
     }
 
     findByIds(ids: ID[]): Promise<FacetValue[]> {
-        return this.connection.getRepository(FacetValue).findByIds(ids);
+        return this.connection.getRepository(FacetValue).findByIds(ids, { relations: ['facet'] });
     }
 
     async create(

@@ -19,6 +19,7 @@ import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { FacetValueService } from './facet-value.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
 
@@ -27,6 +28,7 @@ export class ProductVariantService {
     constructor(
         @InjectConnection() private connection: Connection,
         private taxCategoryService: TaxCategoryService,
+        private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
         private translatableSaver: TranslatableSaver,
@@ -51,12 +53,16 @@ export class ProductVariantService {
                 where: {
                     product: { id: productId } as any,
                 },
-                relations: ['options', 'facetValues', 'taxCategory'],
+                relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
             })
             .then(variants =>
                 variants.map(variant => {
                     const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
-                    return translateDeep(variantWithPrices, ctx.languageCode, ['options', 'facetValues']);
+                    return translateDeep(variantWithPrices, ctx.languageCode, [
+                        'options',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]);
                 }),
             );
     }
@@ -99,6 +105,9 @@ export class ProductVariantService {
                         updatedVariant.taxCategory = taxCategory;
                     }
                 }
+                if (input.facetValueIds) {
+                    updatedVariant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
@@ -107,12 +116,13 @@ export class ProductVariantService {
         });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: ['options', 'facetValues', 'taxCategory'],
+                relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
             }),
         );
         return translateDeep(this.applyChannelPriceAndTax(variant, ctx), DEFAULT_LANGUAGE_CODE, [
             'options',
             'facetValues',
+            ['facetValues', 'facet'],
         ]);
     }
 
@@ -167,7 +177,7 @@ export class ProductVariantService {
         facetValues: FacetValue[],
     ): Promise<Array<Translated<ProductVariant>>> {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(productVariantIds, {
-            relations: ['options', 'facetValues', 'taxCategory'],
+            relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
         });
 
         const notFoundIds = productVariantIds.filter(id => !variants.find(v => idsAreEqual(v.id, id)));
@@ -187,6 +197,7 @@ export class ProductVariantService {
             translateDeep(this.applyChannelPriceAndTax(v, ctx), DEFAULT_LANGUAGE_CODE, [
                 'options',
                 'facetValues',
+                ['facetValues', 'facet'],
             ]),
         );
     }

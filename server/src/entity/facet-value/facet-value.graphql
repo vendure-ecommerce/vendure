@@ -2,7 +2,8 @@ type FacetValue implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    languageCode: LanguageCode
+    languageCode: LanguageCode!
+    facet: Facet!
     name: String!
     code: String!
     translations: [FacetValueTranslation!]!
