@@ -6,9 +6,17 @@
     [cdkDropListDisabled]="true"
     (cdkDropListDropped)="drop($event)"
 >
-    <div class="category" *ngFor="let category of categoryTree.children" cdkDrag [cdkDragData]="category">
+    <div
+        class="category"
+        *ngFor="let category of categoryTree.children; index as i"
+        cdkDrag
+        [cdkDragData]="category"
+    >
         <div class="category-detail" [ngClass]="'depth-' + depth">
-            <div class="name">{{ category.name }}</div>
+            <div class="name">
+                <clr-icon shape="folder"></clr-icon>
+                {{ category.name }}
+            </div>
             <div class="flex-spacer"></div>
             <a class="btn btn-link btn-sm" [routerLink]="['./', category.id]">
                 <clr-icon shape="edit"></clr-icon>
@@ -25,13 +33,32 @@
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
                 </span>
                 <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-                    <h4 class="dropdown-header">Move to:</h4>
                     <button
                         type="button"
                         class="dropdown-item"
-                        (click)="move(category, item.id)"
-                        *ngFor="let item of getMoveListItems(category)"
+                        [disabled]="i === 0"
+                        (click)="moveUp(category, i)"
                     >
+                        <clr-icon shape="caret up"></clr-icon>
+                        {{ 'catalog.move-up' | translate }}
+                    </button>
+                    <button
+                        type="button"
+                        class="dropdown-item"
+                        [disabled]="i === categoryTree.children.length - 1"
+                        (click)="moveDown(category, i)"
+                    >
+                        <clr-icon shape="caret down"></clr-icon>
+                        {{ 'catalog.move-down' | translate }}
+                    </button>
+                    <h4 class="dropdown-header">{{ 'catalog.move-to' | translate }}</h4>
+                    <button
+                        type="button"
+                        class="dropdown-item"
+                        *ngFor="let item of getMoveListItems(category)"
+                        (click)="move(category, item.id)"
+                    >
+                        <clr-icon shape="child-arrow"></clr-icon>
                         {{ item.path }}
                     </button>
                 </clr-dropdown-menu>

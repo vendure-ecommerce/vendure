@@ -1,3 +1,5 @@
+import { forkJoin, from } from 'rxjs';
+import { bufferCount, concatMap, mergeMap } from 'rxjs/operators';
 import {
     AddOptionGroupToProduct,
     ApplyFacetValuesToProductVariants,
@@ -15,6 +17,8 @@ import {
     GetProductList,
     GetProductOptionGroups,
     GetProductWithVariants,
+    MoveProductCategory,
+    MoveProductCategoryInput,
     RemoveOptionGroupFromProduct,
     UpdateProduct,
     UpdateProductCategory,
@@ -40,6 +44,7 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
+    MOVE_PRODUCT_CATEGORY,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_CATEGORY,
@@ -205,6 +210,18 @@ export class ProductDataService {
             {
                 input: pick(input, ['id', 'translations', 'assetIds', 'featuredAssetId', 'customFields']),
             },
+        );
+    }
+
+    moveProductCategory(inputs: MoveProductCategoryInput[]) {
+        return from(inputs).pipe(
+            concatMap(input =>
+                this.baseDataService.mutate<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
+                    MOVE_PRODUCT_CATEGORY,
+                    { input },
+                ),
+            ),
+            bufferCount(inputs.length),
         );
     }
 }

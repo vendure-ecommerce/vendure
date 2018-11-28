@@ -38,7 +38,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
             if (node.id !== category.id) {
                 const path = parentPath.concat(node.name);
                 if (node.id !== category.parent.id) {
-                    output.push({ path: path.join(' / ') || 'root', id: node.id });
+                    output.push({ path: path.slice(1).join(' / ') || 'root', id: node.id });
                 }
                 node.children.forEach(child => visit(child, path, output));
             }
@@ -51,6 +51,22 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         this.root.onMove({
             index: 0,
             parentId,
+            categoryId: category.id,
+        });
+    }
+
+    moveUp(category: ProductCategory.Fragment, currentIndex: number) {
+        this.root.onMove({
+            index: currentIndex - 1,
+            parentId: category.parent.id,
+            categoryId: category.id,
+        });
+    }
+
+    moveDown(category: ProductCategory.Fragment, currentIndex: number) {
+        this.root.onMove({
+            index: currentIndex + 1,
+            parentId: category.parent.id,
             categoryId: category.id,
         });
     }

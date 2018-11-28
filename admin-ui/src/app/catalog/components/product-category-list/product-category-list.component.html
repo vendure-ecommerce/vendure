@@ -8,6 +8,6 @@
 </vdr-action-bar>
 
 <vdr-product-category-tree
-    [productCategories]="categories$ | async"
+    [productCategories]="items$ | async"
     (rearrange)="onRearrange($event)"
 ></vdr-product-category-tree>
