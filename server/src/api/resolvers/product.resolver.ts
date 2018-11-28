@@ -145,16 +145,7 @@ export class ProductResolver {
         @Args() args: ApplyFacetValuesToProductVariantsMutationArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { facetValueIds, productVariantIds } = args;
-        const facetValues = await Promise.all(
-            (facetValueIds as ID[]).map(async facetValueId => {
-                const facetValue = await this.facetValueService.findOne(facetValueId, DEFAULT_LANGUAGE_CODE);
-                if (!facetValue) {
-                    throw new EntityNotFoundError('FacetValue', facetValueId);
-                }
-                return facetValue;
-            }),
-        );
-
+        const facetValues = await this.facetValueService.findByIds(facetValueIds);
         return this.productVariantService.addFacetValues(ctx, productVariantIds, facetValues);
     }
 }

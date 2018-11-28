@@ -42,6 +42,10 @@ export class FacetValueService {
             .then(facetValue => facetValue && translateDeep(facetValue, lang));
     }
 
+    findByIds(ids: ID[]): Promise<FacetValue[]> {
+        return this.connection.getRepository(FacetValue).findByIds(ids);
+    }
+
     async create(
         facet: Facet,
         input: CreateFacetValueInput | CreateFacetValueWithFacetInput,

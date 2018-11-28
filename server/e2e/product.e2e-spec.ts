@@ -504,7 +504,7 @@ describe('Product resolver', () => {
                         {
                             input: [
                                 {
-                                    id: '999',
+                                    id: 'T_999',
                                     translations: variants[0].translations,
                                     sku: 'ABC',
                                     price: 432,
@@ -525,30 +525,32 @@ describe('Product resolver', () => {
                     ApplyFacetValuesToProductVariants.Mutation,
                     ApplyFacetValuesToProductVariants.Variables
                 >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-                    facetValueIds: ['1', '3', '5'],
+                    facetValueIds: ['T_1', 'T_3', 'T_5'],
                     productVariantIds: variants.map(v => v.id),
                 });
 
                 expect(result.applyFacetValuesToProductVariants.length).toBe(2);
                 expect(result.applyFacetValuesToProductVariants[0].facetValues).toMatchSnapshot();
                 expect(result.applyFacetValuesToProductVariants[1].facetValues).toMatchSnapshot();
+
+                variants = result.applyFacetValuesToProductVariants;
             });
 
-            it('applyFacetValuesToProductVariants errors with invalid facet value id', async () => {
-                try {
-                    await client.query<
-                        ApplyFacetValuesToProductVariants.Mutation,
-                        ApplyFacetValuesToProductVariants.Variables
-                    >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-                        facetValueIds: ['999', '888'],
-                        productVariantIds: variants.map(v => v.id),
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`No FacetValue with the id '999' could be found`),
-                    );
-                }
+            it('applyFacetValuesToProductVariants with invalid facet value id is a noop', async () => {
+                const variant = variants[0];
+                const initialValues = variant.facetValues.map(v => v.id);
+
+                const result = await client.query<
+                    ApplyFacetValuesToProductVariants.Mutation,
+                    ApplyFacetValuesToProductVariants.Variables
+                >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
+                    facetValueIds: ['999', '888'],
+                    productVariantIds: variants.map(v => v.id),
+                });
+
+                expect(result.applyFacetValuesToProductVariants[0].facetValues.map(v => v.id)).toEqual(
+                    initialValues,
+                );
             });
 
             it('applyFacetValuesToProductVariants errors with invalid variant id', async () => {
