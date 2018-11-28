@@ -51,6 +51,7 @@ describe('ProductCategory resolver', () => {
                 input: {
                     assetIds: [assets[0].id, assets[1].id],
                     featuredAssetId: assets[1].id,
+                    facetValueIds: ['T_1'],
                     translations: [{ languageCode: LanguageCode.en, name: 'Electronics', description: '' }],
                 },
             });
@@ -99,6 +100,7 @@ describe('ProductCategory resolver', () => {
                     id: appleCategory.id,
                     assetIds: [assets[1].id],
                     featuredAssetId: assets[1].id,
+                    facetValueIds: ['T_3'],
                     translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
                 },
             });

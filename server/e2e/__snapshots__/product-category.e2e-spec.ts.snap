@@ -24,7 +24,13 @@ Object {
   ],
   "children": null,
   "description": "",
-  "facetValues": Array [],
+  "facetValues": Array [
+    Object {
+      "code": "Schiller_-_Welch",
+      "id": "T_1",
+      "name": "Schiller - Welch",
+    },
+  ],
   "featuredAsset": Object {
     "fileSize": 4,
     "id": "T_2",
@@ -67,7 +73,13 @@ Object {
   ],
   "children": null,
   "description": "Apple stuff ",
-  "facetValues": Array [],
+  "facetValues": Array [
+    Object {
+      "code": "Lindgren,_Conn_and_King",
+      "id": "T_3",
+      "name": "Lindgren, Conn and King",
+    },
+  ],
   "featuredAsset": Object {
     "fileSize": 4,
     "id": "T_2",

@@ -14,6 +14,7 @@ import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -23,6 +24,7 @@ import { translateDeep, translateTree } from '../helpers/utils/translate-entity'
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
+import { FacetValueService } from './facet-value.service';
 
 export class ProductCategoryService {
     private rootCategories: { [channelCode: string]: ProductCategory } = {};
@@ -31,6 +33,7 @@ export class ProductCategoryService {
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
         private assetService: AssetService,
+        private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
     ) {}
@@ -94,6 +97,9 @@ export class ProductCategoryService {
                     category.parent = parent;
                 }
                 category.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
+                if (input.facetValueIds) {
+                    category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
             },
         });
         await this.saveAssetInputs(productCategory, input);
@@ -108,6 +114,11 @@ export class ProductCategoryService {
             input,
             entityType: ProductCategory,
             translationType: ProductCategoryTranslation,
+            beforeSave: async category => {
+                if (input.facetValueIds) {
+                    category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
+            },
         });
         await this.saveAssetInputs(productCategory, input);
         return assertFound(this.findOne(ctx, productCategory.id));

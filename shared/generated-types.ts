@@ -1184,6 +1184,7 @@ export interface CreateProductCategoryInput {
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
     parentId?: string | null;
+    facetValueIds?: string[] | null;
     translations: ProductCategoryTranslationInput[];
     customFields?: Json | null;
 }
@@ -1201,6 +1202,7 @@ export interface UpdateProductCategoryInput {
     featuredAssetId?: string | null;
     parentId?: string | null;
     assetIds?: string[] | null;
+    facetValueIds?: string[] | null;
     translations: ProductCategoryTranslationInput[];
     customFields?: Json | null;
 }

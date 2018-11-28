@@ -41,7 +41,7 @@ export class ProductCategoryResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('assetIds', 'featuredAssetId', 'parentId')
+    @Decode('assetIds', 'featuredAssetId', 'parentId', 'facetValueIds')
     async createProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateProductCategoryMutationArgs,
@@ -52,7 +52,7 @@ export class ProductCategoryResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('assetIds', 'featuredAssetId')
+    @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async updateProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductCategoryMutationArgs,

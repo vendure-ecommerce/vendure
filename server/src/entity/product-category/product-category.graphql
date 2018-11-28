@@ -34,6 +34,7 @@ input CreateProductCategoryInput {
     featuredAssetId: ID
     assetIds: [ID!]
     parentId: ID
+    facetValueIds: [ID!]
     translations: [ProductCategoryTranslationInput!]!
 }
 
@@ -42,5 +43,6 @@ input UpdateProductCategoryInput {
     featuredAssetId: ID
     parentId: ID
     assetIds: [ID!]
+    facetValueIds: [ID!]
     translations: [ProductCategoryTranslationInput!]!
 }
