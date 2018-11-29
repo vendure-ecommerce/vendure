@@ -2,7 +2,6 @@ import { forkJoin, from } from 'rxjs';
 import { bufferCount, concatMap, mergeMap } from 'rxjs/operators';
 import {
     AddOptionGroupToProduct,
-    ApplyFacetValuesToProductVariants,
     CreateAssets,
     CreateProduct,
     CreateProductCategory,
@@ -32,7 +31,6 @@ import { pick } from 'shared/pick';
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
-    APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_CATEGORY,
@@ -147,16 +145,6 @@ export class ProductDataService {
                 languageCode: getDefaultLanguage(),
             },
         );
-    }
-
-    applyFacetValuesToProductVariants(facetValueIds: string[], productVariantIds: string[]) {
-        return this.baseDataService.mutate<
-            ApplyFacetValuesToProductVariants.Mutation,
-            ApplyFacetValuesToProductVariants.Variables
-        >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-            facetValueIds,
-            productVariantIds,
-        });
     }
 
     getAssetList(take: number = 10, skip: number = 0) {

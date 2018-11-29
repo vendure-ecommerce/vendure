@@ -21,9 +21,6 @@ type Mutation {
 
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
-
-    "Applies a FacetValue to the given ProductVariants"
-    applyFacetValuesToProductVariants(facetValueIds: [ID!]!, productVariantIds: [ID!]!): [ProductVariant!]!
 }
 
 type ProductList implements PaginatedList {

@@ -171,37 +171,6 @@ export class ProductVariantService {
         return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
     }
 
-    async addFacetValues(
-        ctx: RequestContext,
-        productVariantIds: ID[],
-        facetValues: FacetValue[],
-    ): Promise<Array<Translated<ProductVariant>>> {
-        const variants = await this.connection.getRepository(ProductVariant).findByIds(productVariantIds, {
-            relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
-        });
-
-        const notFoundIds = productVariantIds.filter(id => !variants.find(v => idsAreEqual(v.id, id)));
-        if (notFoundIds.length) {
-            throw new EntityNotFoundError('ProductVariant', notFoundIds[0]);
-        }
-        for (const variant of variants) {
-            for (const facetValue of facetValues) {
-                if (!variant.facetValues.map(fv => fv.id).includes(facetValue.id)) {
-                    variant.facetValues.push(facetValue);
-                }
-            }
-            await this.connection.manager.save(variant);
-        }
-
-        return variants.map(v =>
-            translateDeep(this.applyChannelPriceAndTax(v, ctx), DEFAULT_LANGUAGE_CODE, [
-                'options',
-                'facetValues',
-                ['facetValues', 'facet'],
-            ]),
-        );
-    }
-
     /**
      * Populates the `price` field with the price for the specified channel.
      */

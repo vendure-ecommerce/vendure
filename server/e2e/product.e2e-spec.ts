@@ -17,7 +17,6 @@ import { omit } from 'shared/omit';
 
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
-    APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS,
     CREATE_PRODUCT,
     GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
@@ -497,6 +496,28 @@ describe('Product resolver', () => {
                 expect(updatedVariant.taxCategory.id).toBe('T_2');
             });
 
+            it('updateProductVariants updates facetValues', async () => {
+                const firstVariant = variants[0];
+                const result = await client.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            facetValueIds: ['T_1'],
+                        },
+                    ],
+                });
+                const updatedVariant = result.updateProductVariants[0];
+                if (!updatedVariant) {
+                    fail('no updated variant returned.');
+                    return;
+                }
+                expect(updatedVariant.facetValues.length).toBe(1);
+                expect(updatedVariant.facetValues[0].id).toBe('T_1');
+            });
+
             it('updateProductVariants throws with an invalid variant id', async () => {
                 try {
                     await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
@@ -512,56 +533,6 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`No ProductVariant with the id '999' could be found`),
-                    );
-                }
-            });
-
-            it('applyFacetValuesToProductVariants adds facets to variants', async () => {
-                const result = await client.query<
-                    ApplyFacetValuesToProductVariants.Mutation,
-                    ApplyFacetValuesToProductVariants.Variables
-                >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-                    facetValueIds: ['T_1', 'T_3', 'T_5'],
-                    productVariantIds: variants.map(v => v.id),
-                });
-
-                expect(result.applyFacetValuesToProductVariants.length).toBe(2);
-                expect(result.applyFacetValuesToProductVariants[0].facetValues).toMatchSnapshot();
-                expect(result.applyFacetValuesToProductVariants[1].facetValues).toMatchSnapshot();
-
-                variants = result.applyFacetValuesToProductVariants;
-            });
-
-            it('applyFacetValuesToProductVariants with invalid facet value id is a noop', async () => {
-                const variant = variants[0];
-                const initialValues = variant.facetValues.map(v => v.id);
-
-                const result = await client.query<
-                    ApplyFacetValuesToProductVariants.Mutation,
-                    ApplyFacetValuesToProductVariants.Variables
-                >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-                    facetValueIds: ['999', '888'],
-                    productVariantIds: variants.map(v => v.id),
-                });
-
-                expect(result.applyFacetValuesToProductVariants[0].facetValues.map(v => v.id)).toEqual(
-                    initialValues,
-                );
-            });
-
-            it('applyFacetValuesToProductVariants errors with invalid variant id', async () => {
-                try {
-                    await client.query<
-                        ApplyFacetValuesToProductVariants.Mutation,
-                        ApplyFacetValuesToProductVariants.Variables
-                    >(APPLY_FACET_VALUE_TO_PRODUCT_VARIANTS, {
-                        facetValueIds: ['1', '3', '5'],
-                        productVariantIds: ['999'],
-                    });
                     fail('Should have thrown');
                 } catch (err) {
                     expect(err.message).toEqual(

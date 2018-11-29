@@ -650,7 +650,6 @@ export interface Mutation {
     removeOptionGroupFromProduct: Product;
     generateVariantsForProduct: Product;
     updateProductVariants: (ProductVariant | null)[];
-    applyFacetValuesToProductVariants: ProductVariant[];
     createPromotion: Promotion;
     updatePromotion: Promotion;
     createRole: Role;
@@ -1650,10 +1649,6 @@ export interface GenerateVariantsForProductMutationArgs {
 }
 export interface UpdateProductVariantsMutationArgs {
     input: UpdateProductVariantInput[];
-}
-export interface ApplyFacetValuesToProductVariantsMutationArgs {
-    facetValueIds: string[];
-    productVariantIds: string[];
 }
 export interface CreatePromotionMutationArgs {
     input: CreatePromotionInput;
@@ -3905,11 +3900,6 @@ export namespace MutationResolvers {
         removeOptionGroupFromProduct?: RemoveOptionGroupFromProductResolver<Product, any, Context>;
         generateVariantsForProduct?: GenerateVariantsForProductResolver<Product, any, Context>;
         updateProductVariants?: UpdateProductVariantsResolver<(ProductVariant | null)[], any, Context>;
-        applyFacetValuesToProductVariants?: ApplyFacetValuesToProductVariantsResolver<
-            ProductVariant[],
-            any,
-            Context
-        >;
         createPromotion?: CreatePromotionResolver<Promotion, any, Context>;
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
@@ -4382,16 +4372,6 @@ export namespace MutationResolvers {
     > = Resolver<R, Parent, Context, UpdateProductVariantsArgs>;
     export interface UpdateProductVariantsArgs {
         input: UpdateProductVariantInput[];
-    }
-
-    export type ApplyFacetValuesToProductVariantsResolver<
-        R = ProductVariant[],
-        Parent = any,
-        Context = any
-    > = Resolver<R, Parent, Context, ApplyFacetValuesToProductVariantsArgs>;
-    export interface ApplyFacetValuesToProductVariantsArgs {
-        facetValueIds: string[];
-        productVariantIds: string[];
     }
 
     export type CreatePromotionResolver<R = Promotion, Parent = any, Context = any> = Resolver<
@@ -5205,20 +5185,6 @@ export namespace RemoveOptionGroupFromProduct {
         id: string;
         code?: string | null;
     };
-}
-
-export namespace ApplyFacetValuesToProductVariants {
-    export type Variables = {
-        facetValueIds: string[];
-        productVariantIds: string[];
-    };
-
-    export type Mutation = {
-        __typename?: 'Mutation';
-        applyFacetValuesToProductVariants: ApplyFacetValuesToProductVariants[];
-    };
-
-    export type ApplyFacetValuesToProductVariants = ProductVariant.Fragment;
 }
 
 export namespace GetProductWithVariants {

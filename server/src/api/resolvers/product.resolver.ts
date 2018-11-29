@@ -128,24 +128,12 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('taxCategoryId')
+    @Decode('taxCategoryId', 'facetValueIds')
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductVariantsMutationArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
         return Promise.all(input.map(variant => this.productVariantService.update(ctx, variant)));
-    }
-
-    @Mutation()
-    @Allow(Permission.UpdateCatalog)
-    @Decode('facetValueIds', 'productVariantIds')
-    async applyFacetValuesToProductVariants(
-        @Ctx() ctx: RequestContext,
-        @Args() args: ApplyFacetValuesToProductVariantsMutationArgs,
-    ): Promise<Array<Translated<ProductVariant>>> {
-        const { facetValueIds, productVariantIds } = args;
-        const facetValues = await this.facetValueService.findByIds(facetValueIds);
-        return this.productVariantService.addFacetValues(ctx, productVariantIds, facetValues);
     }
 }
