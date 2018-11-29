@@ -1,6 +1,5 @@
 import {
     AddOptionGroupToProduct,
-    ApplyFacetValuesToProductVariants,
     CreateProduct,
     GenerateProductVariants,
     GetAssetList,
