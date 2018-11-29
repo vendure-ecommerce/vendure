@@ -31,7 +31,7 @@ export class FacetValueService {
             .find(FacetValue, {
                 relations: ['facet'],
             })
-            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang)));
+            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang, ['facet'])));
     }
 
     findOne(id: ID, lang: LanguageCode): Promise<Translated<FacetValue> | undefined> {
@@ -39,7 +39,7 @@ export class FacetValueService {
             .findOne(FacetValue, id, {
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && translateDeep(facetValue, lang));
+            .then(facetValue => facetValue && translateDeep(facetValue, lang, ['facet']));
     }
 
     findByIds(ids: ID[]): Promise<FacetValue[]> {
