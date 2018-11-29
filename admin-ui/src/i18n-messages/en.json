@@ -23,6 +23,7 @@
   "catalog": {
     "add-asset": "Add asset",
     "add-asset-to-product": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}} to product",
+    "add-facet": "Add facet",
     "add-facet-value": "Add facet value",
     "apply-facets": "Apply facets",
     "assets-selected-count": "{ count } assets selected",
@@ -43,7 +44,6 @@
     "move-down": "Move down",
     "move-to": "Move to",
     "move-up": "Move up",
-    "no-facets": "No facets",
     "no-featured-asset": "No featured asset",
     "no-selection": "No selection",
     "notify-create-assets-success": "Created {count, plural, one {new Asset} other {{count} new Assets}}",
@@ -105,7 +105,6 @@
     "password": "Password",
     "remember-me": "Remember me",
     "remove": "Remove",
-    "save-changes": "Save changes",
     "select": "Select...",
     "update": "Update",
     "updated": "Updated",

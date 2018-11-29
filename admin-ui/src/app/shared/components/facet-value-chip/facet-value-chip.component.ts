@@ -9,5 +9,7 @@ import { FacetValue } from 'shared/generated-types';
 })
 export class FacetValueChipComponent {
     @Input() facetValue: FacetValue.Fragment;
+    @Input() removable = true;
+    @Input() displayFacetName = true;
     @Output() remove = new EventEmitter<void>();
 }

@@ -25,7 +25,12 @@
         <td class="left">{{ facet.code }}</td>
         <td class="left">{{ facet.name }}</td>
         <td class="left">
-            <vdr-chip *ngFor="let value of facet.values">{{ value.name }}</vdr-chip>
+            <vdr-facet-value-chip
+                *ngFor="let value of facet.values"
+                [facetValue]="value"
+                [removable]="false"
+                [displayFacetName]="false"
+            ></vdr-facet-value-chip>
         </td>
         <td class="right">
             <vdr-table-row-action

@@ -17,7 +17,14 @@
                 <clr-icon shape="folder"></clr-icon>
                 {{ category.name }}
             </div>
-            <div class="flex-spacer"></div>
+            <div class="flex-spacer">
+                <vdr-facet-value-chip
+                    *ngFor="let facetValue of category.facetValues"
+                    [facetValue]="facetValue"
+                    [displayFacetName]="false"
+                    [removable]="false"
+                ></vdr-facet-value-chip>
+            </div>
             <a class="btn btn-link btn-sm" [routerLink]="['./', category.id]">
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}

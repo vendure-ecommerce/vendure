@@ -10,7 +10,7 @@
     border-radius: 3px;
     margin: 6px;
     &.with-background {
-        color: $color-grey-1;
+        color: transparentize($color-grey-1, 0.2);
         border-color: transparent;
     }
 }
