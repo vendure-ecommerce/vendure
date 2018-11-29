@@ -60,4 +60,20 @@
             ></vdr-product-assets>
         </div>
     </div>
+    <div class="clr-row">
+        <div class="clr-col">
+            <h3>{{ 'catalog.facets' | translate }}</h3>
+            <div class="facets">
+                <vdr-facet-value-chip
+                    *ngFor="let facetValue of (facetValues$ | async)"
+                    [facetValue]="facetValue"
+                    (remove)="removeValueFacet(facetValue.id)"
+                ></vdr-facet-value-chip>
+            </div>
+            <button class="btn btn-secondary" (click)="addFacetValue()">
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'catalog.add-facet' | translate }}
+            </button>
+        </div>
+    </div>
 </form>

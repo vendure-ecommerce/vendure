@@ -201,7 +201,13 @@ export class ProductDataService {
         return this.baseDataService.mutate<CreateProductCategory.Mutation, CreateProductCategory.Variables>(
             CREATE_PRODUCT_CATEGORY,
             {
-                input: pick(input, ['translations', 'assetIds', 'featuredAssetId', 'customFields']),
+                input: pick(input, [
+                    'translations',
+                    'assetIds',
+                    'featuredAssetId',
+                    'facetValueIds',
+                    'customFields',
+                ]),
             },
         );
     }
@@ -210,7 +216,14 @@ export class ProductDataService {
         return this.baseDataService.mutate<UpdateProductCategory.Mutation, UpdateProductCategory.Variables>(
             UPDATE_PRODUCT_CATEGORY,
             {
-                input: pick(input, ['id', 'translations', 'assetIds', 'featuredAssetId', 'customFields']),
+                input: pick(input, [
+                    'id',
+                    'translations',
+                    'assetIds',
+                    'featuredAssetId',
+                    'facetValueIds',
+                    'customFields',
+                ]),
             },
         );
     }

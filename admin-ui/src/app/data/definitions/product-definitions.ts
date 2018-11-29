@@ -317,6 +317,10 @@ export const GET_PRODUCT_CATEGORY_LIST = gql`
                     id
                     code
                     name
+                    facet {
+                        id
+                        name
+                    }
                 }
                 parent {
                     id

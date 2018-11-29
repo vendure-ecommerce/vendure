@@ -1,24 +1,36 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import {
+    filter,
+    map,
+    mergeMap,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+    withLatestFrom,
+} from 'rxjs/operators';
 import {
     CreateProductCategoryInput,
-    CreateProductInput,
+    FacetValue,
+    FacetWithValues,
     LanguageCode,
     ProductCategory,
     UpdateProductCategoryInput,
-    UpdateProductInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
+import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
 @Component({
     selector: 'vdr-product-category-detail',
@@ -31,6 +43,8 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
     customFields: CustomFieldConfig[];
     categoryForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    facetValues$: Observable<FacetValue.Fragment[]>;
+    private facets$: Observable<FacetWithValues.Fragment[]>;
 
     constructor(
         router: Router,
@@ -40,12 +54,14 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
         private dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
+        private modalService: ModalService,
     ) {
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('ProductCategory');
         this.categoryForm = this.formBuilder.group({
             name: ['', Validators.required],
             description: '',
+            facetValueIds: [[]],
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
@@ -54,6 +70,23 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
 
     ngOnInit() {
         this.init();
+        this.facets$ = this.dataService.facet
+            .getFacets(9999999, 0)
+            .mapSingle(data => data.facets.items)
+            .pipe(shareReplay(1));
+
+        const facetValues$ = this.facets$.pipe(map(facets => flattenFacetValues(facets)));
+        const facetValueIds$ = this.entity$.pipe(
+            filter(category => !!(category && category.facetValues)),
+            take(1),
+            switchMap(category => this.categoryForm.valueChanges),
+            startWith(this.categoryForm.value),
+            map(formValue => formValue.facetValueIds),
+        );
+
+        this.facetValues$ = combineLatest(facetValueIds$, facetValues$).pipe(
+            map(([ids, facetValues]) => ids.map(id => facetValues.find(fv => fv.id === id))),
+        );
     }
 
     ngOnDestroy() {
@@ -66,6 +99,42 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
 
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
+    }
+
+    addFacetValue() {
+        this.facets$
+            .pipe(
+                take(1),
+                mergeMap(facets =>
+                    this.modalService.fromComponent(ApplyFacetDialogComponent, {
+                        size: 'md',
+                        locals: { facets },
+                    }),
+                ),
+                map(facetValues => facetValues && facetValues.map(v => v.id)),
+                withLatestFrom(this.entity$),
+            )
+            .subscribe(([facetValueIds, category]) => {
+                if (facetValueIds) {
+                    const existingFacetValueIds = this.categoryForm.value.facetValueIds;
+                    const uniqueFacetValueIds = Array.from(
+                        new Set([...existingFacetValueIds, ...facetValueIds]),
+                    );
+                    this.categoryForm.patchValue({
+                        facetValueIds: uniqueFacetValueIds,
+                    });
+                    this.categoryForm.markAsDirty();
+                    this.changeDetector.markForCheck();
+                }
+            });
+    }
+
+    removeValueFacet(id: string) {
+        const facetValueIds = this.categoryForm.value.facetValueIds.filter(fvid => fvid !== id);
+        this.categoryForm.patchValue({
+            facetValueIds,
+        });
+        this.categoryForm.markAsDirty();
     }
 
     create() {
@@ -103,18 +172,12 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
                 take(1),
                 mergeMap(([category, languageCode]) => {
                     const updateOperations: Array<Observable<any>> = [];
-
-                    if (this.categoryForm.dirty || this.assetsChanged()) {
-                        const input = this.getUpdatedCategory(
-                            category,
-                            this.categoryForm,
-                            languageCode,
-                        ) as UpdateProductCategoryInput;
-                        if (input) {
-                            updateOperations.push(this.dataService.product.updateProductCategory(input));
-                        }
-                    }
-                    return forkJoin(updateOperations);
+                    const input = this.getUpdatedCategory(
+                        category,
+                        this.categoryForm,
+                        languageCode,
+                    ) as UpdateProductCategoryInput;
+                    return this.dataService.product.updateProductCategory(input);
                 }),
             )
             .subscribe(
@@ -142,6 +205,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
             this.categoryForm.patchValue({
                 name: currentTranslation.name,
                 description: currentTranslation.description,
+                facetValueIds: category.facetValues.map(fv => fv.id),
             });
 
             if (this.customFields.length) {
@@ -182,6 +246,10 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
                 description: category.description || '',
             },
         });
-        return { ...updatedCategory, ...this.assetChanges };
+        return {
+            ...updatedCategory,
+            ...this.assetChanges,
+            facetValueIds: this.categoryForm.value.facetValueIds,
+        };
     }
 }

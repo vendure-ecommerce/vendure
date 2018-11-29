@@ -5357,6 +5357,13 @@ export namespace GetProductCategoryList {
         id: string;
         code: string;
         name: string;
+        facet: Facet;
+    };
+
+    export type Facet = {
+        __typename?: 'Facet';
+        id: string;
+        name: string;
     };
 
     export type Parent = {
