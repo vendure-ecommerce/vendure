@@ -42,7 +42,7 @@ export class ProductCategoryService {
         ctx: RequestContext,
         options?: ListQueryOptions<ProductCategory>,
     ): Promise<PaginatedList<Translated<ProductCategory>>> {
-        const relations = ['featuredAsset', 'facetValues', 'parent', 'channels'];
+        const relations = ['featuredAsset', 'facetValues', 'facetValues.facet', 'parent', 'channels'];
 
         return this.listQueryBuilder
             .build(ProductCategory, options, {
@@ -54,7 +54,11 @@ export class ProductCategoryService {
             .getManyAndCount()
             .then(async ([productCategories, totalItems]) => {
                 const items = productCategories.map(productCategory =>
-                    translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']),
+                    translateDeep(productCategory, ctx.languageCode, [
+                        'facetValues',
+                        'parent',
+                        ['facetValues', 'facet'],
+                    ]),
                 );
                 return {
                     items,
