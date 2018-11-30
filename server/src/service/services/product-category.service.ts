@@ -86,6 +86,17 @@ export class ProductCategoryService {
         }
     }
 
+    /**
+     * Returns the descendants of a ProductCategory as a flat array.
+     */
+    async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<ProductCategory>>> {
+        const descendants = await this.connection
+            .getTreeRepository(ProductCategory)
+            .findDescendants(new ProductCategory({ id: rootId }));
+        // Note: the result includes the root category itself, so we filter this out.
+        return descendants.filter(d => d.id !== rootId).map(d => translateDeep(d, ctx.languageCode));
+    }
+
     async create(
         ctx: RequestContext,
         input: CreateProductCategoryInput,

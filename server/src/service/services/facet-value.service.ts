@@ -16,6 +16,7 @@ import { FacetValueTranslation } from '../../entity/facet-value/facet-value-tran
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 
+import { RequestContext } from '../../api/common/request-context';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -44,6 +45,22 @@ export class FacetValueService {
 
     findByIds(ids: ID[]): Promise<FacetValue[]> {
         return this.connection.getRepository(FacetValue).findByIds(ids, { relations: ['facet'] });
+    }
+
+    async findByCategoryIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
+        const facetValues = await this.connection
+            .getRepository(FacetValue)
+            .createQueryBuilder('facetValue')
+            .leftJoinAndSelect(
+                'product_category_facet_values_facet_value',
+                'joinTable',
+                'joinTable.facetValueId = facetValue.id',
+            )
+            .where('joinTable.productCategoryId IN (:...ids)', { ids })
+            .getMany();
+        return this.findByIds(facetValues.map(v => v.id)).then(values =>
+            values.map(value => translateDeep(value, ctx.languageCode)),
+        );
     }
 
     async create(

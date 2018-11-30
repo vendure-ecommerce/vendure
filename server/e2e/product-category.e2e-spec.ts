@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 import {
     CreateProductCategory,
     GetAssetList,
+    GetProductCategory,
     LanguageCode,
     MoveProductCategory,
     ProductCategory,
@@ -12,6 +13,7 @@ import { ROOT_CATEGORY_NAME } from 'shared/shared-constants';
 import {
     CREATE_PRODUCT_CATEGORY,
     GET_ASSET_LIST,
+    GET_PRODUCT_CATEGORY,
     MOVE_PRODUCT_CATEGORY,
     UPDATE_PRODUCT_CATEGORY,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
@@ -69,6 +71,7 @@ describe('ProductCategory resolver', () => {
                 input: {
                     parentId: electronicsCategory.id,
                     translations: [{ languageCode: LanguageCode.en, name: 'Laptops', description: '' }],
+                    facetValueIds: ['T_2'],
                 },
             });
             laptopsCategory = result.createProductCategory;
@@ -83,10 +86,47 @@ describe('ProductCategory resolver', () => {
                 input: {
                     parentId: laptopsCategory.id,
                     translations: [{ languageCode: LanguageCode.en, name: 'Apple', description: '' }],
+                    facetValueIds: ['T_3', 'T_4'],
                 },
             });
             appleCategory = result.createProductCategory;
             expect(appleCategory.parent.name).toBe(laptopsCategory.name);
+        });
+    });
+
+    describe('productCategory query', () => {
+        it('returns a category', async () => {
+            const result = await client.query<GetProductCategory.Query, GetProductCategory.Variables>(
+                GET_PRODUCT_CATEGORY,
+                { id: laptopsCategory.id },
+            );
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.id).toBe(laptopsCategory.id);
+        });
+
+        it('resolves descendantFacetValues 1 level deep', async () => {
+            const result = await client.query(GET_DECENDANT_FACET_VALUES, { id: laptopsCategory.id });
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.descendantFacetValues.map(v => v.id)).toEqual(['T_3', 'T_4']);
+        });
+
+        it('resolves descendantFacetValues 2 levels deep', async () => {
+            const result = await client.query(GET_DECENDANT_FACET_VALUES, { id: electronicsCategory.id });
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.descendantFacetValues.map(v => v.id)).toEqual([
+                'T_2',
+                'T_3',
+                'T_4',
+            ]);
         });
     });
 
@@ -234,6 +274,18 @@ const GET_CATEGORIES = gql`
                     id
                     name
                 }
+            }
+        }
+    }
+`;
+
+const GET_DECENDANT_FACET_VALUES = gql`
+    query GetDescendantFacetValues($id: ID!) {
+        productCategory(id: $id) {
+            id
+            descendantFacetValues {
+                id
+                name
             }
         }
     }

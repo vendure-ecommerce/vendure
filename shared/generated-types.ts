@@ -491,6 +491,7 @@ export interface ProductCategory extends Node {
     parent: ProductCategory;
     children?: ProductCategory[] | null;
     facetValues: FacetValue[];
+    descendantFacetValues: FacetValue[];
     translations: ProductCategoryTranslation[];
     customFields?: Json | null;
 }
@@ -3507,6 +3508,7 @@ export namespace ProductCategoryResolvers {
         parent?: ParentResolver<ProductCategory, any, Context>;
         children?: ChildrenResolver<ProductCategory[] | null, any, Context>;
         facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
+        descendantFacetValues?: DescendantFacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductCategoryTranslation[], any, Context>;
         customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
@@ -3539,6 +3541,11 @@ export namespace ProductCategoryResolvers {
         Context
     >;
     export type FacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type DescendantFacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context

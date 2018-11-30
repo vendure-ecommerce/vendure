@@ -1,7 +1,6 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import {
     AddOptionGroupToProductMutationArgs,
-    ApplyFacetValuesToProductVariantsMutationArgs,
     CreateProductMutationArgs,
     GenerateVariantsForProductMutationArgs,
     Permission,
