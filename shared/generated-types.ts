@@ -631,6 +631,7 @@ export interface Mutation {
     updateFacet: Facet;
     createFacetValues: FacetValue[];
     updateFacetValues: FacetValue[];
+    importProducts?: ImportInfo | null;
     addItemToOrder?: Order | null;
     removeItemFromOrder?: Order | null;
     adjustItemQuantity?: Order | null;
@@ -674,6 +675,11 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
+}
+
+export interface ImportInfo {
+    errors?: string[] | null;
+    importedCount: number;
 }
 
 export interface AdministratorListOptions {
@@ -1583,6 +1589,9 @@ export interface CreateFacetValuesMutationArgs {
 }
 export interface UpdateFacetValuesMutationArgs {
     input: UpdateFacetValueInput[];
+}
+export interface ImportProductsMutationArgs {
+    csvFile: Upload;
 }
 export interface AddItemToOrderMutationArgs {
     productVariantId: string;
@@ -3887,6 +3896,7 @@ export namespace MutationResolvers {
         updateFacet?: UpdateFacetResolver<Facet, any, Context>;
         createFacetValues?: CreateFacetValuesResolver<FacetValue[], any, Context>;
         updateFacetValues?: UpdateFacetValuesResolver<FacetValue[], any, Context>;
+        importProducts?: ImportProductsResolver<ImportInfo | null, any, Context>;
         addItemToOrder?: AddItemToOrderResolver<Order | null, any, Context>;
         removeItemFromOrder?: RemoveItemFromOrderResolver<Order | null, any, Context>;
         adjustItemQuantity?: AdjustItemQuantityResolver<Order | null, any, Context>;
@@ -4175,6 +4185,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateFacetValuesArgs {
         input: UpdateFacetValueInput[];
+    }
+
+    export type ImportProductsResolver<R = ImportInfo | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        ImportProductsArgs
+    >;
+    export interface ImportProductsArgs {
+        csvFile: Upload;
     }
 
     export type AddItemToOrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
@@ -4566,6 +4586,20 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace ImportInfoResolvers {
+    export interface Resolvers<Context = any> {
+        errors?: ErrorsResolver<string[] | null, any, Context>;
+        importedCount?: ImportedCountResolver<number, any, Context>;
+    }
+
+    export type ErrorsResolver<R = string[] | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ImportedCountResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace GetAdministrators {

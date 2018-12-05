@@ -43,6 +43,9 @@ export const devConfig: VendureConfig = {
             outputPath: path.join(__dirname, 'test-emails'),
         },
     },
+    importExportOptions: {
+        importAssetsDir: path.join(__dirname, 'import-assets'),
+    },
     plugins: [
         new DefaultAssetServerPlugin({
             route: 'assets',

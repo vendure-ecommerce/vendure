@@ -197,6 +197,13 @@
   dependencies:
     "@types/express" "*"
 
+"@types/csv-parse@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@types/csv-parse/-/csv-parse-1.1.11.tgz#47d68b5579e66aa0d55af9dbae76f1d2ff836f1d"
+  integrity sha512-c4kjQ7avmOV22T+xH2BAE/n4F52mGm+ELyHOk5PrGc/26Ps6RagP5lVKfDoLx+jmRnFKQlq6XIS33tp9Dco0Ug==
+  dependencies:
+    "@types/node" "*"
+
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -261,6 +268,11 @@
 "@types/long@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
+
+"@types/mime-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/mime-types/-/mime-types-2.1.0.tgz#9ca52cda363f699c69466c2a6ccdaad913ea7a73"
+  integrity sha1-nKUs2jY/aZxpRmwqbM2q2RPqenM=
 
 "@types/mime@*":
   version "2.0.0"
@@ -1652,6 +1664,11 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   resolved "https://registry.yarnpkg.com/cssstyle/-/cssstyle-0.3.1.tgz#6da9b4cff1bc5d716e6e5fe8e04fcb1b50a49adf"
   dependencies:
     cssom "0.3.x"
+
+csv-parse@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.0.1.tgz#4ad438352cbf12d5317d0fb9d588e53473293851"
+  integrity sha512-ehkwejEj05wwO7Q9JD+YSI6dNMIauHIroNU1RALrmRrqPoZIwRnfBtgq5GkU6i2RxZOJqjo3dtI1NrVSXvaimA==
 
 d@1:
   version "1.0.0"
@@ -4281,11 +4298,23 @@ mime-db@~1.36.0:
   version "1.36.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.36.0.tgz#5020478db3c7fe93aad7bbcc4dcf869c43363397"
 
+mime-db@~1.37.0:
+  version "1.37.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.37.0.tgz#0b6a0ce6fdbe9576e25f1f2d2fde8830dc0ad0d8"
+  integrity sha512-R3C4db6bgQhlIhPU48fUtdVmKnflq+hRdad7IyKhtFj06VPNVdk2RhiYL3UjQIlso8L+YxAtFkobT0VK+S/ybg==
+
 mime-types@^2.1.12, mime-types@~2.1.17, mime-types@~2.1.18:
   version "2.1.18"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.18.tgz#6f323f60a83d11146f831ff11fd66e2fe5503bb8"
   dependencies:
     mime-db "~1.33.0"
+
+mime-types@^2.1.21:
+  version "2.1.21"
+  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.21.tgz#28995aa1ecb770742fe6ae7e58f9181c744b3f96"
+  integrity sha512-3iL6DbwpyLzjR3xHSFNFeb9Nz/M8WDkX33t1GFQnFOllWk8pOrh/LSrB5OXlnlW5P9LH73X6loW/eogc+F5lJg==
+  dependencies:
+    mime-db "~1.37.0"
 
 mime-types@~2.1.19:
   version "2.1.20"

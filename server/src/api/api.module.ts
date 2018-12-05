@@ -3,6 +3,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 
 import { ConfigModule } from '../config/config.module';
+import { DataImportModule } from '../data-import/data-import.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
@@ -21,6 +22,7 @@ import { CountryResolver } from './resolvers/country.resolver';
 import { CustomerGroupResolver } from './resolvers/customer-group.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
 import { FacetResolver } from './resolvers/facet.resolver';
+import { ImportResolver } from './resolvers/import.resolver';
 import { OrderResolver } from './resolvers/order.resolver';
 import { PaymentMethodResolver } from './resolvers/payment-method.resolver';
 import { ProductCategoryResolver } from './resolvers/product-category.resolver';
@@ -42,6 +44,7 @@ const exportedProviders = [
     ConfigResolver,
     CountryResolver,
     FacetResolver,
+    ImportResolver,
     CustomerResolver,
     CustomerGroupResolver,
     OrderResolver,
@@ -64,6 +67,7 @@ const exportedProviders = [
 @Module({
     imports: [
         ServiceModule,
+        DataImportModule,
         GraphQLModule.forRootAsync({
             useClass: GraphqlConfigService,
             imports: [ConfigModule, I18nModule],

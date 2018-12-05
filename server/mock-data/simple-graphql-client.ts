@@ -3,11 +3,13 @@ import { GraphQLClient } from 'graphql-request';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
-import { CreateAssets } from 'shared/generated-types';
+import { CreateAssets, ImportInfo } from 'shared/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from 'shared/shared-constants';
 
 import { CREATE_ASSETS } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { getConfig } from '../src/config/vendure-config';
+
+import { createUploadPostData } from './create-upload-post-data';
 
 // tslint:disable:no-console
 /**
@@ -56,44 +58,68 @@ export class SimpleGraphQLClient {
         return result.status;
     }
 
+    uploadAssets(filePaths: string[]): Promise<CreateAssets.Mutation> {
+        return this.fileUploadMutation({
+            mutation: CREATE_ASSETS,
+            filePaths,
+            mapVariables: fp => ({
+                input: fp.map(() => ({ file: null })),
+            }),
+        });
+    }
+
+    importProducts(csvFilePath: string): Promise<{ importProducts: ImportInfo }> {
+        return this.fileUploadMutation({
+            mutation: gql`
+                mutation ImportProducts($csvFile: Upload!) {
+                    importProducts(csvFile: $csvFile) {
+                        importedCount
+                        errors
+                    }
+                }
+            `,
+            filePaths: [csvFilePath],
+            mapVariables: () => ({ csvFile: null }),
+        });
+    }
+
     /**
-     * Uses curl to post a multipart/form-data request to create new assets. Due to differences between the Node and browser
+     * Uses curl to post a multipart/form-data request to the server. Due to differences between the Node and browser
      * environments, we cannot just use an existing library like apollo-upload-client.
      *
      * Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
      * Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
      */
-    uploadAssets(filePaths: string[]): Promise<CreateAssets.Mutation> {
+    private fileUploadMutation(options: {
+        mutation: DocumentNode;
+        filePaths: string[];
+        mapVariables: (filePaths: string[]) => any;
+    }): Promise<any> {
+        const { mutation, filePaths, mapVariables } = options;
         return new Promise((resolve, reject) => {
             const curl = new Curl();
 
-            const postData: any[] = [
+            const postData = createUploadPostData(mutation, filePaths, mapVariables);
+            const processedPostData = [
                 {
                     name: 'operations',
-                    contents: JSON.stringify({
-                        operationName: 'CreateAssets',
-                        variables: {
-                            input: filePaths.map(() => ({ file: null })),
-                        },
-                        query: print(CREATE_ASSETS),
-                    }),
+                    contents: JSON.stringify(postData.operations),
                 },
                 {
                     name: 'map',
                     contents:
                         '{' +
-                        filePaths.map((filePath, i) => `"${i}":["variables.input.${i}.file"]`).join(',') +
+                        Object.entries(postData.map)
+                            .map(([i, path]) => `"${i}":["${path}"]`)
+                            .join(',') +
                         '}',
                 },
-                ...filePaths.map((filePath, i) => ({
-                    name: i.toString(),
-                    file: filePath,
-                })),
+                ...postData.filePaths,
             ];
             curl.setOpt(Curl.option.URL, this.apiUrl);
             curl.setOpt(Curl.option.VERBOSE, false);
             curl.setOpt(Curl.option.TIMEOUT_MS, 30000);
-            curl.setOpt(Curl.option.HTTPPOST, postData);
+            curl.setOpt(Curl.option.HTTPPOST, processedPostData);
             curl.setOpt(Curl.option.HTTPHEADER, [
                 `Authorization: Bearer ${this.authToken}`,
                 `${getConfig().channelTokenKey}: ${this.channelToken}`,

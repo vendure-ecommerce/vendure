@@ -13,6 +13,7 @@ import {
     AuthOptions,
     EmailOptions,
     getConfig,
+    ImportExportOptions,
     OrderMergeOptions,
     OrderProcessOptions,
     PaymentOptions,
@@ -98,6 +99,10 @@ export class ConfigService implements VendureConfig {
 
     get emailOptions(): Required<EmailOptions<any>> {
         return this.activeConfig.emailOptions as Required<EmailOptions<any>>;
+    }
+
+    get importExportOptions(): Required<ImportExportOptions> {
+        return this.activeConfig.importExportOptions as Required<ImportExportOptions>;
     }
 
     get customFields(): CustomFields {

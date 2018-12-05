@@ -182,6 +182,13 @@ export interface PaymentOptions {
     paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
 }
 
+export interface ImportExportOptions {
+    /**
+     * The directory in which assets to be imported are located.
+     */
+    importAssetsDir?: string;
+}
+
 export interface VendureConfig {
     /**
      * The name of the property which contains the token of the
@@ -258,6 +265,10 @@ export interface VendureConfig {
      * Configures the handling of transactional emails.
      */
     emailOptions: EmailOptions<any>;
+    /**
+     * Configuration settings for data import and export.
+     */
+    importExportOptions?: ImportExportOptions;
     /**
      * Custom Express middleware for the server.
      */

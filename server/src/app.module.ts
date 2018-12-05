@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 import { GraphQLDateTime } from 'graphql-iso-date';
-import * as ms from 'ms';
 
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';

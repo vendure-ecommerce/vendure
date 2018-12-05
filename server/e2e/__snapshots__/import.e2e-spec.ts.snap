@@ -1,0 +1,272 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Import resolver imports products 1`] = `
+Array [
+  Object {
+    "assets": Array [
+      Object {
+        "id": "T_6",
+        "name": "pps1.jpg",
+      },
+      Object {
+        "id": "T_7",
+        "name": "pps2.jpg",
+      },
+    ],
+    "description": "A great device for stretching paper.",
+    "featuredAsset": Object {
+      "id": "T_6",
+      "name": "pps1.jpg",
+    },
+    "id": "T_1",
+    "name": "Perfect Paper Stretcher",
+    "optionGroups": Array [
+      Object {
+        "code": "perfect-paper-stretcher-size",
+        "id": "T_2",
+        "name": "size",
+      },
+    ],
+    "slug": "perfect-paper-stretcher",
+    "variants": Array [
+      Object {
+        "id": "T_1",
+        "name": "Perfect Paper Stretcher Half Imperial",
+        "options": Array [
+          Object {
+            "code": "half-imperial",
+            "id": "T_3",
+          },
+        ],
+        "price": 4530,
+        "sku": "PPS12",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+      Object {
+        "id": "T_2",
+        "name": "Perfect Paper Stretcher Quarter Imperial",
+        "options": Array [
+          Object {
+            "code": "quarter-imperial",
+            "id": "T_4",
+          },
+        ],
+        "price": 3250,
+        "sku": "PPS14",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+      Object {
+        "id": "T_3",
+        "name": "Perfect Paper Stretcher Full Imperial",
+        "options": Array [
+          Object {
+            "code": "full-imperial",
+            "id": "T_5",
+          },
+        ],
+        "price": 5950,
+        "sku": "PPSF",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+    ],
+  },
+  Object {
+    "assets": Array [],
+    "description": "Mabef description",
+    "featuredAsset": null,
+    "id": "T_2",
+    "name": "Mabef M/02 Studio Easel",
+    "optionGroups": Array [],
+    "slug": "",
+    "variants": Array [
+      Object {
+        "id": "T_4",
+        "name": "Mabef M/02 Studio Easel",
+        "options": Array [],
+        "price": 91070,
+        "sku": "M02",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+    ],
+  },
+  Object {
+    "assets": Array [],
+    "description": "Really mega pencils",
+    "featuredAsset": null,
+    "id": "T_3",
+    "name": "Giotto Mega Pencils",
+    "optionGroups": Array [
+      Object {
+        "code": "giotto-mega-pencils-box-size",
+        "id": "T_3",
+        "name": "box size",
+      },
+    ],
+    "slug": "",
+    "variants": Array [
+      Object {
+        "id": "T_5",
+        "name": "Giotto Mega Pencils Box of 8",
+        "options": Array [
+          Object {
+            "code": "box-of-8",
+            "id": "T_6",
+          },
+        ],
+        "price": 416,
+        "sku": "225400",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+      Object {
+        "id": "T_6",
+        "name": "Giotto Mega Pencils Box of 12",
+        "options": Array [
+          Object {
+            "code": "box-of-12",
+            "id": "T_7",
+          },
+        ],
+        "price": 624,
+        "sku": "225600",
+        "taxCategory": Object {
+          "id": "T_1",
+          "name": "Standard Tax",
+        },
+      },
+    ],
+  },
+  Object {
+    "assets": Array [],
+    "description": "Keeps the paint off the clothes",
+    "featuredAsset": null,
+    "id": "T_4",
+    "name": "Artists Smock",
+    "optionGroups": Array [
+      Object {
+        "code": "artists-smock-size",
+        "id": "T_4",
+        "name": "size",
+      },
+      Object {
+        "code": "artists-smock-colour",
+        "id": "T_5",
+        "name": "colour",
+      },
+    ],
+    "slug": "",
+    "variants": Array [
+      Object {
+        "id": "T_7",
+        "name": "Artists Smock small beige",
+        "options": Array [
+          Object {
+            "code": "small",
+            "id": "T_1",
+          },
+          Object {
+            "code": "small",
+            "id": "T_8",
+          },
+          Object {
+            "code": "beige",
+            "id": "T_10",
+          },
+        ],
+        "price": 1199,
+        "sku": "10112",
+        "taxCategory": Object {
+          "id": "T_2",
+          "name": "Reduced Tax",
+        },
+      },
+      Object {
+        "id": "T_8",
+        "name": "Artists Smock large beige",
+        "options": Array [
+          Object {
+            "code": "large",
+            "id": "T_2",
+          },
+          Object {
+            "code": "large",
+            "id": "T_9",
+          },
+          Object {
+            "code": "beige",
+            "id": "T_10",
+          },
+        ],
+        "price": 1199,
+        "sku": "10113",
+        "taxCategory": Object {
+          "id": "T_2",
+          "name": "Reduced Tax",
+        },
+      },
+      Object {
+        "id": "T_9",
+        "name": "Artists Smock small navy",
+        "options": Array [
+          Object {
+            "code": "small",
+            "id": "T_1",
+          },
+          Object {
+            "code": "small",
+            "id": "T_8",
+          },
+          Object {
+            "code": "navy",
+            "id": "T_11",
+          },
+        ],
+        "price": 1199,
+        "sku": "10114",
+        "taxCategory": Object {
+          "id": "T_2",
+          "name": "Reduced Tax",
+        },
+      },
+      Object {
+        "id": "T_10",
+        "name": "Artists Smock large navy",
+        "options": Array [
+          Object {
+            "code": "large",
+            "id": "T_2",
+          },
+          Object {
+            "code": "large",
+            "id": "T_9",
+          },
+          Object {
+            "code": "navy",
+            "id": "T_11",
+          },
+        ],
+        "price": 1199,
+        "sku": "10115",
+        "taxCategory": Object {
+          "id": "T_2",
+          "name": "Reduced Tax",
+        },
+      },
+    ],
+  },
+]
+`;

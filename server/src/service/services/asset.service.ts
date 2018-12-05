@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { ReadStream } from 'fs-extra';
+import * as mime from 'mime-types';
+import * as path from 'path';
 import { CreateAssetInput } from 'shared/generated-types';
 import { ID, PaginatedList } from 'shared/shared-types';
+import { Stream } from 'stream';
 import { Connection } from 'typeorm';
 
+import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -36,8 +41,29 @@ export class AssetService {
             }));
     }
 
+    /**
+     * Create an Asset based on a file uploaded via the GraphQL API.
+     */
     async create(input: CreateAssetInput): Promise<Asset> {
-        const { stream, filename, mimetype, encoding } = await input.file;
+        const { stream, filename, mimetype } = await input.file;
+        return this.createAssetInternal(stream, filename, mimetype);
+    }
+
+    /**
+     * Create an Asset from a file stream created during data import.
+     */
+    async createFromFileStream(stream: ReadStream): Promise<Asset> {
+        const filePath = stream.path;
+        if (typeof filePath === 'string') {
+            const filename = path.basename(filePath);
+            const mimetype = mime.lookup(filename) || 'application/octet-stream';
+            return this.createAssetInternal(stream, filename, mimetype);
+        } else {
+            throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
+        }
+    }
+
+    private async createAssetInternal(stream: Stream, filename: string, mimetype: string): Promise<Asset> {
         const { assetOptions } = this.configService;
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(filename);

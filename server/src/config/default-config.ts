@@ -72,6 +72,9 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
             type: 'none',
         },
     },
+    importExportOptions: {
+        importAssetsDir: __dirname,
+    },
     customFields: {
         Address: [],
         Customer: [],

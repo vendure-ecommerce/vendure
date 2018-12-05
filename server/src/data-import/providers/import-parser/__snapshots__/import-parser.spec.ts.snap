@@ -1,0 +1,425 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImportParser parseProducts multiple products with multiple variants 1`] = `
+Array [
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "A great device for stretching paper.",
+      "name": "Perfect Paper Stretcher",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "Half Imperial",
+            "Quarter Imperial",
+            "Full Imperial",
+          ],
+        },
+      ],
+      "slug": "Perfect-paper-stretcher",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Half Imperial",
+        ],
+        "price": 45.3,
+        "sku": "PPS12",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Quarter Imperial",
+        ],
+        "price": 32.5,
+        "sku": "PPS14",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Full Imperial",
+        ],
+        "price": 59.5,
+        "sku": "PPSF",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Mabef description",
+      "name": "Mabef M/02 Studio Easel",
+      "optionGroups": Array [],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [],
+        "price": 910.7,
+        "sku": "M02",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Really mega pencils",
+      "name": "Giotto Mega Pencils",
+      "optionGroups": Array [
+        Object {
+          "name": "box size",
+          "values": Array [
+            "Box of 8",
+            "Box of 12",
+          ],
+        },
+      ],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Box of 8",
+        ],
+        "price": 4.16,
+        "sku": "225400",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Box of 12",
+        ],
+        "price": 6.24,
+        "sku": "225600",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Keeps the paint off the clothes",
+      "name": "Artists Smock",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "small",
+            "large",
+          ],
+        },
+        Object {
+          "name": "colour",
+          "values": Array [
+            "beige",
+            "navy",
+          ],
+        },
+      ],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "small",
+          "beige",
+        ],
+        "price": 11.99,
+        "sku": "10112",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "large",
+          "beige",
+        ],
+        "price": 11.99,
+        "sku": "10113",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "small",
+          "navy",
+        ],
+        "price": 11.99,
+        "sku": "10114",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "large",
+          "navy",
+        ],
+        "price": 11.99,
+        "sku": "10115",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+]
+`;
+
+exports[`ImportParser parseProducts single product with a multiple variants 1`] = `
+Array [
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "A great device for stretching paper.",
+      "name": "Perfect Paper Stretcher",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "Half Imperial",
+            "Quarter Imperial",
+            "Full Imperial",
+          ],
+        },
+      ],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Half Imperial",
+        ],
+        "price": 45.3,
+        "sku": "PPS12",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Quarter Imperial",
+        ],
+        "price": 32.5,
+        "sku": "PPS14",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Full Imperial",
+        ],
+        "price": 59.5,
+        "sku": "PPSF",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+]
+`;
+
+exports[`ImportParser parseProducts single product with a single variant 1`] = `
+Array [
+  Object {
+    "product": Object {
+      "assetPaths": Array [
+        "pps1.jpg",
+        "pps2.jpg",
+      ],
+      "description": "A great device for stretching paper.",
+      "name": "Perfect Paper Stretcher",
+      "optionGroups": Array [],
+      "slug": "perfect-paper-stretcher",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [],
+        "price": 45.3,
+        "sku": "PPS12",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+]
+`;
+
+exports[`ImportParser parseProducts works with streamed input 1`] = `
+Array [
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "A great device for stretching paper.",
+      "name": "Perfect Paper Stretcher",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "Half Imperial",
+            "Quarter Imperial",
+            "Full Imperial",
+          ],
+        },
+      ],
+      "slug": "Perfect-paper-stretcher",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Half Imperial",
+        ],
+        "price": 45.3,
+        "sku": "PPS12",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Quarter Imperial",
+        ],
+        "price": 32.5,
+        "sku": "PPS14",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Full Imperial",
+        ],
+        "price": 59.5,
+        "sku": "PPSF",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Mabef description",
+      "name": "Mabef M/02 Studio Easel",
+      "optionGroups": Array [],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [],
+        "price": 910.7,
+        "sku": "M02",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Really mega pencils",
+      "name": "Giotto Mega Pencils",
+      "optionGroups": Array [
+        Object {
+          "name": "box size",
+          "values": Array [
+            "Box of 8",
+            "Box of 12",
+          ],
+        },
+      ],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Box of 8",
+        ],
+        "price": 4.16,
+        "sku": "225400",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "Box of 12",
+        ],
+        "price": 6.24,
+        "sku": "225600",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "description": "Keeps the paint off the clothes",
+      "name": "Artists Smock",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "small",
+            "large",
+          ],
+        },
+        Object {
+          "name": "colour",
+          "values": Array [
+            "beige",
+            "navy",
+          ],
+        },
+      ],
+      "slug": "",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "small",
+          "beige",
+        ],
+        "price": 11.99,
+        "sku": "10112",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "large",
+          "beige",
+        ],
+        "price": 11.99,
+        "sku": "10113",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "small",
+          "navy",
+        ],
+        "price": 11.99,
+        "sku": "10114",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "optionValues": Array [
+          "large",
+          "navy",
+        ],
+        "price": 11.99,
+        "sku": "10115",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+]
+`;

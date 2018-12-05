@@ -1,0 +1,8 @@
+type Mutation {
+    importProducts(csvFile: Upload!): ImportInfo
+}
+
+type ImportInfo {
+    errors: [String!]
+    importedCount: Int!
+}
