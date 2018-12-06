@@ -83,12 +83,19 @@ export class MockDataService {
         return channels;
     }
 
-    async populateCountries(): Promise<Zone.Fragment[]> {
+    async populateCountries(all = false): Promise<Zone.Fragment[]> {
         const countriesFile = await fs.readFile(
             path.join(__dirname, 'data-sources', 'countries.json'),
             'utf8',
         );
-        const countries: any[] = JSON.parse(countriesFile);
+        const limitedCountries = ['GB', 'DE', 'FR', 'AT', 'US', 'CN', 'JP', 'AU', 'ZA'];
+        const countries: any[] = JSON.parse(countriesFile).filter(c => {
+            if (all) {
+                return true;
+            } else {
+                return limitedCountries.includes(c['alpha-2']);
+            }
+        });
         const zones: { [zoneName: string]: string[] } = {};
         for (const country of countries) {
             const result = await this.client.query<CreateCountry.Mutation, CreateCountry.Variables>(

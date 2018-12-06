@@ -14,6 +14,7 @@ export interface PopulateOptions {
     logging?: boolean;
     productCount: number;
     customerCount: number;
+    allCountries?: boolean;
     channels?: string[];
 }
 
@@ -42,7 +43,7 @@ export async function populate(
     if (options.channels) {
         await mockDataService.populateChannels(options.channels);
     }
-    const zones = await mockDataService.populateCountries();
+    const zones = await mockDataService.populateCountries(options.allCountries);
     await mockDataService.setChannelDefaultZones(zones);
     await mockDataService.populateShippingMethods();
     const assets = await mockDataService.populateAssets();
