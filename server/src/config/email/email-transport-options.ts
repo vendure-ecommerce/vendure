@@ -49,7 +49,7 @@ export interface FileTransportOptions {
     /** The directory in which the emails will be saved */
     outputPath: string;
     /** When set to true, a raw text file will be output rather than an HTML file */
-    raw: boolean;
+    raw?: boolean;
 }
 
 /**

@@ -13,10 +13,11 @@
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
     "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch --runInBand",
-    "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && gulp -f ./build/gulpfile.ts",
+    "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts",
     "generate-email-preview": "node -r ts-node/register src/email/preview/generate-email-preview.ts"
   },
   "main": "dist/server/src/index.js",
+  "bin": "dist/cli/vendure-cli.js",
   "files": [
     "dist/**/*"
   ],
@@ -51,6 +52,7 @@
     "mysql": "^2.16.0",
     "nanoid": "^2.0.0",
     "nodemailer": "^4.7.0",
+    "prompts": "^1.2.1",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.3.3",
     "sharp": "^0.21.0",
@@ -74,6 +76,7 @@
     "@types/nanoid": "^1.2.0",
     "@types/node": "^10.12.9",
     "@types/nodemailer": "^4.6.5",
+    "@types/prompts": "^1.1.1",
     "@types/sharp": "^0.21.0",
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",

@@ -347,6 +347,11 @@
     "@types/events" "*"
     "@types/node" "*"
 
+"@types/prompts@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/prompts/-/prompts-1.1.1.tgz#5688abfa6a95ddfe808f8ae5337e86e5cf8f3147"
+  integrity sha512-iqE02VXr48Dw//ZBTU0wiL1gbBn3sclnAuTztMLjd2L3bKgq2Qcn0d6ezIXFMaaAl2382g99CUp/p3scU/JCpQ==
+
 "@types/range-parser@*":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.2.tgz#fa8e1ad1d474688a757140c91de6dace6f4abc8d"
@@ -4014,6 +4019,11 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
 
+kleur@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.0.tgz#ae185c2e0641ffb2f8e3d182df13239df9d8d3b2"
+  integrity sha512-acHc4xKlqTNuAGmbvtd3KuNi1bnlHsdPg6Os1P5s/Ii/6g8MY3caVPDp4md04/twbh4wwPvdpnol1bc9zFsI3w==
+
 last-run@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/last-run/-/last-run-1.1.1.tgz#45b96942c17b1c79c772198259ba943bebf8ca5b"
@@ -5484,6 +5494,14 @@ prompts@^0.1.9:
     clorox "^1.0.3"
     sisteransi "^0.1.1"
 
+prompts@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/prompts/-/prompts-1.2.1.tgz#7fd4116a458d6a62761e3ccb1432d7bbd8b2cb29"
+  integrity sha512-GE33SMMVO1ISfnq3i6cE+WYK/tLxRWtZiRkl5vdg0KR0owOCPFOsq8BuFajFbW7b2bMHb8krXaQHOpZyUEuvmA==
+  dependencies:
+    kleur "^3.0.0"
+    sisteransi "^1.0.0"
+
 proto-list@~1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
@@ -6123,6 +6141,11 @@ simple-swizzle@^0.2.2:
 sisteransi@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-0.1.1.tgz#5431447d5f7d1675aac667ccd0b865a4994cb3ce"
+
+sisteransi@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.0.tgz#77d9622ff909080f1c19e5f4a1df0c1b0a27b88c"
+  integrity sha512-N+z4pHB4AmUv0SjveWRd6q1Nj5w62m5jodv+GD8lvmbY/83T/rpbJGZOnK5T149OldDj4Db07BSv9xY4K6NTPQ==
 
 slash@^1.0.0:
   version "1.0.0"
