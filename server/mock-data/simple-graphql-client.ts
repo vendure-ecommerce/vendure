@@ -127,7 +127,13 @@ export class SimpleGraphQLClient {
             curl.perform();
             curl.on('end', (statusCode, body) => {
                 curl.close();
-                resolve(JSON.parse(body).data);
+                const response = JSON.parse(body);
+                if (response.errors && response.errors.length) {
+                    const error = response.errors[0];
+                    console.log(JSON.stringify(error.extensions, null, 2));
+                    throw new Error(error.message);
+                }
+                resolve(response.data);
             });
 
             curl.on('error', err => {

@@ -32,11 +32,18 @@ export class ImportResolver {
         }
 
         if (parsed) {
-            const result = await this.importer.importProducts(ctx, parsed);
-            return {
-                errors: [],
-                importedCount: parsed.length,
-            };
+            try {
+                const result = await this.importer.importProducts(ctx, parsed);
+                return {
+                    errors: [],
+                    importedCount: parsed.length,
+                };
+            } catch (err) {
+                return {
+                    errors: [err.message],
+                    importedCount: 0,
+                };
+            }
         } else {
             return {
                 errors: ['nothing to parse!'],
