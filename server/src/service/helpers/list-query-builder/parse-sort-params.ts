@@ -1,11 +1,10 @@
-import { Type } from 'shared/shared-types';
 import { Connection, OrderByCondition } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { VendureEntity } from '../../../entity/base/base.entity';
-
+import { Type } from '../../../../../shared/shared-types';
 import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 /**
  * Parses the provided SortParameter array against the metadata of the given entity, ensuring that only

@@ -1,5 +1,5 @@
-import { AssetType } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
+import { AssetType } from '../../../shared/generated-types';
+import { ID } from '../../../shared/shared-types';
 
 /**
  * Takes a predicate function and returns a negated version.

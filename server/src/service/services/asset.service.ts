@@ -3,11 +3,11 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { ReadStream } from 'fs-extra';
 import * as mime from 'mime-types';
 import * as path from 'path';
-import { CreateAssetInput } from 'shared/generated-types';
-import { ID, PaginatedList } from 'shared/shared-types';
 import { Stream } from 'stream';
 import { Connection } from 'typeorm';
 
+import { CreateAssetInput } from '../../../../shared/generated-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';

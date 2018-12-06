@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { Channel } from 'shared/generated-types';
 
+import { Channel } from '../../shared/generated-types';
 import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig, VendureConfig } from '../src/config/vendure-config';
 

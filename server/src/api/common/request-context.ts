@@ -1,5 +1,5 @@
-import { LanguageCode } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
+import { LanguageCode } from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';

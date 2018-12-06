@@ -1,6 +1,6 @@
-import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
+import { DeepPartial } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
 import { Order } from '../order/order.entity';

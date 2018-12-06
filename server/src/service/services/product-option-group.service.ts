@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection, FindManyOptions, Like } from 'typeorm';
+
 import {
     CreateProductOptionGroupInput,
     LanguageCode,
     UpdateProductOptionGroupInput,
-} from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
-import { Connection, FindManyOptions, Like } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
-
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 

@@ -1,4 +1,4 @@
-import { LanguageCode } from 'shared/generated-types';
+import { LanguageCode } from '../../../../../shared/generated-types';
 
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { ProductCategoryTranslation } from '../../../entity/product-category/product-category-translation.entity';

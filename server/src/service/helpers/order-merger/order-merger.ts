@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from 'shared/shared-types';
 
+import { ID } from '../../../../../shared/shared-types';
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';

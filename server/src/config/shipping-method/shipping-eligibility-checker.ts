@@ -1,4 +1,4 @@
-import { ConfigArg } from 'shared/generated-types';
+import { ConfigArg } from '../../../../shared/generated-types';
 
 import { Order } from '../../entity/order/order.entity';
 import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';

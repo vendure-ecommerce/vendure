@@ -1,4 +1,4 @@
-import { ConfigArg } from 'shared/generated-types';
+import { ConfigArg } from '../../../../shared/generated-types';
 
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';

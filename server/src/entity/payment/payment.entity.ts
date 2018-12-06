@@ -1,6 +1,6 @@
-import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
+import { DeepPartial } from '../../../../shared/shared-types';
 import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';

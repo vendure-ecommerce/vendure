@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ID, Type } from 'shared/shared-types';
 import { Connection, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
+import { ID, Type } from '../../../../../shared/shared-types';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 

@@ -1,9 +1,8 @@
 import * as path from 'path';
-import { LanguageCode } from 'shared/generated-types';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
+import { LanguageCode } from '../../../shared/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '../../../shared/shared-constants';
 import { configEmailType, EmailTypes } from '../config/email/email-options';
-
 import { AccountRegistrationEvent } from '../event-bus/events/account-registration-event';
 import { OrderStateTransitionEvent } from '../event-bus/events/order-state-transition-event';
 

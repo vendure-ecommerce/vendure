@@ -1,4 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+
 import {
     CreateCustomerAddressMutationArgs,
     CreateCustomerMutationArgs,
@@ -7,9 +8,8 @@ import {
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { idsAreEqual } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';

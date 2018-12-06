@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateTaxCategoryInput, UpdateTaxCategoryInput } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { CreateTaxCategoryInput, UpdateTaxCategoryInput } from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { assertFound } from '../../common/utils';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';

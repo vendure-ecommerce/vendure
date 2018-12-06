@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductVariantInput, UpdateProductVariantInput } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
-import { generateAllCombinations } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
+import { CreateProductVariantInput, UpdateProductVariantInput } from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
+import { generateAllCombinations } from '../../../../shared/shared-utils';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';

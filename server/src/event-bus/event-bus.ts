@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Type } from 'shared/shared-types';
+
+import { Type } from '../../../shared/shared-types';
 
 import { VendureEvent } from './vendure-event';
 

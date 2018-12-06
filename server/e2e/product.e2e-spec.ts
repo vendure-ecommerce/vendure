@@ -11,8 +11,8 @@ import {
     SortOrder,
     UpdateProduct,
     UpdateProductVariants,
-} from 'shared/generated-types';
-import { omit } from 'shared/omit';
+} from '../../shared/generated-types';
+import { omit } from '../../shared/omit';
 
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,

@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from 'shared/generated-types';
+import { Adjustment, AdjustmentType } from '../../../../shared/generated-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 

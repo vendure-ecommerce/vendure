@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from 'shared/shared-types';
 
+import { ID } from '../../../../shared/shared-types';
 import { ConfigService } from '../../config/config.service';
 
 import { IdCodec } from './id-codec';

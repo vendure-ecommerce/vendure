@@ -1,13 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import {
     CountriesQueryArgs,
     CountryQueryArgs,
     CreateCountryMutationArgs,
     Permission,
     UpdateCountryMutationArgs,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Translated } from '../../common/types/locale-types';
 import { Country } from '../../entity/country/country.entity';
 import { CountryService } from '../../service/services/country.service';

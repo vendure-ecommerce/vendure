@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
+
 import {
     AdjustmentOperation,
     AdjustmentOperationInput,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
-} from 'shared/generated-types';
-import { omit } from 'shared/omit';
-import { ID, PaginatedList } from 'shared/shared-types';
-import { Connection } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { omit } from '../../../../shared/omit';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';

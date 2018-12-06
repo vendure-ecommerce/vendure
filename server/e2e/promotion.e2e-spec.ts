@@ -5,8 +5,8 @@ import {
     GetPromotionList,
     Promotion,
     UpdatePromotion,
-} from 'shared/generated-types';
-import { pick } from 'shared/pick';
+} from '../../shared/generated-types';
+import { pick } from '../../shared/pick';
 
 import {
     CREATE_PROMOTION,

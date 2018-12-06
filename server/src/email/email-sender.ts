@@ -4,10 +4,10 @@ import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as path from 'path';
-import { normalizeString } from 'shared/normalize-string';
-import { assertNever } from 'shared/shared-utils';
 import { Stream } from 'stream';
 
+import { normalizeString } from '../../../shared/normalize-string';
+import { assertNever } from '../../../shared/shared-utils';
 import { EmailTransportOptions, FileTransportOptions } from '../config/email/email-transport-options';
 
 import { GeneratedEmailContext } from './email-context';

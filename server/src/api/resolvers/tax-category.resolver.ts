@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import {
     CreateTaxCategoryMutationArgs,
     Permission,
     TaxCategoryQueryArgs,
     UpdateTaxCategoryMutationArgs,
-} from 'shared/generated-types';
-
+} from '../../../../shared/generated-types';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxCategoryService } from '../../service/services/tax-category.service';
 import { RequestContext } from '../common/request-context';

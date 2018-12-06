@@ -1,10 +1,10 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
-import { LanguageCode } from 'shared/generated-types';
-import { CustomFields, DeepPartial } from 'shared/shared-types';
 import { ConnectionOptions } from 'typeorm';
 
+import { LanguageCode } from '../../../shared/generated-types';
+import { CustomFields, DeepPartial } from '../../../shared/shared-types';
 import { Transitions } from '../common/finite-state-machine';
 import { ReadOnlyRequired } from '../common/types/common-types';
 import { Order } from '../entity/order/order.entity';

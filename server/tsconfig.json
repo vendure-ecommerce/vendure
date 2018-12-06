@@ -13,10 +13,6 @@
     "target": "es6",
     "strict": true,
     "strictPropertyInitialization": false,
-    "sourceMap": true,
-    "baseUrl": "./src",
-    "paths": {
-      "shared/*": ["../../shared/*"]
-    }
+    "sourceMap": true
   }
 }

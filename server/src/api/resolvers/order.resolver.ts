@@ -1,5 +1,6 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 import * as ms from 'ms';
+
 import {
     AddItemToOrderMutationArgs,
     AddPaymentToOrderMutationArgs,
@@ -14,9 +15,8 @@ import {
     SetOrderShippingMethodMutationArgs,
     ShippingMethodQuote,
     TransitionOrderToStateMutationArgs,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { Order } from '../../entity/order/order.entity';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';

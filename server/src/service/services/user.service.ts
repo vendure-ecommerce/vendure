@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import * as ms from 'ms';
-import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { ID } from '../../../../shared/shared-types';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';

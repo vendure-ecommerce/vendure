@@ -1,4 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+
 import {
     CreateProductCategoryMutationArgs,
     MoveProductCategoryMutationArgs,
@@ -6,9 +7,8 @@ import {
     ProductCategoriesQueryArgs,
     ProductCategoryQueryArgs,
     UpdateProductCategoryMutationArgs,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { UpdatePaymentMethodInput } from 'shared/generated-types';
-import { omit } from 'shared/omit';
-import { ID, PaginatedList } from 'shared/shared-types';
-import { assertNever } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 
+import { UpdatePaymentMethodInput } from '../../../../shared/generated-types';
+import { omit } from '../../../../shared/omit';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
+import { assertNever } from '../../../../shared/shared-utils';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';

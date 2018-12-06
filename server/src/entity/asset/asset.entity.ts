@@ -1,8 +1,8 @@
-import { AssetType } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
-import { HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
+import { AssetType } from '../../../../shared/generated-types';
+import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';

@@ -1,14 +1,4 @@
 import gql from 'graphql-tag';
-import {
-    CreateProductCategory,
-    GetAssetList,
-    GetProductCategory,
-    LanguageCode,
-    MoveProductCategory,
-    ProductCategory,
-    UpdateProductCategory,
-} from 'shared/generated-types';
-import { ROOT_CATEGORY_NAME } from 'shared/shared-constants';
 
 import {
     CREATE_PRODUCT_CATEGORY,
@@ -17,6 +7,16 @@ import {
     MOVE_PRODUCT_CATEGORY,
     UPDATE_PRODUCT_CATEGORY,
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
+import {
+    CreateProductCategory,
+    GetAssetList,
+    GetProductCategory,
+    LanguageCode,
+    MoveProductCategory,
+    ProductCategory,
+    UpdateProductCategory,
+} from '../../shared/generated-types';
+import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';

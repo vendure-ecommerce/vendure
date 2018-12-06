@@ -2,6 +2,24 @@ import * as faker from 'faker/locale/en_GB';
 import * as fs from 'fs-extra';
 import gql from 'graphql-tag';
 import * as path from 'path';
+
+import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
+import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
+    GENERATE_PRODUCT_VARIANTS,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../../admin-ui/src/app/data/definitions/product-definitions';
+import {
+    CREATE_CHANNEL,
+    CREATE_COUNTRY,
+    CREATE_TAX_RATE,
+    CREATE_ZONE,
+    GET_CHANNELS,
+    UPDATE_CHANNEL,
+} from '../../admin-ui/src/app/data/definitions/settings-definitions';
+import { CREATE_SHIPPING_METHOD } from '../../admin-ui/src/app/data/definitions/shipping-definitions';
 import {
     AddOptionGroupToProduct,
     Asset,
@@ -25,25 +43,7 @@ import {
     UpdateChannel,
     UpdateProductVariants,
     Zone,
-} from 'shared/generated-types';
-
-import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_OPTION_GROUP,
-    GENERATE_PRODUCT_VARIANTS,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
-import {
-    CREATE_CHANNEL,
-    CREATE_COUNTRY,
-    CREATE_TAX_RATE,
-    CREATE_ZONE,
-    GET_CHANNELS,
-    UPDATE_CHANNEL,
-} from '../../admin-ui/src/app/data/definitions/settings-definitions';
-import { CREATE_SHIPPING_METHOD } from '../../admin-ui/src/app/data/definitions/shipping-definitions';
+} from '../../shared/generated-types';
 import { defaultShippingCalculator } from '../src/config/shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from '../src/config/shipping-method/default-shipping-eligibility-checker';
 import { Customer } from '../src/entity/customer/customer.entity';

@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import {
     ChannelQueryArgs,
     CreateChannelMutationArgs,
     Permission,
     UpdateChannelMutationArgs,
-} from 'shared/generated-types';
-
+} from '../../../../shared/generated-types';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ChannelService } from '../../service/services/channel.service';
 import { RequestContext } from '../common/request-context';

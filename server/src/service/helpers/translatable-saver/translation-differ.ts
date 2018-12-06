@@ -1,6 +1,6 @@
-import { DeepPartial } from 'shared/shared-types';
 import { EntityManager } from 'typeorm';
 
+import { DeepPartial } from '../../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
 import { foundIn, not } from '../../../common/utils';

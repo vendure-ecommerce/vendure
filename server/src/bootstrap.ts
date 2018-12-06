@@ -1,7 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Type } from 'shared/shared-types';
 import { EntitySubscriberInterface } from 'typeorm';
+
+import { Type } from '../../shared/shared-types';
 
 import { ReadOnlyRequired } from './common/types/common-types';
 import { getConfig, setConfig, VendureConfig } from './config/vendure-config';

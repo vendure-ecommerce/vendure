@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
-import { CreateAddressInput, GetCustomerList } from 'shared/generated-types';
 
 import { GET_CUSTOMER_LIST } from '../../admin-ui/src/app/data/definitions/customer-definitions';
+import { CreateAddressInput, GetCustomerList } from '../../shared/generated-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

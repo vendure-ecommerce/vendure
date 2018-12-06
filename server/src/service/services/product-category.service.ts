@@ -1,13 +1,13 @@
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
+
 import {
     CreateProductCategoryInput,
     MoveProductCategoryInput,
     UpdateProductCategoryInput,
-} from 'shared/generated-types';
-import { ROOT_CATEGORY_NAME } from 'shared/shared-constants';
-import { ID, PaginatedList } from 'shared/shared-types';
-import { Connection } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { IllegalOperationError } from '../../common/error/errors';

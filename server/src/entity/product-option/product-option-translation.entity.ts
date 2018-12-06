@@ -1,8 +1,8 @@
-import { LanguageCode } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
-import { HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
+import { LanguageCode } from '../../../../shared/generated-types';
+import { DeepPartial } from '../../../../shared/shared-types';
+import { HasCustomFields } from '../../../../shared/shared-types';
 import { Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionFieldsTranslation } from '../custom-entity-fields';

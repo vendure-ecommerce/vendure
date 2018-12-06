@@ -1,6 +1,6 @@
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from 'shared/generated-types';
-import { omit } from 'shared/omit';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from 'shared/shared-constants';
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '../../shared/generated-types';
+import { omit } from '../../shared/omit';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../shared/shared-constants';
 
 import {
     CREATE_ROLE,

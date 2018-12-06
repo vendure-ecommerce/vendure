@@ -1,6 +1,6 @@
-import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 import { Role } from '../role/role.entity';

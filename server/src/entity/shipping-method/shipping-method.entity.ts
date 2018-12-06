@@ -1,7 +1,7 @@
-import { Adjustment, AdjustmentOperation, AdjustmentType } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../shared/generated-types';
+import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';

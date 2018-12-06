@@ -1,5 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Request, Response } from 'express';
+
 import {
     LoginMutationArgs,
     LoginResult,
@@ -7,8 +8,7 @@ import {
     RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
     VerifyCustomerAccountMutationArgs,
-} from 'shared/generated-types';
-
+} from '../../../../shared/generated-types';
 import { VerificationTokenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';

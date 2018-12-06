@@ -1,13 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import {
     CreatePromotionMutationArgs,
     Permission,
     PromotionQueryArgs,
     PromotionsQueryArgs,
     UpdatePromotionMutationArgs,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { PromotionService } from '../../service/services/promotion.service';
 import { RequestContext } from '../common/request-context';

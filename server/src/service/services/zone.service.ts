@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
+
 import {
     AddMembersToZoneMutationArgs,
     CreateZoneInput,
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneInput,
-} from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
-import { unique } from 'shared/unique';
-import { Connection } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
+import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
 import { Country } from '../../entity/country/country.entity';

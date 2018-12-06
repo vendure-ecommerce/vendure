@@ -2,13 +2,12 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request, Response } from 'express';
-import { Permission } from 'shared/generated-types';
 
+import { Permission } from '../../../../shared/generated-types';
+import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';
 import { AuthService } from '../../service/services/auth.service';
-
-import { ForbiddenError } from '../../common/error/errors';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
 import { setAuthToken } from '../common/set-auth-token';

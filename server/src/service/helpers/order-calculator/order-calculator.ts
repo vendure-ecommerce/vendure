@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AdjustmentType } from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
 
+import { AdjustmentType } from '../../../../../shared/generated-types';
+import { ID } from '../../../../../shared/shared-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';

@@ -1,8 +1,8 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAddressInput, PaymentInput, ShippingMethodQuote } from 'shared/generated-types';
-import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { CreateAddressInput, PaymentInput, ShippingMethodQuote } from '../../../../shared/generated-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';

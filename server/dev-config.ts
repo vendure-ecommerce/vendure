@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { API_PATH, API_PORT } from 'shared/shared-constants';
+
+import { API_PATH, API_PORT } from '../shared/shared-constants';
 
 import { fakePalPaymentHandler } from './src/config/payment-method/fakepal-payment-method-config';
 import { gripePaymentHandler } from './src/config/payment-method/gripe-payment-method-config';

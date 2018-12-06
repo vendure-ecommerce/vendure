@@ -1,7 +1,7 @@
-import { Permission } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { Permission } from '../../../../shared/generated-types';
+import { DeepPartial } from '../../../../shared/shared-types';
 import { ChannelAware } from '../../common/types/common-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';

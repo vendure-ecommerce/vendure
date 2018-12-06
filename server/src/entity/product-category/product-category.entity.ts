@@ -1,4 +1,3 @@
-import { DeepPartial, HasCustomFields } from 'shared/shared-types';
 import {
     Column,
     Entity,
@@ -11,6 +10,7 @@ import {
     TreeParent,
 } from 'typeorm';
 
+import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';

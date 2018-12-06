@@ -1,7 +1,7 @@
-import { Adjustment, AdjustmentType } from 'shared/generated-types';
-import { DeepPartial } from 'shared/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
+import { Adjustment, AdjustmentType } from '../../../../shared/generated-types';
+import { DeepPartial } from '../../../../shared/shared-types';
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
 import { OrderLine } from '../order-line/order-line.entity';

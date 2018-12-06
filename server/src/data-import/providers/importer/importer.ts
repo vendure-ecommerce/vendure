@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { normalizeString } from 'shared/normalize-string';
 
+import { normalizeString } from '../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';

@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { AssetType } from 'shared/generated-types';
 import * as sharp from 'sharp';
 
+import { AssetType } from '../../../../shared/generated-types';
 import { getAssetType } from '../../common/utils';
 import { AssetPreviewStrategy } from '../../config/asset-preview-strategy/asset-preview-strategy';
 

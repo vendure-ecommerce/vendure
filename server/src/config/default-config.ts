@@ -1,6 +1,6 @@
-import { LanguageCode } from 'shared/generated-types';
-import { API_PATH, API_PORT } from 'shared/shared-constants';
-import { CustomFields } from 'shared/shared-types';
+import { LanguageCode } from '../../../shared/generated-types';
+import { API_PATH, API_PORT } from '../../../shared/shared-constants';
+import { CustomFields } from '../../../shared/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 

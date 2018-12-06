@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { ImportInfo, ImportProductsMutationArgs, Permission } from 'shared/generated-types';
 
+import { ImportInfo, ImportProductsMutationArgs, Permission } from '../../../../shared/generated-types';
 import {
     ImportParser,
     ParsedProductWithVariants,

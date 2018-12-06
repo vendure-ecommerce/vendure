@@ -1,4 +1,4 @@
-import { CustomFields } from 'shared/shared-types';
+import { CustomFields } from '../../../../shared/shared-types';
 
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 

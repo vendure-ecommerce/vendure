@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+
 import {
     CreateProductOptionGroupMutationArgs,
     Permission,
     ProductOptionGroupQueryArgs,
     ProductOptionGroupsQueryArgs,
     UpdateProductOptionGroupMutationArgs,
-} from 'shared/generated-types';
-
+} from '../../../../shared/generated-types';
 import { Translated } from '../../common/types/locale-types';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';

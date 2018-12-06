@@ -1,6 +1,6 @@
-import { ID, Type } from 'shared/shared-types';
 import { Connection, FindOneOptions } from 'typeorm';
 
+import { ID, Type } from '../../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { VendureEntity } from '../../../entity/base/base.entity';
 

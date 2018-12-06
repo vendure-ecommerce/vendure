@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
-import { Omit } from 'shared/omit';
 import { Connection } from 'typeorm';
 
+import { Omit } from '../../../../../shared/omit';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';

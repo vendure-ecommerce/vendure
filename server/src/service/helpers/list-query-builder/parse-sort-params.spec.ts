@@ -1,7 +1,7 @@
-import { Type } from 'shared/shared-types';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
+import { Type } from '../../../../../shared/shared-types';
 import { SortParameter } from '../../../common/types/common-types';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';

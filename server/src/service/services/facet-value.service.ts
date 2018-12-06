@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
+
 import {
     CreateFacetValueInput,
     CreateFacetValueWithFacetInput,
     LanguageCode,
     UpdateFacetValueInput,
-} from 'shared/generated-types';
-import { ID } from 'shared/shared-types';
-import { Connection } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { ID } from '../../../../shared/shared-types';
+import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-
-import { RequestContext } from '../../api/common/request-context';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 

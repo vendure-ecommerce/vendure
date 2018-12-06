@@ -1,4 +1,4 @@
-import { ConfigArg } from 'shared/generated-types';
+import { ConfigArg } from '../../../../shared/generated-types';
 
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';

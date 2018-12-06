@@ -4,7 +4,7 @@ import {
     GetAdministrator,
     GetAdministrators,
     UpdateAdministrator,
-} from 'shared/generated-types';
+} from '../../shared/generated-types';
 
 import {
     CREATE_ADMINISTRATOR,

@@ -1,6 +1,6 @@
-import { DeepPartial } from 'shared/shared-types';
 import { ChildEntity, Column, Index, ManyToOne } from 'typeorm';
 
+import { DeepPartial } from '../../../../shared/shared-types';
 import { User } from '../user/user.entity';
 
 import { Session } from './session.entity';

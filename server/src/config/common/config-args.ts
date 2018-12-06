@@ -1,4 +1,4 @@
-import { ConfigArg } from 'shared/generated-types';
+import { ConfigArg } from '../../../../shared/generated-types';
 
 /**
  * Certain entities allow arbitrary configuration arguments to be specified which can then

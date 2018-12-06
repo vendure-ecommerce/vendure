@@ -1,8 +1,8 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateTaxRateInput, UpdateTaxRateInput } from 'shared/generated-types';
-import { ID, PaginatedList } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { CreateTaxRateInput, UpdateTaxRateInput } from '../../../../shared/generated-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';

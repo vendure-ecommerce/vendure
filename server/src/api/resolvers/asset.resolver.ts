@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
 import {
     AssetQueryArgs,
     AssetsQueryArgs,
     CreateAssetsMutationArgs,
     Permission,
-} from 'shared/generated-types';
-import { PaginatedList } from 'shared/shared-types';
-
+} from '../../../../shared/generated-types';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Asset } from '../../entity/asset/asset.entity';
 import { AssetService } from '../../service/services/asset.service';
 import { Allow } from '../decorators/allow.decorator';

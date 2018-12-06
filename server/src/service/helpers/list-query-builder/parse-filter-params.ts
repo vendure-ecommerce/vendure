@@ -1,10 +1,8 @@
-import { Type } from 'shared/shared-types';
-import { assertNever } from 'shared/shared-utils';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { VendureEntity } from '../../../entity/base/base.entity';
-
+import { Type } from '../../../../../shared/shared-types';
+import { assertNever } from '../../../../../shared/shared-utils';
 import { UserInputError } from '../../../common/error/errors';
 import {
     BooleanOperators,
@@ -14,6 +12,7 @@ import {
     NumberOperators,
     StringOperators,
 } from '../../../common/types/common-types';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 export interface WhereCondition {
     clause: string;

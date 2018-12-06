@@ -1,4 +1,4 @@
-import { LanguageCode } from 'shared/generated-types';
+import { LanguageCode } from '../../../../shared/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Channel } from '../../entity/channel/channel.entity';

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { Connection } from 'typeorm';
+
 import {
     CreateAddressInput,
     CreateCustomerInput,
     RegisterCustomerInput,
     UpdateAddressInput,
     UpdateCustomerInput,
-} from 'shared/generated-types';
-import { ID, PaginatedList } from 'shared/shared-types';
-import { Connection } from 'typeorm';
-
+} from '../../../../shared/generated-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';

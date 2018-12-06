@@ -1,5 +1,5 @@
-import { LanguageCode } from 'shared/generated-types';
-import { Type } from 'shared/shared-types';
+import { LanguageCode } from '../../../../shared/generated-types';
+import { Type } from '../../../../shared/shared-types';
 
 import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
 import { VendureEvent } from '../../event-bus/vendure-event';

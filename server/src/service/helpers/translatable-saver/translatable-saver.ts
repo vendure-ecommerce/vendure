@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { omit } from 'shared/omit';
-import { ID, Type } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { omit } from '../../../../../shared/omit';
+import { ID, Type } from '../../../../../shared/shared-types';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
 import { patchEntity } from '../utils/patch-entity';
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateChannelInput, UpdateChannelInput } from 'shared/generated-types';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
-import { ID } from 'shared/shared-types';
 import { Connection } from 'typeorm';
 
+import { CreateChannelInput, UpdateChannelInput } from '../../../../shared/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '../../../../shared/shared-constants';
+import { ID } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
