@@ -13,10 +13,10 @@
     "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
     "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch --runInBand",
-    "build": "rimraf dist && tsc -p tsconfig.build.json && gulp",
+    "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && gulp -f ./build/gulpfile.ts",
     "generate-email-preview": "node -r ts-node/register src/email/preview/generate-email-preview.ts"
   },
-  "main": "dist/index.js",
+  "main": "dist/server/src/index.js",
   "files": [
     "dist/**/*"
   ],
@@ -64,6 +64,7 @@
     "@types/express": "^4.0.39",
     "@types/faker": "^4.1.4",
     "@types/fs-extra": "^5.0.4",
+    "@types/gulp": "^4.0.5",
     "@types/handlebars": "^4.0.39",
     "@types/i18next": "^11.9.3",
     "@types/i18next-express-middleware": "^0.0.33",

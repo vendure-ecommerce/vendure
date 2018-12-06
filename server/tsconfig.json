@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es6",
+    "target": "es2017",
     "strict": true,
     "strictPropertyInitialization": false,
     "sourceMap": true
