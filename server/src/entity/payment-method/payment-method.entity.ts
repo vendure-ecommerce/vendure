@@ -3,7 +3,7 @@ import { Column, Entity } from 'typeorm';
 import { ConfigArg } from '../../../../shared/generated-types';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { UserInputError } from '../../common/error/errors';
-import { getConfig } from '../../config/vendure-config';
+import { getConfig } from '../../config/config-helpers';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
 import { Payment, PaymentMetadata } from '../payment/payment.entity';

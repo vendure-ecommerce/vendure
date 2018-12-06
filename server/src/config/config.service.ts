@@ -7,12 +7,12 @@ import { LanguageCode } from '../../../shared/generated-types';
 import { CustomFields } from '../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/types/common-types';
 
+import { getConfig } from './config-helpers';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import {
     AssetOptions,
     AuthOptions,
     EmailOptions,
-    getConfig,
     ImportExportOptions,
     OrderMergeOptions,
     OrderProcessOptions,

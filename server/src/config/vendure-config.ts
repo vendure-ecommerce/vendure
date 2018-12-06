@@ -4,20 +4,17 @@ import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
 import { LanguageCode } from '../../../shared/generated-types';
-import { CustomFields, DeepPartial } from '../../../shared/shared-types';
+import { CustomFields } from '../../../shared/shared-types';
 import { Transitions } from '../common/finite-state-machine';
-import { ReadOnlyRequired } from '../common/types/common-types';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
-import { defaultConfig } from './default-config';
 import { EmailGenerator, EmailTypes } from './email/email-options';
 import { EmailTransportOptions } from './email/email-transport-options';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
-import { mergeConfig } from './merge-config';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
@@ -277,38 +274,4 @@ export interface VendureConfig {
      * An array of plugins.
      */
     plugins?: VendurePlugin[];
-}
-
-let activeConfig = defaultConfig;
-
-/**
- * Override the default config by merging in the supplied values. Should only be used prior to
- * bootstrapping the app.
- */
-export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
-    activeConfig = mergeConfig(activeConfig, userConfig);
-}
-
-/**
- * Returns the app config object. In general this function should only be
- * used before bootstrapping the app. In all other contexts, the {@link ConfigService}
- * should be used to access config settings.
- */
-export function getConfig(): ReadOnlyRequired<VendureConfig> {
-    return activeConfig;
-}
-
-/**
- * Returns the type argument to be passed to the PrimaryGeneratedColumn() decorator
- * of the base VendureEntity.
- */
-export function primaryKeyType(): any {
-    return activeConfig.entityIdStrategy.primaryKeyType;
-}
-
-/**
- * Returns the DB data type of ID columns based on the configured primaryKeyType
- */
-export function idType(): 'int' | 'varchar' {
-    return activeConfig.entityIdStrategy.primaryKeyType === 'increment' ? 'int' : 'varchar';
 }

@@ -4,9 +4,9 @@ import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../sha
 import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
+import { getConfig } from '../../config/config-helpers';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
-import { getConfig } from '../../config/vendure-config';
 import { Channel } from '../channel/channel.entity';
 import { Order } from '../order/order.entity';
 

@@ -5,7 +5,8 @@ import { EntitySubscriberInterface } from 'typeorm';
 import { Type } from '../../shared/shared-types';
 
 import { ReadOnlyRequired } from './common/types/common-types';
-import { getConfig, setConfig, VendureConfig } from './config/vendure-config';
+import { getConfig, setConfig } from './config/config-helpers';
+import { VendureConfig } from './config/vendure-config';
 import { VendureEntity } from './entity/base/base.entity';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
 

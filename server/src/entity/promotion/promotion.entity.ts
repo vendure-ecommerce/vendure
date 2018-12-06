@@ -4,9 +4,9 @@ import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../sha
 import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
+import { getConfig } from '../../config/config-helpers';
 import { PromotionItemAction, PromotionOrderAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
-import { getConfig } from '../../config/vendure-config';
 import { Channel } from '../channel/channel.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';

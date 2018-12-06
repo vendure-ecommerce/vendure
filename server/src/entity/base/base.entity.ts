@@ -1,7 +1,7 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { DeepPartial, ID } from '../../../../shared/shared-types';
-import { primaryKeyType } from '../../config/vendure-config';
+import { primaryKeyType } from '../../config/config-helpers';
 
 const keyType = primaryKeyType();
 

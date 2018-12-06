@@ -3,7 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typ
 import { Adjustment, AdjustmentType, ShippingAddress } from '../../../../shared/generated-types';
 import { DeepPartial, ID } from '../../../../shared/shared-types';
 import { Calculated } from '../../common/calculated-decorator';
-import { idType } from '../../config/vendure-config';
+import { idType } from '../../config/config-helpers';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';

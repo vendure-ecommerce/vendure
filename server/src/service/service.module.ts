@@ -1,8 +1,8 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
-import { getConfig } from '../config/vendure-config';
 import { EventBusModule } from '../event-bus/event-bus.module';
 
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';

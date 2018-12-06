@@ -2,7 +2,8 @@ import { INestApplication } from '@nestjs/common';
 
 import { Channel } from '../../shared/generated-types';
 import { VendureBootstrapFunction } from '../src/bootstrap';
-import { setConfig, VendureConfig } from '../src/config/vendure-config';
+import { setConfig } from '../src/config/config-helpers';
+import { VendureConfig } from '../src/config/vendure-config';
 
 import { clearAllTables } from './clear-all-tables';
 import { getDefaultChannelToken } from './get-default-channel-token';

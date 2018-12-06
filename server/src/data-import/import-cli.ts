@@ -3,7 +3,8 @@ import * as path from 'path';
 import { devConfig } from '../../dev-config';
 import { SimpleGraphQLClient } from '../../mock-data/simple-graphql-client';
 import { bootstrap } from '../bootstrap';
-import { setConfig, VendureConfig } from '../config/vendure-config';
+import { setConfig } from '../config/config-helpers';
+import { VendureConfig } from '../config/vendure-config';
 
 // tslint:disable:no-console
 /**
