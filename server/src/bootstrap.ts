@@ -23,7 +23,8 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
-    return app.listen(config.port);
+    await app.listen(config.port);
+    return app;
 }
 
 /**
