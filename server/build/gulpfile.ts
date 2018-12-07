@@ -13,4 +13,11 @@ gulp.task('copy-cli-assets', () => {
     return gulp.src(['../cli/assets/**/*']).pipe(gulp.dest('../dist/cli/assets'));
 });
 
-gulp.task('default', gulp.parallel('copy-schemas', 'copy-email-templates', 'copy-cli-assets'));
+gulp.task('copy-cli-images', () => {
+    return gulp.src(['../mock-data/assets/**/*']).pipe(gulp.dest('../dist/cli/assets/images'));
+});
+
+gulp.task(
+    'default',
+    gulp.parallel(['copy-schemas', 'copy-email-templates', 'copy-cli-assets', 'copy-cli-images']),
+);

@@ -10,11 +10,11 @@ export async function populate() {
     logColored('\nPopulating... (this may take a minute or two)\n');
     const app = await getApplicationRef();
     if (app) {
-        const { Populator } = require('vendure');
-        const populator = app.get(Populator);
+        const { Populator, Importer } = require('vendure');
         const initialData = require('./assets/initial-data.json');
-        await populator.populateInitialData(initialData);
-        logColored('Done!');
+        await populateInitialData(app, initialData, Populator);
+        await populateProducts(app, initialData, Importer);
+        logColored('\nDone!');
         await app.close();
         process.exit(0);
     }
@@ -68,4 +68,32 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     console.log('Bootstrapping Vendure server...');
     const app = await bootstrap(config);
     return app;
+}
+
+async function populateInitialData(app: INestApplication, initialData: any, Populator: any) {
+    const populator = app.get(Populator);
+    try {
+        await populator.populateInitialData(initialData);
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+async function populateProducts(app: INestApplication, initialData: any, Importer: any) {
+    // copy the images to the import folder
+    const images = path.join(__dirname, 'assets', 'images');
+    const destination = path.join(process.cwd(), 'vendure', 'import-assets');
+    await fs.copy(images, destination);
+
+    // import the csv of same product data
+    const importer = app.get(Importer);
+    const productData = await fs.readFile(path.join(__dirname, 'assets', 'sample-products.csv'), 'utf-8');
+    const importResult = await importer.parseAndImport(productData, initialData.defaultLanguage);
+    if (importResult.errors.length) {
+        console.error(`Error encountered when importing product data:`);
+        console.error(importResult.errors.join('\n'));
+    } else {
+        console.log(`Imported ${importResult.importedCount} products`);
+        await fs.emptyDir(destination);
+    }
 }

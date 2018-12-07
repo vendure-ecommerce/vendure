@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { Stream } from 'stream';
 
+import { ImportInfo, LanguageCode } from '../../../../../shared/generated-types';
 import { normalizeString } from '../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { AssetService } from '../../../service/services/asset.service';
+import { ChannelService } from '../../../service/services/channel.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
-import { ParsedProductWithVariants } from '../import-parser/import-parser';
+import { ImportParser, ParsedProductWithVariants } from '../import-parser/import-parser';
 
 @Injectable()
 export class Importer {
@@ -21,6 +24,8 @@ export class Importer {
 
     constructor(
         private configService: ConfigService,
+        private importParser: ImportParser,
+        private channelService: ChannelService,
         private productService: ProductService,
         private productVariantService: ProductVariantService,
         private productOptionGroupService: ProductOptionGroupService,
@@ -29,7 +34,55 @@ export class Importer {
         private productOptionService: ProductOptionService,
     ) {}
 
-    async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[]) {
+    async parseAndImport(
+        input: string | Stream,
+        ctxOrLanguageCode: RequestContext | LanguageCode,
+    ): Promise<ImportInfo> {
+        let ctx: RequestContext;
+        if (ctxOrLanguageCode instanceof RequestContext) {
+            ctx = ctxOrLanguageCode;
+        } else {
+            const channel = await this.channelService.getDefaultChannel();
+            ctx = new RequestContext({
+                isAuthorized: true,
+                authorizedAsOwnerOnly: false,
+                channel,
+                languageCode: ctxOrLanguageCode,
+            });
+        }
+
+        let parsed: ParsedProductWithVariants[];
+        try {
+            parsed = await this.importParser.parseProducts(input);
+        } catch (err) {
+            return {
+                errors: [err.message],
+                importedCount: 0,
+            };
+        }
+
+        if (parsed) {
+            try {
+                const result = await this.importProducts(ctx, parsed);
+                return {
+                    errors: [],
+                    importedCount: parsed.length,
+                };
+            } catch (err) {
+                return {
+                    errors: [err.message],
+                    importedCount: 0,
+                };
+            }
+        } else {
+            return {
+                errors: ['nothing to parse!'],
+                importedCount: 0,
+            };
+        }
+    }
+
+    private async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[]) {
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll();
         for (const { product, variants } of rows) {

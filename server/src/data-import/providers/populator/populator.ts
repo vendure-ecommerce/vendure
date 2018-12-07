@@ -17,12 +17,16 @@ export interface CountryData {
 }
 export interface InitialData {
     defaultLanguage: LanguageCode;
+    defaultZone: string;
     countries: CountryData[];
     taxRates: Array<{ name: string; percentage: number }>;
 }
 
 type ZoneMap = Map<string, { entity: Zone; members: string[] }>;
 
+/**
+ * Responsible for populating the database with initial data.
+ */
 @Injectable()
 export class Populator {
     constructor(
@@ -44,6 +48,22 @@ export class Populator {
 
         const zoneMap = await this.populateCountries(ctx, data.countries);
         await this.populateTaxRates(ctx, data.taxRates, zoneMap);
+        await this.setChannelDefaults(zoneMap, data, channel);
+    }
+
+    private async setChannelDefaults(zoneMap, data: InitialData, channel) {
+        const defaultZone = zoneMap.get(data.defaultZone);
+        if (!defaultZone) {
+            throw new Error(
+                `The defaultZone (${data.defaultZone}) did not match any zones from the InitialData`,
+            );
+        }
+        const defaultZoneId = defaultZone.entity.id as string;
+        await this.channelService.update({
+            id: channel.id as string,
+            defaultTaxZoneId: defaultZoneId,
+            defaultShippingZoneId: defaultZoneId,
+        });
     }
 
     private async populateCountries(ctx: RequestContext, countries: CountryData[]): Promise<ZoneMap> {
