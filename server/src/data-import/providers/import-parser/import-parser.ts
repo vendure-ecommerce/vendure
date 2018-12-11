@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import * as parse from 'csv-parse';
 import { Stream } from 'stream';
 
+import { normalizeString } from '../../../../../shared/normalize-string';
+
 export interface RawProductRecord {
     name?: string;
     slug?: string;
@@ -165,13 +167,15 @@ function validateOptionValueCount(r: RawProductRecord, currentRow?: ParsedProduc
 }
 
 function parseProductFromRecord(r: RawProductRecord): ParsedProduct {
+    const name = parseString(r.name);
+    const slug = parseString(r.slug) || normalizeString(name, '-');
     return {
-        name: parseString(r.name),
-        slug: parseString(r.slug),
+        name,
+        slug,
         description: parseString(r.description),
         assetPaths: parseStringArray(r.assets),
-        optionGroups: parseStringArray(r.optionGroups).map(name => ({
-            name,
+        optionGroups: parseStringArray(r.optionGroups).map(ogName => ({
+            name: ogName,
             values: [],
         })),
     };

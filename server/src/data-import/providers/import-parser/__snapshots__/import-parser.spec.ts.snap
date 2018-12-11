@@ -55,7 +55,7 @@ Array [
       "description": "Mabef description",
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
-      "slug": "",
+      "slug": "mabef-m02-studio-easel",
     },
     "variants": Array [
       Object {
@@ -81,7 +81,7 @@ Array [
           ],
         },
       ],
-      "slug": "",
+      "slug": "giotto-mega-pencils",
     },
     "variants": Array [
       Object {
@@ -125,7 +125,7 @@ Array [
           ],
         },
       ],
-      "slug": "",
+      "slug": "artists-smock",
     },
     "variants": Array [
       Object {
@@ -190,7 +190,7 @@ Array [
           ],
         },
       ],
-      "slug": "",
+      "slug": "perfect-paper-stretcher",
     },
     "variants": Array [
       Object {
@@ -306,7 +306,7 @@ Array [
       "description": "Mabef description",
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
-      "slug": "",
+      "slug": "mabef-m02-studio-easel",
     },
     "variants": Array [
       Object {
@@ -332,7 +332,7 @@ Array [
           ],
         },
       ],
-      "slug": "",
+      "slug": "giotto-mega-pencils",
     },
     "variants": Array [
       Object {
@@ -376,7 +376,7 @@ Array [
           ],
         },
       ],
-      "slug": "",
+      "slug": "artists-smock",
     },
     "variants": Array [
       Object {

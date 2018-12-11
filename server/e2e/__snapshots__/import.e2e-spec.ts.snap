@@ -86,7 +86,7 @@ Array [
     "id": "T_2",
     "name": "Mabef M/02 Studio Easel",
     "optionGroups": Array [],
-    "slug": "",
+    "slug": "mabef-m02-studio-easel",
     "variants": Array [
       Object {
         "id": "T_4",
@@ -114,7 +114,7 @@ Array [
         "name": "box size",
       },
     ],
-    "slug": "",
+    "slug": "giotto-mega-pencils",
     "variants": Array [
       Object {
         "id": "T_5",
@@ -168,7 +168,7 @@ Array [
         "name": "colour",
       },
     ],
-    "slug": "",
+    "slug": "artists-smock",
     "variants": Array [
       Object {
         "id": "T_7",
