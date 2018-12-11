@@ -15,6 +15,7 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -31,6 +32,7 @@ export class ProductVariantService {
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
+        private assetUpdater: AssetUpdater,
         private translatableSaver: TranslatableSaver,
     ) {}
 
@@ -53,7 +55,14 @@ export class ProductVariantService {
                 where: {
                     product: { id: productId } as any,
                 },
-                relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
+                relations: [
+                    'options',
+                    'facetValues',
+                    'facetValues.facet',
+                    'taxCategory',
+                    'assets',
+                    'featuredAsset',
+                ],
             })
             .then(variants =>
                 variants.map(variant => {
@@ -85,6 +94,7 @@ export class ProductVariantService {
                 }
                 variant.product = product;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
+                await this.assetUpdater.updateEntityAssets(variant, input);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
@@ -108,6 +118,7 @@ export class ProductVariantService {
                 if (input.facetValueIds) {
                     updatedVariant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
+                await this.assetUpdater.updateEntityAssets(updatedVariant, input);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
@@ -116,7 +127,14 @@ export class ProductVariantService {
         });
         const variant = await assertFound(
             this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: ['options', 'facetValues', 'facetValues.facet', 'taxCategory'],
+                relations: [
+                    'options',
+                    'facetValues',
+                    'facetValues.facet',
+                    'taxCategory',
+                    'assets',
+                    'featuredAsset',
+                ],
             }),
         );
         return translateDeep(this.applyChannelPriceAndTax(variant, ctx), DEFAULT_LANGUAGE_CODE, [

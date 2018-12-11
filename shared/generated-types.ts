@@ -340,6 +340,8 @@ export interface ProductVariant extends Node {
     languageCode: LanguageCode;
     sku: string;
     name: string;
+    featuredAsset?: Asset | null;
+    assets: Asset[];
     price: number;
     priceIncludesTax: boolean;
     priceWithTax: number;
@@ -1278,6 +1280,8 @@ export interface UpdateProductVariantInput {
     sku?: string | null;
     taxCategoryId?: string | null;
     price?: number | null;
+    featuredAssetId?: string | null;
+    assetIds?: string[] | null;
     customFields?: Json | null;
 }
 
@@ -1380,6 +1384,8 @@ export interface CreateProductVariantInput {
     price?: number | null;
     taxCategoryId: string;
     optionCodes?: string[] | null;
+    featuredAssetId?: string | null;
+    assetIds?: string[] | null;
     customFields?: Json | null;
 }
 
@@ -3125,6 +3131,8 @@ export namespace ProductVariantResolvers {
         languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
         sku?: SkuResolver<string, any, Context>;
         name?: NameResolver<string, any, Context>;
+        featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
+        assets?: AssetsResolver<Asset[], any, Context>;
         price?: PriceResolver<number, any, Context>;
         priceIncludesTax?: PriceIncludesTaxResolver<boolean, any, Context>;
         priceWithTax?: PriceWithTaxResolver<number, any, Context>;
@@ -3146,6 +3154,12 @@ export namespace ProductVariantResolvers {
     >;
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type FeaturedAssetResolver<R = Asset | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type AssetsResolver<R = Asset[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PriceIncludesTaxResolver<R = boolean, Parent = any, Context = any> = Resolver<
         R,

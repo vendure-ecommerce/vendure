@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typ
 
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
+import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
@@ -47,6 +48,13 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
      * Calculated at run-time
      */
     taxRateApplied: TaxRate;
+
+    @ManyToOne(type => Asset)
+    featuredAsset: Asset;
+
+    @ManyToMany(type => Asset)
+    @JoinTable()
+    assets: Asset[];
 
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;

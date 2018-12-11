@@ -14,15 +14,14 @@ import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
+import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep, translateTree } from '../helpers/utils/translate-entity';
 
-import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
@@ -32,7 +31,7 @@ export class ProductCategoryService {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
-        private assetService: AssetService,
+        private assetUpdater: AssetUpdater,
         private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
@@ -115,9 +114,9 @@ export class ProductCategoryService {
                 if (input.facetValueIds) {
                     category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
+                await this.assetUpdater.updateEntityAssets(category, input);
             },
         });
-        await this.saveAssetInputs(productCategory, input);
         return assertFound(this.findOne(ctx, productCategory.id));
     }
 
@@ -133,9 +132,9 @@ export class ProductCategoryService {
                 if (input.facetValueIds) {
                     category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
+                await this.assetUpdater.updateEntityAssets(category, input);
             },
         });
-        await this.saveAssetInputs(productCategory, input);
         return assertFound(this.findOne(ctx, productCategory.id));
     }
 
@@ -179,22 +178,6 @@ export class ProductCategoryService {
 
         await this.connection.getRepository(ProductCategory).save(siblings);
         return assertFound(this.findOne(ctx, input.categoryId));
-    }
-
-    private async saveAssetInputs(productCategory: ProductCategory, input: any) {
-        if (input.assetIds || input.featuredAssetId) {
-            if (input.assetIds) {
-                const assets = await this.assetService.findByIds(input.assetIds);
-                productCategory.assets = assets;
-            }
-            if (input.featuredAssetId) {
-                const featuredAsset = await this.assetService.findOne(input.featuredAssetId);
-                if (featuredAsset) {
-                    productCategory.featuredAsset = featuredAsset;
-                }
-            }
-            await this.connection.manager.save(productCategory);
-        }
     }
 
     /**

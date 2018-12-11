@@ -12,11 +12,11 @@ import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
+import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
-import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { ProductVariantService } from './product-variant.service';
 import { TaxRateService } from './tax-rate.service';
@@ -26,7 +26,7 @@ export class ProductService {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
-        private assetService: AssetService,
+        private assetUpdater: AssetUpdater,
         private productVariantService: ProductVariantService,
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
@@ -69,9 +69,9 @@ export class ProductService {
             translationType: ProductTranslation,
             beforeSave: async p => {
                 this.channelService.assignToChannels(p, ctx);
+                await this.assetUpdater.updateEntityAssets(p, input);
             },
         });
-        await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -80,8 +80,10 @@ export class ProductService {
             input,
             entityType: Product,
             translationType: ProductTranslation,
+            beforeSave: async p => {
+                await this.assetUpdater.updateEntityAssets(p, input);
+            },
         });
-        await this.saveAssetInputs(product, input);
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -116,22 +118,6 @@ export class ProductService {
 
         await this.connection.manager.save(product);
         return assertFound(this.findOne(ctx, productId));
-    }
-
-    private async saveAssetInputs(product: Product, input: CreateProductInput | UpdateProductInput) {
-        if (input.assetIds || input.featuredAssetId) {
-            if (input.assetIds) {
-                const assets = await this.assetService.findByIds(input.assetIds);
-                product.assets = assets;
-            }
-            if (input.featuredAssetId) {
-                const featuredAsset = await this.assetService.findOne(input.featuredAssetId);
-                if (featuredAsset) {
-                    product.featuredAsset = featuredAsset;
-                }
-            }
-            await this.connection.manager.save(product);
-        }
     }
 
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {

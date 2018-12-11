@@ -5,6 +5,8 @@ type ProductVariant implements Node {
     languageCode: LanguageCode!
     sku: String!
     name: String!
+    featuredAsset: Asset
+    assets: [Asset!]!
     price: Int!
     priceIncludesTax: Boolean!
     priceWithTax: Int!
@@ -35,6 +37,8 @@ input CreateProductVariantInput {
     price: Int
     taxCategoryId: ID!
     optionCodes: [String!]
+    featuredAssetId: ID
+    assetIds: [ID!]
 }
 
 input UpdateProductVariantInput {
@@ -44,4 +48,6 @@ input UpdateProductVariantInput {
     sku: String
     taxCategoryId: ID
     price: Int
+    featuredAssetId: ID
+    assetIds: [ID!]
 }

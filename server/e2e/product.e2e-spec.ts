@@ -472,6 +472,29 @@ describe('Product resolver', () => {
                 expect(updatedVariant.price).toBe(432);
             });
 
+            it('updateProductVariants updates assets', async () => {
+                const firstVariant = variants[0];
+                const result = await client.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            assetIds: ['T_1', 'T_2'],
+                            featuredAssetId: 'T_2',
+                        },
+                    ],
+                });
+                const updatedVariant = result.updateProductVariants[0];
+                if (!updatedVariant) {
+                    fail('no updated variant returned.');
+                    return;
+                }
+                expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
+                expect(updatedVariant.featuredAsset!.id).toBe('T_2');
+            });
+
             it('updateProductVariants updates taxCategory and priceBeforeTax', async () => {
                 const firstVariant = variants[0];
                 const result = await client.query<

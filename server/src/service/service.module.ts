@@ -5,6 +5,7 @@ import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 
+import { AssetUpdater } from './helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
@@ -82,6 +83,7 @@ const exportedProviders = [
         OrderMerger,
         ListQueryBuilder,
         ShippingCalculator,
+        AssetUpdater,
     ],
     exports: exportedProviders,
 })
