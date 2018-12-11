@@ -36,6 +36,14 @@
         align-items: center;
     }
 
+    .row {
+        display: flex;
+    }
+
+    .assets {
+        margin-right: 12px;
+    }
+
     .details {
         display: flex;
         margin-bottom: 24px;

@@ -20,7 +20,11 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                [disabled]="(productForm.invalid || productForm.pristine) && !assetsChanged()"
+                [disabled]="
+                    (productForm.invalid || productForm.pristine) &&
+                    !assetsChanged() &&
+                    !variantAssetsChanged()
+                "
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -104,6 +108,7 @@
                             [facets]="facets$ | async"
                             [productVariantsFormArray]="productForm.get('variants')"
                             [taxCategories]="taxCategories$ | async"
+                            (assetChange)="variantAssetChange($event)"
                             #productVariantsList
                         >
                             <button

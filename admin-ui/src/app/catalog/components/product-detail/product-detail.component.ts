@@ -25,6 +25,7 @@ import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
+import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
 
 export type TabName = 'details' | 'variants';
 export interface VariantFormValue {
@@ -35,6 +36,11 @@ export interface VariantFormValue {
     priceWithTax: number;
     taxCategoryId: string;
     facetValueIds: string[];
+}
+
+export interface SelectedAssets {
+    assetIds?: string[];
+    featuredAssetId?: string;
 }
 
 @Component({
@@ -52,7 +58,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     productForm: FormGroup;
-    assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    assetChanges: SelectedAssets = {};
+    variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
 
     constructor(
@@ -110,6 +117,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
+    }
+
+    variantAssetsChanged(): boolean {
+        return !!Object.keys(this.variantAssetChanges).length;
+    }
+
+    variantAssetChange(event: VariantAssetChange) {
+        this.variantAssetChanges[event.variantId] = event;
     }
 
     /**
@@ -193,6 +208,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         entity: 'Product',
                     });
                     this.assetChanges = {};
+                    this.variantAssetChanges = {};
                     this.productForm.markAsPristine();
                     this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
                 },
@@ -223,7 +239,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         }
                     }
                     const variantsArray = this.productForm.get('variants');
-                    if (variantsArray && variantsArray.dirty) {
+                    if ((variantsArray && variantsArray.dirty) || this.variantAssetsChanged()) {
                         const newVariants = this.getUpdatedProductVariants(
                             product,
                             variantsArray as FormArray,
@@ -239,6 +255,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 () => {
                     this.productForm.markAsPristine();
                     this.assetChanges = {};
+                    this.variantAssetChanges = {};
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Product',
                     });
@@ -364,6 +381,11 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 });
                 result.taxCategoryId = formValue.taxCategoryId;
                 result.facetValueIds = formValue.facetValueIds;
+                const assetChanges = this.variantAssetChanges[variant.id];
+                if (assetChanges) {
+                    result.featuredAssetId = assetChanges.featuredAssetId;
+                    result.assetIds = assetChanges.assetIds;
+                }
                 return result;
             })
             .filter(notNullOrUndefined);

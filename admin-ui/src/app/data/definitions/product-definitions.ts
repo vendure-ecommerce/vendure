@@ -45,12 +45,19 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
                 name
             }
         }
+        featuredAsset {
+            ...Asset
+        }
+        assets {
+            ...Asset
+        }
         translations {
             id
             languageCode
             name
         }
     }
+    ${ASSET_FRAGMENT}
 `;
 
 export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`

@@ -6259,6 +6259,8 @@ export namespace ProductVariant {
         sku: string;
         options: Options[];
         facetValues: FacetValues[];
+        featuredAsset?: FeaturedAsset | null;
+        assets: Assets[];
         translations: Translations[];
     };
 
@@ -6296,6 +6298,10 @@ export namespace ProductVariant {
         id: string;
         name: string;
     };
+
+    export type FeaturedAsset = Asset.Fragment;
+
+    export type Assets = Asset.Fragment;
 
     export type Translations = {
         __typename?: 'ProductVariantTranslation';

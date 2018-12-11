@@ -3,6 +3,9 @@
 :host {
     width: 340px;
     display: block;
+    &.compact {
+        width: 150px;
+    }
 }
 
 .placeholder {
@@ -14,6 +17,20 @@
     text-align: center;
     background: $color-grey-2;
     padding: 6px;
+
+    &.compact {
+        width: 150px;
+        min-height: 60px;
+        padding: 0;
+        position: relative;
+    }
+
+    .compact-select {
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        margin: 0;
+    }
 }
 
 .all-assets {

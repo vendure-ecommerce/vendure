@@ -2,10 +2,12 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
+    Output,
     SimpleChanges,
 } from '@angular/core';
 import { FormArray } from '@angular/forms';
@@ -14,7 +16,12 @@ import { FacetValue, FacetWithValues, ProductWithVariants, TaxCategory } from 's
 import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
+import { AssetChange } from '../product-assets/product-assets.component';
 import { VariantFormValue } from '../product-detail/product-detail.component';
+
+export interface VariantAssetChange extends AssetChange {
+    variantId: string;
+}
 
 @Component({
     selector: 'vdr-product-variants-list',
@@ -27,6 +34,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() variants: ProductWithVariants.Variants[];
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
+    @Output() assetChange = new EventEmitter<VariantAssetChange>();
     selectedVariantIds: string[] = [];
     private facetValues: FacetValue.Fragment[];
     private formSubscription: Subscription;
@@ -53,6 +61,15 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
 
     areAllSelected(): boolean {
         return !!this.variants && this.selectedVariantIds.length === this.variants.length;
+    }
+
+    onAssetChange(variantId: string, event: AssetChange) {
+        this.assetChange.emit({
+            variantId,
+            ...event,
+        });
+        const index = this.variants.findIndex(v => v.id === variantId);
+        this.formArray.at(index).markAsDirty();
     }
 
     toggleSelectAll() {

@@ -3,6 +3,7 @@ import {
     ChangeDetectorRef,
     Component,
     EventEmitter,
+    HostBinding,
     Input,
     Output,
 } from '@angular/core';
@@ -11,6 +12,11 @@ import { unique } from 'shared/unique';
 
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
+
+export interface AssetChange {
+    assetIds: string[];
+    featuredAssetId: string | undefined;
+}
 
 /**
  * A component which displays the Assets associated with a product, and allows assets to be removed and
@@ -25,13 +31,20 @@ import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-
 export class ProductAssetsComponent {
     @Input() assets: Asset[] = [];
     @Input() featuredAsset: Asset | undefined;
-    @Output() change = new EventEmitter<{ assetIds: string[]; featuredAssetId: string | undefined }>();
+    @HostBinding('class.compact')
+    @Input()
+    compact = false;
+    @Output() change = new EventEmitter<AssetChange>();
 
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
     nonFeaturedAssets(): Asset[] {
         const featuredAssetId = this.featuredAsset && this.featuredAsset.id;
         return this.assets.filter(a => a.id !== featuredAssetId);
+    }
+
+    getAssetList(): Asset[] {
+        return this.compact ? this.nonFeaturedAssets() : this.assets;
     }
 
     selectAssets() {

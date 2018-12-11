@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" *ngIf="!compact; else: compactView">
     <div class="card-img">
         <div class="featured-asset">
             <img *ngIf="featuredAsset" [src]="featuredAsset!.preview + '?preset=small'" />
@@ -8,42 +8,7 @@
             </div>
         </div>
     </div>
-    <div class="card-block">
-        <div class="all-assets">
-            <ng-container *ngFor="let asset of assets">
-                <clr-dropdown>
-                    <div
-                        class="asset-thumb"
-                        clrDropdownTrigger
-                        [class.featured]="isFeatured(asset)"
-                        [title]=""
-                        tabindex="0"
-                    >
-                        <img [src]="asset.preview + '?preset=tiny'" />
-                    </div>
-                    <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-                        <button
-                            type="button"
-                            [disabled]="isFeatured(asset)"
-                            clrDropdownItem
-                            (click)="setAsFeatured(asset)"
-                        >
-                            {{ 'catalog.set-as-featured-asset' | translate }}
-                        </button>
-                        <div class="dropdown-divider"></div>
-                        <button
-                            type="button"
-                            class="remove-asset"
-                            clrDropdownItem
-                            (click)="removeAsset(asset)"
-                        >
-                            {{ 'catalog.remove-asset' | translate }}
-                        </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
-            </ng-container>
-        </div>
-    </div>
+    <div class="card-block"><ng-container *ngTemplateOutlet="assetList"></ng-container></div>
     <div class="card-footer">
         <button class="btn" (click)="selectAssets()">
             <clr-icon shape="attachment"></clr-icon>
@@ -51,3 +16,59 @@
         </button>
     </div>
 </div>
+
+<ng-template #compactView>
+    <div class="featured-asset compact">
+        <clr-dropdown *ngIf="featuredAsset">
+            <img clrDropdownTrigger [src]="featuredAsset!.preview + '?preset=thumb'" />
+            <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                <button
+                    type="button"
+                    class="remove-asset"
+                    clrDropdownItem
+                    (click)="removeAsset(featuredAsset)"
+                >
+                    {{ 'catalog.remove-asset' | translate }}
+                </button>
+            </clr-dropdown-menu>
+        </clr-dropdown>
+
+        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="64"></clr-icon></div>
+        <button class="compact-select btn btn-icon btn-sm" (click)="selectAssets()">
+            <clr-icon shape="attachment"></clr-icon>
+        </button>
+    </div>
+    <ng-container *ngTemplateOutlet="assetList"></ng-container>
+</ng-template>
+
+<ng-template #assetList>
+    <div class="all-assets">
+        <ng-container *ngFor="let asset of getAssetList()">
+            <clr-dropdown>
+                <div
+                    class="asset-thumb"
+                    clrDropdownTrigger
+                    [class.featured]="isFeatured(asset)"
+                    [title]=""
+                    tabindex="0"
+                >
+                    <img [src]="asset.preview + '?preset=tiny'" />
+                </div>
+                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                    <button
+                        type="button"
+                        [disabled]="isFeatured(asset)"
+                        clrDropdownItem
+                        (click)="setAsFeatured(asset)"
+                    >
+                        {{ 'catalog.set-as-featured-asset' | translate }}
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button type="button" class="remove-asset" clrDropdownItem (click)="removeAsset(asset)">
+                        {{ 'catalog.remove-asset' | translate }}
+                    </button>
+                </clr-dropdown-menu>
+            </clr-dropdown>
+        </ng-container>
+    </div>
+</ng-template>
