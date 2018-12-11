@@ -127,8 +127,10 @@ export class Importer {
             }
 
             for (const variant of variants) {
-                // TODO: implement Assets for ProductVariants
+                const variantAssets = await this.createAssets(variant.assetPaths);
                 await this.productVariantService.create(ctx, createdProduct, {
+                    featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
+                    assetIds: variantAssets.map(a => a.id) as string[],
                     sku: variant.sku,
                     taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
                     optionCodes: variant.optionValues.map(v => normalizeString(v, '-')),

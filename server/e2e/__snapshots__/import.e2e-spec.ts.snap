@@ -30,6 +30,8 @@ Array [
     "slug": "perfect-paper-stretcher",
     "variants": Array [
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_1",
         "name": "Perfect Paper Stretcher Half Imperial",
         "options": Array [
@@ -46,6 +48,8 @@ Array [
         },
       },
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_2",
         "name": "Perfect Paper Stretcher Quarter Imperial",
         "options": Array [
@@ -62,6 +66,8 @@ Array [
         },
       },
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_3",
         "name": "Perfect Paper Stretcher Full Imperial",
         "options": Array [
@@ -89,6 +95,8 @@ Array [
     "slug": "mabef-m02-studio-easel",
     "variants": Array [
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_4",
         "name": "Mabef M/02 Studio Easel",
         "options": Array [],
@@ -117,6 +125,16 @@ Array [
     "slug": "giotto-mega-pencils",
     "variants": Array [
       Object {
+        "assets": Array [
+          Object {
+            "id": "T_8",
+            "name": "box-of-8.jpg",
+          },
+        ],
+        "featuredAsset": Object {
+          "id": "T_8",
+          "name": "box-of-8.jpg",
+        },
         "id": "T_5",
         "name": "Giotto Mega Pencils Box of 8",
         "options": Array [
@@ -133,6 +151,16 @@ Array [
         },
       },
       Object {
+        "assets": Array [
+          Object {
+            "id": "T_9",
+            "name": "box-of-12.jpg",
+          },
+        ],
+        "featuredAsset": Object {
+          "id": "T_9",
+          "name": "box-of-12.jpg",
+        },
         "id": "T_6",
         "name": "Giotto Mega Pencils Box of 12",
         "options": Array [
@@ -171,6 +199,8 @@ Array [
     "slug": "artists-smock",
     "variants": Array [
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_7",
         "name": "Artists Smock small beige",
         "options": Array [
@@ -195,6 +225,8 @@ Array [
         },
       },
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_8",
         "name": "Artists Smock large beige",
         "options": Array [
@@ -219,6 +251,8 @@ Array [
         },
       },
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_9",
         "name": "Artists Smock small navy",
         "options": Array [
@@ -243,6 +277,8 @@ Array [
         },
       },
       Object {
+        "assets": Array [],
+        "featuredAsset": null,
         "id": "T_10",
         "name": "Artists Smock large navy",
         "options": Array [

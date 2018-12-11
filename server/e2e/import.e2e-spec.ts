@@ -77,6 +77,14 @@ describe('Import resolver', () => {
                                     id
                                     code
                                 }
+                                assets {
+                                    id
+                                    name
+                                }
+                                featuredAsset {
+                                    id
+                                    name
+                                }
                             }
                         }
                     }
