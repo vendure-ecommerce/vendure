@@ -4,5 +4,6 @@ type Mutation {
 
 type ImportInfo {
     errors: [String!]
-    importedCount: Int!
+    processed: Int!
+    imported: Int!
 }

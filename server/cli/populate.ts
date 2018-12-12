@@ -1,6 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as ProgressBar from 'progress';
+import { tap } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
 import { logColored } from './cli-utils';
@@ -22,7 +24,7 @@ export async function populate() {
 }
 
 export async function importProducts(csvPath: string, languageCode: string) {
-    logColored(`\nImporting from "${csvPath}"... (this may take a minute or two)\n`);
+    logColored(`\nImporting from "${csvPath}"...\n`);
     const app = await getApplicationRef();
     if (app) {
         await importProductsFromFile(app, csvPath, languageCode);
@@ -76,6 +78,7 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     }
 
     const config = index.config;
+    config.silent = true;
     const { bootstrap } = require('vendure');
     console.log('Bootstrapping Vendure server...');
     const app = await bootstrap(config);
@@ -100,18 +103,37 @@ async function populateProducts(app: INestApplication, initialData: any) {
     // import the csv of same product data
     const sampleProductsFile = path.join(__dirname, 'assets', 'sample-products.csv');
     await importProductsFromFile(app, sampleProductsFile, initialData.defaultLanguage);
-    await fs.emptyDir(destination);
 }
 
 async function importProductsFromFile(app: INestApplication, csvPath: string, languageCode: string) {
     // import the csv of same product data
     const importer = app.get(Importer);
     const productData = await fs.readFile(csvPath, 'utf-8');
-    const importResult = await importer.parseAndImport(productData, languageCode);
+    let bar: ProgressBar | undefined;
+
+    const importResult = await importer
+        .parseAndImport(productData, languageCode)
+        .pipe(
+            tap((progress: any) => {
+                if (!bar) {
+                    bar = new ProgressBar('  importing [:bar] :percent :etas  Importing: :prodName', {
+                        complete: '=',
+                        incomplete: ' ',
+                        total: progress.processed,
+                        width: 40,
+                    });
+                }
+                bar.tick({ prodName: progress.currentProduct });
+            }),
+        )
+        .toPromise();
     if (importResult.errors.length) {
-        console.error(`Error encountered when importing product data:`);
-        console.error(importResult.errors.join('\n'));
-    } else {
-        console.log(`Imported ${importResult.importedCount} products`);
+        const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
+        console.log(
+            `${importResult.errors.length} errors encountered when importing product data. See: ${errorFile}`,
+        );
+        await fs.writeFile(errorFile, importResult.errors.join('\n'));
     }
+
+    logColored(`\nImported ${importResult.imported} products`);
 }

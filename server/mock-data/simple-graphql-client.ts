@@ -73,7 +73,8 @@ export class SimpleGraphQLClient {
             mutation: gql`
                 mutation ImportProducts($csvFile: Upload!) {
                     importProducts(csvFile: $csvFile) {
-                        importedCount
+                        imported
+                        processed
                         errors
                     }
                 }

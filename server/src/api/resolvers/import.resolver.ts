@@ -17,6 +17,6 @@ export class ImportResolver {
         @Args() args: ImportProductsMutationArgs,
     ): Promise<ImportInfo> {
         const { stream, filename, mimetype, encoding } = await args.csvFile;
-        return this.importer.parseAndImport(stream, ctx);
+        return this.importer.parseAndImport(stream, ctx).toPromise();
     }
 }

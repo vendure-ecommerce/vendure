@@ -354,6 +354,13 @@
     "@types/events" "*"
     "@types/node" "*"
 
+"@types/progress@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/progress/-/progress-2.0.1.tgz#af866001a836dbd28a6656e4b335d333bad7faf2"
+  integrity sha512-1Smw4LvkCM4zgie7Zo/GtzrMx1Zlq1XVfPoOBXPLIkmtep06wBE7sXupVDq7MXWrHCYtsM0d6i5eF6OM+LJJrQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/prompts@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/prompts/-/prompts-1.1.1.tgz#5688abfa6a95ddfe808f8ae5337e86e5cf8f3147"
@@ -5493,6 +5500,11 @@ process-nextick-args@^1.0.7:
 process-nextick-args@^2.0.0, process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
+
+progress@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
+  integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
 prompts@^0.1.9:
   version "0.1.11"

@@ -41,7 +41,8 @@ describe('Import resolver', () => {
         expect(result.importProducts.errors).toEqual([
             'Invalid Record Length: header length is 10, got 1 on line 8',
         ]);
-        expect(result.importProducts.importedCount).toBe(4);
+        expect(result.importProducts.imported).toBe(4);
+        expect(result.importProducts.processed).toBe(4);
 
         const productResult = await client.query(
             gql`
