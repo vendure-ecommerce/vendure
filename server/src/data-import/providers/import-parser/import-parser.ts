@@ -44,6 +44,7 @@ export interface ParsedProductWithVariants {
 export interface ParseResult<T> {
     results: T[];
     errors: string[];
+    processed: number;
 }
 
 const requiredColumns: Array<keyof RawProductRecord> = [
@@ -80,9 +81,9 @@ export class ImportParser {
                     if (records) {
                         const parseResult = this.processRawRecords(records);
                         errors = errors.concat(parseResult.errors);
-                        resolve({ results: parseResult.results, errors });
+                        resolve({ results: parseResult.results, errors, processed: parseResult.processed });
                     } else {
-                        resolve({ results: [], errors });
+                        resolve({ results: [], errors, processed: 0 });
                     }
                 });
             } else {
@@ -101,7 +102,7 @@ export class ImportParser {
                 parser.on('end', () => {
                     const parseResult = this.processRawRecords(records);
                     errors = errors.concat(parseResult.errors);
-                    resolve({ results: parseResult.results, errors });
+                    resolve({ results: parseResult.results, errors, processed: parseResult.processed });
                 });
             }
         });
@@ -111,13 +112,15 @@ export class ImportParser {
         const results: ParsedProductWithVariants[] = [];
         const errors: string[] = [];
         let currentRow: ParsedProductWithVariants | undefined;
-        const headerRow = records.shift() as string[];
+        const headerRow = records[0];
+        const rest = records.slice(1);
+        const totalProducts = rest.map(row => row[0]).filter(name => name.trim() !== '').length;
         const columnError = validateRequiredColumns(headerRow);
         if (columnError) {
-            return { results: [], errors: [columnError] };
+            return { results: [], errors: [columnError], processed: 0 };
         }
         let line = 1;
-        for (const record of records) {
+        for (const record of rest) {
             line++;
             const columnCountError = validateColumnCount(headerRow, record);
             if (columnCountError) {
@@ -148,7 +151,7 @@ export class ImportParser {
             populateOptionGroupValues(currentRow);
             results.push(currentRow);
         }
-        return { results, errors };
+        return { results, errors, processed: totalProducts };
     }
 }
 
@@ -231,7 +234,7 @@ function parseNumber(input?: string): number {
     return +(input || '').trim();
 }
 
-function parseStringArray(input?: string, separator = ','): string[] {
+function parseStringArray(input?: string, separator = '|'): string[] {
     return (input || '')
         .trim()
         .split(separator)
