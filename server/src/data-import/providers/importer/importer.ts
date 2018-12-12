@@ -38,25 +38,13 @@ export class Importer {
         input: string | Stream,
         ctxOrLanguageCode: RequestContext | LanguageCode,
     ): Promise<ImportInfo> {
-        let ctx: RequestContext;
-        if (ctxOrLanguageCode instanceof RequestContext) {
-            ctx = ctxOrLanguageCode;
-        } else {
-            const channel = await this.channelService.getDefaultChannel();
-            ctx = new RequestContext({
-                isAuthorized: true,
-                authorizedAsOwnerOnly: false,
-                channel,
-                languageCode: ctxOrLanguageCode,
-            });
-        }
-
+        const ctx = await this.getRequestContext(ctxOrLanguageCode);
         const parsed = await this.importParser.parseProducts(input);
         if (parsed && parsed.results.length) {
             try {
-                const result = await this.importProducts(ctx, parsed.results);
+                const importErrors = await this.importProducts(ctx, parsed.results);
                 return {
-                    errors: parsed.errors,
+                    errors: parsed.errors.concat(importErrors),
                     importedCount: parsed.results.length,
                 };
             } catch (err) {
@@ -73,11 +61,35 @@ export class Importer {
         }
     }
 
-    private async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[]) {
+    private async getRequestContext(
+        ctxOrLanguageCode: RequestContext | LanguageCode,
+    ): Promise<RequestContext> {
+        if (ctxOrLanguageCode instanceof RequestContext) {
+            return ctxOrLanguageCode;
+        } else {
+            const channel = await this.channelService.getDefaultChannel();
+            return new RequestContext({
+                isAuthorized: true,
+                authorizedAsOwnerOnly: false,
+                channel,
+                languageCode: ctxOrLanguageCode,
+            });
+        }
+    }
+
+    /**
+     * Imports the products specified in the rows object. Return an array of error messages.
+     */
+    private async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[]): Promise<string[]> {
+        let errors: string[] = [];
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll();
         for (const { product, variants } of rows) {
-            const productAssets = await this.createAssets(product.assetPaths);
+            const createProductAssets = await this.createAssets(product.assetPaths);
+            const productAssets = createProductAssets.assets;
+            if (createProductAssets.errors.length) {
+                errors = errors.concat(createProductAssets.errors);
+            }
             const createdProduct = await this.productService.create(ctx, {
                 featuredAssetId: productAssets.length ? (productAssets[0].id as string) : undefined,
                 assetIds: productAssets.map(a => a.id) as string[],
@@ -118,7 +130,11 @@ export class Importer {
             }
 
             for (const variant of variants) {
-                const variantAssets = await this.createAssets(variant.assetPaths);
+                const createVariantAssets = await this.createAssets(variant.assetPaths);
+                const variantAssets = createVariantAssets.assets;
+                if (createVariantAssets.errors.length) {
+                    errors = errors.concat(createVariantAssets.errors);
+                }
                 await this.productVariantService.create(ctx, createdProduct, {
                     featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
                     assetIds: variantAssets.map(a => a.id) as string[],
@@ -135,18 +151,28 @@ export class Importer {
                 });
             }
         }
+        return errors;
     }
 
-    private async createAssets(assetPaths: string[]): Promise<Asset[]> {
+    private async createAssets(assetPaths: string[]): Promise<{ assets: Asset[]; errors: string[] }> {
         const assets: Asset[] = [];
+        const errors: string[] = [];
         const { importAssetsDir } = this.configService.importExportOptions;
         for (const assetPath of assetPaths) {
             const filename = path.join(importAssetsDir, assetPath);
-            const stream = fs.createReadStream(filename);
-            const asset = await this.assetService.createFromFileStream(stream);
-            assets.push(asset);
+            if (fs.existsSync(filename)) {
+                try {
+                    const stream = fs.createReadStream(filename);
+                    const asset = await this.assetService.createFromFileStream(stream);
+                    assets.push(asset);
+                } catch (err) {
+                    errors.push(err.toString());
+                }
+            } else {
+                errors.push(`File "${filename}" does not exist`);
+            }
         }
-        return assets;
+        return { assets, errors };
     }
 
     /**

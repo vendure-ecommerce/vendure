@@ -4,7 +4,7 @@
  * Based on https://stackoverflow.com/a/37511463/772859
  */
 export function normalizeString(input: string, spaceReplacer = ' '): string {
-    return input
+    return (input || '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()

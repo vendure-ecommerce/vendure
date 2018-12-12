@@ -17,7 +17,7 @@ export class ProductOptionGroup extends VendureEntity implements Translatable, H
 
     name: LocaleString;
 
-    @Column({ unique: true })
+    @Column()
     code: string;
 
     @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
