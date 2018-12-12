@@ -215,6 +215,10 @@ export interface VendureConfig {
      */
     port: number;
     /**
+     * When set to true, no application logging will be output to the console.
+     */
+    silent?: boolean;
+    /**
      * Configuration for authorization.
      */
     authOptions: AuthOptions;

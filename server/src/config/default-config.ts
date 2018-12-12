@@ -29,6 +29,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         origin: true,
         credentials: true,
     },
+    silent: false,
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',

@@ -50,7 +50,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.middleware.push({
-            handler: this.createProxyHandler(),
+            handler: this.createProxyHandler(!config.silent),
             route: this.options.route,
         });
         return config;
@@ -115,13 +115,14 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
      * Configures the proxy middleware which will be passed to the main Vendure server. This
      * will proxy all asset requests to the dedicated asset server.
      */
-    private createProxyHandler() {
+    private createProxyHandler(logging: boolean) {
         const route = this.options.route.charAt(0) === '/' ? this.options.route : '/' + this.options.route;
         return proxy({
             target: `${this.options.hostname}:${this.options.port}`,
             pathRewrite: {
                 [`^${route}`]: '/',
             },
+            logLevel: logging ? 'info' : 'silent',
         });
     }
 

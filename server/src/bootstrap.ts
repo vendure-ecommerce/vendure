@@ -22,7 +22,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
-    const app = await NestFactory.create(appModule.AppModule, { cors: config.cors });
+    const app = await NestFactory.create(appModule.AppModule, {
+        cors: config.cors,
+        logger: config.silent ? false : undefined,
+    });
     await app.listen(config.port);
     return app;
 }
