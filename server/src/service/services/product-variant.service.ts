@@ -86,10 +86,10 @@ export class ProductVariantService {
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async variant => {
-                const { optionCodes } = input;
-                if (optionCodes && optionCodes.length) {
+                const { optionIds } = input;
+                if (optionIds && optionIds.length) {
                     const options = await this.connection.getRepository(ProductOption).find();
-                    const selectedOptions = options.filter(og => optionCodes.includes(og.code));
+                    const selectedOptions = options.filter(og => optionIds.includes(og.id as string));
                     variant.options = selectedOptions;
                 }
                 variant.product = product;
@@ -174,7 +174,7 @@ export class ProductVariantService {
             const variant = await this.create(ctx, product, {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
-                optionCodes: options.map(o => o.code),
+                optionIds: options.map(o => o.id) as string[],
                 taxCategoryId,
                 translations: [
                     {

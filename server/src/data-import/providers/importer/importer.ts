@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { Observable } from 'rxjs';
 import { Stream } from 'stream';
 
 import { ImportInfo, LanguageCode } from '../../../../../shared/generated-types';
@@ -18,6 +19,11 @@ import { ProductService } from '../../../service/services/product.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import { ImportParser, ParsedProductWithVariants } from '../import-parser/import-parser';
 
+export interface ImportProgress extends ImportInfo {
+    currentProduct: string;
+}
+export type OnProgressFn = (progess: ImportProgress) => void;
+
 @Injectable()
 export class Importer {
     private taxCategoryMatches: { [name: string]: string } = {};
@@ -34,29 +40,52 @@ export class Importer {
         private productOptionService: ProductOptionService,
     ) {}
 
-    async parseAndImport(
+    parseAndImport(
         input: string | Stream,
         ctxOrLanguageCode: RequestContext | LanguageCode,
+    ): Observable<ImportProgress> {
+        return new Observable(subscriber => {
+            const p = this.doParseAndImport(input, ctxOrLanguageCode, progress => {
+                subscriber.next(progress);
+            }).then(value => {
+                subscriber.next({ ...value, currentProduct: 'Complete' });
+                subscriber.complete();
+            });
+        });
+    }
+
+    private async doParseAndImport(
+        input: string | Stream,
+        ctxOrLanguageCode: RequestContext | LanguageCode,
+        onProgress: OnProgressFn,
     ): Promise<ImportInfo> {
         const ctx = await this.getRequestContext(ctxOrLanguageCode);
         const parsed = await this.importParser.parseProducts(input);
         if (parsed && parsed.results.length) {
             try {
-                const importErrors = await this.importProducts(ctx, parsed.results);
+                const importErrors = await this.importProducts(ctx, parsed.results, progess => {
+                    onProgress({
+                        ...progess,
+                        processed: parsed.processed,
+                    });
+                });
                 return {
                     errors: parsed.errors.concat(importErrors),
-                    importedCount: parsed.results.length,
+                    imported: parsed.results.length,
+                    processed: parsed.processed,
                 };
             } catch (err) {
                 return {
                     errors: [err.message],
-                    importedCount: 0,
+                    imported: 0,
+                    processed: parsed.processed,
                 };
             }
         } else {
             return {
                 errors: ['nothing to parse!'],
-                importedCount: 0,
+                imported: 0,
+                processed: parsed.processed,
             };
         }
     }
@@ -80,8 +109,13 @@ export class Importer {
     /**
      * Imports the products specified in the rows object. Return an array of error messages.
      */
-    private async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[]): Promise<string[]> {
+    private async importProducts(
+        ctx: RequestContext,
+        rows: ParsedProductWithVariants[],
+        onProgress: OnProgressFn,
+    ): Promise<string[]> {
         let errors: string[] = [];
+        let imported = 0;
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll();
         for (const { product, variants } of rows) {
@@ -103,6 +137,7 @@ export class Importer {
                 ],
             });
 
+            const optionsMap: { [optionName: string]: string } = {};
             for (const optionGroup of product.optionGroups) {
                 const code = normalizeString(`${product.name}-${optionGroup.name}`, '-');
                 const group = await this.productOptionGroupService.create({
@@ -116,7 +151,7 @@ export class Importer {
                     ],
                 });
                 for (const option of optionGroup.values) {
-                    await this.productOptionService.create(group, {
+                    const createdOption = await this.productOptionService.create(group, {
                         code: normalizeString(option, '-'),
                         translations: [
                             {
@@ -125,6 +160,7 @@ export class Importer {
                             },
                         ],
                     });
+                    optionsMap[option] = createdOption.id as string;
                 }
                 await this.productService.addOptionGroupToProduct(ctx, createdProduct.id, group.id);
             }
@@ -140,7 +176,7 @@ export class Importer {
                     assetIds: variantAssets.map(a => a.id) as string[],
                     sku: variant.sku,
                     taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
-                    optionCodes: variant.optionValues.map(v => normalizeString(v, '-')),
+                    optionIds: variant.optionValues.map(v => optionsMap[v]),
                     translations: [
                         {
                             languageCode,
@@ -150,6 +186,13 @@ export class Importer {
                     price: Math.round(variant.price * 100),
                 });
             }
+            imported++;
+            onProgress({
+                processed: 0,
+                imported,
+                errors,
+                currentProduct: product.name,
+            });
         }
         return errors;
     }

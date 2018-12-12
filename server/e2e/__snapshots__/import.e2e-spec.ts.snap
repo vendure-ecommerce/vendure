@@ -206,10 +206,6 @@ Array [
         "options": Array [
           Object {
             "code": "small",
-            "id": "T_1",
-          },
-          Object {
-            "code": "small",
             "id": "T_8",
           },
           Object {
@@ -230,10 +226,6 @@ Array [
         "id": "T_8",
         "name": "Artists Smock large beige",
         "options": Array [
-          Object {
-            "code": "large",
-            "id": "T_2",
-          },
           Object {
             "code": "large",
             "id": "T_9",
@@ -258,10 +250,6 @@ Array [
         "options": Array [
           Object {
             "code": "small",
-            "id": "T_1",
-          },
-          Object {
-            "code": "small",
             "id": "T_8",
           },
           Object {
@@ -282,10 +270,6 @@ Array [
         "id": "T_10",
         "name": "Artists Smock large navy",
         "options": Array [
-          Object {
-            "code": "large",
-            "id": "T_2",
-          },
           Object {
             "code": "large",
             "id": "T_9",
