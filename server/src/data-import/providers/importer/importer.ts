@@ -51,22 +51,13 @@ export class Importer {
             });
         }
 
-        let parsed: ParsedProductWithVariants[];
-        try {
-            parsed = await this.importParser.parseProducts(input);
-        } catch (err) {
-            return {
-                errors: [err.message],
-                importedCount: 0,
-            };
-        }
-
-        if (parsed) {
+        const parsed = await this.importParser.parseProducts(input);
+        if (parsed && parsed.results.length) {
             try {
-                const result = await this.importProducts(ctx, parsed);
+                const result = await this.importProducts(ctx, parsed.results);
                 return {
-                    errors: [],
-                    importedCount: parsed.length,
+                    errors: parsed.errors,
+                    importedCount: parsed.results.length,
                 };
             } catch (err) {
                 return {

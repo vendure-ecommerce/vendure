@@ -38,7 +38,9 @@ describe('Import resolver', () => {
         const csvFile = path.join(__dirname, 'fixtures', 'product-import.csv');
         const result = await client.importProducts(csvFile);
 
-        expect(result.importProducts.errors).toEqual([]);
+        expect(result.importProducts.errors).toEqual([
+            'Invalid Record Length: header length is 10, got 1 on line 8',
+        ]);
         expect(result.importProducts.importedCount).toBe(4);
 
         const productResult = await client.query(

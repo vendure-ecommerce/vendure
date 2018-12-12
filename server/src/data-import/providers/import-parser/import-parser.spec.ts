@@ -11,7 +11,7 @@ describe('ImportParser', () => {
             const input = await loadTestFixture('single-product-single-variant.csv');
             const result = await importParser.parseProducts(input);
 
-            expect(result).toMatchSnapshot();
+            expect(result.results).toMatchSnapshot();
         });
 
         it('single product with a multiple variants', async () => {
@@ -20,7 +20,7 @@ describe('ImportParser', () => {
             const input = await loadTestFixture('single-product-multiple-variants.csv');
             const result = await importParser.parseProducts(input);
 
-            expect(result).toMatchSnapshot();
+            expect(result.results).toMatchSnapshot();
         });
 
         it('multiple products with multiple variants', async () => {
@@ -29,7 +29,7 @@ describe('ImportParser', () => {
             const input = await loadTestFixture('multiple-products-multiple-variants.csv');
             const result = await importParser.parseProducts(input);
 
-            expect(result).toMatchSnapshot();
+            expect(result.results).toMatchSnapshot();
         });
 
         it('works with streamed input', async () => {
@@ -39,36 +39,47 @@ describe('ImportParser', () => {
             const input = fs.createReadStream(filename);
             const result = await importParser.parseProducts(input);
 
-            expect(result).toMatchSnapshot();
+            expect(result.results).toMatchSnapshot();
         });
 
         describe('error conditions', () => {
-            it('throws on invalid option values', async () => {
+            it('reports errors on invalid option values', async () => {
                 const importParser = new ImportParser();
 
                 const input = await loadTestFixture('invalid-option-values.csv');
-                try {
-                    await importParser.parseProducts(input);
-                    fail('should have thrown');
-                } catch (err) {
-                    expect(err.message).toBe(
-                        'The number of optionValues must match the number of optionGroups for the product "Artists Smock"',
-                    );
-                }
+                const result = await importParser.parseProducts(input);
+
+                expect(result.errors).toEqual([
+                    'The number of optionValues must match the number of optionGroups on line 2',
+                    'The number of optionValues must match the number of optionGroups on line 3',
+                    'The number of optionValues must match the number of optionGroups on line 4',
+                    'The number of optionValues must match the number of optionGroups on line 5',
+                ]);
             });
 
-            it('throws on ivalid columns', async () => {
+            it('reports error on ivalid columns', async () => {
                 const importParser = new ImportParser();
 
                 const input = await loadTestFixture('invalid-columns.csv');
-                try {
-                    await importParser.parseProducts(input);
-                    fail('should have thrown');
-                } catch (err) {
-                    expect(err.message).toBe(
-                        'The import file is missing the following columns: "slug", "assets"',
-                    );
-                }
+                const result = await importParser.parseProducts(input);
+
+                expect(result.results).toEqual([]);
+                expect(result.errors).toEqual([
+                    'The import file is missing the following columns: "slug", "assets"',
+                ]);
+            });
+
+            it('reports error on ivalid row length', async () => {
+                const importParser = new ImportParser();
+
+                const input = await loadTestFixture('invalid-row-length.csv');
+                const result = await importParser.parseProducts(input);
+
+                expect(result.errors).toEqual([
+                    'Invalid Record Length: header length is 10, got 8 on line 3',
+                    'Invalid Record Length: header length is 10, got 1 on line 4',
+                ]);
+                expect(result.results.length).toBe(2);
             });
         });
     });
