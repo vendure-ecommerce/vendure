@@ -4,10 +4,7 @@
         [selected]="areAllSelected()"
         (selectedChange)="toggleSelectAll()"
     ></vdr-select-toggle>
-    <ng-container *ngIf="selectedVariantIds.length">
-        <label>{{ 'catalog.with-selected' | translate }}:</label>
-        <ng-content></ng-content>
-    </ng-container>
+    <ng-content></ng-content>
 </div>
 <div class="variants-list">
     <div class="variant-container card" *ngFor="let variant of variants; let i = index">

@@ -61,6 +61,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
+    selectedVariantIds: string[] = [];
 
     constructor(
         route: ActivatedRoute,

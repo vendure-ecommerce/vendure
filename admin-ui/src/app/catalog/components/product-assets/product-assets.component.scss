@@ -4,7 +4,7 @@
     width: 340px;
     display: block;
     &.compact {
-        width: 150px;
+        width: 50px;
     }
 }
 
@@ -19,8 +19,8 @@
     padding: 6px;
 
     &.compact {
-        width: 150px;
-        min-height: 60px;
+        width: 50px;
+        min-height: 40px;
         padding: 0;
         position: relative;
     }

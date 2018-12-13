@@ -20,7 +20,7 @@
 <ng-template #compactView>
     <div class="featured-asset compact">
         <clr-dropdown *ngIf="featuredAsset">
-            <img clrDropdownTrigger [src]="featuredAsset!.preview + '?preset=thumb'" />
+            <img clrDropdownTrigger [src]="featuredAsset!.preview + '?preset=tiny'" />
             <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
                 <button
                     type="button"
@@ -33,7 +33,7 @@
             </clr-dropdown-menu>
         </clr-dropdown>
 
-        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="64"></clr-icon></div>
+        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="48"></clr-icon></div>
         <button class="compact-select btn btn-icon btn-sm" (click)="selectAssets()">
             <clr-icon shape="attachment"></clr-icon>
         </button>

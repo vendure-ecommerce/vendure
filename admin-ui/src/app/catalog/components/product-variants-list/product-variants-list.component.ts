@@ -35,6 +35,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
+    @Output() selectionChange = new EventEmitter<string[]>();
     selectedVariantIds: string[] = [];
     private facetValues: FacetValue.Fragment[];
     private formSubscription: Subscription;
@@ -78,6 +79,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         } else {
             this.selectedVariantIds = this.variants.map(v => v.id);
         }
+        this.selectionChange.emit(this.selectedVariantIds);
     }
 
     toggleSelectVariant(variantId: string) {
@@ -87,6 +89,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         } else {
             this.selectedVariantIds.push(variantId);
         }
+        this.selectionChange.emit(this.selectedVariantIds);
     }
 
     pendingFacetValues(index: number) {

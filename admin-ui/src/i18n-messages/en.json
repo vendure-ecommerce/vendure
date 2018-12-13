@@ -58,7 +58,6 @@
     "price-with-tax-in-default-zone": "Price with { rate }% tax: { price }",
     "product-details": "Product details",
     "product-name": "Product name",
-    "product-option-groups": "Option groups",
     "product-variants": "Product variants",
     "remove-asset": "Remove asset",
     "select-assets": "Select assets",
@@ -71,8 +70,7 @@
     "taxes": "Taxes",
     "truncated-options-count": "{count} further {count, plural, one {option} other {options}}",
     "upload-assets": "Upload assets",
-    "values": "Values",
-    "with-selected": "With selected"
+    "values": "Values"
   },
   "common": {
     "ID": "ID",

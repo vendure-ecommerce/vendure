@@ -92,27 +92,18 @@
                     ></vdr-generate-product-variants>
 
                     <ng-template #variants>
-                        <vdr-form-item
-                            *ngIf="product?.optionGroups.length"
-                            [label]="'catalog.product-option-groups' | translate"
-                        >
-                            <div class="option-groups-list">
-                                <div *ngFor="let optionGroup of product?.optionGroups" class="option-group">
-                                    <vdr-chip>{{ optionGroup.name }} ({{ optionGroup.code }})</vdr-chip>
-                                </div>
-                            </div>
-                        </vdr-form-item>
-
                         <vdr-product-variants-list
                             [variants]="variants$ | async"
                             [facets]="facets$ | async"
                             [productVariantsFormArray]="productForm.get('variants')"
                             [taxCategories]="taxCategories$ | async"
                             (assetChange)="variantAssetChange($event)"
+                            (selectionChange)="selectedVariantIds = $event"
                             #productVariantsList
                         >
                             <button
                                 class="btn btn-sm btn-secondary"
+                                [disabled]="selectedVariantIds.length === 0"
                                 (click)="selectFacetValue(productVariantsList.selectedVariantIds)"
                             >
                                 {{ 'catalog.apply-facets' | translate }}
