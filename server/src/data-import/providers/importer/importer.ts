@@ -27,6 +27,11 @@ export type OnProgressFn = (progess: ImportProgress) => void;
 @Injectable()
 export class Importer {
     private taxCategoryMatches: { [name: string]: string } = {};
+    /**
+     * This map is used to cache created assets against the file name. This prevents
+     * multiple assets being created for a single identical file.
+     */
+    private assetMap = new Map<string, Asset>();
 
     constructor(
         private configService: ConfigService,
@@ -202,17 +207,23 @@ export class Importer {
         const errors: string[] = [];
         const { importAssetsDir } = this.configService.importExportOptions;
         for (const assetPath of assetPaths) {
-            const filename = path.join(importAssetsDir, assetPath);
-            if (fs.existsSync(filename)) {
-                try {
-                    const stream = fs.createReadStream(filename);
-                    const asset = await this.assetService.createFromFileStream(stream);
-                    assets.push(asset);
-                } catch (err) {
-                    errors.push(err.toString());
-                }
+            const cachedAsset = this.assetMap.get(assetPath);
+            if (cachedAsset) {
+                assets.push(cachedAsset);
             } else {
-                errors.push(`File "${filename}" does not exist`);
+                const filename = path.join(importAssetsDir, assetPath);
+                if (fs.existsSync(filename)) {
+                    try {
+                        const stream = fs.createReadStream(filename);
+                        const asset = await this.assetService.createFromFileStream(stream);
+                        this.assetMap.set(assetPath, asset);
+                        assets.push(asset);
+                    } catch (err) {
+                        errors.push(err.toString());
+                    }
+                } else {
+                    errors.push(`File "${filename}" does not exist`);
+                }
             }
         }
         return { assets, errors };

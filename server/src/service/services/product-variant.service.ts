@@ -88,8 +88,9 @@ export class ProductVariantService {
             beforeSave: async variant => {
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
-                    const options = await this.connection.getRepository(ProductOption).find();
-                    const selectedOptions = options.filter(og => optionIds.includes(og.id as string));
+                    const selectedOptions = await this.connection
+                        .getRepository(ProductOption)
+                        .findByIds(optionIds);
                     variant.options = selectedOptions;
                 }
                 variant.product = product;

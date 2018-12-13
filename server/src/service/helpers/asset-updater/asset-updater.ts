@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
+import { idsAreEqual } from '../../../common/utils';
 import { Asset, VendureEntity } from '../../../entity';
 import { AssetService } from '../../services/asset.service';
 
@@ -27,8 +28,16 @@ export class AssetUpdater {
             if (input.assetIds) {
                 const assets = await this.assetService.findByIds(input.assetIds);
                 product.assets = assets;
-            }
-            if (input.featuredAssetId) {
+                const featuredAssetId = input.featuredAssetId;
+                if (featuredAssetId) {
+                    // If the featuredAsset is also being set, we save the additional
+                    // DB query since we already have that asset from the findByIds query.
+                    const featuredAsset = assets.find(a => idsAreEqual(a.id, featuredAssetId));
+                    if (featuredAsset) {
+                        product.featuredAsset = featuredAsset;
+                    }
+                }
+            } else if (input.featuredAssetId) {
                 const featuredAsset = await this.assetService.findOne(input.featuredAssetId);
                 if (featuredAsset) {
                     product.featuredAsset = featuredAsset;
