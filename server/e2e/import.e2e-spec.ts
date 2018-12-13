@@ -30,7 +30,7 @@ describe('Import resolver', () => {
         // Session repository called from the AuthService.validateSession() method.
         // After several hours of fruitless hunting, I did what any desperate JavaScript
         // developer would do, and threw in a setTimeout. Which of course "works"...
-        const timeout = process.env.CI ? 2000 : 500;
+        const timeout = process.env.CI ? 2000 : 1000;
         await new Promise(resolve => {
             setTimeout(resolve, timeout);
         });

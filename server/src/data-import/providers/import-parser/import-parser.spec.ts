@@ -32,6 +32,15 @@ describe('ImportParser', () => {
             expect(result.results).toMatchSnapshot();
         });
 
+        it('custom fields', async () => {
+            const importParser = new ImportParser();
+
+            const input = await loadTestFixture('custom-fields.csv');
+            const result = await importParser.parseProducts(input);
+
+            expect(result.results).toMatchSnapshot();
+        });
+
         it('works with streamed input', async () => {
             const importParser = new ImportParser();
 

@@ -4,7 +4,7 @@ import { Stream } from 'stream';
 
 import { normalizeString } from '../../../../../shared/normalize-string';
 
-export interface RawProductRecord {
+export type BaseProductRecord = {
     name?: string;
     slug?: string;
     description?: string;
@@ -16,7 +16,9 @@ export interface RawProductRecord {
     taxCategory?: string;
     variantAssets?: string;
     facets?: string;
-}
+};
+
+export type RawProductRecord = BaseProductRecord & { [customFieldName: string]: string };
 
 export interface ParsedProductVariant {
     optionValues: string[];
@@ -28,6 +30,9 @@ export interface ParsedProductVariant {
         facet: string;
         value: string;
     }>;
+    customFields: {
+        [name: string]: string;
+    };
 }
 
 export interface ParsedProduct {
@@ -39,6 +44,9 @@ export interface ParsedProduct {
         name: string;
         values: string[];
     }>;
+    customFields: {
+        [name: string]: string;
+    };
 }
 
 export interface ParsedProductWithVariants {
@@ -52,7 +60,7 @@ export interface ParseResult<T> {
     processed: number;
 }
 
-const requiredColumns: Array<keyof RawProductRecord> = [
+const requiredColumns: Array<keyof BaseProductRecord> = [
     'name',
     'slug',
     'description',
@@ -195,7 +203,7 @@ function mapRowToObject(columns: string[], row: string[]): { [key: string]: stri
 }
 
 function validateOptionValueCount(
-    r: RawProductRecord,
+    r: BaseProductRecord,
     currentRow?: ParsedProductWithVariants,
 ): string | undefined {
     if (!currentRow) {
@@ -219,6 +227,7 @@ function parseProductFromRecord(r: RawProductRecord): ParsedProduct {
             name: ogName,
             values: [],
         })),
+        customFields: parseCustomFields('product', r),
     };
 }
 
@@ -233,7 +242,22 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
             const [facet, value] = pair.split(':');
             return { facet, value };
         }),
+        customFields: parseCustomFields('variant', r),
     };
+}
+
+function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): { [name: string]: string } {
+    return Object.entries(r)
+        .filter(([key, value]) => {
+            return key.indexOf(`${prefix}:`) === 0;
+        })
+        .reduce((output, [key, value]) => {
+            const fieldName = key.replace(`${prefix}:`, '');
+            return {
+                ...output,
+                [fieldName]: value,
+            };
+        }, {});
 }
 
 function parseString(input?: string): string {

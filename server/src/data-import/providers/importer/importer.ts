@@ -150,6 +150,7 @@ export class Importer {
                         slug: product.slug,
                     },
                 ],
+                customFields: product.customFields,
             });
 
             const optionsMap: { [optionName: string]: string } = {};
@@ -204,6 +205,7 @@ export class Importer {
                         },
                     ],
                     price: Math.round(variant.price * 100),
+                    customFields: variant.customFields,
                 });
             }
             imported++;

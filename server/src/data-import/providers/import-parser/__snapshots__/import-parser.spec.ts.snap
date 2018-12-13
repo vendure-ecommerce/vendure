@@ -1,10 +1,79 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ImportParser parseProducts custom fields 1`] = `
+Array [
+  Object {
+    "product": Object {
+      "assetPaths": Array [],
+      "customFields": Object {
+        "customPage": "grid-view",
+        "keywords": "paper, stretch",
+      },
+      "description": "A great device for stretching paper.",
+      "name": "Perfect Paper Stretcher",
+      "optionGroups": Array [
+        Object {
+          "name": "size",
+          "values": Array [
+            "Half Imperial",
+            "Quarter Imperial",
+            "Full Imperial",
+          ],
+        },
+      ],
+      "slug": "perfect-paper-stretcher",
+    },
+    "variants": Array [
+      Object {
+        "assetPaths": Array [],
+        "customFields": Object {
+          "volumetric": "243",
+        },
+        "facets": Array [],
+        "optionValues": Array [
+          "Half Imperial",
+        ],
+        "price": 45.3,
+        "sku": "PPS12",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "customFields": Object {
+          "volumetric": "344",
+        },
+        "facets": Array [],
+        "optionValues": Array [
+          "Quarter Imperial",
+        ],
+        "price": 32.5,
+        "sku": "PPS14",
+        "taxCategory": "standard",
+      },
+      Object {
+        "assetPaths": Array [],
+        "customFields": Object {
+          "volumetric": "656",
+        },
+        "facets": Array [],
+        "optionValues": Array [
+          "Full Imperial",
+        ],
+        "price": 59.5,
+        "sku": "PPSF",
+        "taxCategory": "standard",
+      },
+    ],
+  },
+]
+`;
+
 exports[`ImportParser parseProducts multiple products with multiple variants 1`] = `
 Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "A great device for stretching paper.",
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
@@ -22,6 +91,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Half Imperial",
@@ -32,6 +102,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Quarter Imperial",
@@ -42,6 +113,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Full Imperial",
@@ -55,6 +127,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Mabef description",
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
@@ -63,6 +136,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [],
         "price": 910.7,
@@ -74,6 +148,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Really mega pencils",
       "name": "Giotto Mega Pencils",
       "optionGroups": Array [
@@ -90,6 +165,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Box of 8",
@@ -100,6 +176,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Box of 12",
@@ -113,6 +190,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Keeps the paint off the clothes",
       "name": "Artists Smock",
       "optionGroups": Array [
@@ -136,6 +214,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "small",
@@ -147,6 +226,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "large",
@@ -158,6 +238,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "small",
@@ -169,6 +250,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "large",
@@ -188,6 +270,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "A great device for stretching paper.",
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
@@ -205,6 +288,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Half Imperial",
@@ -215,6 +299,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Quarter Imperial",
@@ -225,6 +310,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Full Imperial",
@@ -246,6 +332,7 @@ Array [
         "pps1.jpg",
         "pps2.jpg",
       ],
+      "customFields": Object {},
       "description": "A great device for stretching paper.",
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [],
@@ -254,6 +341,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [
           Object {
             "facet": "brand",
@@ -279,6 +367,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "A great device for stretching paper.",
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
@@ -296,6 +385,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Half Imperial",
@@ -306,6 +396,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Quarter Imperial",
@@ -316,6 +407,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Full Imperial",
@@ -329,6 +421,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Mabef description",
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
@@ -337,6 +430,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [],
         "price": 910.7,
@@ -348,6 +442,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Really mega pencils",
       "name": "Giotto Mega Pencils",
       "optionGroups": Array [
@@ -364,6 +459,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Box of 8",
@@ -374,6 +470,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "Box of 12",
@@ -387,6 +484,7 @@ Array [
   Object {
     "product": Object {
       "assetPaths": Array [],
+      "customFields": Object {},
       "description": "Keeps the paint off the clothes",
       "name": "Artists Smock",
       "optionGroups": Array [
@@ -410,6 +508,7 @@ Array [
     "variants": Array [
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "small",
@@ -421,6 +520,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "large",
@@ -432,6 +532,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "small",
@@ -443,6 +544,7 @@ Array [
       },
       Object {
         "assetPaths": Array [],
+        "customFields": Object {},
         "facets": Array [],
         "optionValues": Array [
           "large",
