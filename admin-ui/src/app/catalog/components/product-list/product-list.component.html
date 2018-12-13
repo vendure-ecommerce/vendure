@@ -15,16 +15,18 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.slug' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-product="item">
-        <td class="left">{{ product.id }}</td>
+        <td class="left">
+            <div class="image-placeholder">
+                <img [src]="product.featuredAsset?.preview + '?preset=tiny'" />
+            </div>
+        </td>
         <td class="left">{{ product.name }}</td>
         <td class="left">{{ product.slug }}</td>
-        <td class="left">{{ product.description }}</td>
         <td class="right">
             <vdr-table-row-action
                 iconShape="edit"

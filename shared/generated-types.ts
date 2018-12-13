@@ -5282,7 +5282,12 @@ export namespace GetProductList {
         languageCode: LanguageCode;
         name: string;
         slug: string;
-        description: string;
+        featuredAsset?: FeaturedAsset | null;
+    };
+
+    export type FeaturedAsset = {
+        __typename?: 'Asset';
+        preview: string;
     };
 }
 

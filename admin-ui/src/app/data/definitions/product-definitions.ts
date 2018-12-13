@@ -218,7 +218,10 @@ export const GET_PRODUCT_LIST = gql`
                 languageCode
                 name
                 slug
-                description
+                featuredAsset {
+                    id
+                    preview
+                }
             }
             totalItems
         }

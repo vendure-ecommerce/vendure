@@ -5,7 +5,6 @@
         <button
             class="btn btn-primary"
             *ngIf="(isNew$ | async); else: updateButton"
-            (click)="create()"
             [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid"
         >
             {{ 'common.create' | translate }}
