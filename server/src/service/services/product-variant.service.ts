@@ -93,6 +93,9 @@ export class ProductVariantService {
                         .findByIds(optionIds);
                     variant.options = selectedOptions;
                 }
+                if (input.facetValueIds) {
+                    variant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
                 variant.product = product;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
                 await this.assetUpdater.updateEntityAssets(variant, input);

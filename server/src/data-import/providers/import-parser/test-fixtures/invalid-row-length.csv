@@ -1,5 +1,5 @@
-name                    , slug                    , description                          , assets , optionGroups   , optionValues     , sku    , price , taxCategory , variantAssets
-Mabef M/02 Studio Easel ,                         , Mabef description                    ,        ,                ,                  , M02    , 910.7 , standard    ,
-Giotto Mega Pencils     ,                         , Really mega pencils                  ,        , 225400 , 4.16  , standard    ,
+name                    , slug , description                     , assets , optionGroups , optionValues , sku      , price , taxCategory , variantAssets , facets
+Mabef M/02 Studio Easel ,      , Mabef description               ,        ,              ,              , M02      , 910.7 , standard    ,               ,
+Giotto Mega Pencils     ,      , Really mega pencils             ,        , 225400       , 4.16         , standard ,       ,
 
-Artists Smock           ,                         , Keeps the paint off the clothes      ,        ,  ,    , 10112  , 11.99 , standard    ,
+Artists Smock           ,      , Keeps the paint off the clothes ,        ,              ,              , 10112    , 11.99 , standard    ,               ,

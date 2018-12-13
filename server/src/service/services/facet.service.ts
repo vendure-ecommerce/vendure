@@ -50,6 +50,19 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
+    findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
+        const relations = ['values', 'values.facet'];
+        return this.connection
+            .getRepository(Facet)
+            .findOne({
+                where: {
+                    code: facetCode,
+                },
+                relations,
+            })
+            .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
+    }
+
     async create(input: CreateFacetInput): Promise<Translated<Facet>> {
         const facet = await this.translatableSaver.create({
             input,

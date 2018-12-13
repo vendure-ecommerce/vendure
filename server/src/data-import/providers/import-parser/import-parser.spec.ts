@@ -76,8 +76,8 @@ describe('ImportParser', () => {
                 const result = await importParser.parseProducts(input);
 
                 expect(result.errors).toEqual([
-                    'Invalid Record Length: header length is 10, got 8 on line 3',
-                    'Invalid Record Length: header length is 10, got 1 on line 4',
+                    'Invalid Record Length: header length is 11, got 9 on line 3',
+                    'Invalid Record Length: header length is 11, got 1 on line 4',
                 ]);
                 expect(result.results.length).toBe(2);
             });

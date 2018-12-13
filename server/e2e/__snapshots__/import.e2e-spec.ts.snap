@@ -31,6 +31,26 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "facetValues": Array [
+          Object {
+            "code": "kb",
+            "facet": Object {
+              "id": "T_1",
+              "name": "Brand",
+            },
+            "id": "T_11",
+            "name": "KB",
+          },
+          Object {
+            "code": "accessory",
+            "facet": Object {
+              "id": "T_2",
+              "name": "Type",
+            },
+            "id": "T_12",
+            "name": "Accessory",
+          },
+        ],
         "featuredAsset": null,
         "id": "T_1",
         "name": "Perfect Paper Stretcher Half Imperial",
@@ -49,6 +69,26 @@ Array [
       },
       Object {
         "assets": Array [],
+        "facetValues": Array [
+          Object {
+            "code": "kb",
+            "facet": Object {
+              "id": "T_1",
+              "name": "Brand",
+            },
+            "id": "T_11",
+            "name": "KB",
+          },
+          Object {
+            "code": "accessory",
+            "facet": Object {
+              "id": "T_2",
+              "name": "Type",
+            },
+            "id": "T_12",
+            "name": "Accessory",
+          },
+        ],
         "featuredAsset": null,
         "id": "T_2",
         "name": "Perfect Paper Stretcher Quarter Imperial",
@@ -67,6 +107,26 @@ Array [
       },
       Object {
         "assets": Array [],
+        "facetValues": Array [
+          Object {
+            "code": "kb",
+            "facet": Object {
+              "id": "T_1",
+              "name": "Brand",
+            },
+            "id": "T_11",
+            "name": "KB",
+          },
+          Object {
+            "code": "accessory",
+            "facet": Object {
+              "id": "T_2",
+              "name": "Type",
+            },
+            "id": "T_12",
+            "name": "Accessory",
+          },
+        ],
         "featuredAsset": null,
         "id": "T_3",
         "name": "Perfect Paper Stretcher Full Imperial",
@@ -96,6 +156,26 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "facetValues": Array [
+          Object {
+            "code": "mabef",
+            "facet": Object {
+              "id": "T_1",
+              "name": "Brand",
+            },
+            "id": "T_13",
+            "name": "Mabef",
+          },
+          Object {
+            "code": "easel",
+            "facet": Object {
+              "id": "T_2",
+              "name": "Type",
+            },
+            "id": "T_14",
+            "name": "Easel",
+          },
+        ],
         "featuredAsset": null,
         "id": "T_4",
         "name": "Mabef M/02 Studio Easel",
@@ -131,6 +211,17 @@ Array [
             "name": "box-of-8.jpg",
           },
         ],
+        "facetValues": Array [
+          Object {
+            "code": "xmas-sale",
+            "facet": Object {
+              "id": "T_3",
+              "name": "Collection",
+            },
+            "id": "T_15",
+            "name": "Xmas Sale",
+          },
+        ],
         "featuredAsset": Object {
           "id": "T_8",
           "name": "box-of-8.jpg",
@@ -155,6 +246,17 @@ Array [
           Object {
             "id": "T_9",
             "name": "box-of-12.jpg",
+          },
+        ],
+        "facetValues": Array [
+          Object {
+            "code": "xmas-sale",
+            "facet": Object {
+              "id": "T_3",
+              "name": "Collection",
+            },
+            "id": "T_15",
+            "name": "Xmas Sale",
           },
         ],
         "featuredAsset": Object {
@@ -200,6 +302,7 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_7",
         "name": "Artists Smock small beige",
@@ -222,6 +325,7 @@ Array [
       },
       Object {
         "assets": Array [],
+        "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_8",
         "name": "Artists Smock large beige",
@@ -244,6 +348,7 @@ Array [
       },
       Object {
         "assets": Array [],
+        "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_9",
         "name": "Artists Smock small navy",
@@ -266,6 +371,7 @@ Array [
       },
       Object {
         "assets": Array [],
+        "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_10",
         "name": "Artists Smock large navy",

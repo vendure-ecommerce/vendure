@@ -15,6 +15,7 @@ export interface RawProductRecord {
     price?: string;
     taxCategory?: string;
     variantAssets?: string;
+    facets?: string;
 }
 
 export interface ParsedProductVariant {
@@ -23,6 +24,10 @@ export interface ParsedProductVariant {
     price: number;
     taxCategory: string;
     assetPaths: string[];
+    facets: Array<{
+        facet: string;
+        value: string;
+    }>;
 }
 
 export interface ParsedProduct {
@@ -58,6 +63,7 @@ const requiredColumns: Array<keyof RawProductRecord> = [
     'price',
     'taxCategory',
     'variantAssets',
+    'facets',
 ];
 
 /**
@@ -223,6 +229,10 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
         price: parseNumber(r.price),
         taxCategory: parseString(r.taxCategory),
         assetPaths: parseStringArray(r.variantAssets),
+        facets: parseStringArray(r.facets).map(pair => {
+            const [facet, value] = pair.split(':');
+            return { facet, value };
+        }),
     };
 }
 

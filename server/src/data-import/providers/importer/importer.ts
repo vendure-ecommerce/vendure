@@ -9,15 +9,23 @@ import { normalizeString } from '../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';
+import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { AssetService } from '../../../service/services/asset.service';
 import { ChannelService } from '../../../service/services/channel.service';
+import { FacetValueService } from '../../../service/services/facet-value.service';
+import { FacetService } from '../../../service/services/facet.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
-import { ImportParser, ParsedProductWithVariants } from '../import-parser/import-parser';
+import {
+    ImportParser,
+    ParsedProductVariant,
+    ParsedProductWithVariants,
+} from '../import-parser/import-parser';
 
 export interface ImportProgress extends ImportInfo {
     currentProduct: string;
@@ -27,17 +35,19 @@ export type OnProgressFn = (progess: ImportProgress) => void;
 @Injectable()
 export class Importer {
     private taxCategoryMatches: { [name: string]: string } = {};
-    /**
-     * This map is used to cache created assets against the file name. This prevents
-     * multiple assets being created for a single identical file.
-     */
+    // These Maps are used to cache newly-created entities and prevent duplicates
+    // from being created.
     private assetMap = new Map<string, Asset>();
+    private facetMap = new Map<string, Facet>();
+    private facetValueMap = new Map<string, FacetValue>();
 
     constructor(
         private configService: ConfigService,
         private importParser: ImportParser,
         private channelService: ChannelService,
         private productService: ProductService,
+        private facetService: FacetService,
+        private facetValueService: FacetValueService,
         private productVariantService: ProductVariantService,
         private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
@@ -124,7 +134,7 @@ export class Importer {
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll();
         for (const { product, variants } of rows) {
-            const createProductAssets = await this.createAssets(product.assetPaths);
+            const createProductAssets = await this.getAssets(product.assetPaths);
             const productAssets = createProductAssets.assets;
             if (createProductAssets.errors.length) {
                 errors = errors.concat(createProductAssets.errors);
@@ -171,12 +181,17 @@ export class Importer {
             }
 
             for (const variant of variants) {
-                const createVariantAssets = await this.createAssets(variant.assetPaths);
+                const createVariantAssets = await this.getAssets(variant.assetPaths);
                 const variantAssets = createVariantAssets.assets;
                 if (createVariantAssets.errors.length) {
                     errors = errors.concat(createVariantAssets.errors);
                 }
-                await this.productVariantService.create(ctx, createdProduct, {
+                let facetValueIds: string[] = [];
+                if (0 < variant.facets.length) {
+                    facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
+                }
+                const createdVariant = await this.productVariantService.create(ctx, createdProduct, {
+                    facetValueIds,
                     featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
                     assetIds: variantAssets.map(a => a.id) as string[],
                     sku: variant.sku,
@@ -202,7 +217,11 @@ export class Importer {
         return errors;
     }
 
-    private async createAssets(assetPaths: string[]): Promise<{ assets: Asset[]; errors: string[] }> {
+    /**
+     * Creates Asset entities for the given paths, using the assetMap cache to prevent the
+     * creation of duplicates.
+     */
+    private async getAssets(assetPaths: string[]): Promise<{ assets: Asset[]; errors: string[] }> {
         const assets: Asset[] = [];
         const errors: string[] = [];
         const { importAssetsDir } = this.configService.importExportOptions;
@@ -227,6 +246,56 @@ export class Importer {
             }
         }
         return { assets, errors };
+    }
+
+    private async getFacetValueIds(
+        facets: ParsedProductVariant['facets'],
+        languageCode: LanguageCode,
+    ): Promise<string[]> {
+        const facetValueIds: string[] = [];
+
+        for (const item of facets) {
+            const facetName = item.facet;
+            const valueName = item.value;
+
+            let facetEntity: Facet;
+            const cachedFacet = this.facetMap.get(facetName);
+            if (cachedFacet) {
+                facetEntity = cachedFacet;
+            } else {
+                const existing = await this.facetService.findByCode(normalizeString(facetName), languageCode);
+                if (existing) {
+                    facetEntity = existing;
+                } else {
+                    facetEntity = await this.facetService.create({
+                        code: normalizeString(facetName, '-'),
+                        translations: [{ languageCode, name: facetName }],
+                    });
+                }
+                this.facetMap.set(facetName, facetEntity);
+            }
+
+            let facetValueEntity: FacetValue;
+            const facetValueMapKey = `${facetName}:${valueName}`;
+            const cachedFacetValue = this.facetValueMap.get(facetValueMapKey);
+            if (cachedFacetValue) {
+                facetValueEntity = cachedFacetValue;
+            } else {
+                const existing = facetEntity.values.find(v => v.name === valueName);
+                if (existing) {
+                    facetValueEntity = existing;
+                } else {
+                    facetValueEntity = await this.facetValueService.create(facetEntity, {
+                        code: normalizeString(valueName, '-'),
+                        translations: [{ languageCode, name: valueName }],
+                    });
+                }
+                this.facetValueMap.set(facetValueMapKey, facetValueEntity);
+            }
+            facetValueIds.push(facetValueEntity.id as string);
+        }
+
+        return facetValueIds;
     }
 
     /**

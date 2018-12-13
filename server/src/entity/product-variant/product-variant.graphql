@@ -33,6 +33,7 @@ input ProductVariantTranslationInput {
 
 input CreateProductVariantInput {
     translations: [ProductVariantTranslationInput!]!
+    facetValueIds: [ID!]
     sku: String!
     price: Int
     taxCategoryId: ID!

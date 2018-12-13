@@ -1381,6 +1381,7 @@ export interface UpdateZoneInput {
 
 export interface CreateProductVariantInput {
     translations: ProductVariantTranslationInput[];
+    facetValueIds?: string[] | null;
     sku: string;
     price?: number | null;
     taxCategoryId: string;
@@ -5287,6 +5288,7 @@ export namespace GetProductList {
 
     export type FeaturedAsset = {
         __typename?: 'Asset';
+        id: string;
         preview: string;
     };
 }
