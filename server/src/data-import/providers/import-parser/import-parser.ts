@@ -10,13 +10,14 @@ export type BaseProductRecord = {
     slug?: string;
     description?: string;
     assets?: string;
+    facets?: string;
     optionGroups?: string;
     optionValues?: string;
     sku?: string;
     price?: string;
     taxCategory?: string;
     variantAssets?: string;
-    facets?: string;
+    variantFacets?: string;
 };
 
 export type RawProductRecord = BaseProductRecord & { [customFieldName: string]: string };
@@ -45,6 +46,10 @@ export interface ParsedProduct {
         name: string;
         values: string[];
     }>;
+    facets: Array<{
+        facet: string;
+        value: string;
+    }>;
     customFields: {
         [name: string]: string;
     };
@@ -66,13 +71,14 @@ const requiredColumns: Array<keyof BaseProductRecord> = [
     'slug',
     'description',
     'assets',
+    'facets',
     'optionGroups',
     'optionValues',
     'sku',
     'price',
     'taxCategory',
     'variantAssets',
-    'facets',
+    'variantFacets',
 ];
 
 /**
@@ -227,6 +233,10 @@ function parseProductFromRecord(r: RawProductRecord): ParsedProduct {
             name: ogName,
             values: [],
         })),
+        facets: parseStringArray(r.facets).map(pair => {
+            const [facet, value] = pair.split(':');
+            return { facet, value };
+        }),
         customFields: parseCustomFields('product', r),
     };
 }
@@ -238,7 +248,7 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
         price: parseNumber(r.price),
         taxCategory: parseString(r.taxCategory),
         assetPaths: parseStringArray(r.variantAssets),
-        facets: parseStringArray(r.facets).map(pair => {
+        facets: parseStringArray(r.variantFacets).map(pair => {
             const [facet, value] = pair.split(':');
             return { facet, value };
         }),

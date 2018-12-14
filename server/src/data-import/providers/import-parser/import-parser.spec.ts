@@ -74,7 +74,7 @@ describe('ImportParser', () => {
 
                 expect(result.results).toEqual([]);
                 expect(result.errors).toEqual([
-                    'The import file is missing the following columns: "slug", "assets"',
+                    'The import file is missing the following columns: "slug", "assets", "variantFacets"',
                 ]);
             });
 
@@ -85,8 +85,8 @@ describe('ImportParser', () => {
                 const result = await importParser.parseProducts(input);
 
                 expect(result.errors).toEqual([
-                    'Invalid Record Length: header length is 11, got 9 on line 3',
-                    'Invalid Record Length: header length is 11, got 1 on line 4',
+                    'Invalid Record Length: header length is 12, got 10 on line 3',
+                    'Invalid Record Length: header length is 12, got 1 on line 4',
                 ]);
                 expect(result.results.length).toBe(2);
             });

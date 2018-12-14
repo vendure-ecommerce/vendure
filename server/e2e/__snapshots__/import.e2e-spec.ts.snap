@@ -14,6 +14,7 @@ Array [
       },
     ],
     "description": "A great device for stretching paper.",
+    "facetValues": Array [],
     "featuredAsset": Object {
       "id": "T_6",
       "name": "pps1.jpg",
@@ -148,6 +149,7 @@ Array [
   Object {
     "assets": Array [],
     "description": "Mabef description",
+    "facetValues": Array [],
     "featuredAsset": null,
     "id": "T_2",
     "name": "Mabef M/02 Studio Easel",
@@ -192,6 +194,7 @@ Array [
   Object {
     "assets": Array [],
     "description": "Really mega pencils",
+    "facetValues": Array [],
     "featuredAsset": null,
     "id": "T_3",
     "name": "Giotto Mega Pencils",
@@ -283,6 +286,24 @@ Array [
   Object {
     "assets": Array [],
     "description": "Keeps the paint off the clothes",
+    "facetValues": Array [
+      Object {
+        "facet": Object {
+          "id": "T_4",
+          "name": "Material",
+        },
+        "id": "T_16",
+        "name": "Denim",
+      },
+      Object {
+        "facet": Object {
+          "id": "T_3",
+          "name": "Collection",
+        },
+        "id": "T_17",
+        "name": "clothes",
+      },
+    ],
     "featuredAsset": null,
     "id": "T_4",
     "name": "Artists Smock",

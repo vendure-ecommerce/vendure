@@ -142,6 +142,7 @@ export class Importer {
             const createdProduct = await this.productService.create(ctx, {
                 featuredAssetId: productAssets.length ? (productAssets[0].id as string) : undefined,
                 assetIds: productAssets.map(a => a.id) as string[],
+                facetValueIds: await this.getFacetValueIds(product.facets, languageCode),
                 translations: [
                     {
                         languageCode,

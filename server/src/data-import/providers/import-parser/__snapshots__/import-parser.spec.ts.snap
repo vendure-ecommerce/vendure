@@ -10,6 +10,7 @@ Array [
         "keywords": "paper, stretch",
       },
       "description": "A great device for stretching paper.",
+      "facets": Array [],
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
         Object {
@@ -75,6 +76,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "A great device for stretching paper.",
+      "facets": Array [],
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
         Object {
@@ -129,6 +131,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Mabef description",
+      "facets": Array [],
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
       "slug": "mabef-m02-studio-easel",
@@ -150,6 +153,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Really mega pencils",
+      "facets": Array [],
       "name": "Giotto Mega Pencils",
       "optionGroups": Array [
         Object {
@@ -192,6 +196,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Keeps the paint off the clothes",
+      "facets": Array [],
       "name": "Artists Smock",
       "optionGroups": Array [
         Object {
@@ -272,6 +277,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "A great device for stretching paper.",
+      "facets": Array [],
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
         Object {
@@ -334,6 +340,16 @@ Array [
       ],
       "customFields": Object {},
       "description": "A great device for stretching paper.",
+      "facets": Array [
+        Object {
+          "facet": "brand",
+          "value": "KB",
+        },
+        Object {
+          "facet": "type",
+          "value": "Accessory",
+        },
+      ],
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [],
       "slug": "perfect-paper-stretcher",
@@ -344,12 +360,8 @@ Array [
         "customFields": Object {},
         "facets": Array [
           Object {
-            "facet": "brand",
-            "value": "KB",
-          },
-          Object {
-            "facet": "type",
-            "value": "Accessory",
+            "facet": "material",
+            "value": "Wood",
           },
         ],
         "optionValues": Array [],
@@ -369,6 +381,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "A great device for stretching paper.",
+      "facets": Array [],
       "name": "Perfect Paper Stretcher",
       "optionGroups": Array [
         Object {
@@ -423,6 +436,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Mabef description",
+      "facets": Array [],
       "name": "Mabef M/02 Studio Easel",
       "optionGroups": Array [],
       "slug": "mabef-m02-studio-easel",
@@ -444,6 +458,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Really mega pencils",
+      "facets": Array [],
       "name": "Giotto Mega Pencils",
       "optionGroups": Array [
         Object {
@@ -486,6 +501,7 @@ Array [
       "assetPaths": Array [],
       "customFields": Object {},
       "description": "Keeps the paint off the clothes",
+      "facets": Array [],
       "name": "Artists Smock",
       "optionGroups": Array [
         Object {

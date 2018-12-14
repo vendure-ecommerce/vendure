@@ -39,7 +39,7 @@ describe('Import resolver', () => {
         const result = await client.importProducts(csvFile);
 
         expect(result.importProducts.errors).toEqual([
-            'Invalid Record Length: header length is 11, got 1 on line 8',
+            'Invalid Record Length: header length is 12, got 1 on line 8',
         ]);
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
@@ -66,6 +66,14 @@ describe('Import resolver', () => {
                                 id
                                 code
                                 name
+                            }
+                            facetValues {
+                                id
+                                name
+                                facet {
+                                    id
+                                    name
+                                }
                             }
                             variants {
                                 id
