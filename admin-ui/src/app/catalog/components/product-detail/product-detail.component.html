@@ -68,6 +68,18 @@
                                     ></vdr-custom-field-control>
                                 </ng-container>
                             </section>
+
+                            <div class="facets">
+                                <vdr-facet-value-chip
+                                    *ngFor="let facetValue of (facetValues$ | async)"
+                                    [facetValue]="facetValue"
+                                    (remove)="removeProductFacetValue(facetValue.id)"
+                                ></vdr-facet-value-chip>
+                                <button class="btn btn-sm btn-secondary" (click)="selectProductFacetValue()">
+                                    <clr-icon shape="plus"></clr-icon>
+                                    {{ 'catalog.add-facets' | translate }}
+                                </button>
+                            </div>
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
@@ -99,14 +111,14 @@
                             [taxCategories]="taxCategories$ | async"
                             (assetChange)="variantAssetChange($event)"
                             (selectionChange)="selectedVariantIds = $event"
-                            #productVariantsList
                         >
                             <button
                                 class="btn btn-sm btn-secondary"
                                 [disabled]="selectedVariantIds.length === 0"
-                                (click)="selectFacetValue(productVariantsList.selectedVariantIds)"
+                                (click)="selectVariantFacetValue(selectedVariantIds)"
                             >
-                                {{ 'catalog.apply-facets' | translate }}
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ 'catalog.add-facets' | translate }}
                             </button>
                         </vdr-product-variants-list>
                     </ng-template>

@@ -88,6 +88,15 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         variants {
             ...ProductVariant
         }
+        facetValues {
+            id
+            code
+            name
+            facet {
+                id
+                name
+            }
+        }
     }
     ${PRODUCT_VARIANT_FRAGMENT}
     ${ASSET_FRAGMENT}

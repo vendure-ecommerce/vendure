@@ -76,7 +76,13 @@ export class ProductDataService {
 
     createProduct(product: CreateProductInput) {
         const input: CreateProduct.Variables = {
-            input: pick(product, ['translations', 'customFields', 'assetIds', 'featuredAssetId']),
+            input: pick(product, [
+                'translations',
+                'customFields',
+                'assetIds',
+                'featuredAssetId',
+                'facetValueIds',
+            ]),
         };
         return this.baseDataService.mutate<CreateProduct.Mutation, CreateProduct.Variables>(
             CREATE_PRODUCT,
@@ -86,7 +92,14 @@ export class ProductDataService {
 
     updateProduct(product: UpdateProductInput) {
         const input: UpdateProduct.Variables = {
-            input: pick(product, ['id', 'translations', 'customFields', 'assetIds', 'featuredAssetId']),
+            input: pick(product, [
+                'id',
+                'translations',
+                'customFields',
+                'assetIds',
+                'featuredAssetId',
+                'facetValueIds',
+            ]),
         };
         return this.baseDataService.mutate<UpdateProduct.Mutation, UpdateProduct.Variables>(
             UPDATE_PRODUCT,

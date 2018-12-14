@@ -65,7 +65,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('assetIds', 'featuredAssetId')
+    @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async createProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateProductMutationArgs,
@@ -76,7 +76,7 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('assetIds', 'featuredAssetId')
+    @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async updateProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductMutationArgs,

@@ -7,6 +7,7 @@ import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomProductFields } from '../custom-entity-fields';
+import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
@@ -39,6 +40,10 @@ export class Product extends VendureEntity implements Translatable, HasCustomFie
     @ManyToMany(type => ProductOptionGroup)
     @JoinTable()
     optionGroups: ProductOptionGroup[];
+
+    @ManyToMany(type => FacetValue)
+    @JoinTable()
+    facetValues: FacetValue[];
 
     @Column(type => CustomProductFields)
     customFields: CustomProductFields;

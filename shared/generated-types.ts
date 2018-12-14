@@ -544,6 +544,7 @@ export interface Product extends Node {
     assets: Asset[];
     variants: ProductVariant[];
     optionGroups: ProductOptionGroup[];
+    facetValues: FacetValue[];
     translations: ProductTranslation[];
     customFields?: Json | null;
 }
@@ -1253,6 +1254,7 @@ export interface UpdateProductOptionGroupInput {
 export interface CreateProductInput {
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
+    facetValueIds?: string[] | null;
     translations: ProductTranslationInput[];
     customFields?: Json | null;
 }
@@ -1270,6 +1272,7 @@ export interface UpdateProductInput {
     id: string;
     featuredAssetId?: string | null;
     assetIds?: string[] | null;
+    facetValueIds?: string[] | null;
     translations?: ProductTranslationInput[] | null;
     customFields?: Json | null;
 }
@@ -3692,6 +3695,7 @@ export namespace ProductResolvers {
         assets?: AssetsResolver<Asset[], any, Context>;
         variants?: VariantsResolver<ProductVariant[], any, Context>;
         optionGroups?: OptionGroupsResolver<ProductOptionGroup[], any, Context>;
+        facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
         translations?: TranslationsResolver<ProductTranslation[], any, Context>;
         customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
@@ -3719,6 +3723,11 @@ export namespace ProductResolvers {
         Context
     >;
     export type OptionGroupsResolver<R = ProductOptionGroup[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type FacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -6334,6 +6343,7 @@ export namespace ProductWithVariants {
         translations: Translations[];
         optionGroups: OptionGroups[];
         variants: Variants[];
+        facetValues: FacetValues[];
     };
 
     export type FeaturedAsset = Asset.Fragment;
@@ -6357,6 +6367,20 @@ export namespace ProductWithVariants {
     };
 
     export type Variants = ProductVariant.Fragment;
+
+    export type FacetValues = {
+        __typename?: 'FacetValue';
+        id: string;
+        code: string;
+        name: string;
+        facet: Facet;
+    };
+
+    export type Facet = {
+        __typename?: 'Facet';
+        id: string;
+        name: string;
+    };
 }
 
 export namespace ProductOptionGroup {

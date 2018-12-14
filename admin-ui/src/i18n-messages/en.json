@@ -25,7 +25,7 @@
     "add-asset-to-product": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}} to product",
     "add-facet": "Add facet",
     "add-facet-value": "Add facet value",
-    "apply-facets": "Apply facets",
+    "add-facets": "Add facets",
     "assets-selected-count": "{ count } assets selected",
     "confirm-generate-product-variants": "Click 'Finish' to generate {count} product variants.",
     "create-group": "Create option group",

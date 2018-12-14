@@ -20,6 +20,7 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Frag
                 description: '',
                 translations: [],
                 optionGroups: [],
+                facetValues: [],
                 variants: [],
             },
             id => this.dataService.product.getProduct(id).mapStream(data => data.product),

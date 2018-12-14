@@ -311,6 +311,19 @@ describe('Product resolver', () => {
             expect(result.updateProduct.featuredAsset!.id).toBe(assets[0].id);
         });
 
+        it('updateProduct updates FacetValues', async () => {
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        facetValueIds: ['T_1'],
+                    },
+                },
+            );
+            expect(result.updateProduct.facetValues.length).toEqual(1);
+        });
+
         it('updateProduct errors with an invalid productId', async () => {
             try {
                 await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {

@@ -18,6 +18,7 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
+import { FacetValueService } from './facet-value.service';
 import { ProductVariantService } from './product-variant.service';
 import { TaxRateService } from './tax-rate.service';
 
@@ -28,6 +29,7 @@ export class ProductService {
         private channelService: ChannelService,
         private assetUpdater: AssetUpdater,
         private productVariantService: ProductVariantService,
+        private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
@@ -37,14 +39,25 @@ export class ProductService {
         ctx: RequestContext,
         options?: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const relations = ['featuredAsset', 'assets', 'optionGroups', 'channels'];
+        const relations = [
+            'featuredAsset',
+            'assets',
+            'optionGroups',
+            'channels',
+            'facetValues',
+            'facetValues.facet',
+        ];
 
         return this.listQueryBuilder
             .build(Product, options, { relations, channelId: ctx.channelId })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['optionGroups']),
+                    translateDeep(product, ctx.languageCode, [
+                        'optionGroups',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]),
                 );
                 return {
                     items,
@@ -54,12 +67,16 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const relations = ['featuredAsset', 'assets', 'optionGroups'];
+        const relations = ['featuredAsset', 'assets', 'optionGroups', 'facetValues', 'facetValues.facet'];
         const product = await this.connection.manager.findOne(Product, productId, { relations });
         if (!product) {
             return;
         }
-        return translateDeep(product, ctx.languageCode, ['optionGroups']);
+        return translateDeep(product, ctx.languageCode, [
+            'optionGroups',
+            'facetValues',
+            ['facetValues', 'facet'],
+        ]);
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
@@ -69,6 +86,9 @@ export class ProductService {
             translationType: ProductTranslation,
             beforeSave: async p => {
                 this.channelService.assignToChannels(p, ctx);
+                if (input.facetValueIds) {
+                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
                 await this.assetUpdater.updateEntityAssets(p, input);
             },
         });
@@ -81,6 +101,9 @@ export class ProductService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
+                if (input.facetValueIds) {
+                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
                 await this.assetUpdater.updateEntityAssets(p, input);
             },
         });

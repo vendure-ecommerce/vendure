@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { map, mergeMap, skip, take, withLatestFrom } from 'rxjs/operators';
 import {
     CreateProductInput,
@@ -16,9 +16,11 @@ import {
 import { normalizeString } from 'shared/normalize-string';
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
+import { unique } from 'shared/unique';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
+import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -60,6 +62,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     productForm: FormGroup;
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
+    facetValues$: Observable<ProductWithVariants.FacetValues[]>;
     facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
     selectedVariantIds: string[] = [];
 
@@ -82,6 +85,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 name: ['', Validators.required],
                 slug: '',
                 description: '',
+                facetValueIds: [[]],
                 customFields: this.formBuilder.group(
                     this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
                 ),
@@ -98,6 +102,25 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .getTaxCategories()
             .mapSingle(data => data.taxCategories);
         this.activeTab$ = this.route.queryParamMap.pipe(map(qpm => qpm.get('tab') as any));
+
+        // FacetValues are provided initially by the nested array of the
+        // Product entity, but once a fetch to get all Facets is made (as when
+        // opening the FacetValue selector modal), then these additional values
+        // are concatenated onto the initial array.
+        const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
+        const allFacetValues$ = this.facets$.pipe(map(flattenFacetValues));
+
+        const productGroup = this.getProductFormGroup();
+        const formChangeFacetValues$ = combineLatest(
+            productGroup.valueChanges.pipe(map(val => val.facetValueIds as string[])),
+            allFacetValues$,
+        ).pipe(
+            map(([facetValueIds, facetValues]) =>
+                facetValueIds.map(id => facetValues.find(fv => fv.id === id)).filter(notNullOrUndefined),
+            ),
+        );
+
+        this.facetValues$ = merge(productFacetValues$, formChangeFacetValues$);
     }
 
     ngOnDestroy() {
@@ -142,41 +165,43 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         });
     }
 
+    selectProductFacetValue() {
+        this.displayFacetValueModal().subscribe(facetValueIds => {
+            if (facetValueIds) {
+                const productGroup = this.getProductFormGroup();
+                const currentFacetValueIds = productGroup.value.facetValueIds;
+                productGroup.patchValue({
+                    facetValueIds: unique([...currentFacetValueIds, ...facetValueIds]),
+                });
+                productGroup.markAsDirty();
+            }
+        });
+    }
+
+    removeProductFacetValue(facetValueId: string) {
+        const productGroup = this.getProductFormGroup();
+        const currentFacetValueIds = productGroup.value.facetValueIds;
+        productGroup.patchValue({
+            facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
+        });
+    }
+
     /**
      * Opens a dialog to select FacetValues to apply to the select ProductVariants.
      */
-    selectFacetValue(selectedVariantIds: string[]) {
-        this.dataService.facet
-            .getFacets(9999999, 0)
-            .mapSingle(data => data.facets.items)
-            .subscribe(items => this.facets$.next(items));
-
-        this.facets$
-            .pipe(
-                skip(1),
-                take(1),
-                mergeMap(facets =>
-                    this.modalService.fromComponent(ApplyFacetDialogComponent, {
-                        size: 'md',
-                        locals: { facets },
-                    }),
-                ),
-                map(facetValues => facetValues && facetValues.map(v => v.id)),
-                withLatestFrom(this.variants$),
-            )
+    selectVariantFacetValue(selectedVariantIds: string[]) {
+        this.displayFacetValueModal()
+            .pipe(withLatestFrom(this.variants$))
             .subscribe(([facetValueIds, variants]) => {
                 if (facetValueIds) {
                     for (const variantId of selectedVariantIds) {
                         const index = variants.findIndex(v => v.id === variantId);
                         const variant = variants[index];
                         const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
-                        const uniqueFacetValueIds = Array.from(
-                            new Set([...existingFacetValueIds, ...facetValueIds]),
-                        );
                         const variantFormGroup = this.productForm.get(['variants', index]);
                         if (variantFormGroup) {
                             variantFormGroup.patchValue({
-                                facetValueIds: uniqueFacetValueIds,
+                                facetValueIds: unique([...existingFacetValueIds, ...facetValueIds]),
                             });
                             variantFormGroup.markAsDirty();
                         }
@@ -186,9 +211,32 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             });
     }
 
+    private displayFacetValueModal(): Observable<string[] | undefined> {
+        let skipValue = 0;
+        if (this.facets$.value.length === 0) {
+            this.dataService.facet
+                .getFacets(9999999, 0)
+                .mapSingle(data => data.facets.items)
+                .subscribe(items => this.facets$.next(items));
+            skipValue = 1;
+        }
+
+        return this.facets$.pipe(
+            skip(skipValue),
+            take(1),
+            mergeMap(facets =>
+                this.modalService.fromComponent(ApplyFacetDialogComponent, {
+                    size: 'md',
+                    locals: { facets },
+                }),
+            ),
+            map(facetValues => facetValues && facetValues.map(v => v.id)),
+        );
+    }
+
     create() {
-        const productGroup = this.productForm.get('product');
-        if (!productGroup || !productGroup.dirty) {
+        const productGroup = this.getProductFormGroup();
+        if (!productGroup.dirty) {
             return;
         }
         combineLatest(this.product$, this.languageCode$)
@@ -226,10 +274,10 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .pipe(
                 take(1),
                 mergeMap(([product, languageCode]) => {
-                    const productGroup = this.productForm.get('product');
+                    const productGroup = this.getProductFormGroup();
                     const updateOperations: Array<Observable<any>> = [];
 
-                    if ((productGroup && productGroup.dirty) || this.assetsChanged()) {
+                    if (productGroup.dirty || this.assetsChanged()) {
                         const newProduct = this.getUpdatedProduct(
                             product,
                             productGroup as FormGroup,
@@ -280,6 +328,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     name: currentTranslation.name,
                     slug: currentTranslation.slug,
                     description: currentTranslation.description,
+                    facetValueIds: product.facetValues.map(fv => fv.id),
                 },
             });
 
@@ -350,7 +399,11 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 description: product.description || '',
             },
         });
-        return { ...updatedProduct, ...this.assetChanges } as UpdateProductInput | CreateProductInput;
+        return {
+            ...updatedProduct,
+            ...this.assetChanges,
+            facetValueIds: productFormGroup.value.facetValueIds,
+        } as UpdateProductInput | CreateProductInput;
     }
 
     /**
@@ -390,5 +443,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 return result;
             })
             .filter(notNullOrUndefined);
+    }
+
+    private getProductFormGroup(): FormGroup {
+        return this.productForm.get('product') as FormGroup;
     }
 }

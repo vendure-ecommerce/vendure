@@ -4,6 +4,7 @@ exports[`Product resolver product mutation createProduct creates a new Product 1
 Object {
   "assets": Array [],
   "description": "A baked potato",
+  "facetValues": Array [],
   "featuredAsset": null,
   "id": "T_21",
   "languageCode": "en",
@@ -32,6 +33,7 @@ exports[`Product resolver product mutation updateProduct updates a Product 1`] =
 Object {
   "assets": Array [],
   "description": "A blob of mashed potato",
+  "facetValues": Array [],
   "featuredAsset": null,
   "id": "T_21",
   "languageCode": "en",
@@ -79,6 +81,7 @@ Object {
     },
   ],
   "description": "en Accusantium sed libero repudiandae.",
+  "facetValues": Array [],
   "featuredAsset": Object {
     "fileSize": 4,
     "id": "T_5",

@@ -10,6 +10,7 @@ type Product implements Node {
     assets: [Asset!]!
     variants: [ProductVariant!]!
     optionGroups: [ProductOptionGroup!]!
+    facetValues: [FacetValue!]!
     translations: [ProductTranslation!]!
 }
 
@@ -34,6 +35,7 @@ input ProductTranslationInput {
 input CreateProductInput {
     featuredAssetId: ID
     assetIds: [ID!]
+    facetValueIds: [ID!]
     translations: [ProductTranslationInput!]!
 }
 
@@ -41,5 +43,6 @@ input UpdateProductInput {
     id: ID!
     featuredAssetId: ID
     assetIds: [ID!]
+    facetValueIds: [ID!]
     translations: [ProductTranslationInput!]
 }
