@@ -21,6 +21,7 @@ import {
     UpdateProductCategoryInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
+import { unique } from 'shared/unique';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
@@ -117,11 +118,8 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
             .subscribe(([facetValueIds, category]) => {
                 if (facetValueIds) {
                     const existingFacetValueIds = this.categoryForm.value.facetValueIds;
-                    const uniqueFacetValueIds = Array.from(
-                        new Set([...existingFacetValueIds, ...facetValueIds]),
-                    );
                     this.categoryForm.patchValue({
-                        facetValueIds: uniqueFacetValueIds,
+                        facetValueIds: unique([...existingFacetValueIds, ...facetValueIds]),
                     });
                     this.categoryForm.markAsDirty();
                     this.changeDetector.markForCheck();

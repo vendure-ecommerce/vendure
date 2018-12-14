@@ -5,6 +5,7 @@ import { Connection } from 'typeorm';
 import { CreateChannelInput, UpdateChannelInput } from '../../../../shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '../../../../shared/shared-constants';
 import { ID } from '../../../../shared/shared-types';
+import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
@@ -36,7 +37,7 @@ export class ChannelService {
      * specified in the RequestContext.
      */
     assignToChannels<T extends ChannelAware>(entity: T, ctx: RequestContext): T {
-        const channelIds = [...new Set([ctx.channelId, this.getDefaultChannel().id])];
+        const channelIds = unique([ctx.channelId, this.getDefaultChannel().id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
         return entity;
     }

@@ -2,6 +2,7 @@ import { Connection, OrderByCondition } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { Type } from '../../../../../shared/shared-types';
+import { unique } from '../../../../../shared/unique';
 import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
@@ -52,5 +53,5 @@ export function parseSortParams<T extends VendureEntity>(
 }
 
 function getValidSortFields(columns: ColumnMetadata[]): string {
-    return Array.from(new Set(columns.map(c => c.propertyName))).join(', ');
+    return unique(columns.map(c => c.propertyName)).join(', ');
 }

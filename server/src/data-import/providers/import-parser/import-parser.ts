@@ -3,6 +3,7 @@ import * as parse from 'csv-parse';
 import { Stream } from 'stream';
 
 import { normalizeString } from '../../../../../shared/normalize-string';
+import { unique } from '../../../../../shared/unique';
 
 export type BaseProductRecord = {
     name?: string;
@@ -172,8 +173,7 @@ export class ImportParser {
 function populateOptionGroupValues(currentRow: ParsedProductWithVariants) {
     const values = currentRow.variants.map(v => v.optionValues);
     currentRow.product.optionGroups.forEach((og, i) => {
-        const uniqueValues = Array.from(new Set(values.map(v => v[i])));
-        og.values = uniqueValues;
+        og.values = unique(values.map(v => v[i]));
     });
 }
 
