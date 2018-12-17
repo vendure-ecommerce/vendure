@@ -34,15 +34,19 @@
         </clr-dropdown>
 
         <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="48"></clr-icon></div>
-        <button class="compact-select btn btn-icon btn-sm" (click)="selectAssets()">
-            <clr-icon shape="attachment"></clr-icon>
-        </button>
     </div>
     <ng-container *ngTemplateOutlet="assetList"></ng-container>
+    <button
+        class="compact-select btn btn-icon btn-sm btn-block"
+        [title]="'catalog.add-asset' | translate"
+        (click)="selectAssets()"
+    >
+        <clr-icon shape="attachment"></clr-icon>
+    </button>
 </ng-template>
 
 <ng-template #assetList>
-    <div class="all-assets">
+    <div class="all-assets" [class.compact]="compact">
         <ng-container *ngFor="let asset of getAssetList()">
             <clr-dropdown>
                 <div
@@ -52,7 +56,7 @@
                     [title]=""
                     tabindex="0"
                 >
-                    <img [src]="asset.preview + '?preset=tiny'" />
+                    <img [src]="asset.preview + (compact ? '?w=20' : '?preset=tiny')" />
                 </div>
                 <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
                     <button

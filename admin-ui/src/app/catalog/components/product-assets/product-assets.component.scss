@@ -51,4 +51,11 @@
     .remove-asset {
         color: $color-warning;
     }
+
+    &.compact {
+        .asset-thumb {
+            margin: 1px;
+            border-width: 1px;
+        }
+    }
 }
