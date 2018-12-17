@@ -52,6 +52,7 @@
     "option-group-name": "Option group name",
     "option-group-options-label": "Options",
     "option-group-options-tooltip": "Enter each option on a new line in the default language ({ defaultLanguage })",
+    "options": "Options",
     "original-asset-size": "Source size",
     "price": "Price",
     "price-includes-tax-at": "Price includes tax at { rate }%",

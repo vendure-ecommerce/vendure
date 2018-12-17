@@ -21,6 +21,23 @@
     .header-row {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .details {
+        display: flex;
+        margin-left: 12px;
+        > div {
+            margin-right: 12px;
+        }
+
+        .name, .sku {
+            font-weight: bold;
+        }
+
+        ::ng-deep .name input {
+            width: 300px;
+        }
     }
 
     .flex-spacer {
@@ -44,18 +61,19 @@
         margin-right: 12px;
     }
 
-    .details {
-        display: flex;
-        margin-bottom: 24px;
-        > div {
-            margin-right: 12px;
-        }
-    }
-
     .pricing {
         display: flex;
         > div {
             margin-right: 12px;
+        }
+    }
+}
+
+@media screen and (max-width: $breakpoint-small){
+    .details {
+        flex-direction: column;
+        ::ng-deep .clr-control-container, ::ng-deep input {
+            width: 100%
         }
     }
 }
