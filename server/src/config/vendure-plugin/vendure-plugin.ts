@@ -1,4 +1,9 @@
+import { DocumentNode } from 'graphql';
+
+import { Type } from '../../../../shared/shared-types';
 import { VendureConfig } from '../vendure-config';
+
+export type PluginGraphQLExtension = { types: DocumentNode; resolver: Type<any> };
 
 /**
  * A VendurePlugin is a means of configuring and/or extending the functionality of the Vendure server. In its simplest form,
@@ -14,4 +19,16 @@ export interface VendurePlugin {
      * other (potentially async) tasks needed.
      */
     init(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
+
+    /**
+     * The plugin may extend the default Vendure GraphQL schema by implementing this method. For any type extension
+     * such as a new Query or Mutation field, a corresponding resolver must be supplied.
+     */
+    defineGraphQlTypes?(): PluginGraphQLExtension;
+
+    /**
+     * The plugin may define custom database entities, which should be defined as classes annotated as per the
+     * TypeORM documentation.
+     */
+    defineEntities?(): Array<Type<any>>;
 }

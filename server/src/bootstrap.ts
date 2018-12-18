@@ -4,10 +4,10 @@ import { EntitySubscriberInterface } from 'typeorm';
 
 import { Type } from '../../shared/shared-types';
 
+import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';
 import { getConfig, setConfig } from './config/config-helpers';
 import { VendureConfig } from './config/vendure-config';
-import { VendureEntity } from './entity/base/base.entity';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -44,11 +44,12 @@ export async function preBootstrapConfig(
     // base VendureEntity to be correctly configured with the primary key type
     // specified in the EntityIdStrategy.
     // tslint:disable-next-line:whitespace
-    const { coreEntitiesMap } = await import('./entity/entities');
+    const pluginEntities = getEntitiesFromPlugins(userConfig);
+    const entities = await getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers');
     setConfig({
         dbConnectionOptions: {
-            entities: Object.values(coreEntitiesMap) as Array<Type<VendureEntity>>,
+            entities,
             subscribers: Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>,
         },
     });
@@ -62,4 +63,30 @@ export async function preBootstrapConfig(
 
     registerCustomEntityFields(config);
     return config;
+}
+
+async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
+    const { coreEntitiesMap } = await import('./entity/entities');
+    const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
+    const coreEntityNames = Object.keys(coreEntitiesMap);
+    const pluginEntities = getEntitiesFromPlugins(userConfig);
+
+    for (const pluginEntity of pluginEntities) {
+        if (coreEntityNames.includes(pluginEntity.name)) {
+            throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
+        }
+    }
+    return [...coreEntities, ...pluginEntities];
+}
+
+/**
+ * Collects all entities defined in plugins into a single array.
+ */
+function getEntitiesFromPlugins(userConfig: Partial<VendureConfig>): Array<Type<any>> {
+    if (!userConfig.plugins) {
+        return [];
+    }
+    return userConfig.plugins
+        .map(p => (p.defineEntities ? p.defineEntities() : []))
+        .reduce((all, entities) => [...all, ...entities], []);
 }

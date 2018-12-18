@@ -1,3 +1,5 @@
+import { printSchema } from 'graphql';
+
 import { CustomFields } from '../../../../shared/shared-types';
 
 import { addGraphQLCustomFields } from './graphql-custom-fields';
@@ -13,7 +15,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type', () => {
@@ -26,7 +28,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with a translation', () => {
@@ -44,7 +46,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with a Create input', () => {
@@ -61,7 +63,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with an Update input', () => {
@@ -78,7 +80,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with a Create input and a translation', () => {
@@ -103,7 +105,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with SortParameters', () => {
@@ -125,7 +127,7 @@ describe('addGraphQLCustomFields()', () => {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 
     it('extends a type with FilterParameters', () => {
@@ -164,6 +166,6 @@ describe('addGraphQLCustomFields()', () => {
             ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
-        expect(result).toMatchSnapshot();
+        expect(printSchema(result)).toMatchSnapshot();
     });
 });

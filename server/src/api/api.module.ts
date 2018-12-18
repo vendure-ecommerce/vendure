@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 
+import { notNullOrUndefined } from '../../../shared/shared-utils';
+import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { I18nModule } from '../i18n/i18n.module';
@@ -59,6 +61,13 @@ const exportedProviders = [
     ZoneResolver,
 ];
 
+// Plugins may define resolver classes which must also be registered with this module
+// alongside the build-in resolvers.
+const pluginResolvers = getConfig()
+    .plugins.map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))
+    .filter(notNullOrUndefined)
+    .map(types => types.resolver);
+
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
  * come in, are parsed and then handed over to the ServiceModule classes which take care
@@ -75,6 +84,7 @@ const exportedProviders = [
     ],
     providers: [
         ...exportedProviders,
+        ...pluginResolvers,
         RequestContextService,
         IdCodecService,
         {

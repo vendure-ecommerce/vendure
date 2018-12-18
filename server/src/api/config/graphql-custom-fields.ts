@@ -1,4 +1,4 @@
-import { buildSchema, extendSchema, parse, printSchema } from 'graphql';
+import { buildSchema, extendSchema, GraphQLSchema, parse } from 'graphql';
 
 import { CustomFieldConfig, CustomFields, CustomFieldType } from '../../../../shared/shared-types';
 import { assertNever } from '../../../../shared/shared-utils';
@@ -8,7 +8,7 @@ import { assertNever } from '../../../../shared/shared-utils';
  * types with a customFields property for all entities, translations and inputs for which
  * custom fields are defined.
  */
-export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: CustomFields): string {
+export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: CustomFields): GraphQLSchema {
     const schema = buildSchema(typeDefs);
 
     let customFieldTypeDefs = '';
@@ -134,7 +134,7 @@ export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: Cust
         }
     }
 
-    return printSchema(extendSchema(schema, parse(customFieldTypeDefs)));
+    return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
 type GraphQLFieldType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
