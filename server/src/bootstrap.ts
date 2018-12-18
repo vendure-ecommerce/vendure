@@ -26,6 +26,8 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
         cors: config.cors,
         logger: config.silent ? false : undefined,
     });
+
+    await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port);
     return app;
 }
@@ -55,25 +57,59 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
-
-    // Initialize plugins
-    for (const plugin of config.plugins) {
-        config = (await plugin.init(config)) as ReadOnlyRequired<VendureConfig>;
-    }
-
+    config = await runPluginInitMethods(config);
     registerCustomEntityFields(config);
     return config;
 }
 
+/**
+ * Initialize any configured plugins.
+ */
+async function runPluginInitMethods(
+    config: ReadOnlyRequired<VendureConfig>,
+): Promise<ReadOnlyRequired<VendureConfig>> {
+    // Initialize plugins
+    for (const plugin of config.plugins) {
+        config = (await plugin.init(config)) as ReadOnlyRequired<VendureConfig>;
+    }
+    return config;
+}
+
+/**
+ * Run the onBootstrap() method of any configured plugins.
+ */
+async function runPluginOnBootstrapMethods(
+    config: ReadOnlyRequired<VendureConfig>,
+    app: INestApplication,
+): Promise<void> {
+    function inject<T>(type: Type<T>): T {
+        return app.get(type);
+    }
+
+    for (const plugin of config.plugins) {
+        if (plugin.onBootstrap) {
+            await plugin.onBootstrap(inject);
+        }
+    }
+}
+
+/**
+ * Returns an array of core entities and any additional entities defined in plugins.
+ */
 async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
     const { coreEntitiesMap } = await import('./entity/entities');
     const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
-    const coreEntityNames = Object.keys(coreEntitiesMap);
     const pluginEntities = getEntitiesFromPlugins(userConfig);
 
+    const allEntities: Array<Type<any>> = coreEntities;
+
+    // Check to ensure that no plugins are defining entities with names
+    // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
-        if (coreEntityNames.includes(pluginEntity.name)) {
+        if (allEntities.find(e => e.name === pluginEntity.name)) {
             throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
+        } else {
+            allEntities.push(pluginEntity);
         }
     }
     return [...coreEntities, ...pluginEntities];

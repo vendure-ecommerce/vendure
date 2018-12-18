@@ -15,10 +15,17 @@ export type PluginGraphQLExtension = { types: DocumentNode; resolver: Type<any> 
  */
 export interface VendurePlugin {
     /**
-     * This method is called when the app bootstraps, and can modify the VendureConfig object and perform
+     * This method is called before the app bootstraps, and can modify the VendureConfig object and perform
      * other (potentially async) tasks needed.
      */
     init(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
+
+    /**
+     * This method is called after the app has bootstrapped. In this method, instances of services may be injected
+     * into the plugin. For example, the ProductService can be injected in order to enable operations on Product
+     * entities.
+     */
+    onBootstrap?(inject: <T>(type: Type<T>) => T): void | Promise<void>;
 
     /**
      * The plugin may extend the default Vendure GraphQL schema by implementing this method. For any type extension
