@@ -4,9 +4,10 @@
 
 A headless [GraphQL](https://graphql.org/) ecommerce framework built on [NestJS](https://nestjs.com/) with [TypeScript](http://www.typescriptlang.org/).
 
-### Status
+### Status & note on docs
 
-Currently in pre-alpha, i.e. it is not yet useable.
+Currently in pre-alpha. **Alpha release coming in Q1 2019**, at which point there will be some proper documentation. This readme is currently
+a somewhat unstructured collection of development-related notes. For updates follow [twitter.com/vendure_io](https://twitter.com/vendure_io).
 
 ## Structure
 
@@ -128,13 +129,7 @@ Custom fields are configured by means of a `customFields` property in the Vendur
 
 ```TypeScript
 bootstrap({
-    port: API_PORT,
-    apiPath: API_PATH,
-    cors: true,
-    jwtSecret: 'some-secret',
-    dbConnectionOptions: {
-        // ...
-    },
+    // ...
     customFields: {
         Product: [
             { name: 'infoUrl', type: 'string' },
@@ -198,8 +193,9 @@ to another, as defined by the [OrderState definitions](server/src/service/helper
 ```TypeScript
 export type OrderState =
     | 'AddingItems'
-    | 'ArrangingShipping'
     | 'ArrangingPayment'
+    | 'PaymentAuthorized'
+    | 'PaymentSettled'
     | 'OrderComplete'
     | 'Cancelled';
 ```
