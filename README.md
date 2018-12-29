@@ -48,6 +48,39 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 * `yarn start`
 * Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
+### Making a request
+
+When making an API request, it must include a `vendure-token` header with the value 
+being the channel token of the active channel. This value is set in the config by the
+`defaultChannelToken` property. If this is not set, or does not match a valid channel token,
+you will get the error `No valid channel was specified`
+
+For example:
+```TypeScript
+// bootstrap code
+bootstrap({
+    port: 3000,
+    apiPath: 'api',
+    defaultChannelToken: 'default-channel'
+    // ...
+})
+```
+
+```TypeScript
+// API call
+fetch(
+    'http://localhost:3000/api',
+    {
+        headers: {
+            'content-type': 'application/json',
+            'vendure-token': 'default-channel',
+        },
+        body: '{"query":"mutation { login(username: \\"superadmin\\", password: \\"superadmin\\") { user { id } } }"}',
+        method: 'POST',
+    },
+)
+```
+
 ### Code Generation
 
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces
