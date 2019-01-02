@@ -31,9 +31,9 @@ export interface VendurePlugin {
     defineGraphQlTypes?(): DocumentNode;
 
     /**
-     * The plugin may define custom GraphQL resolvers.
+     * The plugin may define custom providers (including GraphQL resolvers) which can then be injected via the Nest DI container.
      */
-    defineResolvers?(): Array<Type<any>>;
+    defineProviders?(): Array<Type<any>>;
 
     /**
      * The plugin may define custom database entities, which should be defined as classes annotated as per the
