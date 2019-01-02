@@ -1,6 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
+import { Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { Permission } from '../../../../shared/generated-types';
 import { Allow } from '../../api/decorators/allow.decorator';
@@ -10,7 +8,13 @@ import { InternalServerError } from '../../common/error/errors';
 export class SearchResolver {
     @Query()
     @Allow(Permission.Public)
-    async search(@Args() args: any): Promise<any[]> {
+    async search(...args: any): Promise<any[]> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async reindex(...args: any[]): Promise<boolean> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 }

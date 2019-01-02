@@ -1,5 +1,8 @@
 type Query {
     search(input: SearchInput!): [SearchResult!]!
+}
+
+type Mutation {
     reindex: Boolean!
 }
 
