@@ -1,8 +1,8 @@
+import { GeneratedEmailContext } from '../../email/email-context';
+
 /**
  * A subset of the SMTP transport options of Nodemailer (https://nodemailer.com/smtp/)
  */
-import { GeneratedEmailContext } from '../../email/email-context';
-
 export interface SMTPTransportOptions {
     type: 'smtp';
     /** the hostname or IP address to connect to (defaults to ‘localhost’) */

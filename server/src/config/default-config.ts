@@ -1,8 +1,10 @@
+import * as path from 'path';
+
 import { LanguageCode } from '../../../shared/generated-types';
 import { API_PATH, API_PORT } from '../../../shared/shared-constants';
 import { CustomFields } from '../../../shared/shared-types';
-
 import { ReadOnlyRequired } from '../common/types/common-types';
+import { DefaultAssetServerPlugin } from '../plugin';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -89,5 +91,21 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         User: [],
     } as ReadOnlyRequired<CustomFields>,
     middleware: [],
-    plugins: [],
+    plugins: [
+        new DefaultAssetServerPlugin({
+            route: 'assets',
+            assetUploadDir: path.join(__dirname, 'assets'),
+            port: 4000,
+            hostname: 'http://localhost',
+            previewMaxHeight: 1600,
+            previewMaxWidth: 1600,
+            presets: [
+                { name: 'tiny', width: 50, height: 50, mode: 'crop' },
+                { name: 'thumb', width: 150, height: 150, mode: 'crop' },
+                { name: 'small', width: 300, height: 300, mode: 'resize' },
+                { name: 'medium', width: 500, height: 500, mode: 'resize' },
+                { name: 'large', width: 800, height: 800, mode: 'resize' },
+            ],
+        }),
+    ],
 };

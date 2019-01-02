@@ -7,7 +7,6 @@ import { gripePaymentHandler } from './src/config/payment-method/gripe-payment-m
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
 import { defaultEmailTypes } from './src/email/default-email-types';
 import { HandlebarsMjmlGenerator } from './src/email/handlebars-mjml-generator';
-import { DefaultAssetServerPlugin } from './src/plugin/default-asset-server/default-asset-server-plugin';
 
 /**
  * Config settings used during development
@@ -47,21 +46,5 @@ export const devConfig: VendureConfig = {
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
-    plugins: [
-        new DefaultAssetServerPlugin({
-            route: 'assets',
-            assetUploadDir: path.join(__dirname, 'assets'),
-            port: 4000,
-            hostname: 'http://localhost',
-            previewMaxHeight: 1600,
-            previewMaxWidth: 1600,
-            presets: [
-                { name: 'tiny', width: 50, height: 50, mode: 'crop' },
-                { name: 'thumb', width: 150, height: 150, mode: 'crop' },
-                { name: 'small', width: 300, height: 300, mode: 'resize' },
-                { name: 'medium', width: 500, height: 500, mode: 'resize' },
-                { name: 'large', width: 800, height: 800, mode: 'resize' },
-            ],
-        }),
-    ],
+    plugins: [],
 };
