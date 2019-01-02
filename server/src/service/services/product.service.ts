@@ -12,6 +12,8 @@ import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -33,6 +35,7 @@ export class ProductService {
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
+        private eventBus: EventBus,
     ) {}
 
     findAll(
@@ -107,6 +110,7 @@ export class ProductService {
                 await this.assetUpdater.updateEntityAssets(p, input);
             },
         });
+        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return assertFound(this.findOne(ctx, product.id));
     }
 

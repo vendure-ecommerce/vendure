@@ -1,0 +1,20 @@
+type Query {
+    search(input: SearchInput!): [SearchResult!]!
+    reindex: Boolean!
+}
+
+input SearchInput {
+    term: String
+}
+
+type SearchResult {
+    productVariantName: String!
+    productName: String!
+    productVariantId: ID!
+    productId: ID!
+    description: String!
+    productPreview: String!
+    productVariantPreview: String!
+    facetIds: [String!]!
+    facetValueIds: [String!]!
+}
