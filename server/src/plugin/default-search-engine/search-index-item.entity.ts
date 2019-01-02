@@ -17,7 +17,7 @@ export class SearchIndexItem {
     @PrimaryColumn({ type: idType() })
     productVariantId: ID;
 
-    @Column('varchar')
+    @PrimaryColumn('varchar')
     languageCode: LanguageCode;
 
     @Column({ type: idType() })
@@ -35,6 +35,9 @@ export class SearchIndexItem {
     @Column('text')
     description: string;
 
+    @Column()
+    sku: string;
+
     @Column('simple-array')
     facetIds: string[];
 
@@ -46,6 +49,4 @@ export class SearchIndexItem {
 
     @Column()
     productVariantPreview: string;
-
-    score: number;
 }

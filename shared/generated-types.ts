@@ -77,6 +77,7 @@ export interface Query {
     adjustmentOperations: AdjustmentOperations;
     roles: RoleList;
     role?: Role | null;
+    search: SearchResponse;
     shippingMethods: ShippingMethodList;
     shippingMethod?: ShippingMethod | null;
     shippingEligibilityCheckers: AdjustmentOperation[];
@@ -584,6 +585,26 @@ export interface RoleList extends PaginatedList {
     totalItems: number;
 }
 
+export interface SearchResponse {
+    items: SearchResult[];
+    totalItems: number;
+    facetValueIds: string[];
+}
+
+export interface SearchResult {
+    sku: string;
+    productVariantName: string;
+    productName: string;
+    productVariantId: string;
+    productId: string;
+    description: string;
+    productPreview: string;
+    productVariantPreview: string;
+    facetIds: string[];
+    facetValueIds: string[];
+    score: number;
+}
+
 export interface ShippingMethodList extends PaginatedList {
     items: ShippingMethod[];
     totalItems: number;
@@ -659,6 +680,7 @@ export interface Mutation {
     updatePromotion: Promotion;
     createRole: Role;
     updateRole: Role;
+    reindex: boolean;
     createShippingMethod: ShippingMethod;
     updateShippingMethod: ShippingMethod;
     createTaxCategory: TaxCategory;
@@ -954,6 +976,13 @@ export interface RoleFilterParameter {
     description?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
+}
+
+export interface SearchInput {
+    term?: string | null;
+    facetIds?: string[] | null;
+    take?: number | null;
+    skip?: number | null;
 }
 
 export interface ShippingMethodListOptions {
@@ -1503,6 +1532,9 @@ export interface RolesQueryArgs {
 export interface RoleQueryArgs {
     id: string;
 }
+export interface SearchQueryArgs {
+    input: SearchInput;
+}
 export interface ShippingMethodsQueryArgs {
     options?: ShippingMethodListOptions | null;
 }
@@ -1998,6 +2030,7 @@ export namespace QueryResolvers {
         adjustmentOperations?: AdjustmentOperationsResolver<AdjustmentOperations, any, Context>;
         roles?: RolesResolver<RoleList, any, Context>;
         role?: RoleResolver<Role | null, any, Context>;
+        search?: SearchResolver<SearchResponse, any, Context>;
         shippingMethods?: ShippingMethodsResolver<ShippingMethodList, any, Context>;
         shippingMethod?: ShippingMethodResolver<ShippingMethod | null, any, Context>;
         shippingEligibilityCheckers?: ShippingEligibilityCheckersResolver<
@@ -2340,6 +2373,16 @@ export namespace QueryResolvers {
     >;
     export interface RoleArgs {
         id: string;
+    }
+
+    export type SearchResolver<R = SearchResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        SearchArgs
+    >;
+    export interface SearchArgs {
+        input: SearchInput;
     }
 
     export type ShippingMethodsResolver<R = ShippingMethodList, Parent = any, Context = any> = Resolver<
@@ -3834,6 +3877,70 @@ export namespace RoleListResolvers {
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace SearchResponseResolvers {
+    export interface Resolvers<Context = any> {
+        items?: ItemsResolver<SearchResult[], any, Context>;
+        totalItems?: TotalItemsResolver<number, any, Context>;
+        facetValueIds?: FacetValueIdsResolver<string[], any, Context>;
+    }
+
+    export type ItemsResolver<R = SearchResult[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type FacetValueIdsResolver<R = string[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace SearchResultResolvers {
+    export interface Resolvers<Context = any> {
+        sku?: SkuResolver<string, any, Context>;
+        productVariantName?: ProductVariantNameResolver<string, any, Context>;
+        productName?: ProductNameResolver<string, any, Context>;
+        productVariantId?: ProductVariantIdResolver<string, any, Context>;
+        productId?: ProductIdResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
+        productPreview?: ProductPreviewResolver<string, any, Context>;
+        productVariantPreview?: ProductVariantPreviewResolver<string, any, Context>;
+        facetIds?: FacetIdsResolver<string[], any, Context>;
+        facetValueIds?: FacetValueIdsResolver<string[], any, Context>;
+        score?: ScoreResolver<number, any, Context>;
+    }
+
+    export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProductVariantNameResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ProductNameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProductVariantIdResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ProductIdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProductPreviewResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ProductVariantPreviewResolver<R = string, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type FacetIdsResolver<R = string[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type FacetValueIdsResolver<R = string[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ScoreResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace ShippingMethodListResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<ShippingMethod[], any, Context>;
@@ -3946,6 +4053,7 @@ export namespace MutationResolvers {
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
+        reindex?: ReindexResolver<boolean, any, Context>;
         createShippingMethod?: CreateShippingMethodResolver<ShippingMethod, any, Context>;
         updateShippingMethod?: UpdateShippingMethodResolver<ShippingMethod, any, Context>;
         createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
@@ -4466,6 +4574,7 @@ export namespace MutationResolvers {
         input: UpdateRoleInput;
     }
 
+    export type ReindexResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CreateShippingMethodResolver<R = ShippingMethod, Parent = any, Context = any> = Resolver<
         R,
         Parent,

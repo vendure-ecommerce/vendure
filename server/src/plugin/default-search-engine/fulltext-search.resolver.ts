@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { Permission } from '../../../../shared/generated-types';
+import { Permission, SearchQueryArgs, SearchResponse } from '../../../../shared/generated-types';
 import { RequestContext } from '../../api/common/request-context';
 import { Allow } from '../../api/decorators/allow.decorator';
 import { Ctx } from '../../api/decorators/request-context.decorator';
@@ -16,8 +16,8 @@ export class FulltextSearchResolver extends BaseSearchResolver {
 
     @Query()
     @Allow(Permission.Public)
-    async search(@Ctx() ctx: RequestContext, @Args() args: any) {
-        return this.fulltextSearchService.search(ctx, args.input.term);
+    async search(@Ctx() ctx: RequestContext, @Args() args: SearchQueryArgs): Promise<SearchResponse> {
+        return this.fulltextSearchService.search(ctx, args.input);
     }
 
     @Mutation()

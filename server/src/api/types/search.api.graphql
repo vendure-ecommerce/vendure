@@ -1,5 +1,5 @@
 type Query {
-    search(input: SearchInput!): [SearchResult!]!
+    search(input: SearchInput!): SearchResponse!
 }
 
 type Mutation {
@@ -8,9 +8,19 @@ type Mutation {
 
 input SearchInput {
     term: String
+    facetIds: [String!]
+    take: Int
+    skip: Int
+}
+
+type SearchResponse {
+    items: [SearchResult!]!
+    totalItems: Int!
+    facetValueIds: [String!]!
 }
 
 type SearchResult {
+    sku: String!
     productVariantName: String!
     productName: String!
     productVariantId: ID!
@@ -20,4 +30,5 @@ type SearchResult {
     productVariantPreview: String!
     facetIds: [String!]!
     facetValueIds: [String!]!
+    score: Float!
 }
