@@ -67,7 +67,7 @@ export class GraphqlConfigService implements GqlOptionsFactory {
         const pluginTypes = this.configService.plugins
             .map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))
             .filter(notNullOrUndefined);
-        for (const { types } of pluginTypes) {
+        for (const types of pluginTypes) {
             schema = extendSchema(schema, types);
         }
         return printSchema(schema);

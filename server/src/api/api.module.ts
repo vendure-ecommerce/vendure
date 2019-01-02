@@ -32,6 +32,7 @@ import { ProductOptionResolver } from './resolvers/product-option.resolver';
 import { ProductResolver } from './resolvers/product.resolver';
 import { PromotionResolver } from './resolvers/promotion.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
+import { SearchResolver } from './resolvers/search.resolver';
 import { ShippingMethodResolver } from './resolvers/shipping-method.resolver';
 import { TaxCategoryResolver } from './resolvers/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/tax-rate.resolver';
@@ -55,6 +56,7 @@ const exportedProviders = [
     ProductResolver,
     ProductCategoryResolver,
     RoleResolver,
+    SearchResolver,
     ShippingMethodResolver,
     TaxCategoryResolver,
     TaxRateResolver,
@@ -64,9 +66,9 @@ const exportedProviders = [
 // Plugins may define resolver classes which must also be registered with this module
 // alongside the build-in resolvers.
 const pluginResolvers = getConfig()
-    .plugins.map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))
+    .plugins.map(p => (p.defineResolvers ? p.defineResolvers() : undefined))
     .filter(notNullOrUndefined)
-    .map(types => types.resolver);
+    .reduce((flattened, resolvers) => flattened.concat(resolvers), []);
 
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
