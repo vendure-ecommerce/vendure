@@ -3,12 +3,15 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, SelectQueryBuilder } from 'typeorm';
 
 import { LanguageCode, SearchInput, SearchResponse } from '../../../../shared/generated-types';
+import { Omit } from '../../../../shared/omit';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
+import { Translated } from '../../common/types/locale-types';
 import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
+import { FacetValueService } from '../../service/services/facet-value.service';
 
 import { SearchIndexItem } from './search-index-item.entity';
 
@@ -29,7 +32,11 @@ export class FulltextSearchService {
         'facetValues.facet',
     ];
 
-    constructor(@InjectConnection() private connection: Connection, private eventBus: EventBus) {
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private eventBus: EventBus,
+        private facetValueService: FacetValueService,
+    ) {
         eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
                 return this.update(event.ctx, event.entity);
@@ -40,7 +47,7 @@ export class FulltextSearchService {
     /**
      * Perform a fulltext search according to the provided input arguments.
      */
-    async search(ctx: RequestContext, input: SearchInput): Promise<SearchResponse> {
+    async search(ctx: RequestContext, input: SearchInput): Promise<Omit<SearchResponse, 'facetValues'>> {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
@@ -84,6 +91,13 @@ export class FulltextSearchService {
             .setParameters(innerQb.getParameters());
         const totalResult = await totalItemsQb.getRawOne();
 
+        return {
+            items,
+            totalItems: totalResult.total,
+        };
+    }
+
+    async facetValues(ctx: RequestContext, input: SearchInput): Promise<Array<Translated<FacetValue>>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
@@ -92,12 +106,7 @@ export class FulltextSearchService {
         const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, input).getRawOne();
         const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
         const facetValueIds = unique(allFacetValues.split(',').filter(x => x !== '') as string[]);
-
-        return {
-            items,
-            totalItems: totalResult.total,
-            facetValueIds,
-        };
+        return this.facetValueService.findByIds(facetValueIds, ctx.languageCode);
     }
 
     /**

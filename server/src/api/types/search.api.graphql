@@ -16,7 +16,7 @@ input SearchInput {
 type SearchResponse {
     items: [SearchResult!]!
     totalItems: Int!
-    facetValueIds: [String!]!
+    facetValues: [FacetValue!]!
 }
 
 type SearchResult {

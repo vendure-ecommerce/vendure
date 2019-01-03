@@ -588,7 +588,7 @@ export interface RoleList extends PaginatedList {
 export interface SearchResponse {
     items: SearchResult[];
     totalItems: number;
-    facetValueIds: string[];
+    facetValues: FacetValue[];
 }
 
 export interface SearchResult {
@@ -3881,12 +3881,12 @@ export namespace SearchResponseResolvers {
     export interface Resolvers<Context = any> {
         items?: ItemsResolver<SearchResult[], any, Context>;
         totalItems?: TotalItemsResolver<number, any, Context>;
-        facetValueIds?: FacetValueIdsResolver<string[], any, Context>;
+        facetValues?: FacetValuesResolver<FacetValue[], any, Context>;
     }
 
     export type ItemsResolver<R = SearchResult[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type FacetValueIdsResolver<R = string[], Parent = any, Context = any> = Resolver<
+    export type FacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
