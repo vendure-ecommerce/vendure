@@ -5,3 +5,12 @@
     height: 50px;
     background-color: $color-grey-2;
 }
+.search-form {
+    display: flex;
+}
+.search-input {
+    min-width: 300px;
+    @media screen and (max-width: $breakpoint-small){
+        min-width: 100px;
+    }
+}

@@ -1,8 +1,29 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <form class="clr-form search-form" [formGroup]="searchForm">
+            <input
+                type="text"
+                name="searchTerm"
+                formControlName="searchTerm"
+                [placeholder]="'catalog.search-product-name-or-code' | translate"
+                class="clr-input search-input"
+            />
+            <clr-checkbox-wrapper>
+                <input
+                    type="checkbox"
+                    clrCheckbox
+                    formControlName="groupByProduct"
+                    (ngModelChange)="groupByProduct = $event"
+                />
+                <label>{{ 'catalog.group-by-product' | translate }}</label>
+            </clr-checkbox-wrapper>
+        </form>
+    </vdr-ab-left>
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
-            {{ 'catalog.create-new-product' | translate }}
+            <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
+            <span class="compact-label">{{ 'common.create' | translate }}</span>
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
@@ -17,21 +38,25 @@
 >
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'catalog.slug' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
-    <ng-template let-product="item">
+    <ng-template let-result="item">
         <td class="left">
             <div class="image-placeholder">
-                <img [src]="product.featuredAsset?.preview + '?preset=tiny'" />
+                <img
+                    [src]="
+                        (groupByProduct
+                            ? result.productPreview
+                            : result.productVariantPreview || result.productPreview) + '?preset=tiny'
+                    "
+                />
             </div>
         </td>
-        <td class="left">{{ product.name }}</td>
-        <td class="left">{{ product.slug }}</td>
+        <td class="left">{{ groupByProduct ? result.productName : result.productVariantName }}</td>
         <td class="right">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"
-                [linkTo]="['./', product.id]"
+                [linkTo]="['./', result.productId]"
             ></vdr-table-row-action>
         </td>
     </ng-template>

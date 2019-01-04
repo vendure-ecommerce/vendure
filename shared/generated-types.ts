@@ -5575,6 +5575,33 @@ export namespace MoveProductCategory {
     export type MoveProductCategory = ProductCategory.Fragment;
 }
 
+export namespace SearchProducts {
+    export type Variables = {
+        input: SearchInput;
+    };
+
+    export type Query = {
+        __typename?: 'Query';
+        search: Search;
+    };
+
+    export type Search = {
+        __typename?: 'SearchResponse';
+        totalItems: number;
+        items: Items[];
+    };
+
+    export type Items = {
+        __typename?: 'SearchResult';
+        productName: string;
+        productVariantName: string;
+        productId: string;
+        productVariantId: string;
+        productPreview: string;
+        sku: string;
+    };
+}
+
 export namespace GetPromotionList {
     export type Variables = {
         options?: PromotionListOptions | null;

@@ -374,3 +374,20 @@ export const MOVE_PRODUCT_CATEGORY = gql`
     }
     ${PRODUCT_CATEGORY_FRAGMENT}
 `;
+
+export const SEARCH_PRODUCTS = gql`
+    query SearchProducts($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            items {
+                productId
+                productName
+                productPreview
+                productVariantId
+                productVariantName
+                productVariantPreview
+                sku
+            }
+        }
+    }
+`;

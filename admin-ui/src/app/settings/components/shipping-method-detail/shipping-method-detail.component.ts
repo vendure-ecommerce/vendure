@@ -144,7 +144,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     ): AdjustmentOperationInput {
         return {
             code: operation.code,
-            arguments: Object.values(formValueOperations.args).map((value, j) => ({
+            arguments: Object.values(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
                 value: value.toString(),
             })),
@@ -155,8 +155,8 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         this.shippingMethodForm.patchValue({
             description: shippingMethod.description,
             code: shippingMethod.code,
-            checker: shippingMethod.checker,
-            calculator: shippingMethod.calculator,
+            checker: shippingMethod.checker || {},
+            calculator: shippingMethod.calculator || {},
         });
         this.selectedChecker = shippingMethod.checker;
         this.selectedCalculator = shippingMethod.calculator;
