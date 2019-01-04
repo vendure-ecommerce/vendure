@@ -48,6 +48,9 @@ export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
     }
 
     toAbsoluteUrl(request: Request, identifier: string): string {
+        if (!identifier) {
+            return '';
+        }
         return `${request.protocol}://${request.get('host')}/${this.route}/${identifier}`;
     }
 

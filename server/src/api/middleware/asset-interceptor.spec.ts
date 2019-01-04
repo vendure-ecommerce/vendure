@@ -126,4 +126,38 @@ describe('AssetInterceptor', () => {
             },
         ),
     );
+
+    it(
+        'handles productPreview property',
+        testInterceptor(
+            {
+                items: [
+                    {
+                        productPreview: 'image.jpg',
+                    },
+                ],
+            },
+            (response, result, toAbsoluteUrl) => {
+                expect(result).toEqual({ items: [{ productPreview: 'visited' }] });
+                expect(toAbsoluteUrl).toHaveBeenCalledTimes(1);
+            },
+        ),
+    );
+
+    it(
+        'handles productVariantPreview property',
+        testInterceptor(
+            {
+                items: [
+                    {
+                        productVariantPreview: 'image.jpg',
+                    },
+                ],
+            },
+            (response, result, toAbsoluteUrl) => {
+                expect(result).toEqual({ items: [{ productVariantPreview: 'visited' }] });
+                expect(toAbsoluteUrl).toHaveBeenCalledTimes(1);
+            },
+        ),
+    );
 });

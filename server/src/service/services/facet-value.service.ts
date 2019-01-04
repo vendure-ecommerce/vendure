@@ -42,8 +42,19 @@ export class FacetValueService {
             .then(facetValue => facetValue && translateDeep(facetValue, lang, ['facet']));
     }
 
-    findByIds(ids: ID[]): Promise<FacetValue[]> {
-        return this.connection.getRepository(FacetValue).findByIds(ids, { relations: ['facet'] });
+    findByIds(ids: ID[]): Promise<FacetValue[]>;
+    findByIds(ids: ID[], lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
+    findByIds(ids: ID[], lang?: LanguageCode): Promise<FacetValue[]> {
+        const facetValues = this.connection
+            .getRepository(FacetValue)
+            .findByIds(ids, { relations: ['facet'] });
+        if (lang) {
+            return facetValues.then(values =>
+                values.map(facetValue => translateDeep(facetValue, lang, ['facet'])),
+            );
+        } else {
+            return facetValues;
+        }
     }
 
     async findByCategoryIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {

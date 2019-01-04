@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 
-import { notNullOrUndefined } from '../../../shared/shared-utils';
-import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { I18nModule } from '../i18n/i18n.module';
+import { PluginModule } from '../plugin/plugin.module';
 import { ServiceModule } from '../service/service.module';
 
 import { IdCodecService } from './common/id-codec.service';
@@ -38,7 +37,7 @@ import { TaxCategoryResolver } from './resolvers/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/zone.resolver';
 
-const exportedProviders = [
+const resolvers = [
     PromotionResolver,
     AdministratorResolver,
     AuthResolver,
@@ -63,13 +62,6 @@ const exportedProviders = [
     ZoneResolver,
 ];
 
-// Plugins may define resolver classes which must also be registered with this module
-// alongside the build-in resolvers.
-const pluginResolvers = getConfig()
-    .plugins.map(p => (p.defineResolvers ? p.defineResolvers() : undefined))
-    .filter(notNullOrUndefined)
-    .reduce((flattened, resolvers) => flattened.concat(resolvers), []);
-
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
  * come in, are parsed and then handed over to the ServiceModule classes which take care
@@ -83,10 +75,10 @@ const pluginResolvers = getConfig()
             useClass: GraphqlConfigService,
             imports: [ConfigModule, I18nModule],
         }),
+        PluginModule,
     ],
     providers: [
-        ...exportedProviders,
-        ...pluginResolvers,
+        ...resolvers,
         RequestContextService,
         IdCodecService,
         {
@@ -102,6 +94,5 @@ const pluginResolvers = getConfig()
             useClass: IdInterceptor,
         },
     ],
-    exports: exportedProviders,
 })
 export class ApiModule {}

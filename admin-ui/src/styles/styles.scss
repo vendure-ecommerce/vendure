@@ -21,3 +21,21 @@ a:link, a:visited {
 .table {
     border-color: $color-grey-2;
 }
+
+.full-label, .compact-label {
+    margin-left: 6px;
+}
+.full-label {
+    display: none;
+}
+.compact-label {
+    display: initial;
+}
+@media screen and (min-width: $breakpoint-small) {
+    .full-label {
+        display: initial;
+    }
+    .compact-label {
+        display: none;
+    }
+}

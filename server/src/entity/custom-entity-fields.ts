@@ -5,7 +5,6 @@ import { assertNever } from '../../../shared/shared-utils';
 import { VendureConfig } from '../config/vendure-config';
 
 import { VendureEntity } from './base/base.entity';
-import { coreEntitiesMap } from './entities';
 
 @Entity()
 export class CustomAddressFields {}
@@ -175,8 +174,10 @@ export function registerCustomEntityFields(config: VendureConfig) {
  * Validates the custom fields config, e.g. by ensuring that there are no naming conflicts with the built-in fields
  * of each entity.
  */
-export function validateCustomFieldsConfig(customFieldConfig: CustomFields) {
+export async function validateCustomFieldsConfig(customFieldConfig: CustomFields) {
     const connection = getConnection();
+    // dynamic import to avoid bootstrap-time order of loading issues
+    const { coreEntitiesMap } = await import('./entities');
 
     for (const key of Object.keys(customFieldConfig)) {
         const entityName = key as keyof CustomFields;

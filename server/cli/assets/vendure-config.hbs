@@ -3,6 +3,8 @@
     gripePaymentHandler,
     defaultEmailTypes,
     HandlebarsMjmlGenerator,
+    DefaultAssetServerPlugin,
+    DefaultSearchPlugin,
     {{#if isTs}}VendureConfig,{{/if}}
 } {{#if isTs}}from 'vendure'; {{ else }}= require('vendure');{{/if}}
 {{#if isTs }}
@@ -46,7 +48,24 @@ const path = require('path');
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'vendure', 'import-assets'),
     },
-    plugins: [],
+    plugins: [
+        new DefaultAssetServerPlugin({
+            route: 'assets',
+            assetUploadDir: path.join(__dirname, 'vendure', 'assets'),
+            port: 4000,
+            hostname: 'http://localhost',
+            previewMaxHeight: 1600,
+            previewMaxWidth: 1600,
+            presets: [
+                { name: 'tiny', width: 50, height: 50, mode: 'crop' },
+                { name: 'thumb', width: 150, height: 150, mode: 'crop' },
+                { name: 'small', width: 300, height: 300, mode: 'resize' },
+                { name: 'medium', width: 500, height: 500, mode: 'resize' },
+                { name: 'large', width: 800, height: 800, mode: 'resize' },
+            ],
+        }),
+        new DefaultSearchPlugin(),
+    ],
 };
 {{#if isTs}}
 {{else}}

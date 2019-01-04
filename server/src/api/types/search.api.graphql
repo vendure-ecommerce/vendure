@@ -1,0 +1,35 @@
+type Query {
+    search(input: SearchInput!): SearchResponse!
+}
+
+type Mutation {
+    reindex: Boolean!
+}
+
+input SearchInput {
+    term: String
+    facetIds: [String!]
+    groupByProduct: Boolean
+    take: Int
+    skip: Int
+}
+
+type SearchResponse {
+    items: [SearchResult!]!
+    totalItems: Int!
+    facetValues: [FacetValue!]!
+}
+
+type SearchResult {
+    sku: String!
+    productId: ID!
+    productName: String!
+    productPreview: String!
+    productVariantId: ID!
+    productVariantName: String!
+    productVariantPreview: String!
+    description: String!
+    facetIds: [String!]!
+    facetValueIds: [String!]!
+    score: Float!
+}

@@ -7,19 +7,22 @@ import { QueryResult } from '../data/query-result';
 
 export type ListQueryFn<R> = (take: number, skip: number, ...args: any[]) => QueryResult<R, any>;
 export type MappingFn<T, R> = (result: R) => { items: T[]; totalItems: number };
+export type OnPageChangeFn<V> = (skip: number, take: number) => V;
 
 /**
  * This is a base class which implements the logic required to fetch and manipluate
  * a list of data from a query which returns a PaginatedList type.
  */
-export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestroy {
+export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
     items$: Observable<ItemType[]>;
     totalItems$: Observable<number>;
     itemsPerPage$: Observable<number>;
     currentPage$: Observable<number>;
-    private destroy$ = new Subject<void>();
+    protected destroy$ = new Subject<void>();
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
+    private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
+        ({ options: { skip, take } } as any);
     private refresh$ = new BehaviorSubject<undefined>(undefined);
 
     constructor(private router: Router, private route: ActivatedRoute) {}
@@ -27,9 +30,16 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
     /**
      * Sets the fetch function for the list being implemented.
      */
-    setQueryFn(listQueryFn: ListQueryFn<ResultType>, mappingFn: MappingFn<ItemType, ResultType>) {
+    setQueryFn(
+        listQueryFn: ListQueryFn<ResultType>,
+        mappingFn: MappingFn<ItemType, ResultType>,
+        onPageChangeFn?: OnPageChangeFn<VariableType>,
+    ) {
         this.listQueryFn = listQueryFn;
         this.mappingFn = mappingFn;
+        if (onPageChangeFn) {
+            this.onPageChangeFn = onPageChangeFn;
+        }
     }
 
     ngOnInit() {
@@ -43,7 +53,7 @@ export class BaseListComponent<ResultType, ItemType> implements OnInit, OnDestro
         const fetchPage = ([currentPage, itemsPerPage, _]: [number, number, undefined]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
-            listQuery.ref.refetch({ options: { skip, take } });
+            listQuery.ref.refetch(this.onPageChangeFn(skip, take));
         };
 
         this.items$ = listQuery.stream$.pipe(map(data => this.mappingFn(data).items));

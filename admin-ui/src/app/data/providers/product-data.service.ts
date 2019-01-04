@@ -19,6 +19,7 @@ import {
     MoveProductCategory,
     MoveProductCategoryInput,
     RemoveOptionGroupFromProduct,
+    SearchProducts,
     UpdateProduct,
     UpdateProductCategory,
     UpdateProductCategoryInput,
@@ -44,6 +45,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     MOVE_PRODUCT_CATEGORY,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_CATEGORY,
     UPDATE_PRODUCT_VARIANTS,
@@ -53,6 +55,17 @@ import { BaseDataService } from './base-data.service';
 
 export class ProductDataService {
     constructor(private baseDataService: BaseDataService) {}
+
+    searchProducts(term: string, take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            input: {
+                term,
+                take,
+                skip,
+                groupByProduct: true,
+            },
+        });
+    }
 
     getProducts(take: number = 10, skip: number = 0) {
         return this.baseDataService.query<GetProductList.Query, GetProductList.Variables>(GET_PRODUCT_LIST, {
