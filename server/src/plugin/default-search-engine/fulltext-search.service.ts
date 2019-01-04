@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection, SelectQueryBuilder } from 'typeorm';
+import { Brackets, Connection, Like, SelectQueryBuilder } from 'typeorm';
 
 import { LanguageCode, SearchInput, SearchResponse } from '../../../../shared/generated-types';
 import { Omit } from '../../../../shared/omit';
@@ -149,6 +149,7 @@ export class FulltextSearchService {
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
         const { term, facetIds } = input;
+        qb.where('true');
         if (term && term.length > this.minTermLength) {
             qb.addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
                 .addSelect(
@@ -159,15 +160,24 @@ export class FulltextSearchService {
                         MATCH (description) AGAINST (:term)* 1`,
                     'score',
                 )
-                .having(`score > 0`)
+                .andWhere(
+                    new Brackets(qb1 => {
+                        qb1.where('sku LIKE :like_term')
+                            .orWhere('MATCH (productName) AGAINST (:term)')
+                            .orWhere('MATCH (productVariantName) AGAINST (:term)')
+                            .orWhere('MATCH (description) AGAINST (:term)');
+                    }),
+                )
                 .setParameters({ term, like_term: `%${term}%` });
         }
         if (facetIds) {
-            qb.where('true');
             for (const id of facetIds) {
                 const placeholder = '_' + id;
                 qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
             }
+        }
+        if (input.groupByProduct === true) {
+            qb.groupBy('productId');
         }
         return qb;
     }

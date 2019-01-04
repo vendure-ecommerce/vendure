@@ -981,6 +981,7 @@ export interface RoleFilterParameter {
 export interface SearchInput {
     term?: string | null;
     facetIds?: string[] | null;
+    groupByProduct?: boolean | null;
     take?: number | null;
     skip?: number | null;
 }

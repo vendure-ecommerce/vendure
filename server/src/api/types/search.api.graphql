@@ -9,6 +9,7 @@ type Mutation {
 input SearchInput {
     term: String
     facetIds: [String!]
+    groupByProduct: Boolean
     take: Int
     skip: Int
 }
@@ -21,13 +22,13 @@ type SearchResponse {
 
 type SearchResult {
     sku: String!
-    productVariantName: String!
-    productName: String!
-    productVariantId: ID!
     productId: ID!
-    description: String!
+    productName: String!
     productPreview: String!
+    productVariantId: ID!
+    productVariantName: String!
     productVariantPreview: String!
+    description: String!
     facetIds: [String!]!
     facetValueIds: [String!]!
     score: Float!
