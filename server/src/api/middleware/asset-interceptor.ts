@@ -34,9 +34,14 @@ export class AssetInterceptor implements NestInterceptor {
         const request = ctx.req;
         return call$.pipe(
             map(data => {
-                visitType(data, Asset, asset => {
-                    asset.preview = toAbsoluteUrl(request, asset.preview);
-                    asset.source = toAbsoluteUrl(request, asset.source);
+                visitType(data, [Asset, 'productPreview', 'productVariantPreview'], asset => {
+                    if (asset instanceof Asset) {
+                        asset.preview = toAbsoluteUrl(request, asset.preview);
+                        asset.source = toAbsoluteUrl(request, asset.source);
+                    } else {
+                        asset = toAbsoluteUrl(request, asset);
+                    }
+                    return asset;
                 });
                 return data;
             }),
@@ -48,16 +53,22 @@ export class AssetInterceptor implements NestInterceptor {
  * Traverses the object and when encountering a property with a value which
  * is an instance of class T, invokes the visitor function on that value.
  */
-function visitType<T>(obj: any, type: Type<T>, visit: (instance: T) => void) {
+function visitType<T>(obj: any, types: Array<Type<T> | string>, visit: (instance: T | string) => T | string) {
     const keys = Object.keys(obj || {});
     for (const key of keys) {
         const value = obj[key];
-        if (value instanceof type) {
-            visit(value);
-        } else {
-            if (typeof value === 'object') {
-                visitType(value, type, visit);
+
+        for (const type of types) {
+            if (typeof type === 'string') {
+                if (type === key) {
+                    obj[key] = visit(value);
+                }
+            } else if (value instanceof type) {
+                visit(value);
             }
+        }
+        if (typeof value === 'object') {
+            visitType(value, types, visit);
         }
     }
 }
