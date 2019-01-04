@@ -234,14 +234,18 @@ export class Importer {
                 assets.push(cachedAsset);
             } else {
                 const filename = path.join(importAssetsDir, assetPath);
+
                 if (fs.existsSync(filename)) {
-                    try {
-                        const stream = fs.createReadStream(filename);
-                        const asset = await this.assetService.createFromFileStream(stream);
-                        this.assetMap.set(assetPath, asset);
-                        assets.push(asset);
-                    } catch (err) {
-                        errors.push(err.toString());
+                    const fileStat = fs.statSync(filename);
+                    if (fileStat.isFile()) {
+                        try {
+                            const stream = fs.createReadStream(filename);
+                            const asset = await this.assetService.createFromFileStream(stream);
+                            this.assetMap.set(assetPath, asset);
+                            assets.push(asset);
+                        } catch (err) {
+                            errors.push(err.toString());
+                        }
                     }
                 } else {
                     errors.push(`File "${filename}" does not exist`);
