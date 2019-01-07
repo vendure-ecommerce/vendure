@@ -1,13 +1,12 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
-    fakePalPaymentHandler,
-    gripePaymentHandler,
+    examplePaymentHandler,
     DefaultAssetServerPlugin,
     DefaultEmailPlugin,
     DefaultSearchPlugin,
     {{#if isTs}}VendureConfig,{{/if}}
 } {{#if isTs}}from 'vendure'; {{ else }}= require('vendure');{{/if}}
 {{#if isTs }}
-import path from 'path';
+import * as path from 'path';
 {{ else }}
 const path = require('path');
 {{/if}}
@@ -33,7 +32,7 @@ const path = require('path');
         {{/if}}
     },
     paymentOptions: {
-        paymentMethodHandlers: [fakePalPaymentHandler, gripePaymentHandler],
+        paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
     importExportOptions: {

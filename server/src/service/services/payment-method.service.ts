@@ -83,11 +83,14 @@ export class PaymentMethodService {
         const paymentMethodHandlers: Array<PaymentMethodHandler<PaymentMethodArgs>> = this.configService
             .paymentOptions.paymentMethodHandlers;
         const existingPaymentMethods = await this.connection.getRepository(PaymentMethod).find();
-        const missing = paymentMethodHandlers.filter(
+        const toCreate = paymentMethodHandlers.filter(
             h => !existingPaymentMethods.find(pm => pm.code === h.code),
         );
+        const toRemove = existingPaymentMethods.filter(
+            h => !paymentMethodHandlers.find(pm => pm.code === h.code),
+        );
 
-        for (const handler of paymentMethodHandlers) {
+        for (const handler of toCreate) {
             let paymentMethod = existingPaymentMethods.find(pm => pm.code === handler.code);
 
             if (!paymentMethod) {
@@ -112,6 +115,7 @@ export class PaymentMethodService {
             );
             await this.connection.getRepository(PaymentMethod).save(paymentMethod);
         }
+        await this.connection.getRepository(PaymentMethod).remove(toRemove);
     }
 
     private getDefaultValue(type: PaymentMethodArgType): string {

@@ -33,7 +33,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
     metadata: PaymentMetadata,
 ) => PaymentConfig | Promise<PaymentConfig>;
 
-export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = {}> {
+export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs> {
     code: string;
     name: string;
     createPayment: CreatePaymentFn<T>;
@@ -47,7 +47,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = {}> {
  * third-party payment gateway before the Payment is created and can also define actions to fire
  * when the state of the payment is changed.
  */
-export class PaymentMethodHandler<T extends PaymentMethodArgs = {}> {
+export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArgs> {
     readonly code: string;
     readonly name: string;
     readonly args: T;

@@ -2,8 +2,7 @@ import path from 'path';
 
 import { API_PATH, API_PORT } from '../shared/shared-constants';
 
-import { fakePalPaymentHandler } from './src/config/payment-method/fakepal-payment-method-config';
-import { gripePaymentHandler } from './src/config/payment-method/gripe-payment-method-config';
+import { examplePaymentHandler } from './src/config/payment-method/example-payment-method-config';
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
 import { defaultEmailTypes } from './src/email/default-email-types';
 import { HandlebarsMjmlGenerator } from './src/email/handlebars-mjml-generator';
@@ -33,11 +32,11 @@ export const devConfig: VendureConfig = {
     },
     orderProcessOptions: {} as OrderProcessOptions<any>,
     paymentOptions: {
-        paymentMethodHandlers: [fakePalPaymentHandler, gripePaymentHandler],
+        paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
     emailOptions: {
-        emailTemplatePath: path.join(__dirname, 'src', 'email', 'templates'),
+        emailTemplatePath: path.join(__dirname, 'src/email/templates'),
         emailTypes: defaultEmailTypes,
         generator: new HandlebarsMjmlGenerator(),
         transport: {

@@ -1,5 +1,8 @@
 import { PaymentConfig, PaymentMethodHandler } from './payment-method-handler';
 
+/**
+ * A dummy API to simulate an SDK provided by a popular payments service.
+ */
 const gripeSDK = {
     charges: {
         create: (options: any) => {
@@ -16,9 +19,9 @@ const gripeSDK = {
  * An example of a payment method which sets up and authorizes the payment on the client side and then
  * requires a further step on the server side to charge the card.
  */
-export const gripePaymentHandler = new PaymentMethodHandler({
-    code: 'gripe',
-    name: 'Gripe Checkout',
+export const examplePaymentHandler = new PaymentMethodHandler({
+    code: 'example-payment-provider',
+    name: 'Example Payment Provider',
     args: {
         apiKey: 'string',
     },
