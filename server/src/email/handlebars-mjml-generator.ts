@@ -1,10 +1,15 @@
-import * as dateFormat from 'dateformat';
-import * as fs from 'fs-extra';
-import * as Handlebars from 'handlebars';
+import dateFormat from 'dateformat';
+import fs from 'fs-extra';
+import Handlebars from 'handlebars';
+// tslint:disable-next-line
+//const mjml2html = require('mjml');
 import mjml2html from 'mjml';
-import * as path from 'path';
+import path from 'path';
 
+import { InternalServerError } from '../common/error/errors';
+import { ReadOnlyRequired } from '../common/types/common-types';
 import { EmailGenerator } from '../config/email/email-options';
+import { VendureConfig } from '../config/vendure-config';
 
 import { EmailContext, GeneratedEmailContext } from './email-context';
 
@@ -13,7 +18,13 @@ import { EmailContext, GeneratedEmailContext } from './email-context';
  * compiled down to responsive email HTML.
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-    constructor(partialsPath: string) {
+    onInit(config: ReadOnlyRequired<VendureConfig>) {
+        if (!config.emailOptions.emailTemplatePath) {
+            throw new InternalServerError(
+                `When using the HandlebarsMjmlGenerator, the emailTemplatePath config option must be set`,
+            );
+        }
+        const partialsPath = path.join(config.emailOptions.emailTemplatePath, 'partials');
         this.registerPartials(partialsPath);
         this.registerHelpers();
     }

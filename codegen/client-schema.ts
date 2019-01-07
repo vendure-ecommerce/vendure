@@ -1,6 +1,6 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { makeExecutableSchema } from 'graphql-tools';
-import * as path from 'path';
+import path from 'path';
 
 const CLIENT_SCHEMA_FILE = '../admin-ui/src/app/data/client-state/client-types.graphql';
 const LANGUAGE_CODE_FILE = '../server/src/common/types/language-code.graphql';

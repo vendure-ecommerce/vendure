@@ -1,5 +1,6 @@
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_ADMINISTRATOR,
@@ -41,6 +42,7 @@ describe('Authorization & permissions', () => {
             },
             {
                 emailOptions: {
+                    emailTemplatePath: 'src/email/templates',
                     emailTypes: defaultEmailTypes,
                     generator: new NoopEmailGenerator(),
                     transport: {

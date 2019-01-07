@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import * as ms from 'ms';
+import ms from 'ms';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../../shared/shared-types';

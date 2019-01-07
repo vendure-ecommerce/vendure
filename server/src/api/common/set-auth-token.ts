@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as ms from 'ms';
+import ms from 'ms';
 
 import { AuthOptions } from '../../config/vendure-config';
 

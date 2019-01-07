@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
-import * as Handlebars from 'handlebars';
-import * as path from 'path';
+import fs from 'fs-extra';
+import Handlebars from 'handlebars';
+import path from 'path';
 import { PromptObject } from 'prompts';
-import * as prompts from 'prompts';
+import prompts from 'prompts';
 
 // tslint:disable:no-console
 export async function init(): Promise<string> {

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import * as path from 'path';
+import path from 'path';
 import { Stream } from 'stream';
 
 import { normalizeString } from '../../../shared/normalize-string';

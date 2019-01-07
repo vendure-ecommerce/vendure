@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import * as ms from 'ms';
+import ms from 'ms';
 
 import {
     AddItemToOrderMutationArgs,

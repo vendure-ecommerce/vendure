@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import * as path from 'path';
+import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';

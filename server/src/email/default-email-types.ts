@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import { LanguageCode } from '../../../shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '../../../shared/shared-constants';
@@ -28,12 +28,7 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
                 defaultLanguage: {
                     templateContext: emailContext => ({ order: emailContext.event.order }),
                     subject: `Order confirmation for #{{ order.code }}`,
-                    templatePath: path.join(
-                        __dirname,
-                        'templates',
-                        'order-confirmation',
-                        'order-confirmation.hbs',
-                    ),
+                    templatePath: 'order-confirmation/order-confirmation.hbs',
                 },
             },
         },
@@ -55,12 +50,7 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
                         verifyUrl: SHOPFRONT_URL + 'verify',
                     }),
                     subject: `Please verify your email address`,
-                    templatePath: path.join(
-                        __dirname,
-                        'templates',
-                        'email-verification',
-                        'email-verification.hbs',
-                    ),
+                    templatePath: 'email-verification/email-verification.hbs',
                 },
             },
         },

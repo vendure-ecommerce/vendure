@@ -3,8 +3,8 @@ import { GqlModuleOptions, GqlOptionsFactory, GraphQLTypesLoader } from '@nestjs
 import { GraphQLUpload } from 'apollo-server-core';
 import { extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
-import * as GraphQLJSON from 'graphql-type-json';
-import * as path from 'path';
+import GraphQLJSON from 'graphql-type-json';
+import path from 'path';
 
 import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { ConfigService } from '../../config/config.service';

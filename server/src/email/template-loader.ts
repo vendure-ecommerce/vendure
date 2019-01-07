@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { ConfigService } from '../config/config.service';
 import { TemplateConfig } from '../config/email/email-options';
@@ -18,7 +19,8 @@ export class TemplateLoader {
         context: EmailContext,
     ): Promise<{ templateContext: any; subject: string; body: string }> {
         const { subject, templateContext, templatePath } = this.getTemplateConfig(type, context);
-        const body = await fs.readFile(templatePath, 'utf-8');
+        const { emailTemplatePath } = this.configService.emailOptions;
+        const body = await fs.readFile(path.join(emailTemplatePath, templatePath), 'utf-8');
 
         return {
             templateContext: templateContext(context),

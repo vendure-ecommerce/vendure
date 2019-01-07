@@ -1,7 +1,7 @@
-import * as express from 'express';
+import express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import * as proxy from 'http-proxy-middleware';
-import * as path from 'path';
+import proxy from 'http-proxy-middleware';
+import path from 'path';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { VendureConfig } from '../../config/vendure-config';

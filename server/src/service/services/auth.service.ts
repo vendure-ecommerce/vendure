@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import * as crypto from 'crypto';
-import * as ms from 'ms';
+import crypto from 'crypto';
+import ms from 'ms';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

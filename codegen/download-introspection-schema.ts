@@ -1,7 +1,7 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { introspectionQuery } from 'graphql';
-import * as http from 'http';
-import * as path from 'path';
+import http from 'http';
+import path from 'path';
 
 import { API_PATH, API_PORT } from '../shared/shared-constants';
 

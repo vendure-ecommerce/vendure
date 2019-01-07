@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import { API_PATH } from '../../../shared/shared-constants';
 import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
@@ -42,6 +42,7 @@ export const testConfig: VendureConfig = {
         paymentMethodHandlers: [],
     },
     emailOptions: {
+        emailTemplatePath: __dirname,
         transport: {
             type: 'none',
         },

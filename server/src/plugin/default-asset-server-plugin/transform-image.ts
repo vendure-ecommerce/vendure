@@ -1,4 +1,4 @@
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import { ResizeOptions } from 'sharp';
 
 import { ImageTransformPreset } from './default-asset-server-plugin';

@@ -1,7 +1,7 @@
 import { INestApplication, INestExpressApplication } from '@nestjs/common';
 import { Request } from 'express';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
+import path from 'path';
 import { Stream } from 'stream';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';

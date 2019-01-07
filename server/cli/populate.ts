@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as ProgressBar from 'progress';
+import fs from 'fs-extra';
+import path from 'path';
+import ProgressBar from 'progress';
 import { tap } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 

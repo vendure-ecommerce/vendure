@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Handler, Request } from 'express';
 import { GraphQLError } from 'graphql';
-import * as i18next from 'i18next';
+import i18next from 'i18next';
 import { TranslationFunction } from 'i18next';
-import * as i18nextMiddleware from 'i18next-express-middleware';
-import * as ICU from 'i18next-icu';
-import * as Backend from 'i18next-node-fs-backend';
-import * as path from 'path';
+import i18nextMiddleware from 'i18next-express-middleware';
+import ICU from 'i18next-icu';
+import Backend from 'i18next-node-fs-backend';
+import path from 'path';
 
 import { ConfigService } from '../config/config.service';
 

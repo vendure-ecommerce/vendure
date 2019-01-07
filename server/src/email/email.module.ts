@@ -1,5 +1,5 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
@@ -26,6 +26,10 @@ export class EmailModule implements OnModuleInit {
 
     async onModuleInit() {
         await this.setupEventSubscribers();
+        const { generator } = this.configService.emailOptions;
+        if (generator.onInit) {
+            await generator.onInit.call(generator, this.configService);
+        }
     }
 
     async setupEventSubscribers() {

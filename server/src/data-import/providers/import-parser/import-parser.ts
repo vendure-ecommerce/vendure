@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as parse from 'csv-parse';
+import parse from 'csv-parse';
 import { Stream } from 'stream';
 
 import { normalizeString } from '../../../../../shared/normalize-string';

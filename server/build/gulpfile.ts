@@ -1,5 +1,5 @@
-import * as gulp from 'gulp';
-import * as path from 'path';
+import gulp from 'gulp';
+import path from 'path';
 
 gulp.task('copy-schemas', () => {
     return gulp.src(['../src/**/*.graphql']).pipe(gulp.dest('../dist/server/src'));

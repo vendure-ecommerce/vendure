@@ -1,7 +1,7 @@
-import * as faker from 'faker/locale/en_GB';
-import * as fs from 'fs-extra';
+import faker from 'faker/locale/en_GB';
+import fs from 'fs-extra';
 import gql from 'graphql-tag';
-import * as path from 'path';
+import path from 'path';
 
 import { CREATE_FACET } from '../../admin-ui/src/app/data/definitions/facet-definitions';
 import {

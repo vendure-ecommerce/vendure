@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as sharp from 'sharp';
+import path from 'path';
+import sharp from 'sharp';
 
 import { AssetType } from '../../../../shared/generated-types';
 import { getAssetType } from '../../common/utils';

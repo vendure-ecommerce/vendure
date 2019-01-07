@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import { devConfig } from '../../dev-config';
 import { SimpleGraphQLClient } from '../../mock-data/simple-graphql-client';

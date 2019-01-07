@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import * as program from 'commander';
-import * as path from 'path';
-import * as prompts from 'prompts';
+import program from 'commander';
+import path from 'path';
+import prompts from 'prompts';
 
 import { logColored } from './cli-utils';
 import { init } from './init';

@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import { API_PATH, API_PORT } from '../shared/shared-constants';
 
@@ -8,7 +8,7 @@ import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config'
 import { defaultEmailTypes } from './src/email/default-email-types';
 import { HandlebarsMjmlGenerator } from './src/email/handlebars-mjml-generator';
 import { DefaultAssetServerPlugin } from './src/plugin';
-import { DefaultSearchPlugin } from './src/plugin/default-search-engine/default-search-plugin';
+import { DefaultSearchPlugin } from './src/plugin/default-search-plugin/default-search-plugin';
 
 /**
  * Config settings used during development
@@ -37,8 +37,9 @@ export const devConfig: VendureConfig = {
     },
     customFields: {},
     emailOptions: {
+        emailTemplatePath: path.join(__dirname, 'src', 'email', 'templates'),
         emailTypes: defaultEmailTypes,
-        generator: new HandlebarsMjmlGenerator(path.join(__dirname, 'src', 'email', 'templates', 'partials')),
+        generator: new HandlebarsMjmlGenerator(),
         transport: {
             type: 'file',
             raw: false,

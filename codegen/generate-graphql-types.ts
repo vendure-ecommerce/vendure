@@ -1,5 +1,5 @@
 import { generate } from 'graphql-code-generator';
-import * as path from 'path';
+import path from 'path';
 
 import { API_PATH, API_PORT } from '../shared/shared-constants';
 
