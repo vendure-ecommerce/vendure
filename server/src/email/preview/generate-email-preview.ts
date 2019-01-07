@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
-import * as opn from 'opn';
-import * as path from 'path';
+import fs from 'fs-extra';
+import opn from 'opn';
+import path from 'path';
 
 import { NoopEmailGenerator } from '../../config/email/noop-email-generator';
 import { EmailOptions } from '../../config/vendure-config';
@@ -12,8 +12,9 @@ import { TemplateLoader } from '../template-loader';
 import { getEmailVerificationContext, getOrderReceiptContext } from './email-contexts';
 // tslint:disable:no-console
 
-const generator = new HandlebarsMjmlGenerator(path.join(__dirname, '../templates', 'partials'));
+const generator = new HandlebarsMjmlGenerator();
 const emailOptions: EmailOptions<any> = {
+    emailTemplatePath: path.join(__dirname, '../templates', 'partials'),
     emailTypes: defaultEmailTypes,
     generator: new NoopEmailGenerator(),
     transport: {

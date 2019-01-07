@@ -66,6 +66,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         paymentMethodHandlers: [],
     },
     emailOptions: {
+        emailTemplatePath: __dirname,
         emailTypes: {},
         generator: new NoopEmailGenerator(),
         transport: {

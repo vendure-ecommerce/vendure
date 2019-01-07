@@ -1,14 +1,13 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
     fakePalPaymentHandler,
     gripePaymentHandler,
-    defaultEmailTypes,
-    HandlebarsMjmlGenerator,
     DefaultAssetServerPlugin,
+    DefaultEmailPlugin,
     DefaultSearchPlugin,
     {{#if isTs}}VendureConfig,{{/if}}
 } {{#if isTs}}from 'vendure'; {{ else }}= require('vendure');{{/if}}
 {{#if isTs }}
-import * as path from 'path';
+import path from 'path';
 {{ else }}
 const path = require('path');
 {{/if}}
@@ -37,14 +36,6 @@ const path = require('path');
         paymentMethodHandlers: [fakePalPaymentHandler, gripePaymentHandler],
     },
     customFields: {},
-    emailOptions: {
-        emailTypes: defaultEmailTypes,
-        generator: new HandlebarsMjmlGenerator(path.join(__dirname, 'vendure', 'email', 'templates', 'partials')),
-        transport: {
-            type: 'file',
-            outputPath: path.join(__dirname, 'vendure', 'email', 'test-emails'),
-        },
-    },
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'vendure', 'import-assets'),
     },
@@ -63,6 +54,10 @@ const path = require('path');
                 { name: 'medium', width: 500, height: 500, mode: 'resize' },
                 { name: 'large', width: 800, height: 800, mode: 'resize' },
             ],
+        }),
+        new DefaultEmailPlugin({
+            templatePath: path.join(__dirname, 'vendure/email/templates'),
+            devMode: true,
         }),
         new DefaultSearchPlugin(),
     ],

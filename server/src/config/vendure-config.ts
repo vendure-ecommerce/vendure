@@ -159,6 +159,10 @@ export interface ShippingOptions {
 
 export interface EmailOptions<EmailType extends string> {
     /**
+     * Path to the email template files.
+     */
+    emailTemplatePath: string;
+    /**
      * Configuration for the creation and templating of each email type
      */
     emailTypes?: EmailTypes<EmailType>;
@@ -265,7 +269,7 @@ export interface VendureConfig {
     /**
      * Configures the handling of transactional emails.
      */
-    emailOptions: EmailOptions<any>;
+    emailOptions?: EmailOptions<any>;
     /**
      * Configuration settings for data import and export.
      */

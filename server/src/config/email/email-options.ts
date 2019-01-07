@@ -1,8 +1,10 @@
 import { LanguageCode } from '../../../../shared/generated-types';
 import { Type } from '../../../../shared/shared-types';
 
+import { ReadOnlyRequired } from '../../common/types/common-types';
 import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
 import { VendureEvent } from '../../event-bus/vendure-event';
+import { VendureConfig } from '../vendure-config';
 
 export type TemplateConfig<C = any, R = any> = {
     /**
@@ -50,6 +52,7 @@ export function configEmailType<T extends string, E extends VendureEvent = Vendu
 }
 
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
+    onInit?(config: ReadOnlyRequired<VendureConfig>): void | Promise<void>;
     generate(
         subject: string,
         body: string,
