@@ -4,7 +4,7 @@ import { ResizeOptions } from 'sharp';
 import { ImageTransformPreset } from './default-asset-server-plugin';
 
 /**
- * Applies transforms to the gifen image according to the query params passed.
+ * Applies transforms to the given image according to the query params passed.
  */
 export async function transformImage(
     originalImage: Buffer,

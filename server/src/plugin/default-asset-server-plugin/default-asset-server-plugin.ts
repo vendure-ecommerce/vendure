@@ -51,7 +51,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
             for (const preset of options.presets) {
                 const existingIndex = this.presets.findIndex(p => p.name === preset.name);
                 if (-1 < existingIndex) {
-                    this.presets = this.presets.splice(existingIndex, 1, preset);
+                    this.presets.splice(existingIndex, 1, preset);
                 } else {
                     this.presets.push(preset);
                 }
@@ -105,8 +105,14 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         return async (err, req: Request, res: Response, next: NextFunction) => {
             if (err && err.status === 404) {
                 if (req.query) {
-                    const file = await this.assetStorage.readFileToBuffer(req.path);
-                    const image = await transformImage(file, req.query, this.options.presets || []);
+                    let file: Buffer;
+                    try {
+                        file = await this.assetStorage.readFileToBuffer(req.path);
+                    } catch (err) {
+                        res.status(404).send('Resource not found');
+                        return;
+                    }
+                    const image = await transformImage(file, req.query, this.presets || []);
                     const imageBuffer = await image.toBuffer();
                     const cachedFileName = this.getFileNameFromRequest(req);
                     await this.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
