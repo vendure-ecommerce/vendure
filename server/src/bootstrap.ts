@@ -57,7 +57,7 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
-    config = await runPluginInitMethods(config);
+    config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     return config;
 }
@@ -65,12 +65,11 @@ export async function preBootstrapConfig(
 /**
  * Initialize any configured plugins.
  */
-async function runPluginInitMethods(
+async function runPluginConfigurations(
     config: ReadOnlyRequired<VendureConfig>,
 ): Promise<ReadOnlyRequired<VendureConfig>> {
-    // Initialize plugins
     for (const plugin of config.plugins) {
-        config = (await plugin.init(config)) as ReadOnlyRequired<VendureConfig>;
+        config = (await plugin.configure(config)) as ReadOnlyRequired<VendureConfig>;
     }
     return config;
 }

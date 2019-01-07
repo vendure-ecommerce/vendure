@@ -8,7 +8,7 @@ import { SearchIndexItem } from './search-index-item.entity';
 export class DefaultSearchPlugin implements VendurePlugin {
     private fulltextSearchService: FulltextSearchService;
 
-    async init(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
+    async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
         return config;
     }
 

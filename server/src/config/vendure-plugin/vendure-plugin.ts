@@ -8,15 +8,15 @@ import { VendureConfig } from '../vendure-config';
  * a plugin simply modifies the VendureConfig object. Although such configuration can be directly supplied to the bootstrap
  * function, using a plugin allows one to abstract away a set of related configuration.
  *
- * Aditionally, the init() method can perform async work such as starting servers, making calls to 3rd party services, or any other
- * kind of task which may be called for.
+ * As well as configuring the app, a plugin may also extend the GraphQL schema by extending existing types or adding
+ * entirely new types. Database entities and resolvers can also be defined to handle the extended GraphQL types.
  */
 export interface VendurePlugin {
     /**
      * This method is called before the app bootstraps, and can modify the VendureConfig object and perform
      * other (potentially async) tasks needed.
      */
-    init(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
+    configure(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
 
     /**
      * This method is called after the app has bootstrapped. In this method, instances of services may be injected

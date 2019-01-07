@@ -41,7 +41,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
 
     constructor(private options: DefaultAssetServerOptions) {}
 
-    init(config: Required<VendureConfig>) {
+    configure(config: Required<VendureConfig>) {
         this.createAssetServer();
         this.assetStorage = new DefaultAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
         config.assetOptions.assetPreviewStrategy = new DefaultAssetPreviewStrategy({
