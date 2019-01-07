@@ -593,13 +593,13 @@ export interface SearchResponse {
 
 export interface SearchResult {
     sku: string;
-    productVariantName: string;
-    productName: string;
-    productVariantId: string;
     productId: string;
-    description: string;
+    productName: string;
     productPreview: string;
+    productVariantId: string;
+    productVariantName: string;
     productVariantPreview: string;
+    description: string;
     facetIds: string[];
     facetValueIds: string[];
     score: number;
@@ -3897,33 +3897,32 @@ export namespace SearchResponseResolvers {
 export namespace SearchResultResolvers {
     export interface Resolvers<Context = any> {
         sku?: SkuResolver<string, any, Context>;
-        productVariantName?: ProductVariantNameResolver<string, any, Context>;
-        productName?: ProductNameResolver<string, any, Context>;
-        productVariantId?: ProductVariantIdResolver<string, any, Context>;
         productId?: ProductIdResolver<string, any, Context>;
-        description?: DescriptionResolver<string, any, Context>;
+        productName?: ProductNameResolver<string, any, Context>;
         productPreview?: ProductPreviewResolver<string, any, Context>;
+        productVariantId?: ProductVariantIdResolver<string, any, Context>;
+        productVariantName?: ProductVariantNameResolver<string, any, Context>;
         productVariantPreview?: ProductVariantPreviewResolver<string, any, Context>;
+        description?: DescriptionResolver<string, any, Context>;
         facetIds?: FacetIdsResolver<string[], any, Context>;
         facetValueIds?: FacetValueIdsResolver<string[], any, Context>;
         score?: ScoreResolver<number, any, Context>;
     }
 
     export type SkuResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ProductVariantNameResolver<R = string, Parent = any, Context = any> = Resolver<
+    export type ProductIdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProductNameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProductPreviewResolver<R = string, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
-    export type ProductNameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ProductVariantIdResolver<R = string, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
     >;
-    export type ProductIdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ProductPreviewResolver<R = string, Parent = any, Context = any> = Resolver<
+    export type ProductVariantNameResolver<R = string, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3933,6 +3932,7 @@ export namespace SearchResultResolvers {
         Parent,
         Context
     >;
+    export type DescriptionResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type FacetIdsResolver<R = string[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type FacetValueIdsResolver<R = string[], Parent = any, Context = any> = Resolver<
         R,
@@ -5593,11 +5593,12 @@ export namespace SearchProducts {
 
     export type Items = {
         __typename?: 'SearchResult';
-        productName: string;
-        productVariantName: string;
         productId: string;
-        productVariantId: string;
+        productName: string;
         productPreview: string;
+        productVariantId: string;
+        productVariantName: string;
+        productVariantPreview: string;
         sku: string;
     };
 }
@@ -6381,6 +6382,7 @@ export namespace OrderWithLines {
     export type Payments = {
         __typename?: 'Payment';
         id: string;
+        transactionId?: string | null;
         amount: number;
         method: string;
         state: string;

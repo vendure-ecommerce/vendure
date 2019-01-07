@@ -91,6 +91,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         }
         payments {
             id
+            transactionId
             amount
             method
             state
