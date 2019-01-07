@@ -3,6 +3,8 @@ import { DocumentNode } from 'graphql';
 import { Type } from '../../../../shared/shared-types';
 import { VendureConfig } from '../vendure-config';
 
+export type InjectorFn = <T>(type: Type<T>) => T;
+
 /**
  * A VendurePlugin is a means of configuring and/or extending the functionality of the Vendure server. In its simplest form,
  * a plugin simply modifies the VendureConfig object. Although such configuration can be directly supplied to the bootstrap
@@ -23,7 +25,7 @@ export interface VendurePlugin {
      * into the plugin. For example, the ProductService can be injected in order to enable operations on Product
      * entities.
      */
-    onBootstrap?(inject: <T>(type: Type<T>) => T): void | Promise<void>;
+    onBootstrap?(inject: InjectorFn): void | Promise<void>;
 
     /**
      * The plugin may extend the default Vendure GraphQL schema by implementing this method.

@@ -5,7 +5,7 @@ import path from 'path';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { VendureConfig } from '../../config/vendure-config';
-import { VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
+import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
 
 import { DefaultAssetPreviewStrategy } from './default-asset-preview-strategy';
 import { DefaultAssetStorageStrategy } from './default-asset-storage-strategy';
@@ -21,12 +21,12 @@ export interface ImageTransformPreset {
 }
 
 export interface DefaultAssetServerOptions {
-    hostname: string;
+    hostname?: string;
     port: number;
     route: string;
     assetUploadDir: string;
-    previewMaxWidth: number;
-    previewMaxHeight: number;
+    previewMaxWidth?: number;
+    previewMaxHeight?: number;
     presets?: ImageTransformPreset[];
 }
 
@@ -38,22 +38,43 @@ export interface DefaultAssetServerOptions {
 export class DefaultAssetServerPlugin implements VendurePlugin {
     private assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
+    private readonly presets: ImageTransformPreset[] = [
+        { name: 'tiny', width: 50, height: 50, mode: 'crop' },
+        { name: 'thumb', width: 150, height: 150, mode: 'crop' },
+        { name: 'small', width: 300, height: 300, mode: 'resize' },
+        { name: 'medium', width: 500, height: 500, mode: 'resize' },
+        { name: 'large', width: 800, height: 800, mode: 'resize' },
+    ];
 
-    constructor(private options: DefaultAssetServerOptions) {}
+    constructor(private options: DefaultAssetServerOptions) {
+        if (options.presets) {
+            for (const preset of options.presets) {
+                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
+                if (-1 < existingIndex) {
+                    this.presets = this.presets.splice(existingIndex, 1, preset);
+                } else {
+                    this.presets.push(preset);
+                }
+            }
+        }
+    }
 
     configure(config: Required<VendureConfig>) {
-        this.createAssetServer();
         this.assetStorage = new DefaultAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
         config.assetOptions.assetPreviewStrategy = new DefaultAssetPreviewStrategy({
-            maxWidth: this.options.previewMaxWidth,
-            maxHeight: this.options.previewMaxHeight,
+            maxWidth: this.options.previewMaxWidth || 1600,
+            maxHeight: this.options.previewMaxHeight || 1600,
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.middleware.push({
-            handler: this.createProxyHandler(!config.silent),
+            handler: this.createProxyHandler(config.hostname, !config.silent),
             route: this.options.route,
         });
         return config;
+    }
+
+    onBootstrap(inject: InjectorFn): void | Promise<void> {
+        this.createAssetServer();
     }
 
     /**
@@ -104,7 +125,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
             const mode = req.query.mode || '';
             return this.cacheDir + '/' + this.addSuffix(req.path, `_transform_w${width}_h${height}_m${mode}`);
         } else if (req.query.preset) {
-            if (this.options.presets && !!this.options.presets.find(p => p.name === req.query.preset)) {
+            if (this.presets && !!this.presets.find(p => p.name === req.query.preset)) {
                 return this.cacheDir + '/' + this.addSuffix(req.path, `_transform_pre_${req.query.preset}`);
             }
         }
@@ -115,10 +136,12 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
      * Configures the proxy middleware which will be passed to the main Vendure server. This
      * will proxy all asset requests to the dedicated asset server.
      */
-    private createProxyHandler(logging: boolean) {
+    private createProxyHandler(serverHostname: string, logging: boolean) {
         const route = this.options.route.charAt(0) === '/' ? this.options.route : '/' + this.options.route;
+        const proxyHostname = this.options.hostname ? this.options.hostname : serverHostname || 'localhost';
         return proxy({
-            target: `${this.options.hostname}:${this.options.port}`,
+            // TODO: how do we detect https?
+            target: `http://${proxyHostname}:${this.options.port}`,
             pathRewrite: {
                 [`^${route}`]: '/',
             },
