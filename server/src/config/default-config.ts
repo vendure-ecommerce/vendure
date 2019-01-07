@@ -23,6 +23,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     channelTokenKey: 'vendure-token',
     defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
+    hostname: '',
     port: API_PORT,
     cors: {
         origin: true,

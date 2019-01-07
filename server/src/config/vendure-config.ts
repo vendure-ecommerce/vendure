@@ -215,6 +215,10 @@ export interface VendureConfig {
      */
     cors?: boolean | CorsOptions;
     /**
+     * Set the hostname of the server.
+     */
+    hostname?: string;
+    /**
      * Which port the Vendure server should listen on.
      */
     port: number;

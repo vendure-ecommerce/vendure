@@ -28,7 +28,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
 
     await runPluginOnBootstrapMethods(config, app);
-    await app.listen(config.port);
+    await app.listen(config.port, config.hostname);
     return app;
 }
 
