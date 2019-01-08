@@ -284,19 +284,6 @@
   version "4.0.39"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.39.tgz#961fb54db68030890942e6aeffe9f93a957807bd"
 
-"@types/i18next-express-middleware@^0.0.33":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@types/i18next-express-middleware/-/i18next-express-middleware-0.0.33.tgz#1c5625f123eaae126de3b43626ef9a04bc6ad482"
-  integrity sha512-lXuok/3HcT81FipU00+5W1cRjSpl5y0ImQKV2wxCaRkLfANMBi+T7idOVdhZutsX0OlnR2YxLM1I/NuTvYetoQ==
-  dependencies:
-    "@types/express" "*"
-    "@types/i18next" "*"
-
-"@types/i18next@*", "@types/i18next@^11.9.3":
-  version "11.9.3"
-  resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-11.9.3.tgz#04d84c6539908ad69665d26d8967f942d1638550"
-  integrity sha512-snM7bMKy6gt7UYdpjsxycqSCAy0fr2JVPY0B8tJ2vp9bN58cE7C880k20PWFM4KXxQ3KsstKM8DLCawGCIH0tg==
-
 "@types/jest@^23.3.9":
   version "23.3.9"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.9.tgz#c16b55186ee73ae65e001fbee69d392c51337ad1"
@@ -3077,17 +3064,17 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-i18next-express-middleware@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/i18next-express-middleware/-/i18next-express-middleware-1.5.0.tgz#02dd5dbeb3b8e00f7c837ca6724e07257cb9a340"
-  integrity sha512-lWf/BoF8pH3I76Xj3dvoulM/5+wJHsmW/uirT1N2pno/Xyht/5K3utIb9FC3PUTSHZjT8UMwXZWoAj9c10Tbgw==
+i18next-express-middleware@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/i18next-express-middleware/-/i18next-express-middleware-1.7.1.tgz#00436776113ff2e87d3befa81a9aa8a359af1193"
+  integrity sha512-e8JhShjL2sVkWFrO0ySVsmM9Ge7sQ8iDsNXSmpAD/2Fvg/P4uo7Kqm0R+yWWsRYCr+uu8tWsSDiEbmbjrnsyVg==
   dependencies:
     cookies "0.7.1"
 
-i18next-icu@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/i18next-icu/-/i18next-icu-0.6.0.tgz#23a0db74443e0abfb88ca01923cc9a0728a34f7d"
-  integrity sha512-8s/2FVdd0ZSNzrtXAStv3aMCnSr/2RttCKw03Uze3L2vLTRL6X5rgqSvCYi8hGdGeljCd3LG1SMkQ1iXejQpjg==
+i18next-icu@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/i18next-icu/-/i18next-icu-1.0.1.tgz#77dad326a38d495f6e9482c7aeab0d7074901008"
+  integrity sha512-ZQSLB96ikd04DXB90zasR+30Ga9B9qrBFllS3hHUYcJXDJfeWHCo4qBYMeXUuNUozfgm91rhKqb7WaeJy8ewow==
   dependencies:
     intl-messageformat "2.2.0"
 
@@ -3099,10 +3086,10 @@ i18next-node-fs-backend@^2.1.0:
     js-yaml "3.12.0"
     json5 "2.0.0"
 
-i18next@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-12.0.0.tgz#27c1494219dde0451a8d714d5bfc19bf055d51bb"
-  integrity sha512-Zy/nFpmBZxgmi6k9HkHbf+MwvAwiY5BDzNjNfvyLPKyalc2YBwwZtblESDlTKLDO8XSv23qYRY2uZcADDlRSjQ==
+i18next@^13.1.0:
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-13.1.0.tgz#d8656bbc53216ffcd428364fbfb75f75647846a5"
+  integrity sha512-BuDhYRFReCXJiUJ8GdC2m0wXw4vC/BS6e7UJO+wTrkE3K+92VmJn5p/wxqEE+pdffquh9GYYAMfK9rUlb48pcg==
 
 iconv-lite@0.4.19:
   version "0.4.19"

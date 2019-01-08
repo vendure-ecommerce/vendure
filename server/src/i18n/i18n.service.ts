@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Handler, Request } from 'express';
 import { GraphQLError } from 'graphql';
 import i18next from 'i18next';
-import { TranslationFunction } from 'i18next';
 import i18nextMiddleware from 'i18next-express-middleware';
 import ICU from 'i18next-icu';
 import Backend from 'i18next-node-fs-backend';
@@ -13,7 +12,7 @@ import { ConfigService } from '../config/config.service';
 import { I18nError } from './i18n-error';
 
 export interface I18nRequest extends Request {
-    t: TranslationFunction;
+    t: i18next.TranslationFunction;
 }
 
 /**
@@ -23,11 +22,11 @@ export interface I18nRequest extends Request {
  * functions to the Express request / response objects.
  */
 @Injectable()
-export class I18nService {
-    private i18n: i18next.i18n;
+export class I18nService implements OnModuleInit {
+    constructor(private configService: ConfigService) {}
 
-    constructor(private configService: ConfigService) {
-        this.i18n = i18next
+    onModuleInit() {
+        return i18next
             .use(i18nextMiddleware.LanguageDetector)
             .use(Backend)
             .use(ICU)
@@ -53,7 +52,7 @@ export class I18nService {
      */
     translateError(req: I18nRequest, error: GraphQLError) {
         const originalError = error.originalError;
-        const t: TranslationFunction = req.t;
+        const t: i18next.TranslationFunction = req.t;
 
         if (t && originalError instanceof I18nError) {
             let translation = originalError.message;
