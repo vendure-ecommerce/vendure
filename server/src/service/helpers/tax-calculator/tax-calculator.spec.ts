@@ -37,14 +37,12 @@ describe('TaxCalculator', () => {
                 { provide: ListQueryBuilder, useValue: {} },
             ],
         }).compile();
-
         taxCalculator = module.get(TaxCalculator);
-        const taxRateService = module.get(TaxRateService);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
         mockConfigService.taxOptions = {
             taxCalculationStrategy: new DefaultTaxCalculationStrategy(),
         };
-        await taxRateService.initTaxRates();
+        await module.init();
     });
 
     describe('with prices which do not include tax', () => {

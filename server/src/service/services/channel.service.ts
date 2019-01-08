@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -18,7 +18,7 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
-export class ChannelService {
+export class ChannelService implements OnModuleInit {
     private allChannels: Channel[] = [];
 
     constructor(@InjectConnection() private connection: Connection, private configService: ConfigService) {}
@@ -27,7 +27,7 @@ export class ChannelService {
      * When the app is bootstrapped, ensure a default Channel exists and populate the
      * channel lookup array.
      */
-    async initChannels() {
+    async onModuleInit() {
         await this.ensureDefaultChannelExists();
         await this.updateAllChannels();
     }

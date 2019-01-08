@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -22,14 +22,14 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
-export class PaymentMethodService {
+export class PaymentMethodService implements OnModuleInit {
     constructor(
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
-    async initPaymentMethods() {
+    async onModuleInit() {
         await this.ensurePaymentMethodsExist();
     }
 
