@@ -30,11 +30,6 @@ export class TranslationDiffer<Entity extends Translatable> {
     ): TranslationDiff<Entity> {
         if (updated) {
             const translationEntities = this.translationInputsToEntities(updated, existing);
-
-            // TODO: deletion should be made more explicit that simple omission
-            // from the update array. This would lead to accidental deletion.
-            // const toDelete = existing.filter(not(foundIn(translationEntities, 'languageCode')));
-            const toDelete = [];
             const toAdd = translationEntities.filter(not(foundIn(existing, 'languageCode')));
             const toUpdate = translationEntities.filter(foundIn(existing, 'languageCode'));
 

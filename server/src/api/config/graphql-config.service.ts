@@ -40,7 +40,7 @@ export class GraphqlConfigService implements GqlOptionsFactory {
                 DateTime: GraphQLDateTime,
                 Node: dummyResolveType,
                 PaginatedList: dummyResolveType,
-                Upload: GraphQLUpload,
+                Upload: GraphQLUpload || dummyResolveType,
             },
             uploads: {
                 maxFileSize: this.configService.assetOptions.uploadMaxFileSize,
