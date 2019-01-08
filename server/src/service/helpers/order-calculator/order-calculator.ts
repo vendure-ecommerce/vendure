@@ -4,17 +4,21 @@ import { AdjustmentType } from '../../../../../shared/generated-types';
 import { ID } from '../../../../../shared/shared-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
+import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
+import { ZoneService } from '../../services/zone.service';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 @Injectable()
 export class OrderCalculator {
     constructor(
+        private configService: ConfigService,
+        private zoneService: ZoneService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
         private shippingCalculator: ShippingCalculator,
@@ -24,16 +28,18 @@ export class OrderCalculator {
      * Applies taxes and promotions to an Order. Mutates the order object.
      */
     async applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[]): Promise<Order> {
-        const activeZone = ctx.channel.defaultTaxZone;
+        const { taxZoneStrategy } = this.configService.taxOptions;
+        const zones = this.zoneService.findAll(ctx);
+        const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel, order);
         order.clearAdjustments();
         if (order.lines.length) {
             // First apply taxes to the non-discounted prices
-            this.applyTaxes(ctx, order, activeZone);
+            this.applyTaxes(ctx, order, activeTaxZone);
             // Then test and apply promotions
             this.applyPromotions(order, promotions);
             // Finally, re-calculate taxes because the promotions may have
             // altered the unit prices, which in turn will alter the tax payable.
-            this.applyTaxes(ctx, order, activeZone);
+            this.applyTaxes(ctx, order, activeTaxZone);
             await this.applyShipping(ctx, order);
         } else {
             this.calculateOrderTotals(order);
@@ -52,6 +58,7 @@ export class OrderCalculator {
             const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
                 line.unitPrice,
                 line.taxCategory,
+                activeZone,
                 ctx,
             );
 

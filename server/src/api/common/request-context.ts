@@ -58,12 +58,6 @@ export class RequestContext {
         }
     }
 
-    get activeTaxZone(): Zone {
-        // TODO: This will vary depending on Customer data available -
-        // a customer with a billing address in another zone will alter the value etc.
-        return this.channel.defaultTaxZone;
-    }
-
     /**
      * True if the current session is authorized to access the current resolver method.
      */

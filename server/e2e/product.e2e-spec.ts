@@ -430,21 +430,6 @@ describe('Product resolver', () => {
         describe('variants', () => {
             let variants: ProductWithVariants.Variants[];
 
-            it('generateVariantsForProduct generates variants', async () => {
-                const result = await client.query<
-                    GenerateProductVariants.Mutation,
-                    GenerateProductVariants.Variables
-                >(GENERATE_PRODUCT_VARIANTS, {
-                    productId: newProduct.id,
-                    defaultPrice: 123,
-                    defaultSku: 'ABC',
-                });
-                variants = result.generateVariantsForProduct.variants;
-                expect(variants.length).toBe(2);
-                expect(variants[0].options.length).toBe(1);
-                expect(variants[1].options.length).toBe(1);
-            });
-
             it('generateVariantsForProduct throws with an invalid productId', async () => {
                 try {
                     await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
@@ -459,6 +444,38 @@ describe('Product resolver', () => {
                         expect.stringContaining(`No Product with the id '999' could be found`),
                     );
                 }
+            });
+
+            it('generateVariantsForProduct throws with an invalid defaultTaxCategoryId', async () => {
+                try {
+                    await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
+                        GENERATE_PRODUCT_VARIANTS,
+                        {
+                            productId: newProduct.id,
+                            defaultTaxCategoryId: '999',
+                        },
+                    );
+                    fail('Should have thrown');
+                } catch (err) {
+                    expect(err.message).toEqual(
+                        expect.stringContaining(`No TaxCategory with the id '999' could be found`),
+                    );
+                }
+            });
+
+            it('generateVariantsForProduct generates variants', async () => {
+                const result = await client.query<
+                    GenerateProductVariants.Mutation,
+                    GenerateProductVariants.Variables
+                >(GENERATE_PRODUCT_VARIANTS, {
+                    productId: newProduct.id,
+                    defaultPrice: 123,
+                    defaultSku: 'ABC',
+                });
+                variants = result.generateVariantsForProduct.variants;
+                expect(variants.length).toBe(2);
+                expect(variants[0].options.length).toBe(1);
+                expect(variants[1].options.length).toBe(1);
             });
 
             it('updateProductVariants updates variants', async () => {

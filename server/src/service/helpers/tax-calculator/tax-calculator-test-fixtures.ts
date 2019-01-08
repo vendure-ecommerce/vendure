@@ -70,7 +70,7 @@ export class MockConnection {
     }
 }
 
-export function createRequestContext(pricesIncludeTax: boolean, activeTaxZone: Zone): RequestContext {
+export function createRequestContext(pricesIncludeTax: boolean): RequestContext {
     const channel = new Channel({
         defaultTaxZone: zoneDefault,
         pricesIncludeTax,
@@ -82,9 +82,5 @@ export function createRequestContext(pricesIncludeTax: boolean, activeTaxZone: Z
         isAuthorized: true,
         session: {} as any,
     });
-    // TODO: Hack until we implement the other ways of
-    // calculating the activeTaxZone (customer billing address etc)
-    delete Object.getPrototypeOf(ctx).activeTaxZone;
-    (ctx as any).activeTaxZone = activeTaxZone;
     return ctx;
 }

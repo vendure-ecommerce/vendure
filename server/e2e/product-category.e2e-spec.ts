@@ -14,6 +14,7 @@ import {
     LanguageCode,
     MoveProductCategory,
     ProductCategory,
+    SortOrder,
     UpdateProductCategory,
 } from '../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
@@ -36,7 +37,13 @@ describe('ProductCategory resolver', () => {
             customerCount: 1,
         });
         await client.init();
-        const assetsResult = await client.query<GetAssetList.Query, GetAssetList.Variables>(GET_ASSET_LIST);
+        const assetsResult = await client.query<GetAssetList.Query, GetAssetList.Variables>(GET_ASSET_LIST, {
+            options: {
+                sort: {
+                    name: SortOrder.ASC,
+                },
+            },
+        });
         assets = assetsResult.assets.items;
     }, TEST_SETUP_TIMEOUT_MS);
 

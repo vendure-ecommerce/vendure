@@ -21,7 +21,7 @@ export class ZoneResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    zones(@Ctx() ctx: RequestContext): Promise<Zone[]> {
+    zones(@Ctx() ctx: RequestContext): Zone[] {
         return this.zoneService.findAll(ctx);
     }
 

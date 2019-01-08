@@ -10,6 +10,8 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
+import { TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
@@ -18,21 +20,25 @@ import { Product } from '../../entity/product/product.entity';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { FacetValueService } from './facet-value.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
+import { ZoneService } from './zone.service';
 
 @Injectable()
 export class ProductVariantService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
         private taxCategoryService: TaxCategoryService,
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
         private assetUpdater: AssetUpdater,
+        private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
     ) {}
 
@@ -169,8 +175,13 @@ export class ProductVariantService {
             ? generateAllCombinations(product.optionGroups.map(g => g.options))
             : [[]];
 
-        // TODO: how to handle default tax category?
-        const taxCategoryId = defaultTaxCategoryId || '1';
+        let taxCategory: TaxCategory;
+        if (defaultTaxCategoryId) {
+            taxCategory = await getEntityOrThrow(this.connection, TaxCategory, defaultTaxCategoryId);
+        } else {
+            const taxCategories = await this.taxCategoryService.findAll();
+            taxCategory = taxCategories[0];
+        }
 
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {
@@ -179,7 +190,7 @@ export class ProductVariantService {
                 sku: defaultSku || 'sku-not-set',
                 price: defaultPrice || 0,
                 optionIds: options.map(o => o.id) as string[],
-                taxCategoryId,
+                taxCategoryId: taxCategory.id as string,
                 translations: [
                     {
                         languageCode: ctx.languageCode,
@@ -201,14 +212,18 @@ export class ProductVariantService {
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`);
         }
+        const { taxZoneStrategy } = this.configService.taxOptions;
+        const zones = this.zoneService.findAll(ctx);
+        const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel);
         const applicableTaxRate = this.taxRateService.getApplicableTaxRate(
-            ctx.activeTaxZone,
+            activeTaxZone,
             variant.taxCategory,
         );
 
         const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
             channelPrice.price,
             variant.taxCategory,
+            activeTaxZone,
             ctx,
         );
 

@@ -21,6 +21,8 @@ import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
+import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
+import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 export interface AuthOptions {
@@ -183,6 +185,17 @@ export interface PaymentOptions {
     paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
 }
 
+export interface TaxOptions {
+    /**
+     * Defines the strategy used to determine the applicable Zone used in tax calculations.
+     */
+    taxZoneStrategy: TaxZoneStrategy;
+    /**
+     * Defines the strategy used for calculating taxes.
+     */
+    taxCalculationStrategy: TaxCalculationStrategy;
+}
+
 export interface ImportExportOptions {
     /**
      * The directory in which assets to be imported are located.
@@ -270,6 +283,10 @@ export interface VendureConfig {
      * Configures available payment processing methods.
      */
     paymentOptions: PaymentOptions;
+    /**
+     * Configures how taxes are calculated on products.
+     */
+    taxOptions?: TaxOptions;
     /**
      * Configures the handling of transactional emails.
      */

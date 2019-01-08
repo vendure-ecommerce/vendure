@@ -14,6 +14,8 @@ import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
+import { DefaultTaxCalculationStrategy } from './tax/default-tax-calculation-strategy';
+import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { VendureConfig } from './vendure-config';
 
 /**
@@ -65,6 +67,10 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     paymentOptions: {
         paymentMethodHandlers: [],
+    },
+    taxOptions: {
+        taxZoneStrategy: new DefaultTaxZoneStrategy(),
+        taxCalculationStrategy: new DefaultTaxCalculationStrategy(),
     },
     emailOptions: {
         emailTemplatePath: __dirname,

@@ -19,6 +19,7 @@ import {
     PaymentOptions,
     PromotionOptions,
     ShippingOptions,
+    TaxOptions,
     VendureConfig,
 } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
@@ -95,6 +96,10 @@ export class ConfigService implements VendureConfig {
 
     get paymentOptions(): PaymentOptions {
         return this.activeConfig.paymentOptions;
+    }
+
+    get taxOptions(): TaxOptions {
+        return this.activeConfig.taxOptions;
     }
 
     get emailOptions(): Required<EmailOptions<any>> {
