@@ -7,6 +7,7 @@ type Order implements Node {
     active: Boolean!
     customer: Customer
     shippingAddress: ShippingAddress
+    billingAddress: BillingAddress
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
     payments: [Payment!]
@@ -19,6 +20,18 @@ type Order implements Node {
 }
 
 type ShippingAddress {
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    phoneNumber: String
+}
+
+type BillingAddress {
     fullName: String
     company: String
     streetLine1: String

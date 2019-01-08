@@ -296,6 +296,7 @@ export interface Order extends Node {
     active: boolean;
     customer?: Customer | null;
     shippingAddress?: ShippingAddress | null;
+    billingAddress?: BillingAddress | null;
     lines: OrderLine[];
     adjustments: Adjustment[];
     payments?: Payment[] | null;
@@ -308,6 +309,18 @@ export interface Order extends Node {
 }
 
 export interface ShippingAddress {
+    fullName?: string | null;
+    company?: string | null;
+    streetLine1?: string | null;
+    streetLine2?: string | null;
+    city?: string | null;
+    province?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+    phoneNumber?: string | null;
+}
+
+export interface BillingAddress {
     fullName?: string | null;
     company?: string | null;
     streetLine1?: string | null;
@@ -3012,6 +3025,7 @@ export namespace OrderResolvers {
         active?: ActiveResolver<boolean, any, Context>;
         customer?: CustomerResolver<Customer | null, any, Context>;
         shippingAddress?: ShippingAddressResolver<ShippingAddress | null, any, Context>;
+        billingAddress?: BillingAddressResolver<BillingAddress | null, any, Context>;
         lines?: LinesResolver<OrderLine[], any, Context>;
         adjustments?: AdjustmentsResolver<Adjustment[], any, Context>;
         payments?: PaymentsResolver<Payment[] | null, any, Context>;
@@ -3035,6 +3049,11 @@ export namespace OrderResolvers {
         Context
     >;
     export type ShippingAddressResolver<R = ShippingAddress | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type BillingAddressResolver<R = BillingAddress | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3071,6 +3090,62 @@ export namespace OrderResolvers {
 }
 
 export namespace ShippingAddressResolvers {
+    export interface Resolvers<Context = any> {
+        fullName?: FullNameResolver<string | null, any, Context>;
+        company?: CompanyResolver<string | null, any, Context>;
+        streetLine1?: StreetLine1Resolver<string | null, any, Context>;
+        streetLine2?: StreetLine2Resolver<string | null, any, Context>;
+        city?: CityResolver<string | null, any, Context>;
+        province?: ProvinceResolver<string | null, any, Context>;
+        postalCode?: PostalCodeResolver<string | null, any, Context>;
+        country?: CountryResolver<string | null, any, Context>;
+        phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
+    }
+
+    export type FullNameResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CompanyResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type StreetLine1Resolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type StreetLine2Resolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CityResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ProvinceResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PostalCodeResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CountryResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace BillingAddressResolvers {
     export interface Resolvers<Context = any> {
         fullName?: FullNameResolver<string | null, any, Context>;
         company?: CompanyResolver<string | null, any, Context>;

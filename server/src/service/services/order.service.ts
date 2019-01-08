@@ -115,6 +115,7 @@ export class OrderService {
             state: this.orderStateMachine.getInitialState(),
             lines: [],
             shippingAddress: {},
+            billingAddress: {},
             pendingAdjustments: [],
             subTotal: 0,
             subTotalBeforeTax: 0,
