@@ -45,7 +45,8 @@ export class AssetService {
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
     async create(input: CreateAssetInput): Promise<Asset> {
-        const { stream, filename, mimetype } = await input.file;
+        const { createReadStream, filename, mimetype } = await input.file;
+        const stream = createReadStream();
         return this.createAssetInternal(stream, filename, mimetype);
     }
 
