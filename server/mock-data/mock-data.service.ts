@@ -325,7 +325,11 @@ export class MockDataService {
 
     async populateAssets(): Promise<Asset[]> {
         const fileNames = await fs.readdir(path.join(__dirname, 'assets'));
-        const filePaths = fileNames.map(fileName => path.join(__dirname, 'assets', fileName));
+        const filePaths = fileNames
+            .map(fileName => path.join(__dirname, 'assets', fileName))
+            // Sorting is needed because readdir order is not determnistic on Windows.
+            // See https://github.com/nodejs/node/issues/3232
+            .sort((a, b) => (a > b ? 1 : -1));
         return this.client.uploadAssets(filePaths).then(response => {
             this.log(`Created ${response.createAssets.length} Assets`);
             return response.createAssets;
