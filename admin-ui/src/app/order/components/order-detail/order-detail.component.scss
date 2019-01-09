@@ -1,5 +1,9 @@
 @import "variables";
 
+ul.payment-metadata {
+   list-style-type: none;
+}
+
 .order-lines {
 
     .sub-total td {

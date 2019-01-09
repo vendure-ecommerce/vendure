@@ -59,7 +59,7 @@
                         </tr>
                         <tr>
                             <th>{{ 'order.amount' | translate }}</th>
-                            <td>{{ payment.amount }}</td>
+                            <td>{{ payment.amount / 100 | currency }}</td>
                         </tr>
                         <tr>
                             <th>{{ 'order.transaction-id' | translate }}</th>
@@ -68,7 +68,7 @@
                         <tr>
                             <th>{{ 'order.payment-metadata' | translate }}</th>
                             <td>
-                                <ul>
+                                <ul class="payment-metadata">
                                     <li *ngFor="let entry of getPaymentMetadata(payment)">
                                         <strong>{{ entry[0] }}</strong>
                                         : {{ entry[1] }}
@@ -115,7 +115,7 @@
         </tr>
         <tr class="shipping">
             <td class="left">{{ 'order.shipping' | translate }}</td>
-            <td>{{ order.shippingMethod }}</td>
+            <td>{{ order.shippingMethod.description }}</td>
             <td colspan="3"></td>
             <td>{{ order.shipping / 100 | currency }}</td>
         </tr>
