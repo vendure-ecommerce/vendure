@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { getConfig } from '../config/config-helpers';
@@ -89,4 +89,28 @@ const exportedProviders = [
     ],
     exports: exportedProviders,
 })
-export class ServiceModule {}
+export class ServiceModule implements OnModuleInit {
+    constructor(
+        private channelService: ChannelService,
+        private roleService: RoleService,
+        private administratorService: AdministratorService,
+        private taxRateService: TaxRateService,
+        private shippingMethodService: ShippingMethodService,
+        private paymentMethodService: PaymentMethodService,
+    ) {}
+
+    async onModuleInit() {
+        // IMPORTANT - why manually invoke these init methods rather than just relying on
+        // Nest's "onModuleInit" lifecycle hook within each individual service class?
+        // The reason is that the order of invokation matters. By explicitly invoking the
+        // methods below, we can e.g. guarantee that the default channel exists
+        // (channelService.initChannels()) before we try to create any roles (which assume that
+        // there is a default Channel to work with.
+        await this.channelService.initChannels();
+        await this.roleService.initRoles();
+        await this.administratorService.initAdministrators();
+        await this.taxRateService.initTaxRates();
+        await this.shippingMethodService.initShippingMethods();
+        await this.paymentMethodService.initPaymentMethods();
+    }
+}

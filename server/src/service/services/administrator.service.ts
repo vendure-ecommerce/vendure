@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -17,7 +17,7 @@ import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
 @Injectable()
-export class AdministratorService implements OnModuleInit {
+export class AdministratorService {
     constructor(
         @InjectConnection() private connection: Connection,
         private listQueryBuilder: ListQueryBuilder,
@@ -26,7 +26,7 @@ export class AdministratorService implements OnModuleInit {
         private roleService: RoleService,
     ) {}
 
-    async onModuleInit() {
+    async initAdministrators() {
         await this.ensureSuperAdminExists();
     }
 

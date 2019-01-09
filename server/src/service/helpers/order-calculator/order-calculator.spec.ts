@@ -46,7 +46,8 @@ describe('OrderCalculator', () => {
             taxZoneStrategy: new DefaultTaxZoneStrategy(),
             taxCalculationStrategy: new DefaultTaxCalculationStrategy(),
         };
-        await module.init();
+        const taxRateService = module.get(TaxRateService);
+        await taxRateService.initTaxRates();
     });
 
     function createOrder(

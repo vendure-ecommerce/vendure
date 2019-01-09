@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -20,14 +20,14 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { ChannelService } from './channel.service';
 
 @Injectable()
-export class RoleService implements OnModuleInit {
+export class RoleService {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
-    async onModuleInit() {
+    async initRoles() {
         await this.ensureSuperAdminRoleExists();
         await this.ensureCustomerRoleExists();
     }

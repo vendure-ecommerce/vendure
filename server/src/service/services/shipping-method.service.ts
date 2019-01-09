@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -24,7 +24,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { ChannelService } from './channel.service';
 
 @Injectable()
-export class ShippingMethodService implements OnModuleInit {
+export class ShippingMethodService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
     shippingCalculators: ShippingCalculator[];
     private activeShippingMethods: ShippingMethod[];
@@ -40,7 +40,7 @@ export class ShippingMethodService implements OnModuleInit {
         this.shippingCalculators = this.configService.shippingOptions.shippingCalculators || [];
     }
 
-    async onModuleInit() {
+    async initShippingMethods() {
         await this.updateActiveShippingMethods();
     }
 

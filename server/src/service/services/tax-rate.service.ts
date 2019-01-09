@@ -1,4 +1,3 @@
-import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -15,7 +14,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
-export class TaxRateService implements OnModuleInit {
+export class TaxRateService {
     /**
      * We cache all active TaxRates to avoid hitting the DB many times
      * per request.
@@ -33,7 +32,7 @@ export class TaxRateService implements OnModuleInit {
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
-    async onModuleInit() {
+    async initTaxRates() {
         return this.updateActiveTaxRates();
     }
 
