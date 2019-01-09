@@ -24,7 +24,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMethod.Fragment>
     implements OnInit, OnDestroy {
-    paymentMethodForm: FormGroup;
+    detailForm: FormGroup;
 
     constructor(
         router: Router,
@@ -36,7 +36,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.paymentMethodForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             enabled: [true, Validators.required],
             configArgs: this.formBuilder.group({}),
@@ -56,7 +56,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.paymentMethodForm.value;
+                    const formValue = this.detailForm.value;
                     const input: UpdatePaymentMethodInput = {
                         id,
                         code: formValue.code,
@@ -74,7 +74,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'PaymentMethod',
                     });
-                    this.paymentMethodForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -86,11 +86,11 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
     }
 
     protected setFormValues(paymentMethod: PaymentMethod.Fragment): void {
-        this.paymentMethodForm.patchValue({
+        this.detailForm.patchValue({
             code: paymentMethod.code,
             enabled: paymentMethod.enabled,
         });
-        const configArgsGroup = this.paymentMethodForm.get('configArgs') as FormGroup;
+        const configArgsGroup = this.detailForm.get('configArgs') as FormGroup;
         if (configArgsGroup) {
             for (const arg of paymentMethod.configArgs) {
                 const control = configArgsGroup.get(arg.name);

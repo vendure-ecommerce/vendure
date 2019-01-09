@@ -16,6 +16,7 @@ import { AdjustmentOperationInputComponent } from './components/adjustment-opera
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { ChipComponent } from './components/chip/chip.component';
+import { ConfirmNavigationDialogComponent } from './components/confirm-navigation-dialog/confirm-navigation-dialog.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
@@ -38,6 +39,7 @@ import { TableRowActionComponent } from './components/table-row-action/table-row
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { ModalService } from './providers/modal/modal.service';
+import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 
 const IMPORTS = [
     ClarityModule,
@@ -58,6 +60,7 @@ const DECLARATIONS = [
     AffixedInputComponent,
     BackgroundColorFromDirective,
     ChipComponent,
+    ConfirmNavigationDialogComponent,
     CurrencyInputComponent,
     CustomerLabelComponent,
     CustomFieldControlComponent,
@@ -91,8 +94,9 @@ const DECLARATIONS = [
         // are unknown to the CoreModule instance of ModalService.
         // See https://github.com/angular/angular/issues/14324#issuecomment-305650763
         ModalService,
+        CanDeactivateDetailGuard,
     ],
-    entryComponents: [ModalDialogComponent],
+    entryComponents: [ModalDialogComponent, ConfirmNavigationDialogComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

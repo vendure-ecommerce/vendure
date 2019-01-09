@@ -27,7 +27,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Fragment>
     implements OnInit, OnDestroy {
     promotion$: Observable<Promotion.Fragment>;
-    promotionForm: FormGroup;
+    detailForm: FormGroup;
     conditions: AdjustmentOperation[] = [];
     actions: AdjustmentOperation[] = [];
 
@@ -44,7 +44,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.promotionForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             conditions: this.formBuilder.array([]),
             actions: this.formBuilder.array([]),
@@ -74,8 +74,8 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     saveButtonEnabled(): boolean {
         return (
-            this.promotionForm.dirty &&
-            this.promotionForm.valid &&
+            this.detailForm.dirty &&
+            this.detailForm.valid &&
             this.conditions.length !== 0 &&
             this.actions.length !== 0
         );
@@ -83,33 +83,33 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     addCondition(condition: AdjustmentOperation) {
         this.addOperation('conditions', condition);
-        this.promotionForm.markAsDirty();
+        this.detailForm.markAsDirty();
     }
 
     addAction(action: AdjustmentOperation) {
         this.addOperation('actions', action);
-        this.promotionForm.markAsDirty();
+        this.detailForm.markAsDirty();
     }
 
     removeCondition(condition: AdjustmentOperation) {
         this.removeOperation('conditions', condition);
-        this.promotionForm.markAsDirty();
+        this.detailForm.markAsDirty();
     }
 
     removeAction(action: AdjustmentOperation) {
         this.removeOperation('actions', action);
-        this.promotionForm.markAsDirty();
+        this.detailForm.markAsDirty();
     }
 
     formArrayOf(key: 'conditions' | 'actions'): FormArray {
-        return this.promotionForm.get(key) as FormArray;
+        return this.detailForm.get(key) as FormArray;
     }
 
     create() {
-        if (!this.promotionForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.promotionForm.value;
+        const formValue = this.detailForm.value;
         const input: CreatePromotionInput = {
             name: formValue.name,
             enabled: true,
@@ -119,7 +119,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.dataService.promotion.createPromotion(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), { entity: 'Promotion' });
-                this.promotionForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createPromotion.id], { relativeTo: this.route });
             },
@@ -132,10 +132,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     }
 
     save() {
-        if (!this.promotionForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.promotionForm.value;
+        const formValue = this.detailForm.value;
         this.promotion$
             .pipe(
                 take(1),
@@ -154,7 +154,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Promotion',
                     });
-                    this.promotionForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -169,7 +169,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
-        this.promotionForm.patchValue({ name: entity.name });
+        this.detailForm.patchValue({ name: entity.name });
         entity.conditions.forEach(o => {
             this.addOperation('conditions', o);
         });

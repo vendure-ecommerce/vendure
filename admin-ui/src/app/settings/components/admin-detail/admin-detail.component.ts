@@ -28,7 +28,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     administrator$: Observable<Administrator>;
     allRoles$: Observable<Role.Fragment[]>;
     selectedRoles: Role.Fragment[] = [];
-    administratorForm: FormGroup;
+    detailForm: FormGroup;
     selectedRolePermissions: { [K in Permission]: boolean } = {} as any;
 
     constructor(
@@ -41,7 +41,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.administratorForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             emailAddress: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
@@ -65,7 +65,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     }
 
     create() {
-        const formValue = this.administratorForm.value;
+        const formValue = this.detailForm.value;
         const administrator: CreateAdministratorInput = {
             emailAddress: formValue.emailAddress,
             firstName: formValue.firstName,
@@ -78,7 +78,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Administrator',
                 });
-                this.administratorForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createAdministrator.id], { relativeTo: this.route });
             },
@@ -95,7 +95,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.administratorForm.value;
+                    const formValue = this.detailForm.value;
                     const administrator: UpdateAdministratorInput = {
                         id,
                         emailAddress: formValue.emailAddress,
@@ -112,7 +112,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Administrator',
                     });
-                    this.administratorForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -124,13 +124,13 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     }
 
     protected setFormValues(administrator: Administrator, languageCode: LanguageCode): void {
-        this.administratorForm.patchValue({
+        this.detailForm.patchValue({
             emailAddress: administrator.emailAddress,
             firstName: administrator.firstName,
             lastName: administrator.lastName,
             roles: administrator.user.roles,
         });
-        const passwordControl = this.administratorForm.get('password');
+        const passwordControl = this.detailForm.get('password');
         if (passwordControl) {
             if (!administrator.id) {
                 passwordControl.setValidators([Validators.required]);
@@ -142,7 +142,7 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     }
 
     private buildPermissionsMap() {
-        const permissionsControl = this.administratorForm.get('roles');
+        const permissionsControl = this.detailForm.get('roles');
         if (permissionsControl) {
             const permissions = permissionsControl.value.reduce(
                 (output, role: Role) => [...output, ...role.permissions],

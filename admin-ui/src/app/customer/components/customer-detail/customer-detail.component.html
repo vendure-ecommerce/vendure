@@ -6,7 +6,7 @@
             class="btn btn-primary"
             *ngIf="(isNew$ | async); else: updateButton"
             (click)="create()"
-            [disabled]="customerForm.invalid || customerForm.pristine"
+            [disabled]="detailForm.invalid || detailForm.pristine"
         >
             {{ 'common.create' | translate }}
         </button>
@@ -14,7 +14,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                [disabled]="customerForm.invalid || customerForm.pristine"
+                [disabled]="detailForm.invalid || detailForm.pristine"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -22,7 +22,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="customerForm">
+<form class="form" [formGroup]="detailForm">
     <section class="form-block">
         <vdr-form-field
             [label]="'customer.title' | translate"
@@ -61,7 +61,7 @@
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control
                     *ngIf="customFieldIsSet(customField.name)"
-                    [customFieldsFormGroup]="customerForm.get(['facet', 'customFields'])"
+                    [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
                     [customField]="customField"
                 ></vdr-custom-field-control>
             </ng-container>

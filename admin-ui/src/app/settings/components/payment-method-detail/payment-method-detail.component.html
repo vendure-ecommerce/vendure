@@ -5,7 +5,7 @@
         <button
             class="btn btn-primary"
             *ngIf="(isNew$ | async); else: updateButton"
-            [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid"
+            [disabled]="detailForm.pristine || detailForm.invalid"
         >
             {{ 'common.create' | translate }}
         </button>
@@ -13,7 +13,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                [disabled]="paymentMethodForm.pristine || paymentMethodForm.invalid"
+                [disabled]="detailForm.pristine || detailForm.invalid"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -21,7 +21,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="paymentMethodForm">
+<form class="form" [formGroup]="detailForm">
     <section class="form-block">
         <vdr-form-field [label]="'common.code' | translate" for="code">
             <input id="code" type="text" formControlName="code" />

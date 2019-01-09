@@ -12,6 +12,7 @@ import {
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
 import { AdministratorListComponent } from './components/administrator-list/administrator-list.component';
@@ -50,6 +51,7 @@ export const settingsRoutes: Route[] = [
         path: 'administrators/:id',
         component: AdminDetailComponent,
         resolve: createResolveData(AdministratorResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: { breadcrumb: administratorBreadcrumb },
     },
     {
@@ -63,6 +65,7 @@ export const settingsRoutes: Route[] = [
         path: 'channels/:id',
         component: ChannelDetailComponent,
         resolve: createResolveData(ChannelResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: { breadcrumb: channelBreadcrumb },
     },
     {
@@ -76,6 +79,7 @@ export const settingsRoutes: Route[] = [
         path: 'roles/:id',
         component: RoleDetailComponent,
         resolve: createResolveData(RoleResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: { breadcrumb: roleBreadcrumb },
     },
     {
@@ -89,6 +93,7 @@ export const settingsRoutes: Route[] = [
         path: 'tax-categories/:id',
         component: TaxCategoryDetailComponent,
         resolve: createResolveData(TaxCategoryResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: taxCategoryBreadcrumb,
         },
@@ -104,6 +109,7 @@ export const settingsRoutes: Route[] = [
         path: 'tax-rates/:id',
         component: TaxRateDetailComponent,
         resolve: createResolveData(TaxRateResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: taxRateBreadcrumb,
         },
@@ -119,6 +125,7 @@ export const settingsRoutes: Route[] = [
         path: 'countries/:id',
         component: CountryDetailComponent,
         resolve: createResolveData(CountryResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: countryBreadcrumb,
         },
@@ -134,6 +141,7 @@ export const settingsRoutes: Route[] = [
         path: 'shipping-methods/:id',
         component: ShippingMethodDetailComponent,
         resolve: createResolveData(ShippingMethodResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: shippingMethodBreadcrumb,
         },
@@ -149,6 +157,7 @@ export const settingsRoutes: Route[] = [
         path: 'payment-methods/:id',
         component: PaymentMethodDetailComponent,
         resolve: createResolveData(PaymentMethodResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: paymentMethodBreadcrumb,
         },

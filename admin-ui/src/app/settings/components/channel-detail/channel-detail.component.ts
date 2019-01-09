@@ -26,7 +26,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment>
     implements OnInit, OnDestroy {
     zones$: Observable<GetZones.Zones[]>;
-    channelForm: FormGroup;
+    detailForm: FormGroup;
 
     constructor(
         router: Router,
@@ -38,7 +38,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.channelForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             token: ['', Validators.required],
             pricesIncludeTax: [false],
@@ -57,14 +57,14 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     }
 
     saveButtonEnabled(): boolean {
-        return this.channelForm.dirty && this.channelForm.valid;
+        return this.detailForm.dirty && this.detailForm.valid;
     }
 
     create() {
-        if (!this.channelForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.channelForm.value;
+        const formValue = this.detailForm.value;
         const input = {
             code: formValue.code,
             pricesIncludeTax: formValue.pricesIncludeTax,
@@ -76,7 +76,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Channel',
                 });
-                this.channelForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createChannel.id], { relativeTo: this.route });
             },
@@ -89,10 +89,10 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     }
 
     save() {
-        if (!this.channelForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.channelForm.value;
+        const formValue = this.detailForm.value;
         this.entity$
             .pipe(
                 take(1),
@@ -112,7 +112,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Channel',
                     });
-                    this.channelForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -127,7 +127,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: Channel.Fragment, languageCode: LanguageCode): void {
-        this.channelForm.patchValue({
+        this.detailForm.patchValue({
             code: entity.code,
             token: entity.token,
             pricesIncludeTax: entity.pricesIncludeTax,

@@ -1,3 +1,4 @@
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
@@ -13,6 +14,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
+    abstract detailForm: FormGroup;
     protected destroy$ = new Subject<void>();
 
     protected constructor(

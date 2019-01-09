@@ -4,6 +4,7 @@ import { FacetWithValues, ProductWithVariants } from 'shared/generated-types';
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
@@ -28,6 +29,7 @@ export const catalogRoutes: Route[] = [
         path: 'products/:id',
         component: ProductDetailComponent,
         resolve: createResolveData(ProductResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: productBreadcrumb,
         },
@@ -43,6 +45,7 @@ export const catalogRoutes: Route[] = [
         path: 'facets/:id',
         component: FacetDetailComponent,
         resolve: createResolveData(FacetResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: facetBreadcrumb,
         },
@@ -58,6 +61,7 @@ export const catalogRoutes: Route[] = [
         path: 'categories/:id',
         component: ProductCategoryDetailComponent,
         resolve: createResolveData(ProductCategoryResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: productCategoryBreadcrumb,
         },

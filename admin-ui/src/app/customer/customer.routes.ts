@@ -4,6 +4,7 @@ import { Customer } from 'shared/generated-types';
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
@@ -22,6 +23,7 @@ export const customerRoutes: Route[] = [
         path: 'customers/:id',
         component: CustomerDetailComponent,
         resolve: createResolveData(CustomerResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: customerBreadcrumb,
         },

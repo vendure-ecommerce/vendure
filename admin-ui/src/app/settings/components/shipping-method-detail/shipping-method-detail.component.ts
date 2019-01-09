@@ -25,7 +25,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingMethod.Fragment>
     implements OnInit, OnDestroy {
-    shippingMethodForm: FormGroup;
+    detailForm: FormGroup;
     checkers: AdjustmentOperation[] = [];
     calculators: AdjustmentOperation[] = [];
     selectedChecker?: AdjustmentOperation;
@@ -41,7 +41,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.shippingMethodForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],
             checker: {},
@@ -74,7 +74,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         if (!this.selectedChecker || !this.selectedCalculator) {
             return;
         }
-        const formValue = this.shippingMethodForm.value;
+        const formValue = this.detailForm.value;
         const input: CreateShippingMethodInput = {
             code: formValue.code,
             description: formValue.description,
@@ -86,7 +86,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'ShippingMethod',
                 });
-                this.shippingMethodForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
             },
@@ -108,7 +108,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.shippingMethodForm.value;
+                    const formValue = this.detailForm.value;
                     const input: UpdateShippingMethodInput = {
                         id,
                         code: formValue.code,
@@ -124,7 +124,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'ShippingMethod',
                     });
-                    this.shippingMethodForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -152,7 +152,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     }
 
     protected setFormValues(shippingMethod: ShippingMethod.Fragment): void {
-        this.shippingMethodForm.patchValue({
+        this.detailForm.patchValue({
             description: shippingMethod.description,
             code: shippingMethod.code,
             checker: shippingMethod.checker || {},

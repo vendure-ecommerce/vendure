@@ -26,7 +26,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.Fragment>
     implements OnInit, OnDestroy {
     taxCategory$: Observable<TaxCategory.Fragment>;
-    taxCategoryForm: FormGroup;
+    detailForm: FormGroup;
 
     private taxCondition: AdjustmentOperation;
     private taxAction: AdjustmentOperation;
@@ -41,7 +41,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.taxCategoryForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             taxRate: [0, Validators.required],
         });
@@ -57,21 +57,21 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
     }
 
     saveButtonEnabled(): boolean {
-        return this.taxCategoryForm.dirty && this.taxCategoryForm.valid;
+        return this.detailForm.dirty && this.detailForm.valid;
     }
 
     create() {
-        if (!this.taxCategoryForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.taxCategoryForm.value;
+        const formValue = this.detailForm.value;
         const input = { name: formValue.name } as CreateTaxCategoryInput;
         this.dataService.settings.createTaxCategory(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxCategory',
                 });
-                this.taxCategoryForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createTaxCategory.id], { relativeTo: this.route });
             },
@@ -84,10 +84,10 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
     }
 
     save() {
-        if (!this.taxCategoryForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.taxCategoryForm.value;
+        const formValue = this.detailForm.value;
         this.taxCategory$
             .pipe(
                 take(1),
@@ -104,7 +104,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'TaxCategory',
                     });
-                    this.taxCategoryForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -119,7 +119,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: TaxCategory.Fragment, languageCode: LanguageCode): void {
-        this.taxCategoryForm.patchValue({
+        this.detailForm.patchValue({
             name: entity.name,
         });
     }

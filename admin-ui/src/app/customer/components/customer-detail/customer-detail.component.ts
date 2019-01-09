@@ -25,7 +25,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragment>
     implements OnInit, OnDestroy {
-    customerForm: FormGroup;
+    detailForm: FormGroup;
     customFields: CustomFieldConfig[];
 
     constructor(
@@ -40,7 +40,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
         super(route, router, serverConfigService);
 
         this.customFields = this.getCustomFieldConfig('Customer');
-        this.customerForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             title: '',
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
@@ -62,11 +62,11 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.customerForm.get(['customFields', name]);
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     create() {
-        const formValue = this.customerForm.value;
+        const formValue = this.detailForm.value;
         const customer: CreateCustomerInput = {
             title: formValue.title,
             emailAddress: formValue.emailAddress,
@@ -78,7 +78,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Customer',
                 });
-                this.customerForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createCustomer.id], { relativeTo: this.route });
             },
@@ -95,7 +95,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.customerForm.value;
+                    const formValue = this.detailForm.value;
                     const customer: UpdateCustomerInput = {
                         id,
                         title: formValue.title,
@@ -111,7 +111,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Customer',
                     });
-                    this.customerForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -123,7 +123,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     }
 
     protected setFormValues(entity: Customer.Fragment): void {
-        this.customerForm.patchValue({
+        this.detailForm.patchValue({
             title: entity.title,
             firstName: entity.firstName,
             lastName: entity.lastName,
@@ -132,7 +132,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.customerForm.get(['customFields']) as FormGroup;
+            const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
 
             for (const fieldDef of this.customFields) {
                 const key = fieldDef.name;

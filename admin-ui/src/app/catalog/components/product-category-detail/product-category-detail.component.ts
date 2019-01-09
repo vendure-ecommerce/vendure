@@ -42,7 +42,7 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
 export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductCategory.Fragment>
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
-    categoryForm: FormGroup;
+    detailForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
     facetValues$: Observable<FacetValue.Fragment[]>;
     private facets$: Observable<FacetWithValues.Fragment[]>;
@@ -59,7 +59,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
     ) {
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('ProductCategory');
-        this.categoryForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             description: '',
             facetValueIds: [[]],
@@ -80,8 +80,8 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
         const facetValueIds$ = this.entity$.pipe(
             filter(category => !!(category && category.facetValues)),
             take(1),
-            switchMap(category => this.categoryForm.valueChanges),
-            startWith(this.categoryForm.value),
+            switchMap(category => this.detailForm.valueChanges),
+            startWith(this.detailForm.value),
             map(formValue => formValue.facetValueIds),
         );
 
@@ -95,7 +95,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.categoryForm.get(['customFields', name]);
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     assetsChanged(): boolean {
@@ -117,33 +117,33 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
             )
             .subscribe(([facetValueIds, category]) => {
                 if (facetValueIds) {
-                    const existingFacetValueIds = this.categoryForm.value.facetValueIds;
-                    this.categoryForm.patchValue({
+                    const existingFacetValueIds = this.detailForm.value.facetValueIds;
+                    this.detailForm.patchValue({
                         facetValueIds: unique([...existingFacetValueIds, ...facetValueIds]),
                     });
-                    this.categoryForm.markAsDirty();
+                    this.detailForm.markAsDirty();
                     this.changeDetector.markForCheck();
                 }
             });
     }
 
     removeValueFacet(id: string) {
-        const facetValueIds = this.categoryForm.value.facetValueIds.filter(fvid => fvid !== id);
-        this.categoryForm.patchValue({
+        const facetValueIds = this.detailForm.value.facetValueIds.filter(fvid => fvid !== id);
+        this.detailForm.patchValue({
             facetValueIds,
         });
-        this.categoryForm.markAsDirty();
+        this.detailForm.markAsDirty();
     }
 
     create() {
-        if (!this.categoryForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
         combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
                 mergeMap(([category, languageCode]) => {
-                    const input = this.getUpdatedCategory(category, this.categoryForm, languageCode);
+                    const input = this.getUpdatedCategory(category, this.detailForm, languageCode);
                     return this.dataService.product.createProductCategory(input);
                 }),
             )
@@ -152,7 +152,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'ProductCategory',
                     });
-                    this.categoryForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createProductCategory.id], { relativeTo: this.route });
                 },
@@ -172,7 +172,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
                     const updateOperations: Array<Observable<any>> = [];
                     const input = this.getUpdatedCategory(
                         category,
-                        this.categoryForm,
+                        this.detailForm,
                         languageCode,
                     ) as UpdateProductCategoryInput;
                     return this.dataService.product.updateProductCategory(input);
@@ -180,7 +180,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
             )
             .subscribe(
                 () => {
-                    this.categoryForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'ProductCategory',
@@ -200,14 +200,14 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
     protected setFormValues(category: ProductCategory.Fragment, languageCode: LanguageCode) {
         const currentTranslation = category.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
-            this.categoryForm.patchValue({
+            this.detailForm.patchValue({
                 name: currentTranslation.name,
                 description: currentTranslation.description,
                 facetValueIds: category.facetValues.map(fv => fv.id),
             });
 
             if (this.customFields.length) {
-                const customFieldsGroup = this.categoryForm.get(['customFields']) as FormGroup;
+                const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
 
                 for (const fieldDef of this.customFields) {
                     const key = fieldDef.name;
@@ -247,7 +247,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
         return {
             ...updatedCategory,
             ...this.assetChanges,
-            facetValueIds: this.categoryForm.value.facetValueIds,
+            facetValueIds: this.detailForm.value.facetValueIds,
         };
     }
 }

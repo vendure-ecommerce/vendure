@@ -20,7 +20,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
-    roleForm: FormGroup;
+    detailForm: FormGroup;
     permissions: { [K in Permission]: boolean };
     permissionsChanged = false;
     constructor(
@@ -37,7 +37,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             (result, key) => ({ ...result, [key]: false }),
             {} as { [K in Permission]: boolean },
         );
-        this.roleForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],
         });
@@ -53,7 +53,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     }
 
     updateCode(nameValue: string) {
-        const codeControl = this.roleForm.get(['code']);
+        const codeControl = this.detailForm.get(['code']);
         if (codeControl && codeControl.pristine) {
             codeControl.setValue(normalizeString(nameValue, '-'));
         }
@@ -65,7 +65,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     }
 
     create() {
-        const formValue = this.roleForm.value;
+        const formValue = this.detailForm.value;
         const role: CreateRoleInput = {
             code: formValue.code,
             description: formValue.description,
@@ -74,7 +74,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.dataService.administrator.createRole(role).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), { entity: 'Role' });
-                this.roleForm.markAsPristine();
+                this.detailForm.markAsPristine();
                 this.changeDetector.markForCheck();
                 this.permissionsChanged = false;
                 this.router.navigate(['../', data.createRole.id], { relativeTo: this.route });
@@ -92,7 +92,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.roleForm.value;
+                    const formValue = this.detailForm.value;
                     const role: UpdateRoleInput = {
                         id,
                         code: formValue.code,
@@ -105,7 +105,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             .subscribe(
                 data => {
                     this.notificationService.success(_('common.notify-update-success'), { entity: 'Role' });
-                    this.roleForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.permissionsChanged = false;
                 },
@@ -118,7 +118,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     }
 
     protected setFormValues(role: Role, languageCode: LanguageCode): void {
-        this.roleForm.patchValue({
+        this.detailForm.patchValue({
             description: role.description,
             code: role.code,
         });

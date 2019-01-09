@@ -20,7 +20,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment>
     implements OnInit, OnDestroy {
     country$: Observable<Country.Fragment>;
-    countryForm: FormGroup;
+    detailForm: FormGroup;
 
     constructor(
         router: Router,
@@ -32,7 +32,7 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService);
-        this.countryForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             name: ['', Validators.required],
             enabled: [true],
@@ -49,14 +49,14 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
     }
 
     create() {
-        if (!this.countryForm.dirty) {
+        if (!this.detailForm.dirty) {
             return;
         }
         combineLatest(this.country$, this.languageCode$)
             .pipe(
                 take(1),
                 mergeMap(([country, languageCode]) => {
-                    const formValue = this.countryForm.value;
+                    const formValue = this.detailForm.value;
                     const input: CreateCountryInput = createUpdatedTranslatable({
                         translatable: country,
                         updatedFields: formValue,
@@ -74,7 +74,7 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Country',
                     });
-                    this.countryForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createCountry.id], { relativeTo: this.route });
                 },
@@ -91,7 +91,7 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
             .pipe(
                 take(1),
                 mergeMap(([country, languageCode]) => {
-                    const formValue = this.countryForm.value;
+                    const formValue = this.detailForm.value;
                     const input: UpdateCountryInput = createUpdatedTranslatable({
                         translatable: country,
                         updatedFields: formValue,
@@ -105,7 +105,7 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Country',
                     });
-                    this.countryForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -119,7 +119,7 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
     protected setFormValues(country: Country, languageCode: LanguageCode): void {
         const currentTranslation = country.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
-            this.countryForm.patchValue({
+            this.detailForm.patchValue({
                 code: country.code,
                 name: currentTranslation.name,
                 enabled: country.enabled,

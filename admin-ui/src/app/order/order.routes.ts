@@ -4,6 +4,7 @@ import { OrderWithLines } from 'shared/generated-types';
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
@@ -21,6 +22,7 @@ export const orderRoutes: Route[] = [
         path: ':id',
         component: OrderDetailComponent,
         resolve: createResolveData(OrderResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: orderBreadcrumb,
         },

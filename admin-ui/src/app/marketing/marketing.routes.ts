@@ -4,6 +4,7 @@ import { Promotion } from 'shared/generated-types';
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
@@ -21,6 +22,7 @@ export const marketingRoutes: Route[] = [
         path: 'promotions/:id',
         component: PromotionDetailComponent,
         resolve: createResolveData(PromotionResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: promotionBreadcrumb,
         },

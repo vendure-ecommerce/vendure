@@ -32,7 +32,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     values$: Observable<FacetWithValues.Values[]>;
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
-    facetForm: FormGroup;
+    detailForm: FormGroup;
 
     constructor(
         router: Router,
@@ -46,7 +46,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Facet');
         this.customValueFields = this.getCustomFieldConfig('FacetValue');
-        this.facetForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             facet: this.formBuilder.group({
                 code: ['', Validators.required],
                 name: '',
@@ -69,40 +69,40 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     }
 
     updateCode(nameValue: string) {
-        const codeControl = this.facetForm.get(['facet', 'code']);
+        const codeControl = this.detailForm.get(['facet', 'code']);
         if (codeControl && codeControl.pristine) {
             codeControl.setValue(normalizeString(nameValue, '-'));
         }
     }
 
     updateValueCode(nameValue: string, index: number) {
-        const codeControl = this.facetForm.get(['values', index, 'code']);
+        const codeControl = this.detailForm.get(['values', index, 'code']);
         if (codeControl && codeControl.pristine) {
             codeControl.setValue(normalizeString(nameValue, '-'));
         }
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.facetForm.get(['facet', 'customFields', name]);
+        return !!this.detailForm.get(['facet', 'customFields', name]);
     }
 
     customValueFieldIsSet(index: number, name: string): boolean {
-        return !!this.facetForm.get(['values', index, 'customFields', name]);
+        return !!this.detailForm.get(['values', index, 'customFields', name]);
     }
 
     getValuesFormArray(): FormArray {
-        return this.facetForm.get('values') as FormArray;
+        return this.detailForm.get('values') as FormArray;
     }
 
     addFacetValue() {
-        const valuesFormArray = this.facetForm.get('values') as FormArray | null;
+        const valuesFormArray = this.detailForm.get('values') as FormArray | null;
         if (valuesFormArray) {
             valuesFormArray.insert(valuesFormArray.length, this.formBuilder.group({ name: '', code: '' }));
         }
     }
 
     create() {
-        const facetForm = this.facetForm.get('facet');
+        const facetForm = this.detailForm.get('facet');
         if (!facetForm || !facetForm.dirty) {
             return;
         }
@@ -117,7 +117,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             .subscribe(
                 data => {
                     this.notificationService.success(_('common.notify-create-success'), { entity: 'Facet' });
-                    this.facetForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
                 },
@@ -134,7 +134,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             .pipe(
                 take(1),
                 mergeMap(([facet, languageCode]) => {
-                    const facetGroup = this.facetForm.get('facet');
+                    const facetGroup = this.detailForm.get('facet');
                     const updateOperations: Array<Observable<any>> = [];
 
                     if (facetGroup && facetGroup.dirty) {
@@ -143,7 +143,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                             updateOperations.push(this.dataService.facet.updateFacet(newFacet));
                         }
                     }
-                    const valuesArray = this.facetForm.get('values');
+                    const valuesArray = this.detailForm.get('values');
                     if (valuesArray && valuesArray.dirty) {
                         const newValues: CreateFacetValueInput[] = (valuesArray as FormArray).controls
                             .filter(c => !c.value.id)
@@ -170,7 +170,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             )
             .subscribe(
                 () => {
-                    this.facetForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.notificationService.success(_('common.notify-update-success'), { entity: 'Facet' });
                 },
@@ -188,7 +188,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
         const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
-            this.facetForm.patchValue({
+            this.detailForm.patchValue({
                 facet: {
                     code: facet.code,
                     name: currentTranslation.name,
@@ -196,7 +196,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             });
 
             if (this.customFields.length) {
-                const customFieldsGroup = this.facetForm.get(['facet', 'customFields']) as FormGroup;
+                const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as FormGroup;
 
                 for (const fieldDef of this.customFields) {
                     const key = fieldDef.name;
@@ -211,7 +211,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 }
             }
 
-            const valuesFormArray = this.facetForm.get('values') as FormArray;
+            const valuesFormArray = this.detailForm.get('values') as FormArray;
             facet.values.forEach((value, i) => {
                 const valueTranslation = value.translations.find(t => t.languageCode === languageCode);
                 const group = {
@@ -226,14 +226,14 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     valuesFormArray.insert(i, this.formBuilder.group(group));
                 }
                 if (this.customValueFields.length) {
-                    let customValueFieldsGroup = this.facetForm.get([
+                    let customValueFieldsGroup = this.detailForm.get([
                         'values',
                         i,
                         'customFields',
                     ]) as FormGroup;
                     if (!customValueFieldsGroup) {
                         customValueFieldsGroup = new FormGroup({});
-                        (this.facetForm.get(['values', i]) as FormGroup).addControl(
+                        (this.detailForm.get(['values', i]) as FormGroup).addControl(
                             'customFields',
                             customValueFieldsGroup,
                         );
@@ -260,7 +260,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     }
 
     /**
-     * Given a facet and the value of the facetForm, this method creates an updated copy of the facet which
+     * Given a facet and the value of the detailForm, this method creates an updated copy of the facet which
      * can then be persisted to the API.
      */
     private getUpdatedFacet(
@@ -281,7 +281,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     }
 
     /**
-     * Given an array of facet values and the values from the facetForm, this method creates an new array
+     * Given an array of facet values and the values from the detailForm, this method creates an new array
      * which can be persisted to the API.
      */
     private getUpdatedFacetValues(

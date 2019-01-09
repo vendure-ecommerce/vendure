@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Order, OrderWithLines } from 'shared/generated-types';
 
@@ -13,6 +14,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fragment>
     implements OnInit, OnDestroy {
+    detailForm: FormGroup;
     constructor(router: Router, route: ActivatedRoute, serverConfigService: ServerConfigService) {
         super(route, router, serverConfigService);
     }

@@ -59,7 +59,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     taxCategories$: Observable<TaxCategory.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
-    productForm: FormGroup;
+    detailForm: FormGroup;
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     facetValues$: Observable<ProductWithVariants.FacetValues[]>;
@@ -80,7 +80,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Product');
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
-        this.productForm = this.formBuilder.group({
+        this.detailForm = this.formBuilder.group({
             product: this.formBuilder.group({
                 name: ['', Validators.required],
                 slug: '',
@@ -136,7 +136,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.productForm.get(['product', 'customFields', name]);
+        return !!this.detailForm.get(['product', 'customFields', name]);
     }
 
     assetsChanged(): boolean {
@@ -157,7 +157,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     updateSlug(nameValue: string) {
         this.isNew$.pipe(take(1)).subscribe(isNew => {
             if (isNew) {
-                const slugControl = this.productForm.get(['product', 'slug']);
+                const slugControl = this.detailForm.get(['product', 'slug']);
                 if (slugControl && slugControl.pristine) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
@@ -198,7 +198,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         const index = variants.findIndex(v => v.id === variantId);
                         const variant = variants[index];
                         const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
-                        const variantFormGroup = this.productForm.get(['variants', index]);
+                        const variantFormGroup = this.detailForm.get(['variants', index]);
                         if (variantFormGroup) {
                             variantFormGroup.patchValue({
                                 facetValueIds: unique([...existingFacetValueIds, ...facetValueIds]),
@@ -258,7 +258,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     });
                     this.assetChanges = {};
                     this.variantAssetChanges = {};
-                    this.productForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
                 },
                 err => {
@@ -287,7 +287,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                             updateOperations.push(this.dataService.product.updateProduct(newProduct));
                         }
                     }
-                    const variantsArray = this.productForm.get('variants');
+                    const variantsArray = this.detailForm.get('variants');
                     if ((variantsArray && variantsArray.dirty) || this.variantAssetsChanged()) {
                         const newVariants = this.getUpdatedProductVariants(
                             product,
@@ -302,7 +302,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             )
             .subscribe(
                 () => {
-                    this.productForm.markAsPristine();
+                    this.detailForm.markAsPristine();
                     this.assetChanges = {};
                     this.variantAssetChanges = {};
                     this.notificationService.success(_('common.notify-update-success'), {
@@ -323,7 +323,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
         const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
         if (currentTranslation) {
-            this.productForm.patchValue({
+            this.detailForm.patchValue({
                 product: {
                     name: currentTranslation.name,
                     slug: currentTranslation.slug,
@@ -333,7 +333,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             });
 
             if (this.customFields.length) {
-                const customFieldsGroup = this.productForm.get(['product', 'customFields']) as FormGroup;
+                const customFieldsGroup = this.detailForm.get(['product', 'customFields']) as FormGroup;
 
                 for (const fieldDef of this.customFields) {
                     const key = fieldDef.name;
@@ -348,7 +348,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 }
             }
 
-            const variantsFormArray = this.productForm.get('variants') as FormArray;
+            const variantsFormArray = this.detailForm.get('variants') as FormArray;
             product.variants.forEach((variant, i) => {
                 const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
                 const facetValueIds = variant.facetValues.map(fv => fv.id);
@@ -379,7 +379,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     /**
-     * Given a product and the value of the productForm, this method creates an updated copy of the product which
+     * Given a product and the value of the detailForm, this method creates an updated copy of the product which
      * can then be persisted to the API.
      */
     private getUpdatedProduct(
@@ -407,7 +407,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     /**
-     * Given an array of product variants and the values from the productForm, this method creates an new array
+     * Given an array of product variants and the values from the detailForm, this method creates an new array
      * which can be persisted to the API.
      */
     private getUpdatedProductVariants(
@@ -446,6 +446,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     private getProductFormGroup(): FormGroup {
-        return this.productForm.get('product') as FormGroup;
+        return this.detailForm.get('product') as FormGroup;
     }
 }
