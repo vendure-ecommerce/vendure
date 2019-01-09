@@ -59,10 +59,6 @@ describe('Authorization & permissions', () => {
         await server.destroy();
     });
 
-    beforeEach(() => {
-        sendEmailFn = jest.fn();
-    });
-
     describe('admin permissions', () => {
         describe('Anonymous user', () => {
             beforeAll(async () => {
@@ -151,6 +147,10 @@ describe('Authorization & permissions', () => {
         const emailAddress = 'test1@test.com';
         let verificationToken: string;
 
+        beforeEach(() => {
+            sendEmailFn = jest.fn();
+        });
+
         it('register a new account', async () => {
             const verificationTokenPromise = getVerificationTokenPromise();
             const input: RegisterCustomerInput = {
@@ -205,11 +205,12 @@ describe('Authorization & permissions', () => {
 
             verificationToken = newVerificationToken;
         });
+
         it('refreshCustomerVerification does nothing with an unrecognized emailAddress', async () => {
             const result = await client.query(REFRESH_TOKEN, {
                 emailAddress: 'never-been-registered@test.com',
             });
-
+            await waitForSendEmailFn();
             expect(result.refreshCustomerVerification).toBe(true);
             expect(sendEmailFn).not.toHaveBeenCalled();
         });
@@ -242,6 +243,18 @@ describe('Authorization & permissions', () => {
             });
 
             expect(result.verifyCustomerAccount.user.identifier).toBe('test1@test.com');
+        });
+
+        it('registration silently fails if attempting to register an email already verified', async () => {
+            const input: RegisterCustomerInput = {
+                firstName: 'Dodgy',
+                lastName: 'Hacker',
+                emailAddress,
+            };
+            const result = await client.query(REGISTER_ACCOUNT, { input });
+            await waitForSendEmailFn();
+            expect(result.registerCustomerAccount).toBe(true);
+            expect(sendEmailFn).not.toHaveBeenCalled();
         });
 
         it('verification fails if attempted a second time', async () => {
@@ -329,6 +342,13 @@ describe('Authorization & permissions', () => {
             identifier,
             password,
         };
+    }
+
+    /**
+     * A "sleep" function which allows the sendEmailFn time to get called.
+     */
+    function waitForSendEmailFn() {
+        return new Promise(resolve => setTimeout(resolve, 10));
     }
 
     const REGISTER_ACCOUNT = gql`

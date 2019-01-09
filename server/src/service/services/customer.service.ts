@@ -80,17 +80,21 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
-    async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<Customer> {
+    async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
+        let user = await this.userService.getUserByEmailAddress(input.emailAddress);
+        if (user && user.verified) {
+            // If the user has already been verified, do nothing
+            return false;
+        }
         const customer = await this.createOrUpdate({
             emailAddress: input.emailAddress,
             title: input.title || '',
             firstName: input.firstName || '',
             lastName: input.lastName || '',
         });
-        let user = await this.userService.getUserByEmailAddress(input.emailAddress);
         if (!user) {
             user = await this.userService.createCustomerUser(input.emailAddress);
-        } else {
+        } else if (!user.verified) {
             user = await this.userService.setVerificationToken(user);
         }
         customer.user = user;
@@ -98,7 +102,7 @@ export class CustomerService {
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         }
-        return customer;
+        return true;
     }
 
     async refreshVerificationToken(ctx: RequestContext, emailAddress: string) {
