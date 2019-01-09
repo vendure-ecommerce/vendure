@@ -51,6 +51,12 @@ export class VerificationTokenError extends I18nError {
     }
 }
 
+export class VerificationTokenExpiredError extends I18nError {
+    constructor() {
+        super('error.verification-token-has-expired', {}, 'EXPIRED_VERIFICATION_TOKEN');
+    }
+}
+
 export class NotVerifiedError extends I18nError {
     constructor() {
         super('error.email-address-not-verified', {}, 'NOT_VERIFIED');

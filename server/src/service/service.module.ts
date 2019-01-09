@@ -14,6 +14,7 @@ import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
+import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
 import { AdministratorService } from './services/administrator.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
@@ -84,6 +85,7 @@ const exportedProviders = [
         ListQueryBuilder,
         ShippingCalculator,
         AssetUpdater,
+        VerificationTokenGenerator,
     ],
     exports: exportedProviders,
 })

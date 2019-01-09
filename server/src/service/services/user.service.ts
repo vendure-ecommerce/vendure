@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import ms from 'ms';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../../shared/shared-types';
-import { generatePublicId } from '../../common/generate-public-id';
+import { VerificationTokenExpiredError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 
 import { RoleService } from './role.service';
 
@@ -18,6 +18,7 @@ export class UserService {
         private configService: ConfigService,
         private roleService: RoleService,
         private passwordCipher: PasswordCiper,
+        private verificationTokenGenerator: VerificationTokenGenerator,
     ) {}
 
     async getUserById(userId: ID): Promise<User | undefined> {
@@ -38,7 +39,7 @@ export class UserService {
     async createCustomerUser(identifier: string, password?: string): Promise<User> {
         const user = new User();
         if (this.configService.authOptions.requireVerification) {
-            user.verificationToken = this.generateVerificationToken();
+            user.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
             user.verified = false;
         } else {
             user.verified = true;
@@ -64,7 +65,7 @@ export class UserService {
     }
 
     async setVerificationToken(user: User): Promise<User> {
-        user.verificationToken = this.generateVerificationToken();
+        user.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
         user.verified = false;
         return this.connection.manager.save(user);
     }
@@ -74,37 +75,15 @@ export class UserService {
             where: { verificationToken },
         });
         if (user) {
-            if (this.verifyVerificationToken(verificationToken)) {
+            if (this.verificationTokenGenerator.verifyVerificationToken(verificationToken)) {
                 user.passwordHash = await this.passwordCipher.hash(password);
                 user.verificationToken = null;
                 user.verified = true;
                 await this.connection.getRepository(User).save(user);
                 return user;
+            } else {
+                throw new VerificationTokenExpiredError();
             }
         }
-    }
-
-    /**
-     * Generates a verification token which encodes the time of generation and concatenates it with a
-     * random id.
-     */
-    private generateVerificationToken() {
-        const now = new Date();
-        const base64Now = Buffer.from(now.toJSON()).toString('base64');
-        const id = generatePublicId();
-        return `${base64Now}_${id}`;
-    }
-
-    /**
-     * Checks the age of the verification token to see if it falls within the token duration
-     * as specified in the VendureConfig.
-     */
-    private verifyVerificationToken(token: string): boolean {
-        const duration = ms(this.configService.authOptions.verificationTokenDuration);
-        const [generatedOn] = token.split('_');
-        const dateString = Buffer.from(generatedOn, 'base64').toString();
-        const date = new Date(dateString);
-        const elapsed = +new Date() - +date;
-        return elapsed < duration;
     }
 }

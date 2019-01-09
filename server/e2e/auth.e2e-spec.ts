@@ -29,10 +29,20 @@ import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
 
+let sendEmailFn: jest.Mock;
+const emailOptions = {
+    emailTemplatePath: 'src/email/templates',
+    emailTypes: defaultEmailTypes,
+    generator: new NoopEmailGenerator(),
+    transport: {
+        type: 'testing' as 'testing',
+        onSend: ctx => sendEmailFn(ctx),
+    },
+};
+
 describe('Authorization & permissions', () => {
     const client = new TestClient();
     const server = new TestServer();
-    let sendEmailFn: jest.Mock;
 
     beforeAll(async () => {
         const token = await server.init(
@@ -41,15 +51,7 @@ describe('Authorization & permissions', () => {
                 customerCount: 1,
             },
             {
-                emailOptions: {
-                    emailTemplatePath: 'src/email/templates',
-                    emailTypes: defaultEmailTypes,
-                    generator: new NoopEmailGenerator(),
-                    transport: {
-                        type: 'testing',
-                        onSend: ctx => sendEmailFn(ctx),
-                    },
-                },
+                emailOptions,
             },
         );
         await client.init();
@@ -270,14 +272,6 @@ describe('Authorization & permissions', () => {
         });
     });
 
-    function getVerificationTokenPromise(): Promise<string> {
-        return new Promise<string>(resolve => {
-            sendEmailFn.mockImplementation(ctx => {
-                resolve(ctx.event.user.verificationToken);
-            });
-        });
-    }
-
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
         try {
             const status = await client.queryStatus(operation, variables);
@@ -350,27 +344,96 @@ describe('Authorization & permissions', () => {
     function waitForSendEmailFn() {
         return new Promise(resolve => setTimeout(resolve, 10));
     }
+});
 
-    const REGISTER_ACCOUNT = gql`
-        mutation Register($input: RegisterCustomerInput!) {
-            registerCustomerAccount(input: $input)
+describe('Expiring registration token', () => {
+    const client = new TestClient();
+    const server = new TestServer();
+
+    beforeAll(async () => {
+        const token = await server.init(
+            {
+                productCount: 1,
+                customerCount: 1,
+            },
+            {
+                emailOptions,
+                authOptions: {
+                    verificationTokenDuration: '1ms',
+                },
+            },
+        );
+        await client.init();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    beforeEach(() => {
+        sendEmailFn = jest.fn();
+    });
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    it('attempting to verify after token has expired throws', async () => {
+        const verificationTokenPromise = getVerificationTokenPromise();
+        const input: RegisterCustomerInput = {
+            firstName: 'Barry',
+            lastName: 'Wallace',
+            emailAddress: 'barry.wallace@test.com',
+        };
+        const result1 = await client.query(REGISTER_ACCOUNT, { input });
+
+        const verificationToken = await verificationTokenPromise;
+
+        expect(result1.registerCustomerAccount).toBe(true);
+        expect(sendEmailFn).toHaveBeenCalledTimes(1);
+        expect(verificationToken).toBeDefined();
+
+        await new Promise(resolve => setTimeout(resolve, 3));
+
+        try {
+            await client.query(VERIFY_EMAIL, {
+                password: 'test',
+                token: verificationToken,
+            });
+            fail('should have thrown');
+        } catch (err) {
+            expect(err.message).toEqual(
+                expect.stringContaining(
+                    `Verification token has expired. Use refreshCustomerVerification to send a new token.`,
+                ),
+            );
         }
-    `;
+    });
+});
 
-    const VERIFY_EMAIL = gql`
-        mutation Verify($password: String!, $token: String!) {
-            verifyCustomerAccount(password: $password, token: $token) {
-                user {
-                    id
-                    identifier
-                }
+function getVerificationTokenPromise(): Promise<string> {
+    return new Promise<string>(resolve => {
+        sendEmailFn.mockImplementation(ctx => {
+            resolve(ctx.event.user.verificationToken);
+        });
+    });
+}
+
+const REGISTER_ACCOUNT = gql`
+    mutation Register($input: RegisterCustomerInput!) {
+        registerCustomerAccount(input: $input)
+    }
+`;
+
+const VERIFY_EMAIL = gql`
+    mutation Verify($password: String!, $token: String!) {
+        verifyCustomerAccount(password: $password, token: $token) {
+            user {
+                id
+                identifier
             }
         }
-    `;
+    }
+`;
 
-    const REFRESH_TOKEN = gql`
-        mutation RefreshToken($emailAddress: String!) {
-            refreshCustomerVerification(emailAddress: $emailAddress)
-        }
-    `;
-});
+const REFRESH_TOKEN = gql`
+    mutation RefreshToken($emailAddress: String!) {
+        refreshCustomerVerification(emailAddress: $emailAddress)
+    }
+`;
