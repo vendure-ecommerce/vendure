@@ -1,0 +1,36 @@
+@import "variables";
+
+.top-bar {
+    position: fixed;
+    padding: 12px;
+    background-color: hsla(224, 14%, 15%, 0.0);
+    width: 100%;
+    top: 0;
+    height: $top-bar-height;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.7s;
+
+    &.floating {
+        background-color: hsla(163, 100%, 100%, 0.9);
+    }
+
+    .flex-spacer {
+        flex: 1;
+    }
+
+    .logo {
+        img {
+            max-width: 32px;
+        }
+    }
+
+    .right {
+        a {
+            margin-left: 12px;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

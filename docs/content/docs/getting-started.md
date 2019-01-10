@@ -12,24 +12,24 @@ weight: 1
  
 ## Installation
 
-```
+```bash
 $ npm install --save @vendure/core
 ```
 
 Vendure includes a CLI program which can generate the initial configuration and entry file for your server:
 
-```
+```bash
 $ npx vendure init
 ```
 
 The init command will ask a series of questions which allow the CLI to generate a configuration and index file.
 
-```
+```bash
 $ ts-node index
 ```
 
 or if using JavaScript:
-```
+```bash
 $ node index
 ```
 
@@ -45,7 +45,7 @@ bootstrap({
     apiPath: 'api',
     defaultChannelToken: 'default-channel'
     // ...
-})
+});
 ```
 
 ```TypeScript
@@ -60,5 +60,5 @@ fetch(
         body: '{"query":"mutation { login(username: \\"superadmin\\", password: \\"superadmin\\") { user { id } } }"}',
         method: 'POST',
     },
-)
+);
 ```

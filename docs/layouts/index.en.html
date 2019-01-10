@@ -1,10 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Vendure</title>
+    {{ partial "docs/html-head" . }}
+    {{ partial "docs/inject/head" . }}
+    <link href="https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="{{ "clr-icons.min.css" | absURL }}">
+    <script src="{{ "custom-elements.min.js" | absURL }}"></script>
+    <script src="{{ "clr-icons.min.js" | absURL }}"></script>
 </head>
 <body>
-<h1>This is tha docs innit!?</h1>
+{{ partial "top-bar" . }}
+<div class="hero">
+    <div class="logo">
+        <img src="{{ "logo.png" | absURL }}" />
+        <h1>vendure</h1>
+    </div>
+    <div class="subhead">
+        A modern, headless <a href="https://graphql.org/">GraphQL</a>-based ecommerce framework built with <a href="http://www.typescriptlang.org">TypeScript</a> & <a href="https://nodejs.org">Nodejs</a>
+    </div>
+</div>
+<div class="section-1">
+    <div class="content">
+        <h2 class="top-header">Ecommerce For The Modern Web
+            <a class="status" href="https://github.com/vendure-ecommerce/vendure/projects/1">
+            <clr-icon shape="info-standard" size="24"></clr-icon>
+                Status: pre-alpha
+            </a>
+        </h2>
+        <p>Vendure is a new ecommerce framework built for the developers who are building the modern web.</p>
+        <p>
+            The project is currently in the early stages of development.
+            <strong>The alpha release is coming in Q1 2019</strong>.
+            You can track progress on <a href="https://github.com/vendure-ecommerce/vendure/projects/1">GitHub</a>.</p>
+    </div>
+</div>
+<div class="section-2">
+    <div class="content">
+        <div class="features">
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <clr-icon shape="data-cluster" size="64"></clr-icon>
+                </div>
+                <h3>De-coupled & Flexible</h3>
+                <p>
+                    Vendure is a headless framework, meaning that it delivers content through its <a href="https://graphql.org/">GraphQL API</a>, leaving you free to
+                    implement your store-front application(s) in the technologies of your choice.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <clr-icon shape="terminal" size="64"></clr-icon>
+                </div>
+                <h3>Built for Developers</h3>
+                <p>
+                    Vendure makes developer productivity a top priority. The framework is written in TypeScript and is
+                    built on the npm ecosystem.
+                </p>
+                <p>
+                    The combination of TypeScript and GraphQL enables end-to-end type safety.
+                </p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">
+                    <clr-icon shape="library" size="64"></clr-icon>
+                </div>
+                <h3>Open Source</h3>
+                <p>
+                    Vendure is available under the <a href="https://tldrlegal.com/license/mit-license">MIT license</a>.
+                </p>
+                <p>
+                    All development of the core framework is being done in the open on <a href="https://github.com/vendure-ecommerce/vendure">GitHub</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="section-video">
+    <div class="content">
+        <iframe class="video-embed"
+                src="https://player.vimeo.com/video/305117299"
+                width="640" height="360" frameborder="0"
+                webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </div>
+</div>
+<div class="section-3">
+    <div class="content">
+        <div class="roadmap">
+            <h2>Roadmap</h2>
+            <p>
+                Here's a partial list of some of the features which are planned for the initial release:
+            </p>
+            <ul>
+                <li>
+                    <strong>Built-in admin interface</strong> Vendure will ship with a fully-functional admin UI app.
+                </li>
+                <li>
+                    <strong>Full multi-language support</strong> Create and deliver content in any language.
+                </li>
+                <li>
+                    <strong>Guest checkouts</strong> Reduce friction by allowing purchases to be made without requiring
+                    a sign-up.
+                </li>
+                <li>
+                    <strong>Fully customizable models</strong> Adding domain-specific properties to your models (products,
+                    customers, orders etc.) can be done in just a few lines of configuration code.
+                </li>
+                <li>
+                    <strong>Faceted search</strong> Facets (e.g. "Brand", "Colour") enable efficient filtering and grouping
+                    of products.
+                </li>
+                <li>
+                    <strong>Flexible search integrations</strong> Product search is one of the most important aspects of a successful
+                    ecommerce experience. Vendure will feature a pluggable interface to allow you to use the search solution
+                    of your choice (e.g. Elastic, Algolia etc).
+                </li>
+                <li>
+                    <strong>Extensible business logic</strong> Need to apply custom shipping logic? Sophisticated promotions?
+                    Vendure will feature hooks at each point of the purchase journey which allow you to customise and extend
+                    the built-in behaviour.
+                </li>
+                <li>
+                    <strong>Blazing fast</strong> What feature list would be complete without these two magical words?
+                </li>
+            </ul>
+        </div>
+        <div class="about">
+            <h2>Who is building Vendure?</h2>
+            <p>
+                Vendure is being built full-time by <a href="https://www.michaelbromley.co.uk/">Michael Bromley</a>.
+            </p>
+            <p>
+                I've been working on custom ecommerce software on and off for the past 13 years. Over that time I've learned
+                a lot about how <em>not</em> to do things, and have developed a feel for what I as a developer would
+                really like to see in an ecommerce tool.
+            </p>
+            <p>
+                I also spent the past 3 years working on the core team of the <a href="https://getmesh.io/">Gentics Mesh</a> headless CMS.
+                During my time on that project I came to appreciate the power of the API-first approach.
+            </p>
+            <p>
+                Vendure is the culmination of my years in the trenches of yesterday's ecommerce development combined with
+                my passion for front-end development and my conviction that headless architecture - and GraphQL
+                in particular - are the way of the future.
+            </p>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    &copy; 2018 <a href="https://www.michaelbromley.co.uk/">Michael Bromley</a>
+    <a href="https://github.com/vendure-ecommerce/vendure" class="gh-link">Vendure on GitHub</a>
+</div>
 </body>
 </html>

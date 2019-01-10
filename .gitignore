@@ -394,3 +394,4 @@ server/dist
 server/test-emails
 server/src/email/preview/output
 docs/resources/_gen/*
+docs/static/main.js
