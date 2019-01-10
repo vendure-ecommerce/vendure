@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{{- partial "docs/shared" -}}
+<html>
+
+<head>
+  {{ partial "docs/html-head" . }}
+  {{ partial "docs/inject/head" . }}
+</head>
+
+<body>
+  <main class="book-posts mx-auto">
+    {{ template "main" . }}
+  </main>
+
+  {{ partial "docs/inject/body" . }}
+  {{ template "_internal/google_analytics_async.html" . }}
+</body>
+
+</html>

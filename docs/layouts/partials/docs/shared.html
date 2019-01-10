@@ -1,0 +1,11 @@
+<!-- These templates contains some more complex logic and shared between partials-->
+{{ define "title" }}
+  {{- if .Pages -}}
+    {{ $sections := split (trim .Dir "/") "/" }}
+    {{ $title := index ($sections | last 1) 0 | humanize | title }}
+    {{- default $title .Title -}}
+  {{- else -}}
+    {{ $title :=  .File | humanize | title }}
+    {{- default $title .Title -}}
+  {{- end -}}
+{{ end }}

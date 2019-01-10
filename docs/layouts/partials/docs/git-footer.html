@@ -1,0 +1,18 @@
+{{ if or .GitInfo .Site.Params.BookEditPath }}
+<div class="align-center book-git-footer {{ if not .GitInfo }}justify-end{{ else }}justify-between{{ end }}">
+  {{ with .GitInfo }}
+  <div>
+    <a href="{{ $.Site.Params.BookRepo }}/commit/{{ .Hash }}" title='Last modified {{ .AuthorDate.Local.Format "January 2, 2006 15:04 MST" }} by {{ .AuthorName }}' target="_blank" rel="noopener">
+      <img src="{{ "svg/code-merge.svg" | absURL }}" /> {{ .AuthorDate.Local.Format "Last Modified Jan 2, 2006" }}
+    </a>
+  </div>
+  {{ end }}
+  {{ with .Site.Params.BookEditPath }}
+  <div>
+    <a href="{{ $.Site.Params.BookRepo }}/{{ . }}/{{ $.File.Path }}" target="_blank" rel="noopener">
+      <img src="{{ "svg/code-fork.svg" | absURL }}" /> Edit this page
+    </a>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

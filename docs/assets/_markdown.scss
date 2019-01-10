@@ -1,0 +1,60 @@
+@import 'variables';
+
+$block-border-radius: 0.15rem;
+
+.markdown {
+  line-height: 1.7;
+
+  > :first-child {
+    margin-top: 0;
+    line-height: 1em;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 400;
+    line-height: 1.25;
+  }
+
+  b, optgroup, strong {
+    font-weight: 700;
+  }
+  
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  code {
+    font-family: 'Oxygen Mono', monospace;
+  }
+
+  p code {
+    padding: 0 $padding-4;
+    background: $gray-100;
+    border-radius: $block-border-radius;
+  }
+
+  pre {
+    padding: $padding-16;
+    background: $gray-100;
+    border-radius: $block-border-radius;
+    font-size: $font-size-14;
+    overflow-x: auto;
+  }
+
+  blockquote {
+    border-left: $padding-1*2 solid $gray-300;
+    margin: 0;
+    padding: $padding-1 $padding-16;
+
+    :first-child { margin-top: 0; }
+    :last-child { margin-bottom: 0; }
+  }
+
+  table tr td {
+    padding: $padding-8;
+  }
+}

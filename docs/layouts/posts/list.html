@@ -1,0 +1,20 @@
+{{ define "main" }}
+  {{ $paginator := .Paginate (where .Pages "Params.hidden" "ne" true) }}
+  {{ range sort .Paginator.Pages }}
+  <article>
+    <h2>
+      <a href="{{ .Permalink }}">{{ .Title }}</a>
+    </h2>
+    <h5>
+      <strong>{{ .Date.Format "January 2, 2006" }}</strong>
+    </h5>
+    <p>
+      {{- .Summary -}}
+      {{ if .Truncated }}
+        <a href="{{ .Permalink }}">...</a>
+      {{ end }}
+    </p>
+  </article>
+  {{ end }}
+  {{ template "_internal/pagination.html" . }}
+{{ end }}

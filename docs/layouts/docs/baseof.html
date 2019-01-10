@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{{- partial "docs/shared" -}}
+<html>
+
+<head>
+  {{ partial "docs/html-head" . }}
+  {{ partial "docs/inject/head" . }}
+</head>
+
+<body>
+  <input type="checkbox" style="display: none" id="menu-control" />
+  <main class="flex container">
+
+    <aside class="book-menu fixed">
+      <nav role="navigation">
+        {{ partial "docs/brand" . }}
+        {{ partial "docs/inject/menu-before" . }}
+
+        {{ if .Site.Params.BookMenuBundle }}
+          {{ partial "docs/menu-bundle" . }}
+        {{ else }}
+          {{ partial "docs/menu-filetree" . }}
+        {{ end }}
+
+        {{ partial "docs/inject/menu-after" . }}
+      </nav>
+    </aside>
+
+    <div class="book-page">
+      {{ partial "docs/mobile-header" . }}
+      {{ template "main" . }}
+      {{ partial "docs/git-footer" . }}
+    </div>
+
+    {{ template "toc" . }}
+  </main>
+
+  {{ partial "docs/inject/body" . }}
+  {{ template "_internal/google_analytics_async.html" . }}
+</body>
+
+</html>

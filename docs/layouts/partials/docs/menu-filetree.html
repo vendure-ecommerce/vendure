@@ -1,0 +1,47 @@
+<!-- Put configured sections list to .Scratch -->
+{{ template "book-get-root-section" . }} 
+
+{{- range .Scratch.Get "BookSections" -}}
+  {{ template "book-section" (dict "Section" . "CurrentPage" $.Permalink) }}
+{{- end -}}
+
+{{ define "book-section" }} <!-- Single section of menu (recursive) -->
+  <ul>
+    {{ range .Section.Sections }}
+    <li {{- if .Params.bookflatsection}} class="flat-section" {{ end }}>
+      {{- if .Content -}}
+        {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+      {{- else -}}
+        {{- template "title" . -}}
+      {{- end -}}
+
+      {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage) }}
+    </li>
+    {{ end }}
+
+    {{ range .Section.Pages }}
+    <li>
+      {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+    </li>
+    {{ end }}
+  </ul>
+{{ end }}
+
+{{ define "book-page-link" }}
+{{- with .Page -}}
+<a href="{{ .RelPermalink }}" {{- if eq $.CurrentPage .Permalink }} class="active"{{ end }}>
+  {{- template "title" . -}}
+</a>
+{{- end -}}
+{{ end }}
+
+{{ define "book-get-root-section" }}
+<!-- Complex logic to guess page title without .Title specified -->
+  {{ $bookSection := default "docs" .Site.Params.BookSection  }}
+  {{ if eq $bookSection "*" }}
+    {{ .Scratch.Set "BookSections" .Site.Sections }}
+  {{ else }}
+    {{ $bookSections := where .Site.Sections "Section" $bookSection }}
+    {{ .Scratch.Set "BookSections" $bookSections }}
+  {{ end }}
+{{ end }}

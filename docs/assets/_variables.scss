@@ -1,0 +1,43 @@
+$padding-1: 1px;
+$padding-4: 0.25rem;
+$padding-8: 0.5rem;
+$padding-16: 1rem;
+
+$font-size-base: 16px;
+$font-size-12: 0.75rem;
+$font-size-14: 0.875rem;
+$font-size-16: 1rem;
+
+// Grayscale
+$white: #ffffff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #868e96;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
+
+$color-link: #004ed0;
+$color-visited-link: #8440f1;
+
+$body-background: white;
+$body-font-color: $gray-800;
+$body-font-weight: 400;
+$body-min-width: 25rem;
+
+$nav-background: $body-background;
+$nav-link-color: $gray-800;
+
+$header-height: 3.5rem;
+$menu-width: 18rem;
+$toc-width: 14rem;
+
+$container-min-width: $body-min-width;
+$container-max-width: 80rem;
+
+$sm-breakpoint: $menu-width + $body-min-width;
+$md-breakpoint: $sm-breakpoint + $toc-width;
