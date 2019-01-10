@@ -205,11 +205,35 @@ export interface ImportExportOptions {
 
 export interface VendureConfig {
     /**
+     * The path to the GraphQL API.
+     */
+    apiPath?: string;
+    /**
+     * Configuration for the handling of Assets.
+     */
+    assetOptions?: AssetOptions;
+    /**
+     * Configuration for authorization.
+     */
+    authOptions: AuthOptions;
+    /**
      * The name of the property which contains the token of the
      * active channel. This property can be included either in
      * the request header or as a query string.
      */
     channelTokenKey?: string;
+    /**
+     * Set the CORS handling for the server.
+     */
+    cors?: boolean | CorsOptions;
+    /**
+     * Defines custom fields which can be used to extend the built-in entities.
+     */
+    customFields?: CustomFields;
+    /**
+     * The connection options used by TypeORM to connect to the database.
+     */
+    dbConnectionOptions: ConnectionOptions;
     /**
      * The token for the default channel. If not specified, a token
      * will be randomly generated.
@@ -220,33 +244,9 @@ export interface VendureConfig {
      */
     defaultLanguageCode?: LanguageCode;
     /**
-     * The path to the GraphQL API.
+     * Configures the handling of transactional emails.
      */
-    apiPath?: string;
-    /**
-     * Set the CORS handling for the server.
-     */
-    cors?: boolean | CorsOptions;
-    /**
-     * Set the hostname of the server.
-     */
-    hostname?: string;
-    /**
-     * Which port the Vendure server should listen on.
-     */
-    port: number;
-    /**
-     * When set to true, no application logging will be output to the console.
-     */
-    silent?: boolean;
-    /**
-     * Configuration for authorization.
-     */
-    authOptions: AuthOptions;
-    /**
-     * Configuration for the handling of Assets.
-     */
-    assetOptions?: AssetOptions;
+    emailOptions?: EmailOptions<any>;
     /**
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
@@ -255,9 +255,38 @@ export interface VendureConfig {
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
-     * The connection options used by TypeORM to connect to the database.
+     * Set the hostname of the server.
      */
-    dbConnectionOptions: ConnectionOptions;
+    hostname?: string;
+    /**
+     * Configuration settings for data import and export.
+     */
+    importExportOptions?: ImportExportOptions;
+    /**
+     * Define the strategies governing how Orders are merged when an existing
+     * Customer signs in.
+     */
+    orderMergeOptions?: OrderMergeOptions;
+    /**
+     * Defines custom states in the order process finite state machine.
+     */
+    orderProcessOptions?: OrderProcessOptions<any>;
+    /**
+     * Custom Express middleware for the server.
+     */
+    middleware?: Array<{ handler: RequestHandler; route: string }>;
+    /**
+     * Configures available payment processing methods.
+     */
+    paymentOptions: PaymentOptions;
+    /**
+     * An array of plugins.
+     */
+    plugins?: VendurePlugin[];
+    /**
+     * Which port the Vendure server should listen on.
+     */
+    port: number;
     /**
      * Configures the Conditions and Actions available when creating Promotions.
      */
@@ -267,40 +296,11 @@ export interface VendureConfig {
      */
     shippingOptions?: ShippingOptions;
     /**
-     * Defines custom fields which can be used to extend the built-in entities.
+     * When set to true, no application logging will be output to the console.
      */
-    customFields?: CustomFields;
-    /**
-     * Defines custom states in the order process finite state machine.
-     */
-    orderProcessOptions?: OrderProcessOptions<any>;
-    /**
-     * Define the strategies governing how Orders are merged when an existing
-     * Customer signs in.
-     */
-    orderMergeOptions?: OrderMergeOptions;
-    /**
-     * Configures available payment processing methods.
-     */
-    paymentOptions: PaymentOptions;
+    silent?: boolean;
     /**
      * Configures how taxes are calculated on products.
      */
     taxOptions?: TaxOptions;
-    /**
-     * Configures the handling of transactional emails.
-     */
-    emailOptions?: EmailOptions<any>;
-    /**
-     * Configuration settings for data import and export.
-     */
-    importExportOptions?: ImportExportOptions;
-    /**
-     * Custom Express middleware for the server.
-     */
-    middleware?: Array<{ handler: RequestHandler; route: string }>;
-    /**
-     * An array of plugins.
-     */
-    plugins?: VendurePlugin[];
 }
