@@ -1,7 +1,8 @@
-<div class="top-bar">
+<div class="top-bar {{ if .isLandingPage }}landing-page{{ end }}" >
     <div class="left">
         <a class="logo" href="/">
             <img src="{{ "logo.png" | absURL }}" />
+            {{ if not .isLandingPage }}vendure{{ end }}
         </a>
     </div>
     <div class="flex-spacer"></div>

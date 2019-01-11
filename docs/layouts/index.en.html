@@ -9,7 +9,7 @@
     <script src="{{ "clr-icons.min.js" | absURL }}"></script>
 </head>
 <body>
-{{ partial "top-bar" . }}
+{{ partial "top-bar" (dict "isLandingPage" true) }}
 <div class="hero">
     <div class="logo">
         <img src="{{ "logo.png" | absURL }}" />

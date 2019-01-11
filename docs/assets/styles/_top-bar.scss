@@ -2,8 +2,8 @@
 
 .top-bar {
     position: fixed;
-    padding: 12px;
-    background-color: hsla(224, 14%, 15%, 0.0);
+    padding: 12px 24px;
+    background-color: #1e1e1e;
     width: 100%;
     top: 0;
     height: $top-bar-height;
@@ -11,9 +11,14 @@
     align-items: center;
     transition: background-color 0.7s;
 
-    &.floating {
-        background-color: hsla(163, 100%, 100%, 0.9);
+    &.landing-page {
+        background-color: transparent;
+
+        &.floating {
+            background-color: #1e1e1e;
+        }
     }
+
 
     .flex-spacer {
         flex: 1;
@@ -22,15 +27,25 @@
     .logo {
         img {
             max-width: 32px;
+            margin-right: 12px;
         }
+        color: $brand-color;
+        font-size: 18px;
+        font-size: 24px;
+        letter-spacing: 0px;
+        font-weight: 600;
     }
 
     .right {
         a {
             margin-left: 12px;
-            &:hover {
-                text-decoration: underline;
-            }
+        }
+        a:link, a:visited {
+            color: $gray-400;
+        }
+        a:hover {
+            color: $gray-100;
+            text-decoration: none;
         }
     }
 }
