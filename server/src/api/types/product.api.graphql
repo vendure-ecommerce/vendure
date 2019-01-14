@@ -33,6 +33,7 @@ input ProductListOptions {
     skip: Int
     sort: ProductSortParameter
     filter: ProductFilterParameter
+    categoryId: ID
 }
 
 input ProductSortParameter {

@@ -14,14 +14,13 @@ import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { FacetValue, Product } from '../../entity';
 import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
-import { translateDeep, translateTree } from '../helpers/utils/translate-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
@@ -78,18 +77,24 @@ export class ProductCategoryService {
         return translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']);
     }
 
-    async findProductsByCategory(ctx: RequestContext, categoryId: ID) {
-        const ancestors = await this.connection
-            .getTreeRepository(ProductCategory)
-            .createAncestorsQueryBuilder('category', 'categoryClosure', { id: categoryId } as any)
-            .leftJoinAndSelect('category.facetValues', 'facetValue')
-            .getMany();
-        this.connection
-            .getRepository(Product)
-            .createQueryBuilder('products')
-            .innerJoin(FacetValue, 'facetValues');
-
-        return {} as any;
+    /**
+     * Given a categoryId, returns an array of all the facetValueIds assigned to that
+     * category and its ancestors. A Product is considered to be "in" a category when it has *all*
+     * of these facetValues assigned to it.
+     */
+    async getFacetValueIdsForCategory(categoryId: ID): Promise<ID[]> {
+        const category = await this.connection
+            .getRepository(ProductCategory)
+            .findOne(categoryId, { relations: ['facetValues'] });
+        if (!category) {
+            return [];
+        }
+        const ancestors = await this.getAncestors(categoryId);
+        const facetValueIds = [category, ...ancestors].reduce(
+            (flat, c) => [...flat, ...c.facetValues.map(fv => fv.id)],
+            [] as ID[],
+        );
+        return facetValueIds;
     }
 
     /**
@@ -109,6 +114,44 @@ export class ProductCategoryService {
 
         const descendants = await getChildren(rootId);
         return descendants.map(c => translateDeep(c, ctx.languageCode));
+    }
+
+    /**
+     * Gets the ancestors of a given category. Note that since ProductCategories are implemented as an adjacency list, this method
+     * will produce more queries the deeper the category is in the tree.
+     * @param categoryId
+     */
+    getAncestors(categoryId: ID): Promise<ProductCategory[]>;
+    getAncestors(categoryId: ID, ctx: RequestContext): Promise<Array<Translated<ProductCategory>>>;
+    async getAncestors(
+        categoryId: ID,
+        ctx?: RequestContext,
+    ): Promise<Array<Translated<ProductCategory> | ProductCategory>> {
+        const getParent = async (id, _ancestors: ProductCategory[] = []): Promise<ProductCategory[]> => {
+            const parent = await this.connection
+                .getRepository(ProductCategory)
+                .createQueryBuilder()
+                .relation(ProductCategory, 'parent')
+                .of(id)
+                .loadOne();
+            if (parent) {
+                if (!parent.isRoot) {
+                    _ancestors.push(parent);
+                    return getParent(parent.id, _ancestors);
+                }
+            }
+            return _ancestors;
+        };
+        const ancestors = await getParent(categoryId);
+
+        return this.connection
+            .getRepository(ProductCategory)
+            .findByIds(ancestors.map(c => c.id), {
+                relations: ['facetValues'],
+            })
+            .then(categories => {
+                return ctx ? categories.map(c => translateDeep(c, ctx.languageCode)) : categories;
+            });
     }
 
     async create(

@@ -928,6 +928,7 @@ export interface ProductListOptions {
     skip?: number | null;
     sort?: ProductSortParameter | null;
     filter?: ProductFilterParameter | null;
+    categoryId?: string | null;
 }
 
 export interface ProductSortParameter {
