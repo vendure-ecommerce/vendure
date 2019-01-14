@@ -14,6 +14,7 @@ import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { FacetValue, Product } from '../../entity';
 import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
 import { ProductCategory } from '../../entity/product-category/product-category.entity';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
@@ -77,23 +78,37 @@ export class ProductCategoryService {
         return translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']);
     }
 
-    async getTree(ctx: RequestContext, rootId?: ID): Promise<Translated<ProductCategory> | undefined> {
-        const root = await this.getParentCategory(ctx, rootId);
-        if (root) {
-            const tree = await this.connection.getTreeRepository(ProductCategory).findDescendantsTree(root);
-            return translateTree(tree, ctx.languageCode);
-        }
+    async findProductsByCategory(ctx: RequestContext, categoryId: ID) {
+        const ancestors = await this.connection
+            .getTreeRepository(ProductCategory)
+            .createAncestorsQueryBuilder('category', 'categoryClosure', { id: categoryId } as any)
+            .leftJoinAndSelect('category.facetValues', 'facetValue')
+            .getMany();
+        this.connection
+            .getRepository(Product)
+            .createQueryBuilder('products')
+            .innerJoin(FacetValue, 'facetValues');
+
+        return {} as any;
     }
 
     /**
      * Returns the descendants of a ProductCategory as a flat array.
      */
     async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<ProductCategory>>> {
-        const descendants = await this.connection
-            .getTreeRepository(ProductCategory)
-            .findDescendants(new ProductCategory({ id: rootId }));
-        // Note: the result includes the root category itself, so we filter this out.
-        return descendants.filter(d => d.id !== rootId).map(d => translateDeep(d, ctx.languageCode));
+        const getChildren = async (id, _descendants: ProductCategory[] = []) => {
+            const children = await this.connection
+                .getRepository(ProductCategory)
+                .find({ where: { parent: { id } } });
+            for (const child of children) {
+                _descendants.push(child);
+                await getChildren(child.id, _descendants);
+            }
+            return _descendants;
+        };
+
+        const descendants = await getChildren(rootId);
+        return descendants.map(c => translateDeep(c, ctx.languageCode));
     }
 
     async create(
@@ -142,7 +157,7 @@ export class ProductCategoryService {
         const target = await getEntityOrThrow(this.connection, ProductCategory, input.categoryId, {
             relations: ['parent'],
         });
-        const descendants = await this.connection.getTreeRepository(ProductCategory).findDescendants(target);
+        const descendants = await this.getDescendants(ctx, input.categoryId);
 
         if (
             idsAreEqual(input.parentId, target.id) ||

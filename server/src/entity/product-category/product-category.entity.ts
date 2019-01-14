@@ -22,7 +22,11 @@ import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductCategoryTranslation } from './product-category-translation.entity';
 
 @Entity()
-@Tree('closure-table')
+// TODO: It would be ideal to use the TypeORM built-in tree support, but unfortunately it is incomplete
+// at this time - does not support moving or deleting. See https://github.com/typeorm/typeorm/issues/2032
+// Therefore we will just use an adjacency list which will have a perf impact when needing to lookup
+// decendants or ancestors more than 1 level removed.
+// @Tree('closure-table')
 export class ProductCategory extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
     constructor(input?: DeepPartial<ProductCategory>) {
         super(input);
