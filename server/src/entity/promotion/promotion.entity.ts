@@ -5,8 +5,13 @@ import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
-import { PromotionItemAction, PromotionOrderAction } from '../../config/promotion/promotion-action';
+import {
+    PromotionAction,
+    PromotionItemAction,
+    PromotionOrderAction,
+} from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
+import { PromotionUtils } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
@@ -18,10 +23,17 @@ export class Promotion extends AdjustmentSource implements ChannelAware {
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: { [code: string]: PromotionItemAction | PromotionOrderAction } = {};
 
-    constructor(input?: DeepPartial<Promotion>) {
+    constructor(
+        input?: DeepPartial<Promotion> & {
+            promotionConditions?: Array<PromotionCondition<any>>;
+            promotionActions?: Array<PromotionAction<any>>;
+        },
+    ) {
         super(input);
-        const conditions = getConfig().promotionOptions.promotionConditions || [];
-        const actions = getConfig().promotionOptions.promotionActions || [];
+        const conditions =
+            (input && input.promotionConditions) || getConfig().promotionOptions.promotionConditions || [];
+        const actions =
+            (input && input.promotionActions) || getConfig().promotionOptions.promotionActions || [];
         this.allConditions = conditions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
         this.allActions = actions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
@@ -80,10 +92,10 @@ export class Promotion extends AdjustmentSource implements ChannelAware {
         }
     }
 
-    test(order: Order): boolean {
+    async test(order: Order, utils: PromotionUtils): Promise<boolean> {
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
-            if (!promotionCondition || !promotionCondition.check(order, condition.args)) {
+            if (!promotionCondition || !(await promotionCondition.check(order, condition.args, utils))) {
                 return false;
             }
         }

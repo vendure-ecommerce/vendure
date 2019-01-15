@@ -1,14 +1,26 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
+import { ID } from '../../../../shared/shared-types';
+import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
 import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
-export type PromotionConditionArgType = 'int' | 'money' | 'string' | 'datetime' | 'boolean';
+export type PromotionConditionArgType = 'int' | 'money' | 'string' | 'datetime' | 'boolean' | 'facetValueIds';
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
+
+/**
+ * An object containing utility methods which may be used in promotion `check` functions
+ * in order to determine whether a promotion should be applied.
+ */
+export interface PromotionUtils {
+    hasFacetValues: (orderLine: OrderLine, facetValueIds: ID[]) => Promise<boolean>;
+}
+
 export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => boolean;
+    utils: PromotionUtils,
+) => boolean | Promise<boolean>;
 
 export class PromotionCondition<T extends PromotionConditionArgs = {}> {
     readonly code: string;
@@ -31,7 +43,7 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> {
         this.priorityValue = config.priorityValue || 0;
     }
 
-    check(order: Order, args: ConfigArg[]) {
-        return this.checkFn(order, argsArrayToHash<T>(args));
+    async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
+        return await this.checkFn(order, argsArrayToHash<T>(args), utils);
     }
 }

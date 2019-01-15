@@ -1,4 +1,5 @@
 import { ConfigArg } from '../../../../shared/generated-types';
+import { InternalServerError } from '../../common/error/errors';
 
 /**
  * Certain entities allow arbitrary configuration arguments to be specified which can then
@@ -7,7 +8,14 @@ import { ConfigArg } from '../../../../shared/generated-types';
  * 1. How the argument form field is rendered in the admin-ui
  * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
  */
-export type ConfigArgType = 'percentage' | 'money' | 'int' | 'string' | 'datetime' | 'boolean';
+export type ConfigArgType =
+    | 'percentage'
+    | 'money'
+    | 'int'
+    | 'string'
+    | 'datetime'
+    | 'boolean'
+    | 'facetValueIds';
 
 export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: T;
@@ -21,7 +29,13 @@ export type ConfigArgs<T extends ConfigArgType> = {
 export type ConfigArgValues<T extends ConfigArgs<any>> = {
     [K in keyof T]: T[K] extends 'int' | 'money' | 'percentage'
         ? number
-        : T[K] extends 'datetime' ? Date : T[K] extends 'boolean' ? boolean : string
+        : T[K] extends 'datetime'
+            ? Date
+            : T[K] extends 'boolean'
+                ? boolean
+                : T[K] extends 'facetValueIds'
+                    ? string[]
+                    : string
 };
 
 export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
@@ -43,6 +57,12 @@ function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
             return Date.parse(arg.value || '') as any;
         case 'boolean':
             return !!arg.value as any;
+        case 'facetValueIds':
+            try {
+                return JSON.parse(arg.value as any);
+            } catch (err) {
+                throw new InternalServerError(err.message);
+            }
         default:
             return (arg.value as string) as any;
     }

@@ -51,7 +51,7 @@ export class ProductService {
 
     async findAll(
         ctx: RequestContext,
-        options?: ListQueryOptions<Product> & { categoryId?: ID },
+        options?: ListQueryOptions<Product> & { categoryId?: string | null },
     ): Promise<PaginatedList<Translated<Product>>> {
         let where: FindConditions<Product> | undefined;
         if (options && options.categoryId) {
