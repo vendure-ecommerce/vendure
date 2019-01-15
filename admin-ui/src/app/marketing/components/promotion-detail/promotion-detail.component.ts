@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { mergeMap, shareReplay, take } from 'rxjs/operators';
 import {
     AdjustmentOperation,
     AdjustmentOperationInput,
     CreatePromotionInput,
+    FacetWithValues,
     LanguageCode,
     Promotion,
     UpdatePromotionInput,
@@ -30,6 +31,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     detailForm: FormGroup;
     conditions: AdjustmentOperation[] = [];
     actions: AdjustmentOperation[] = [];
+    facets$: Observable<FacetWithValues.Fragment[]>;
 
     private allConditions: AdjustmentOperation[];
     private allActions: AdjustmentOperation[];
@@ -53,6 +55,11 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     ngOnInit() {
         this.init();
+        this.facets$ = this.dataService.facet
+            .getFacets(9999999, 0)
+            .mapSingle(data => data.facets.items)
+            .pipe(shareReplay(1));
+
         this.promotion$ = this.entity$;
         this.dataService.promotion.getAdjustmentOperations().single$.subscribe(data => {
             this.allActions = data.adjustmentOperations.actions;

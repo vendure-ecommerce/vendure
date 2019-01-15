@@ -31,6 +31,7 @@
             <ng-container *ngFor="let condition of conditions; index as i">
                 <vdr-adjustment-operation-input
                     (remove)="removeCondition($event)"
+                    [facets]="facets$ | async"
                     [operation]="condition"
                     [formControlName]="i"
                 ></vdr-adjustment-operation-input>
@@ -62,6 +63,7 @@
             <vdr-adjustment-operation-input
                 *ngFor="let action of actions; index as i"
                 (remove)="removeAction($event)"
+                [facets]="facets$ | async"
                 [operation]="action"
                 [formControlName]="i"
             ></vdr-adjustment-operation-input>

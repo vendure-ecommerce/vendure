@@ -14,7 +14,6 @@ import { CreateOptionGroupDialogComponent } from './components/create-option-gro
 import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
-import { FacetValueSelectorComponent } from './components/facet-value-selector/facet-value-selector.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductCategoryDetailComponent } from './components/product-category-detail/product-category-detail.component';
@@ -47,7 +46,6 @@ import { ProductResolver } from './providers/routing/product-resolver';
         FacetDetailComponent,
         GenerateProductVariantsComponent,
         ProductVariantsListComponent,
-        FacetValueSelectorComponent,
         ApplyFacetDialogComponent,
         AssetListComponent,
         AssetGalleryComponent,

@@ -4,15 +4,9 @@
 }
 
 .operation-inputs {
-    display: flex;
-    flex-wrap: wrap;
 
-    .clr-form-control {
-        margin-top: 0;
-    }
-
-    clr-input-container:not(:last-child) {
-        margin-right: 12px;
+    .arg-row {
+        margin-bottom: 24px;
     }
 
     .hidden {

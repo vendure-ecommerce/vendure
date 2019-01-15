@@ -23,6 +23,7 @@ import { CustomerLabelComponent } from './components/customer-label/customer-lab
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { FacetValueChipComponent } from './components/facet-value-chip/facet-value-chip.component';
+import { FacetValueSelectorComponent } from './components/facet-value-selector/facet-value-selector.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
@@ -66,6 +67,7 @@ const DECLARATIONS = [
     CustomFieldControlComponent,
     DataTableComponent,
     DataTableColumnComponent,
+    FacetValueSelectorComponent,
     ItemsPerPageControlsComponent,
     PaginationControlsComponent,
     TableRowActionComponent,

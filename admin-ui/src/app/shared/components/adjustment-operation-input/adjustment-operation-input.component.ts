@@ -21,7 +21,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AdjustmentOperation } from 'shared/generated-types';
+import { AdjustmentOperation, FacetWithValues } from 'shared/generated-types';
 
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
@@ -49,6 +49,7 @@ import { interpolateDescription } from '../../../common/utilities/interpolate-de
 export class AdjustmentOperationInputComponent
     implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
     @Input() operation: AdjustmentOperation;
+    @Input() facets: FacetWithValues.Fragment[] = [];
     @Output() remove = new EventEmitter<AdjustmentOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;

@@ -3,9 +3,11 @@
     [addTag]="false"
     [hideSelected]="true"
     groupBy="facetName"
-    bindValue="value"
+    bindValue="id"
     multiple="true"
     appendTo="body"
     bindLabel="name"
+    [disabled]="disabled"
+    [ngModel]="value"
     (change)="onChange($event)"
 ></ng-select>
