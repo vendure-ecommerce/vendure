@@ -31,24 +31,6 @@ export class OrderCalculator {
         private shippingCalculator: ShippingCalculator,
     ) {}
 
-    private readonly promotionUtils: PromotionUtils = {
-        hasFacetValues: async (orderLine: OrderLine, facetValueIds: ID[]): Promise<boolean> => {
-            const variant = await this.connection
-                .getRepository(ProductVariant)
-                .findOne(orderLine.productVariant.id, {
-                    relations: ['product', 'product.facetValues', 'facetValues'],
-                });
-            if (!variant) {
-                return false;
-            }
-            const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
-            return facetValueIds.reduce(
-                (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
-                true,
-            );
-        },
-    };
-
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
      */
@@ -105,17 +87,16 @@ export class OrderCalculator {
      * Applies any eligible promotions to each OrderItem in the order.
      */
     private async applyPromotions(order: Order, promotions: Promotion[]) {
+        const utils = this.createPromotionUtils();
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p =>
-                p.test(order, this.promotionUtils),
-            );
+            const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
 
             line.clearAdjustments(AdjustmentType.PROMOTION);
 
             for (const promotion of applicablePromotions) {
-                if (await promotion.test(order, this.promotionUtils)) {
+                if (await promotion.test(order, utils)) {
                     for (const item of line.items) {
                         if (applicablePromotions) {
                             const adjustment = promotion.apply(item, line);
@@ -129,14 +110,12 @@ export class OrderCalculator {
             }
         }
 
-        const applicableOrderPromotions = await filterAsync(promotions, p =>
-            p.test(order, this.promotionUtils),
-        );
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
-                if (await promotion.test(order, this.promotionUtils)) {
+                if (await promotion.test(order, utils)) {
                     const adjustment = promotion.apply(order);
                     if (adjustment) {
                         order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
@@ -172,5 +151,34 @@ export class OrderCalculator {
 
         order.subTotalBeforeTax = totalPriceBeforeTax;
         order.subTotal = totalPrice;
+    }
+
+    /**
+     * Creates a new PromotionUtils object with a cache which lives as long as the created object.
+     */
+    private createPromotionUtils(): PromotionUtils {
+        const variantCache = new Map<ID, ProductVariant>();
+
+        return {
+            hasFacetValues: async (orderLine: OrderLine, facetValueIds: ID[]): Promise<boolean> => {
+                let variant = variantCache.get(orderLine.productVariant.id);
+                if (!variant) {
+                    variant = await this.connection
+                        .getRepository(ProductVariant)
+                        .findOne(orderLine.productVariant.id, {
+                            relations: ['product', 'product.facetValues', 'facetValues'],
+                        });
+                    if (!variant) {
+                        return false;
+                    }
+                    variantCache.set(variant.id, variant);
+                }
+                const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
+                return facetValueIds.reduce(
+                    (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
+                    true,
+                );
+            },
+        };
     }
 }
