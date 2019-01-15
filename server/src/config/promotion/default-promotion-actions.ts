@@ -30,7 +30,24 @@ export const buy1Get1Free = new PromotionItemAction({
         }
         return 0;
     },
-    description: 'Discount every item by { discount }%',
+    description: 'Buy 1 get 1 free',
 });
 
-export const defaultPromotionActions = [orderPercentageDiscount, itemPercentageDiscount, buy1Get1Free];
+export const discountOnItemWithFacets = new PromotionItemAction({
+    code: 'facet_based_discount',
+    args: { discount: 'percentage', facets: 'facetValueIds' },
+    async execute(orderItem, orderLine, args, { hasFacetValues }) {
+        if (await hasFacetValues(orderLine, args.facets)) {
+            return -orderLine.unitPrice * (args.discount / 100);
+        }
+        return 0;
+    },
+    description: 'Discount products with these facets by { discount }%',
+});
+
+export const defaultPromotionActions = [
+    orderPercentageDiscount,
+    itemPercentageDiscount,
+    buy1Get1Free,
+    discountOnItemWithFacets,
+];

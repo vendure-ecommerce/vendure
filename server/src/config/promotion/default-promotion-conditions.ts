@@ -42,7 +42,7 @@ export const atLeastNOfProduct = new PromotionCondition({
 
 export const atLeastNWithFacets = new PromotionCondition({
     code: 'at_least_n_with_facets',
-    description: 'Buy at least { minimum } with the given facets',
+    description: 'Buy at least { minimum } products with the given facets',
     args: { minimum: 'int', facets: 'facetValueIds' },
     async check(order: Order, args, { hasFacetValues }) {
         let matches = 0;

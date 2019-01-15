@@ -1,22 +1,25 @@
 import { ConfigArg } from '../../../../shared/generated-types';
-
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
-export type PromotionActionArgType = 'percentage' | 'money';
+import { PromotionUtils } from './promotion-condition';
+
+export type PromotionActionArgType = 'percentage' | 'money' | 'int' | 'facetValueIds';
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
-) => number;
+    utils: PromotionUtils,
+) => number | Promise<number>;
 export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => number;
+    utils: PromotionUtils,
+) => number | Promise<number>;
 
 export interface PromotionActionConfig<T extends PromotionActionArgs> {
     args: T;
@@ -55,8 +58,8 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
         this.executeFn = config.execute;
     }
 
-    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
-        return this.executeFn(orderItem, orderLine, argsArrayToHash(args));
+    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[], utils: PromotionUtils) {
+        return this.executeFn(orderItem, orderLine, argsArrayToHash(args), utils);
     }
 }
 
@@ -70,7 +73,7 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
         this.executeFn = config.execute;
     }
 
-    execute(order: Order, args: ConfigArg[]) {
-        return this.executeFn(order, argsArrayToHash(args));
+    execute(order: Order, args: ConfigArg[], utils: PromotionUtils) {
+        return this.executeFn(order, argsArrayToHash(args), utils);
     }
 }

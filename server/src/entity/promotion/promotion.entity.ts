@@ -17,6 +17,17 @@ import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
 
+export interface ApplyOrderItemActionArgs {
+    orderItem: OrderItem;
+    orderLine: OrderLine;
+    utils: PromotionUtils;
+}
+
+export interface ApplyOrderActionArgs {
+    order: Order;
+    utils: PromotionUtils;
+}
+
 @Entity()
 export class Promotion extends AdjustmentSource implements ChannelAware {
     type = AdjustmentType.PROMOTION;
@@ -65,20 +76,22 @@ export class Promotion extends AdjustmentSource implements ChannelAware {
      */
     @Column() priorityScore: number;
 
-    apply(order: Order): Adjustment | undefined;
-    apply(orderItem: OrderItem, orderLine: OrderLine): Adjustment | undefined;
-    apply(orderItemOrOrder: OrderItem | Order, orderLine?: OrderLine): Adjustment | undefined {
+    async apply(args: ApplyOrderActionArgs | ApplyOrderItemActionArgs): Promise<Adjustment | undefined> {
         let amount = 0;
 
         for (const action of this.actions) {
             const promotionAction = this.allActions[action.code];
             if (this.isItemAction(promotionAction)) {
-                if (orderItemOrOrder instanceof OrderItem && orderLine) {
-                    amount += Math.round(promotionAction.execute(orderItemOrOrder, orderLine, action.args));
+                if (this.isOrderItemArg(args)) {
+                    const { orderItem, orderLine, utils } = args;
+                    amount += Math.round(
+                        await promotionAction.execute(orderItem, orderLine, action.args, utils),
+                    );
                 }
             } else {
-                if (orderItemOrOrder instanceof Order) {
-                    amount += Math.round(promotionAction.execute(orderItemOrOrder, action.args));
+                if (!this.isOrderItemArg(args)) {
+                    const { order, utils } = args;
+                    amount += Math.round(await promotionAction.execute(order, action.args, utils));
                 }
             }
         }
@@ -104,5 +117,11 @@ export class Promotion extends AdjustmentSource implements ChannelAware {
 
     private isItemAction(value: PromotionItemAction | PromotionOrderAction): value is PromotionItemAction {
         return value instanceof PromotionItemAction;
+    }
+
+    private isOrderItemArg(
+        value: ApplyOrderItemActionArgs | ApplyOrderActionArgs,
+    ): value is ApplyOrderItemActionArgs {
+        return value.hasOwnProperty('orderItem');
     }
 }
