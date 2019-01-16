@@ -273,7 +273,7 @@ export class OrderResolver {
             }
 
             if (!order && createIfNotExists) {
-                order = await this.orderService.create(ctx.activeUserId);
+                order = await this.orderService.create(ctx, ctx.activeUserId);
             }
 
             if (order) {

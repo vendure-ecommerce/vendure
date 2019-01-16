@@ -109,7 +109,7 @@ export class OrderService {
         }
     }
 
-    async create(userId?: ID): Promise<Order> {
+    async create(ctx: RequestContext, userId?: ID): Promise<Order> {
         const newOrder = new Order({
             code: generatePublicId(),
             state: this.orderStateMachine.getInitialState(),
@@ -119,6 +119,7 @@ export class OrderService {
             pendingAdjustments: [],
             subTotal: 0,
             subTotalBeforeTax: 0,
+            currencyCode: ctx.channel.currencyCode,
         });
         if (userId) {
             const customer = await this.customerService.findOneByUserId(userId);

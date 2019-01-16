@@ -303,6 +303,7 @@ export interface Order extends Node {
     payments?: Payment[] | null;
     subTotalBeforeTax: number;
     subTotal: number;
+    currencyCode: CurrencyCode;
     shipping: number;
     shippingMethod?: ShippingMethod | null;
     totalBeforeTax: number;
@@ -3202,6 +3203,7 @@ export namespace OrderResolvers {
         payments?: PaymentsResolver<Payment[] | null, any, Context>;
         subTotalBeforeTax?: SubTotalBeforeTaxResolver<number, any, Context>;
         subTotal?: SubTotalResolver<number, any, Context>;
+        currencyCode?: CurrencyCodeResolver<CurrencyCode, any, Context>;
         shipping?: ShippingResolver<number, any, Context>;
         shippingMethod?: ShippingMethodResolver<ShippingMethod | null, any, Context>;
         totalBeforeTax?: TotalBeforeTaxResolver<number, any, Context>;
@@ -3246,6 +3248,11 @@ export namespace OrderResolvers {
         Context
     >;
     export type SubTotalResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CurrencyCodeResolver<R = CurrencyCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type ShippingResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ShippingMethodResolver<R = ShippingMethod | null, Parent = any, Context = any> = Resolver<
         R,

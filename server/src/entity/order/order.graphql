@@ -13,6 +13,7 @@ type Order implements Node {
     payments: [Payment!]
     subTotalBeforeTax: Int!
     subTotal: Int!
+    currencyCode: CurrencyCode!
     shipping: Int!
     shippingMethod: ShippingMethod
     totalBeforeTax: Int!

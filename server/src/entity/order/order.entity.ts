@@ -4,6 +4,7 @@ import {
     Adjustment,
     AdjustmentType,
     BillingAddress,
+    CurrencyCode,
     ShippingAddress,
 } from '../../../../shared/generated-types';
 import { DeepPartial, ID } from '../../../../shared/shared-types';
@@ -47,6 +48,9 @@ export class Order extends VendureEntity {
 
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
+
+    @Column('varchar')
+    currencyCode: CurrencyCode;
 
     @Column() subTotalBeforeTax: number;
 
