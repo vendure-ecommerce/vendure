@@ -45,6 +45,7 @@ export interface CustomFields {
     Customer?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
+    GlobalSettings?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductCategory?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];

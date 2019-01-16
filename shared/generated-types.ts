@@ -58,6 +58,7 @@ export interface Query {
     activeCustomer?: Customer | null;
     facets: FacetList;
     facet?: Facet | null;
+    globalSettings: GlobalSettings;
     order?: Order | null;
     activeOrder?: Order | null;
     orderByCode?: Order | null;
@@ -286,6 +287,18 @@ export interface FacetTranslation {
     updatedAt: DateTime;
     languageCode: LanguageCode;
     name: string;
+}
+
+export interface GlobalSettings {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    availableLanguages: LanguageCode[];
+    customFields?: GlobalSettingsCustomFields | null;
+}
+
+export interface GlobalSettingsCustomFields {
+    royalMailId?: string | null;
 }
 
 export interface Order extends Node {
@@ -671,6 +684,7 @@ export interface Mutation {
     updateFacet: Facet;
     createFacetValues: FacetValue[];
     updateFacetValues: FacetValue[];
+    updateGlobalSettings: GlobalSettings;
     importProducts?: ImportInfo | null;
     addItemToOrder?: Order | null;
     removeItemFromOrder?: Order | null;
@@ -1223,6 +1237,15 @@ export interface UpdateFacetValueInput {
     customFields?: Json | null;
 }
 
+export interface UpdateGlobalSettingsInput {
+    availableLanguages?: LanguageCode[] | null;
+    customFields?: UpdateGlobalSettingsCustomFieldsInput | null;
+}
+
+export interface UpdateGlobalSettingsCustomFieldsInput {
+    royalMailId?: string | null;
+}
+
 export interface PaymentInput {
     method: string;
     metadata: Json;
@@ -1652,6 +1675,9 @@ export interface CreateFacetValuesMutationArgs {
 }
 export interface UpdateFacetValuesMutationArgs {
     input: UpdateFacetValueInput[];
+}
+export interface UpdateGlobalSettingsMutationArgs {
+    input: UpdateGlobalSettingsInput;
 }
 export interface ImportProductsMutationArgs {
     csvFile: Upload;
@@ -2191,6 +2217,7 @@ export namespace QueryResolvers {
         activeCustomer?: ActiveCustomerResolver<Customer | null, any, Context>;
         facets?: FacetsResolver<FacetList, any, Context>;
         facet?: FacetResolver<Facet | null, any, Context>;
+        globalSettings?: GlobalSettingsResolver<GlobalSettings, any, Context>;
         order?: OrderResolver<Order | null, any, Context>;
         activeOrder?: ActiveOrderResolver<Order | null, any, Context>;
         orderByCode?: OrderByCodeResolver<Order | null, any, Context>;
@@ -2380,6 +2407,11 @@ export namespace QueryResolvers {
         languageCode?: LanguageCode | null;
     }
 
+    export type GlobalSettingsResolver<R = GlobalSettings, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type OrderResolver<R = Order | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3185,6 +3217,42 @@ export namespace FacetTranslationResolvers {
         Context
     >;
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace GlobalSettingsResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        availableLanguages?: AvailableLanguagesResolver<LanguageCode[], any, Context>;
+        customFields?: CustomFieldsResolver<GlobalSettingsCustomFields | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AvailableLanguagesResolver<R = LanguageCode[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CustomFieldsResolver<
+        R = GlobalSettingsCustomFields | null,
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
+}
+
+export namespace GlobalSettingsCustomFieldsResolvers {
+    export interface Resolvers<Context = any> {
+        royalMailId?: RoyalMailIdResolver<string | null, any, Context>;
+    }
+
+    export type RoyalMailIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace OrderResolvers {
@@ -4288,6 +4356,7 @@ export namespace MutationResolvers {
         updateFacet?: UpdateFacetResolver<Facet, any, Context>;
         createFacetValues?: CreateFacetValuesResolver<FacetValue[], any, Context>;
         updateFacetValues?: UpdateFacetValuesResolver<FacetValue[], any, Context>;
+        updateGlobalSettings?: UpdateGlobalSettingsResolver<GlobalSettings, any, Context>;
         importProducts?: ImportProductsResolver<ImportInfo | null, any, Context>;
         addItemToOrder?: AddItemToOrderResolver<Order | null, any, Context>;
         removeItemFromOrder?: RemoveItemFromOrderResolver<Order | null, any, Context>;
@@ -4578,6 +4647,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateFacetValuesArgs {
         input: UpdateFacetValueInput[];
+    }
+
+    export type UpdateGlobalSettingsResolver<R = GlobalSettings, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        UpdateGlobalSettingsArgs
+    >;
+    export interface UpdateGlobalSettingsArgs {
+        input: UpdateGlobalSettingsInput;
     }
 
     export type ImportProductsResolver<R = ImportInfo | null, Parent = any, Context = any> = Resolver<

@@ -1,0 +1,7 @@
+type Query {
+    globalSettings: GlobalSettings!
+}
+
+type Mutation {
+    updateGlobalSettings(input: UpdateGlobalSettingsInput!): GlobalSettings!
+}

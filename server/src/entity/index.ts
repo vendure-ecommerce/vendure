@@ -11,6 +11,7 @@ export * from './facet/facet.entity';
 export * from './facet/facet-translation.entity';
 export * from './facet-value/facet-value.entity';
 export * from './facet-value/facet-value-translation.entity';
+export * from './global-settings/global-settings.entity';
 export * from './order/order.entity';
 export * from './order-item/order-item.entity';
 export * from './order-line/order-line.entity';

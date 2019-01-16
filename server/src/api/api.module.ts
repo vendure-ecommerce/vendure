@@ -23,6 +23,7 @@ import { CountryResolver } from './resolvers/country.resolver';
 import { CustomerGroupResolver } from './resolvers/customer-group.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
 import { FacetResolver } from './resolvers/facet.resolver';
+import { GlobalSettingsResolver } from './resolvers/global-settings.resolver';
 import { ImportResolver } from './resolvers/import.resolver';
 import { OrderResolver } from './resolvers/order.resolver';
 import { PaymentMethodResolver } from './resolvers/payment-method.resolver';
@@ -60,6 +61,7 @@ const resolvers = [
     TaxCategoryResolver,
     TaxRateResolver,
     ZoneResolver,
+    GlobalSettingsResolver,
 ];
 
 /**

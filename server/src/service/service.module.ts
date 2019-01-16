@@ -24,6 +24,7 @@ import { CustomerGroupService } from './services/customer-group.service';
 import { CustomerService } from './services/customer.service';
 import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
+import { GlobalSettingsService } from './services/global-settings.service';
 import { OrderService } from './services/order.service';
 import { PaymentMethodService } from './services/payment-method.service';
 import { ProductCategoryService } from './services/product-category.service';
@@ -50,6 +51,7 @@ const exportedProviders = [
     CustomerService,
     FacetService,
     FacetValueService,
+    GlobalSettingsService,
     OrderService,
     PaymentMethodService,
     ProductCategoryService,
@@ -97,6 +99,7 @@ export class ServiceModule implements OnModuleInit {
         private taxRateService: TaxRateService,
         private shippingMethodService: ShippingMethodService,
         private paymentMethodService: PaymentMethodService,
+        private globalSettingsService: GlobalSettingsService,
     ) {}
 
     async onModuleInit() {
@@ -106,6 +109,7 @@ export class ServiceModule implements OnModuleInit {
         // methods below, we can e.g. guarantee that the default channel exists
         // (channelService.initChannels()) before we try to create any roles (which assume that
         // there is a default Channel to work with.
+        await this.globalSettingsService.initGlobalSettings();
         await this.channelService.initChannels();
         await this.roleService.initRoles();
         await this.administratorService.initAdministrators();

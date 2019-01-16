@@ -34,7 +34,9 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        GlobalSettings: [{ name: 'royalMailId', type: 'string' }],
+    },
     emailOptions: {
         emailTemplatePath: path.join(__dirname, 'src/email/templates'),
         emailTypes: defaultEmailTypes,

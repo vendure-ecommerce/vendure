@@ -10,6 +10,7 @@ import { FacetValueTranslation } from './facet-value/facet-value-translation.ent
 import { FacetValue } from './facet-value/facet-value.entity';
 import { FacetTranslation } from './facet/facet-translation.entity';
 import { Facet } from './facet/facet.entity';
+import { GlobalSettings } from './global-settings/global-settings.entity';
 import { OrderItem } from './order-item/order-item.entity';
 import { OrderLine } from './order-line/order-line.entity';
 import { Order } from './order/order.entity';
@@ -55,6 +56,7 @@ export const coreEntitiesMap = {
     FacetTranslation,
     FacetValue,
     FacetValueTranslation,
+    GlobalSettings,
     Order,
     OrderLine,
     OrderItem,

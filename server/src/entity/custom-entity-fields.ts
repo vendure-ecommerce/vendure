@@ -40,6 +40,8 @@ export class CustomProductVariantFields {}
 export class CustomProductVariantFieldsTranslation {}
 @Entity()
 export class CustomUserFields {}
+@Entity()
+export class CustomGlobalSettingsFields {}
 
 /**
  * Dynamically add columns to the custom field entity based on the CustomFields config.
@@ -168,6 +170,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFields);
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
+    registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
 }
 
 /**

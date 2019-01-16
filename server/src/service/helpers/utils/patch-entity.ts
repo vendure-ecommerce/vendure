@@ -9,7 +9,9 @@ export type InputPatch<T> = { [K in keyof T]?: T[K] | null };
 export function patchEntity<T extends VendureEntity, I extends InputPatch<T>>(entity: T, input: I): T {
     for (const key of Object.keys(entity)) {
         const value = input[key];
-        if (value != null && key !== 'id') {
+        if (key === 'customFields') {
+            patchEntity(entity[key], value);
+        } else if (value != null && key !== 'id') {
             entity[key] = value;
         }
     }

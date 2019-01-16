@@ -1,0 +1,10 @@
+type GlobalSettings {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    availableLanguages: [LanguageCode!]!
+}
+
+input UpdateGlobalSettingsInput {
+    availableLanguages: [LanguageCode!]
+}
