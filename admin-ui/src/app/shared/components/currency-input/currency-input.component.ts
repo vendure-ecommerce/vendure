@@ -23,6 +23,7 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnChanges {
     @Input() disabled = false;
     @Input() readonly = false;
     @Input() value: number;
+    @Input() currencyCode = '';
     onChange: (val: any) => void;
     onTouch: () => void;
     _decimalValue: string;

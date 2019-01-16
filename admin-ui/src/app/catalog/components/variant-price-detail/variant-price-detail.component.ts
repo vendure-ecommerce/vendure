@@ -13,6 +13,7 @@ import { DataService } from '../../../data/providers/data.service';
 export class VariantPriceDetailComponent implements OnInit, OnChanges {
     @Input() priceIncludesTax: boolean;
     @Input() price: number;
+    @Input() currencyCode: string;
     @Input() taxCategoryId: string;
 
     grossPrice$: Observable<number>;

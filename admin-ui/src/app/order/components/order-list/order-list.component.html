@@ -29,7 +29,7 @@
         <td class="left">{{ order.code }}</td>
         <td class="left"><vdr-customer-label [customer]="order.customer"></vdr-customer-label></td>
         <td class="left">{{ order.state }}</td>
-        <td class="left">{{ order.total / 100 | currency }}</td>
+        <td class="left">{{ order.total / 100 | currency: order.currencyCode }}</td>
         <td class="left">{{ order.updatedAt | date: 'medium' }}</td>
         <td class="right">
             <vdr-table-row-action

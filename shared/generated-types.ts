@@ -6554,6 +6554,7 @@ export namespace Order {
         code: string;
         state: string;
         total: number;
+        currencyCode: CurrencyCode;
         customer?: Customer | null;
     };
 
@@ -6580,6 +6581,7 @@ export namespace OrderWithLines {
         subTotal: number;
         subTotalBeforeTax: number;
         totalBeforeTax: number;
+        currencyCode: CurrencyCode;
         shipping: number;
         shippingMethod?: ShippingMethod | null;
         shippingAddress?: ShippingAddress | null;

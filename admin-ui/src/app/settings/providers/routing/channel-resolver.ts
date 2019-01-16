@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Channel } from 'shared/generated-types';
+import { Channel, CurrencyCode } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
@@ -18,6 +18,7 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
                 code: '',
                 token: '',
                 pricesIncludeTax: false,
+                currencyCode: CurrencyCode.USD,
                 defaultLanguageCode: getDefaultLanguage(),
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,

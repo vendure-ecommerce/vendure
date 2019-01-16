@@ -133,8 +133,7 @@
     "403-forbidden": "Your session has expired. Please log in",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
-    "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants",
-    "this-field-is-required": "This field is required"
+    "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
   },
   "marketing": {
     "actions": "Actions",
@@ -187,6 +186,7 @@
     "add-countries-to-zone-success": "Added { countryCount } {countryCount, plural, one {country} other {countries}} to zone \"{ zoneName }\"",
     "administrator": "Administrator",
     "catalog": "Catalog",
+    "channel-token": "Channel token",
     "create": "Create",
     "create-new-channel": "Create new channel",
     "create-new-country": "Create new country",
@@ -195,6 +195,7 @@
     "create-new-tax-category": "Create tax category",
     "create-new-tax-rate": "Create new tax rate",
     "create-zone": "Create zone",
+    "currency": "Currency",
     "customer": "Customer",
     "default-shipping-zone": "Default shipping zone",
     "default-tax-zone": "Default tax zone",

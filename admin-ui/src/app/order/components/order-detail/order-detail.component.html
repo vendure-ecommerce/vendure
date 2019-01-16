@@ -59,7 +59,7 @@
                         </tr>
                         <tr>
                             <th>{{ 'order.amount' | translate }}</th>
-                            <td>{{ payment.amount / 100 | currency }}</td>
+                            <td>{{ payment.amount / 100 | currency: order.currencyCode }}</td>
                         </tr>
                         <tr>
                             <th>{{ 'order.transaction-id' | translate }}</th>
@@ -97,9 +97,9 @@
             <td class="thumb"><img [src]="line.featuredAsset.preview + '?preset=tiny'" /></td>
             <td class="name">{{ line.productVariant.name }}</td>
             <td class="sku">{{ line.productVariant.sku }}</td>
-            <td class="unit-price">{{ line.unitPriceWithTax / 100 | currency }}</td>
+            <td class="unit-price">{{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}</td>
             <td class="quantity">{{ line.quantity }}</td>
-            <td class="total">{{ line.totalPrice / 100 | currency }}</td>
+            <td class="total">{{ line.totalPrice / 100 | currency: order.currencyCode }}</td>
         </tr>
         <tr class="sub-total">
             <td class="left">{{ 'order.sub-total' | translate }}</td>
@@ -107,17 +107,17 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ order.subTotal / 100 | currency }}</td>
+            <td>{{ order.subTotal / 100 | currency: order.currencyCode }}</td>
         </tr>
         <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
             <td colspan="5" class="left">{{ adjustment.description }}</td>
-            <td>{{ adjustment.amount / 100 | currency }}</td>
+            <td>{{ adjustment.amount / 100 | currency: order.currencyCode }}</td>
         </tr>
         <tr class="shipping">
             <td class="left">{{ 'order.shipping' | translate }}</td>
-            <td>{{ order.shippingMethod.description }}</td>
+            <td>{{ order.shippingMethod?.description }}</td>
             <td colspan="3"></td>
-            <td>{{ order.shipping / 100 | currency }}</td>
+            <td>{{ order.shipping / 100 | currency: order.currencyCode }}</td>
         </tr>
         <tr class="total">
             <td class="left">{{ 'order.total' | translate }}</td>
@@ -125,7 +125,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ order.total / 100 | currency }}</td>
+            <td>{{ order.total / 100 | currency: order.currencyCode }}</td>
         </tr>
     </table>
 </div>

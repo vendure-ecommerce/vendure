@@ -4,6 +4,7 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
+import { CurrencyNamePipe } from '../../pipes/currency-name.pipe';
 import { AffixedInputComponent } from '../affixed-input/affixed-input.component';
 
 import { CurrencyInputComponent } from './currency-input.component';
@@ -17,6 +18,7 @@ describe('CurrencyInputComponent', () => {
                 TestSimpleComponent,
                 CurrencyInputComponent,
                 AffixedInputComponent,
+                CurrencyNamePipe,
             ],
         }).compileComponents();
     }));

@@ -23,6 +23,14 @@
         <vdr-form-field [label]="'common.code' | translate" for="code">
             <input id="code" type="text" formControlName="code" />
         </vdr-form-field>
+        <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
+            <input id="token" type="text" formControlName="token" />
+        </vdr-form-field>
+        <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
+            <select clrSelect name="currencyCode" formControlName="currencyCode">
+                <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
+            </select>
+        </vdr-form-field>
         <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
             <div class="toggle-switch">
                 <input type="checkbox" id="pricesIncludeTax" formControlName="pricesIncludeTax" />

@@ -6,10 +6,12 @@ import { mergeMap, take } from 'rxjs/operators';
 import {
     Channel,
     CreateChannelInput,
+    CurrencyCode,
     GetZones,
     LanguageCode,
     UpdateChannelInput,
 } from 'shared/generated-types';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -27,6 +29,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     implements OnInit, OnDestroy {
     zones$: Observable<GetZones.Zones[]>;
     detailForm: FormGroup;
+    currencyCodes = Object.values(CurrencyCode);
 
     constructor(
         router: Router,
@@ -42,6 +45,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             code: ['', Validators.required],
             token: ['', Validators.required],
             pricesIncludeTax: [false],
+            currencyCode: [''],
             defaultShippingZoneId: [''],
             defaultTaxZoneId: [''],
         });
@@ -68,6 +72,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         const input = {
             code: formValue.code,
             pricesIncludeTax: formValue.pricesIncludeTax,
+            currencyCode: formValue.currencyCode,
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
         } as CreateChannelInput;
@@ -101,6 +106,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                         id: channel.id,
                         code: formValue.code,
                         pricesIncludeTax: formValue.pricesIncludeTax,
+                        currencyCode: formValue.currencyCode,
                         defaultShippingZoneId: formValue.defaultShippingZoneId,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
                     } as UpdateChannelInput;
@@ -131,8 +137,15 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             code: entity.code,
             token: entity.token,
             pricesIncludeTax: entity.pricesIncludeTax,
+            currencyCode: entity.currencyCode,
             defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
             defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
         });
+        if (entity.code === DEFAULT_CHANNEL_CODE) {
+            const codeControl = this.detailForm.get('code');
+            if (codeControl) {
+                codeControl.disable();
+            }
+        }
     }
 }

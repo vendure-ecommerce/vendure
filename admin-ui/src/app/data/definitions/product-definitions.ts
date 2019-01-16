@@ -18,6 +18,7 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         languageCode
         name
         price
+        currencyCode
         priceIncludesTax
         priceWithTax
         taxRateApplied {

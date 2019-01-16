@@ -31,6 +31,7 @@ export const ORDER_FRAGMENT = gql`
         code
         state
         total
+        currencyCode
         customer {
             id
             firstName
@@ -80,6 +81,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         subTotal
         subTotalBeforeTax
         totalBeforeTax
+        currencyCode
         shipping
         shippingMethod {
             id

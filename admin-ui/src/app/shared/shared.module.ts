@@ -38,6 +38,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
+import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
@@ -63,6 +64,7 @@ const DECLARATIONS = [
     ChipComponent,
     ConfirmNavigationDialogComponent,
     CurrencyInputComponent,
+    CurrencyNamePipe,
     CustomerLabelComponent,
     CustomFieldControlComponent,
     DataTableComponent,
