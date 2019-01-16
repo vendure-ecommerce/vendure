@@ -1,5 +1,5 @@
-import { INestApplication, INestExpressApplication } from '@nestjs/common';
 import { Request } from 'express';
+import { ReadStream } from 'fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { Stream } from 'stream';
@@ -14,12 +14,12 @@ export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
         this.ensureUploadPathExists(this.uploadPath);
     }
 
-    writeFileFromStream(fileName: string, data: Stream): Promise<string> {
+    writeFileFromStream(fileName: string, data: ReadStream): Promise<string> {
         const filePath = path.join(this.uploadPath, fileName);
         const writeStream = fs.createWriteStream(filePath, 'binary');
         return new Promise<string>((resolve, reject) => {
-            data.pipe(writeStream);
-            writeStream.on('close', () => resolve(this.filePathToIdentifier(filePath)));
+            data.on('data', chunk => writeStream.write(chunk));
+            data.on('close', () => resolve(this.filePathToIdentifier(filePath)));
             writeStream.on('error', reject);
         });
     }
