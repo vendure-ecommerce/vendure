@@ -1,9 +1,9 @@
 <clr-dropdown>
-    <span class="user-name">{{ userName }}</span>
-    <span class="trigger" clrDropdownTrigger>
+    <button class="btn btn-link trigger" clrDropdownTrigger>
+        <span class="user-name">{{ userName }}</span>
         <clr-icon shape="user" size="24"></clr-icon>
         <clr-icon shape="caret down"></clr-icon>
-    </span>
+    </button>
     <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
         <button type="button" clrDropdownItem (click)="logOut.emit()">
             {{ 'common.log-out' | translate }}
