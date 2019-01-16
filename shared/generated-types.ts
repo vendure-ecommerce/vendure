@@ -140,6 +140,7 @@ export interface Channel extends Node {
     defaultTaxZone?: Zone | null;
     defaultShippingZone?: Zone | null;
     defaultLanguageCode: LanguageCode;
+    currencyCode: CurrencyCode;
     pricesIncludeTax: boolean;
 }
 
@@ -357,6 +358,7 @@ export interface ProductVariant extends Node {
     featuredAsset?: Asset | null;
     assets: Asset[];
     price: number;
+    currencyCode: CurrencyCode;
     priceIncludesTax: boolean;
     priceWithTax: number;
     taxRateApplied: TaxRate;
@@ -1078,6 +1080,7 @@ export interface CreateChannelInput {
     token: string;
     defaultLanguageCode: LanguageCode;
     pricesIncludeTax: boolean;
+    currencyCode: CurrencyCode;
     defaultTaxZoneId?: string | null;
     defaultShippingZoneId?: string | null;
 }
@@ -1088,6 +1091,7 @@ export interface UpdateChannelInput {
     token?: string | null;
     defaultLanguageCode?: LanguageCode | null;
     pricesIncludeTax?: boolean | null;
+    currencyCode?: CurrencyCode | null;
     defaultTaxZoneId?: string | null;
     defaultShippingZoneId?: string | null;
 }
@@ -1989,6 +1993,166 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export enum CurrencyCode {
+    AED = 'AED',
+    AFN = 'AFN',
+    ALL = 'ALL',
+    AMD = 'AMD',
+    ANG = 'ANG',
+    AOA = 'AOA',
+    ARS = 'ARS',
+    AUD = 'AUD',
+    AWG = 'AWG',
+    AZN = 'AZN',
+    BAM = 'BAM',
+    BBD = 'BBD',
+    BDT = 'BDT',
+    BGN = 'BGN',
+    BHD = 'BHD',
+    BIF = 'BIF',
+    BMD = 'BMD',
+    BND = 'BND',
+    BOB = 'BOB',
+    BRL = 'BRL',
+    BSD = 'BSD',
+    BTN = 'BTN',
+    BWP = 'BWP',
+    BYN = 'BYN',
+    BZD = 'BZD',
+    CAD = 'CAD',
+    CHE = 'CHE',
+    CHW = 'CHW',
+    CLP = 'CLP',
+    CNY = 'CNY',
+    COP = 'COP',
+    CRC = 'CRC',
+    CUC = 'CUC',
+    CUP = 'CUP',
+    CVE = 'CVE',
+    CZK = 'CZK',
+    DJF = 'DJF',
+    DKK = 'DKK',
+    DOP = 'DOP',
+    DZD = 'DZD',
+    EGP = 'EGP',
+    ERN = 'ERN',
+    ETB = 'ETB',
+    EUR = 'EUR',
+    FJD = 'FJD',
+    FKP = 'FKP',
+    GBP = 'GBP',
+    GEL = 'GEL',
+    GHS = 'GHS',
+    GIP = 'GIP',
+    GMD = 'GMD',
+    GNF = 'GNF',
+    GTQ = 'GTQ',
+    GYD = 'GYD',
+    HKD = 'HKD',
+    HNL = 'HNL',
+    HRK = 'HRK',
+    HTG = 'HTG',
+    HUF = 'HUF',
+    IDR = 'IDR',
+    ILS = 'ILS',
+    INR = 'INR',
+    IQD = 'IQD',
+    IRR = 'IRR',
+    ISK = 'ISK',
+    JMD = 'JMD',
+    JOD = 'JOD',
+    JPY = 'JPY',
+    KES = 'KES',
+    KGS = 'KGS',
+    KHR = 'KHR',
+    KMF = 'KMF',
+    KPW = 'KPW',
+    KRW = 'KRW',
+    KWD = 'KWD',
+    KYD = 'KYD',
+    KZT = 'KZT',
+    LAK = 'LAK',
+    LBP = 'LBP',
+    LKR = 'LKR',
+    LRD = 'LRD',
+    LSL = 'LSL',
+    LYD = 'LYD',
+    MAD = 'MAD',
+    MDL = 'MDL',
+    MGA = 'MGA',
+    MKD = 'MKD',
+    MMK = 'MMK',
+    MNT = 'MNT',
+    MOP = 'MOP',
+    MRU = 'MRU',
+    MUR = 'MUR',
+    MVR = 'MVR',
+    MWK = 'MWK',
+    MXN = 'MXN',
+    MYR = 'MYR',
+    MZN = 'MZN',
+    NAD = 'NAD',
+    NGN = 'NGN',
+    NIO = 'NIO',
+    NOK = 'NOK',
+    NPR = 'NPR',
+    NZD = 'NZD',
+    OMR = 'OMR',
+    PAB = 'PAB',
+    PEN = 'PEN',
+    PGK = 'PGK',
+    PHP = 'PHP',
+    PKR = 'PKR',
+    PLN = 'PLN',
+    PYG = 'PYG',
+    QAR = 'QAR',
+    RON = 'RON',
+    RSD = 'RSD',
+    RUB = 'RUB',
+    RWF = 'RWF',
+    SAR = 'SAR',
+    SBD = 'SBD',
+    SCR = 'SCR',
+    SDG = 'SDG',
+    SEK = 'SEK',
+    SGD = 'SGD',
+    SHP = 'SHP',
+    SLL = 'SLL',
+    SOS = 'SOS',
+    SRD = 'SRD',
+    SSP = 'SSP',
+    STN = 'STN',
+    SVC = 'SVC',
+    SYP = 'SYP',
+    SZL = 'SZL',
+    THB = 'THB',
+    TJS = 'TJS',
+    TMT = 'TMT',
+    TND = 'TND',
+    TOP = 'TOP',
+    TRY = 'TRY',
+    TTD = 'TTD',
+    TWD = 'TWD',
+    TZS = 'TZS',
+    UAH = 'UAH',
+    UGX = 'UGX',
+    USD = 'USD',
+    UYU = 'UYU',
+    UZS = 'UZS',
+    VES = 'VES',
+    VND = 'VND',
+    VUV = 'VUV',
+    WST = 'WST',
+    XAF = 'XAF',
+    XCD = 'XCD',
+    XOF = 'XOF',
+    XPF = 'XPF',
+    YER = 'YER',
+    ZAR = 'ZAR',
+    ZMW = 'ZMW',
+    ZWL = 'ZWL',
+}
+
 export enum AssetType {
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
@@ -2590,6 +2754,7 @@ export namespace ChannelResolvers {
         defaultTaxZone?: DefaultTaxZoneResolver<Zone | null, any, Context>;
         defaultShippingZone?: DefaultShippingZoneResolver<Zone | null, any, Context>;
         defaultLanguageCode?: DefaultLanguageCodeResolver<LanguageCode, any, Context>;
+        currencyCode?: CurrencyCodeResolver<CurrencyCode, any, Context>;
         pricesIncludeTax?: PricesIncludeTaxResolver<boolean, any, Context>;
     }
 
@@ -2609,6 +2774,11 @@ export namespace ChannelResolvers {
         Context
     >;
     export type DefaultLanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CurrencyCodeResolver<R = CurrencyCode, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3259,6 +3429,7 @@ export namespace ProductVariantResolvers {
         featuredAsset?: FeaturedAssetResolver<Asset | null, any, Context>;
         assets?: AssetsResolver<Asset[], any, Context>;
         price?: PriceResolver<number, any, Context>;
+        currencyCode?: CurrencyCodeResolver<CurrencyCode, any, Context>;
         priceIncludesTax?: PriceIncludesTaxResolver<boolean, any, Context>;
         priceWithTax?: PriceWithTaxResolver<number, any, Context>;
         taxRateApplied?: TaxRateAppliedResolver<TaxRate, any, Context>;
@@ -3286,6 +3457,11 @@ export namespace ProductVariantResolvers {
     >;
     export type AssetsResolver<R = Asset[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PriceResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CurrencyCodeResolver<R = CurrencyCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type PriceIncludesTaxResolver<R = boolean, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -6486,6 +6662,7 @@ export namespace ProductVariant {
         languageCode: LanguageCode;
         name: string;
         price: number;
+        currencyCode: CurrencyCode;
         priceIncludesTax: boolean;
         priceWithTax: number;
         taxRateApplied: TaxRateApplied;
@@ -6784,6 +6961,7 @@ export namespace Channel {
         code: string;
         token: string;
         pricesIncludeTax: boolean;
+        currencyCode: CurrencyCode;
         defaultLanguageCode: LanguageCode;
         defaultShippingZone?: DefaultShippingZone | null;
         defaultTaxZone?: DefaultTaxZone | null;

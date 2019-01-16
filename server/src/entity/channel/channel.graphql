@@ -7,6 +7,7 @@ type Channel implements Node {
     defaultTaxZone: Zone
     defaultShippingZone: Zone
     defaultLanguageCode: LanguageCode!
+    currencyCode: CurrencyCode!
     pricesIncludeTax: Boolean!
 }
 
@@ -15,6 +16,7 @@ input CreateChannelInput {
     token: String!
     defaultLanguageCode: LanguageCode!
     pricesIncludeTax: Boolean!
+    currencyCode: CurrencyCode!
     defaultTaxZoneId: ID
     defaultShippingZoneId: ID
 }
@@ -25,6 +27,7 @@ input UpdateChannelInput {
     token: String
     defaultLanguageCode: LanguageCode
     pricesIncludeTax: Boolean
+    currencyCode: CurrencyCode
     defaultTaxZoneId: ID
     defaultShippingZoneId: ID
 }

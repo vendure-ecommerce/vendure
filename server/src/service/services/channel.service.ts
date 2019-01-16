@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { CreateChannelInput, UpdateChannelInput } from '../../../../shared/generated-types';
+import { CreateChannelInput, CurrencyCode, UpdateChannelInput } from '../../../../shared/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '../../../../shared/shared-constants';
 import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
@@ -136,6 +136,7 @@ export class ChannelService {
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: DEFAULT_LANGUAGE_CODE,
                 pricesIncludeTax: false,
+                currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
             await this.connection.manager.save(newDefaultChannel);
