@@ -1,5 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
+import { CurrencyCode } from '../../../../shared/generated-types';
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';
@@ -33,6 +34,11 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
         comment: 'Not used - actual price is stored in product_variant_price table',
     })
     price: number;
+
+    /**
+     * Calculated at run-time
+     */
+    currencyCode: CurrencyCode;
 
     /**
      * Calculated at run-time

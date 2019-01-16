@@ -231,6 +231,7 @@ export class ProductVariantService {
         variant.priceIncludesTax = priceIncludesTax;
         variant.priceWithTax = priceWithTax;
         variant.taxRateApplied = applicableTaxRate;
+        variant.currencyCode = ctx.channel.currencyCode;
         return variant;
     }
 

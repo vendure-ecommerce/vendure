@@ -8,6 +8,7 @@ type ProductVariant implements Node {
     featuredAsset: Asset
     assets: [Asset!]!
     price: Int!
+    currencyCode: CurrencyCode!
     priceIncludesTax: Boolean!
     priceWithTax: Int!
     taxRateApplied: TaxRate!
