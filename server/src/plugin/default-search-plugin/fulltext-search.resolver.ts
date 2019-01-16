@@ -37,6 +37,6 @@ export class FulltextSearchResolver extends BaseSearchResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async reindex(@Ctx() ctx: RequestContext): Promise<boolean> {
-        return this.fulltextSearchService.reindex(ctx);
+        return this.fulltextSearchService.reindex(ctx.languageCode);
     }
 }

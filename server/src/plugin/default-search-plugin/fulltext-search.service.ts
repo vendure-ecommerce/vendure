@@ -112,8 +112,7 @@ export class FulltextSearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext): Promise<boolean> {
-        const { languageCode } = ctx;
+    async reindex(languageCode: LanguageCode): Promise<boolean> {
         const variants = await this.connection.getRepository(ProductVariant).find({
             relations: this.variantRelations,
         });
@@ -142,6 +141,20 @@ export class FulltextSearchService {
             }
         }
         await this.saveSearchIndexItems(ctx.languageCode, variants);
+    }
+
+    /**
+     * Checks to see if the index is empty, and if so triggers a re-index operation.
+     */
+    async checkIndex(languageCode: LanguageCode) {
+        const indexSize = await this.connection.getRepository(SearchIndexItem).count({
+            where: {
+                languageCode,
+            },
+        });
+        if (indexSize === 0) {
+            await this.reindex(languageCode);
+        }
     }
 
     private applyTermAndFilters(
