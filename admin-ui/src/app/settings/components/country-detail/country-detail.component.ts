@@ -118,12 +118,11 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
 
     protected setFormValues(country: Country, languageCode: LanguageCode): void {
         const currentTranslation = country.translations.find(t => t.languageCode === languageCode);
-        if (currentTranslation) {
-            this.detailForm.patchValue({
-                code: country.code,
-                name: currentTranslation.name,
-                enabled: country.enabled,
-            });
-        }
+
+        this.detailForm.patchValue({
+            code: country.code,
+            name: currentTranslation ? currentTranslation.name : '',
+            enabled: country.enabled,
+        });
     }
 }

@@ -68,17 +68,21 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         this.destroy();
     }
 
-    updateCode(nameValue: string) {
-        const codeControl = this.detailForm.get(['facet', 'code']);
-        if (codeControl && codeControl.pristine) {
-            codeControl.setValue(normalizeString(nameValue, '-'));
+    updateCode(currentCode: string, nameValue: string) {
+        if (!currentCode) {
+            const codeControl = this.detailForm.get(['facet', 'code']);
+            if (codeControl && codeControl.pristine) {
+                codeControl.setValue(normalizeString(nameValue, '-'));
+            }
         }
     }
 
-    updateValueCode(nameValue: string, index: number) {
-        const codeControl = this.detailForm.get(['values', index, 'code']);
-        if (codeControl && codeControl.pristine) {
-            codeControl.setValue(normalizeString(nameValue, '-'));
+    updateValueCode(currentCode: string, nameValue: string, index: number) {
+        if (!currentCode) {
+            const codeControl = this.detailForm.get(['values', index, 'code']);
+            if (codeControl && codeControl.pristine) {
+                codeControl.setValue(normalizeString(nameValue, '-'));
+            }
         }
     }
 
@@ -187,76 +191,71 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
      */
     protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
         const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
-        if (currentTranslation) {
-            this.detailForm.patchValue({
-                facet: {
-                    code: facet.code,
-                    name: currentTranslation.name,
-                },
-            });
 
-            if (this.customFields.length) {
-                const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as FormGroup;
+        this.detailForm.patchValue({
+            facet: {
+                code: facet.code,
+                name: currentTranslation ? currentTranslation.name : '',
+            },
+        });
 
-                for (const fieldDef of this.customFields) {
-                    const key = fieldDef.name;
-                    const value =
-                        fieldDef.type === 'localeString'
-                            ? (currentTranslation as any).customFields[key]
-                            : (facet as any).customFields[key];
-                    const control = customFieldsGroup.get(key);
-                    if (control) {
-                        control.patchValue(value);
-                    }
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value =
+                    fieldDef.type === 'localeString'
+                        ? (currentTranslation as any).customFields[key]
+                        : (facet as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
                 }
             }
+        }
 
-            const valuesFormArray = this.detailForm.get('values') as FormArray;
-            facet.values.forEach((value, i) => {
-                const valueTranslation = value.translations.find(t => t.languageCode === languageCode);
-                const group = {
-                    id: value.id,
-                    code: value.code,
-                    name: valueTranslation ? valueTranslation.name : '',
-                };
-                const existing = valuesFormArray.at(i);
-                if (existing) {
-                    existing.patchValue(group);
-                } else {
-                    valuesFormArray.insert(i, this.formBuilder.group(group));
-                }
-                if (this.customValueFields.length) {
-                    let customValueFieldsGroup = this.detailForm.get([
-                        'values',
-                        i,
+        const valuesFormArray = this.detailForm.get('values') as FormArray;
+        facet.values.forEach((value, i) => {
+            const valueTranslation = value.translations.find(t => t.languageCode === languageCode);
+            const group = {
+                id: value.id,
+                code: value.code,
+                name: valueTranslation ? valueTranslation.name : '',
+            };
+            const existing = valuesFormArray.at(i);
+            if (existing) {
+                existing.patchValue(group);
+            } else {
+                valuesFormArray.insert(i, this.formBuilder.group(group));
+            }
+            if (this.customValueFields.length) {
+                let customValueFieldsGroup = this.detailForm.get(['values', i, 'customFields']) as FormGroup;
+                if (!customValueFieldsGroup) {
+                    customValueFieldsGroup = new FormGroup({});
+                    (this.detailForm.get(['values', i]) as FormGroup).addControl(
                         'customFields',
-                    ]) as FormGroup;
-                    if (!customValueFieldsGroup) {
-                        customValueFieldsGroup = new FormGroup({});
-                        (this.detailForm.get(['values', i]) as FormGroup).addControl(
-                            'customFields',
-                            customValueFieldsGroup,
-                        );
-                    }
+                        customValueFieldsGroup,
+                    );
+                }
 
-                    if (customValueFieldsGroup) {
-                        for (const fieldDef of this.customValueFields) {
-                            const key = fieldDef.name;
-                            const fieldValue =
-                                fieldDef.type === 'localeString'
-                                    ? (valueTranslation as any).customFields[key]
-                                    : (value as any).customFields[key];
-                            const control = customValueFieldsGroup.get(key);
-                            if (control) {
-                                control.setValue(fieldValue);
-                            } else {
-                                customValueFieldsGroup.addControl(key, new FormControl(fieldValue));
-                            }
+                if (customValueFieldsGroup) {
+                    for (const fieldDef of this.customValueFields) {
+                        const key = fieldDef.name;
+                        const fieldValue =
+                            fieldDef.type === 'localeString'
+                                ? (valueTranslation as any).customFields[key]
+                                : (value as any).customFields[key];
+                        const control = customValueFieldsGroup.get(key);
+                        if (control) {
+                            control.setValue(fieldValue);
+                        } else {
+                            customValueFieldsGroup.addControl(key, new FormControl(fieldValue));
                         }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     /**
@@ -307,6 +306,10 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     updatedFields: dirtyValueValues[i],
                     customFieldConfig: this.customValueFields,
                     languageCode,
+                    defaultTranslation: {
+                        languageCode,
+                        name: '',
+                    },
                 });
             })
             .filter(notNullOrUndefined);

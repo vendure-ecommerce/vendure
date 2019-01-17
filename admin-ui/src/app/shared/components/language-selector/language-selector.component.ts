@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
 import { LanguageCode } from 'shared/generated-types';
 
 @Component({
@@ -10,5 +9,6 @@ import { LanguageCode } from 'shared/generated-types';
 export class LanguageSelectorComponent {
     @Input() currentLanguageCode: LanguageCode;
     @Input() availableLanguageCodes: LanguageCode[];
+    @Input() disabled = false;
     @Output() languageCodeChange = new EventEmitter<LanguageCode>();
 }

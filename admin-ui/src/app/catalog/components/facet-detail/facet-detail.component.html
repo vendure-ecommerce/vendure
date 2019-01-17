@@ -1,6 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <vdr-language-selector
+            [disabled]="isNew$ | async"
             [availableLanguageCodes]="availableLanguages$ | async"
             [currentLanguageCode]="languageCode$ | async"
             (languageCodeChange)="setLanguage($event)"
@@ -28,11 +29,16 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm">
+<form class="form" [formGroup]="detailForm" *ngIf="(entity$ | async) as facet">
     <section class="form-block" formGroupName="facet">
         <label>{{ 'catalog.facet' | translate }}</label>
         <vdr-form-field [label]="'common.name' | translate" for="name">
-            <input id="name" type="text" formControlName="name" (input)="updateCode($event.target.value)" />
+            <input
+                id="name"
+                type="text"
+                formControlName="name"
+                (input)="updateCode(facet.code, $event.target.value)"
+            />
         </vdr-form-field>
         <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
             <input id="code" type="text" formControlName="code" />
@@ -73,7 +79,7 @@
                         <input
                             type="text"
                             formControlName="name"
-                            (input)="updateValueCode($event.target.value, i)"
+                            (input)="updateValueCode(facet.values[i]?.code, $event.target.value, i)"
                         />
                     </td>
                     <td><input type="text" formControlName="code" readonly /></td>

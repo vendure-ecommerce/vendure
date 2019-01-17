@@ -322,60 +322,58 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      */
     protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
         const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
-        if (currentTranslation) {
-            this.detailForm.patchValue({
-                product: {
-                    name: currentTranslation.name,
-                    slug: currentTranslation.slug,
-                    description: currentTranslation.description,
-                    facetValueIds: product.facetValues.map(fv => fv.id),
-                },
-            });
+        this.detailForm.patchValue({
+            product: {
+                name: currentTranslation ? currentTranslation.name : '',
+                slug: currentTranslation ? currentTranslation.slug : '',
+                description: currentTranslation ? currentTranslation.description : '',
+                facetValueIds: product.facetValues.map(fv => fv.id),
+            },
+        });
 
-            if (this.customFields.length) {
-                const customFieldsGroup = this.detailForm.get(['product', 'customFields']) as FormGroup;
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get(['product', 'customFields']) as FormGroup;
 
-                for (const fieldDef of this.customFields) {
-                    const key = fieldDef.name;
-                    const value =
-                        fieldDef.type === 'localeString'
-                            ? (currentTranslation as any).customFields[key]
-                            : (product as any).customFields[key];
-                    const control = customFieldsGroup.get(key);
-                    if (control) {
-                        control.patchValue(value);
-                    }
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value =
+                    fieldDef.type === 'localeString'
+                        ? (currentTranslation as any).customFields[key]
+                        : (product as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
                 }
             }
-
-            const variantsFormArray = this.detailForm.get('variants') as FormArray;
-            product.variants.forEach((variant, i) => {
-                const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
-                const facetValueIds = variant.facetValues.map(fv => fv.id);
-                const group: VariantFormValue = {
-                    sku: variant.sku,
-                    name: variantTranslation ? variantTranslation.name : '',
-                    price: variant.price,
-                    priceIncludesTax: variant.priceIncludesTax,
-                    priceWithTax: variant.priceWithTax,
-                    taxCategoryId: variant.taxCategory.id,
-                    facetValueIds,
-                };
-
-                const existing = variantsFormArray.at(i);
-                if (existing) {
-                    existing.setValue(group);
-                } else {
-                    variantsFormArray.insert(
-                        i,
-                        this.formBuilder.group({
-                            ...group,
-                            facetValueIds: this.formBuilder.control(facetValueIds),
-                        }),
-                    );
-                }
-            });
         }
+
+        const variantsFormArray = this.detailForm.get('variants') as FormArray;
+        product.variants.forEach((variant, i) => {
+            const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
+            const facetValueIds = variant.facetValues.map(fv => fv.id);
+            const group: VariantFormValue = {
+                sku: variant.sku,
+                name: variantTranslation ? variantTranslation.name : '',
+                price: variant.price,
+                priceIncludesTax: variant.priceIncludesTax,
+                priceWithTax: variant.priceWithTax,
+                taxCategoryId: variant.taxCategory.id,
+                facetValueIds,
+            };
+
+            const existing = variantsFormArray.at(i);
+            if (existing) {
+                existing.setValue(group);
+            } else {
+                variantsFormArray.insert(
+                    i,
+                    this.formBuilder.group({
+                        ...group,
+                        facetValueIds: this.formBuilder.control(facetValueIds),
+                    }),
+                );
+            }
+        });
     }
 
     /**
@@ -432,6 +430,10 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     updatedFields: formValue,
                     customFieldConfig: this.customVariantFields,
                     languageCode,
+                    defaultTranslation: {
+                        languageCode,
+                        name: '',
+                    },
                 });
                 result.taxCategoryId = formValue.taxCategoryId;
                 result.facetValueIds = formValue.facetValueIds;

@@ -199,26 +199,25 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
      */
     protected setFormValues(category: ProductCategory.Fragment, languageCode: LanguageCode) {
         const currentTranslation = category.translations.find(t => t.languageCode === languageCode);
-        if (currentTranslation) {
-            this.detailForm.patchValue({
-                name: currentTranslation.name,
-                description: currentTranslation.description,
-                facetValueIds: category.facetValues.map(fv => fv.id),
-            });
 
-            if (this.customFields.length) {
-                const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
+        this.detailForm.patchValue({
+            name: currentTranslation ? currentTranslation.name : '',
+            description: currentTranslation ? currentTranslation.description : '',
+            facetValueIds: category.facetValues.map(fv => fv.id),
+        });
 
-                for (const fieldDef of this.customFields) {
-                    const key = fieldDef.name;
-                    const value =
-                        fieldDef.type === 'localeString'
-                            ? (currentTranslation as any).customFields[key]
-                            : (category as any).customFields[key];
-                    const control = customFieldsGroup.get(key);
-                    if (control) {
-                        control.patchValue(value);
-                    }
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value =
+                    fieldDef.type === 'localeString'
+                        ? (currentTranslation as any).customFields[key]
+                        : (category as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
                 }
             }
         }

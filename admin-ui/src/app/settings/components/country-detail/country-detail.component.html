@@ -1,6 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <vdr-language-selector
+            [disabled]="isNew$ | async"
             [availableLanguageCodes]="availableLanguages$ | async"
             [currentLanguageCode]="languageCode$ | async"
             (languageCodeChange)="setLanguage($event)"

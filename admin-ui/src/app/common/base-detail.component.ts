@@ -29,8 +29,8 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
             map(entity => entity.id === ''),
             shareReplay(1),
         );
-        this.languageCode$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('lang')),
+        this.languageCode$ = this.route.paramMap.pipe(
+            map(paramMap => paramMap.get('lang')),
             map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
         );
 
@@ -38,7 +38,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
 
         combineLatest(this.entity$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([facet, languageCode]) => this.setFormValues(facet, languageCode));
+            .subscribe(([facet, languageCode]) => {
+                this.setFormValues(facet, languageCode);
+                this.detailForm.markAsPristine();
+            });
     }
 
     destroy() {
@@ -57,8 +60,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     }
 
     protected setQueryParam(key: string, value: any) {
-        this.router.navigate(['./'], {
-            queryParams: { [key]: value },
+        this.router.navigate(['./', { [key]: value }], {
             relativeTo: this.route,
             queryParamsHandling: 'merge',
         });
