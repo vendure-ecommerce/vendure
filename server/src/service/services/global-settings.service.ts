@@ -5,7 +5,7 @@ import { Connection } from 'typeorm';
 import { UpdateGlobalSettingsInput } from '../../../../shared/generated-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { InternalServerError } from '../../common/error/errors';
-import { GlobalSettings } from '../../entity';
+import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()

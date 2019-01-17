@@ -39,6 +39,13 @@ export class AssetResolver {
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createAssets(@Args() args: CreateAssetsMutationArgs): Promise<Asset[]> {
-        return Promise.all(args.input.map(asset => this.assetService.create(asset)));
+        // TODO: Is there some way to parellelize this while still preserving
+        // the order of files in the upload? Non-deterministic IDs mess up the e2e test snapshots.
+        const assets: Asset[] = [];
+        for (const input of args.input) {
+            const asset = await this.assetService.create(input);
+            assets.push(asset);
+        }
+        return assets;
     }
 }
