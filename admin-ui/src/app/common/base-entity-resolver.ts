@@ -31,8 +31,8 @@ export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
 
         if (id === 'create') {
             return of(of(this.emptyEntity));
-        } else if (id) {
-            const stream = this.entityStream(id).pipe(
+        } else {
+            const stream = this.entityStream(id || '').pipe(
                 filter(notNullOrUndefined),
                 shareReplay(1),
             );
@@ -41,8 +41,6 @@ export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
                 take(1),
                 map(() => stream),
             );
-        } else {
-            return {} as any;
         }
     }
 }

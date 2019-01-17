@@ -20,6 +20,7 @@ import { ChannelDetailComponent } from './components/channel-detail/channel-deta
 import { ChannelListComponent } from './components/channel-list/channel-list.component';
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
+import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
@@ -33,6 +34,7 @@ import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.c
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
+import { GlobalSettingsResolver } from './providers/routing/global-settings-resolver';
 import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
@@ -160,6 +162,15 @@ export const settingsRoutes: Route[] = [
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: paymentMethodBreadcrumb,
+        },
+    },
+    {
+        path: 'global-settings',
+        component: GlobalSettingsComponent,
+        resolve: createResolveData(GlobalSettingsResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: _('breadcrumb.global-settings'),
         },
     },
 ];

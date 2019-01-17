@@ -139,6 +139,16 @@
                         {{ 'nav.countries' | translate }}
                     </a>
                 </li>
+                <li>
+                    <a
+                        class="nav-link"
+                        [routerLink]="['/settings', 'global-settings']"
+                        routerLinkActive="active"
+                    >
+                        <clr-icon shape="cog" size="20"></clr-icon>
+                        {{ 'nav.global-settings' | translate }}
+                    </a>
+                </li>
             </ul>
         </section>
     </section>

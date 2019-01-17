@@ -15,6 +15,7 @@ import {
     GetChannels,
     GetCountry,
     GetCountryList,
+    GetGlobalSettings,
     GetPaymentMethod,
     GetPaymentMethodList,
     GetTaxCategories,
@@ -28,6 +29,8 @@ import {
     UpdateChannelInput,
     UpdateCountry,
     UpdateCountryInput,
+    UpdateGlobalSettings,
+    UpdateGlobalSettingsInput,
     UpdatePaymentMethod,
     UpdatePaymentMethodInput,
     UpdateTaxCategory,
@@ -51,6 +54,7 @@ import {
     GET_CHANNELS,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
+    GET_GLOBAL_SETTINGS,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -61,6 +65,7 @@ import {
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
+    UPDATE_GLOBAL_SETTINGS,
     UPDATE_PAYMENT_METHOD,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
@@ -244,6 +249,19 @@ export class SettingsDataService {
     updatePaymentMethod(input: UpdatePaymentMethodInput) {
         return this.baseDataService.mutate<UpdatePaymentMethod.Mutation, UpdatePaymentMethod.Variables>(
             UPDATE_PAYMENT_METHOD,
+            {
+                input,
+            },
+        );
+    }
+
+    getGlobalSettings() {
+        return this.baseDataService.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS);
+    }
+
+    updateGlobalSettings(input: UpdateGlobalSettingsInput) {
+        return this.baseDataService.mutate<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+            UPDATE_GLOBAL_SETTINGS,
             {
                 input,
             },

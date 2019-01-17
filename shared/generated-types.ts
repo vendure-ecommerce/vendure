@@ -6386,6 +6386,36 @@ export namespace UpdatePaymentMethod {
     export type UpdatePaymentMethod = PaymentMethod.Fragment;
 }
 
+export namespace GetGlobalSettings {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        globalSettings: GlobalSettings;
+    };
+
+    export type GlobalSettings = {
+        __typename?: 'GlobalSettings';
+        availableLanguages: LanguageCode[];
+    };
+}
+
+export namespace UpdateGlobalSettings {
+    export type Variables = {
+        input: UpdateGlobalSettingsInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        updateGlobalSettings: UpdateGlobalSettings;
+    };
+
+    export type UpdateGlobalSettings = {
+        __typename?: 'GlobalSettings';
+        availableLanguages: LanguageCode[];
+    };
+}
+
 export namespace GetShippingMethodList {
     export type Variables = {
         options?: ShippingMethodListOptions | null;

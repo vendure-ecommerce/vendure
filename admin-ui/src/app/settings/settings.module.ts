@@ -9,6 +9,7 @@ import { ChannelDetailComponent } from './components/channel-detail/channel-deta
 import { ChannelListComponent } from './components/channel-list/channel-list.component';
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
+import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
@@ -24,6 +25,7 @@ import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/z
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
+import { GlobalSettingsResolver } from './providers/routing/global-settings-resolver';
 import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
@@ -52,6 +54,7 @@ import { settingsRoutes } from './settings.routes';
         ShippingMethodDetailComponent,
         PaymentMethodListComponent,
         PaymentMethodDetailComponent,
+        GlobalSettingsComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
     providers: [
@@ -63,6 +66,7 @@ import { settingsRoutes } from './settings.routes';
         ChannelResolver,
         ShippingMethodResolver,
         PaymentMethodResolver,
+        GlobalSettingsResolver,
     ],
 })
 export class SettingsModule {}

@@ -334,3 +334,27 @@ export const UPDATE_PAYMENT_METHOD = gql`
     }
     ${PAYMENT_METHOD_FRAGMENT}
 `;
+
+export const GLOBAL_SETTINGS_FRAGMENT = gql`
+    fragment GlobalSettings on GlobalSettings {
+        availableLanguages
+    }
+`;
+
+export const GET_GLOBAL_SETTINGS = gql`
+    query GetGlobalSettings {
+        globalSettings {
+            ...GlobalSettings
+        }
+    }
+    ${GLOBAL_SETTINGS_FRAGMENT}
+`;
+
+export const UPDATE_GLOBAL_SETTINGS = gql`
+    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
+        updateGlobalSettings(input: $input) {
+            ...GlobalSettings
+        }
+    }
+    ${GLOBAL_SETTINGS_FRAGMENT}
+`;
