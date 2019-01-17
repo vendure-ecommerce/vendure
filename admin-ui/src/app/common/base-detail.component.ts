@@ -20,7 +20,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     protected constructor(
         protected route: ActivatedRoute,
         protected router: Router,
-        private serverConfigService: ServerConfigService,
+        protected serverConfigService: ServerConfigService,
     ) {}
 
     init() {
@@ -34,7 +34,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
             map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
         );
 
-        this.availableLanguages$ = of([LanguageCode.en]);
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
 
         combineLatest(this.entity$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))

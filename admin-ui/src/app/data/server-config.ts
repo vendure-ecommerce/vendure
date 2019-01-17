@@ -1,8 +1,8 @@
 import { Injectable, Injector } from '@angular/core';
 import gql from 'graphql-tag';
-import { GetServerConfig, ServerConfig } from 'shared/generated-types';
+import { GetGlobalSettings, GetServerConfig, ServerConfig } from 'shared/generated-types';
 
-import { GET_SERVER_CONFIG } from './definitions/settings-definitions';
+import { GET_GLOBAL_SETTINGS, GET_SERVER_CONFIG } from './definitions/settings-definitions';
 import { BaseDataService } from './providers/base-data.service';
 
 export function initializeServerConfigService(serverConfigService: ServerConfigService): () => Promise<any> {
@@ -16,6 +16,10 @@ export function initializeServerConfigService(serverConfigService: ServerConfigS
 @Injectable()
 export class ServerConfigService {
     private _serverConfig: ServerConfig = {} as any;
+
+    private get baseDataService() {
+        return this.injector.get<BaseDataService>(BaseDataService);
+    }
 
     constructor(private injector: Injector) {}
 
@@ -31,8 +35,7 @@ export class ServerConfigService {
      * Fetch the ServerConfig. Should be run on app init (in case user is already logged in) and on successful login.
      */
     getServerConfig() {
-        const baseDataService = this.injector.get<BaseDataService>(BaseDataService);
-        return baseDataService
+        return this.baseDataService
             .query<GetServerConfig.Query>(GET_SERVER_CONFIG)
             .single$.toPromise()
             .then(
@@ -43,6 +46,20 @@ export class ServerConfigService {
                     // Let the error fall through to be caught by the http interceptor.
                 },
             );
+    }
+
+    getAvailableLanguages() {
+        return this.baseDataService
+            .query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS, {}, 'cache-first')
+            .mapSingle(res => res.globalSettings.availableLanguages);
+    }
+
+    /**
+     * When any of the GLobalSettings are modified, this method should be called to update the Apollo cache.
+     */
+    refreshGlobalSettings() {
+        return this.baseDataService.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS, {}, 'network-only')
+            .single$;
     }
 
     get serverConfig(): ServerConfig {

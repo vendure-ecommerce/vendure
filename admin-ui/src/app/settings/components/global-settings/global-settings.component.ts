@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 import { GlobalSettings, LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
 
@@ -53,18 +54,23 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
             return;
         }
 
-        this.dataService.settings.updateGlobalSettings(this.detailForm.value).subscribe(
-            () => {
-                this.detailForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.notificationService.success(_('common.notify-update-success'), { entity: 'Settings' });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-update-error'), {
-                    entity: 'Settings',
-                });
-            },
-        );
+        this.dataService.settings
+            .updateGlobalSettings(this.detailForm.value)
+            .pipe(switchMap(() => this.serverConfigService.refreshGlobalSettings()))
+            .subscribe(
+                () => {
+                    this.detailForm.markAsPristine();
+                    this.changeDetector.markForCheck();
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'Settings',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'Settings',
+                    });
+                },
+            );
     }
 
     protected setFormValues(entity: GlobalSettings, languageCode: LanguageCode): void {
