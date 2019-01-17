@@ -294,7 +294,12 @@ export interface GlobalSettings {
     createdAt: DateTime;
     updatedAt: DateTime;
     availableLanguages: LanguageCode[];
+    serverConfig: ServerConfig;
     customFields?: GlobalSettingsCustomFields | null;
+}
+
+export interface ServerConfig {
+    customFields?: Json | null;
 }
 
 export interface GlobalSettingsCustomFields {
@@ -3225,6 +3230,7 @@ export namespace GlobalSettingsResolvers {
         createdAt?: CreatedAtResolver<DateTime, any, Context>;
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         availableLanguages?: AvailableLanguagesResolver<LanguageCode[], any, Context>;
+        serverConfig?: ServerConfigResolver<ServerConfig, any, Context>;
         customFields?: CustomFieldsResolver<GlobalSettingsCustomFields | null, any, Context>;
     }
 
@@ -3236,11 +3242,28 @@ export namespace GlobalSettingsResolvers {
         Parent,
         Context
     >;
+    export type ServerConfigResolver<R = ServerConfig, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type CustomFieldsResolver<
         R = GlobalSettingsCustomFields | null,
         Parent = any,
         Context = any
     > = Resolver<R, Parent, Context>;
+}
+
+export namespace ServerConfigResolvers {
+    export interface Resolvers<Context = any> {
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
+    }
+
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace GlobalSettingsCustomFieldsResolvers {
@@ -5355,20 +5378,6 @@ export namespace GetUiState {
     };
 }
 
-export namespace GetServerConfig {
-    export type Variables = {};
-
-    export type Query = {
-        __typename?: 'Query';
-        config: Config;
-    };
-
-    export type Config = {
-        __typename?: 'Config';
-        customFields?: Json | null;
-    };
-}
-
 export namespace GetCustomerList {
     export type Variables = {
         options: CustomerListOptions;
@@ -6394,10 +6403,7 @@ export namespace GetGlobalSettings {
         globalSettings: GlobalSettings;
     };
 
-    export type GlobalSettings = {
-        __typename?: 'GlobalSettings';
-        availableLanguages: LanguageCode[];
-    };
+    export type GlobalSettings = GlobalSettings.Fragment;
 }
 
 export namespace UpdateGlobalSettings {
@@ -6410,9 +6416,25 @@ export namespace UpdateGlobalSettings {
         updateGlobalSettings: UpdateGlobalSettings;
     };
 
-    export type UpdateGlobalSettings = {
+    export type UpdateGlobalSettings = GlobalSettings.Fragment;
+}
+
+export namespace GetServerConfig {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        globalSettings: GlobalSettings;
+    };
+
+    export type GlobalSettings = {
         __typename?: 'GlobalSettings';
-        availableLanguages: LanguageCode[];
+        serverConfig: ServerConfig;
+    };
+
+    export type ServerConfig = {
+        __typename?: 'ServerConfig';
+        customFields?: Json | null;
     };
 }
 
@@ -7112,6 +7134,13 @@ export namespace PaymentMethod {
         name: string;
         type: string;
         value?: string | null;
+    };
+}
+
+export namespace GlobalSettings {
+    export type Fragment = {
+        __typename?: 'GlobalSettings';
+        availableLanguages: LanguageCode[];
     };
 }
 

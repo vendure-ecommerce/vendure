@@ -358,3 +358,13 @@ export const UPDATE_GLOBAL_SETTINGS = gql`
     }
     ${GLOBAL_SETTINGS_FRAGMENT}
 `;
+
+export const GET_SERVER_CONFIG = gql`
+    query GetServerConfig {
+        globalSettings {
+            serverConfig {
+                customFields
+            }
+        }
+    }
+`;

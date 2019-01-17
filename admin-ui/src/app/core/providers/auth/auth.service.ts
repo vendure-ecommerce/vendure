@@ -4,6 +4,7 @@ import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
 import { SetAsLoggedIn } from 'shared/generated-types';
 
 import { DataService } from '../../../data/providers/data.service';
+import { ServerConfigService } from '../../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
 /**
@@ -11,7 +12,11 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
  */
 @Injectable()
 export class AuthService {
-    constructor(private localStorageService: LocalStorageService, private dataService: DataService) {}
+    constructor(
+        private localStorageService: LocalStorageService,
+        private dataService: DataService,
+        private serverConfigService: ServerConfigService,
+    ) {}
 
     /**
      * Attempts to log in via the REST login endpoint and updates the app
@@ -21,6 +26,9 @@ export class AuthService {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
                 this.setChannelToken(response.login.user.channelTokens[0]);
+                return this.serverConfigService.getServerConfig();
+            }),
+            switchMap(() => {
                 return this.dataService.client.loginSuccess(username);
             }),
         );

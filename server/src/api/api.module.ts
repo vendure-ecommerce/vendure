@@ -18,7 +18,6 @@ import { AdministratorResolver } from './resolvers/administrator.resolver';
 import { AssetResolver } from './resolvers/asset.resolver';
 import { AuthResolver } from './resolvers/auth.resolver';
 import { ChannelResolver } from './resolvers/channel.resolver';
-import { ConfigResolver } from './resolvers/config.resolver';
 import { CountryResolver } from './resolvers/country.resolver';
 import { CustomerGroupResolver } from './resolvers/customer-group.resolver';
 import { CustomerResolver } from './resolvers/customer.resolver';
@@ -39,29 +38,28 @@ import { TaxRateResolver } from './resolvers/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/zone.resolver';
 
 const resolvers = [
-    PromotionResolver,
     AdministratorResolver,
-    AuthResolver,
     AssetResolver,
+    AuthResolver,
     ChannelResolver,
-    ConfigResolver,
     CountryResolver,
-    FacetResolver,
-    ImportResolver,
-    CustomerResolver,
     CustomerGroupResolver,
+    CustomerResolver,
+    FacetResolver,
+    GlobalSettingsResolver,
+    ImportResolver,
     OrderResolver,
     PaymentMethodResolver,
+    ProductCategoryResolver,
     ProductOptionResolver,
     ProductResolver,
-    ProductCategoryResolver,
+    PromotionResolver,
     RoleResolver,
     SearchResolver,
     ShippingMethodResolver,
     TaxCategoryResolver,
     TaxRateResolver,
     ZoneResolver,
-    GlobalSettingsResolver,
 ];
 
 /**
