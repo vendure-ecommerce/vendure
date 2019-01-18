@@ -1,28 +1,30 @@
 <!-- Put configured sections list to .Scratch -->
-{{ template "book-get-root-section" . }} 
+{{ template "book-get-root-section" . }}
 
 {{- range .Scratch.Get "BookSections" -}}
   {{ template "book-section" (dict "Section" . "CurrentPage" $.Permalink) }}
 {{- end -}}
 
 {{ define "book-section" }} <!-- Single section of menu (recursive) -->
-  <ul>
-    {{ range .Section.Sections }}
-    <li {{- if .Params.bookflatsection}} class="flat-section" {{ end }}>
-      {{- if .Content -}}
-        {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
-      {{- else -}}
-        {{- template "title" . -}}
-      {{- end -}}
-
-      {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage) }}
-    </li>
-    {{ end }}
-
-    {{ range .Section.Pages }}
-    <li>
-      {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
-    </li>
+<ul {{ if .Expanded }}class="expanded"{{ end }}>
+    {{ $list := .Section.Sections }}
+    {{ $list = $list | append .Section.Pages }}
+    {{ range sort $list "Weight" }}
+        {{ if eq .Kind "section" }}
+            <li class="section">
+                {{- if .Content -}}
+                  {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+                {{- else -}}
+                  {{- template "title" . -}}
+                {{- end -}}
+                {{ $expanded := in $.CurrentPage .Permalink }}
+                {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage "Expanded" $expanded) }}
+            </li>
+        {{ else }}
+            <li>
+                {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+            </li>
+        {{ end }}
     {{ end }}
   </ul>
 {{ end }}

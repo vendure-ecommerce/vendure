@@ -2,12 +2,11 @@ baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "Vendure Documenation"
 pygmentsCodeFences = true
-pygmentsStyle = "friendly"
+pygmentsStyle = "monokai"
 disableKinds = [
   "taxonomy",
   "taxonomyTerm"
 ]
 [params]
-    BookMenuBundle = "/menu"
     BookSection = "docs"
 

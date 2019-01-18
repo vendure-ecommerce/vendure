@@ -1,0 +1,10 @@
+.book-menu {
+    .section > ul {
+        max-height: 0px;
+        overflow: hidden;
+
+        &.expanded {
+            max-height: initial;
+        }
+    }
+}
