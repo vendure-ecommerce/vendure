@@ -134,6 +134,9 @@ ul.pagination {
     nav > ul > li {
         margin: 0;
     }
+    a.active {
+        font-weight: bold;
+    }
 }
 
 .book-git-footer {

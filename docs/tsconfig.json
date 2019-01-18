@@ -4,7 +4,7 @@
     "module": "None",
     "lib": [
       "es2017",
-      "dom",
+      "dom"
     ],
     "target": "es5",
     "outFile": "static/main.js"
