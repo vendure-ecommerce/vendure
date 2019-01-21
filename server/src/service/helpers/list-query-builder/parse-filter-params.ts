@@ -75,7 +75,7 @@ function buildWhereCondition(fieldName: string, operator: Operator, operand: any
         case 'contains':
             return {
                 clause: `${fieldName} LIKE :arg1`,
-                parameters: { arg1: `%${operand}%` },
+                parameters: { arg1: `%${operand.trim()}%` },
             };
         case 'lt':
         case 'before':
