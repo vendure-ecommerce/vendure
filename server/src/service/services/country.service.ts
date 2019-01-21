@@ -5,6 +5,7 @@ import { Connection } from 'typeorm';
 import { CreateCountryInput, UpdateCountryInput } from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
+import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -43,6 +44,18 @@ export class CountryService {
             .getRepository(Country)
             .findOne(countryId)
             .then(country => country && translateDeep(country, ctx.languageCode));
+    }
+
+    async findOneByCode(ctx: RequestContext, countryCode: string): Promise<Translated<Country>> {
+        const country = await this.connection.getRepository(Country).findOne({
+            where: {
+                code: countryCode,
+            },
+        });
+        if (!country) {
+            throw new UserInputError('error.country-code-not-valid', { countryCode });
+        }
+        return translateDeep(country, ctx.languageCode);
     }
 
     async create(ctx: RequestContext, input: CreateCountryInput): Promise<Translated<Country>> {

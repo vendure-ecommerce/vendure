@@ -78,9 +78,12 @@ export class CustomerResolver {
     @Mutation()
     @Allow(Permission.CreateCustomer)
     @Decode('customerId')
-    async createCustomerAddress(@Args() args: CreateCustomerAddressMutationArgs): Promise<Address> {
+    async createCustomerAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CreateCustomerAddressMutationArgs,
+    ): Promise<Address> {
         const { customerId, input } = args;
-        return this.customerService.createAddress(customerId, input);
+        return this.customerService.createAddress(ctx, customerId, input);
     }
 
     @Mutation()

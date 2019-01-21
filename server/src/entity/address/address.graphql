@@ -4,12 +4,13 @@ type Address implements Node {
     updatedAt: DateTime!
     fullName: String
     company: String
-    streetLine1: String
+    streetLine1: String!
     streetLine2: String
     city: String
     province: String
     postalCode: String
-    country: String
+    country: String!
+    countryCode: String!
     phoneNumber: String
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean
@@ -18,12 +19,12 @@ type Address implements Node {
 input CreateAddressInput {
     fullName: String
     company: String
-    streetLine1: String
+    streetLine1: String!
     streetLine2: String
     city: String
     province: String
     postalCode: String
-    country: String
+    countryCode: String!
     phoneNumber: String
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean
@@ -38,7 +39,7 @@ input UpdateAddressInput {
     city: String
     province: String
     postalCode: String
-    country: String
+    countryCode: String
     phoneNumber: String
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean

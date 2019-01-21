@@ -232,12 +232,13 @@ export interface Address extends Node {
     updatedAt: DateTime;
     fullName?: string | null;
     company?: string | null;
-    streetLine1?: string | null;
+    streetLine1: string;
     streetLine2?: string | null;
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
     country?: string | null;
+    countryCode: string;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
     defaultBillingAddress?: boolean | null;
@@ -337,6 +338,7 @@ export interface ShippingAddress {
     province?: string | null;
     postalCode?: string | null;
     country?: string | null;
+    countryCode?: string | null;
     phoneNumber?: string | null;
 }
 
@@ -349,6 +351,7 @@ export interface BillingAddress {
     province?: string | null;
     postalCode?: string | null;
     country?: string | null;
+    countryCode?: string | null;
     phoneNumber?: string | null;
 }
 
@@ -1167,12 +1170,12 @@ export interface UpdateCustomerInput {
 export interface CreateAddressInput {
     fullName?: string | null;
     company?: string | null;
-    streetLine1?: string | null;
+    streetLine1: string;
     streetLine2?: string | null;
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
-    country?: string | null;
+    countryCode: string;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
     defaultBillingAddress?: boolean | null;
@@ -1188,7 +1191,7 @@ export interface UpdateAddressInput {
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
-    country?: string | null;
+    countryCode?: string | null;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
     defaultBillingAddress?: boolean | null;
@@ -3029,12 +3032,13 @@ export namespace AddressResolvers {
         updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
         fullName?: FullNameResolver<string | null, any, Context>;
         company?: CompanyResolver<string | null, any, Context>;
-        streetLine1?: StreetLine1Resolver<string | null, any, Context>;
+        streetLine1?: StreetLine1Resolver<string, any, Context>;
         streetLine2?: StreetLine2Resolver<string | null, any, Context>;
         city?: CityResolver<string | null, any, Context>;
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
         country?: CountryResolver<string | null, any, Context>;
+        countryCode?: CountryCodeResolver<string, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
         defaultShippingAddress?: DefaultShippingAddressResolver<boolean | null, any, Context>;
         defaultBillingAddress?: DefaultBillingAddressResolver<boolean | null, any, Context>;
@@ -3054,11 +3058,7 @@ export namespace AddressResolvers {
         Parent,
         Context
     >;
-    export type StreetLine1Resolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
+    export type StreetLine1Resolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type StreetLine2Resolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3080,6 +3080,7 @@ export namespace AddressResolvers {
         Parent,
         Context
     >;
+    export type CountryCodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -3368,6 +3369,7 @@ export namespace ShippingAddressResolvers {
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
         country?: CountryResolver<string | null, any, Context>;
+        countryCode?: CountryCodeResolver<string | null, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
     }
 
@@ -3403,6 +3405,11 @@ export namespace ShippingAddressResolvers {
         Context
     >;
     export type CountryResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CountryCodeResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -3424,6 +3431,7 @@ export namespace BillingAddressResolvers {
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
         country?: CountryResolver<string | null, any, Context>;
+        countryCode?: CountryCodeResolver<string | null, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
     }
 
@@ -3459,6 +3467,11 @@ export namespace BillingAddressResolvers {
         Context
     >;
     export type CountryResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CountryCodeResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context
@@ -5380,7 +5393,7 @@ export namespace GetUiState {
 
 export namespace GetCustomerList {
     export type Variables = {
-        options: CustomerListOptions;
+        options?: CustomerListOptions | null;
     };
 
     export type Query = {
@@ -6569,12 +6582,14 @@ export namespace Address {
         __typename?: 'Address';
         id: string;
         fullName?: string | null;
-        streetLine1?: string | null;
+        company?: string | null;
+        streetLine1: string;
         streetLine2?: string | null;
         city?: string | null;
         province?: string | null;
         postalCode?: string | null;
         country?: string | null;
+        countryCode: string;
         phoneNumber?: string | null;
         defaultShippingAddress?: boolean | null;
         defaultBillingAddress?: boolean | null;

@@ -24,6 +24,7 @@ import { OrderStateMachine } from '../helpers/order-state-machine/order-state-ma
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
@@ -33,6 +34,7 @@ export class OrderService {
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
         private customerService: CustomerService,
+        private countryService: CountryService,
         private orderCalculator: OrderCalculator,
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
@@ -201,7 +203,8 @@ export class OrderService {
 
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        order.shippingAddress = input;
+        const country = await this.countryService.findOneByCode(ctx, input.countryCode);
+        order.shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
         return this.connection.getRepository(Order).save(order);
     }
 

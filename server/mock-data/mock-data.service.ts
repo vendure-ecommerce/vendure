@@ -309,7 +309,7 @@ export class MockDataService {
                         city: faker.address.city(),
                         province: faker.address.county(),
                         postalCode: faker.address.zipCode(),
-                        country: faker.address.country(),
+                        countryCode: 'GB',
                     } as CreateAddressInput,
                     customerId: customer.id,
                 };

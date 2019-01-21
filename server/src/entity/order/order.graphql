@@ -29,6 +29,7 @@ type ShippingAddress {
     province: String
     postalCode: String
     country: String
+    countryCode: String
     phoneNumber: String
 }
 
@@ -41,5 +42,6 @@ type BillingAddress {
     province: String
     postalCode: String
     country: String
+    countryCode: String
     phoneNumber: String
 }

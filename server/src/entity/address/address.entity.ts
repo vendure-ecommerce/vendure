@@ -14,7 +14,7 @@ export class Address extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => Customer, customer => customer.addresses)
     customer: Customer;
 
-    @Column() fullName: string;
+    @Column({ default: '' }) fullName: string;
 
     @Column({ default: '' })
     company: string;
@@ -24,14 +24,16 @@ export class Address extends VendureEntity implements HasCustomFields {
     @Column({ default: '' })
     streetLine2: string;
 
-    @Column() city: string;
+    @Column({ default: '' }) city: string;
 
     @Column({ default: '' })
     province: string;
 
-    @Column() postalCode: string;
+    @Column({ default: '' }) postalCode: string;
 
     @Column() country: string;
+
+    @Column() countryCode: string;
 
     @Column({ default: '' })
     phoneNumber: string;

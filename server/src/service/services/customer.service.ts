@@ -13,7 +13,7 @@ import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound, normalizeEmailAddress } from '../../common/utils';
+import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -22,6 +22,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { CountryService } from './country.service';
 import { UserService } from './user.service';
 
 @Injectable()
@@ -29,6 +30,7 @@ export class CustomerService {
     constructor(
         @InjectConnection() private connection: Connection,
         private userService: UserService,
+        private countryService: CountryService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
     ) {}
@@ -153,7 +155,11 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
-    async createAddress(customerId: string, input: CreateAddressInput): Promise<Address> {
+    async createAddress(
+        ctx: RequestContext,
+        customerId: string,
+        input: CreateAddressInput,
+    ): Promise<Address> {
         const customer = await this.connection.manager.findOne(Customer, customerId, {
             relations: ['addresses'],
         });
@@ -161,11 +167,15 @@ export class CustomerService {
         if (!customer) {
             throw new EntityNotFoundError('Customer', customerId);
         }
-
-        const address = new Address(input);
+        const country = await this.countryService.findOneByCode(ctx, input.countryCode);
+        const address = new Address({
+            ...input,
+            country: country.name,
+        });
         const createdAddress = await this.connection.manager.getRepository(Address).save(address);
         customer.addresses.push(createdAddress);
         await this.connection.manager.save(customer);
+        await this.enforceSingleDefaultAddress(createdAddress.id, input);
         return createdAddress;
     }
 
@@ -173,6 +183,31 @@ export class CustomerService {
         const address = await getEntityOrThrow(this.connection, Address, input.id);
         const updatedAddress = patchEntity(address, input);
         await this.connection.getRepository(Address).save(updatedAddress);
+        await this.enforceSingleDefaultAddress(input.id, input);
         return updatedAddress;
+    }
+
+    private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {
+        const result = await this.connection
+            .getRepository(Address)
+            .findOne(addressId, { relations: ['customer', 'customer.addresses'] });
+        if (result) {
+            const customerAddressIds = result.customer.addresses
+                .map(a => a.id)
+                .filter(id => !idsAreEqual(id, addressId)) as string[];
+
+            if (customerAddressIds.length) {
+                if (input.defaultBillingAddress === true) {
+                    await this.connection.getRepository(Address).update(customerAddressIds, {
+                        defaultBillingAddress: false,
+                    });
+                }
+                if (input.defaultShippingAddress === true) {
+                    await this.connection.getRepository(Address).update(customerAddressIds, {
+                        defaultShippingAddress: false,
+                    });
+                }
+            }
+        }
     }
 }

@@ -342,6 +342,24 @@ describe('Orders', () => {
         describe('shipping', () => {
             let shippingMethods: any;
 
+            it('setOrderShippingAddress throws with invalid countryCode', async () => {
+                const address: CreateAddressInput = {
+                    streetLine1: '12 the street',
+                    countryCode: 'INVALID',
+                };
+
+                try {
+                    await client.query(SET_SHIPPING_ADDRESS, {
+                        input: address,
+                    });
+                    fail('Should have thrown');
+                } catch (err) {
+                    expect(err.message).toEqual(
+                        expect.stringContaining(`The countryCode "INVALID" was not recognized`),
+                    );
+                }
+            });
+
             it('setOrderShippingAddress sets shipping address', async () => {
                 const address: CreateAddressInput = {
                     fullName: 'name',
@@ -351,14 +369,24 @@ describe('Orders', () => {
                     city: 'foo',
                     province: 'bar',
                     postalCode: '123456',
-                    country: 'baz',
+                    countryCode: 'US',
                     phoneNumber: '4444444',
                 };
                 const result = await client.query(SET_SHIPPING_ADDRESS, {
                     input: address,
                 });
 
-                expect(result.setOrderShippingAddress.shippingAddress).toEqual(address);
+                expect(result.setOrderShippingAddress.shippingAddress).toEqual({
+                    fullName: 'name',
+                    company: 'company',
+                    streetLine1: '12 the street',
+                    streetLine2: 'line 2',
+                    city: 'foo',
+                    province: 'bar',
+                    postalCode: '123456',
+                    country: 'United States of America',
+                    phoneNumber: '4444444',
+                });
             });
 
             it('eligibleShippingMethods lists shipping methods', async () => {
