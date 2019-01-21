@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { debounceTime, map, takeUntil } from 'rxjs/operators';
 import { GetAssetList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
@@ -17,6 +18,7 @@ import { DataService } from '../../../data/providers/data.service';
 })
 export class AssetListComponent extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
     implements OnInit {
+    searchTerm = new FormControl('');
     paginationConfig$: Observable<PaginationInstance>;
 
     constructor(
@@ -29,6 +31,17 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         super.setQueryFn(
             (...args: any[]) => this.dataService.product.getAssetList(...args),
             data => data.assets,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTerm.value,
+                        },
+                    },
+                },
+            }),
         );
     }
 
@@ -37,6 +50,12 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         this.paginationConfig$ = combineLatest(this.itemsPerPage$, this.currentPage$, this.totalItems$).pipe(
             map(([itemsPerPage, currentPage, totalItems]) => ({ itemsPerPage, currentPage, totalItems })),
         );
+        this.searchTerm.valueChanges
+            .pipe(
+                debounceTime(250),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => this.refresh());
     }
 
     filesSelected(files: File[]) {

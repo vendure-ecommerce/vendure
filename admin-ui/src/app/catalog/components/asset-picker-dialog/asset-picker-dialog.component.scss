@@ -3,12 +3,17 @@
 :host {
     display: flex;
     flex-direction: column;
+    height: 90vh;
 }
 
 .title-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+vdr-asset-gallery {
+    flex: 1;
 }
 
 .paging-controls {

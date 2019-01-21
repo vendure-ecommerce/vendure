@@ -7,7 +7,13 @@
         ></vdr-asset-file-input>
     </div>
 </ng-template>
-
+<input
+    type="text"
+    name="searchTerm"
+    [formControl]="searchTerm"
+    [placeholder]="'catalog.search-asset-name' | translate"
+    class="clr-input search-input"
+/>
 <vdr-asset-gallery
     [assets]="assets$ | async | paginate: paginationConfig"
     [multiSelect]="true"
