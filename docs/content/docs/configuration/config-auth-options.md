@@ -1,5 +1,5 @@
 ---
-title: authOptions"
+title: authOptions
 weight: 1
 ---
 

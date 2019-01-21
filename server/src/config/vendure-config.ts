@@ -121,14 +121,11 @@ export interface AssetOptions {
      */
     assetNamingStrategy: AssetNamingStrategy;
     /**
-     * Defines the strategy used for storing uploaded binary files. By default files are
-     * persisted to the local file system.
+     * Defines the strategy used for storing uploaded binary files.
      */
     assetStorageStrategy: AssetStorageStrategy;
     /**
-     * Defines the strategy used for creating preview images of uploaded assets. The default
-     * strategy resizes images based on maximum dimensions and outputs a sensible default
-     * preview image for other file types.
+     * Defines the strategy used for creating preview images of uploaded assets.
      */
     assetPreviewStrategy: AssetPreviewStrategy;
     /**
