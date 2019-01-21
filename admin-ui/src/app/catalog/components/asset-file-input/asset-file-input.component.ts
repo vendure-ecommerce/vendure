@@ -82,8 +82,8 @@ export class AssetFileInputComponent implements OnInit {
             const rect = target.getBoundingClientRect();
             this.dropZoneStyle['width.px'] = rect.width;
             this.dropZoneStyle['height.px'] = rect.height;
-            this.dropZoneStyle['top.px'] = target.offsetTop;
-            this.dropZoneStyle['left.px'] = target.offsetLeft;
+            this.dropZoneStyle['top.px'] = rect.top;
+            this.dropZoneStyle['left.px'] = rect.left;
         }
     }
 }

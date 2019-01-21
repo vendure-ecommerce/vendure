@@ -5,7 +5,7 @@
 }
 
 .drop-zone {
-    position: absolute;
+    position: fixed;
     background-color: transparentize($color-brand, 0.7);
     border: 3px dashed $color-grey-4;
     opacity: 0;
