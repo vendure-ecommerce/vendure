@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { mergeMap, publishBehavior, publishReplay, shareReplay, take } from 'rxjs/operators';
 import {
-    CreateAdministratorInput,
+    CreateAddressInput,
     CreateCustomerInput,
     Customer,
-    UpdateAdministratorInput,
+    GetAvailableCountries,
+    UpdateAddressInput,
     UpdateCustomerInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
@@ -27,6 +29,10 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
+    availableCountries$: Observable<GetAvailableCountries.AvailableCountries[]>;
+    defaultShippingAddressId: string;
+    defaultBillingAddressId: string;
+    addressDefaultsUpdated = false;
 
     constructor(
         route: ActivatedRoute,
@@ -41,19 +47,26 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
 
         this.customFields = this.getCustomFieldConfig('Customer');
         this.detailForm = this.formBuilder.group({
-            title: '',
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            phoneNumber: '',
-            emailAddress: '',
-            password: '',
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
+            customer: this.formBuilder.group({
+                title: '',
+                firstName: ['', Validators.required],
+                lastName: ['', Validators.required],
+                phoneNumber: '',
+                emailAddress: '',
+                password: '',
+                customFields: this.formBuilder.group(
+                    this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                ),
+            }),
+            addresses: new FormArray([]),
         });
     }
 
     ngOnInit() {
+        this.availableCountries$ = this.dataService.settings
+            .getAvailableCountries()
+            .mapSingle(result => result.availableCountries)
+            .pipe(shareReplay(1));
         this.init();
     }
 
@@ -62,11 +75,48 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
+        return !!this.detailForm.get(['customer', 'customFields', name]);
+    }
+
+    getAddressFormControls(): FormControl[] {
+        const formArray = this.detailForm.get(['addresses']) as FormArray;
+        return formArray.controls as FormControl[];
+    }
+
+    setDefaultBillingAddressId(id: string) {
+        this.defaultBillingAddressId = id;
+        this.addressDefaultsUpdated = true;
+    }
+
+    setDefaultShippingAddressId(id: string) {
+        this.defaultShippingAddressId = id;
+        this.addressDefaultsUpdated = true;
+    }
+
+    addAddress() {
+        const addressFormArray = this.detailForm.get('addresses') as FormArray;
+        const newAddress = this.formBuilder.group({
+            fullName: '',
+            company: '',
+            streetLine1: ['', Validators.required],
+            streetLine2: '',
+            city: '',
+            province: '',
+            postalCode: '',
+            countryCode: ['', Validators.required],
+            phoneNumber: '',
+            defaultShippingAddress: false,
+            defaultBillingAddress: false,
+        });
+        addressFormArray.push(newAddress);
     }
 
     create() {
-        const formValue = this.detailForm.value;
+        const customerForm = this.detailForm.get('customer');
+        if (!customerForm) {
+            return;
+        }
+        const formValue = customerForm.value;
         const customer: CreateCustomerInput = {
             title: formValue.title,
             emailAddress: formValue.emailAddress,
@@ -79,6 +129,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
                     entity: 'Customer',
                 });
                 this.detailForm.markAsPristine();
+                this.addressDefaultsUpdated = false;
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createCustomer.id], { relativeTo: this.route });
             },
@@ -95,15 +146,53 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const formValue = this.detailForm.value;
-                    const customer: UpdateCustomerInput = {
-                        id,
-                        title: formValue.title,
-                        emailAddress: formValue.emailAddress,
-                        firstName: formValue.firstName,
-                        lastName: formValue.lastName,
-                    };
-                    return this.dataService.customer.updateCustomer(customer);
+                    const saveOperations: Array<Observable<any>> = [];
+                    const customerForm = this.detailForm.get('customer');
+                    if (customerForm && customerForm.dirty) {
+                        const formValue = customerForm.value;
+                        const customer: UpdateCustomerInput = {
+                            id,
+                            title: formValue.title,
+                            emailAddress: formValue.emailAddress,
+                            firstName: formValue.firstName,
+                            lastName: formValue.lastName,
+                        };
+                        saveOperations.push(this.dataService.customer.updateCustomer(customer));
+                    }
+                    const addressFormArray = this.detailForm.get('addresses') as FormArray;
+                    if ((addressFormArray && addressFormArray.dirty) || this.addressDefaultsUpdated) {
+                        for (const addressControl of addressFormArray.controls) {
+                            if (addressControl.dirty || this.addressDefaultsUpdated) {
+                                const address = addressControl.value;
+                                const input: CreateAddressInput = {
+                                    fullName: address.fullName,
+                                    company: address.company,
+                                    streetLine1: address.streetLine1,
+                                    streetLine2: address.streetLine2,
+                                    city: address.city,
+                                    province: address.province,
+                                    postalCode: address.postalCode,
+                                    countryCode: address.countryCode,
+                                    phoneNumber: address.phoneNumber,
+                                    defaultShippingAddress: this.defaultShippingAddressId === address.id,
+                                    defaultBillingAddress: this.defaultBillingAddressId === address.id,
+                                };
+                                if (!address.id) {
+                                    saveOperations.push(
+                                        this.dataService.customer.createCustomerAddress(id, input),
+                                    );
+                                } else {
+                                    saveOperations.push(
+                                        this.dataService.customer.updateCustomerAddress({
+                                            ...input,
+                                            id: address.id,
+                                        }),
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    return forkJoin(saveOperations);
                 }),
             )
             .subscribe(
@@ -112,6 +201,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
                         entity: 'Customer',
                     });
                     this.detailForm.markAsPristine();
+                    this.addressDefaultsUpdated = false;
                     this.changeDetector.markForCheck();
                 },
                 err => {
@@ -123,13 +213,30 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     }
 
     protected setFormValues(entity: Customer.Fragment): void {
-        this.detailForm.patchValue({
-            title: entity.title,
-            firstName: entity.firstName,
-            lastName: entity.lastName,
-            phoneNumber: entity.phoneNumber,
-            emailAddress: entity.emailAddress,
-        });
+        const customerGroup = this.detailForm.get('customer');
+        if (customerGroup) {
+            customerGroup.patchValue({
+                title: entity.title,
+                firstName: entity.firstName,
+                lastName: entity.lastName,
+                phoneNumber: entity.phoneNumber,
+                emailAddress: entity.emailAddress,
+            });
+        }
+
+        if (entity.addresses) {
+            const addressesArray = new FormArray([]);
+            for (const address of entity.addresses) {
+                addressesArray.push(this.formBuilder.group(address));
+                if (address.defaultShippingAddress) {
+                    this.defaultShippingAddressId = address.id;
+                }
+                if (address.defaultBillingAddress) {
+                    this.defaultBillingAddressId = address.id;
+                }
+            }
+            this.detailForm.setControl('addresses', addressesArray);
+        }
 
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;

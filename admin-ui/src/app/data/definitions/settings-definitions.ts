@@ -28,6 +28,17 @@ export const GET_COUNTRY_LIST = gql`
     }
 `;
 
+export const GET_AVAILABLE_COUNTRIES = gql`
+    query GetAvailableCountries {
+        availableCountries {
+            id
+            code
+            name
+            enabled
+        }
+    }
+`;
+
 export const GET_COUNTRY = gql`
     query GetCountry($id: ID!) {
         country(id: $id) {

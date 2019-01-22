@@ -11,6 +11,7 @@ import {
     CreateZone,
     CreateZoneInput,
     GetActiveChannel,
+    GetAvailableCountries,
     GetChannel,
     GetChannels,
     GetCountry,
@@ -50,6 +51,7 @@ import {
     CREATE_TAX_RATE,
     CREATE_ZONE,
     GET_ACTIVE_CHANNEL,
+    GET_AVAILABLE_COUNTRIES,
     GET_CHANNEL,
     GET_CHANNELS,
     GET_COUNTRY,
@@ -84,6 +86,10 @@ export class SettingsDataService {
                 skip,
             },
         });
+    }
+
+    getAvailableCountries() {
+        return this.baseDataService.query<GetAvailableCountries.Query>(GET_AVAILABLE_COUNTRIES);
     }
 
     getCountry(id: string) {

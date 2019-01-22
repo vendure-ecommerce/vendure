@@ -4,12 +4,14 @@ export const ADDRESS_FRAGMENT = gql`
     fragment Address on Address {
         id
         fullName
+        company
         streetLine1
         streetLine2
         city
         province
         postalCode
         country
+        countryCode
         phoneNumber
         defaultShippingAddress
         defaultBillingAddress
@@ -38,7 +40,7 @@ export const CUSTOMER_FRAGMENT = gql`
 `;
 
 export const GET_CUSTOMER_LIST = gql`
-    query GetCustomerList($options: CustomerListOptions!) {
+    query GetCustomerList($options: CustomerListOptions) {
         customers(options: $options) {
             items {
                 id
@@ -81,6 +83,15 @@ export const UPDATE_CUSTOMER = gql`
         }
     }
     ${CUSTOMER_FRAGMENT}
+`;
+
+export const CREATE_CUSTOMER_ADDRESS = gql`
+    mutation CreateCustomerAddress($customerId: ID!, $input: CreateAddressInput!) {
+        createCustomerAddress(customerId: $customerId, input: $input) {
+            ...Address
+        }
+    }
+    ${ADDRESS_FRAGMENT}
 `;
 
 export const UPDATE_CUSTOMER_ADDRESS = gql`

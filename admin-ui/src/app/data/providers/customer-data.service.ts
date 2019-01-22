@@ -1,5 +1,7 @@
 import {
+    CreateAddressInput,
     CreateCustomer,
+    CreateCustomerAddress,
     CreateCustomerInput,
     GetCustomer,
     GetCustomerList,
@@ -11,6 +13,7 @@ import {
 
 import {
     CREATE_CUSTOMER,
+    CREATE_CUSTOMER_ADDRESS,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
     UPDATE_CUSTOMER,
@@ -52,6 +55,16 @@ export class CustomerDataService {
         return this.baseDataService.mutate<UpdateCustomer.Mutation, UpdateCustomer.Variables>(
             UPDATE_CUSTOMER,
             {
+                input,
+            },
+        );
+    }
+
+    createCustomerAddress(customerId: string, input: CreateAddressInput) {
+        return this.baseDataService.mutate<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
+            CREATE_CUSTOMER_ADDRESS,
+            {
+                customerId,
                 input,
             },
         );

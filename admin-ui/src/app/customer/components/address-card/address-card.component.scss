@@ -1,0 +1,18 @@
+@import "variables";
+
+.address-lines {
+    list-style-type: none;
+}
+
+clr-input-container {
+    margin-bottom: 12px;
+}
+
+.defaul-controls {
+    display: flex;
+}
+
+.is-default {
+    margin: 0;
+    color: $color-success;
+}

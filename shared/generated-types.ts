@@ -237,7 +237,7 @@ export interface Address extends Node {
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
-    country?: string | null;
+    country: string;
     countryCode: string;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
@@ -3037,7 +3037,7 @@ export namespace AddressResolvers {
         city?: CityResolver<string | null, any, Context>;
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
-        country?: CountryResolver<string | null, any, Context>;
+        country?: CountryResolver<string, any, Context>;
         countryCode?: CountryCodeResolver<string, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
         defaultShippingAddress?: DefaultShippingAddressResolver<boolean | null, any, Context>;
@@ -3075,11 +3075,7 @@ export namespace AddressResolvers {
         Parent,
         Context
     >;
-    export type CountryResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
+    export type CountryResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CountryCodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
@@ -5464,6 +5460,20 @@ export namespace UpdateCustomer {
     export type UpdateCustomer = Customer.Fragment;
 }
 
+export namespace CreateCustomerAddress {
+    export type Variables = {
+        customerId: string;
+        input: CreateAddressInput;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        createCustomerAddress: CreateCustomerAddress;
+    };
+
+    export type CreateCustomerAddress = Address.Fragment;
+}
+
 export namespace UpdateCustomerAddress {
     export type Variables = {
         input: UpdateAddressInput;
@@ -6065,6 +6075,23 @@ export namespace GetCountryList {
     };
 }
 
+export namespace GetAvailableCountries {
+    export type Variables = {};
+
+    export type Query = {
+        __typename?: 'Query';
+        availableCountries: AvailableCountries[];
+    };
+
+    export type AvailableCountries = {
+        __typename?: 'Country';
+        id: string;
+        code: string;
+        name: string;
+        enabled: boolean;
+    };
+}
+
 export namespace GetCountry {
     export type Variables = {
         id: string;
@@ -6588,7 +6615,7 @@ export namespace Address {
         city?: string | null;
         province?: string | null;
         postalCode?: string | null;
-        country?: string | null;
+        country: string;
         countryCode: string;
         phoneNumber?: string | null;
         defaultShippingAddress?: boolean | null;
