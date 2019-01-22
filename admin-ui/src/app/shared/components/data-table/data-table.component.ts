@@ -27,6 +27,7 @@ export class DataTableComponent<T> {
     @Input() totalItems: number;
     @Input() allSelected: boolean;
     @Input() isRowSelectedFn: (item: T) => boolean;
+    @Input() emptyStateLabel: string;
     @Output() allSelectChange = new EventEmitter<void>();
     @Output() rowSelectChange = new EventEmitter<T>();
     @Output() pageChange = new EventEmitter<number>();

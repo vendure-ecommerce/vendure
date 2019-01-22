@@ -11,3 +11,14 @@ thead th {
     align-items: baseline;
     justify-content: space-between;
 }
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    color: $color-grey-4;
+
+    .empty-label {
+        margin-top: 12px;
+        font-size: 22px;
+    }
+}
