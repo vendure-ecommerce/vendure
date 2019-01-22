@@ -5,6 +5,7 @@ import {
     CreateCustomerMutationArgs,
     CustomerQueryArgs,
     CustomersQueryArgs,
+    DeleteCustomerMutationArgs,
     OrdersCustomerArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
@@ -103,6 +104,12 @@ export class CustomerResolver {
     async updateCustomerAddress(@Args() args: UpdateCustomerAddressMutationArgs): Promise<Address> {
         const { input } = args;
         return this.customerService.updateAddress(input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCustomer)
+    async deleteCustomer(@Args() args: DeleteCustomerMutationArgs): Promise<boolean> {
+        return this.customerService.softDelete(args.id);
     }
 
     /**

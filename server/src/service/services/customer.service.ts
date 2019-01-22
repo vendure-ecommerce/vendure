@@ -38,18 +38,20 @@ export class CustomerService {
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
         return this.listQueryBuilder
             .build(Customer, options)
+            .andWhere('customer.deletedAt IS NULL')
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
     findOne(id: ID): Promise<Customer | undefined> {
-        return this.connection.getRepository(Customer).findOne(id);
+        return this.connection.getRepository(Customer).findOne(id, { where: { deletedAt: null } });
     }
 
     findOneByUserId(userId: ID): Promise<Customer | undefined> {
         return this.connection.getRepository(Customer).findOne({
             where: {
                 user: { id: userId },
+                deletedAt: null,
             },
         });
     }
@@ -131,6 +133,9 @@ export class CustomerService {
 
     async update(input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        if (customer.deletedAt) {
+            throw new EntityNotFoundError('Customer', input.id);
+        }
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(Customer).save(customer);
         return assertFound(this.findOne(customer.id));
@@ -161,6 +166,7 @@ export class CustomerService {
         input: CreateAddressInput,
     ): Promise<Address> {
         const customer = await this.connection.manager.findOne(Customer, customerId, {
+            where: { deletedAt: null },
             relations: ['addresses'],
         });
 
@@ -185,6 +191,12 @@ export class CustomerService {
         await this.connection.getRepository(Address).save(updatedAddress);
         await this.enforceSingleDefaultAddress(input.id, input);
         return updatedAddress;
+    }
+
+    async softDelete(customerId: ID): Promise<boolean> {
+        await getEntityOrThrow(this.connection, Customer, customerId);
+        await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
+        return true;
     }
 
     private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {

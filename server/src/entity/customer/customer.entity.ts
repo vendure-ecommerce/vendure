@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne 
 
 import { DeepPartial } from '../../../../shared/shared-types';
 import { HasCustomFields } from '../../../../shared/shared-types';
+import { SoftDeletable } from '../../common/types/common-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';
@@ -10,10 +11,13 @@ import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
-export class Customer extends VendureEntity implements HasCustomFields {
+export class Customer extends VendureEntity implements HasCustomFields, SoftDeletable {
     constructor(input?: DeepPartial<Customer>) {
         super(input);
     }
+
+    @Column({ nullable: true, default: null })
+    deletedAt: Date;
 
     @Column({ nullable: true })
     title: string;

@@ -687,6 +687,7 @@ export interface Mutation {
     removeCustomersFromGroup: CustomerGroup;
     createCustomer: Customer;
     updateCustomer: Customer;
+    deleteCustomer: boolean;
     createCustomerAddress: Address;
     updateCustomerAddress: Address;
     createFacet: Facet;
@@ -711,6 +712,7 @@ export interface Mutation {
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
     updateProduct: Product;
+    deleteProduct?: boolean | null;
     addOptionGroupToProduct: Product;
     removeOptionGroupFromProduct: Product;
     generateVariantsForProduct: Product;
@@ -1669,6 +1671,9 @@ export interface CreateCustomerMutationArgs {
 export interface UpdateCustomerMutationArgs {
     input: UpdateCustomerInput;
 }
+export interface DeleteCustomerMutationArgs {
+    id: string;
+}
 export interface CreateCustomerAddressMutationArgs {
     customerId: string;
     input: CreateAddressInput;
@@ -1743,6 +1748,9 @@ export interface CreateProductMutationArgs {
 }
 export interface UpdateProductMutationArgs {
     input: UpdateProductInput;
+}
+export interface DeleteProductMutationArgs {
+    id: string;
 }
 export interface AddOptionGroupToProductMutationArgs {
     productId: string;
@@ -4397,6 +4405,7 @@ export namespace MutationResolvers {
         removeCustomersFromGroup?: RemoveCustomersFromGroupResolver<CustomerGroup, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
         updateCustomer?: UpdateCustomerResolver<Customer, any, Context>;
+        deleteCustomer?: DeleteCustomerResolver<boolean, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
         updateCustomerAddress?: UpdateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
@@ -4421,6 +4430,7 @@ export namespace MutationResolvers {
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
         updateProduct?: UpdateProductResolver<Product, any, Context>;
+        deleteProduct?: DeleteProductResolver<boolean | null, any, Context>;
         addOptionGroupToProduct?: AddOptionGroupToProductResolver<Product, any, Context>;
         removeOptionGroupFromProduct?: RemoveOptionGroupFromProductResolver<Product, any, Context>;
         generateVariantsForProduct?: GenerateVariantsForProductResolver<Product, any, Context>;
@@ -4633,6 +4643,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateCustomerArgs {
         input: UpdateCustomerInput;
+    }
+
+    export type DeleteCustomerResolver<R = boolean, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteCustomerArgs
+    >;
+    export interface DeleteCustomerArgs {
+        id: string;
     }
 
     export type CreateCustomerAddressResolver<R = Address, Parent = any, Context = any> = Resolver<
@@ -4874,6 +4894,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateProductArgs {
         input: UpdateProductInput;
+    }
+
+    export type DeleteProductResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteProductArgs
+    >;
+    export interface DeleteProductArgs {
+        id: string;
     }
 
     export type AddOptionGroupToProductResolver<R = Product, Parent = any, Context = any> = Resolver<

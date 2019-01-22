@@ -1,10 +1,19 @@
 import gql from 'graphql-tag';
 
 import {
+    CREATE_CUSTOMER_ADDRESS,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
+    UPDATE_CUSTOMER,
+    UPDATE_CUSTOMER_ADDRESS,
 } from '../../admin-ui/src/app/data/definitions/customer-definitions';
-import { GetCustomer, GetCustomerList } from '../../shared/generated-types';
+import {
+    CreateCustomerAddress,
+    GetCustomer,
+    GetCustomerList,
+    UpdateCustomer,
+    UpdateCustomerAddress,
+} from '../../shared/generated-types';
 import { omit } from '../../shared/omit';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -17,7 +26,8 @@ describe('Customer resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
     let firstCustomer: GetCustomerList.Items;
-    let secondsCustomer: GetCustomerList.Items;
+    let secondCustomer: GetCustomerList.Items;
+    let thirdCustomer: GetCustomerList.Items;
 
     beforeAll(async () => {
         const token = await server.init({
@@ -39,7 +49,8 @@ describe('Customer resolver', () => {
         expect(result.customers.items.length).toBe(5);
         expect(result.customers.totalItems).toBe(5);
         firstCustomer = result.customers.items[0];
-        secondsCustomer = result.customers.items[1];
+        secondCustomer = result.customers.items[1];
+        thirdCustomer = result.customers.items[2];
     });
 
     describe('addresses', () => {
@@ -143,7 +154,7 @@ describe('Customer resolver', () => {
 
             // get the second customer's address id
             const result5 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: secondsCustomer.id,
+                id: secondCustomer.id,
             });
             const secondCustomerAddressId = result5.customer!.addresses![0].id;
 
@@ -206,7 +217,7 @@ describe('Customer resolver', () => {
     });
 
     describe('orders', () => {
-        it("lists that user's orders", async () => {
+        it(`lists that user\'s orders`, async () => {
             // log in as first customer
             await client.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
@@ -221,6 +232,66 @@ describe('Customer resolver', () => {
 
             expect(result2.customer.orders.totalItems).toBe(1);
             expect(result2.customer.orders.items[0].id).toBe(result1.addItemToOrder.id);
+        });
+    });
+
+    describe('deletion', () => {
+        it('deletes a customer', async () => {
+            const result = await client.query(DELETE_CUSTOMER, { id: thirdCustomer.id });
+
+            expect(result.deleteCustomer).toBe(true);
+        });
+
+        it('cannot get a deleted customer', async () => {
+            const result = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+                id: thirdCustomer.id,
+            });
+
+            expect(result.customer).toBe(null);
+        });
+
+        it('deleted customer omitted from list', async () => {
+            const result = await client.query<GetCustomerList.Query, GetCustomerList.Variables>(
+                GET_CUSTOMER_LIST,
+            );
+
+            expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
+        });
+
+        it('updateCustomer throws for deleted customer', async () => {
+            try {
+                await client.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
+                    input: {
+                        id: thirdCustomer.id,
+                        firstName: 'updated',
+                    },
+                });
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Customer with the id '3' could be found`),
+                );
+            }
+        });
+
+        it('createCustomerAddress throws for deleted customer', async () => {
+            try {
+                await client.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
+                    CREATE_CUSTOMER_ADDRESS,
+                    {
+                        customerId: thirdCustomer.id,
+                        input: {
+                            streetLine1: 'test',
+                            countryCode: 'GB',
+                        },
+                    },
+                );
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Customer with the id '3' could be found`),
+                );
+            }
         });
     });
 });
@@ -273,5 +344,11 @@ const GET_CUSTOMER_ORDERS = gql`
                 totalItems
             }
         }
+    }
+`;
+
+const DELETE_CUSTOMER = gql`
+    mutation DeleteCustomer($id: ID!) {
+        deleteCustomer(id: $id)
     }
 `;

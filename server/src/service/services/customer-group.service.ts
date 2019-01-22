@@ -63,6 +63,6 @@ export class CustomerGroupService {
     }
 
     private getCustomersFromIds(ids: ID[]): Promise<Customer[]> {
-        return this.connection.getRepository(Customer).findByIds(ids);
+        return this.connection.getRepository(Customer).findByIds(ids, { where: { deletedAt: null } });
     }
 }
