@@ -71,7 +71,7 @@
     </section>
 </form>
 
-<div class="clr-row">
+<div class="clr-row" *ngIf="!(isNew$ | async)">
     <div class="clr-col-md-4">
         <h3>{{ 'customer.addresses' | translate }}</h3>
         <vdr-address-card

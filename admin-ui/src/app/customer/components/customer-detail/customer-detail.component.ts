@@ -36,7 +36,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Cus
     defaultShippingAddressId: string;
     defaultBillingAddressId: string;
     addressDefaultsUpdated = false;
-    ordersPerPage = 1;
+    ordersPerPage = 10;
     currentOrdersPage = 1;
     private orderListUpdates$ = new Subject<GetCustomer.Customer>();
 

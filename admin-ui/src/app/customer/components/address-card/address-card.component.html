@@ -1,8 +1,8 @@
 <div class="card" *ngIf="addressForm.value as address">
     <div class="card-header">
-        <div class="address-title">
+        <div class="address-title ">
             <span class="street-line" *ngIf="address.streetLine1">{{ address.streetLine1 }},</span>
-            {{ getCountryName(address.countryCode) }}
+            {{ address.countryCode }}
         </div>
         <div class="default-controls">
             <vdr-chip class="is-default p8" *ngIf="isDefaultShipping">
@@ -24,8 +24,14 @@
                 <li *ngIf="address.city">{{ address.city }}</li>
                 <li *ngIf="address.province">{{ address.province }}</li>
                 <li *ngIf="address.postalCode">{{ address.postalCode }}</li>
-                <li *ngIf="address.countryCode">{{ getCountryName(address.countryCode) }}</li>
-                <li *ngIf="address.phoneNumber">{{ address.phoneNumber }}</li>
+                <li *ngIf="address.countryCode">
+                    <clr-icon shape="world" size="12"></clr-icon>
+                    {{ getCountryName(address.countryCode) }}
+                </li>
+                <li *ngIf="address.phoneNumber">
+                    <clr-icon shape="phone-handset" size="12"></clr-icon>
+                    {{ address.phoneNumber }}
+                </li>
             </ul>
             <form [formGroup]="addressForm" *ngIf="editing">
                 <clr-input-container>
