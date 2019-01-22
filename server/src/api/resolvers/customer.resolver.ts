@@ -5,15 +5,19 @@ import {
     CreateCustomerMutationArgs,
     CustomerQueryArgs,
     CustomersQueryArgs,
+    OrdersCustomerArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
 } from '../../../../shared/generated-types';
 import { PaginatedList } from '../../../../shared/shared-types';
+import { UnauthorizedError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/utils';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { Order } from '../../entity/order/order.entity';
 import { CustomerService } from '../../service/services/customer.service';
+import { OrderService } from '../../service/services/order.service';
 import { IdCodecService } from '../common/id-codec.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
@@ -22,7 +26,11 @@ import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Customer')
 export class CustomerResolver {
-    constructor(private customerService: CustomerService, private idCodecService: IdCodecService) {}
+    constructor(
+        private customerService: CustomerService,
+        private orderService: OrderService,
+        private idCodecService: IdCodecService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCustomer)
@@ -47,18 +55,22 @@ export class CustomerResolver {
 
     @ResolveProperty()
     @Allow(Permission.ReadCustomer, Permission.Owner)
-    async addresses(
-        @Ctx() ctx: RequestContext,
-        @Parent() customer: Customer,
-    ): Promise<Address[] | undefined> {
-        if (ctx.authorizedAsOwnerOnly) {
-            const userId = customer.user && this.idCodecService.decode(customer.user.id);
-            if (userId && !idsAreEqual(userId, ctx.activeUserId)) {
-                return;
-            }
-        }
+    async addresses(@Ctx() ctx: RequestContext, @Parent() customer: Customer): Promise<Address[]> {
+        this.checkOwnerPermissions(ctx, customer);
         const customerId = this.idCodecService.decode(customer.id);
         return this.customerService.findAddressesByCustomerId(customerId);
+    }
+
+    @ResolveProperty()
+    @Allow(Permission.ReadOrder, Permission.Owner)
+    async orders(
+        @Ctx() ctx: RequestContext,
+        @Parent() customer: Customer,
+        @Args() args: OrdersCustomerArgs,
+    ): Promise<PaginatedList<Order>> {
+        this.checkOwnerPermissions(ctx, customer);
+        const customerId = this.idCodecService.decode(customer.id);
+        return this.orderService.findByCustomerId(customerId, args.options || undefined);
     }
 
     @Mutation()
@@ -91,5 +103,18 @@ export class CustomerResolver {
     async updateCustomerAddress(@Args() args: UpdateCustomerAddressMutationArgs): Promise<Address> {
         const { input } = args;
         return this.customerService.updateAddress(input);
+    }
+
+    /**
+     * If the current request is authorized as the Owner, ensure that the userId matches that
+     * of the Customer data being requested.
+     */
+    private checkOwnerPermissions(ctx: RequestContext, customer: Customer) {
+        if (ctx.authorizedAsOwnerOnly) {
+            const userId = customer.user && this.idCodecService.decode(customer.user.id);
+            if (userId && !idsAreEqual(userId, ctx.activeUserId)) {
+                throw new UnauthorizedError();
+            }
+        }
     }
 }

@@ -16,8 +16,8 @@ import { TestServer } from './test-server';
 describe('Customer resolver', () => {
     const client = new TestClient();
     const server = new TestServer();
-    let firstCustomerId = '';
-    let secondCustomerId = '';
+    let firstCustomer: GetCustomerList.Items;
+    let secondsCustomer: GetCustomerList.Items;
 
     beforeAll(async () => {
         const token = await server.init({
@@ -38,8 +38,8 @@ describe('Customer resolver', () => {
 
         expect(result.customers.items.length).toBe(5);
         expect(result.customers.totalItems).toBe(5);
-        firstCustomerId = result.customers.items[0].id;
-        secondCustomerId = result.customers.items[1].id;
+        firstCustomer = result.customers.items[0];
+        secondsCustomer = result.customers.items[1];
     });
 
     describe('addresses', () => {
@@ -48,7 +48,7 @@ describe('Customer resolver', () => {
         it('createCustomerAddress throws on invalid countryCode', async () => {
             try {
                 await client.query(CREATE_ADDRESS, {
-                    id: firstCustomerId,
+                    id: firstCustomer.id,
                     input: {
                         streetLine1: 'streetLine1',
                         countryCode: 'INVALID',
@@ -64,7 +64,7 @@ describe('Customer resolver', () => {
 
         it('createCustomerAddress creates a new address', async () => {
             const result = await client.query(CREATE_ADDRESS, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
                 input: {
                     fullName: 'fullName',
                     company: 'company',
@@ -97,7 +97,7 @@ describe('Customer resolver', () => {
 
         it('customer query returns addresses', async () => {
             const result = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
             });
 
             expect(result.customer!.addresses!.length).toBe(2);
@@ -118,7 +118,7 @@ describe('Customer resolver', () => {
 
             // assert the first customer's first address is not default
             const result2 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
             });
             expect(result2.customer!.addresses![0].defaultShippingAddress).toBe(false);
             expect(result2.customer!.addresses![0].defaultBillingAddress).toBe(false);
@@ -136,14 +136,14 @@ describe('Customer resolver', () => {
 
             // assert the first customer's second address is not default
             const result4 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
             });
             expect(result4.customer!.addresses![1].defaultShippingAddress).toBe(false);
             expect(result4.customer!.addresses![1].defaultBillingAddress).toBe(false);
 
             // get the second customer's address id
             const result5 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: secondCustomerId,
+                id: secondsCustomer.id,
             });
             const secondCustomerAddressId = result5.customer!.addresses![0].id;
 
@@ -160,7 +160,7 @@ describe('Customer resolver', () => {
 
             // assets the first customer's address defaults are unchanged
             const result7 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
             });
             expect(result7.customer!.addresses![0].defaultShippingAddress).toBe(true);
             expect(result7.customer!.addresses![0].defaultBillingAddress).toBe(true);
@@ -170,7 +170,7 @@ describe('Customer resolver', () => {
 
         it('createCustomerAddress with true defaults unsets existing defaults', async () => {
             const result1 = await client.query(CREATE_ADDRESS, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
                 input: {
                     streetLine1: 'new default streetline',
                     countryCode: 'GB',
@@ -194,7 +194,7 @@ describe('Customer resolver', () => {
             });
 
             const result2 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-                id: firstCustomerId,
+                id: firstCustomer.id,
             });
             expect(result2.customer!.addresses![0].defaultShippingAddress).toBe(false);
             expect(result2.customer!.addresses![0].defaultBillingAddress).toBe(false);
@@ -202,6 +202,25 @@ describe('Customer resolver', () => {
             expect(result2.customer!.addresses![1].defaultBillingAddress).toBe(false);
             expect(result2.customer!.addresses![2].defaultShippingAddress).toBe(true);
             expect(result2.customer!.addresses![2].defaultBillingAddress).toBe(true);
+        });
+    });
+
+    describe('orders', () => {
+        it("lists that user's orders", async () => {
+            // log in as first customer
+            await client.asUserWithCredentials(firstCustomer.emailAddress, 'test');
+            // add an item to the order to create an order
+            const result1 = await client.query(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+
+            await client.asSuperAdmin();
+
+            const result2 = await client.query(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
+
+            expect(result2.customer.orders.totalItems).toBe(1);
+            expect(result2.customer.orders.items[0].id).toBe(result1.addItemToOrder.id);
         });
     });
 });
@@ -232,6 +251,27 @@ const UPDATE_ADDRESS = gql`
             id
             defaultShippingAddress
             defaultBillingAddress
+        }
+    }
+`;
+
+const ADD_ITEM_TO_ORDER = gql`
+    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+            id
+        }
+    }
+`;
+
+const GET_CUSTOMER_ORDERS = gql`
+    query GetCustomerOrders($id: ID!) {
+        customer(id: $id) {
+            orders {
+                items {
+                    id
+                }
+                totalItems
+            }
         }
     }
 `;

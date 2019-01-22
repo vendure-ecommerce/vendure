@@ -222,6 +222,7 @@ export interface Customer extends Node {
     phoneNumber?: string | null;
     emailAddress: string;
     addresses?: Address[] | null;
+    orders: OrderList;
     user?: User | null;
     customFields?: Json | null;
 }
@@ -245,66 +246,9 @@ export interface Address extends Node {
     customFields?: Json | null;
 }
 
-export interface FacetList extends PaginatedList {
-    items: Facet[];
+export interface OrderList extends PaginatedList {
+    items: Order[];
     totalItems: number;
-}
-
-export interface Facet extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    languageCode: LanguageCode;
-    name: string;
-    code: string;
-    values: FacetValue[];
-    translations: FacetTranslation[];
-    customFields?: Json | null;
-}
-
-export interface FacetValue extends Node {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    languageCode: LanguageCode;
-    facet: Facet;
-    name: string;
-    code: string;
-    translations: FacetValueTranslation[];
-    customFields?: Json | null;
-}
-
-export interface FacetValueTranslation {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    languageCode: LanguageCode;
-    name: string;
-}
-
-export interface FacetTranslation {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    languageCode: LanguageCode;
-    name: string;
-}
-
-export interface GlobalSettings {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    availableLanguages: LanguageCode[];
-    serverConfig: ServerConfig;
-    customFields?: GlobalSettingsCustomFields | null;
-}
-
-export interface ServerConfig {
-    customFields?: Json | null;
-}
-
-export interface GlobalSettingsCustomFields {
-    royalMailId?: string | null;
 }
 
 export interface Order extends Node {
@@ -429,6 +373,46 @@ export interface ProductOptionTranslation {
     name: string;
 }
 
+export interface FacetValue extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    facet: Facet;
+    name: string;
+    code: string;
+    translations: FacetValueTranslation[];
+    customFields?: Json | null;
+}
+
+export interface Facet extends Node {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    name: string;
+    code: string;
+    values: FacetValue[];
+    translations: FacetTranslation[];
+    customFields?: Json | null;
+}
+
+export interface FacetTranslation {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    name: string;
+}
+
+export interface FacetValueTranslation {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    languageCode: LanguageCode;
+    name: string;
+}
+
 export interface ProductVariantTranslation {
     id: string;
     createdAt: DateTime;
@@ -488,9 +472,26 @@ export interface ConfigArg {
     value?: string | null;
 }
 
-export interface OrderList extends PaginatedList {
-    items: Order[];
+export interface FacetList extends PaginatedList {
+    items: Facet[];
     totalItems: number;
+}
+
+export interface GlobalSettings {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    availableLanguages: LanguageCode[];
+    serverConfig: ServerConfig;
+    customFields?: GlobalSettingsCustomFields | null;
+}
+
+export interface ServerConfig {
+    customFields?: Json | null;
+}
+
+export interface GlobalSettingsCustomFields {
+    royalMailId?: string | null;
 }
 
 export interface ShippingMethodQuote {
@@ -864,6 +865,26 @@ export interface CustomerFilterParameter {
     updatedAt?: DateOperators | null;
 }
 
+export interface OrderListOptions {
+    take?: number | null;
+    skip?: number | null;
+    sort?: OrderSortParameter | null;
+    filter?: OrderFilterParameter | null;
+}
+
+export interface OrderSortParameter {
+    id?: SortOrder | null;
+    createdAt?: SortOrder | null;
+    updatedAt?: SortOrder | null;
+    code?: SortOrder | null;
+}
+
+export interface OrderFilterParameter {
+    code?: StringOperators | null;
+    createdAt?: DateOperators | null;
+    updatedAt?: DateOperators | null;
+}
+
 export interface FacetListOptions {
     take?: number | null;
     skip?: number | null;
@@ -881,26 +902,6 @@ export interface FacetSortParameter {
 
 export interface FacetFilterParameter {
     name?: StringOperators | null;
-    code?: StringOperators | null;
-    createdAt?: DateOperators | null;
-    updatedAt?: DateOperators | null;
-}
-
-export interface OrderListOptions {
-    take?: number | null;
-    skip?: number | null;
-    sort?: OrderSortParameter | null;
-    filter?: OrderFilterParameter | null;
-}
-
-export interface OrderSortParameter {
-    id?: SortOrder | null;
-    createdAt?: SortOrder | null;
-    updatedAt?: SortOrder | null;
-    code?: SortOrder | null;
-}
-
-export interface OrderFilterParameter {
     code?: StringOperators | null;
     createdAt?: DateOperators | null;
     updatedAt?: DateOperators | null;
@@ -1603,6 +1604,9 @@ export interface TaxRateQueryArgs {
 }
 export interface ZoneQueryArgs {
     id: string;
+}
+export interface OrdersCustomerArgs {
+    options?: OrderListOptions | null;
 }
 export interface CreateAdministratorMutationArgs {
     input: CreateAdministratorInput;
@@ -2996,6 +3000,7 @@ export namespace CustomerResolvers {
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
         emailAddress?: EmailAddressResolver<string, any, Context>;
         addresses?: AddressesResolver<Address[] | null, any, Context>;
+        orders?: OrdersResolver<OrderList, any, Context>;
         user?: UserResolver<User | null, any, Context>;
         customFields?: CustomFieldsResolver<Json | null, any, Context>;
     }
@@ -3017,6 +3022,16 @@ export namespace CustomerResolvers {
         Parent,
         Context
     >;
+    export type OrdersResolver<R = OrderList, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        OrdersArgs
+    >;
+    export interface OrdersArgs {
+        options?: OrderListOptions | null;
+    }
+
     export type UserResolver<R = User | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
         R,
@@ -3099,180 +3114,14 @@ export namespace AddressResolvers {
     >;
 }
 
-export namespace FacetListResolvers {
+export namespace OrderListResolvers {
     export interface Resolvers<Context = any> {
-        items?: ItemsResolver<Facet[], any, Context>;
+        items?: ItemsResolver<Order[], any, Context>;
         totalItems?: TotalItemsResolver<number, any, Context>;
     }
 
-    export type ItemsResolver<R = Facet[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ItemsResolver<R = Order[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace FacetResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        values?: ValuesResolver<FacetValue[], any, Context>;
-        translations?: TranslationsResolver<FacetTranslation[], any, Context>;
-        customFields?: CustomFieldsResolver<Json | null, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type ValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TranslationsResolver<R = FacetTranslation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
-export namespace FacetValueResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
-        facet?: FacetResolver<Facet, any, Context>;
-        name?: NameResolver<string, any, Context>;
-        code?: CodeResolver<string, any, Context>;
-        translations?: TranslationsResolver<FacetValueTranslation[], any, Context>;
-        customFields?: CustomFieldsResolver<Json | null, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type FacetResolver<R = Facet, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type TranslationsResolver<R = FacetValueTranslation[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
-export namespace FacetValueTranslationResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
-        name?: NameResolver<string, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace FacetTranslationResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
-        name?: NameResolver<string, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-}
-
-export namespace GlobalSettingsResolvers {
-    export interface Resolvers<Context = any> {
-        id?: IdResolver<string, any, Context>;
-        createdAt?: CreatedAtResolver<DateTime, any, Context>;
-        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
-        availableLanguages?: AvailableLanguagesResolver<LanguageCode[], any, Context>;
-        serverConfig?: ServerConfigResolver<ServerConfig, any, Context>;
-        customFields?: CustomFieldsResolver<GlobalSettingsCustomFields | null, any, Context>;
-    }
-
-    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type AvailableLanguagesResolver<R = LanguageCode[], Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type ServerConfigResolver<R = ServerConfig, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-    export type CustomFieldsResolver<
-        R = GlobalSettingsCustomFields | null,
-        Parent = any,
-        Context = any
-    > = Resolver<R, Parent, Context>;
-}
-
-export namespace ServerConfigResolvers {
-    export interface Resolvers<Context = any> {
-        customFields?: CustomFieldsResolver<Json | null, any, Context>;
-    }
-
-    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
-}
-
-export namespace GlobalSettingsCustomFieldsResolvers {
-    export interface Resolvers<Context = any> {
-        royalMailId?: RoyalMailIdResolver<string | null, any, Context>;
-    }
-
-    export type RoyalMailIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
-        R,
-        Parent,
-        Context
-    >;
 }
 
 export namespace OrderResolvers {
@@ -3703,6 +3552,118 @@ export namespace ProductOptionTranslationResolvers {
     export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
+export namespace FacetValueResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        facet?: FacetResolver<Facet, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        translations?: TranslationsResolver<FacetValueTranslation[], any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type FacetResolver<R = Facet, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TranslationsResolver<R = FacetValueTranslation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace FacetResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        name?: NameResolver<string, any, Context>;
+        code?: CodeResolver<string, any, Context>;
+        values?: ValuesResolver<FacetValue[], any, Context>;
+        translations?: TranslationsResolver<FacetTranslation[], any, Context>;
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TranslationsResolver<R = FacetTranslation[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace FacetTranslationResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        name?: NameResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace FacetValueTranslationResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        languageCode?: LanguageCodeResolver<LanguageCode, any, Context>;
+        name?: NameResolver<string, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type LanguageCodeResolver<R = LanguageCode, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type NameResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
 export namespace ProductVariantTranslationResolvers {
     export interface Resolvers<Context = any> {
         id?: IdResolver<string, any, Context>;
@@ -3853,14 +3814,68 @@ export namespace ConfigArgResolvers {
     export type ValueResolver<R = string | null, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
-export namespace OrderListResolvers {
+export namespace FacetListResolvers {
     export interface Resolvers<Context = any> {
-        items?: ItemsResolver<Order[], any, Context>;
+        items?: ItemsResolver<Facet[], any, Context>;
         totalItems?: TotalItemsResolver<number, any, Context>;
     }
 
-    export type ItemsResolver<R = Order[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ItemsResolver<R = Facet[], Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type TotalItemsResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace GlobalSettingsResolvers {
+    export interface Resolvers<Context = any> {
+        id?: IdResolver<string, any, Context>;
+        createdAt?: CreatedAtResolver<DateTime, any, Context>;
+        updatedAt?: UpdatedAtResolver<DateTime, any, Context>;
+        availableLanguages?: AvailableLanguagesResolver<LanguageCode[], any, Context>;
+        serverConfig?: ServerConfigResolver<ServerConfig, any, Context>;
+        customFields?: CustomFieldsResolver<GlobalSettingsCustomFields | null, any, Context>;
+    }
+
+    export type IdResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CreatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type UpdatedAtResolver<R = DateTime, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type AvailableLanguagesResolver<R = LanguageCode[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type ServerConfigResolver<R = ServerConfig, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type CustomFieldsResolver<
+        R = GlobalSettingsCustomFields | null,
+        Parent = any,
+        Context = any
+    > = Resolver<R, Parent, Context>;
+}
+
+export namespace ServerConfigResolvers {
+    export interface Resolvers<Context = any> {
+        customFields?: CustomFieldsResolver<Json | null, any, Context>;
+    }
+
+    export type CustomFieldsResolver<R = Json | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+}
+
+export namespace GlobalSettingsCustomFieldsResolvers {
+    export interface Resolvers<Context = any> {
+        royalMailId?: RoyalMailIdResolver<string | null, any, Context>;
+    }
+
+    export type RoyalMailIdResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace ShippingMethodQuoteResolvers {

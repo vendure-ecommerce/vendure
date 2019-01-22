@@ -88,6 +88,19 @@ export class OrderService {
         return order;
     }
 
+    async findByCustomerId(customerId: ID, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
+        return this.listQueryBuilder
+            .build(Order, options, { relations: ['lines', 'lines.productVariant', 'customer'] })
+            .andWhere('order.customer.id = :customerId', { customerId })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items,
+                    totalItems,
+                };
+            });
+    }
+
     getOrderPayments(orderId: ID): Promise<Payment[]> {
         return this.connection.getRepository(Payment).find({
             where: {

@@ -8,6 +8,7 @@ type Customer implements Node {
     phoneNumber: String
     emailAddress: String!
     addresses: [Address!]
+    orders(options: OrderListOptions): OrderList!
     user: User
 }
 
