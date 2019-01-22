@@ -14,7 +14,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fragment>
     implements OnInit, OnDestroy {
-    detailForm: FormGroup;
+    detailForm = new FormGroup({});
     constructor(router: Router, route: ActivatedRoute, serverConfigService: ServerConfigService) {
         super(route, router, serverConfigService);
     }

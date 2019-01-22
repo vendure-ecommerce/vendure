@@ -1,13 +1,9 @@
-<vdr-action-bar>
-    <vdr-ab-right>
-        <!--
-            <a class="btn btn-primary" [routerLink]="['./create']">
-                <clr-icon shape="plus"></clr-icon>
-                {{ 'order.create-new-order' | translate }}
-            </a>
-        -->
-    </vdr-ab-right>
-</vdr-action-bar>
+<!--
+    <vdr-action-bar>
+        <vdr-ab-right>
+        </vdr-ab-right>
+    </vdr-action-bar>
+-->
 
 <vdr-data-table
     [items]="items$ | async"
@@ -33,8 +29,8 @@
         <td class="left">{{ order.updatedAt | date: 'medium' }}</td>
         <td class="right">
             <vdr-table-row-action
-                iconShape="edit"
-                [label]="'common.edit' | translate"
+                iconShape="shopping-cart"
+                [label]="'common.open' | translate"
                 [linkTo]="['./', order.id]"
             ></vdr-table-row-action>
         </td>

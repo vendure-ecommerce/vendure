@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
-import { mergeMap, publishBehavior, publishReplay, shareReplay, take } from 'rxjs/operators';
+import { forkJoin, Observable, Subject } from 'rxjs';
+import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
 import {
     CreateAddressInput,
     CreateCustomerInput,
     Customer,
     GetAvailableCountries,
-    UpdateAddressInput,
+    GetCustomer,
     UpdateCustomerInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -25,14 +26,19 @@ import { ServerConfigService } from '../../../data/server-config';
     styleUrls: ['./customer-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragment>
+export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Customer>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     availableCountries$: Observable<GetAvailableCountries.AvailableCountries[]>;
+    orders$: Observable<GetCustomer.Items[]>;
+    ordersCount$: Observable<number>;
     defaultShippingAddressId: string;
     defaultBillingAddressId: string;
     addressDefaultsUpdated = false;
+    ordersPerPage = 1;
+    currentOrdersPage = 1;
+    private orderListUpdates$ = new Subject<GetCustomer.Customer>();
 
     constructor(
         route: ActivatedRoute,
@@ -63,15 +69,20 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
     }
 
     ngOnInit() {
+        this.init();
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
             .mapSingle(result => result.availableCountries)
             .pipe(shareReplay(1));
-        this.init();
+
+        const customerWithUpdates$ = this.entity$.pipe(merge(this.orderListUpdates$));
+        this.orders$ = customerWithUpdates$.pipe(map(customer => customer.orders.items));
+        this.ordersCount$ = this.entity$.pipe(map(customer => customer.orders.totalItems));
     }
 
     ngOnDestroy() {
         this.destroy();
+        this.orderListUpdates$.complete();
     }
 
     customFieldIsSet(name: string): boolean {
@@ -109,6 +120,16 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
             defaultBillingAddress: false,
         });
         addressFormArray.push(newAddress);
+    }
+
+    setOrderItemsPerPage(itemsPerPage: number) {
+        this.ordersPerPage = +itemsPerPage;
+        this.fetchOrdersList();
+    }
+
+    setOrderCurrentPage(page: number) {
+        this.currentOrdersPage = +page;
+        this.fetchOrdersList();
     }
 
     create() {
@@ -250,5 +271,21 @@ export class CustomerDetailComponent extends BaseDetailComponent<Customer.Fragme
                 }
             }
         }
+    }
+
+    /**
+     * Refetch the customer with the current order list settings.
+     */
+    private fetchOrdersList() {
+        this.dataService.customer
+            .getCustomer(this.id, {
+                take: this.ordersPerPage,
+                skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
+            })
+            .single$.pipe(
+                map(data => data.customer),
+                filter(notNullOrUndefined),
+            )
+            .subscribe(result => this.orderListUpdates$.next(result));
     }
 }

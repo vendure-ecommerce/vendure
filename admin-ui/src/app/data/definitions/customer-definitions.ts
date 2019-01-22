@@ -59,9 +59,20 @@ export const GET_CUSTOMER_LIST = gql`
 `;
 
 export const GET_CUSTOMER = gql`
-    query GetCustomer($id: ID!) {
+    query GetCustomer($id: ID!, $orderListOptions: OrderListOptions) {
         customer(id: $id) {
             ...Customer
+            orders(options: $orderListOptions) {
+                items {
+                    id
+                    code
+                    state
+                    total
+                    currencyCode
+                    updatedAt
+                }
+                totalItems
+            }
         }
     }
     ${CUSTOMER_FRAGMENT}

@@ -1,7 +1,7 @@
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
 
@@ -14,6 +14,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
+    id: string;
     abstract detailForm: FormGroup;
     protected destroy$ = new Subject<void>();
 
@@ -24,7 +25,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     ) {}
 
     init() {
-        this.entity$ = this.route.data.pipe(switchMap(data => data.entity));
+        this.entity$ = this.route.data.pipe(
+            switchMap(data => data.entity),
+            tap<any>(entity => (this.id = entity.id)),
+        );
         this.isNew$ = this.entity$.pipe(
             map(entity => entity.id === ''),
             shareReplay(1),

@@ -5,6 +5,7 @@ import {
     CreateCustomerInput,
     GetCustomer,
     GetCustomerList,
+    OrderListOptions,
     UpdateAddressInput,
     UpdateCustomer,
     UpdateCustomerAddress,
@@ -37,8 +38,11 @@ export class CustomerDataService {
         );
     }
 
-    getCustomer(id: string) {
-        return this.baseDataService.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id });
+    getCustomer(id: string, orderListOptions?: OrderListOptions) {
+        return this.baseDataService.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            id,
+            orderListOptions,
+        });
     }
 
     createCustomer(input: CreateCustomerInput, password?: string) {

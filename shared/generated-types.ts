@@ -5438,6 +5438,7 @@ export namespace GetCustomerList {
 export namespace GetCustomer {
     export type Variables = {
         id: string;
+        orderListOptions?: OrderListOptions | null;
     };
 
     export type Query = {
@@ -5445,7 +5446,26 @@ export namespace GetCustomer {
         customer?: Customer | null;
     };
 
-    export type Customer = Customer.Fragment;
+    export type Customer = {
+        __typename?: 'Customer';
+        orders: Orders;
+    } & Customer.Fragment;
+
+    export type Orders = {
+        __typename?: 'OrderList';
+        items: Items[];
+        totalItems: number;
+    };
+
+    export type Items = {
+        __typename?: 'Order';
+        id: string;
+        code: string;
+        state: string;
+        total: number;
+        currencyCode: CurrencyCode;
+        updatedAt: DateTime;
+    };
 }
 
 export namespace CreateCustomer {
