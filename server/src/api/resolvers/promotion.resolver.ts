@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreatePromotionMutationArgs,
     DeletePromotionMutationArgs,
+    DeletionResponse,
     Permission,
     PromotionQueryArgs,
     PromotionsQueryArgs,
@@ -61,7 +62,7 @@ export class PromotionResolver {
 
     @Mutation()
     @Allow(Permission.DeleteSettings)
-    deletePromotion(@Args() args: DeletePromotionMutationArgs): Promise<boolean> {
+    deletePromotion(@Args() args: DeletePromotionMutationArgs): Promise<DeletionResponse> {
         return this.promotionService.softDeletePromotion(args.id);
     }
 }

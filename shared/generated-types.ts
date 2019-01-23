@@ -687,7 +687,7 @@ export interface Mutation {
     removeCustomersFromGroup: CustomerGroup;
     createCustomer: Customer;
     updateCustomer: Customer;
-    deleteCustomer: boolean;
+    deleteCustomer: DeletionResponse;
     createCustomerAddress: Address;
     updateCustomerAddress: Address;
     createFacet: Facet;
@@ -712,14 +712,14 @@ export interface Mutation {
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
     updateProduct: Product;
-    deleteProduct?: boolean | null;
+    deleteProduct: DeletionResponse;
     addOptionGroupToProduct: Product;
     removeOptionGroupFromProduct: Product;
     generateVariantsForProduct: Product;
     updateProductVariants: (ProductVariant | null)[];
     createPromotion: Promotion;
     updatePromotion: Promotion;
-    deletePromotion?: boolean | null;
+    deletePromotion: DeletionResponse;
     createRole: Role;
     updateRole: Role;
     reindex: boolean;
@@ -742,6 +742,11 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
+}
+
+export interface DeletionResponse {
+    result: DeletionResult;
+    message?: string | null;
 }
 
 export interface ImportInfo {
@@ -2218,6 +2223,11 @@ export enum AdjustmentType {
     TAX_REFUND = 'TAX_REFUND',
     PROMOTION_REFUND = 'PROMOTION_REFUND',
     SHIPPING_REFUND = 'SHIPPING_REFUND',
+}
+
+export enum DeletionResult {
+    DELETED = 'DELETED',
+    NOT_DELETED = 'NOT_DELETED',
 }
 
 export namespace QueryResolvers {
@@ -4409,7 +4419,7 @@ export namespace MutationResolvers {
         removeCustomersFromGroup?: RemoveCustomersFromGroupResolver<CustomerGroup, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
         updateCustomer?: UpdateCustomerResolver<Customer, any, Context>;
-        deleteCustomer?: DeleteCustomerResolver<boolean, any, Context>;
+        deleteCustomer?: DeleteCustomerResolver<DeletionResponse, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
         updateCustomerAddress?: UpdateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
@@ -4434,14 +4444,14 @@ export namespace MutationResolvers {
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
         updateProduct?: UpdateProductResolver<Product, any, Context>;
-        deleteProduct?: DeleteProductResolver<boolean | null, any, Context>;
+        deleteProduct?: DeleteProductResolver<DeletionResponse, any, Context>;
         addOptionGroupToProduct?: AddOptionGroupToProductResolver<Product, any, Context>;
         removeOptionGroupFromProduct?: RemoveOptionGroupFromProductResolver<Product, any, Context>;
         generateVariantsForProduct?: GenerateVariantsForProductResolver<Product, any, Context>;
         updateProductVariants?: UpdateProductVariantsResolver<(ProductVariant | null)[], any, Context>;
         createPromotion?: CreatePromotionResolver<Promotion, any, Context>;
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
-        deletePromotion?: DeletePromotionResolver<boolean | null, any, Context>;
+        deletePromotion?: DeletePromotionResolver<DeletionResponse, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
         reindex?: ReindexResolver<boolean, any, Context>;
@@ -4650,7 +4660,7 @@ export namespace MutationResolvers {
         input: UpdateCustomerInput;
     }
 
-    export type DeleteCustomerResolver<R = boolean, Parent = any, Context = any> = Resolver<
+    export type DeleteCustomerResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context,
@@ -4901,7 +4911,7 @@ export namespace MutationResolvers {
         input: UpdateProductInput;
     }
 
-    export type DeleteProductResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
+    export type DeleteProductResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context,
@@ -4975,7 +4985,7 @@ export namespace MutationResolvers {
         input: UpdatePromotionInput;
     }
 
-    export type DeletePromotionResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
+    export type DeletePromotionResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
         R,
         Parent,
         Context,
@@ -5151,6 +5161,24 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace DeletionResponseResolvers {
+    export interface Resolvers<Context = any> {
+        result?: ResultResolver<DeletionResult, any, Context>;
+        message?: MessageResolver<string | null, any, Context>;
+    }
+
+    export type ResultResolver<R = DeletionResult, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type MessageResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace ImportInfoResolvers {

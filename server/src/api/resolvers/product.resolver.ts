@@ -4,6 +4,7 @@ import {
     AddOptionGroupToProductMutationArgs,
     CreateProductMutationArgs,
     DeleteProductMutationArgs,
+    DeletionResponse,
     GenerateVariantsForProductMutationArgs,
     Permission,
     ProductQueryArgs,
@@ -89,7 +90,7 @@ export class ProductResolver {
     async deleteProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: DeleteProductMutationArgs,
-    ): Promise<boolean> {
+    ): Promise<DeletionResponse> {
         return this.productService.softDelete(args.id);
     }
 

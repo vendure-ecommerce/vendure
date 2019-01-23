@@ -9,6 +9,7 @@ import {
 } from '../../admin-ui/src/app/data/definitions/promotion-definitions';
 import {
     CreatePromotion,
+    DeletionResult,
     GetAdjustmentOperations,
     GetPromotion,
     GetPromotionList,
@@ -147,7 +148,7 @@ describe('Promotion resolver', () => {
             promotionToDelete = allPromotions[0];
             const result = await client.query(DELETE_PROMOTION, { id: promotionToDelete.id });
 
-            expect(result.deletePromotion).toBe(true);
+            expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted promotion', async () => {
@@ -203,6 +204,8 @@ function generateTestAction(code: string): PromotionAction<any> {
 
 const DELETE_PROMOTION = gql`
     mutation DeletePromotion($id: ID!) {
-        deletePromotion(id: $id)
+        deletePromotion(id: $id) {
+            result
+        }
     }
 `;

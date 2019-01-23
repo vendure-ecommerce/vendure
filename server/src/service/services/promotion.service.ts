@@ -6,6 +6,8 @@ import {
     AdjustmentOperation,
     AdjustmentOperationInput,
     CreatePromotionInput,
+    DeletionResponse,
+    DeletionResult,
     UpdatePromotionInput,
 } from '../../../../shared/generated-types';
 import { omit } from '../../../../shared/omit';
@@ -120,10 +122,12 @@ export class PromotionService {
         return assertFound(this.findOne(updatedAdjustmentSource.id));
     }
 
-    async softDeletePromotion(promotionId: ID): Promise<boolean> {
+    async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Promotion, promotionId);
         await this.connection.getRepository(Promotion).update({ id: promotionId }, { deletedAt: new Date() });
-        return true;
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     /**

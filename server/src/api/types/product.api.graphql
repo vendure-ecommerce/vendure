@@ -11,7 +11,7 @@ type Mutation {
     updateProduct(input: UpdateProductInput!): Product!
 
     "Delete a Product"
-    deleteProduct(id: ID!): Boolean
+    deleteProduct(id: ID!): DeletionResponse!
 
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!

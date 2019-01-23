@@ -32,6 +32,18 @@ type AdjustmentOperation {
     description: String!
 }
 
+enum DeletionResult {
+    "The entity was successfully deleted"
+    DELETED
+    "Deletion did not take place, reason given in message"
+    NOT_DELETED
+}
+
+type DeletionResponse {
+    result: DeletionResult!
+    message: String
+}
+
 input ConfigArgInput {
     name: String!
     value: String!

@@ -12,7 +12,7 @@ type Mutation {
     updateCustomer(input: UpdateCustomerInput!): Customer!
 
     "Delete a Customer"
-    deleteCustomer(id: ID!): Boolean!
+    deleteCustomer(id: ID!): DeletionResponse!
 
     "Create a new Address and associate it with the Customer specified by customerId"
     createCustomerAddress(customerId: ID!, input: CreateAddressInput!): Address!

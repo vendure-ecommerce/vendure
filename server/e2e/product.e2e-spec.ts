@@ -14,6 +14,7 @@ import {
 import {
     AddOptionGroupToProduct,
     CreateProduct,
+    DeletionResult,
     GenerateProductVariants,
     GetAssetList,
     GetProductList,
@@ -596,7 +597,7 @@ describe('Product resolver', () => {
             productToDelete = allProducts[0];
             const result = await client.query(DELETE_PRODUCT, { id: productToDelete.id });
 
-            expect(result.deleteProduct).toBe(true);
+            expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted product', async () => {
@@ -679,6 +680,8 @@ describe('Product resolver', () => {
 
 const DELETE_PRODUCT = gql`
     mutation DeleteProduct($id: ID!) {
-        deleteProduct(id: $id)
+        deleteProduct(id: $id) {
+            result
+        }
     }
 `;

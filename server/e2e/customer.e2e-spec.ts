@@ -9,6 +9,7 @@ import {
 } from '../../admin-ui/src/app/data/definitions/customer-definitions';
 import {
     CreateCustomerAddress,
+    DeletionResult,
     GetCustomer,
     GetCustomerList,
     UpdateCustomer,
@@ -238,7 +239,7 @@ describe('Customer resolver', () => {
         it('deletes a customer', async () => {
             const result = await client.query(DELETE_CUSTOMER, { id: thirdCustomer.id });
 
-            expect(result.deleteCustomer).toBe(true);
+            expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted customer', async () => {
@@ -344,6 +345,8 @@ const GET_CUSTOMER_ORDERS = gql`
 
 const DELETE_CUSTOMER = gql`
     mutation DeleteCustomer($id: ID!) {
-        deleteCustomer(id: $id)
+        deleteCustomer(id: $id) {
+            result
+        }
     }
 `;

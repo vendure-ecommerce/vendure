@@ -5,6 +5,8 @@ import { Connection } from 'typeorm';
 import {
     CreateAddressInput,
     CreateCustomerInput,
+    DeletionResponse,
+    DeletionResult,
     RegisterCustomerInput,
     UpdateAddressInput,
     UpdateCustomerInput,
@@ -189,10 +191,12 @@ export class CustomerService {
         return updatedAddress;
     }
 
-    async softDelete(customerId: ID): Promise<boolean> {
+    async softDelete(customerId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Customer, customerId);
         await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
-        return true;
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {

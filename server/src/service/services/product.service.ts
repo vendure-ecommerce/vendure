@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, FindConditions, In } from 'typeorm';
 
-import { CreateProductInput, UpdateProductInput } from '../../../../shared/generated-types';
+import {
+    CreateProductInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateProductInput,
+} from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -132,10 +137,12 @@ export class ProductService {
         return assertFound(this.findOne(ctx, product.id));
     }
 
-    async softDelete(productId: ID): Promise<boolean> {
+    async softDelete(productId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Product, productId);
         await this.connection.getRepository(Product).update({ id: productId }, { deletedAt: new Date() });
-        return true;
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     async addOptionGroupToProduct(

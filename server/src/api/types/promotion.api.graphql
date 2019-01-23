@@ -12,7 +12,7 @@ type AdjustmentOperations {
 type Mutation {
     createPromotion(input: CreatePromotionInput!): Promotion!
     updatePromotion(input: UpdatePromotionInput!): Promotion!
-    deletePromotion(id: ID!): Boolean
+    deletePromotion(id: ID!): DeletionResponse!
 }
 
 type PromotionList implements PaginatedList {

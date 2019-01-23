@@ -6,6 +6,7 @@ import {
     CustomerQueryArgs,
     CustomersQueryArgs,
     DeleteCustomerMutationArgs,
+    DeletionResponse,
     OrdersCustomerArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
@@ -108,7 +109,7 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.DeleteCustomer)
-    async deleteCustomer(@Args() args: DeleteCustomerMutationArgs): Promise<boolean> {
+    async deleteCustomer(@Args() args: DeleteCustomerMutationArgs): Promise<DeletionResponse> {
         return this.customerService.softDelete(args.id);
     }
 
