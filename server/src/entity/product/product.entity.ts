@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
@@ -14,10 +14,15 @@ import { ProductVariant } from '../product-variant/product-variant.entity';
 import { ProductTranslation } from './product-translation.entity';
 
 @Entity()
-export class Product extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
+export class Product extends VendureEntity
+    implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {
     constructor(input?: DeepPartial<Product>) {
         super(input);
     }
+
+    @Column({ type: Date, nullable: true, default: null })
+    deletedAt: Date | null;
+
     name: LocaleString;
 
     slug: LocaleString;

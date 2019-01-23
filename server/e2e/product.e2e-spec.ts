@@ -1,3 +1,16 @@
+import gql from 'graphql-tag';
+
+import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
+    CREATE_PRODUCT,
+    GENERATE_PRODUCT_VARIANTS,
+    GET_ASSET_LIST,
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
+    REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
@@ -13,18 +26,6 @@ import {
     UpdateProductVariants,
 } from '../../shared/generated-types';
 import { omit } from '../../shared/omit';
-
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    CREATE_PRODUCT,
-    GENERATE_PRODUCT_VARIANTS,
-    GET_ASSET_LIST,
-    GET_PRODUCT_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-    REMOVE_OPTION_GROUP_FROM_PRODUCT,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
@@ -594,4 +595,111 @@ describe('Product resolver', () => {
             });
         });
     });
+
+    describe('deletion', () => {
+        let allProducts: GetProductList.Items[];
+        let productToDelete: GetProductList.Items;
+
+        beforeAll(async () => {
+            const result = await client.query<GetProductList.Query>(GET_PRODUCT_LIST);
+            allProducts = result.products.items;
+        });
+
+        it('deletes a product', async () => {
+            productToDelete = allProducts[0];
+            const result = await client.query(DELETE_PRODUCT, { id: productToDelete.id });
+
+            expect(result.deleteProduct).toBe(true);
+        });
+
+        it('cannot get a deleted product', async () => {
+            const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
+                GET_PRODUCT_WITH_VARIANTS,
+                {
+                    id: productToDelete.id,
+                },
+            );
+
+            expect(result.product).toBe(null);
+        });
+
+        it('deleted product omitted from list', async () => {
+            const result = await client.query<GetProductList.Query>(GET_PRODUCT_LIST);
+
+            expect(result.products.items.length).toBe(allProducts.length - 1);
+            expect(result.products.items.map(c => c.id).includes(productToDelete.id)).toBe(false);
+        });
+
+        it('updateProduct throws for deleted product', async () => {
+            try {
+                await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: productToDelete.id,
+                        facetValueIds: ['T_1'],
+                    },
+                });
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Product with the id '1' could be found`),
+                );
+            }
+        });
+
+        it('addOptionGroupToProduct throws for deleted product', async () => {
+            try {
+                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        optionGroupId: 'T_1',
+                        productId: productToDelete.id,
+                    },
+                );
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Product with the id '1' could be found`),
+                );
+            }
+        });
+
+        it('removeOptionGroupToProduct throws for deleted product', async () => {
+            try {
+                await client.query<
+                    RemoveOptionGroupFromProduct.Mutation,
+                    RemoveOptionGroupFromProduct.Variables
+                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    optionGroupId: 'T_1',
+                    productId: productToDelete.id,
+                });
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Product with the id '1' could be found`),
+                );
+            }
+        });
+
+        it('generateVariantsForProduct throws for deleted product', async () => {
+            try {
+                await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
+                    GENERATE_PRODUCT_VARIANTS,
+                    {
+                        productId: productToDelete.id,
+                    },
+                );
+                fail('Should have thrown');
+            } catch (err) {
+                expect(err.message).toEqual(
+                    expect.stringContaining(`No Product with the id '1' could be found`),
+                );
+            }
+        });
+    });
 });
+
+const DELETE_PRODUCT = gql`
+    mutation DeleteProduct($id: ID!) {
+        deleteProduct(id: $id)
+    }
+`;

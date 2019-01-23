@@ -163,6 +163,7 @@ export class ProductVariantService {
     ): Promise<Array<Translated<ProductVariant>>> {
         const product = await this.connection.getRepository(Product).findOne(productId, {
             relations: ['optionGroups', 'optionGroups.options'],
+            where: { deletedAt: null },
         });
 
         if (!product) {

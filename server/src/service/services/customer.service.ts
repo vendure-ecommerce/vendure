@@ -37,8 +37,7 @@ export class CustomerService {
 
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
         return this.listQueryBuilder
-            .build(Customer, options)
-            .andWhere('customer.deletedAt IS NULL')
+            .build(Customer, options, { where: { deletedAt: null } })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
@@ -133,9 +132,6 @@ export class CustomerService {
 
     async update(input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
-        if (customer.deletedAt) {
-            throw new EntityNotFoundError('Customer', input.id);
-        }
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(Customer).save(customer);
         return assertFound(this.findOne(customer.id));
