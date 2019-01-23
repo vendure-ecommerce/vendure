@@ -28,6 +28,7 @@ import { defaultEmailTypes } from '../src/email/default-email-types';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 let sendEmailFn: jest.Mock;
 const emailOptions = {
@@ -226,17 +227,17 @@ describe('Authorization & permissions', () => {
             }
         });
 
-        it('verification fails with wrong token', async () => {
-            try {
-                await client.query(VERIFY_EMAIL, {
-                    password,
-                    token: 'bad-token',
-                });
-                fail('should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(expect.stringContaining(`Verification token not recognized`));
-            }
-        });
+        it(
+            'verification fails with wrong token',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(VERIFY_EMAIL, {
+                        password,
+                        token: 'bad-token',
+                    }),
+                `Verification token not recognized`,
+            ),
+        );
 
         it('verification succeeds with correct token', async () => {
             const result = await client.query(VERIFY_EMAIL, {
@@ -259,17 +260,17 @@ describe('Authorization & permissions', () => {
             expect(sendEmailFn).not.toHaveBeenCalled();
         });
 
-        it('verification fails if attempted a second time', async () => {
-            try {
-                await client.query(VERIFY_EMAIL, {
-                    password,
-                    token: verificationToken,
-                });
-                fail('should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(expect.stringContaining(`Verification token not recognized`));
-            }
-        });
+        it(
+            'verification fails if attempted a second time',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(VERIFY_EMAIL, {
+                        password,
+                        token: verificationToken,
+                    }),
+                `Verification token not recognized`,
+            ),
+        );
     });
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
@@ -374,37 +375,31 @@ describe('Expiring registration token', () => {
         await server.destroy();
     });
 
-    it('attempting to verify after token has expired throws', async () => {
-        const verificationTokenPromise = getVerificationTokenPromise();
-        const input: RegisterCustomerInput = {
-            firstName: 'Barry',
-            lastName: 'Wallace',
-            emailAddress: 'barry.wallace@test.com',
-        };
-        const result1 = await client.query(REGISTER_ACCOUNT, { input });
+    it(
+        'attempting to verify after token has expired throws',
+        assertThrowsWithMessage(async () => {
+            const verificationTokenPromise = getVerificationTokenPromise();
+            const input: RegisterCustomerInput = {
+                firstName: 'Barry',
+                lastName: 'Wallace',
+                emailAddress: 'barry.wallace@test.com',
+            };
+            const result1 = await client.query(REGISTER_ACCOUNT, { input });
 
-        const verificationToken = await verificationTokenPromise;
+            const verificationToken = await verificationTokenPromise;
 
-        expect(result1.registerCustomerAccount).toBe(true);
-        expect(sendEmailFn).toHaveBeenCalledTimes(1);
-        expect(verificationToken).toBeDefined();
+            expect(result1.registerCustomerAccount).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalledTimes(1);
+            expect(verificationToken).toBeDefined();
 
-        await new Promise(resolve => setTimeout(resolve, 3));
+            await new Promise(resolve => setTimeout(resolve, 3));
 
-        try {
-            await client.query(VERIFY_EMAIL, {
+            return client.query(VERIFY_EMAIL, {
                 password: 'test',
                 token: verificationToken,
             });
-            fail('should have thrown');
-        } catch (err) {
-            expect(err.message).toEqual(
-                expect.stringContaining(
-                    `Verification token has expired. Use refreshCustomerVerification to send a new token.`,
-                ),
-            );
-        }
-    });
+        }, `Verification token has expired. Use refreshCustomerVerification to send a new token.`),
+    );
 });
 
 function getVerificationTokenPromise(): Promise<string> {

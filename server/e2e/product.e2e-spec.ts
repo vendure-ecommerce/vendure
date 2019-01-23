@@ -30,6 +30,7 @@ import { omit } from '../../shared/omit';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 // tslint:disable:no-non-null-assertion
 
@@ -325,34 +326,32 @@ describe('Product resolver', () => {
             expect(result.updateProduct.facetValues.length).toEqual(1);
         });
 
-        it('updateProduct errors with an invalid productId', async () => {
-            try {
-                await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                    input: {
-                        id: '999',
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Mashed Potato',
-                                slug: 'en-mashed-potato',
-                                description: 'A blob of mashed potato',
-                            },
-                            {
-                                languageCode: LanguageCode.de,
-                                name: 'de Mashed Potato',
-                                slug: 'de-mashed-potato',
-                                description: 'Eine blob von gemashed Erdapfel',
-                            },
-                        ],
-                    },
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '999' could be found`),
-                );
-            }
-        });
+        it(
+            'updateProduct errors with an invalid productId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                        input: {
+                            id: '999',
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'en Mashed Potato',
+                                    slug: 'en-mashed-potato',
+                                    description: 'A blob of mashed potato',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'de Mashed Potato',
+                                    slug: 'de-mashed-potato',
+                                    description: 'Eine blob von gemashed Erdapfel',
+                                },
+                            ],
+                        },
+                    }),
+                `No Product with the id '999' could be found`,
+            ),
+        );
 
         it('addOptionGroupToProduct adds an option group', async () => {
             const result = await client.query<
@@ -366,39 +365,35 @@ describe('Product resolver', () => {
             expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_1');
         });
 
-        it('addOptionGroupToProduct errors with an invalid productId', async () => {
-            try {
-                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                    ADD_OPTION_GROUP_TO_PRODUCT,
-                    {
-                        optionGroupId: 'T_1',
-                        productId: '999',
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '999' could be found`),
-                );
-            }
-        });
+        it(
+            'addOptionGroupToProduct errors with an invalid productId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                        ADD_OPTION_GROUP_TO_PRODUCT,
+                        {
+                            optionGroupId: 'T_1',
+                            productId: '999',
+                        },
+                    ),
+                `No Product with the id '999' could be found`,
+            ),
+        );
 
-        it('addOptionGroupToProduct errors with an invalid optionGroupId', async () => {
-            try {
-                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                    ADD_OPTION_GROUP_TO_PRODUCT,
-                    {
-                        optionGroupId: '999',
-                        productId: newProduct.id,
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No ProductOptionGroup with the id '999' could be found`),
-                );
-            }
-        });
+        it(
+            'addOptionGroupToProduct errors with an invalid optionGroupId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                        ADD_OPTION_GROUP_TO_PRODUCT,
+                        {
+                            optionGroupId: '999',
+                            productId: newProduct.id,
+                        },
+                    ),
+                `No ProductOptionGroup with the id '999' could be found`,
+            ),
+        );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
             const result = await client.query<
@@ -411,58 +406,52 @@ describe('Product resolver', () => {
             expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(0);
         });
 
-        it('removeOptionGroupFromProduct errors with an invalid productId', async () => {
-            try {
-                await client.query<
-                    RemoveOptionGroupFromProduct.Mutation,
-                    RemoveOptionGroupFromProduct.Variables
-                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                    optionGroupId: '1',
-                    productId: '999',
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '999' could be found`),
-                );
-            }
-        });
+        it(
+            'removeOptionGroupFromProduct errors with an invalid productId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<
+                        RemoveOptionGroupFromProduct.Mutation,
+                        RemoveOptionGroupFromProduct.Variables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: '1',
+                        productId: '999',
+                    }),
+                `No Product with the id '999' could be found`,
+            ),
+        );
 
         describe('variants', () => {
             let variants: ProductWithVariants.Variants[];
 
-            it('generateVariantsForProduct throws with an invalid productId', async () => {
-                try {
-                    await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                        GENERATE_PRODUCT_VARIANTS,
-                        {
-                            productId: '999',
-                        },
-                    );
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`No Product with the id '999' could be found`),
-                    );
-                }
-            });
+            it(
+                'generateVariantsForProduct throws with an invalid productId',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
+                            GENERATE_PRODUCT_VARIANTS,
+                            {
+                                productId: '999',
+                            },
+                        ),
+                    `No Product with the id '999' could be found`,
+                ),
+            );
 
-            it('generateVariantsForProduct throws with an invalid defaultTaxCategoryId', async () => {
-                try {
-                    await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                        GENERATE_PRODUCT_VARIANTS,
-                        {
-                            productId: newProduct.id,
-                            defaultTaxCategoryId: '999',
-                        },
-                    );
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`No TaxCategory with the id '999' could be found`),
-                    );
-                }
-            });
+            it(
+                'generateVariantsForProduct throws with an invalid defaultTaxCategoryId',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
+                            GENERATE_PRODUCT_VARIANTS,
+                            {
+                                productId: newProduct.id,
+                                defaultTaxCategoryId: '999',
+                            },
+                        ),
+                    `No TaxCategory with the id '999' could be found`,
+                ),
+            );
 
             it('generateVariantsForProduct generates variants', async () => {
                 const result = await client.query<
@@ -571,28 +560,26 @@ describe('Product resolver', () => {
                 expect(updatedVariant.facetValues[0].id).toBe('T_1');
             });
 
-            it('updateProductVariants throws with an invalid variant id', async () => {
-                try {
-                    await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                        UPDATE_PRODUCT_VARIANTS,
-                        {
-                            input: [
-                                {
-                                    id: 'T_999',
-                                    translations: variants[0].translations,
-                                    sku: 'ABC',
-                                    price: 432,
-                                },
-                            ],
-                        },
-                    );
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`No ProductVariant with the id '999' could be found`),
-                    );
-                }
-            });
+            it(
+                'updateProductVariants throws with an invalid variant id',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                            UPDATE_PRODUCT_VARIANTS,
+                            {
+                                input: [
+                                    {
+                                        id: 'T_999',
+                                        translations: variants[0].translations,
+                                        sku: 'ABC',
+                                        price: 432,
+                                    },
+                                ],
+                            },
+                        ),
+                    `No ProductVariant with the id '999' could be found`,
+                ),
+            );
         });
     });
 
@@ -630,71 +617,63 @@ describe('Product resolver', () => {
             expect(result.products.items.map(c => c.id).includes(productToDelete.id)).toBe(false);
         });
 
-        it('updateProduct throws for deleted product', async () => {
-            try {
-                await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                    input: {
-                        id: productToDelete.id,
-                        facetValueIds: ['T_1'],
-                    },
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '1' could be found`),
-                );
-            }
-        });
+        it(
+            'updateProduct throws for deleted product',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                        input: {
+                            id: productToDelete.id,
+                            facetValueIds: ['T_1'],
+                        },
+                    }),
+                `No Product with the id '1' could be found`,
+            ),
+        );
 
-        it('addOptionGroupToProduct throws for deleted product', async () => {
-            try {
-                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                    ADD_OPTION_GROUP_TO_PRODUCT,
-                    {
+        it(
+            'addOptionGroupToProduct throws for deleted product',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                        ADD_OPTION_GROUP_TO_PRODUCT,
+                        {
+                            optionGroupId: 'T_1',
+                            productId: productToDelete.id,
+                        },
+                    ),
+                `No Product with the id '1' could be found`,
+            ),
+        );
+
+        it(
+            'removeOptionGroupToProduct throws for deleted product',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<
+                        RemoveOptionGroupFromProduct.Mutation,
+                        RemoveOptionGroupFromProduct.Variables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '1' could be found`),
-                );
-            }
-        });
+                    }),
+                `No Product with the id '1' could be found`,
+            ),
+        );
 
-        it('removeOptionGroupToProduct throws for deleted product', async () => {
-            try {
-                await client.query<
-                    RemoveOptionGroupFromProduct.Mutation,
-                    RemoveOptionGroupFromProduct.Variables
-                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                    optionGroupId: 'T_1',
-                    productId: productToDelete.id,
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '1' could be found`),
-                );
-            }
-        });
-
-        it('generateVariantsForProduct throws for deleted product', async () => {
-            try {
-                await client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                    GENERATE_PRODUCT_VARIANTS,
-                    {
-                        productId: productToDelete.id,
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Product with the id '1' could be found`),
-                );
-            }
-        });
+        it(
+            'generateVariantsForProduct throws for deleted product',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
+                        GENERATE_PRODUCT_VARIANTS,
+                        {
+                            productId: productToDelete.id,
+                        },
+                    ),
+                `No Product with the id '1' could be found`,
+            ),
+        );
     });
 });
 

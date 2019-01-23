@@ -22,6 +22,7 @@ import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 describe('ProductCategory resolver', () => {
     const client = new TestClient();
@@ -223,45 +224,41 @@ describe('ProductCategory resolver', () => {
             expect(afterResult.map(i => i.id)).toEqual([laptopsCategory.id, appleCategory.id]);
         });
 
-        it('throws if attempting to move into self', async () => {
-            try {
-                await client.query<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
-                    MOVE_PRODUCT_CATEGORY,
-                    {
-                        input: {
-                            categoryId: appleCategory.id,
-                            parentId: appleCategory.id,
-                            index: 0,
+        it(
+            'throws if attempting to move into self',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
+                        MOVE_PRODUCT_CATEGORY,
+                        {
+                            input: {
+                                categoryId: appleCategory.id,
+                                parentId: appleCategory.id,
+                                index: 0,
+                            },
                         },
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`Cannot move a ProductCategory into itself`),
-                );
-            }
-        });
+                    ),
+                `Cannot move a ProductCategory into itself`,
+            ),
+        );
 
-        it('throws if attempting to move into a decendant of self', async () => {
-            try {
-                await client.query<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
-                    MOVE_PRODUCT_CATEGORY,
-                    {
-                        input: {
-                            categoryId: appleCategory.id,
-                            parentId: appleCategory.id,
-                            index: 0,
+        it(
+            'throws if attempting to move into a decendant of self',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
+                        MOVE_PRODUCT_CATEGORY,
+                        {
+                            input: {
+                                categoryId: appleCategory.id,
+                                parentId: appleCategory.id,
+                                index: 0,
+                            },
                         },
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`Cannot move a ProductCategory into itself`),
-                );
-            }
-        });
+                    ),
+                `Cannot move a ProductCategory into itself`,
+            ),
+        );
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
             const result = await client.query(GET_CATEGORIES);

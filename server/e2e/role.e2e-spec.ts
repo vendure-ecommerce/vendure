@@ -12,6 +12,7 @@ import {
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 describe('Role resolver', () => {
     const client = new TestClient();
@@ -87,14 +88,15 @@ describe('Role resolver', () => {
         ]);
     });
 
-    it('updateRole is not allowed for SuperAdmin role', async () => {
-        const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
-        if (!superAdminRole) {
-            fail(`Could not find SuperAdmin role`);
-            return;
-        }
-        try {
-            const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+    it(
+        'updateRole is not allowed for SuperAdmin role',
+        assertThrowsWithMessage(async () => {
+            const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
+            if (!superAdminRole) {
+                fail(`Could not find SuperAdmin role`);
+                return;
+            }
+            return client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: superAdminRole.id,
                     code: 'superadmin-modified',
@@ -102,22 +104,18 @@ describe('Role resolver', () => {
                     permissions: [Permission.Authenticated],
                 },
             });
-            fail(`Should throw`);
-        } catch (err) {
-            expect(err.message).toEqual(
-                expect.stringContaining(`The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
-            );
-        }
-    });
+        }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
+    );
 
-    it('updateRole is not allowed for Customer role', async () => {
-        const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
-        if (!customerRole) {
-            fail(`Could not find Customer role`);
-            return;
-        }
-        try {
-            const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+    it(
+        'updateRole is not allowed for Customer role',
+        assertThrowsWithMessage(async () => {
+            const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
+            if (!customerRole) {
+                fail(`Could not find Customer role`);
+                return;
+            }
+            return client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: customerRole.id,
                     code: 'customer-modified',
@@ -125,11 +123,6 @@ describe('Role resolver', () => {
                     permissions: [Permission.Authenticated, Permission.DeleteAdministrator],
                 },
             });
-            fail(`Should throw`);
-        } catch (err) {
-            expect(err.message).toEqual(
-                expect.stringContaining(`The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
-            );
-        }
-    });
+        }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
+    );
 });

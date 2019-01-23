@@ -7,6 +7,7 @@ import { PaymentMethodHandler } from '../src/config/payment-method/payment-metho
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 describe('Orders', () => {
     const client = new TestClient();
@@ -65,33 +66,29 @@ describe('Orders', () => {
             firstOrderItemId = result.addItemToOrder.lines[0].id;
         });
 
-        it('addItemToOrder errors with an invalid productVariantId', async () => {
-            try {
-                await client.query(ADD_ITEM_TO_ORDER, {
-                    productVariantId: 'T_999',
-                    quantity: 1,
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No ProductVariant with the id '999' could be found`),
-                );
-            }
-        });
+        it(
+            'addItemToOrder errors with an invalid productVariantId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(ADD_ITEM_TO_ORDER, {
+                        productVariantId: 'T_999',
+                        quantity: 1,
+                    }),
+                `No ProductVariant with the id '999' could be found`,
+            ),
+        );
 
-        it('addItemToOrder errors with a negative quantity', async () => {
-            try {
-                await client.query(ADD_ITEM_TO_ORDER, {
-                    productVariantId: 'T_999',
-                    quantity: -3,
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`-3 is not a valid quantity for an OrderItem`),
-                );
-            }
-        });
+        it(
+            'addItemToOrder errors with a negative quantity',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(ADD_ITEM_TO_ORDER, {
+                        productVariantId: 'T_999',
+                        quantity: -3,
+                    }),
+                `-3 is not a valid quantity for an OrderItem`,
+            ),
+        );
 
         it('addItemToOrder with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const result = await client.query(ADD_ITEM_TO_ORDER, {
@@ -113,33 +110,29 @@ describe('Orders', () => {
             expect(result.adjustItemQuantity.lines[0].quantity).toBe(50);
         });
 
-        it('adjustItemQuantity errors with a negative quantity', async () => {
-            try {
-                await client.query(ADJUST_ITEM_QUENTITY, {
-                    orderItemId: firstOrderItemId,
-                    quantity: -3,
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`-3 is not a valid quantity for an OrderItem`),
-                );
-            }
-        });
+        it(
+            'adjustItemQuantity errors with a negative quantity',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(ADJUST_ITEM_QUENTITY, {
+                        orderItemId: firstOrderItemId,
+                        quantity: -3,
+                    }),
+                `-3 is not a valid quantity for an OrderItem`,
+            ),
+        );
 
-        it('adjustItemQuantity errors with an invalid orderItemId', async () => {
-            try {
-                await client.query(ADJUST_ITEM_QUENTITY, {
-                    orderItemId: 'T_999',
-                    quantity: 5,
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`This order does not contain an OrderLine with the id 999`),
-                );
-            }
-        });
+        it(
+            'adjustItemQuantity errors with an invalid orderItemId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(ADJUST_ITEM_QUENTITY, {
+                        orderItemId: 'T_999',
+                        quantity: 5,
+                    }),
+                `This order does not contain an OrderLine with the id 999`,
+            ),
+        );
 
         it('removeItemFromOrder removes the correct item', async () => {
             const result1 = await client.query(ADD_ITEM_TO_ORDER, {
@@ -156,18 +149,16 @@ describe('Orders', () => {
             expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
-        it('removeItemFromOrder errors with an invalid orderItemId', async () => {
-            try {
-                await client.query(REMOVE_ITEM_FROM_ORDER, {
-                    orderItemId: 'T_999',
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`This order does not contain an OrderLine with the id 999`),
-                );
-            }
-        });
+        it(
+            'removeItemFromOrder errors with an invalid orderItemId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(REMOVE_ITEM_FROM_ORDER, {
+                        orderItemId: 'T_999',
+                    }),
+                `This order does not contain an OrderLine with the id 999`,
+            ),
+        );
 
         it('nextOrderStates returns next valid states', async () => {
             const result = await client.query(gql`
@@ -179,29 +170,21 @@ describe('Orders', () => {
             expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
         });
 
-        it('transitionOrderToState throws for an invalid state', async () => {
-            try {
-                await client.query(TRANSITION_TO_STATE, { state: 'Completed' });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`Cannot transition Order from "AddingItems" to "Completed"`),
-                );
-            }
-        });
+        it(
+            'transitionOrderToState throws for an invalid state',
+            assertThrowsWithMessage(
+                () => client.query(TRANSITION_TO_STATE, { state: 'Completed' }),
+                `Cannot transition Order from "AddingItems" to "Completed"`,
+            ),
+        );
 
-        it('attempting to transition to ArrangingPayment throws when Order has no Customer', async () => {
-            try {
-                await client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(
-                        `Cannot transition Order to the "ArrangingShipping" state without Customer details`,
-                    ),
-                );
-            }
-        });
+        it(
+            'attempting to transition to ArrangingPayment throws when Order has no Customer',
+            assertThrowsWithMessage(
+                () => client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' }),
+                `Cannot transition Order to the "ArrangingShipping" state without Customer details`,
+            ),
+        );
 
         it('setCustomerForOrder creates a new Customer and associates it with the Order', async () => {
             const result = await client.query(SET_CUSTOMER, {
@@ -342,23 +325,19 @@ describe('Orders', () => {
         describe('shipping', () => {
             let shippingMethods: any;
 
-            it('setOrderShippingAddress throws with invalid countryCode', async () => {
-                const address: CreateAddressInput = {
-                    streetLine1: '12 the street',
-                    countryCode: 'INVALID',
-                };
+            it(
+                'setOrderShippingAddress throws with invalid countryCode',
+                assertThrowsWithMessage(() => {
+                    const address: CreateAddressInput = {
+                        streetLine1: '12 the street',
+                        countryCode: 'INVALID',
+                    };
 
-                try {
-                    await client.query(SET_SHIPPING_ADDRESS, {
+                    return client.query(SET_SHIPPING_ADDRESS, {
                         input: address,
                     });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(`The countryCode "INVALID" was not recognized`),
-                    );
-                }
-            });
+                }, `The countryCode "INVALID" was not recognized`),
+            );
 
             it('setOrderShippingAddress sets shipping address', async () => {
                 const address: CreateAddressInput = {
@@ -438,23 +417,19 @@ describe('Orders', () => {
         });
 
         describe('payment', () => {
-            it('attempting add a Payment throws error when in AddingItems state', async () => {
-                try {
-                    await client.query(ADD_PAYMENT, {
-                        input: {
-                            method: testPaymentMethod.code,
-                            metadata: {},
-                        },
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(
-                            `A Payment may only be added when Order is in "ArrangingPayment" state`,
-                        ),
-                    );
-                }
-            });
+            it(
+                'attempting add a Payment throws error when in AddingItems state',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query(ADD_PAYMENT, {
+                            input: {
+                                method: testPaymentMethod.code,
+                                metadata: {},
+                            },
+                        }),
+                    `A Payment may only be added when Order is in "ArrangingPayment" state`,
+                ),
+            );
 
             it('transitions to the ArrangingPayment state', async () => {
                 const result = await client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
@@ -464,70 +439,51 @@ describe('Orders', () => {
                 });
             });
 
-            it('attempting to add an item throws error when in ArrangingPayment state', async () => {
-                try {
-                    const result = await client.query(ADD_ITEM_TO_ORDER, {
-                        productVariantId: 'T_4',
-                        quantity: 1,
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(
-                            `Order contents may only be modified when in the "AddingItems" state`,
-                        ),
-                    );
-                }
-            });
+            it(
+                'attempting to add an item throws error when in ArrangingPayment state',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query(ADD_ITEM_TO_ORDER, {
+                            productVariantId: 'T_4',
+                            quantity: 1,
+                        }),
+                    `Order contents may only be modified when in the "AddingItems" state`,
+                ),
+            );
 
-            it('attempting to modify item quantity throws error when in ArrangingPayment state', async () => {
-                try {
-                    const result = await client.query(ADJUST_ITEM_QUENTITY, {
-                        orderItemId: activeOrder.lines[0].id,
-                        quantity: 12,
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(
-                            `Order contents may only be modified when in the "AddingItems" state`,
-                        ),
-                    );
-                }
-            });
+            it(
+                'attempting to modify item quantity throws error when in ArrangingPayment state',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query(ADJUST_ITEM_QUENTITY, {
+                            orderItemId: activeOrder.lines[0].id,
+                            quantity: 12,
+                        }),
+                    `Order contents may only be modified when in the "AddingItems" state`,
+                ),
+            );
 
-            it('attempting to remove an item throws error when in ArrangingPayment state', async () => {
-                try {
-                    const result = await client.query(REMOVE_ITEM_FROM_ORDER, {
-                        orderItemId: activeOrder.lines[0].id,
-                    });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(
-                            `Order contents may only be modified when in the "AddingItems" state`,
-                        ),
-                    );
-                }
-            });
+            it(
+                'attempting to remove an item throws error when in ArrangingPayment state',
+                assertThrowsWithMessage(
+                    () =>
+                        client.query(REMOVE_ITEM_FROM_ORDER, {
+                            orderItemId: activeOrder.lines[0].id,
+                        }),
+                    `Order contents may only be modified when in the "AddingItems" state`,
+                ),
+            );
 
-            it('attempting to setOrderShippingMethod throws error when in ArrangingPayment state', async () => {
-                const shippingMethodsResult = await client.query(GET_ELIGIBLE_SHIPPING_METHODS);
-                const shippingMethods = shippingMethodsResult.eligibleShippingMethods;
-
-                try {
-                    await client.query(SET_SHIPPING_METHOD, {
+            it(
+                'attempting to setOrderShippingMethod throws error when in ArrangingPayment state',
+                assertThrowsWithMessage(async () => {
+                    const shippingMethodsResult = await client.query(GET_ELIGIBLE_SHIPPING_METHODS);
+                    const shippingMethods = shippingMethodsResult.eligibleShippingMethods;
+                    return client.query(SET_SHIPPING_METHOD, {
                         id: shippingMethods[0].id,
                     });
-                    fail('Should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining(
-                            `Order contents may only be modified when in the "AddingItems" state`,
-                        ),
-                    );
-                }
-            });
+                }, `Order contents may only be modified when in the "AddingItems" state`),
+            );
 
             it('adds a declined payment', async () => {
                 const result = await client.query(ADD_PAYMENT, {
@@ -591,23 +547,16 @@ describe('Orders', () => {
                     expect(result.orderByCode.id).toBe(activeOrder.id);
                 });
 
-                it(`throws error for another user's Order`, async () => {
-                    authenticatedUserEmailAddress = customers[1].emailAddress;
-                    await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
-
-                    try {
-                        await client.query(GET_ORDER_BY_CODE, {
+                it(
+                    `throws error for another user's Order`,
+                    assertThrowsWithMessage(async () => {
+                        authenticatedUserEmailAddress = customers[1].emailAddress;
+                        await client.asUserWithCredentials(authenticatedUserEmailAddress, password);
+                        return client.query(GET_ORDER_BY_CODE, {
                             code: activeOrder.code,
                         });
-                        fail('Should have thrown');
-                    } catch (err) {
-                        expect(err.message).toEqual(
-                            expect.stringContaining(
-                                `You are not currently authorized to perform this action`,
-                            ),
-                        );
-                    }
-                });
+                    }, `You are not currently authorized to perform this action`),
+                );
             });
         });
     });

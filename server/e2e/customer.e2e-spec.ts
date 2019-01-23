@@ -19,6 +19,7 @@ import { omit } from '../../shared/omit';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 // tslint:disable:no-non-null-assertion
 
@@ -56,22 +57,20 @@ describe('Customer resolver', () => {
     describe('addresses', () => {
         let firstCustomerAddressIds: string[] = [];
 
-        it('createCustomerAddress throws on invalid countryCode', async () => {
-            try {
-                await client.query(CREATE_ADDRESS, {
-                    id: firstCustomer.id,
-                    input: {
-                        streetLine1: 'streetLine1',
-                        countryCode: 'INVALID',
-                    },
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`The countryCode "INVALID" was not recognized`),
-                );
-            }
-        });
+        it(
+            'createCustomerAddress throws on invalid countryCode',
+            assertThrowsWithMessage(
+                () =>
+                    client.query(CREATE_ADDRESS, {
+                        id: firstCustomer.id,
+                        input: {
+                            streetLine1: 'streetLine1',
+                            countryCode: 'INVALID',
+                        },
+                    }),
+                `The countryCode "INVALID" was not recognized`,
+            ),
+        );
 
         it('createCustomerAddress creates a new address', async () => {
             const result = await client.query(CREATE_ADDRESS, {
@@ -258,41 +257,37 @@ describe('Customer resolver', () => {
             expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
         });
 
-        it('updateCustomer throws for deleted customer', async () => {
-            try {
-                await client.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
-                    input: {
-                        id: thirdCustomer.id,
-                        firstName: 'updated',
-                    },
-                });
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Customer with the id '3' could be found`),
-                );
-            }
-        });
-
-        it('createCustomerAddress throws for deleted customer', async () => {
-            try {
-                await client.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
-                    CREATE_CUSTOMER_ADDRESS,
-                    {
-                        customerId: thirdCustomer.id,
+        it(
+            'updateCustomer throws for deleted customer',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
                         input: {
-                            streetLine1: 'test',
-                            countryCode: 'GB',
+                            id: thirdCustomer.id,
+                            firstName: 'updated',
                         },
-                    },
-                );
-                fail('Should have thrown');
-            } catch (err) {
-                expect(err.message).toEqual(
-                    expect.stringContaining(`No Customer with the id '3' could be found`),
-                );
-            }
-        });
+                    }),
+                `No Customer with the id '3' could be found`,
+            ),
+        );
+
+        it(
+            'createCustomerAddress throws for deleted customer',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
+                        CREATE_CUSTOMER_ADDRESS,
+                        {
+                            customerId: thirdCustomer.id,
+                            input: {
+                                streetLine1: 'test',
+                                countryCode: 'GB',
+                            },
+                        },
+                    ),
+                `No Customer with the id '3' could be found`,
+            ),
+        );
     });
 });
 
