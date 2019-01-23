@@ -11,7 +11,7 @@ import {
 import { omit } from '../../../../shared/omit';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -19,6 +19,7 @@ import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -46,7 +47,7 @@ export class PromotionService {
 
     findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
         return this.listQueryBuilder
-            .build(Promotion, options)
+            .build(Promotion, options, { where: { deletedAt: null } })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -55,7 +56,7 @@ export class PromotionService {
     }
 
     async findOne(adjustmentSourceId: ID): Promise<Promotion | undefined> {
-        return this.connection.manager.findOne(Promotion, adjustmentSourceId, {});
+        return this.connection.manager.findOne(Promotion, adjustmentSourceId, { where: { deletedAt: null } });
     }
 
     /**
@@ -103,10 +104,7 @@ export class PromotionService {
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
-        const adjustmentSource = await this.connection.getRepository(Promotion).findOne(input.id);
-        if (!adjustmentSource) {
-            throw new EntityNotFoundError('Promotion', input.id);
-        }
+        const adjustmentSource = await getEntityOrThrow(this.connection, Promotion, input.id);
         const updatedAdjustmentSource = patchEntity(adjustmentSource, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
             updatedAdjustmentSource.conditions = input.conditions.map(c =>
@@ -120,6 +118,12 @@ export class PromotionService {
             await this.connection.manager.save(updatedAdjustmentSource);
         await this.updatePromotions();
         return assertFound(this.findOne(updatedAdjustmentSource.id));
+    }
+
+    async softDeletePromotion(promotionId: ID): Promise<boolean> {
+        await getEntityOrThrow(this.connection, Promotion, promotionId);
+        await this.connection.getRepository(Promotion).update({ id: promotionId }, { deletedAt: new Date() });
+        return true;
     }
 
     /**

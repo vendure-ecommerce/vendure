@@ -3,7 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../shared/generated-types';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
 import {
     PromotionAction,
@@ -29,7 +29,7 @@ export interface ApplyOrderActionArgs {
 }
 
 @Entity()
-export class Promotion extends AdjustmentSource implements ChannelAware {
+export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: { [code: string]: PromotionItemAction | PromotionOrderAction } = {};
@@ -48,6 +48,9 @@ export class Promotion extends AdjustmentSource implements ChannelAware {
         this.allConditions = conditions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
         this.allActions = actions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
+
+    @Column({ type: Date, nullable: true, default: null })
+    deletedAt: Date | null;
 
     @Column() name: string;
 

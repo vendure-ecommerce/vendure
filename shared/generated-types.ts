@@ -719,6 +719,7 @@ export interface Mutation {
     updateProductVariants: (ProductVariant | null)[];
     createPromotion: Promotion;
     updatePromotion: Promotion;
+    deletePromotion?: boolean | null;
     createRole: Role;
     updateRole: Role;
     reindex: boolean;
@@ -1774,6 +1775,9 @@ export interface CreatePromotionMutationArgs {
 }
 export interface UpdatePromotionMutationArgs {
     input: UpdatePromotionInput;
+}
+export interface DeletePromotionMutationArgs {
+    id: string;
 }
 export interface CreateRoleMutationArgs {
     input: CreateRoleInput;
@@ -4437,6 +4441,7 @@ export namespace MutationResolvers {
         updateProductVariants?: UpdateProductVariantsResolver<(ProductVariant | null)[], any, Context>;
         createPromotion?: CreatePromotionResolver<Promotion, any, Context>;
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
+        deletePromotion?: DeletePromotionResolver<boolean | null, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
         reindex?: ReindexResolver<boolean, any, Context>;
@@ -4968,6 +4973,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdatePromotionArgs {
         input: UpdatePromotionInput;
+    }
+
+    export type DeletePromotionResolver<R = boolean | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeletePromotionArgs
+    >;
+    export interface DeletePromotionArgs {
+        id: string;
     }
 
     export type CreateRoleResolver<R = Role, Parent = any, Context = any> = Resolver<
