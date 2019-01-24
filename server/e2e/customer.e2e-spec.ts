@@ -98,8 +98,10 @@ describe('Customer resolver', () => {
                 city: 'city',
                 province: 'province',
                 postalCode: 'postalCode',
-                countryCode: 'GB',
-                country: 'United Kingdom of Great Britain and Northern Ireland',
+                country: {
+                    code: 'GB',
+                    name: 'United Kingdom of Great Britain and Northern Ireland',
+                },
                 phoneNumber: 'phoneNumber',
                 defaultShippingAddress: false,
                 defaultBillingAddress: false,
@@ -197,8 +199,10 @@ describe('Customer resolver', () => {
                 city: '',
                 province: '',
                 postalCode: '',
-                countryCode: 'GB',
-                country: 'United Kingdom of Great Britain and Northern Ireland',
+                country: {
+                    code: 'GB',
+                    name: 'United Kingdom of Great Britain and Northern Ireland',
+                },
                 phoneNumber: '',
                 defaultShippingAddress: true,
                 defaultBillingAddress: true,
@@ -303,8 +307,10 @@ const CREATE_ADDRESS = gql`
             city
             province
             postalCode
-            country
-            countryCode
+            country {
+                code
+                name
+            }
             phoneNumber
             defaultShippingAddress
             defaultBillingAddress

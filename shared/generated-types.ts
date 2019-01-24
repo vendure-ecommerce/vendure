@@ -238,8 +238,7 @@ export interface Address extends Node {
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
-    country: string;
-    countryCode: string;
+    country: Country;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
     defaultBillingAddress?: boolean | null;
@@ -681,6 +680,7 @@ export interface Mutation {
     updateChannel: Channel;
     createCountry: Country;
     updateCountry: Country;
+    deleteCountry: DeletionResponse;
     createCustomerGroup: CustomerGroup;
     updateCustomerGroup: CustomerGroup;
     addCustomersToGroup: CustomerGroup;
@@ -1657,6 +1657,9 @@ export interface CreateCountryMutationArgs {
 }
 export interface UpdateCountryMutationArgs {
     input: UpdateCountryInput;
+}
+export interface DeleteCountryMutationArgs {
+    id: string;
 }
 export interface CreateCustomerGroupMutationArgs {
     input: CreateCustomerGroupInput;
@@ -3084,8 +3087,7 @@ export namespace AddressResolvers {
         city?: CityResolver<string | null, any, Context>;
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
-        country?: CountryResolver<string, any, Context>;
-        countryCode?: CountryCodeResolver<string, any, Context>;
+        country?: CountryResolver<Country, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
         defaultShippingAddress?: DefaultShippingAddressResolver<boolean | null, any, Context>;
         defaultBillingAddress?: DefaultBillingAddressResolver<boolean | null, any, Context>;
@@ -3122,8 +3124,7 @@ export namespace AddressResolvers {
         Parent,
         Context
     >;
-    export type CountryResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CountryCodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CountryResolver<R = Country, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4423,6 +4424,7 @@ export namespace MutationResolvers {
         updateChannel?: UpdateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
         updateCountry?: UpdateCountryResolver<Country, any, Context>;
+        deleteCountry?: DeleteCountryResolver<DeletionResponse, any, Context>;
         createCustomerGroup?: CreateCustomerGroupResolver<CustomerGroup, any, Context>;
         updateCustomerGroup?: UpdateCustomerGroupResolver<CustomerGroup, any, Context>;
         addCustomersToGroup?: AddCustomersToGroupResolver<CustomerGroup, any, Context>;
@@ -4607,6 +4609,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateCountryArgs {
         input: UpdateCountryInput;
+    }
+
+    export type DeleteCountryResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteCountryArgs
+    >;
+    export interface DeleteCountryArgs {
+        id: string;
     }
 
     export type CreateCustomerGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
@@ -6757,11 +6769,17 @@ export namespace Address {
         city?: string | null;
         province?: string | null;
         postalCode?: string | null;
-        country: string;
-        countryCode: string;
+        country: Country;
         phoneNumber?: string | null;
         defaultShippingAddress?: boolean | null;
         defaultBillingAddress?: boolean | null;
+    };
+
+    export type Country = {
+        __typename?: 'Country';
+        id: string;
+        code: string;
+        name: string;
     };
 }
 

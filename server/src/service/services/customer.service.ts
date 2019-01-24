@@ -23,6 +23,7 @@ import { AccountRegistrationEvent } from '../../event-bus/events/account-registr
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
 import { UserService } from './user.service';
@@ -57,12 +58,20 @@ export class CustomerService {
         });
     }
 
-    findAddressesByCustomerId(customerId: ID): Promise<Address[]> {
+    findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {
         return this.connection
             .getRepository(Address)
             .createQueryBuilder('address')
+            .leftJoinAndSelect('address.country', 'country')
+            .leftJoinAndSelect('country.translations', 'countryTranslation')
             .where('address.customerId = :id', { id: customerId })
-            .getMany();
+            .getMany()
+            .then(addresses => {
+                addresses.forEach(address => {
+                    address.country = translateDeep(address.country, ctx.languageCode);
+                });
+                return addresses;
+            });
     }
 
     async create(input: CreateCustomerInput, password?: string): Promise<Customer> {
@@ -174,7 +183,7 @@ export class CustomerService {
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         const address = new Address({
             ...input,
-            country: country.name,
+            country,
         });
         const createdAddress = await this.connection.manager.getRepository(Address).save(address);
         customer.addresses.push(createdAddress);
@@ -183,8 +192,11 @@ export class CustomerService {
         return createdAddress;
     }
 
-    async updateAddress(input: UpdateAddressInput): Promise<Address> {
-        const address = await getEntityOrThrow(this.connection, Address, input.id);
+    async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
+        const address = await getEntityOrThrow(this.connection, Address, input.id, {
+            relations: ['country'],
+        });
+        address.country = translateDeep(address.country, ctx.languageCode);
         const updatedAddress = patchEntity(address, input);
         await this.connection.getRepository(Address).save(updatedAddress);
         await this.enforceSingleDefaultAddress(input.id, input);

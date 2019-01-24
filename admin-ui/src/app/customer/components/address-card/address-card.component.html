@@ -24,9 +24,9 @@
                 <li *ngIf="address.city">{{ address.city }}</li>
                 <li *ngIf="address.province">{{ address.province }}</li>
                 <li *ngIf="address.postalCode">{{ address.postalCode }}</li>
-                <li *ngIf="address.countryCode">
+                <li *ngIf="address.country">
                     <clr-icon shape="world" size="12"></clr-icon>
-                    {{ getCountryName(address.countryCode) }}
+                    {{ address.country.name }}
                 </li>
                 <li *ngIf="address.phoneNumber">
                     <clr-icon shape="phone-handset" size="12"></clr-icon>

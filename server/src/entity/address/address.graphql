@@ -9,8 +9,7 @@ type Address implements Node {
     city: String
     province: String
     postalCode: String
-    country: String!
-    countryCode: String!
+    country: Country!
     phoneNumber: String
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean
