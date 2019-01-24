@@ -42,7 +42,7 @@ describe('Promotion resolver', () => {
     let promotion: Promotion.Fragment;
 
     beforeAll(async () => {
-        const token = await server.init(
+        await server.init(
             {
                 productCount: 1,
                 customerCount: 1,
@@ -61,7 +61,7 @@ describe('Promotion resolver', () => {
         await server.destroy();
     });
 
-    it('createPromotion promotion', async () => {
+    it('createPromotion', async () => {
         const result = await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
             CREATE_PROMOTION,
             {

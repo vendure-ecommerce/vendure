@@ -6,12 +6,21 @@ type Query {
 type Mutation {
     "Create a new Facet"
     createFacet(input: CreateFacetInput!): Facet!
+
     "Update an existing Facet"
     updateFacet(input: UpdateFacetInput!): Facet!
+
+    "Delete an existing Facet"
+    deleteFacet(id: ID!, force: Boolean): DeletionResponse!
+
     "Create one or more FacetValues"
     createFacetValues(input: [CreateFacetValueInput!]!): [FacetValue!]!
+
     "Update one or more FacetValues"
     updateFacetValues(input: [UpdateFacetValueInput!]!): [FacetValue!]!
+
+    "Delete one or more FacetValues"
+    deleteFacetValues(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
 }
 
 type FacetList implements PaginatedList {

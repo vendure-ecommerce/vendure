@@ -692,8 +692,10 @@ export interface Mutation {
     updateCustomerAddress: Address;
     createFacet: Facet;
     updateFacet: Facet;
+    deleteFacet: DeletionResponse;
     createFacetValues: FacetValue[];
     updateFacetValues: FacetValue[];
+    deleteFacetValues: DeletionResponse[];
     updateGlobalSettings: GlobalSettings;
     importProducts?: ImportInfo | null;
     addItemToOrder?: Order | null;
@@ -1693,11 +1695,19 @@ export interface CreateFacetMutationArgs {
 export interface UpdateFacetMutationArgs {
     input: UpdateFacetInput;
 }
+export interface DeleteFacetMutationArgs {
+    id: string;
+    force?: boolean | null;
+}
 export interface CreateFacetValuesMutationArgs {
     input: CreateFacetValueInput[];
 }
 export interface UpdateFacetValuesMutationArgs {
     input: UpdateFacetValueInput[];
+}
+export interface DeleteFacetValuesMutationArgs {
+    ids: string[];
+    force?: boolean | null;
 }
 export interface UpdateGlobalSettingsMutationArgs {
     input: UpdateGlobalSettingsInput;
@@ -4424,8 +4434,10 @@ export namespace MutationResolvers {
         updateCustomerAddress?: UpdateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
         updateFacet?: UpdateFacetResolver<Facet, any, Context>;
+        deleteFacet?: DeleteFacetResolver<DeletionResponse, any, Context>;
         createFacetValues?: CreateFacetValuesResolver<FacetValue[], any, Context>;
         updateFacetValues?: UpdateFacetValuesResolver<FacetValue[], any, Context>;
+        deleteFacetValues?: DeleteFacetValuesResolver<DeletionResponse[], any, Context>;
         updateGlobalSettings?: UpdateGlobalSettingsResolver<GlobalSettings, any, Context>;
         importProducts?: ImportProductsResolver<ImportInfo | null, any, Context>;
         addItemToOrder?: AddItemToOrderResolver<Order | null, any, Context>;
@@ -4711,6 +4723,17 @@ export namespace MutationResolvers {
         input: UpdateFacetInput;
     }
 
+    export type DeleteFacetResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteFacetArgs
+    >;
+    export interface DeleteFacetArgs {
+        id: string;
+        force?: boolean | null;
+    }
+
     export type CreateFacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4729,6 +4752,17 @@ export namespace MutationResolvers {
     >;
     export interface UpdateFacetValuesArgs {
         input: UpdateFacetValueInput[];
+    }
+
+    export type DeleteFacetValuesResolver<R = DeletionResponse[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteFacetValuesArgs
+    >;
+    export interface DeleteFacetValuesArgs {
+        ids: string[];
+        force?: boolean | null;
     }
 
     export type UpdateGlobalSettingsResolver<R = GlobalSettings, Parent = any, Context = any> = Resolver<

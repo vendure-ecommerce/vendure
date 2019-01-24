@@ -3,6 +3,9 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreateFacetMutationArgs,
     CreateFacetValuesMutationArgs,
+    DeleteFacetMutationArgs,
+    DeleteFacetValuesMutationArgs,
+    DeletionResponse,
     FacetQueryArgs,
     FacetsQueryArgs,
     Permission,
@@ -19,6 +22,7 @@ import { FacetValueService } from '../../service/services/facet-value.service';
 import { FacetService } from '../../service/services/facet.service';
 import { RequestContext } from '../common/request-context';
 import { Allow } from '../decorators/allow.decorator';
+import { Decode } from '../decorators/decode.decorator';
 import { Ctx } from '../decorators/request-context.decorator';
 
 @Resolver('Facet')
@@ -66,7 +70,17 @@ export class FacetResolver {
     }
 
     @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteFacet(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteFacetMutationArgs,
+    ): Promise<DeletionResponse> {
+        return this.facetService.delete(ctx, args.id, args.force || false);
+    }
+
+    @Mutation()
     @Allow(Permission.CreateCatalog)
+    @Decode('facetId')
     async createFacetValues(
         @Args() args: CreateFacetValuesMutationArgs,
     ): Promise<Array<Translated<FacetValue>>> {
@@ -86,5 +100,15 @@ export class FacetResolver {
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    @Decode('ids')
+    async deleteFacetValues(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteFacetValuesMutationArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.facetValueService.delete(ctx, id, args.force || false)));
     }
 }
