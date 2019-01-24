@@ -12,9 +12,9 @@
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxCategory="item">
-        <td class="left">{{ taxCategory.id }}</td>
-        <td class="left">{{ taxCategory.name }}</td>
-        <td class="right">
+        <td class="left align-middle">{{ taxCategory.id }}</td>
+        <td class="left align-middle">{{ taxCategory.name }}</td>
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"

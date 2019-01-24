@@ -19,9 +19,9 @@
     <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-shippingMethod="item">
-        <td class="left">{{ shippingMethod.code }}</td>
-        <td class="left">{{ shippingMethod.description }}</td>
-        <td class="right">
+        <td class="left align-middle">{{ shippingMethod.code }}</td>
+        <td class="left align-middle">{{ shippingMethod.description }}</td>
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"

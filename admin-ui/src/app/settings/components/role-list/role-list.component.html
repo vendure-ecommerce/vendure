@@ -21,15 +21,15 @@
     <vdr-dt-column>{{ 'settings.permissions' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-role="item">
-        <td class="left">{{ role.id }}</td>
-        <td class="left">{{ role.code }}</td>
-        <td class="left">{{ role.description }}</td>
-        <td class="left">
+        <td class="left align-middle">{{ role.id }}</td>
+        <td class="left align-middle">{{ role.code }}</td>
+        <td class="left align-middle">{{ role.description }}</td>
+        <td class="left align-middle">
             <ng-container *ngIf="!isDefaultRole(role)">
                 <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
             </ng-container>
         </td>
-        <td class="right">
+        <td class="right align-middle">
             <vdr-table-row-action
                 [disabled]="isDefaultRole(role)"
                 iconShape="edit"

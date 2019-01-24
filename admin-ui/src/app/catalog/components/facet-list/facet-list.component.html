@@ -15,16 +15,14 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.values' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-facet="item">
-        <td class="left">{{ facet.id }}</td>
-        <td class="left">{{ facet.code }}</td>
-        <td class="left">{{ facet.name }}</td>
-        <td class="left">
+        <td class="left align-middle">{{ facet.code }}</td>
+        <td class="left align-middle">{{ facet.name }}</td>
+        <td class="left align-middle">
             <vdr-facet-value-chip
                 *ngFor="let value of facet.values"
                 [facetValue]="value"
@@ -32,7 +30,7 @@
                 [displayFacetName]="false"
             ></vdr-facet-value-chip>
         </td>
-        <td class="right">
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"

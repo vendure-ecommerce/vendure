@@ -21,11 +21,11 @@
     <vdr-dt-column>{{ 'settings.email-address' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-administrator="item">
-        <td class="left">{{ administrator.id }}</td>
-        <td class="left">{{ administrator.firstName }}</td>
-        <td class="left">{{ administrator.lastName }}</td>
-        <td class="left">{{ administrator.emailAddress }}</td>
-        <td class="right">
+        <td class="left align-middle">{{ administrator.id }}</td>
+        <td class="left align-middle">{{ administrator.firstName }}</td>
+        <td class="left align-middle">{{ administrator.lastName }}</td>
+        <td class="left align-middle">{{ administrator.emailAddress }}</td>
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"

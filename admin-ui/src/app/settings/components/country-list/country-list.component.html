@@ -31,18 +31,18 @@
     <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-country="item">
-        <td class="left">{{ country.code }}</td>
-        <td class="left">{{ country.name }}</td>
-        <td class="left">
+        <td class="left align-middle">{{ country.code }}</td>
+        <td class="left align-middle">{{ country.name }}</td>
+        <td class="left align-middle">
             <vdr-chip *ngFor="let zone of country.zones" [colorFrom]="zone.id">{{ zone.name }}</vdr-chip>
         </td>
-        <td class="left">
+        <td class="left align-middle">
             <clr-icon
                 [class.enabled]="country.enabled"
                 [attr.shape]="country.enabled ? 'check' : 'times'"
             ></clr-icon>
         </td>
-        <td class="right">
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"
