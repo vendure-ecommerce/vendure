@@ -12,7 +12,6 @@ import { AssetListComponent } from './components/asset-list/asset-list.component
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { CreateOptionGroupDialogComponent } from './components/create-option-group-dialog/create-option-group-dialog.component';
 import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
-import { DeleteFacetValueDialogComponent } from './components/delete-facet-value-dialog/delete-facet-value-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
@@ -58,14 +57,12 @@ import { ProductResolver } from './providers/routing/product-resolver';
         ProductCategoryDetailComponent,
         ProductCategoryTreeComponent,
         ProductCategoryTreeNodeComponent,
-        DeleteFacetValueDialogComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,
         CreateOptionGroupDialogComponent,
         SelectOptionGroupDialogComponent,
         ApplyFacetDialogComponent,
-        DeleteFacetValueDialogComponent,
     ],
     providers: [ProductResolver, FacetResolver, ProductCategoryResolver],
 })

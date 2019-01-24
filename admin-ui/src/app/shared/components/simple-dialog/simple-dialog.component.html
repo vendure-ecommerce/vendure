@@ -1,0 +1,14 @@
+<ng-template vdrDialogTitle>{{ title | translate }}</ng-template>
+{{ body | translate }}
+<ng-template vdrDialogButtons>
+    <ng-container *ngFor="let button of buttons">
+        <button
+            class="btn"
+            [class.btn-primary]="button.type === 'primary'"
+            [class.btn-danger]="button.type === 'danger'"
+            (click)="resolveWith(button.returnValue)"
+        >
+            {{ button.label | translate }}
+        </button>
+    </ng-container>
+</ng-template>

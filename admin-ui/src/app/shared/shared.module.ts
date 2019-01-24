@@ -16,7 +16,6 @@ import { AdjustmentOperationInputComponent } from './components/adjustment-opera
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { ChipComponent } from './components/chip/chip.component';
-import { ConfirmNavigationDialogComponent } from './components/confirm-navigation-dialog/confirm-navigation-dialog.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
@@ -36,6 +35,7 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
+import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
@@ -62,7 +62,6 @@ const DECLARATIONS = [
     AffixedInputComponent,
     BackgroundColorFromDirective,
     ChipComponent,
-    ConfirmNavigationDialogComponent,
     CurrencyInputComponent,
     CurrencyNamePipe,
     CustomerLabelComponent,
@@ -86,6 +85,7 @@ const DECLARATIONS = [
     SelectToggleComponent,
     LanguageSelectorComponent,
     RichTextEditorComponent,
+    SimpleDialogComponent,
 ];
 
 @NgModule({
@@ -100,7 +100,7 @@ const DECLARATIONS = [
         ModalService,
         CanDeactivateDetailGuard,
     ],
-    entryComponents: [ModalDialogComponent, ConfirmNavigationDialogComponent],
+    entryComponents: [ModalDialogComponent, SimpleDialogComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

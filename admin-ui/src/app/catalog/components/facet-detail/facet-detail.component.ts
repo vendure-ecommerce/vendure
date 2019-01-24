@@ -21,7 +21,6 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
-import { DeleteFacetValueDialogComponent } from '../delete-facet-value-dialog/delete-facet-value-dialog.component';
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -227,10 +226,13 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
 
     private showDeleteFacetValueModalAndDelete(facetValueId: string, message?: string) {
         return this.modalService
-            .fromComponent(DeleteFacetValueDialogComponent, {
-                locals: {
-                    message,
-                },
+            .dialog({
+                title: _('catalog.confirm-delete-facet-value'),
+                body: message,
+                buttons: [
+                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
             })
             .pipe(
                 switchMap(result => {

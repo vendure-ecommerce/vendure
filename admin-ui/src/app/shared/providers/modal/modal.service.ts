@@ -5,6 +5,7 @@ import { map, mergeMap } from 'rxjs/operators';
 
 import { OverlayHostService } from '../../../core/providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../components/modal-dialog/modal-dialog.component';
+import { SimpleDialogComponent } from '../../components/simple-dialog/simple-dialog.component';
 
 /**
  * Any component intended to be used with the ModalService.fromComponent() method must implement
@@ -17,6 +18,21 @@ export interface Dialog<R = any> {
      * to this method and then complete.
      */
     resolveWith: (result?: R) => void;
+}
+
+export interface DialogButtonConfig<T> {
+    label: string;
+    type: 'seconday' | 'primary' | 'danger';
+    returnValue?: T;
+}
+
+/**
+ * Configures a generic modal dialog.
+ */
+export interface DialogConfig<T> {
+    title: string;
+    body?: string;
+    buttons: Array<DialogButtonConfig<T>>;
 }
 
 /**
@@ -108,5 +124,14 @@ export class ModalService {
                 });
             }),
         );
+    }
+
+    /**
+     * Displays a modal dialog with the provided title, body and buttons.
+     */
+    dialog<T>(config: DialogConfig<T>): Observable<T | undefined> {
+        return this.fromComponent(SimpleDialogComponent, {
+            locals: config,
+        });
     }
 }
