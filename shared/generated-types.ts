@@ -733,6 +733,7 @@ export interface Mutation {
     updateTaxRate: TaxRate;
     createZone: Zone;
     updateZone: Zone;
+    deleteZone: DeletionResponse;
     addMembersToZone: Zone;
     removeMembersFromZone: Zone;
     requestStarted: number;
@@ -1826,6 +1827,9 @@ export interface CreateZoneMutationArgs {
 }
 export interface UpdateZoneMutationArgs {
     input: UpdateZoneInput;
+}
+export interface DeleteZoneMutationArgs {
+    id: string;
 }
 export interface AddMembersToZoneMutationArgs {
     zoneId: string;
@@ -4477,6 +4481,7 @@ export namespace MutationResolvers {
         updateTaxRate?: UpdateTaxRateResolver<TaxRate, any, Context>;
         createZone?: CreateZoneResolver<Zone, any, Context>;
         updateZone?: UpdateZoneResolver<Zone, any, Context>;
+        deleteZone?: DeleteZoneResolver<DeletionResponse, any, Context>;
         addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
         removeMembersFromZone?: RemoveMembersFromZoneResolver<Zone, any, Context>;
         requestStarted?: RequestStartedResolver<number, any, Context>;
@@ -5140,6 +5145,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdateZoneArgs {
         input: UpdateZoneInput;
+    }
+
+    export type DeleteZoneResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteZoneArgs
+    >;
+    export interface DeleteZoneArgs {
+        id: string;
     }
 
     export type AddMembersToZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<

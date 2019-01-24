@@ -3,6 +3,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AddMembersToZoneMutationArgs,
     CreateZoneMutationArgs,
+    DeleteZoneMutationArgs,
+    DeletionResponse,
     Permission,
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneMutationArgs,
@@ -42,6 +44,15 @@ export class ZoneResolver {
     @Allow(Permission.UpdateSettings)
     async updateZone(@Ctx() ctx: RequestContext, @Args() args: UpdateZoneMutationArgs): Promise<Zone> {
         return this.zoneService.update(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    async deleteZone(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteZoneMutationArgs,
+    ): Promise<DeletionResponse> {
+        return this.zoneService.delete(ctx, args.id);
     }
 
     @Mutation()
