@@ -5708,6 +5708,24 @@ export namespace UpdateFacetValues {
     export type UpdateFacetValues = FacetValue.Fragment;
 }
 
+export namespace DeleteFacetValues {
+    export type Variables = {
+        ids: string[];
+        force?: boolean | null;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        deleteFacetValues: DeleteFacetValues[];
+    };
+
+    export type DeleteFacetValues = {
+        __typename?: 'DeletionResponse';
+        result: DeletionResult;
+        message?: string | null;
+    };
+}
+
 export namespace GetFacetList {
     export type Variables = {
         options?: FacetListOptions | null;

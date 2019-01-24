@@ -3,6 +3,7 @@ import {
     CreateFacetInput,
     CreateFacetValueInput,
     CreateFacetValues,
+    DeleteFacetValues,
     GetFacetList,
     GetFacetWithValues,
     UpdateFacet,
@@ -16,6 +17,7 @@ import { getDefaultLanguage } from '../../common/utilities/get-default-language'
 import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
+    DELETE_FACET_VALUES,
     GET_FACET_LIST,
     GET_FACET_WITH_VALUES,
     UPDATE_FACET,
@@ -78,6 +80,16 @@ export class FacetDataService {
         return this.baseDataService.mutate<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
             UPDATE_FACET_VALUES,
             input,
+        );
+    }
+
+    deleteFacetValues(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+            DELETE_FACET_VALUES,
+            {
+                ids,
+                force,
+            },
         );
     }
 }

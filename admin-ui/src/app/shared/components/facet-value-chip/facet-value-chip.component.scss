@@ -1,5 +1,9 @@
 @import "variables";
 
+:host {
+    display: inline-block;
+}
+
 .facet-name {
     color: transparentize($color-grey-1, 0.5);
     text-transform: uppercase;

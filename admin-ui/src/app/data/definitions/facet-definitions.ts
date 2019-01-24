@@ -72,6 +72,15 @@ export const UPDATE_FACET_VALUES = gql`
     ${FACET_VALUE_FRAGMENT}
 `;
 
+export const DELETE_FACET_VALUES = gql`
+    mutation DeleteFacetValues($ids: [ID!]!, $force: Boolean) {
+        deleteFacetValues(ids: $ids, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_FACET_LIST = gql`
     query GetFacetList($options: FacetListOptions, $languageCode: LanguageCode) {
         facets(languageCode: $languageCode, options: $options) {

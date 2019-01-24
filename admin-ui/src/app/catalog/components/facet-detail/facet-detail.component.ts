@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
+import { map, mergeMap, switchMap, take } from 'rxjs/operators';
 import {
     CreateFacetValueInput,
+    DeletionResult,
     FacetWithValues,
     LanguageCode,
     UpdateFacetValueInput,
@@ -19,6 +20,8 @@ import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { DeleteFacetValueDialogComponent } from '../delete-facet-value-dialog/delete-facet-value-dialog.component';
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -42,6 +45,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         private dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
+        private modalService: ModalService,
     ) {
         super(route, router, serverConfigService);
         this.customFields = this.getCustomFieldConfig('Facet');
@@ -183,6 +187,58 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                         entity: 'Facet',
                     });
                 },
+            );
+    }
+
+    deleteFacetValue(facetValueId: string) {
+        this.showDeleteFacetValueModalAndDelete(facetValueId)
+            .pipe(
+                switchMap(response => {
+                    if (response.deleteFacetValues[0].result === DeletionResult.DELETED) {
+                        return [true];
+                    } else {
+                        return this.showDeleteFacetValueModalAndDelete(
+                            facetValueId,
+                            response.deleteFacetValues[0].message || '',
+                        ).pipe(map(r => r.deleteFacetValues[0].result === DeletionResult.DELETED));
+                    }
+                }),
+                switchMap(deleted => {
+                    if (deleted) {
+                        return this.dataService.facet.getFacet(this.id).single$;
+                    } else {
+                        return [];
+                    }
+                }),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-delete-success'), {
+                        entity: 'FacetValue',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-delete-error'), {
+                        entity: 'FacetValue',
+                    });
+                },
+            );
+    }
+
+    private showDeleteFacetValueModalAndDelete(facetValueId: string, message?: string) {
+        return this.modalService
+            .fromComponent(DeleteFacetValueDialogComponent, {
+                locals: {
+                    message,
+                },
+            })
+            .pipe(
+                switchMap(result => {
+                    if (result) {
+                        return this.dataService.facet.deleteFacetValues([facetValueId], !!message);
+                    }
+                    return EMPTY;
+                }),
             );
     }
 

@@ -67,11 +67,12 @@
                     <ng-container *ngFor="let customField of customValueFields">
                         <th>{{ customField.name }}</th>
                     </ng-container>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr
-                    class="variant"
+                    class="facet-value"
                     *ngFor="let value of getValuesFormArray().controls; let i = index"
                     [formGroupName]="i"
                 >
@@ -93,6 +94,24 @@
                             ></vdr-custom-field-control>
                         </td>
                     </ng-container>
+                    <td class="actions">
+                        <clr-dropdown>
+                            <button type="button" class="btn btn-link btn-sm" clrDropdownTrigger>
+                                {{ 'common.actions' | translate }}
+                                <clr-icon shape="caret down"></clr-icon>
+                            </button>
+                            <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                                <button
+                                    type="button"
+                                    class="delete-button"
+                                    (click)="deleteFacetValue(facet.values[i].id)"
+                                    clrDropdownItem
+                                >
+                                    {{ 'common.delete' | translate }}
+                                </button>
+                            </clr-dropdown-menu>
+                        </clr-dropdown>
+                    </td>
                 </tr>
             </tbody>
         </table>

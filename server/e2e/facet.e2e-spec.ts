@@ -218,7 +218,7 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.NOT_DELETED,
-                    message: `The selected FacetValue is assigned to 1 Product, 1 ProductVariant. To delete anyway, set "force: true"`,
+                    message: `The selected FacetValue is assigned to 1 Product, 1 ProductVariant`,
                 },
             ]);
 
@@ -269,7 +269,7 @@ describe('Facet resolver', () => {
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.NOT_DELETED,
-                message: `The selected Facet includes FacetValues which are assigned to 1 Product. To delete anyway, set "force: true"`,
+                message: `The selected Facet includes FacetValues which are assigned to 1 Product`,
             });
 
             expect(result2.facet).not.toBe(null);
