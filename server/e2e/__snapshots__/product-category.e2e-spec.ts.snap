@@ -26,7 +26,7 @@ Object {
   "description": "",
   "facetValues": Array [
     Object {
-      "code": "Larkin_Group",
+      "code": "larkin-group",
       "id": "T_1",
       "name": "Larkin Group",
     },
@@ -75,7 +75,7 @@ Object {
   "description": "Apple stuff ",
   "facetValues": Array [
     Object {
-      "code": "Lindgren,_Conn_and_King",
+      "code": "lindgren-conn-and-king",
       "id": "T_3",
       "name": "Lindgren, Conn and King",
     },
