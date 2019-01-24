@@ -5,6 +5,8 @@ import { Connection } from 'typeorm';
 import {
     CreateAddressInput,
     CreateCustomerInput,
+    DeletionResponse,
+    DeletionResult,
     RegisterCustomerInput,
     UpdateAddressInput,
     UpdateCustomerInput,
@@ -21,6 +23,7 @@ import { AccountRegistrationEvent } from '../../event-bus/events/account-registr
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
 import { UserService } from './user.service';
@@ -37,29 +40,38 @@ export class CustomerService {
 
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
         return this.listQueryBuilder
-            .build(Customer, options)
+            .build(Customer, options, { where: { deletedAt: null } })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
     findOne(id: ID): Promise<Customer | undefined> {
-        return this.connection.getRepository(Customer).findOne(id);
+        return this.connection.getRepository(Customer).findOne(id, { where: { deletedAt: null } });
     }
 
     findOneByUserId(userId: ID): Promise<Customer | undefined> {
         return this.connection.getRepository(Customer).findOne({
             where: {
                 user: { id: userId },
+                deletedAt: null,
             },
         });
     }
 
-    findAddressesByCustomerId(customerId: ID): Promise<Address[]> {
+    findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {
         return this.connection
             .getRepository(Address)
             .createQueryBuilder('address')
+            .leftJoinAndSelect('address.country', 'country')
+            .leftJoinAndSelect('country.translations', 'countryTranslation')
             .where('address.customerId = :id', { id: customerId })
-            .getMany();
+            .getMany()
+            .then(addresses => {
+                addresses.forEach(address => {
+                    address.country = translateDeep(address.country, ctx.languageCode);
+                });
+                return addresses;
+            });
     }
 
     async create(input: CreateCustomerInput, password?: string): Promise<Customer> {
@@ -161,6 +173,7 @@ export class CustomerService {
         input: CreateAddressInput,
     ): Promise<Address> {
         const customer = await this.connection.manager.findOne(Customer, customerId, {
+            where: { deletedAt: null },
             relations: ['addresses'],
         });
 
@@ -170,7 +183,7 @@ export class CustomerService {
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         const address = new Address({
             ...input,
-            country: country.name,
+            country,
         });
         const createdAddress = await this.connection.manager.getRepository(Address).save(address);
         customer.addresses.push(createdAddress);
@@ -179,12 +192,23 @@ export class CustomerService {
         return createdAddress;
     }
 
-    async updateAddress(input: UpdateAddressInput): Promise<Address> {
-        const address = await getEntityOrThrow(this.connection, Address, input.id);
+    async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
+        const address = await getEntityOrThrow(this.connection, Address, input.id, {
+            relations: ['country'],
+        });
+        address.country = translateDeep(address.country, ctx.languageCode);
         const updatedAddress = patchEntity(address, input);
         await this.connection.getRepository(Address).save(updatedAddress);
         await this.enforceSingleDefaultAddress(input.id, input);
         return updatedAddress;
+    }
+
+    async softDelete(customerId: ID): Promise<DeletionResponse> {
+        await getEntityOrThrow(this.connection, Customer, customerId);
+        await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {

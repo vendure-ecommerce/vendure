@@ -1,12 +1,4 @@
-import {
-    CreatePromotion,
-    GetAdjustmentOperations,
-    GetPromotion,
-    GetPromotionList,
-    Promotion,
-    UpdatePromotion,
-} from '../../shared/generated-types';
-import { pick } from '../../shared/pick';
+import gql from 'graphql-tag';
 
 import {
     CREATE_PROMOTION,
@@ -15,12 +7,23 @@ import {
     GET_PROMOTION_LIST,
     UPDATE_PROMOTION,
 } from '../../admin-ui/src/app/data/definitions/promotion-definitions';
+import {
+    CreatePromotion,
+    DeletionResult,
+    GetAdjustmentOperations,
+    GetPromotion,
+    GetPromotionList,
+    Promotion,
+    UpdatePromotion,
+} from '../../shared/generated-types';
+import { pick } from '../../shared/pick';
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 // tslint:disable:no-non-null-assertion
 
@@ -39,7 +42,7 @@ describe('Promotion resolver', () => {
     let promotion: Promotion.Fragment;
 
     beforeAll(async () => {
-        const token = await server.init(
+        await server.init(
             {
                 productCount: 1,
                 customerCount: 1,
@@ -58,7 +61,7 @@ describe('Promotion resolver', () => {
         await server.destroy();
     });
 
-    it('createPromotion promotion', async () => {
+    it('createPromotion', async () => {
         const result = await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
             CREATE_PROMOTION,
             {
@@ -131,6 +134,52 @@ describe('Promotion resolver', () => {
 
         expect(result.adjustmentOperations).toMatchSnapshot();
     });
+
+    describe('deletion', () => {
+        let allPromotions: GetPromotionList.Items[];
+        let promotionToDelete: GetPromotionList.Items;
+
+        beforeAll(async () => {
+            const result = await client.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            allPromotions = result.promotions.items;
+        });
+
+        it('deletes a promotion', async () => {
+            promotionToDelete = allPromotions[0];
+            const result = await client.query(DELETE_PROMOTION, { id: promotionToDelete.id });
+
+            expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
+        });
+
+        it('cannot get a deleted promotion', async () => {
+            const result = await client.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
+                id: promotionToDelete.id,
+            });
+
+            expect(result.promotion).toBe(null);
+        });
+
+        it('deleted promotion omitted from list', async () => {
+            const result = await client.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+
+            expect(result.promotions.items.length).toBe(allPromotions.length - 1);
+            expect(result.promotions.items.map(c => c.id).includes(promotionToDelete.id)).toBe(false);
+        });
+
+        it(
+            'updatePromotion throws for deleted promotion',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+                        input: {
+                            id: promotionToDelete.id,
+                            enabled: false,
+                        },
+                    }),
+                `No Promotion with the id '1' could be found`,
+            ),
+        );
+    });
 });
 
 function generateTestCondition(code: string): PromotionCondition<any> {
@@ -152,3 +201,11 @@ function generateTestAction(code: string): PromotionAction<any> {
         },
     });
 }
+
+const DELETE_PROMOTION = gql`
+    mutation DeletePromotion($id: ID!) {
+        deletePromotion(id: $id) {
+            result
+        }
+    }
+`;

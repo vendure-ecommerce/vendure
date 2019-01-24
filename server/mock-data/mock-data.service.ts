@@ -435,7 +435,7 @@ export class MockDataService {
         return Array.from({ length: count }).map(() => {
             const brand = faker.company.companyName();
             return {
-                code: brand.replace(/\s/g, '_'),
+                code: brand.toLowerCase().replace(/[^a-zA-Z]+/g, '-'),
                 translations: [
                     {
                         languageCode: LanguageCode.en,

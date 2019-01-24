@@ -238,8 +238,7 @@ export interface Address extends Node {
     city?: string | null;
     province?: string | null;
     postalCode?: string | null;
-    country: string;
-    countryCode: string;
+    country: Country;
     phoneNumber?: string | null;
     defaultShippingAddress?: boolean | null;
     defaultBillingAddress?: boolean | null;
@@ -681,18 +680,22 @@ export interface Mutation {
     updateChannel: Channel;
     createCountry: Country;
     updateCountry: Country;
+    deleteCountry: DeletionResponse;
     createCustomerGroup: CustomerGroup;
     updateCustomerGroup: CustomerGroup;
     addCustomersToGroup: CustomerGroup;
     removeCustomersFromGroup: CustomerGroup;
     createCustomer: Customer;
     updateCustomer: Customer;
+    deleteCustomer: DeletionResponse;
     createCustomerAddress: Address;
     updateCustomerAddress: Address;
     createFacet: Facet;
     updateFacet: Facet;
+    deleteFacet: DeletionResponse;
     createFacetValues: FacetValue[];
     updateFacetValues: FacetValue[];
+    deleteFacetValues: DeletionResponse[];
     updateGlobalSettings: GlobalSettings;
     importProducts?: ImportInfo | null;
     addItemToOrder?: Order | null;
@@ -711,12 +714,14 @@ export interface Mutation {
     updateProductOptionGroup: ProductOptionGroup;
     createProduct: Product;
     updateProduct: Product;
+    deleteProduct: DeletionResponse;
     addOptionGroupToProduct: Product;
     removeOptionGroupFromProduct: Product;
     generateVariantsForProduct: Product;
     updateProductVariants: (ProductVariant | null)[];
     createPromotion: Promotion;
     updatePromotion: Promotion;
+    deletePromotion: DeletionResponse;
     createRole: Role;
     updateRole: Role;
     reindex: boolean;
@@ -728,6 +733,7 @@ export interface Mutation {
     updateTaxRate: TaxRate;
     createZone: Zone;
     updateZone: Zone;
+    deleteZone: DeletionResponse;
     addMembersToZone: Zone;
     removeMembersFromZone: Zone;
     requestStarted: number;
@@ -739,6 +745,11 @@ export interface Mutation {
 
 export interface LoginResult {
     user: CurrentUser;
+}
+
+export interface DeletionResponse {
+    result: DeletionResult;
+    message?: string | null;
 }
 
 export interface ImportInfo {
@@ -1648,6 +1659,9 @@ export interface CreateCountryMutationArgs {
 export interface UpdateCountryMutationArgs {
     input: UpdateCountryInput;
 }
+export interface DeleteCountryMutationArgs {
+    id: string;
+}
 export interface CreateCustomerGroupMutationArgs {
     input: CreateCustomerGroupInput;
 }
@@ -1669,6 +1683,9 @@ export interface CreateCustomerMutationArgs {
 export interface UpdateCustomerMutationArgs {
     input: UpdateCustomerInput;
 }
+export interface DeleteCustomerMutationArgs {
+    id: string;
+}
 export interface CreateCustomerAddressMutationArgs {
     customerId: string;
     input: CreateAddressInput;
@@ -1682,11 +1699,19 @@ export interface CreateFacetMutationArgs {
 export interface UpdateFacetMutationArgs {
     input: UpdateFacetInput;
 }
+export interface DeleteFacetMutationArgs {
+    id: string;
+    force?: boolean | null;
+}
 export interface CreateFacetValuesMutationArgs {
     input: CreateFacetValueInput[];
 }
 export interface UpdateFacetValuesMutationArgs {
     input: UpdateFacetValueInput[];
+}
+export interface DeleteFacetValuesMutationArgs {
+    ids: string[];
+    force?: boolean | null;
 }
 export interface UpdateGlobalSettingsMutationArgs {
     input: UpdateGlobalSettingsInput;
@@ -1744,6 +1769,9 @@ export interface CreateProductMutationArgs {
 export interface UpdateProductMutationArgs {
     input: UpdateProductInput;
 }
+export interface DeleteProductMutationArgs {
+    id: string;
+}
 export interface AddOptionGroupToProductMutationArgs {
     productId: string;
     optionGroupId: string;
@@ -1766,6 +1794,9 @@ export interface CreatePromotionMutationArgs {
 }
 export interface UpdatePromotionMutationArgs {
     input: UpdatePromotionInput;
+}
+export interface DeletePromotionMutationArgs {
+    id: string;
 }
 export interface CreateRoleMutationArgs {
     input: CreateRoleInput;
@@ -1796,6 +1827,9 @@ export interface CreateZoneMutationArgs {
 }
 export interface UpdateZoneMutationArgs {
     input: UpdateZoneInput;
+}
+export interface DeleteZoneMutationArgs {
+    id: string;
 }
 export interface AddMembersToZoneMutationArgs {
     zoneId: string;
@@ -2206,6 +2240,11 @@ export enum AdjustmentType {
     TAX_REFUND = 'TAX_REFUND',
     PROMOTION_REFUND = 'PROMOTION_REFUND',
     SHIPPING_REFUND = 'SHIPPING_REFUND',
+}
+
+export enum DeletionResult {
+    DELETED = 'DELETED',
+    NOT_DELETED = 'NOT_DELETED',
 }
 
 export namespace QueryResolvers {
@@ -3052,8 +3091,7 @@ export namespace AddressResolvers {
         city?: CityResolver<string | null, any, Context>;
         province?: ProvinceResolver<string | null, any, Context>;
         postalCode?: PostalCodeResolver<string | null, any, Context>;
-        country?: CountryResolver<string, any, Context>;
-        countryCode?: CountryCodeResolver<string, any, Context>;
+        country?: CountryResolver<Country, any, Context>;
         phoneNumber?: PhoneNumberResolver<string | null, any, Context>;
         defaultShippingAddress?: DefaultShippingAddressResolver<boolean | null, any, Context>;
         defaultBillingAddress?: DefaultBillingAddressResolver<boolean | null, any, Context>;
@@ -3090,8 +3128,7 @@ export namespace AddressResolvers {
         Parent,
         Context
     >;
-    export type CountryResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
-    export type CountryCodeResolver<R = string, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type CountryResolver<R = Country, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type PhoneNumberResolver<R = string | null, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4391,18 +4428,22 @@ export namespace MutationResolvers {
         updateChannel?: UpdateChannelResolver<Channel, any, Context>;
         createCountry?: CreateCountryResolver<Country, any, Context>;
         updateCountry?: UpdateCountryResolver<Country, any, Context>;
+        deleteCountry?: DeleteCountryResolver<DeletionResponse, any, Context>;
         createCustomerGroup?: CreateCustomerGroupResolver<CustomerGroup, any, Context>;
         updateCustomerGroup?: UpdateCustomerGroupResolver<CustomerGroup, any, Context>;
         addCustomersToGroup?: AddCustomersToGroupResolver<CustomerGroup, any, Context>;
         removeCustomersFromGroup?: RemoveCustomersFromGroupResolver<CustomerGroup, any, Context>;
         createCustomer?: CreateCustomerResolver<Customer, any, Context>;
         updateCustomer?: UpdateCustomerResolver<Customer, any, Context>;
+        deleteCustomer?: DeleteCustomerResolver<DeletionResponse, any, Context>;
         createCustomerAddress?: CreateCustomerAddressResolver<Address, any, Context>;
         updateCustomerAddress?: UpdateCustomerAddressResolver<Address, any, Context>;
         createFacet?: CreateFacetResolver<Facet, any, Context>;
         updateFacet?: UpdateFacetResolver<Facet, any, Context>;
+        deleteFacet?: DeleteFacetResolver<DeletionResponse, any, Context>;
         createFacetValues?: CreateFacetValuesResolver<FacetValue[], any, Context>;
         updateFacetValues?: UpdateFacetValuesResolver<FacetValue[], any, Context>;
+        deleteFacetValues?: DeleteFacetValuesResolver<DeletionResponse[], any, Context>;
         updateGlobalSettings?: UpdateGlobalSettingsResolver<GlobalSettings, any, Context>;
         importProducts?: ImportProductsResolver<ImportInfo | null, any, Context>;
         addItemToOrder?: AddItemToOrderResolver<Order | null, any, Context>;
@@ -4421,12 +4462,14 @@ export namespace MutationResolvers {
         updateProductOptionGroup?: UpdateProductOptionGroupResolver<ProductOptionGroup, any, Context>;
         createProduct?: CreateProductResolver<Product, any, Context>;
         updateProduct?: UpdateProductResolver<Product, any, Context>;
+        deleteProduct?: DeleteProductResolver<DeletionResponse, any, Context>;
         addOptionGroupToProduct?: AddOptionGroupToProductResolver<Product, any, Context>;
         removeOptionGroupFromProduct?: RemoveOptionGroupFromProductResolver<Product, any, Context>;
         generateVariantsForProduct?: GenerateVariantsForProductResolver<Product, any, Context>;
         updateProductVariants?: UpdateProductVariantsResolver<(ProductVariant | null)[], any, Context>;
         createPromotion?: CreatePromotionResolver<Promotion, any, Context>;
         updatePromotion?: UpdatePromotionResolver<Promotion, any, Context>;
+        deletePromotion?: DeletePromotionResolver<DeletionResponse, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
         reindex?: ReindexResolver<boolean, any, Context>;
@@ -4438,6 +4481,7 @@ export namespace MutationResolvers {
         updateTaxRate?: UpdateTaxRateResolver<TaxRate, any, Context>;
         createZone?: CreateZoneResolver<Zone, any, Context>;
         updateZone?: UpdateZoneResolver<Zone, any, Context>;
+        deleteZone?: DeleteZoneResolver<DeletionResponse, any, Context>;
         addMembersToZone?: AddMembersToZoneResolver<Zone, any, Context>;
         removeMembersFromZone?: RemoveMembersFromZoneResolver<Zone, any, Context>;
         requestStarted?: RequestStartedResolver<number, any, Context>;
@@ -4572,6 +4616,16 @@ export namespace MutationResolvers {
         input: UpdateCountryInput;
     }
 
+    export type DeleteCountryResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteCountryArgs
+    >;
+    export interface DeleteCountryArgs {
+        id: string;
+    }
+
     export type CreateCustomerGroupResolver<R = CustomerGroup, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4635,6 +4689,16 @@ export namespace MutationResolvers {
         input: UpdateCustomerInput;
     }
 
+    export type DeleteCustomerResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteCustomerArgs
+    >;
+    export interface DeleteCustomerArgs {
+        id: string;
+    }
+
     export type CreateCustomerAddressResolver<R = Address, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4676,6 +4740,17 @@ export namespace MutationResolvers {
         input: UpdateFacetInput;
     }
 
+    export type DeleteFacetResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteFacetArgs
+    >;
+    export interface DeleteFacetArgs {
+        id: string;
+        force?: boolean | null;
+    }
+
     export type CreateFacetValuesResolver<R = FacetValue[], Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4694,6 +4769,17 @@ export namespace MutationResolvers {
     >;
     export interface UpdateFacetValuesArgs {
         input: UpdateFacetValueInput[];
+    }
+
+    export type DeleteFacetValuesResolver<R = DeletionResponse[], Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteFacetValuesArgs
+    >;
+    export interface DeleteFacetValuesArgs {
+        ids: string[];
+        force?: boolean | null;
     }
 
     export type UpdateGlobalSettingsResolver<R = GlobalSettings, Parent = any, Context = any> = Resolver<
@@ -4876,6 +4962,16 @@ export namespace MutationResolvers {
         input: UpdateProductInput;
     }
 
+    export type DeleteProductResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteProductArgs
+    >;
+    export interface DeleteProductArgs {
+        id: string;
+    }
+
     export type AddOptionGroupToProductResolver<R = Product, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -4938,6 +5034,16 @@ export namespace MutationResolvers {
     >;
     export interface UpdatePromotionArgs {
         input: UpdatePromotionInput;
+    }
+
+    export type DeletePromotionResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeletePromotionArgs
+    >;
+    export interface DeletePromotionArgs {
+        id: string;
     }
 
     export type CreateRoleResolver<R = Role, Parent = any, Context = any> = Resolver<
@@ -5041,6 +5147,16 @@ export namespace MutationResolvers {
         input: UpdateZoneInput;
     }
 
+    export type DeleteZoneResolver<R = DeletionResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context,
+        DeleteZoneArgs
+    >;
+    export interface DeleteZoneArgs {
+        id: string;
+    }
+
     export type AddMembersToZoneResolver<R = Zone, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -5106,6 +5222,24 @@ export namespace LoginResultResolvers {
     }
 
     export type UserResolver<R = CurrentUser, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace DeletionResponseResolvers {
+    export interface Resolvers<Context = any> {
+        result?: ResultResolver<DeletionResult, any, Context>;
+        message?: MessageResolver<string | null, any, Context>;
+    }
+
+    export type ResultResolver<R = DeletionResult, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
+    export type MessageResolver<R = string | null, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace ImportInfoResolvers {
@@ -6650,11 +6784,17 @@ export namespace Address {
         city?: string | null;
         province?: string | null;
         postalCode?: string | null;
-        country: string;
-        countryCode: string;
+        country: Country;
         phoneNumber?: string | null;
         defaultShippingAddress?: boolean | null;
         defaultBillingAddress?: boolean | null;
+    };
+
+    export type Country = {
+        __typename?: 'Country';
+        id: string;
+        code: string;
+        name: string;
     };
 }
 

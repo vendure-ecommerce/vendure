@@ -4,6 +4,8 @@ import {
     CountriesQueryArgs,
     CountryQueryArgs,
     CreateCountryMutationArgs,
+    DeleteCountryMutationArgs,
+    DeletionResponse,
     Permission,
     UpdateCountryMutationArgs,
 } from '../../../../shared/generated-types';
@@ -72,5 +74,14 @@ export class CountryResolver {
         @Args() args: UpdateCountryMutationArgs,
     ): Promise<Translated<Country>> {
         return this.countryService.update(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    async deleteCountry(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteCountryMutationArgs,
+    ): Promise<DeletionResponse> {
+        return this.countryService.delete(ctx, args.id);
     }
 }

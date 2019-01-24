@@ -5,6 +5,8 @@ import { Connection } from 'typeorm';
 import {
     AddMembersToZoneMutationArgs,
     CreateZoneInput,
+    DeletionResponse,
+    DeletionResult,
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneInput,
 } from '../../../../shared/generated-types';
@@ -12,6 +14,7 @@ import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
+import { TaxRate } from '../../entity';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -67,6 +70,32 @@ export class ZoneService implements OnModuleInit {
         await this.connection.getRepository(Zone).save(updatedZone);
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
+    }
+
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const zone = await getEntityOrThrow(this.connection, Zone, id);
+
+        const taxRatesUsingZone = await this.connection
+            .getRepository(TaxRate)
+            .createQueryBuilder('taxRate')
+            .where('taxRate.zoneId = :id', { id })
+            .getMany();
+
+        if (0 < taxRatesUsingZone.length) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.zone-used-in-tax-rates', {
+                    taxRateNames: taxRatesUsingZone.map(t => t.name).join(', '),
+                }),
+            };
+        } else {
+            await this.connection.getRepository(Zone).remove(zone);
+            await this.updateZonesCache();
+            return {
+                result: DeletionResult.DELETED,
+                message: '',
+            };
+        }
     }
 
     async addMembersToZone(ctx: RequestContext, input: AddMembersToZoneMutationArgs): Promise<Zone> {

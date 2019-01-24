@@ -42,7 +42,7 @@ Object {
 }
 `;
 
-exports[`Promotion resolver createPromotion promotion 1`] = `
+exports[`Promotion resolver createPromotion 1`] = `
 Object {
   "actions": Array [
     Object {

@@ -20,7 +20,7 @@ export class FacetValue extends VendureEntity implements Translatable, HasCustom
     @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<FacetValue>>;
 
-    @ManyToOne(type => Facet, group => group.values)
+    @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' })
     facet: Facet;
 
     @Column(type => CustomFacetValueFields)

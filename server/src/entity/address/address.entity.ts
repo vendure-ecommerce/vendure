@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
+import { Country } from '../country/country.entity';
 import { CustomAddressFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 
@@ -31,9 +32,8 @@ export class Address extends VendureEntity implements HasCustomFields {
 
     @Column({ default: '' }) postalCode: string;
 
-    @Column() country: string;
-
-    @Column() countryCode: string;
+    @ManyToOne(type => Country)
+    country: Country;
 
     @Column({ default: '' })
     phoneNumber: string;

@@ -38,12 +38,14 @@ export class RequestContextService {
         const user = session && (session as AuthenticatedSession).user;
         const isAuthorized = this.userHasRequiredPermissionsOnChannel(requiredPermissions, channel, user);
         const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
+        const translationFn = (req as any).t;
         return new RequestContext({
             channel,
             languageCode,
             session,
             isAuthorized,
             authorizedAsOwnerOnly,
+            translationFn,
         });
     }
 

@@ -10,8 +10,11 @@ export const ADDRESS_FRAGMENT = gql`
         city
         province
         postalCode
-        country
-        countryCode
+        country {
+            id
+            code
+            name
+        }
         phoneNumber
         defaultShippingAddress
         defaultBillingAddress

@@ -1,11 +1,11 @@
+import i18next from 'i18next';
+
 import { LanguageCode } from '../../../../shared/generated-types';
 import { ID } from '../../../../shared/shared-types';
-
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
-import { Zone } from '../../entity/zone/zone.entity';
 
 /**
  * The RequestContext is intended to hold information relevant to the current request, which may be
@@ -17,6 +17,7 @@ export class RequestContext {
     private readonly _session?: Session;
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
+    private readonly _translationFn: i18next.TranslationFunction;
 
     constructor(options: {
         channel: Channel;
@@ -24,14 +25,16 @@ export class RequestContext {
         languageCode?: LanguageCode;
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
+        translationFn?: i18next.TranslationFunction;
     }) {
-        const { channel, session, languageCode } = options;
+        const { channel, session, languageCode, translationFn } = options;
         this._channel = channel;
         this._session = session;
         this._languageCode =
             languageCode || (channel && channel.defaultLanguageCode) || DEFAULT_LANGUAGE_CODE;
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
+        this._translationFn = translationFn || (((key: string) => key) as any);
     }
 
     get channel(): Channel {
@@ -71,6 +74,17 @@ export class RequestContext {
      */
     get authorizedAsOwnerOnly(): boolean {
         return this._authorizedAsOwnerOnly;
+    }
+
+    /**
+     * Translate the given i18n key
+     */
+    translate(key: string, variables?: { [k: string]: any }): string {
+        try {
+            return this._translationFn(key, variables);
+        } catch (e) {
+            return `Translation format error: ${e.message}). Original key: ${key}`;
+        }
     }
 
     private isAuthenticatedSession(session: Session): session is AuthenticatedSession {

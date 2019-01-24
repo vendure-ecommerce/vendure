@@ -2,6 +2,7 @@ import { Connection, FindOneOptions } from 'typeorm';
 
 import { ID, Type } from '../../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../../common/error/errors';
+import { SoftDeletable } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
 /**
@@ -14,7 +15,7 @@ export async function getEntityOrThrow<T extends VendureEntity>(
     findOptions?: FindOneOptions<T>,
 ): Promise<T> {
     const entity = await connection.getRepository(entityType).findOne(id, findOptions);
-    if (!entity) {
+    if (!entity || (entity.hasOwnProperty('deletedAt') && (entity as T & SoftDeletable).deletedAt !== null)) {
         throw new EntityNotFoundError(entityType.name as any, id);
     }
     return entity;

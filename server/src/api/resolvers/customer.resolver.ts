@@ -5,6 +5,8 @@ import {
     CreateCustomerMutationArgs,
     CustomerQueryArgs,
     CustomersQueryArgs,
+    DeleteCustomerMutationArgs,
+    DeletionResponse,
     OrdersCustomerArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
@@ -58,7 +60,7 @@ export class CustomerResolver {
     async addresses(@Ctx() ctx: RequestContext, @Parent() customer: Customer): Promise<Address[]> {
         this.checkOwnerPermissions(ctx, customer);
         const customerId = this.idCodecService.decode(customer.id);
-        return this.customerService.findAddressesByCustomerId(customerId);
+        return this.customerService.findAddressesByCustomerId(ctx, customerId);
     }
 
     @ResolveProperty()
@@ -100,9 +102,18 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async updateCustomerAddress(@Args() args: UpdateCustomerAddressMutationArgs): Promise<Address> {
+    async updateCustomerAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateCustomerAddressMutationArgs,
+    ): Promise<Address> {
         const { input } = args;
-        return this.customerService.updateAddress(input);
+        return this.customerService.updateAddress(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCustomer)
+    async deleteCustomer(@Args() args: DeleteCustomerMutationArgs): Promise<DeletionResponse> {
+        return this.customerService.softDelete(args.id);
     }
 
     /**

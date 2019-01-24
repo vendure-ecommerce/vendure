@@ -18,7 +18,7 @@ export class FacetValueTranslation extends VendureEntity implements Translation<
 
     @Column() name: string;
 
-    @ManyToOne(type => FacetValue, base => base.translations)
+    @ManyToOne(type => FacetValue, base => base.translations, { onDelete: 'CASCADE' })
     base: FacetValue;
 
     @Column(type => CustomFacetValueFieldsTranslation)

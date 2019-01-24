@@ -248,7 +248,9 @@ export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Cus
         if (entity.addresses) {
             const addressesArray = new FormArray([]);
             for (const address of entity.addresses) {
-                addressesArray.push(this.formBuilder.group(address));
+                addressesArray.push(
+                    this.formBuilder.group({ ...address, countryCode: address.country.code }),
+                );
                 if (address.defaultShippingAddress) {
                     this.defaultShippingAddressId = address.id;
                 }

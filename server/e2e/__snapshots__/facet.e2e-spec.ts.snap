@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Facet resolver createFacet 1`] = `
+Object {
+  "code": "speaker-type",
+  "id": "T_2",
+  "languageCode": "en",
+  "name": "Speaker Type",
+  "translations": Array [
+    Object {
+      "id": "T_3",
+      "languageCode": "en",
+      "name": "Speaker Type",
+    },
+  ],
+  "values": Array [
+    Object {
+      "code": "portable",
+      "facet": Object {
+        "id": "T_2",
+        "name": "Speaker Type",
+      },
+      "id": "T_11",
+      "languageCode": "en",
+      "name": "Portable",
+      "translations": Array [
+        Object {
+          "id": "T_21",
+          "languageCode": "en",
+          "name": "Portable",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`Facet resolver createFacetValues 1`] = `
+Array [
+  Object {
+    "code": "pc",
+    "facet": Object {
+      "id": "T_2",
+      "name": "Speaker Category",
+    },
+    "id": "T_13",
+    "languageCode": "en",
+    "name": "PC Speakers",
+    "translations": Array [
+      Object {
+        "id": "T_23",
+        "languageCode": "en",
+        "name": "PC Speakers",
+      },
+    ],
+  },
+  Object {
+    "code": "hi-fi",
+    "facet": Object {
+      "id": "T_2",
+      "name": "Speaker Category",
+    },
+    "id": "T_12",
+    "languageCode": "en",
+    "name": "Hi Fi Speakers",
+    "translations": Array [
+      Object {
+        "id": "T_22",
+        "languageCode": "en",
+        "name": "Hi Fi Speakers",
+      },
+    ],
+  },
+]
+`;

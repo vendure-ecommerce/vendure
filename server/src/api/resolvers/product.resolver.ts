@@ -3,6 +3,8 @@ import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestj
 import {
     AddOptionGroupToProductMutationArgs,
     CreateProductMutationArgs,
+    DeleteProductMutationArgs,
+    DeletionResponse,
     GenerateVariantsForProductMutationArgs,
     Permission,
     ProductQueryArgs,
@@ -11,9 +13,7 @@ import {
     UpdateProductMutationArgs,
     UpdateProductVariantsMutationArgs,
 } from '../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../shared/shared-types';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError } from '../../common/error/errors';
+import { PaginatedList } from '../../../../shared/shared-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -83,6 +83,15 @@ export class ProductResolver {
     ): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.update(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteProduct(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteProductMutationArgs,
+    ): Promise<DeletionResponse> {
+        return this.productService.softDelete(args.id);
     }
 
     @Mutation()

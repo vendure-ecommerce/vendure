@@ -17,6 +17,6 @@ export class CountryTranslation extends VendureEntity implements Translation<Cou
 
     @Column() name: string;
 
-    @ManyToOne(type => Country, base => base.translations)
+    @ManyToOne(type => Country, base => base.translations, { onDelete: 'CASCADE' })
     base: Country;
 }

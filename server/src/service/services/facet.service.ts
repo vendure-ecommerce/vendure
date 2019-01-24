@@ -2,8 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { CreateFacetInput, LanguageCode, UpdateFacetInput } from '../../../../shared/generated-types';
+import {
+    CreateFacetInput,
+    DeletionResponse,
+    DeletionResult,
+    LanguageCode,
+    UpdateFacetInput,
+} from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
+import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -12,12 +19,16 @@ import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+
+import { FacetValueService } from './facet-value.service';
 
 @Injectable()
 export class FacetService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private facetValueService: FacetValueService,
         private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
@@ -79,5 +90,35 @@ export class FacetService {
             translationType: FacetTranslation,
         });
         return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
+    }
+
+    async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const facet = await getEntityOrThrow(this.connection, Facet, id, { relations: ['values'] });
+        const { productCount, variantCount } = await this.facetValueService.checkFacetValueUsage(
+            facet.values.map(fv => fv.id),
+        );
+
+        const isInUse = !!(productCount || variantCount);
+        const both = !!(productCount && variantCount) ? 'both' : 'single';
+        const i18nVars = { products: productCount, variants: variantCount, both };
+        let message = '';
+        let result: DeletionResult;
+
+        if (!isInUse) {
+            await this.connection.getRepository(Facet).remove(facet);
+            result = DeletionResult.DELETED;
+        } else if (force) {
+            await this.connection.getRepository(Facet).remove(facet);
+            message = ctx.translate('message.facet-force-deleted', i18nVars);
+            result = DeletionResult.DELETED;
+        } else {
+            message = ctx.translate('message.facet-used', i18nVars);
+            result = DeletionResult.NOT_DELETED;
+        }
+
+        return {
+            result,
+            message,
+        };
     }
 }

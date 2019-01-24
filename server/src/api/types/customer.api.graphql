@@ -7,10 +7,16 @@ type Query {
 type Mutation {
     "Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer."
     createCustomer(input: CreateCustomerInput!, password: String): Customer!
+
     "Update an existing Customer"
     updateCustomer(input: UpdateCustomerInput!): Customer!
+
+    "Delete a Customer"
+    deleteCustomer(id: ID!): DeletionResponse!
+
     "Create a new Address and associate it with the Customer specified by customerId"
     createCustomerAddress(customerId: ID!, input: CreateAddressInput!): Address!
+
     "Update an existing Address"
     updateCustomerAddress(input: UpdateAddressInput!): Address!
 }

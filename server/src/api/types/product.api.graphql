@@ -10,6 +10,9 @@ type Mutation {
     "Update an existing Product"
     updateProduct(input: UpdateProductInput!): Product!
 
+    "Delete a Product"
+    deleteProduct(id: ID!): DeletionResponse!
+
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
 

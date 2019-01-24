@@ -16,6 +16,7 @@ import {
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './test-utils';
 
 describe('Administrator resolver', () => {
     const client = new TestClient();
@@ -102,24 +103,24 @@ describe('Administrator resolver', () => {
         expect(result.updateAdministrator.lastName).toBe('new last');
     });
 
-    it('updateAdministrator throws with invalid roleId', async () => {
-        try {
-            const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
-                UPDATE_ADMINISTRATOR,
-                {
-                    input: {
-                        id: createdAdmin.id,
-                        emailAddress: 'new-email',
-                        firstName: 'new first',
-                        lastName: 'new last',
-                        password: 'new password',
-                        roleIds: ['999'],
+    it(
+        'updateAdministrator throws with invalid roleId',
+        assertThrowsWithMessage(
+            () =>
+                client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
+                    UPDATE_ADMINISTRATOR,
+                    {
+                        input: {
+                            id: createdAdmin.id,
+                            emailAddress: 'new-email',
+                            firstName: 'new first',
+                            lastName: 'new last',
+                            password: 'new password',
+                            roleIds: ['999'],
+                        },
                     },
-                },
-            );
-            fail(`Should throw`);
-        } catch (err) {
-            expect(err.message).toEqual(expect.stringContaining(`No Role with the id '999' could be found`));
-        }
-    });
+                ),
+            `No Role with the id '999' could be found`,
+        ),
+    );
 });

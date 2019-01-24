@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, FindConditions, In } from 'typeorm';
 
-import { CreateProductInput, UpdateProductInput } from '../../../../shared/generated-types';
+import {
+    CreateProductInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateProductInput,
+} from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -17,6 +22,7 @@ import { CatalogModificationEvent } from '../../event-bus/events/catalog-modific
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
@@ -63,7 +69,7 @@ export class ProductService {
             .build(Product, options, {
                 relations: this.relations,
                 channelId: ctx.channelId,
-                where,
+                where: { ...where, deletedAt: null },
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
@@ -84,6 +90,9 @@ export class ProductService {
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
         const product = await this.connection.manager.findOne(Product, productId, {
             relations: this.relations,
+            where: {
+                deletedAt: null,
+            },
         });
         if (!product) {
             return;
@@ -112,6 +121,7 @@ export class ProductService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
+        await getEntityOrThrow(this.connection, Product, input.id);
         const product = await this.translatableSaver.update({
             input,
             entityType: Product,
@@ -125,6 +135,14 @@ export class ProductService {
         });
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return assertFound(this.findOne(ctx, product.id));
+    }
+
+    async softDelete(productId: ID): Promise<DeletionResponse> {
+        await getEntityOrThrow(this.connection, Product, productId);
+        await this.connection.getRepository(Product).update({ id: productId }, { deletedAt: new Date() });
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     async addOptionGroupToProduct(
@@ -179,7 +197,7 @@ export class ProductService {
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {
         const product = await this.connection
             .getRepository(Product)
-            .findOne(productId, { relations: ['optionGroups'] });
+            .findOne(productId, { relations: ['optionGroups'], where: { deletedAt: null } });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);
         }
