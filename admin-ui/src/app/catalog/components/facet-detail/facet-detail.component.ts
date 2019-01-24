@@ -190,25 +190,18 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     }
 
     deleteFacetValue(facetValueId: string) {
-        this.showDeleteFacetValueModalAndDelete(facetValueId)
+        this.showModalAndDelete(facetValueId)
             .pipe(
                 switchMap(response => {
-                    if (response.deleteFacetValues[0].result === DeletionResult.DELETED) {
+                    if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
-                        return this.showDeleteFacetValueModalAndDelete(
-                            facetValueId,
-                            response.deleteFacetValues[0].message || '',
-                        ).pipe(map(r => r.deleteFacetValues[0].result === DeletionResult.DELETED));
+                        return this.showModalAndDelete(facetValueId, response.message || '').pipe(
+                            map(r => r.result === DeletionResult.DELETED),
+                        );
                     }
                 }),
-                switchMap(deleted => {
-                    if (deleted) {
-                        return this.dataService.facet.getFacet(this.id).single$;
-                    } else {
-                        return [];
-                    }
-                }),
+                switchMap(deleted => (deleted ? this.dataService.facet.getFacet(this.id).single$ : [])),
             )
             .subscribe(
                 () => {
@@ -224,7 +217,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             );
     }
 
-    private showDeleteFacetValueModalAndDelete(facetValueId: string, message?: string) {
+    private showModalAndDelete(facetValueId: string, message?: string) {
         return this.modalService
             .dialog({
                 title: _('catalog.confirm-delete-facet-value'),
@@ -235,12 +228,10 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 ],
             })
             .pipe(
-                switchMap(result => {
-                    if (result) {
-                        return this.dataService.facet.deleteFacetValues([facetValueId], !!message);
-                    }
-                    return EMPTY;
-                }),
+                switchMap(result =>
+                    result ? this.dataService.facet.deleteFacetValues([facetValueId], !!message) : EMPTY,
+                ),
+                map(result => result.deleteFacetValues[0]),
             );
     }
 

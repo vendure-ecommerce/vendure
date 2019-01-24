@@ -5682,6 +5682,24 @@ export namespace UpdateFacet {
     export type UpdateFacet = FacetWithValues.Fragment;
 }
 
+export namespace DeleteFacet {
+    export type Variables = {
+        id: string;
+        force?: boolean | null;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        deleteFacet: DeleteFacet;
+    };
+
+    export type DeleteFacet = {
+        __typename?: 'DeletionResponse';
+        result: DeletionResult;
+        message?: string | null;
+    };
+}
+
 export namespace CreateFacetValues {
     export type Variables = {
         input: CreateFacetValueInput[];

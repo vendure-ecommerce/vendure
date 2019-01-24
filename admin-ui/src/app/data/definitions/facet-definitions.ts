@@ -54,6 +54,15 @@ export const UPDATE_FACET = gql`
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
 
+export const DELETE_FACET = gql`
+    mutation DeleteFacet($id: ID!, $force: Boolean) {
+        deleteFacet(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_FACET_VALUES = gql`
     mutation CreateFacetValues($input: [CreateFacetValueInput!]!) {
         createFacetValues(input: $input) {

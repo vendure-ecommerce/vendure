@@ -14,6 +14,6 @@ import { Dialog, DialogButtonConfig } from '../../providers/modal/modal.service'
 export class SimpleDialogComponent implements Dialog<any> {
     resolveWith: (result?: any) => void;
     title = '';
-    message = '';
+    body = '';
     buttons: Array<DialogButtonConfig<any>> = [];
 }

@@ -39,3 +39,11 @@ a:link, a:visited {
         display: none;
     }
 }
+
+table tr .dropdown-menu button.dropdown-item {
+    line-height: 24px;
+
+    &.delete-button {
+        color: #e12200;
+    }
+}
