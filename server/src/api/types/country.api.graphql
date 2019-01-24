@@ -7,8 +7,12 @@ type Query {
 type Mutation {
     "Create a new Country"
     createCountry(input: CreateCountryInput!): Country!
+
     "Update an existing Country"
     updateCountry(input: UpdateCountryInput!): Country!
+
+    "Delete a Country"
+    deleteCountry(id: ID!): DeletionResponse!
 }
 
 type CountryList implements PaginatedList {

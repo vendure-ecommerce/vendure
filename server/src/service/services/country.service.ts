@@ -2,17 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { CreateCountryInput, UpdateCountryInput } from '../../../../shared/generated-types';
+import {
+    CreateCountryInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateCountryInput,
+} from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { Address } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 @Injectable()
@@ -74,5 +81,27 @@ export class CountryService {
             translationType: CountryTranslation,
         });
         return assertFound(this.findOne(ctx, country.id));
+    }
+
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const country = await getEntityOrThrow(this.connection, Country, id);
+        const addressesUsingCountry = await this.connection
+            .getRepository(Address)
+            .createQueryBuilder('address')
+            .where('address.countryId = :id', { id })
+            .getCount();
+
+        if (0 < addressesUsingCountry) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
+            };
+        } else {
+            await this.connection.getRepository(Country).remove(country);
+            return {
+                result: DeletionResult.DELETED,
+                message: '',
+            };
+        }
     }
 }
