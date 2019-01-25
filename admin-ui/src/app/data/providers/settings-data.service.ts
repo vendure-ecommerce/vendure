@@ -10,6 +10,7 @@ import {
     CreateTaxRateInput,
     CreateZone,
     CreateZoneInput,
+    DeleteCountry,
     GetActiveChannel,
     GetAvailableCountries,
     GetChannel,
@@ -50,6 +51,7 @@ import {
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
+    DELETE_COUNTRY,
     GET_ACTIVE_CHANNEL,
     GET_AVAILABLE_COUNTRIES,
     GET_CHANNEL,
@@ -105,6 +107,12 @@ export class SettingsDataService {
     updateCountry(input: UpdateCountryInput) {
         return this.baseDataService.mutate<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
             input: pick(input, ['id', 'code', 'enabled', 'translations']),
+        });
+    }
+
+    deleteCountry(id: string) {
+        return this.baseDataService.mutate<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, {
+            id,
         });
     }
 

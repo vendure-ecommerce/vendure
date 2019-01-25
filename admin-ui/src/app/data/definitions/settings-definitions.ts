@@ -66,6 +66,15 @@ export const UPDATE_COUNTRY = gql`
     ${COUNTRY_FRAGMENT}
 `;
 
+export const DELETE_COUNTRY = gql`
+    mutation DeleteCountry($id: ID!) {
+        deleteCountry(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const ZONE_FRAGMENT = gql`
     fragment Zone on Zone {
         id

@@ -760,6 +760,8 @@ export interface ImportInfo {
 
 export interface SearchReindexResponse {
     success: boolean;
+    timeTaken: number;
+    indexedItemCount: number;
 }
 
 export interface AdministratorListOptions {
@@ -5269,9 +5271,17 @@ export namespace ImportInfoResolvers {
 export namespace SearchReindexResponseResolvers {
     export interface Resolvers<Context = any> {
         success?: SuccessResolver<boolean, any, Context>;
+        timeTaken?: TimeTakenResolver<number, any, Context>;
+        indexedItemCount?: IndexedItemCountResolver<number, any, Context>;
     }
 
     export type SuccessResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type TimeTakenResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type IndexedItemCountResolver<R = number, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
 }
 
 export namespace GetAdministrators {
@@ -6367,6 +6377,23 @@ export namespace UpdateCountry {
     };
 
     export type UpdateCountry = Country.Fragment;
+}
+
+export namespace DeleteCountry {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        deleteCountry: DeleteCountry;
+    };
+
+    export type DeleteCountry = {
+        __typename?: 'DeletionResponse';
+        result: DeletionResult;
+        message?: string | null;
+    };
 }
 
 export namespace GetZones {

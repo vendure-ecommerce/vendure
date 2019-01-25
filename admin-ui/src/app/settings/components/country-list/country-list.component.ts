@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { map, mergeMap, take, tap } from 'rxjs/operators';
-import { Country, GetCountryList, GetZones, Zone } from 'shared/generated-types';
+import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
+import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { Country, DeletionResult, GetCountryList, GetZones, Zone } from 'shared/generated-types';
 
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
@@ -146,6 +146,39 @@ export class CountryListComponent implements OnInit, OnDestroy {
                     this.selectedCountryIds = [];
                 }
             });
+    }
+
+    deleteCountry(countryId: string) {
+        this.modalService
+            .dialog({
+                title: _('catalog.confirm-delete-country'),
+                buttons: [
+                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(response =>
+                    response ? this.dataService.settings.deleteCountry(countryId) : EMPTY,
+                ),
+            )
+            .subscribe(
+                response => {
+                    if (response.deleteCountry.result === DeletionResult.DELETED) {
+                        this.notificationService.success(_('common.notify-delete-success'), {
+                            entity: 'Country',
+                        });
+                        this.dataService.settings.getCountries(9999, 0).single$.subscribe();
+                    } else {
+                        this.notificationService.error(response.deleteCountry.message || '');
+                    }
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-delete-error'), {
+                        entity: 'Country',
+                    });
+                },
+            );
     }
 
     private isZone(input: Zone.Fragment | { name: string }): input is Zone.Fragment {
