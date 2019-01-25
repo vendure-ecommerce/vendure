@@ -30,6 +30,7 @@
     "assets-selected-count": "{ count } assets selected",
     "confirm-delete-facet": "Delete facet?",
     "confirm-delete-facet-value": "Delete facet value?",
+    "confirm-delete-product": "Delete product?",
     "confirm-generate-product-variants": "Click 'Finish' to generate {count} product variants.",
     "create-group": "Create option group",
     "create-new-facet": "Create new facet",

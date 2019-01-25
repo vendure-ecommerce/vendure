@@ -1,5 +1,5 @@
-import { forkJoin, from } from 'rxjs';
-import { bufferCount, concatMap, mergeMap } from 'rxjs/operators';
+import { from } from 'rxjs';
+import { bufferCount, concatMap } from 'rxjs/operators';
 import {
     AddOptionGroupToProduct,
     CreateAssets,
@@ -9,6 +9,7 @@ import {
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
+    DeleteProduct,
     GenerateProductVariants,
     GetAssetList,
     GetProductCategory,
@@ -36,6 +37,7 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_CATEGORY,
     CREATE_PRODUCT_OPTION_GROUP,
+    DELETE_PRODUCT,
     GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
     GET_PRODUCT_CATEGORY,
@@ -118,6 +120,12 @@ export class ProductDataService {
             UPDATE_PRODUCT,
             input,
         );
+    }
+
+    deleteProduct(id: string) {
+        return this.baseDataService.mutate<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+            id,
+        });
     }
 
     generateProductVariants(productId: string, defaultPrice?: number, defaultSku?: string) {

@@ -142,6 +142,15 @@ export const CREATE_PRODUCT = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const DELETE_PRODUCT = gql`
+    mutation DeleteProduct($id: ID!) {
+        deleteProduct(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const GENERATE_PRODUCT_VARIANTS = gql`
     mutation GenerateProductVariants(
         $productId: ID!
