@@ -71,7 +71,7 @@ export const clientResolvers: ResolverDefinition = {
 
 function updateRequestsInFlight(cache: InMemoryCache, increment: 1 | -1): number {
     const previous = cache.readQuery<GetNetworkStatus.Query>({ query: GET_NEWTORK_STATUS });
-    const inFlightRequests = previous.networkStatus.inFlightRequests + increment;
+    const inFlightRequests = previous ? previous.networkStatus.inFlightRequests + increment : increment;
     const data: GetNetworkStatus.Query = {
         networkStatus: {
             __typename: 'NetworkStatus',
