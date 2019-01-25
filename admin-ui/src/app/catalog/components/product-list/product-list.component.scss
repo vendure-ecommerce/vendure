@@ -4,6 +4,10 @@
     width: 50px;
     height: 50px;
     background-color: $color-grey-2;
+    .placeholder {
+        text-align: center;
+        color: $color-grey-3;
+    }
 }
 .search-form {
     display: flex;

@@ -44,12 +44,17 @@
         <td class="left align-middle">
             <div class="image-placeholder">
                 <img
-                    [src]="
-                        (groupByProduct
+                    *ngIf="
+                        groupByProduct
                             ? result.productPreview
-                            : result.productVariantPreview || result.productPreview) + '?preset=tiny'
+                            : result.productVariantPreview || result.productPreview as image;
+                        else: imagePlaceholder
                     "
+                    [src]="image + '?preset=tiny'"
                 />
+                <ng-template #imagePlaceholder>
+                    <div class="placeholder"><clr-icon shape="image" size="48"></clr-icon></div>
+                </ng-template>
             </div>
         </td>
         <td class="left align-middle">
