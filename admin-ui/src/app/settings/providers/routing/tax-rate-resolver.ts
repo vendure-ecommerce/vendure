@@ -19,6 +19,7 @@ export class TaxRateResolver extends BaseEntityResolver<TaxRate.Fragment> {
                 enabled: true,
                 category: {} as any,
                 zone: {} as any,
+                customerGroup: null,
             },
             id => this.dataService.settings.getTaxRate(id).mapStream(data => data.taxRate),
         );

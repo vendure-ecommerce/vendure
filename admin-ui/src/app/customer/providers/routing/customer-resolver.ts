@@ -15,6 +15,9 @@ export class CustomerResolver extends BaseEntityResolver<Customer.Fragment> {
                 firstName: '',
                 lastName: '',
                 emailAddress: '',
+                phoneNumber: null,
+                addresses: null,
+                user: null,
             },
             id => this.dataService.customer.getCustomer(id).mapStream(data => data.customer),
         );
