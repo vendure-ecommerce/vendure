@@ -117,6 +117,7 @@ export class ProductService {
                 await this.assetUpdater.updateEntityAssets(p, input);
             },
         });
+        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -137,9 +138,10 @@ export class ProductService {
         return assertFound(this.findOne(ctx, product.id));
     }
 
-    async softDelete(productId: ID): Promise<DeletionResponse> {
-        await getEntityOrThrow(this.connection, Product, productId);
+    async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
+        const product = await getEntityOrThrow(this.connection, Product, productId);
         await this.connection.getRepository(Product).update({ id: productId }, { deletedAt: new Date() });
+        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return {
             result: DeletionResult.DELETED,
         };

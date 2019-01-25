@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Brackets, Connection, Like, SelectQueryBuilder } from 'typeorm';
+import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { LanguageCode, SearchInput, SearchResponse } from '../../../../shared/generated-types';
 import { Omit } from '../../../../shared/omit';
+import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
@@ -13,6 +15,7 @@ import { CatalogModificationEvent } from '../../event-bus/events/catalog-modific
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { FacetValueService } from '../../service/services/facet-value.service';
 
+import { DefaultSearceReindexResonse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
 
 /**
@@ -112,35 +115,57 @@ export class FulltextSearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(languageCode: LanguageCode): Promise<boolean> {
-        const variants = await this.connection.getRepository(ProductVariant).find({
+    async reindex(languageCode: LanguageCode): Promise<DefaultSearceReindexResonse> {
+        const timeStart = Date.now();
+        const qb = await this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: this.variantRelations,
         });
-
+        const variants = await qb.where('variants_product.deletedAt IS NULL').getMany();
         await this.connection.getRepository(SearchIndexItem).delete({ languageCode });
         await this.saveSearchIndexItems(languageCode, variants);
-        return true;
+        return {
+            success: true,
+            indexedItemCount: variants.length,
+            timeTaken: Date.now() - timeStart,
+        };
     }
 
     /**
      * Updates the search index only for the affected entities.
      */
     async update(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
-        let variants: ProductVariant[] = [];
+        let updatedVariants: ProductVariant[] = [];
+        let removedVariantIds: ID[] = [];
         if (updatedEntity instanceof Product) {
-            variants = await this.connection.getRepository(ProductVariant).find({
-                relations: this.variantRelations,
-                where: { product: { id: updatedEntity.id } },
+            const product = await this.connection.getRepository(Product).findOne(updatedEntity.id, {
+                relations: ['variants'],
             });
+            if (product) {
+                if (product.deletedAt) {
+                    removedVariantIds = product.variants.map(v => v.id);
+                } else {
+                    updatedVariants = await this.connection
+                        .getRepository(ProductVariant)
+                        .findByIds(product.variants.map(v => v.id), {
+                            relations: this.variantRelations,
+                        });
+                }
+            }
         } else {
             const variant = await this.connection.getRepository(ProductVariant).findOne(updatedEntity.id, {
                 relations: this.variantRelations,
             });
             if (variant) {
-                variants = [variant];
+                updatedVariants = [variant];
             }
         }
-        await this.saveSearchIndexItems(ctx.languageCode, variants);
+        if (updatedVariants.length) {
+            await this.saveSearchIndexItems(ctx.languageCode, updatedVariants);
+        }
+        if (removedVariantIds.length) {
+            await this.removeSearchIndexItems(ctx.languageCode, removedVariantIds);
+        }
     }
 
     /**
@@ -195,6 +220,9 @@ export class FulltextSearchService {
         return qb;
     }
 
+    /**
+     * Add or update items in the search index
+     */
     private async saveSearchIndexItems(languageCode: LanguageCode, variants: ProductVariant[]) {
         const items = variants
             .map(v => translateDeep(v, languageCode, ['product']))
@@ -215,6 +243,17 @@ export class FulltextSearchService {
                     }),
             );
         await this.connection.getRepository(SearchIndexItem).save(items);
+    }
+
+    /**
+     * Remove items from the search index
+     */
+    private async removeSearchIndexItems(languageCode: LanguageCode, variantIds: ID[]) {
+        const compositeKeys = variantIds.map(id => ({
+            productVariantId: id,
+            languageCode,
+        })) as any[];
+        await this.connection.getRepository(SearchIndexItem).delete(compositeKeys);
     }
 
     private getFacetIds(variant: ProductVariant): string[] {

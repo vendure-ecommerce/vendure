@@ -1,9 +1,9 @@
 import { RequestContext } from '../../api/common/request-context';
-import { VendureEntity } from '../../entity';
+import { Product, ProductVariant } from '../../entity';
 import { VendureEvent } from '../vendure-event';
 
 export class CatalogModificationEvent extends VendureEvent {
-    constructor(public ctx: RequestContext, public entity: VendureEntity) {
+    constructor(public ctx: RequestContext, public entity: Product | ProductVariant) {
         super();
     }
 }

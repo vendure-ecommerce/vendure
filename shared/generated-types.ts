@@ -724,7 +724,7 @@ export interface Mutation {
     deletePromotion: DeletionResponse;
     createRole: Role;
     updateRole: Role;
-    reindex: boolean;
+    reindex: SearchReindexResponse;
     createShippingMethod: ShippingMethod;
     updateShippingMethod: ShippingMethod;
     createTaxCategory: TaxCategory;
@@ -756,6 +756,10 @@ export interface ImportInfo {
     errors?: string[] | null;
     processed: number;
     imported: number;
+}
+
+export interface SearchReindexResponse {
+    success: boolean;
 }
 
 export interface AdministratorListOptions {
@@ -4472,7 +4476,7 @@ export namespace MutationResolvers {
         deletePromotion?: DeletePromotionResolver<DeletionResponse, any, Context>;
         createRole?: CreateRoleResolver<Role, any, Context>;
         updateRole?: UpdateRoleResolver<Role, any, Context>;
-        reindex?: ReindexResolver<boolean, any, Context>;
+        reindex?: ReindexResolver<SearchReindexResponse, any, Context>;
         createShippingMethod?: CreateShippingMethodResolver<ShippingMethod, any, Context>;
         updateShippingMethod?: UpdateShippingMethodResolver<ShippingMethod, any, Context>;
         createTaxCategory?: CreateTaxCategoryResolver<TaxCategory, any, Context>;
@@ -5066,7 +5070,11 @@ export namespace MutationResolvers {
         input: UpdateRoleInput;
     }
 
-    export type ReindexResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+    export type ReindexResolver<R = SearchReindexResponse, Parent = any, Context = any> = Resolver<
+        R,
+        Parent,
+        Context
+    >;
     export type CreateShippingMethodResolver<R = ShippingMethod, Parent = any, Context = any> = Resolver<
         R,
         Parent,
@@ -5256,6 +5264,14 @@ export namespace ImportInfoResolvers {
     >;
     export type ProcessedResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
     export type ImportedResolver<R = number, Parent = any, Context = any> = Resolver<R, Parent, Context>;
+}
+
+export namespace SearchReindexResponseResolvers {
+    export interface Resolvers<Context = any> {
+        success?: SuccessResolver<boolean, any, Context>;
+    }
+
+    export type SuccessResolver<R = boolean, Parent = any, Context = any> = Resolver<R, Parent, Context>;
 }
 
 export namespace GetAdministrators {
@@ -5834,6 +5850,23 @@ export namespace CreateProduct {
     };
 
     export type CreateProduct = ProductWithVariants.Fragment;
+}
+
+export namespace DeleteProduct {
+    export type Variables = {
+        id: string;
+    };
+
+    export type Mutation = {
+        __typename?: 'Mutation';
+        deleteProduct: DeleteProduct;
+    };
+
+    export type DeleteProduct = {
+        __typename?: 'DeletionResponse';
+        result: DeletionResult;
+        message?: string | null;
+    };
 }
 
 export namespace GenerateProductVariants {

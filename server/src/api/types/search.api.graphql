@@ -3,7 +3,11 @@ type Query {
 }
 
 type Mutation {
-    reindex: Boolean!
+    reindex: SearchReindexResponse!
+}
+
+type SearchReindexResponse {
+    success: Boolean!
 }
 
 input SearchInput {

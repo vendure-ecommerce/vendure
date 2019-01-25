@@ -17,6 +17,8 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -40,6 +42,7 @@ export class ProductVariantService {
         private assetUpdater: AssetUpdater,
         private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
+        private eventBus: EventBus,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -147,6 +150,7 @@ export class ProductVariantService {
                 ],
             }),
         );
+        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
         return translateDeep(this.applyChannelPriceAndTax(variant, ctx), DEFAULT_LANGUAGE_CODE, [
             'options',
             'facetValues',
@@ -201,7 +205,7 @@ export class ProductVariantService {
             });
             variants.push(variant);
         }
-
+        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
     }
 
