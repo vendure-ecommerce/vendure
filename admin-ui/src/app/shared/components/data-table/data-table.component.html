@@ -9,7 +9,7 @@
                         (selectedChange)="allSelectChange.emit()"
                     ></vdr-select-toggle>
                 </th>
-                <th *ngFor="let header of columns?.toArray()" class="left">
+                <th *ngFor="let header of columns?.toArray()" class="left" [class.expand]="header.expand">
                     <ng-container *ngTemplateOutlet="header.template"></ng-container>
                 </th>
             </tr>

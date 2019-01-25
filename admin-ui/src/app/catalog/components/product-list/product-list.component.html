@@ -37,7 +37,7 @@
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-result="item">

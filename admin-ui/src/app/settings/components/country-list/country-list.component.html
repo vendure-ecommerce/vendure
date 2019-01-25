@@ -26,7 +26,7 @@
     (allSelectChange)="toggleSelectAll()"
 >
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.zone' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>

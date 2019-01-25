@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'vdr-dt-column',
@@ -7,5 +7,9 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
     `,
 })
 export class DataTableColumnComponent {
+    /**
+     * When set to true, this column will expand to use avaiable width
+     */
+    @Input() expand = false;
     @ViewChild(TemplateRef) template: TemplateRef<any>;
 }

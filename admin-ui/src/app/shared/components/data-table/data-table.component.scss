@@ -4,6 +4,10 @@ thead th {
     position: sticky;
     top: 24px;
     z-index: 1;
+
+    &.expand {
+        width: 100%;
+    }
 }
 
 .table-footer {
