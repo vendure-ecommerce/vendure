@@ -60,7 +60,7 @@
     "rxjs": "^6.3.3",
     "sharp": "^0.21.1",
     "typeorm": "0.2.11",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

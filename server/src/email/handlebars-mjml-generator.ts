@@ -1,15 +1,12 @@
 import dateFormat from 'dateformat';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
-// tslint:disable-next-line
-//const mjml2html = require('mjml');
 import mjml2html from 'mjml';
 import path from 'path';
 
 import { InternalServerError } from '../common/error/errors';
-import { ReadOnlyRequired } from '../common/types/common-types';
+import { ConfigService } from '../config/config.service';
 import { EmailGenerator } from '../config/email/email-options';
-import { VendureConfig } from '../config/vendure-config';
 
 import { EmailContext, GeneratedEmailContext } from './email-context';
 
@@ -18,7 +15,7 @@ import { EmailContext, GeneratedEmailContext } from './email-context';
  * compiled down to responsive email HTML.
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-    onInit(config: ReadOnlyRequired<VendureConfig>) {
+    onInit(config: ConfigService) {
         if (!config.emailOptions.emailTemplatePath) {
             throw new InternalServerError(
                 `When using the HandlebarsMjmlGenerator, the emailTemplatePath config option must be set`,
