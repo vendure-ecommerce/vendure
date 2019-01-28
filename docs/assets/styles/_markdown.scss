@@ -14,8 +14,13 @@ $block-border-radius: 0.15rem;
         margin-top: 48px;
     }
 
+    h3 {
+        margin-top: 36px;
+        color: $gray-700;
+    }
+
     h1, h2, h3, h4, h5 {
-        font-weight: 400;
+        font-weight: 600;
         line-height: 1.25;
 
         &[id]:target:before {

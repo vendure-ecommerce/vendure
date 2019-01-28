@@ -11,7 +11,6 @@ All configuration and customization of Vendure is done via the `VendureConfig` o
 
 ```TypeScript
 bootstrap({
-    defaultChannelToken: 'default-channel',
     authOptions: {
         sessionSecret: 'xup1hki5zo',
     },
@@ -43,6 +42,9 @@ bootstrap({
             devMode: true,
         }),
         new DefaultSearchPlugin(),
+        new AdminUiPlugin({
+            port: 3001,
+        }),
     ],
 }).catch(err => {
     console.log(err);
