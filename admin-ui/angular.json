@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "baseHref": "/admin/",
             "outputPath": "dist/vendure-admin",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -57,7 +58,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
             }
           }
         },

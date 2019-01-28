@@ -1,5 +1,6 @@
+import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { Inject, Injectable, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -13,8 +14,15 @@ import { CustomHttpTranslationLoader } from './core/providers/i18n/custom-http-l
 import { I18nService } from './core/providers/i18n/i18n.service';
 import { DataService } from './data/providers/data.service';
 
-export function HttpLoaderFactory(http: HttpClient) {
-    return new CustomHttpTranslationLoader(http, '/i18n-messages/');
+@Injectable()
+export class BaseHrefHolder {
+    constructor(@Inject(APP_BASE_HREF) public addBaseHref: string) {}
+}
+
+export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) {
+    // Dynamically get the baseHref, which is configured in the angular.json file
+    const baseHref = location.getBaseHrefFromDOM();
+    return new CustomHttpTranslationLoader(http, baseHref + '/i18n-messages/');
 }
 
 @NgModule({
@@ -26,13 +34,13 @@ export function HttpLoaderFactory(http: HttpClient) {
             loader: {
                 provide: TranslateLoader,
                 useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
+                deps: [HttpClient, PlatformLocation],
             },
             compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatCompiler },
         }),
         CoreModule,
     ],
-    providers: [],
+    providers: [BaseHrefHolder],
     bootstrap: [AppComponent],
 })
 export class AppModule {
