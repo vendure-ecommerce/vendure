@@ -26,7 +26,11 @@ function buildAdminUi() {
         {
             cwd: path.join(__dirname, '../../admin-ui'),
         },
-        error => console.log(error),
+        error => {
+            if (error) {
+                console.log(error);
+            }
+        },
     );
 }
 

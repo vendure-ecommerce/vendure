@@ -121,6 +121,7 @@ export class FulltextSearchService {
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: this.variantRelations,
         });
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
         const variants = await qb.where('variants_product.deletedAt IS NULL').getMany();
         await this.connection.getRepository(SearchIndexItem).delete({ languageCode });
         await this.saveSearchIndexItems(languageCode, variants);
@@ -187,7 +188,7 @@ export class FulltextSearchService {
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
         const { term, facetIds } = input;
-        qb.where('true');
+        qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
             qb.addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
                 .addSelect(
