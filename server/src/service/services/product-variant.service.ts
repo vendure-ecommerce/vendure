@@ -188,6 +188,11 @@ export class ProductVariantService {
             taxCategory = taxCategories[0];
         }
 
+        if (!taxCategory) {
+            // there is no TaxCategory set up, so create a default
+            taxCategory = await this.taxCategoryService.create({ name: 'Standard Tax' });
+        }
+
         const variants: ProductVariant[] = [];
         for (const options of optionCombinations) {
             const name = this.createVariantName(productName, options);
