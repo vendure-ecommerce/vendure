@@ -46,6 +46,10 @@ export class ChannelService {
      * Given a channel token, returns the corresponding Channel if it exists.
      */
     getChannelFromToken(token: string): Channel {
+        if (this.allChannels.length === 1 || token === '') {
+            // there is only the default channel, so return it
+            return this.getDefaultChannel();
+        }
         const channel = this.allChannels.find(c => c.token === token);
         if (!channel) {
             throw new InternalServerError(`error.channel-not-found`, { token });

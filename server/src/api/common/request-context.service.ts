@@ -51,14 +51,12 @@ export class RequestContextService {
 
     private getChannelToken(req: Request): string {
         const tokenKey = this.configService.channelTokenKey;
-        let channelToken: string;
+        let channelToken = '';
 
         if (req && req.query && req.query[tokenKey]) {
             channelToken = req.query[tokenKey];
         } else if (req && req.headers && req.headers[tokenKey]) {
             channelToken = req.headers[tokenKey] as string;
-        } else {
-            throw new NoValidChannelError();
         }
         return channelToken;
     }
