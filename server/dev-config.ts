@@ -7,6 +7,7 @@ import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config'
 import { defaultEmailTypes } from './src/email/default-email-types';
 import { HandlebarsMjmlGenerator } from './src/email/handlebars-mjml-generator';
 import { DefaultAssetServerPlugin } from './src/plugin';
+import { AdminUiPlugin } from './src/plugin/admin-ui-plugin/admin-ui-plugin';
 import { DefaultSearchPlugin } from './src/plugin/default-search-plugin/default-search-plugin';
 
 /**
@@ -57,5 +58,8 @@ export const devConfig: VendureConfig = {
             port: 4000,
         }),
         new DefaultSearchPlugin(),
+        new AdminUiPlugin({
+            port: 3001,
+        }),
     ],
 };

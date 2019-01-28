@@ -1,11 +1,10 @@
-import express from 'express';
-import { NextFunction, Request, Response } from 'express';
-import proxy from 'http-proxy-middleware';
+import express, { NextFunction, Request, Response } from 'express';
 import path from 'path';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { VendureConfig } from '../../config/vendure-config';
 import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
+import { createProxyHandler } from '../plugin-utils';
 
 import { DefaultAssetPreviewStrategy } from './default-asset-preview-strategy';
 import { DefaultAssetStorageStrategy } from './default-asset-storage-strategy';
@@ -67,7 +66,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.middleware.push({
-            handler: this.createProxyHandler(config.hostname, !config.silent),
+            handler: createProxyHandler(this.options, !config.silent),
             route: this.options.route,
         });
         return config;
@@ -136,23 +135,6 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
             }
         }
         return req.path;
-    }
-
-    /**
-     * Configures the proxy middleware which will be passed to the main Vendure server. This
-     * will proxy all asset requests to the dedicated asset server.
-     */
-    private createProxyHandler(serverHostname: string, logging: boolean) {
-        const route = this.options.route.charAt(0) === '/' ? this.options.route : '/' + this.options.route;
-        const proxyHostname = this.options.hostname ? this.options.hostname : serverHostname || 'localhost';
-        return proxy({
-            // TODO: how do we detect https?
-            target: `http://${proxyHostname}:${this.options.port}`,
-            pathRewrite: {
-                [`^${route}`]: '/',
-            },
-            logLevel: logging ? 'info' : 'silent',
-        });
     }
 
     private addSuffix(fileName: string, suffix: string): string {
