@@ -12,16 +12,15 @@ weight: 0
  
 ## Installation
 
-The following instructions describe how to run a development instance of Vendure using ts-node and a MySQL / MariaDB server
+The following instructions describe how to run a development instance of Vendure using ts-node and SQLite.
 
 ### Set up the database
 
-You'll need a database server available from your local machine. For example, [this MariaDB & phpMyAdmin Docker image](https://github.com/bitnami/bitnami-docker-phpmyadmin) can be used. Create a new database and name it e.g. "vendure".
-
-You'll also need a driver for Vendure to connect to the database. In this case, the `mysql` package.
+You'll need a database to store your shop data. The simplest way to try out Vendure is to use SQLite, since it does not 
+require a separate database server to work.
 
 ```bash
-$ npm install mysql --save
+$ npm install sqlite3
 ```
 
 ### Install ts-node
@@ -35,7 +34,7 @@ $ npm install --save-dev ts-node
 ### Install Vendure
 
 ```bash
-$ npm install --save @vendure/core
+$ npm install @vendure/core
 ```
 
 ### Initialize with the Vendure CLI

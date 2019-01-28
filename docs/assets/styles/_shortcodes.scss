@@ -1,5 +1,8 @@
 @import "variables";
 
+/**
+ Alert
+ */
 .alert {
     border: 1px solid;
     border-radius: 2px;
@@ -9,4 +12,21 @@
     &.danger { border-color: $color-danger; background: transparentize($color-danger, 0.9); }
     &.warning { border-color: $color-warning; background: transparentize($color-warning, 0.9); }
     &.success { border-color: $color-success; background: transparentize($color-success, 0.9); }
+}
+
+/**
+ Config option
+ */
+.config-option-info {
+    display: flex;
+    margin-top: -16px;
+
+    .type, .default {
+        margin-right: 12px;
+    }
+    .label{
+        display: inline-block;
+        color: $gray-700;
+    }
+
 }

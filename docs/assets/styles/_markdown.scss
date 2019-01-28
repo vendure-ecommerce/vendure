@@ -1,6 +1,6 @@
 @import 'variables';
 
-$block-border-radius: 0.15rem;
+$block-border-radius: 4px;
 
 .markdown {
     line-height: 1.7;
@@ -49,11 +49,9 @@ $block-border-radius: 0.15rem;
 
     code {
         font-family: 'Oxygen Mono', monospace;
-    }
-
-    p code {
         padding: 0 $padding-4;
         background: $gray-100;
+        color: darken($brand-color, 30%);
         border-radius: $block-border-radius;
     }
 
@@ -63,6 +61,12 @@ $block-border-radius: 0.15rem;
         border-radius: $block-border-radius;
         font-size: $font-size-14;
         overflow-x: auto;
+
+        code {
+            color: $gray-200;
+            background: none;
+            padding: none;
+        }
     }
 
     blockquote {
