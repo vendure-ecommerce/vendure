@@ -40,25 +40,27 @@ type TypeMap = Map<string, string>;
 
 const docsPath = '/docs/api/';
 const outputPath = path.join(__dirname, '../docs/content/docs/api');
-const vendureConfig = path.join(__dirname, '../server/src/config/vendure-config.ts');
+
+/**
+ * This map is used to cache types and their corresponding Hugo path. It is used to enable
+ * hyperlinking from a member's "type" to the definition of that type.
+ */
 const globalTypeMap: TypeMap = new Map();
+
 const tsFiles = klawSync(path.join(__dirname, '../server/src/'), {
     nodir: true,
-    filter: item => {
-        return path.extname(item.path) === '.ts';
-    },
+    filter: item => path.extname(item.path) === '.ts',
     traverseAll: true,
 }).map(item => item.path);
 
 deleteGeneratedDocs();
-generateDocs(tsFiles, globalTypeMap);
-
+generateDocs(tsFiles, outputPath, globalTypeMap);
 const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
 if (watchMode) {
     console.log(`Watching for changes to source files...`);
     tsFiles.forEach(file => {
         fs.watchFile(file, {interval: 1000}, () => {
-            generateDocs([file], globalTypeMap);
+            generateDocs([file], outputPath, globalTypeMap);
         });
     });
 }
@@ -86,7 +88,13 @@ function isGenerated(content: string) {
     return /generated\: true\n---\n/.test(content);
 }
 
-function generateDocs(filePaths: string[], typeMap: TypeMap) {
+/**
+ * Uses the TypeScript compiler API to parse the given files and extract out the documentation
+ * into markdown files
+ * @param filePaths
+ * @param typeMap
+ */
+function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: TypeMap) {
     const timeStart = +new Date();
     const sourceFiles = filePaths.map(filePath => {
         return ts.createSourceFile(
@@ -111,7 +119,7 @@ function generateDocs(filePaths: string[], typeMap: TypeMap) {
 
     for (const info of interfaces) {
         const markdown = renderInterface(info, typeMap);
-        const categoryDir = path.join(outputPath, info.category);
+        const categoryDir = path.join(hugoApiDocsPath, info.category);
         const indexFile = path.join(categoryDir, '_index.md');
         if (!fs.existsSync(categoryDir)) {
             fs.mkdirSync(categoryDir);
@@ -120,7 +128,6 @@ function generateDocs(filePaths: string[], typeMap: TypeMap) {
             const indexFileContent = generateFrontMatter(info.category, 10) + `\n\n# ${info.category}`;
             fs.writeFileSync(indexFile, indexFileContent);
         }
-
 
         fs.writeFileSync(path.join(categoryDir, info.fileName + '.md'), markdown);
     }
@@ -252,10 +259,17 @@ function parseTags<T extends ts.Node>(node: T, tagMatcher: { [tagName: string]: 
     }
 }
 
+/**
+ * This function takes a string representing a type (e.g. "Array<ShippingMethod>") and turns
+ * and known types (e.g. "ShippingMethod") into hyperlinks.
+ */
 function renderType(type: string, knownTypeMap: Map<string, string>): string {
-    let typeText = type.trim().replace(/[\u00A0-\u9999<>\&]/gim, i => {
-        return '&#' + i.charCodeAt(0) + ';';
-    }).replace(/\n/, ' ');
+    let typeText = type.trim()
+        // encode HTML entities
+        .replace(/[\u00A0-\u9999<>\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+        // remove newlines
+        .replace(/\n/g, ' ');
+
     for (const [key, val] of knownTypeMap) {
         typeText = typeText.replace(key, `<a href='${docsPath}/${val}/'>${key}</a>`);
     }
