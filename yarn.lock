@@ -125,6 +125,18 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/is-glob/-/is-glob-4.0.0.tgz#fb8a2bff539025d4dcd6d5efe7689e03341b876d"
 
+"@types/klaw-sync@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@types/klaw-sync/-/klaw-sync-6.0.0.tgz#ff0b36601efaaa109d513c4ced109311fd06ba36"
+  integrity sha512-Ibfb2jgpjYUxnl7RSVvUzOrv/vhkTVKEfPwQf9ZlDDsSyWVDp/2JtTBxO4eRrKBYtxc3cZQabdR38i8R0o1uww==
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*":
+  version "10.12.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.19.tgz#ca1018c26be01f07e66ac7fefbeb6407e4490c61"
+  integrity sha512-2NVovndCjJQj6fUUn9jCgpP4WSqr+u1SoUZMZyJkhGeBFsm6dE46l31S7lPUYt9uQ28XI+ibrJA1f5XyH5HNtA==
+
 "@types/node@^10.11.5":
   version "10.11.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.5.tgz#6489ebda4452592d3fd37aefa57eedc01ed13378"
@@ -1666,6 +1678,13 @@ kind-of@^5.0.0:
 kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
+
+klaw-sync@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/klaw-sync/-/klaw-sync-6.0.0.tgz#1fd2cfd56ebb6250181114f0a581167099c2b28c"
+  integrity sha512-nIeuVSzdCCs6TDPTqI8w1Yre34sSq7AkZ4B3sfOBbI2CgVSB4Du4aLQijFU2+lhAFCwt9+42Hel6lQNIv6AntQ==
+  dependencies:
+    graceful-fs "^4.1.11"
 
 kuler@1.0.x:
   version "1.0.0"

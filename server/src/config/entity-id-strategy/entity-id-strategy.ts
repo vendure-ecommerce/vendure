@@ -3,9 +3,12 @@ import { ID } from '../../../../shared/shared-types';
 export type PrimaryKeyType = 'increment' | 'uuid';
 
 /**
+ * @description
  * The EntityIdStrategy determines how entity IDs are generated and stored in the
  * database, as well as how they are transformed when being passed from the API to the
  * service layer.
+ *
+ * @docsCategory
  */
 export interface EntityIdStrategy<T extends ID = ID> {
     readonly primaryKeyType: PrimaryKeyType;

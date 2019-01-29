@@ -3,8 +3,11 @@ import { Request } from 'express';
 import { Stream } from 'stream';
 
 /**
+ * @description
  * The AssetPersistenceStrategy determines how Asset files are physically stored
  * and retrieved.
+ *
+ * @docsCategory assets
  */
 export interface AssetStorageStrategy {
     /**

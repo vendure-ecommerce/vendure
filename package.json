@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.0.5",
+    "@types/klaw-sync": "^6.0.0",
     "@types/node": "^10.11.5",
     "graphql": "^14.1.1",
     "graphql-code-generator": "^0.16.0",
@@ -26,6 +27,7 @@
     "graphql-codegen-typescript-server": "^0.16.0",
     "graphql-tools": "^4.0.0",
     "husky": "^0.14.3",
+    "klaw-sync": "^6.0.0",
     "lint-staged": "^7.2.0",
     "prettier": "^1.15.2",
     "ts-node": "^7.0.1",

@@ -1,7 +1,17 @@
 import { GeneratedEmailContext } from '../../email/email-context';
 
+export interface SMTPCredentials {
+    /** the username */
+    user: string;
+    /** then password */
+    pass: string;
+}
+
 /**
- * A subset of the SMTP transport options of Nodemailer (https://nodemailer.com/smtp/)
+ * @description
+ * A subset of the SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
+ *
+ * @docsCategory email
  */
 export interface SMTPTransportOptions {
     type: 'smtp';
@@ -10,12 +20,7 @@ export interface SMTPTransportOptions {
     /** the port to connect to (defaults to 25 or 465) */
     port: number;
     /** defines authentication data */
-    auth: {
-        /** the username */
-        user: string;
-        /** then password */
-        pass: string;
-    };
+    auth: SMTPCredentials;
     /** defines if the connection should use SSL (if true) or not (if false) */
     secure?: boolean;
     /** turns off STARTTLS support if true */
@@ -31,7 +36,10 @@ export interface SMTPTransportOptions {
 }
 
 /**
+ * @description
  * Uses the local Sendmail program to send the email.
+ *
+ * @docsCategory email
  */
 export interface SendmailTransportOptions {
     type: 'sendmail';
@@ -42,7 +50,10 @@ export interface SendmailTransportOptions {
 }
 
 /**
+ * @description
  * Outputs the email as an HTML file for development purposes.
+ *
+ * @docsCategory email
  */
 export interface FileTransportOptions {
     type: 'file';
@@ -53,17 +64,27 @@ export interface FileTransportOptions {
 }
 
 /**
+ * @description
  * Does nothing with the generated email. Mainly intended for use in testing where we don't care about the email transport.
+ *
+ * @docsCategory email
  */
 export interface NoopTransportOptions {
     type: 'none';
 }
 
 /**
+ * @description
  * Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
+ *
+ * @docsCategory email
  */
 export interface TestingTransportOptions {
     type: 'testing';
+    /**
+     * @description
+     * Callback to be invoked when an email would be sent.
+     */
     onSend: (context: GeneratedEmailContext) => void;
 }
 

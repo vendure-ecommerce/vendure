@@ -1,6 +1,14 @@
 {{ define "main" }}
 <article class="markdown">
   {{- .Content -}}
+
+    {{ if gt (len .Pages) 0 }}
+        <ul>
+        {{ range .Pages }}
+            <li>{{ .Title }}</li>
+        {{ end}}
+        </ul>
+    {{ end }}
 </article>
 {{ end }}
 

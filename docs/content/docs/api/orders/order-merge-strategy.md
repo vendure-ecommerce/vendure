@@ -1,0 +1,18 @@
+---
+title: "OrderMergeStrategy"
+weight: 10
+generated: true
+---
+<!-- This file was generated from the Vendure TypeScript source. Do not modify. Instead, re-run "generate-docs" -->
+
+
+# OrderMergeStrategy
+
+An OrderMergeStrategy defines what happens when a Customer with an existing Ordersigns in with a guest Order, where both Orders may contain differing OrderLines.Somehow these differing OrderLines need to be reconciled into a single collectionof OrderLines. The OrderMergeStrategy defines the rules governing this reconciliation.
+
+### merge
+
+{{< member-info type="(guestOrder: Order, existingOrder: Order) => OrderLine[]" >}}
+
+
+

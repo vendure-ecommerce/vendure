@@ -25,65 +25,97 @@ import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
+/**
+ * @description
+ * The AuthOptions define how authentication is managed.
+ *
+ * @docsCategory auth
+ */
 export interface AuthOptions {
     /**
+     * @description
      * Disable authentication & permissions checks.
      * NEVER set the to true in production. It exists
      * only to aid certain development tasks.
+     *
+     * @default truuuu
      */
     disableAuth?: boolean;
     /**
+     * @description
      * Sets the method by which the session token is delivered and read.
      *
-     * - "cookie": Upon login, a 'Set-Cookie' header will be returned to the client, setting a
+     * * 'cookie': Upon login, a 'Set-Cookie' header will be returned to the client, setting a
      *   cookie containing the session token. A browser-based client (making requests with credentials)
      *   should automatically send the session cookie with each request.
-     * - "bearer": Upon login, the token is returned in the response and should be then stored by the
-     *   client app. Each request should include the header "Authorization: Bearer <token>".
+     * * 'bearer': Upon login, the token is returned in the response and should be then stored by the
+     *   client app. Each request should include the header 'Authorization: Bearer <token>'.
+     *
+     * @default 'cookie'
      */
     tokenMethod?: 'cookie' | 'bearer';
     /**
+     * @description
      * The secret used for signing the session cookies for authenticated users. Only applies when
-     * tokenMethod is set to "cookie".
+     * tokenMethod is set to 'cookie'.
      *
      * In production applications, this should not be stored as a string in
      * source control for security reasons, but may be loaded from an external
      * file not under source control, or from an environment variable, for example.
-     * See https://stackoverflow.com/a/30090120/772859
+     *
+     * @default 'session-secret'
      */
     sessionSecret?: string;
     /**
-     * Sets the header property which will be used to send the auth token when using the "bearer" method.
+     * @description
+     * Sets the header property which will be used to send the auth token when using the 'bearer' method.
+     *
+     * @default 'vendure-auth-token'
      */
     authTokenHeaderKey?: string;
     /**
+     * @description
      * Session duration, i.e. the time which must elapse from the last authenticted request
      * after which the user must re-authenticate.
      *
-     * Expressed as a string describing a time span
-     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+     * Expressed as a string describing a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
+     *
+     * @default '7d'
      */
     sessionDuration?: string | number;
     /**
+     * @description
      * Determines whether new User accounts require verification of their email address.
+     *
+     * @defaut true
      */
     requireVerification?: boolean;
     /**
-     * Sets the length of time that a verification token is valid for.
+     * @description
+     * Sets the length of time that a verification token is valid for, after which the verification token must be refreshed.
      *
-     * Expressed as a string describing a time span
-     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+     * Expressed as a string describing a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
+     *
+     * @default '7d'
      */
     verificationTokenDuration?: string | number;
 }
 
+/**
+ * @docsCategory orders
+ */
 export interface OrderProcessOptions<T extends string> {
     /**
+     * @description
      * Define how the custom states fit in with the default order
      * state transitions.
+     *
      */
     transtitions?: Partial<Transitions<T | OrderState>>;
     /**
+     * @description
      * Define logic to run before a state tranition takes place. Returning
      * false will prevent the transition from going ahead.
      */
@@ -93,158 +125,229 @@ export interface OrderProcessOptions<T extends string> {
         data: { order: Order },
     ): boolean | Promise<boolean> | Observable<boolean> | void;
     /**
+     * @description
      * Define logic to run after a state transition has taken place.
      */
     onTransitionEnd?(fromState: T, toState: T, data: { order: Order }): void;
     /**
+     * @description
      * Define a custom error handler function for transition errors.
      */
     onError?(fromState: T, toState: T, message?: string): void;
 }
 
+/**
+ * @docsCategory orders
+ */
 export interface OrderMergeOptions {
     /**
+     * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
      * signing in.
      */
     mergeStrategy: OrderMergeStrategy;
     /**
+     * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
      * signing in as part of the checkout flow.
      */
     checkoutMergeStrategy: OrderMergeStrategy;
 }
 
+/**
+ * @description
+ * The AssetOptions define how assets (images and other files) are named and stored, and how preview images are generated.
+ *
+ * @docsCategory assets
+ */
 export interface AssetOptions {
     /**
+     * @description
      * Defines how asset files and preview images are named before being saved.
      */
     assetNamingStrategy: AssetNamingStrategy;
     /**
+     * @description
      * Defines the strategy used for storing uploaded binary files.
      */
     assetStorageStrategy: AssetStorageStrategy;
     /**
+     * @description
      * Defines the strategy used for creating preview images of uploaded assets.
      */
     assetPreviewStrategy: AssetPreviewStrategy;
     /**
+     * @description
      * The max file size in bytes for uploaded assets.
      */
     uploadMaxFileSize?: number;
 }
 
+/**
+ * @docsCategory promotions
+ */
 export interface PromotionOptions {
     /**
+     * @description
      * An array of conditions which can be used to construct Promotions
      */
     promotionConditions?: Array<PromotionCondition<any>>;
     /**
+     * @description
      * An array of actions which can be used to construct Promotions
      */
     promotionActions?: Array<PromotionAction<any>>;
 }
 
+/**
+ * @docsCategory orders
+ */
 export interface ShippingOptions {
     /**
+     * @description
      * An array of available ShippingEligibilityCheckers for use in configuring ShippingMethods
      */
     shippingEligibilityCheckers?: Array<ShippingEligibilityChecker<any>>;
     /**
+     * @description
      * An array of available ShippingCalculator for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
+/**
+ * @docsCategory email
+ */
 export interface EmailOptions<EmailType extends string> {
     /**
+     * @description
      * Path to the email template files.
      */
     emailTemplatePath: string;
     /**
+     * @description
      * Configuration for the creation and templating of each email type
      */
     emailTypes?: EmailTypes<EmailType>;
     /**
+     * @description
      * The EmailGenerator uses the EmailContext and template to generate the email body
      */
     generator?: EmailGenerator;
     /**
+     * @description
      * Configuration for the transport (email sending) method
      */
     transport: EmailTransportOptions;
 }
 
+/**
+ * @docsCategory payment
+ */
 export interface PaymentOptions {
     /**
+     * @description
      * An array of payment methods with which to process payments.
      */
     paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
 }
 
+/**
+ * @docsCategory tax
+ */
 export interface TaxOptions {
     /**
+     * @description
      * Defines the strategy used to determine the applicable Zone used in tax calculations.
      */
     taxZoneStrategy: TaxZoneStrategy;
     /**
+     * @description
      * Defines the strategy used for calculating taxes.
      */
     taxCalculationStrategy: TaxCalculationStrategy;
 }
 
+/**
+ * @docsCategory
+ */
 export interface ImportExportOptions {
     /**
+     * @description
      * The directory in which assets to be imported are located.
      */
     importAssetsDir?: string;
 }
 
+/**
+ * @description
+ * All possible configuration options are defined by the
+ * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
+ *
+ * {{% alert %}}
+ * Note on terminology: many of the configuration properties are named "Strategy" - this is because their use follows the
+ * [Strategy Pattern](https://en.wikipedia.org/wiki/Strategy_pattern) of software design.
+ * {{% /alert %}}
+ *
+ * @docsCategory
+ * @docsWeight 0
+ */
 export interface VendureConfig {
     /**
+     * @description
      * The path to the GraphQL API.
      */
     apiPath?: string;
     /**
+     * @description
      * Configuration for the handling of Assets.
      */
     assetOptions?: AssetOptions;
     /**
+     * @description
      * Configuration for authorization.
      */
     authOptions: AuthOptions;
     /**
+     * @description
      * The name of the property which contains the token of the
      * active channel. This property can be included either in
      * the request header or as a query string.
      */
     channelTokenKey?: string;
     /**
+     * @description
      * Set the CORS handling for the server.
      */
     cors?: boolean | CorsOptions;
     /**
+     * @description
      * Defines custom fields which can be used to extend the built-in entities.
      */
     customFields?: CustomFields;
     /**
+     * @description
      * The connection options used by TypeORM to connect to the database.
      */
     dbConnectionOptions: ConnectionOptions;
     /**
+     * @description
      * The token for the default channel. If not specified, a token
      * will be randomly generated.
      */
     defaultChannelToken?: string | null;
     /**
+     * @description
      * The default languageCode of the app.
      */
     defaultLanguageCode?: LanguageCode;
     /**
+     * @description
      * Configures the handling of transactional emails.
      */
     emailOptions?: EmailOptions<any>;
     /**
+     * @description
      * Defines the strategy used for both storing the primary keys of entities
      * in the database, and the encoding & decoding of those ids when exposing
      * entities via the API. The default uses a simple auto-increment integer
@@ -252,51 +355,63 @@ export interface VendureConfig {
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
+     * @description
      * Set the hostname of the server.
      */
     hostname?: string;
     /**
+     * @description
      * Configuration settings for data import and export.
      */
     importExportOptions?: ImportExportOptions;
     /**
+     * @description
      * Define the strategies governing how Orders are merged when an existing
      * Customer signs in.
      */
     orderMergeOptions?: OrderMergeOptions;
     /**
+     * @description
      * Defines custom states in the order process finite state machine.
      */
     orderProcessOptions?: OrderProcessOptions<any>;
     /**
+     * @description
      * Custom Express middleware for the server.
      */
     middleware?: Array<{ handler: RequestHandler; route: string }>;
     /**
+     * @description
      * Configures available payment processing methods.
      */
     paymentOptions: PaymentOptions;
     /**
+     * @description
      * An array of plugins.
      */
     plugins?: VendurePlugin[];
     /**
+     * @description
      * Which port the Vendure server should listen on.
      */
     port: number;
     /**
+     * @description
      * Configures the Conditions and Actions available when creating Promotions.
      */
     promotionOptions?: PromotionOptions;
     /**
+     * @description
      * Configures the available checkers and calculators for ShippingMethods.
      */
     shippingOptions?: ShippingOptions;
     /**
+     * @description
      * When set to true, no application logging will be output to the console.
      */
     silent?: boolean;
     /**
+     * @description
      * Configures how taxes are calculated on products.
      */
     taxOptions?: TaxOptions;

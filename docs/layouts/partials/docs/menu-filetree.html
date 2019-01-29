@@ -12,11 +12,7 @@
     {{ range sort $list "Weight" }}
         {{ if eq .Kind "section" }}
             <li class="section">
-                {{- if .Content -}}
-                  {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
-                {{- else -}}
-                  {{- template "title" . -}}
-                {{- end -}}
+                {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
                 {{ $expanded := in $.CurrentPage .Permalink }}
                 {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage "Expanded" $expanded) }}
             </li>

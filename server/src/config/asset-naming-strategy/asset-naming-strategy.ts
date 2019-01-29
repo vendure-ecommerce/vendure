@@ -1,9 +1,13 @@
 /**
+ * @description
  * The AssetNamingStrategy determines how file names are generated based on the uploaded source file name,
  * as well as how to handle naming conflicts.
+ *
+ * @docsCategory assets
  */
 export interface AssetNamingStrategy {
     /**
+     * @description
      * Given the original file name of the uploaded file, generate a file name to
      * be stored on the server. Operations like normalization and time-stamping can
      * be performed in this method.
@@ -16,6 +20,7 @@ export interface AssetNamingStrategy {
     generateSourceFileName(originalFileName: string, conflictFileName?: string): string;
 
     /**
+     * @description
      * Given the source file name generated in the {@link generateSourceFileName} method, this method
      * should generate the file name of the preview image.
      *

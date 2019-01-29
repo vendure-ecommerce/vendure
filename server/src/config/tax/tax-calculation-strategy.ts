@@ -12,7 +12,10 @@ export interface TaxCalculationArgs {
 }
 
 /**
+ * @description
  * Defines how taxes are calculated based on the input price, tax zone and current request context.
+ *
+ * @docsCategory tax
  */
 export interface TaxCalculationStrategy {
     calculate(args: TaxCalculationArgs): TaxCalculationResult;
