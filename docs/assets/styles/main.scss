@@ -118,6 +118,8 @@ ul.pagination {
 
 .book-page {
     min-width: $body-min-width;
+    min-height: 80vh;
+    flex: 1;
     padding: $padding-16;
 }
 

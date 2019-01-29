@@ -1,75 +1,219 @@
-import { readFileSync, writeFileSync } from 'fs';
+import fs from 'fs';
+import klawSync from 'klaw-sync';
 import path from 'path';
 import ts from 'typescript';
 
+// tslint:disable:no-console
+interface MemberInfo {
+    name: string;
+    description: string;
+    type: string;
+    defaultValue: string;
+}
+
+interface InterfaceInfo {
+    title: string;
+    weight: number;
+    category: string;
+    description: string;
+    fileName: string;
+    members: MemberInfo[];
+}
+
+const docsPath = '/docs/api/';
 const outputPath = path.join(__dirname, '../docs/content/docs/api');
 const vendureConfig = path.join(__dirname, '../server/src/config/vendure-config.ts');
 
-// Parse a file
-const sourceFile = ts.createSourceFile(
-    vendureConfig,
-    readFileSync(vendureConfig).toString(),
-    ts.ScriptTarget.ES2015,
-    true,
-);
+deleteGeneratedDocs();
+generateDocs();
+console.log(`Watching for changes to ${vendureConfig}`);
+fs.watchFile(vendureConfig, { interval: 1000 }, () => {
+    generateDocs();
+});
 
-for (const statement of [...sourceFile.statements]) {
-    if (ts.isInterfaceDeclaration(statement)) {
-        const title = statement.name.text;
-        const frontMatter = generateFrontMatter(statement);
-        const body = generateInterfaceDocs(statement);
-
-        const fileName = getGeneratedFileName(title);
-        const contents = `${frontMatter}\n${body}`;
-        writeFileSync(path.join(outputPath, fileName), contents);
+/**
+ * Delete all generated docs found in the outputPath.
+ */
+function deleteGeneratedDocs() {
+    let deleteCount = 0;
+    const files = klawSync(outputPath, { nodir: true });
+    for (const file of files) {
+        const content = fs.readFileSync(file.path, 'utf-8');
+        if (isGenerated(content)) {
+            fs.unlinkSync(file.path);
+            deleteCount ++;
+        }
     }
+    console.log(`Deleted ${deleteCount} generated docs`);
+}
+
+function isGenerated(content: string) {
+    return /generated\: true\n---\n/.test(content);
+}
+
+function generateDocs() {
+    const timeStart = +new Date();
+    const sourceFile = ts.createSourceFile(
+        vendureConfig,
+        fs.readFileSync(vendureConfig).toString(),
+        ts.ScriptTarget.ES2015,
+        true,
+    );
+    const knownTypeMap = new Map<string, string>();
+
+    const interfaces = [...sourceFile.statements]
+        .filter(ts.isInterfaceDeclaration)
+        .map(statement => {
+            const info = parseInterface(statement);
+            knownTypeMap.set(info.title, info.category + '/' + info.fileName);
+            return info;
+        });
+
+    for (const info of interfaces) {
+        const markdown = renderInterface(info, knownTypeMap);
+        fs.writeFileSync(path.join(outputPath, info.category, info.fileName + '.md'), markdown);
+    }
+
+    console.log(`Generated ${interfaces.length} docs in ${+new Date() - timeStart}ms`);
 }
 
 /**
- * Generates the body of a TypeScript interface documentation markdown file.
+ * Parses an InterfaceDeclaration into a simple object which can be rendered into markdown.
  */
-function generateInterfaceDocs(statement: ts.InterfaceDeclaration): string {
-    let output = `## ${statement.name.text}\n\n`;
-    for (const member of statement.members) {
+function parseInterface(statement: ts.InterfaceDeclaration): InterfaceInfo {
+    const title = statement.name.text;
+    const weight = getInterfaceWeight(statement);
+    const category = getDocsCategory(statement);
+    const description = getInterfaceDescription(statement);
+    const fileName = title.split(/(?=[A-Z])/).join('-').toLowerCase();
+    const members = parseMembers(statement.members);
+    return {
+        title,
+        weight,
+        category,
+        description,
+        fileName,
+        members,
+    };
+}
+
+/**
+ * Parses an array of inteface members into a simple object which can be rendered into markdown.
+ */
+function parseMembers(members: ts.NodeArray<ts.TypeElement>): MemberInfo[] {
+    const result: MemberInfo[] = [];
+
+    for (const member of members) {
         if (ts.isPropertySignature(member)) {
+            const name = member.name.getText();
             let description = '';
             let type = '';
-            let defaultVal = '';
-            const jsDocTags = ts.getJSDocTags(member);
-            for (const tag of jsDocTags) {
-                if (tag.tagName.text === 'description') {
-                    description = tag.comment || '';
-                }
-                if (tag.tagName.text === 'example') {
-                    description += formatExampleCode(tag.comment);
-                }
-                if (tag.tagName.text === 'default') {
-                    defaultVal = tag.comment || '';
-                }
-            }
+            let defaultValue = '';
+            parseTags(member, {
+                description: tag => description += tag.comment || '',
+                example: tag => description += formatExampleCode(tag.comment),
+                default: tag => defaultValue = tag.comment || '',
+            });
             if (member.type) {
                 type = member.type.getFullText();
             }
-            output += `### ${member.name.getText()}\n\n`;
-            output += `{{< config-option type="${type}" default="${defaultVal}" >}}\n\n`;
-            output += `${description}\n\n`;
+
+            result.push({
+                name,
+                description,
+                type,
+                defaultValue,
+            });
         }
+    }
+
+    return result;
+}
+
+function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string, string>): string {
+    const { title, weight, category, description, members } = interfaceInfo;
+    let output = '';
+    output += generateFrontMatter(title, weight);
+    output += `\n\n# ${title}\n\n`;
+    output += `${description}\n\n`;
+
+    for (const member of members) {
+        const type = renderType(member.type, knownTypeMap);
+        output += `### ${member.name}\n\n`;
+        output += `{{< member-info type="${type}" ${member.defaultValue ? `default="${member.defaultValue}" ` : ''}>}}\n\n`;
+        output += `${member.description}\n\n`;
     }
 
     return output;
 }
 
 /**
+ * Extracts the "@docsCategory" value from the JSDoc comments if present.
+ */
+function getDocsCategory(statement: ts.InterfaceDeclaration): string {
+    let category = '';
+    parseTags(statement, {
+        docsCategory: tag => category = tag.comment || '',
+    });
+    return category;
+}
+
+/**
+ * Parses the Node's JSDoc tags and invokes the supplied functions against any matching tag names.
+ */
+function parseTags<T extends ts.Node>(node: T, tagMatcher: { [tagName: string]: (tag: ts.JSDocTag) => void; }): void {
+    const jsDocTags = ts.getJSDocTags(node);
+    for (const tag of jsDocTags) {
+        const tagName = tag.tagName.text;
+        if (tagMatcher[tagName]) {
+            tagMatcher[tagName](tag);
+        }
+    }
+}
+
+function renderType(type: string, knownTypeMap: Map<string, string>): string {
+    let typeText = type.trim().replace(/[\u00A0-\u9999<>\&]/gim, i => {
+       return '&#' + i.charCodeAt(0) + ';';
+    });
+    for (const [key, val] of knownTypeMap) {
+        typeText = typeText.replace(key, `<a href='${docsPath}${val}/'>${key}</a>`);
+    }
+    return typeText;
+}
+
+/**
  * Generates the Hugo front matter with the title of the document
  */
-function generateFrontMatter(statement: ts.InterfaceDeclaration): string {
+function generateFrontMatter(title: string, weight: number): string {
     return `---
-title: "${statement.name.text}"
-weight: 0
+title: "${title}"
+weight: ${weight}
 generated: true
 ---
 <!-- This file was generated from the Vendure TypeScript source. Do not modify. Instead, re-run "generate-docs" -->
 `;
+}
+
+/**
+ * Reads the @docsWeight JSDoc tag from the interface.
+ */
+function getInterfaceWeight(statement: ts.InterfaceDeclaration): number {
+    let weight = 10;
+    parseTags(statement, {
+        docsWeight: tag => weight = Number.parseInt(tag.comment || '10', 10),
+    });
+    return weight;
+}
+
+/**
+ * Reads the @description JSDoc tag from the interface.
+ */
+function getInterfaceDescription(statement: ts.InterfaceDeclaration): string {
+    let description = '';
+    parseTags(statement, {
+        description: tag => description += tag.comment,
+    });
+    return description;
 }
 
 /**
@@ -78,11 +222,4 @@ generated: true
  */
 function formatExampleCode(example: string = ''): string {
     return '\n\n' + example.replace(/\n\s+\*\s/g, '');
-}
-
-/**
- * Generates a markdown filename from a normalized version of the title.
- */
-function getGeneratedFileName(title: string): string {
-    return title.split(/(?=[A-Z])/).join('-').toLowerCase() + '.md';
 }

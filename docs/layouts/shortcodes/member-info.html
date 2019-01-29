@@ -1,10 +1,12 @@
-<div class="config-option-info">
+<div class="member-info">
     <div class="type">
         <div class="label">type:</div>
-        <code>{{ .Get "type" }}</code>
+        <div class="type-code">{{ .Get "type" | safeHTML }}</div>
     </div>
+    {{ if isset .Params "default" }}
     <div class="default">
         <div class="label">default:</div>
         <code>{{ .Get "default" }}</code>
     </div>
+    {{ end }}
 </div>

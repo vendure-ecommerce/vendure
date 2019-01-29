@@ -17,7 +17,7 @@
 /**
  Config option
  */
-.config-option-info {
+.member-info {
     display: flex;
     margin-top: -16px;
 
@@ -27,6 +27,18 @@
     .label{
         display: inline-block;
         color: $gray-700;
+    }
+
+    .type-code {
+        display: inline-block;
+        font-family: 'Oxygen Mono', monospace;
+        padding: 0 $padding-4;
+        background: $gray-100;
+        color: $gray-700;
+        border-radius: 4px;
+        a:link, a:visited {
+            color: darken($brand-color, 20%);
+        }
     }
 
 }
