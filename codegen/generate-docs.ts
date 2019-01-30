@@ -15,6 +15,7 @@ interface MemberInfo {
     name: string;
     description: string;
     type: string;
+    fullText: string;
 }
 
 interface PropertyInfo extends MemberInfo {
@@ -31,6 +32,7 @@ interface DeclarationInfo {
     sourceFile: string;
     sourceLine: number;
     title: string;
+    fullText: string;
     weight: number;
     category: string;
     description: string;
@@ -103,8 +105,6 @@ function isGenerated(content: string) {
 /**
  * Uses the TypeScript compiler API to parse the given files and extract out the documentation
  * into markdown files
- * @param filePaths
- * @param typeMap
  */
 function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: TypeMap) {
     const timeStart = +new Date();
@@ -188,7 +188,8 @@ function parseDeclaration(statement: ts.Statement, sourceFile: string, sourceLin
     if (category === undefined) {
         return;
     }
-    const title = statement.name.text;
+    const title = statement.name.getText();
+    const fullText = getDeclarationFullText(statement);
     const weight = getDeclarationWeight(statement);
     const description = getDeclarationDescription(statement);
     const fileName = title
@@ -199,6 +200,7 @@ function parseDeclaration(statement: ts.Statement, sourceFile: string, sourceLin
     const info = {
         sourceFile,
         sourceLine,
+        fullText,
         title,
         weight,
         category,
@@ -222,6 +224,18 @@ function parseDeclaration(statement: ts.Statement, sourceFile: string, sourceLin
 }
 
 /**
+ * Returns the declaration name plus any type parameters.
+ */
+function getDeclarationFullText(declaration: ValidDeclaration): string {
+    const name = declaration.name.getText();
+    let typeParams = '';
+    if (declaration.typeParameters) {
+        typeParams = '<' + declaration.typeParameters.map(tp => tp.getText()).join(', ') + '>';
+    }
+    return name + typeParams;
+}
+
+/**
  * Parses an array of inteface members into a simple object which can be rendered into markdown.
  */
 function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo | MethodInfo> {
@@ -234,6 +248,7 @@ function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo
             let type = '';
             let defaultValue = '';
             let parameters: MethodParameterInfo[] = [];
+            const fullText = member.getText();
             parseTags(member, {
                 description: tag => (description += tag.comment || ''),
                 example: tag => (description += formatExampleCode(tag.comment)),
@@ -242,24 +257,26 @@ function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo
             if (member.type) {
                 type = member.type.getFullText().trim();
             }
+            const memberInfo: MemberInfo = {
+                fullText,
+                name,
+                description,
+                type,
+            };
             if (ts.isMethodSignature(member)) {
                 parameters = member.parameters.map(p => ({
                     name: p.name.getText(),
                     type: p.type ? p.type.getFullText() : '',
                 }));
                 result.push({
+                    ...memberInfo,
                     kind: 'method',
-                    name,
-                    description,
-                    type,
                     parameters,
                 });
             } else {
                 result.push({
+                    ...memberInfo,
                     kind: 'property',
-                    name,
-                    description,
-                    type,
                     defaultValue,
                 });
             }
@@ -273,7 +290,7 @@ function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo
  * Render the interface to a markdown string.
  */
 function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string, string>): string {
-    const { title, weight, category, description, sourceFile, members } = interfaceInfo;
+    const { title, weight, category, description, members } = interfaceInfo;
     let output = '';
     output += generateFrontMatter(title, weight);
     output += `\n\n# ${title}\n\n`;
@@ -309,20 +326,11 @@ function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string,
  * Generates a markdown code block string for the interface signature.
  */
 function renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
-    const { title, members } = interfaceInfo;
+    const { fullText, members } = interfaceInfo;
     let output = '';
     output += `\`\`\`ts\n`;
-    output += `interface ${title} {\n`;
-    output += members.map(member => {
-        if (member.kind === 'property') {
-            return `  ${member.name}: ${member.type};`;
-        } else {
-            const args = member.parameters
-                .map(p => `${p.name}: ${p.type}`)
-                .join(', ');
-            return `  ${member.name}: (${args}) => ${member.type}`;
-        }
-    }).join(`\n`) ;
+    output += `interface ${fullText} {\n`;
+    output += members.map(member => `  ${member.fullText}`).join(`\n`) ;
     output += `\n}\n`;
     output += `\`\`\`\n`;
 
@@ -333,14 +341,14 @@ function renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
  * Render the type alias to a markdown string.
  */
 function renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: Map<string, string>): string {
-    const { title, weight, category, description, sourceFile, sourceLine, type } = typeAliasInfo;
+    const { title, weight, description, type, fullText } = typeAliasInfo;
     let output = '';
     output += generateFrontMatter(title, weight);
     output += `\n\n# ${title}\n\n`;
     output += renderGenerationInfoShortcode(typeAliasInfo);
     output += `${description}\n\n`;
     output += `## Signature\n\n`;
-    output += `\`\`\`ts\ntype ${title} = ${type};\n\`\`\``;
+    output += `\`\`\`ts\ntype ${fullText} = ${type};\n\`\`\``;
 
     return output;
 }
