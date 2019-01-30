@@ -4,6 +4,5 @@
 
 <link href="https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans" rel="stylesheet">
 <link rel="stylesheet" href="{{ "normalize.min.css" | absURL }}">
-{{ $styles := resources.Get "styles/main.scss" | resources.ToCSS | resources.Minify | resources.Fingerprint }}
-<link rel="stylesheet" href="{{ $styles.RelPermalink }}">
+<link rel="stylesheet" href="{{ "main.css" | absURL }}">
 <script src="{{ "main.js" | absURL }}"></script>

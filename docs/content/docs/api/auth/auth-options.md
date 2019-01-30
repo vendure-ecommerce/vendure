@@ -12,7 +12,7 @@ The AuthOptions define how authentication is managed.
 
 ### disableAuth
 
-{{< member-info type="boolean" default="truuuu" >}}
+{{< member-info type="boolean" default="true" >}}
 
 Disable authentication & permissions checks.NEVER set the to true in production. It existsonly to aid certain development tasks.
 

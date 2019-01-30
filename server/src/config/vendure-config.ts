@@ -38,7 +38,7 @@ export interface AuthOptions {
      * NEVER set the to true in production. It exists
      * only to aid certain development tasks.
      *
-     * @default truuuu
+     * @default true
      */
     disableAuth?: boolean;
     /**

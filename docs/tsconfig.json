@@ -1,12 +1,11 @@
 {
   "extends": "../tsconfig",
   "compilerOptions": {
-    "module": "None",
+    "module": "commonjs",
     "lib": [
       "es2017",
       "dom"
     ],
-    "target": "es5",
-    "outFile": "static/main.js"
+    "target": "es5"
   }
 }

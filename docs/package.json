@@ -1,0 +1,21 @@
+{
+  "name": "vendure-docs",
+  "version": "1.0.0",
+  "description": "Documentation site for Vendure",
+  "main": "index.js",
+  "author": "Michael Bromley <michael@michaelbromley.co.uk>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@clr/icons": "^1.0.5",
+    "@types/webpack": "^4.4.24",
+    "@webcomponents/custom-elements": "1.0.0",
+    "css-loader": "^2.1.0",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "ts-loader": "^5.3.3",
+    "webpack": "^4.29.0",
+    "webpack-cli": "^3.2.1"
+  }
+}

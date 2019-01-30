@@ -2,7 +2,8 @@
   "name": "vendure",
   "version": "0.1.0",
   "scripts": {
-    "apollo": "apollo",
+    "docs:watch": "concurrently -n docgen,hugo,webpack \"yarn generate-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
+    "docs:build": "yarn generate-docs && cd docs && yarn webpack --prod && hugo",
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "generate-docs": "ts-node ./codegen/generate-docs.ts",
     "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
@@ -18,6 +19,7 @@
     "@types/graphql": "^14.0.5",
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "^10.11.5",
+    "concurrently": "^4.1.0",
     "graphql": "^14.1.1",
     "graphql-code-generator": "^0.16.0",
     "graphql-codegen-add": "^0.16.0",
