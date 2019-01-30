@@ -29,3 +29,11 @@ yarn generate-docs [-w]
 This script uses the TypeScript compiler API to traverse the server source code and extract data about the types as well as other information such as descriptions and default values.
 
 Currently, any `interface` which includes the JSDoc `@docCategory` tag will be extracted into a markdown file in the [content/docs/api](./content/docs/api) directory. Hugo can then build the API documentation from these markdown files. This will probably be expanded to be able to parse `class` and `type` declarations too.
+
+## A note on icons
+
+The docs site also uses the [Clarity icons](https://clarity.design/icons) to maintain consistency with the Vendure admin ui app. However, currently [this bug](https://github.com/vmware/clarity/issues/2599) makes the use of the custom-elements based icons unfeasible since it adds about 400kb to the JS bundle size. This is unacceptable for what is essentially a static HTML site.
+
+So for now we are hand-picking the icons as svg files from [https://icongr.am/clarity](https://icongr.am/clarity) and using them as regular images. The downside is that to get different colours, the svg files themselves must be edited.
+
+This is a pain but for the small number of icons planned, it is workable.
