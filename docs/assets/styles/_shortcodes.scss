@@ -15,11 +15,20 @@
 }
 
 /**
- Config option
+ Member info for generated docs
  */
 .member-info {
     display: flex;
+    align-items: center;
     margin-top: -16px;
+
+    .kind-label {
+        font-size: $font-size-12;
+        background-color: #d3f2eb;
+        border-radius: 4px;
+        padding: 0 6px;
+        margin-right: 6px;
+    }
 
     .type, .default {
         margin-right: 12px;
@@ -41,4 +50,12 @@
         }
     }
 
+}
+
+/**
+ Info on the generated document
+ */
+.generation-info {
+    font-size: $font-size-12;
+    border-bottom: 1px dashed $gray-400;
 }

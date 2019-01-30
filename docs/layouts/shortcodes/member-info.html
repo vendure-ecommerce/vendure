@@ -1,4 +1,7 @@
 <div class="member-info">
+    <div class="kind">
+        <div class="kind-label">{{ .Get "kind" | safeHTML }}</div>
+    </div>
     <div class="type">
         <div class="label">type:</div>
         <div class="type-code">{{ .Get "type" | safeHTML }}</div>
