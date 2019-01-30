@@ -13,12 +13,10 @@
         {{ if eq .Kind "section" }}
             <li class="section">
                 {{ $expanded := in $.CurrentPage .Permalink }}
+                <div class="section-link">
+                <img src="{{ "svg/clr-icon-angle.svg" | absURL }}" class="section-icon {{ if $expanded}}expanded{{ end }}" />
                 {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
-                <!-- {{ if $expanded }}
-
-                {{ else }}
-
-                {{ end }} -->
+                </div>
                 {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage "Expanded" $expanded) }}
             </li>
         {{ else }}
