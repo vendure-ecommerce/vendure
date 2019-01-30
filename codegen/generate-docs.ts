@@ -29,6 +29,7 @@ interface MethodInfo extends MemberInfo {
 
 interface DeclarationInfo {
     sourceFile: string;
+    sourceLine: number;
     title: string;
     weight: number;
     category: string;
@@ -116,11 +117,11 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
         );
     });
 
-    const statements = getStatementsWithSourceFile(sourceFiles);
+    const statements = getStatementsWithSourceLocation(sourceFiles);
 
     const declarationInfos = statements
         .map(statement => {
-            const info = parseDeclaration(statement.statement, statement.sourceFile);
+            const info = parseDeclaration(statement.statement, statement.sourceFile, statement.sourceLine);
             if (info) {
                 typeMap.set(info.title, info.category + '/' + info.fileName);
             }
@@ -161,24 +162,25 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
  * Maps an array of parsed SourceFiles into statements, including a reference to the original file each statement
  * came from.
  */
-function getStatementsWithSourceFile(sourceFiles: ts.SourceFile[]): Array<{ statement: ts.Statement; sourceFile: string }> {
+function getStatementsWithSourceLocation(sourceFiles: ts.SourceFile[]): Array<{ statement: ts.Statement; sourceFile: string; sourceLine: number; }> {
     return sourceFiles.reduce(
         (st, sf) => {
             const statementsWithSources = sf.statements.map(statement => {
                 const serverSourceRoot = '/server/src';
                 const sourceFile = sf.fileName.substring(sf.fileName.indexOf(serverSourceRoot));
-                return {statement, sourceFile };
+                const sourceLine = sf.getLineAndCharacterOfPosition(statement.getStart()).line + 1;
+                return {statement, sourceFile, sourceLine };
             });
             return [...st, ...statementsWithSources];
         },
-        [] as Array<{ statement: ts.Statement; sourceFile: string }>,
+        [] as Array<{ statement: ts.Statement; sourceFile: string, sourceLine: number; }>,
     );
 }
 
 /**
  * Parses an InterfaceDeclaration into a simple object which can be rendered into markdown.
  */
-function parseDeclaration(statement: ts.Statement, sourceFile: string): InterfaceInfo | TypeAliasInfo | undefined {
+function parseDeclaration(statement: ts.Statement, sourceFile: string, sourceLine: number): InterfaceInfo | TypeAliasInfo | undefined {
     if (!isValidDeclaration(statement)) {
         return;
     }
@@ -196,6 +198,7 @@ function parseDeclaration(statement: ts.Statement, sourceFile: string): Interfac
 
     const info = {
         sourceFile,
+        sourceLine,
         title,
         weight,
         category,
@@ -274,7 +277,7 @@ function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string,
     let output = '';
     output += generateFrontMatter(title, weight);
     output += `\n\n# ${title}\n\n`;
-    output += `{{< generation-info source="${sourceFile}">}}\n\n`;
+    output += renderGenerationInfoShortcode(interfaceInfo);
     output += `${description}\n\n`;
     output += `## Signature\n\n`;
     output += renderInterfaceSignature(interfaceInfo);
@@ -330,16 +333,20 @@ function renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
  * Render the type alias to a markdown string.
  */
 function renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: Map<string, string>): string {
-    const { title, weight, category, description, sourceFile, type } = typeAliasInfo;
+    const { title, weight, category, description, sourceFile, sourceLine, type } = typeAliasInfo;
     let output = '';
     output += generateFrontMatter(title, weight);
     output += `\n\n# ${title}\n\n`;
-    output += `{{< generation-info source="${sourceFile}">}}\n\n`;
+    output += renderGenerationInfoShortcode(typeAliasInfo);
     output += `${description}\n\n`;
     output += `## Signature\n\n`;
     output += `\`\`\`ts\ntype ${title} = ${type};\n\`\`\``;
 
     return output;
+}
+
+function renderGenerationInfoShortcode(info: DeclarationInfo): string {
+    return `{{< generation-info sourceFile="${info.sourceFile}" sourceLine="${info.sourceLine}">}}\n\n`;
 }
 
 /**
