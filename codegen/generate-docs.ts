@@ -125,7 +125,7 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
             fs.mkdirSync(categoryDir);
         }
         if (!fs.existsSync(indexFile)) {
-            const indexFileContent = generateFrontMatter(info.category, 10) + `\n\n# ${info.category}`;
+            const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;
             fs.writeFileSync(indexFile, indexFileContent);
         }
 
@@ -308,11 +308,12 @@ function renderType(type: string, knownTypeMap: Map<string, string>): string {
 /**
  * Generates the Hugo front matter with the title of the document
  */
-function generateFrontMatter(title: string, weight: number): string {
+function generateFrontMatter(title: string, weight: number, showToc: boolean = true): string {
     return `---
 title: "${title}"
 weight: ${weight}
 date: ${new Date().toISOString()}
+showtoc: ${showToc}
 generated: true
 ---
 <!-- This file was generated from the Vendure TypeScript source. Do not modify. Instead, re-run "generate-docs" -->

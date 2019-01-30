@@ -10,6 +10,10 @@ $block-border-radius: 4px;
         line-height: 1em;
     }
 
+    h1:first-of-type {
+        text-transform: capitalize;
+    }
+
     h2 {
         margin-top: 48px;
     }

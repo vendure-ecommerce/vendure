@@ -99,6 +99,12 @@ ul.pagination {
     margin: $top-bar-height auto 0;
 }
 
+ul.contents-list {
+    padding: 0;
+    list-style-type: none;
+    text-transform: capitalize;
+}
+
 .book-brand {
     margin-top: 0;
 }

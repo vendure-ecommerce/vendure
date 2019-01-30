@@ -1,17 +1,22 @@
 {{ define "main" }}
 <article class="markdown">
-  {{- .Content -}}
+    {{- .Content -}}
+    {{ $list := .Sections }}
+    {{ $list = $list | append .Pages }}
 
-    {{ if gt (len .Pages) 0 }}
-        <ul>
-        {{ range .Pages }}
-            <li>{{ .Title }}</li>
+    {{ if gt (len $list) 0 }}
+    <h3>Contents:</h3>
+    <ul class="contents-list">
+        {{ range sort $list "Weight" }}
+        <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </li>
         {{ end}}
-        </ul>
+    </ul>
     {{ end }}
 </article>
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/toc" . }}
+{{ partial "docs/toc" . }}
 {{ end }}
