@@ -27,16 +27,26 @@ interface MethodInfo extends MemberInfo {
     parameters: MethodParameterInfo[];
 }
 
-interface InterfaceInfo {
+interface DeclarationInfo {
     sourceFile: string;
     title: string;
     weight: number;
     category: string;
     description: string;
     fileName: string;
+}
+
+interface InterfaceInfo extends DeclarationInfo {
+    kind: 'interface';
     members: Array<PropertyInfo | MethodInfo>;
 }
 
+interface TypeAliasInfo extends DeclarationInfo {
+    kind: 'typeAlias';
+    type: string;
+}
+
+type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration;
 type TypeMap = Map<string, string>;
 
 const docsPath = '/docs/api/';
@@ -106,10 +116,11 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
         );
     });
 
-    const interfaces = getStatementsWithSourceFile(sourceFiles)
-        .filter(s => ts.isInterfaceDeclaration(s.statement))
+    const statements = getStatementsWithSourceFile(sourceFiles);
+
+    const declarationInfos = statements
         .map(statement => {
-            const info = parseInterface(statement.statement as ts.InterfaceDeclaration, statement.sourceFile);
+            const info = parseDeclaration(statement.statement, statement.sourceFile);
             if (info) {
                 typeMap.set(info.title, info.category + '/' + info.fileName);
             }
@@ -117,8 +128,17 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
         })
         .filter(notNullOrUndefined);
 
-    for (const info of interfaces) {
-        const markdown = renderInterface(info, typeMap);
+    for (const info of declarationInfos) {
+        let markdown = '';
+        switch (info.kind) {
+            case 'interface':
+                markdown = renderInterface(info, typeMap);
+                break;
+            case 'typeAlias':
+                markdown = renderTypeAlias(info, typeMap);
+                break;
+        }
+
         const categoryDir = path.join(hugoApiDocsPath, info.category);
         const indexFile = path.join(categoryDir, '_index.md');
         if (!fs.existsSync(categoryDir)) {
@@ -132,8 +152,8 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
         fs.writeFileSync(path.join(categoryDir, info.fileName + '.md'), markdown);
     }
 
-    if (interfaces.length) {
-        console.log(`Generated ${interfaces.length} docs in ${+new Date() - timeStart}ms`);
+    if (declarationInfos.length) {
+        console.log(`Generated ${declarationInfos.length} docs in ${+new Date() - timeStart}ms`);
     }
 }
 
@@ -158,28 +178,44 @@ function getStatementsWithSourceFile(sourceFiles: ts.SourceFile[]): Array<{ stat
 /**
  * Parses an InterfaceDeclaration into a simple object which can be rendered into markdown.
  */
-function parseInterface(statement: ts.InterfaceDeclaration, sourceFile: string): InterfaceInfo | undefined {
+function parseDeclaration(statement: ts.Statement, sourceFile: string): InterfaceInfo | TypeAliasInfo | undefined {
+    if (!isValidDeclaration(statement)) {
+        return;
+    }
     const category = getDocsCategory(statement);
     if (category === undefined) {
         return;
     }
     const title = statement.name.text;
-    const weight = getInterfaceWeight(statement);
-    const description = getInterfaceDescription(statement);
+    const weight = getDeclarationWeight(statement);
+    const description = getDeclarationDescription(statement);
     const fileName = title
         .split(/(?=[A-Z])/)
         .join('-')
         .toLowerCase();
-    const members = parseMembers(statement.members);
-    return {
+
+    const info = {
         sourceFile,
         title,
         weight,
         category,
         description,
         fileName,
-        members,
     };
+
+    if (ts.isInterfaceDeclaration(statement)) {
+        return {
+            ...info,
+            kind: 'interface',
+            members: parseMembers(statement.members),
+        };
+    } else if (ts.isTypeAliasDeclaration(statement)) {
+        return {
+            ...info,
+            type: statement.type.getFullText().trim(),
+            kind: 'typeAlias',
+        };
+    }
 }
 
 /**
@@ -201,7 +237,7 @@ function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo
                 default: tag => (defaultValue = tag.comment || ''),
             });
             if (member.type) {
-                type = member.type.getFullText();
+                type = member.type.getFullText().trim();
             }
             if (ts.isMethodSignature(member)) {
                 parameters = member.parameters.map(p => ({
@@ -230,13 +266,19 @@ function parseMembers(members: ts.NodeArray<ts.TypeElement>): Array<PropertyInfo
     return result;
 }
 
+/**
+ * Render the interface to a markdown string.
+ */
 function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string, string>): string {
-    const { title, weight, category, description, members } = interfaceInfo;
+    const { title, weight, category, description, sourceFile, members } = interfaceInfo;
     let output = '';
     output += generateFrontMatter(title, weight);
     output += `\n\n# ${title}\n\n`;
-    output += `{{< generation-info source="${interfaceInfo.sourceFile}">}}\n\n`;
+    output += `{{< generation-info source="${sourceFile}">}}\n\n`;
     output += `${description}\n\n`;
+    output += `## Signature\n\n`;
+    output += renderInterfaceSignature(interfaceInfo);
+    output += `## Members\n\n`;
 
     for (const member of members) {
         let defaultParam = '';
@@ -261,9 +303,49 @@ function renderInterface(interfaceInfo: InterfaceInfo, knownTypeMap: Map<string,
 }
 
 /**
+ * Generates a markdown code block string for the interface signature.
+ */
+function renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
+    const { title, members } = interfaceInfo;
+    let output = '';
+    output += `\`\`\`ts\n`;
+    output += `interface ${title} {\n`;
+    output += members.map(member => {
+        if (member.kind === 'property') {
+            return `  ${member.name}: ${member.type};`;
+        } else {
+            const args = member.parameters
+                .map(p => `${p.name}: ${p.type}`)
+                .join(', ');
+            return `  ${member.name}: (${args}) => ${member.type}`;
+        }
+    }).join(`\n`) ;
+    output += `\n}\n`;
+    output += `\`\`\`\n`;
+
+    return output;
+}
+
+/**
+ * Render the type alias to a markdown string.
+ */
+function renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: Map<string, string>): string {
+    const { title, weight, category, description, sourceFile, type } = typeAliasInfo;
+    let output = '';
+    output += generateFrontMatter(title, weight);
+    output += `\n\n# ${title}\n\n`;
+    output += `{{< generation-info source="${sourceFile}">}}\n\n`;
+    output += `${description}\n\n`;
+    output += `## Signature\n\n`;
+    output += `\`\`\`ts\ntype ${title} = ${type};\n\`\`\``;
+
+    return output;
+}
+
+/**
  * Extracts the "@docsCategory" value from the JSDoc comments if present.
  */
-function getDocsCategory(statement: ts.InterfaceDeclaration): string | undefined {
+function getDocsCategory(statement: ValidDeclaration): string | undefined {
     let category: string | undefined;
     parseTags(statement, {
         docsCategory: tag => (category = tag.comment || ''),
@@ -323,7 +405,7 @@ generated: true
 /**
  * Reads the @docsWeight JSDoc tag from the interface.
  */
-function getInterfaceWeight(statement: ts.InterfaceDeclaration): number {
+function getDeclarationWeight(statement: ValidDeclaration): number {
     let weight = 10;
     parseTags(statement, {
         docsWeight: tag => (weight = Number.parseInt(tag.comment || '10', 10)),
@@ -334,7 +416,7 @@ function getInterfaceWeight(statement: ts.InterfaceDeclaration): number {
 /**
  * Reads the @description JSDoc tag from the interface.
  */
-function getInterfaceDescription(statement: ts.InterfaceDeclaration): string {
+function getDeclarationDescription(statement: ValidDeclaration): string {
     let description = '';
     parseTags(statement, {
         description: tag => (description += tag.comment),
@@ -348,4 +430,11 @@ function getInterfaceDescription(statement: ts.InterfaceDeclaration): string {
  */
 function formatExampleCode(example: string = ''): string {
     return '\n\n' + example.replace(/\n\s+\*\s/g, '');
+}
+
+/**
+ * Type guard for the types of statement which can ge processed by the doc generator.
+ */
+function isValidDeclaration(statement: ts.Statement): statement is ValidDeclaration {
+    return ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement);
 }
