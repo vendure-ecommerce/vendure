@@ -14,7 +14,6 @@ import { DefaultSearchPlugin } from './src/plugin/default-search-plugin/default-
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
-    defaultChannelToken: 'default-channel',
     authOptions: {
         disableAuth: false,
         sessionSecret: 'some-secret',
@@ -35,9 +34,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        GlobalSettings: [{ name: 'royalMailId', type: 'string' }],
-    },
+    customFields: {},
     emailOptions: {
         emailTemplatePath: path.join(__dirname, 'src/email/templates'),
         emailTypes: defaultEmailTypes,
