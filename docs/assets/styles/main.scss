@@ -6,6 +6,7 @@
 @import "top-bar";
 @import "menu";
 @import "shortcodes";
+@import "syntax";
 
 html {
     font-size: $font-size-base;
@@ -33,12 +34,6 @@ body {
     * {
         box-sizing: inherit;
     }
-}
-
-footer {
-    margin-top: 100px;
-    background-color: #efefef;
-    padding: 50px;
 }
 
 h1,
@@ -164,6 +159,12 @@ ul.contents-list {
         width: $font-size-14;
         vertical-align: bottom;
     }
+}
+
+.book-footer {
+    height: 200px;
+    background-color: $gray-100;
+    margin-top: 60px;
 }
 
 .book-posts {

@@ -6,7 +6,7 @@
 .alert {
     border: 1px solid;
     border-radius: 2px;
-    padding: 0 12px;
+    padding: 0 18px;
 
     &.primary { border-color: $color-default; background: transparentize($color-default, 0.9); }
     &.danger { border-color: $color-danger; background: transparentize($color-danger, 0.9); }
@@ -21,35 +21,31 @@
     display: flex;
     align-items: center;
     margin-top: -16px;
+    font-size: 14px;
 
     .kind-label {
         font-size: $font-size-12;
-        background-color: #d3f2eb;
+        background-color: #eaf9f5;
+        color: #38979f;
         border-radius: 4px;
         padding: 0 6px;
-        margin-right: 6px;
+        margin-right: 12px;
     }
 
     .type, .default {
         margin-right: 12px;
-    }
-    .label{
-        display: inline-block;
-        color: $gray-700;
-    }
-
-    .type-code {
-        display: inline-block;
-        font-family: 'Oxygen Mono', monospace;
-        padding: 0 $padding-4;
-        background: $gray-100;
-        color: $gray-700;
-        border-radius: 4px;
         a:link, a:visited {
             color: darken($brand-color, 20%);
         }
     }
-
+    .type {
+        code {
+        }
+    }
+    .label{
+        display: inline-block;
+        color: $gray-600;
+    }
 }
 
 /**

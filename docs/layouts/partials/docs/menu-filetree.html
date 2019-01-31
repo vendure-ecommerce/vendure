@@ -9,7 +9,7 @@
 <ul {{ if .Expanded }}class="expanded"{{ end }}>
     {{ $list := .Section.Sections }}
     {{ $list = $list | append .Section.Pages }}
-    {{ range sort $list "Weight" }}
+    {{ range ($list.ByParam "Title").ByParam "Weight" }}
         {{ if eq .Kind "section" }}
             <li class="section">
                 {{ $expanded := in $.CurrentPage .Permalink }}

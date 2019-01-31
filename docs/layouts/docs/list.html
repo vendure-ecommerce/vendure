@@ -7,7 +7,7 @@
     {{ if gt (len $list) 0 }}
     <h3>Contents:</h3>
     <ul class="contents-list">
-        {{ range sort $list "Weight" }}
+        {{ range ($list.ByParam "Title").ByParam "Weight" }}
         <li>
             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         </li>

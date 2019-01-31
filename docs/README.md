@@ -30,6 +30,59 @@ This script uses the TypeScript compiler API to traverse the server source code 
 
 Currently, any `interface` which includes the JSDoc `@docCategory` tag will be extracted into a markdown file in the [content/docs/api](./content/docs/api) directory. Hugo can then build the API documentation from these markdown files. This will probably be expanded to be able to parse `class` and `type` declarations too.
 
+### Docs-specific JSDoc tags
+
+#### `@docsCategory`
+
+This is required as its presence determines whether the declaration is extracted into the docs. Its value should be a string corresponding to the API sub-section that this declaration belongs to, e.g. "payment", "shipping" etc.
+
+#### `@description`
+
+This tag specifies the text description of the declaration. It supports markdown, but should not be used for code blocks, which should be tagged with `@example` (see below). Links to other declarations can be made with the `{@link SomeOtherDeclaration}` syntax. Also applies to class/interface members.
+
+#### `@example`
+
+This tag should be used to include any code blocks. Remember to specify the language after the opening delimiter for correct highlighting. Also applies to class/interface members.
+
+#### `@docsWeight`
+
+This is optional and when present, sets the "weight" of the markdown file in the Hugo front matter. A lower value makes the resulting doc page appear higher in the menu. If not specified, a default value of `10` is used.
+
+#### `@default`
+
+This is used to specify the default value of a property, e.g. when documenting an optional configuration option.
+
+#### Example
+
+````ts
+/**
+ * @description
+ * Greets people with a friendly message. 
+ * Used by the {@link AppInitializer} during the start-up process.
+ *
+ * @example
+ * ```ts
+ * const greeter = new Greeter();
+ * console.log(greeter.greet('mike'));
+ * // -> 'Hi, mike, good to see you!'
+ * ```
+ *
+ * @docsCategory helpers
+ * @docsWeight 1
+ */
+export class Greeter {
+
+    /**
+     * @description
+     * Greets the person by name
+     */
+    greet(name: string): string {
+      return `Hi, ${name}, good to see you!`;
+    }
+}
+````
+
+
 ## A note on icons
 
 The docs site also uses the [Clarity icons](https://clarity.design/icons) to maintain consistency with the Vendure admin ui app. However, currently [this bug](https://github.com/vmware/clarity/issues/2599) makes the use of the custom-elements based icons unfeasible since it adds about 400kb to the JS bundle size. This is unacceptable for what is essentially a static HTML site.

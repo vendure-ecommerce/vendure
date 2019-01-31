@@ -4,6 +4,7 @@ $block-border-radius: 4px;
 
 .markdown {
     line-height: 1.7;
+    margin-left: 12px;
 
     > :first-child {
         margin-top: 0;
@@ -51,23 +52,24 @@ $block-border-radius: 4px;
         }
     }
 
-    code {
+    code:not([data-lang]) {
         font-family: 'Oxygen Mono', monospace;
         padding: 0 $padding-4;
-        background: $gray-100;
-        color: darken($brand-color, 30%);
+        background: $color-code-bg;
+        color: $color-code-text;
         border-radius: $block-border-radius;
+        border: 1px solid $color-code-border;
     }
 
-    pre {
+    pre:not(.chroma) {
         padding: $padding-16;
-        background: $gray-100;
+        background: $color-code-bg;
         border-radius: $block-border-radius;
         font-size: $font-size-14;
         overflow-x: auto;
 
         code {
-            color: $gray-200;
+            color: $color-code-text;
             background: none;
             padding: none;
         }

@@ -2,7 +2,7 @@ baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "Vendure Documenation"
 pygmentsCodeFences = true
-pygmentsStyle = "monokai"
+pygmentsUseClasses = true
 disableKinds = [
   "taxonomy",
   "taxonomyTerm"

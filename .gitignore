@@ -397,5 +397,5 @@ docs/resources/_gen/*
 docs/static/main.js
 docs/static/main.css
 docs/public
-docs/content/docs/api/
-!docs/content/docs/api/_index.md
+docs/content/docs/configuration/*
+!docs/content/docs/configuration/_index.md
