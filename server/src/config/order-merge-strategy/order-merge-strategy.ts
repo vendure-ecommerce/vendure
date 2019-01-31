@@ -12,5 +12,10 @@ import { Order } from '../../entity/order/order.entity';
  * @docsCategory orders
  */
 export interface OrderMergeStrategy {
+    /**
+     * @description
+     * Merges the lines of the guest Order with those of the existing Order which is associated
+     * with the active customer.
+     */
     merge(guestOrder: Order, existingOrder: Order): OrderLine[];
 }

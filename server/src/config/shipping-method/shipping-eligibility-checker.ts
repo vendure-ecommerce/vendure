@@ -10,6 +10,13 @@ export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheck
     args: ConfigArgValues<T>,
 ) => boolean | Promise<boolean>;
 
+/**
+ * @description
+ * The ShippingEligibilityChecker class is used to check whether an order qualifies for a
+ * given {@link ShippingMethod}.
+ *
+ * @docsCategory shipping
+ */
 export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}> {
     readonly code: string;
     readonly description: string;
@@ -28,7 +35,11 @@ export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs
         this.checkFn = config.check;
     }
 
-    check(order: Order, args: ConfigArg[]) {
+    /**
+     * @description
+     * Check the given Order to determine whether it is eligible.
+     */
+    check(order: Order, args: ConfigArg[]): boolean | Promise<boolean> {
         return this.checkFn(order, argsArrayToHash(args));
     }
 }

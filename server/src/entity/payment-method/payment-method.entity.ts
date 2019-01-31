@@ -8,6 +8,13 @@ import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
 import { Payment, PaymentMetadata } from '../payment/payment.entity';
 
+/**
+ * @description
+ * A PaymentMethod is created automatically according to the configured {@link PaymentMethodHandler}s defined
+ * in the {@link PaymentOptions} config.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class PaymentMethod extends VendureEntity {
     constructor(input?: DeepPartial<PaymentMethod>) {

@@ -6,6 +6,12 @@ import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 
+/**
+ * @description
+ * An individual item of an {@link OrderLine}.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class OrderItem extends VendureEntity {
     constructor(input?: DeepPartial<OrderItem>) {

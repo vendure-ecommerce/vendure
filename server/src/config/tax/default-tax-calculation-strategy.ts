@@ -6,6 +6,12 @@ import { TaxRateService } from '../../service/services/tax-rate.service';
 
 import { TaxCalculationArgs, TaxCalculationStrategy } from './tax-calculation-strategy';
 
+/**
+ * @description
+ * A default tax calculation function.
+ *
+ * @docsCategory tax
+ */
 export class DefaultTaxCalculationStrategy implements TaxCalculationStrategy {
     calculate(args: TaxCalculationArgs): TaxCalculationResult {
         const { inputPrice, activeTaxZone, ctx, taxCategory, taxRateService } = args;

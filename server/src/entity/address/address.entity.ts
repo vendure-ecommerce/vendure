@@ -6,6 +6,12 @@ import { Country } from '../country/country.entity';
 import { CustomAddressFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 
+/**
+ * @description
+ * Represent's a {@link Customer}'s address.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Address extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Address>) {

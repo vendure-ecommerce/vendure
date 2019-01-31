@@ -30,6 +30,7 @@ import { VendurePlugin } from './vendure-plugin/vendure-plugin';
  * The AuthOptions define how authentication is managed.
  *
  * @docsCategory auth
+ * @docsWeight 0
  */
 export interface AuthOptions {
     /**
@@ -38,7 +39,7 @@ export interface AuthOptions {
      * NEVER set the to true in production. It exists
      * only to aid certain development tasks.
      *
-     * @default true
+     * @default false
      */
     disableAuth?: boolean;
     /**
@@ -158,33 +159,49 @@ export interface OrderMergeOptions {
  * @description
  * The AssetOptions define how assets (images and other files) are named and stored, and how preview images are generated.
  *
+ * {{% alert %}}
+ * If you are using the `DefaultAssetServerPlugin`,
+ * it is not necessary to configure these options.
+ * {{% /alert %}}
+ *
  * @docsCategory assets
+ * @docsWeight 0
  */
 export interface AssetOptions {
     /**
      * @description
      * Defines how asset files and preview images are named before being saved.
+     *
+     * @default DefaultAssetNamingStrategy
      */
     assetNamingStrategy: AssetNamingStrategy;
     /**
      * @description
      * Defines the strategy used for storing uploaded binary files.
+     *
+     * @default NoAssetStorageStrategy
      */
     assetStorageStrategy: AssetStorageStrategy;
     /**
      * @description
      * Defines the strategy used for creating preview images of uploaded assets.
+     *
+     * @default NoAssetPreviewStrategy
      */
     assetPreviewStrategy: AssetPreviewStrategy;
     /**
      * @description
      * The max file size in bytes for uploaded assets.
+     *
+     * @default 20971520
      */
     uploadMaxFileSize?: number;
 }
 
 /**
  * @docsCategory promotions
+ *
+ * @docsWeight 0
  */
 export interface PromotionOptions {
     /**
@@ -200,7 +217,8 @@ export interface PromotionOptions {
 }
 
 /**
- * @docsCategory orders
+ * @docsCategory shipping
+ * @docsWeight 0
  */
 export interface ShippingOptions {
     /**
@@ -210,39 +228,58 @@ export interface ShippingOptions {
     shippingEligibilityCheckers?: Array<ShippingEligibilityChecker<any>>;
     /**
      * @description
-     * An array of available ShippingCalculator for use in configuring ShippingMethods
+     * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
 /**
+ * @description
+ * Defines how transactional emails (account verification, order confirmation etc) are generated and sent.
+ *
+ * {{% alert %}}
+ * It is usually not recommended to configure these yourself.
+ * You should use the `DefaultEmailPlugin`.
+ * {{% /alert %}}
+ *
  * @docsCategory email
+ * @docsWeight 0
  */
 export interface EmailOptions<EmailType extends string> {
     /**
      * @description
      * Path to the email template files.
+     *
+     * @default __dirname
      */
     emailTemplatePath: string;
     /**
      * @description
      * Configuration for the creation and templating of each email type
+     *
+     * @default {}
      */
     emailTypes?: EmailTypes<EmailType>;
     /**
      * @description
      * The EmailGenerator uses the EmailContext and template to generate the email body
+     *
+     * @default NoopEmailGenerator
      */
     generator?: EmailGenerator;
     /**
      * @description
      * Configuration for the transport (email sending) method
+     *
+     * @default NoopTransportOptions
      */
     transport: EmailTransportOptions;
 }
 
 /**
  * @docsCategory payment
+ *
+ * @docsWeight 0
  */
 export interface PaymentOptions {
     /**
@@ -254,27 +291,38 @@ export interface PaymentOptions {
 
 /**
  * @docsCategory tax
+ *
+ * @docsWeight 0
  */
 export interface TaxOptions {
     /**
      * @description
      * Defines the strategy used to determine the applicable Zone used in tax calculations.
+     *
+     * @default DefaultTaxZoneStrategy
      */
     taxZoneStrategy: TaxZoneStrategy;
     /**
      * @description
      * Defines the strategy used for calculating taxes.
+     *
+     * @default DefaultTaxCalculationStrategy
      */
     taxCalculationStrategy: TaxCalculationStrategy;
 }
 
 /**
- * @docsCategory
+ * @description
+ * Options related to importing & exporting data.
+ *
+ * @docsCategory import-export
  */
 export interface ImportExportOptions {
     /**
      * @description
      * The directory in which assets to be imported are located.
+     *
+     * @default __dirname
      */
     importAssetsDir?: string;
 }
@@ -296,6 +344,8 @@ export interface VendureConfig {
     /**
      * @description
      * The path to the GraphQL API.
+     *
+     * @default 'api'
      */
     apiPath?: string;
     /**
@@ -313,16 +363,22 @@ export interface VendureConfig {
      * The name of the property which contains the token of the
      * active channel. This property can be included either in
      * the request header or as a query string.
+     *
+     * @default 'vendure-token'
      */
     channelTokenKey?: string;
     /**
      * @description
-     * Set the CORS handling for the server.
+     * Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
+     *
+     * @default { origin: true, credentials: true }
      */
     cors?: boolean | CorsOptions;
     /**
      * @description
      * Defines custom fields which can be used to extend the built-in entities.
+     *
+     * @default {}
      */
     customFields?: CustomFields;
     /**
@@ -334,11 +390,15 @@ export interface VendureConfig {
      * @description
      * The token for the default channel. If not specified, a token
      * will be randomly generated.
+     *
+     * @default null
      */
     defaultChannelToken?: string | null;
     /**
      * @description
      * The default languageCode of the app.
+     *
+     * @default LanguageCode.en
      */
     defaultLanguageCode?: LanguageCode;
     /**
@@ -352,11 +412,15 @@ export interface VendureConfig {
      * in the database, and the encoding & decoding of those ids when exposing
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
+     *
+     * @default new AutoIncrementIdStrategy()
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
      * @description
-     * Set the hostname of the server.
+     * Set the hostname of the server. If not set, the server will be available on localhost.
+     *
+     * @default ''
      */
     hostname?: string;
     /**
@@ -378,6 +442,8 @@ export interface VendureConfig {
     /**
      * @description
      * Custom Express middleware for the server.
+     *
+     * @default []
      */
     middleware?: Array<{ handler: RequestHandler; route: string }>;
     /**
@@ -388,11 +454,15 @@ export interface VendureConfig {
     /**
      * @description
      * An array of plugins.
+     *
+     * @default []
      */
     plugins?: VendurePlugin[];
     /**
      * @description
      * Which port the Vendure server should listen on.
+     *
+     * @default 3000
      */
     port: number;
     /**
@@ -408,6 +478,8 @@ export interface VendureConfig {
     /**
      * @description
      * When set to true, no application logging will be output to the console.
+     *
+     * @default false
      */
     silent?: boolean;
     /**

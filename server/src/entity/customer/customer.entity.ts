@@ -10,6 +10,14 @@ import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
+/**
+ * @description
+ * This entity represents a customer of the store, typically an individual person. A Customer can be
+ * a guest, in which case it has no associated {@link User}. Customers with registered account will
+ * have an associated User entity.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Customer extends VendureEntity implements HasCustomFields, SoftDeletable {
     constructor(input?: DeepPartial<Customer>) {

@@ -29,17 +29,41 @@ export type PaginatedList<T> = {
 };
 
 /**
- * An entity ID
+ * @description
+ * An entity ID. Depending on the configured {@link EntityIdStrategy}, it will be either
+ * a `string` or a `number`;
+ *
+ * @docsCategory entities
+ * @docsWeight 0
  */
 export type ID = string | number;
 
+/**
+ * @description
+ * A data type for a custom field.
+ *
+ * @docsCategory custom-fields
+ */
 export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
 
+/**
+ * @description
+ * Configures a custom field on an entity in the {@link CustomFields} config object.
+ *
+ * @docsCategory custom-fields
+ */
 export interface CustomFieldConfig {
     name: string;
     type: CustomFieldType;
 }
 
+/**
+ * @description
+ * The certain entities can have additional fields added to them by defining an array of {@link CustomFieldConfig}
+ * objects on against the corresponding key.
+ *
+ * @docsCategory custom-fields
+ */
 export interface CustomFields {
     Address?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];

@@ -10,6 +10,16 @@ import { ShippingEligibilityChecker } from '../../config/shipping-method/shippin
 import { Channel } from '../channel/channel.entity';
 import { Order } from '../order/order.entity';
 
+/**
+ * @description
+ * A ShippingMethod is used to apply a shipping price to an {@link Order}. It is composed of a
+ * {@link ShippingEligibilityChecker} and a {@link ShippingCalculator}. For a given Order,
+ * the `checker` is used to determine whether this ShippingMethod can be used. If yes, then
+ * the ShippingMethod can be applied and the `calculator` is used to determine the price of
+ * shipping.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class ShippingMethod extends AdjustmentSource implements ChannelAware {
     type = AdjustmentType.SHIPPING;

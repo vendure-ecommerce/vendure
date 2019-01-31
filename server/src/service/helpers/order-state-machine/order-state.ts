@@ -3,8 +3,11 @@ import { Transitions } from '../../../common/finite-state-machine';
 import { Order } from '../../../entity/order/order.entity';
 
 /**
+ * @description
  * These are the default states of the Order process. They can be augmented via
- * the orderProcessOptions property in VendureConfig.
+ * the `transtitions` property in the {@link OrderProcessOptions}.
+ *
+ * @docsCategory orders
  */
 export type OrderState =
     | 'AddingItems'

@@ -2,7 +2,7 @@ import { Channel, Order, Zone } from '../../entity';
 
 /**
  * @description
- * Defines how the active Zone is determined for the purposes of calculating taxes.
+ * Defines how the active {@link Zone} is determined for the purposes of calculating taxes.
  *
  * @docsCategory tax
  */

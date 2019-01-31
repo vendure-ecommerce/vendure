@@ -34,6 +34,12 @@ export interface PromotionOrderActionConfig<T extends PromotionActionArgs> exten
     execute: ExecutePromotionOrderActionFn<T>;
 }
 
+/**
+ * @description
+ * An abstract class which is extended by {@link PromotionItemAction} and {@link PromotionOrderAction}.
+ *
+ * @docsCategory promotions
+ */
 export abstract class PromotionAction<T extends PromotionActionArgs = {}> {
     readonly code: string;
     readonly args: PromotionActionArgs;
@@ -49,7 +55,23 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}> {
 }
 
 /**
- * Represents a PromotionAction which applies to individual OrderItems.
+ * @description
+ * Represents a PromotionAction which applies to individual {@link OrderItem}s.
+ *
+ * @example
+ * ```ts
+ * // Applies a percentage discount to each OrderItem
+ * const itemPercentageDiscount = new PromotionItemAction({
+ *     code: 'item_percentage_discount',
+ *     args: { discount: 'percentage' },
+ *     execute(orderItem, orderLine, args) {
+ *         return -orderLine.unitPrice * (args.discount / 100);
+ *     },
+ *     description: 'Discount every item by { discount }%',
+ * });
+ * ```
+ *
+ * @docsCategory promotions
  */
 export class PromotionItemAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionItemActionFn<T>;
@@ -64,7 +86,23 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
 }
 
 /**
- * Represents a PromotionAction which applies to the Order as a whole.
+ * @description
+ * Represents a PromotionAction which applies to the {@link Order} as a whole.
+ *
+ * @example
+ * ```ts
+ * // Applies a percentage discount to the entire Order
+ * const orderPercentageDiscount = new PromotionOrderAction({
+ *     code: 'order_percentage_discount',
+ *     args: { discount: 'percentage' },
+ *     execute(order, args) {
+ *         return -order.subTotal * (args.discount / 100);
+ *     },
+ *     description: 'Discount order by { discount }%',
+ * });
+ * ```
+ *
+ * @docsCategory promotions
  */
 export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionOrderActionFn<T>;

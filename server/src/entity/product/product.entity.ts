@@ -13,6 +13,13 @@ import { ProductVariant } from '../product-variant/product-variant.entity';
 
 import { ProductTranslation } from './product-translation.entity';
 
+/**
+ * @description
+ * A Product contains one or more {@link ProductVariant}s and serves as a container for those variants,
+ * providing an overall name, description etc.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Product extends VendureEntity
     implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {

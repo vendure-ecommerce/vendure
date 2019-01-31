@@ -28,6 +28,16 @@ export interface ApplyOrderActionArgs {
     utils: PromotionUtils;
 }
 
+/**
+ * @description
+ * A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
+ * will be applied to an Order.
+ *
+ * Each assigned {@link PromotionCondition} is checked against the Order, and if they all return `true`,
+ * then each assign {@link PromotionItemAction} / {@link PromotionOrderAction} is applied to the Order.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable {
     type = AdjustmentType.PROMOTION;

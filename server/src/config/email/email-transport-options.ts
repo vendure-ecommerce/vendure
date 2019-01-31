@@ -88,6 +88,12 @@ export interface TestingTransportOptions {
     onSend: (context: GeneratedEmailContext) => void;
 }
 
+/**
+ * @description
+ * A union of all the possible transport options for sending emails.
+ *
+ * @docsCategory email
+ */
 export type EmailTransportOptions =
     | SMTPTransportOptions
     | SendmailTransportOptions

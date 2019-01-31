@@ -21,6 +21,12 @@ import { FacetValue } from '../facet-value/facet-value.entity';
 
 import { ProductCategoryTranslation } from './product-category-translation.entity';
 
+/**
+ * @description
+ * A ProductCategory is a grouping of {@link Product}s based on {@link FacetValue}s.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 // TODO: It would be ideal to use the TypeORM built-in tree support, but unfortunately it is incomplete
 // at this time - does not support moving or deleting. See https://github.com/typeorm/typeorm/issues/2032

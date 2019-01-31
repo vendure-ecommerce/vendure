@@ -10,6 +10,12 @@ export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     args: ConfigArgValues<T>,
 ) => number | Promise<number>;
 
+/**
+ * @description
+ * The ShippingCalculator is used by a {@link ShippingMethod} to calculate the price of shipping on a given {@link Order}.
+ *
+ * @docsCategory shipping
+ */
 export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
     readonly code: string;
     readonly description: string;
@@ -23,6 +29,10 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
         this.calculateFn = config.calculate;
     }
 
+    /**
+     * @description
+     * Calculates the price of shipping for the given Order.
+     */
     calculate(order: Order, args: ConfigArg[]): number | Promise<number> {
         return this.calculateFn(order, argsArrayToHash(args));
     }

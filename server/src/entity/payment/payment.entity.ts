@@ -7,6 +7,13 @@ import { Order } from '../order/order.entity';
 
 export type PaymentMetadata = { [key: string]: string | number | boolean };
 
+/**
+ * @description
+ * A Payment represents a single payment transaction and exists in a well-defined state
+ * defined by the {@link PaymentState} type.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Payment extends VendureEntity {
     constructor(input?: DeepPartial<Payment>) {

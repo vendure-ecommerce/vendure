@@ -3,6 +3,12 @@ import { DocumentNode } from 'graphql';
 import { Type } from '../../../../shared/shared-types';
 import { VendureConfig } from '../vendure-config';
 
+/**
+ * @description
+ * A function which allows any injectable provider to be injected into the `onBootstrap` method of a {@link VendurePlugin}.
+ *
+ * @docsCategory plugin
+ */
 export type InjectorFn = <T>(type: Type<T>) => T;
 
 /**
@@ -14,7 +20,7 @@ export type InjectorFn = <T>(type: Type<T>) => T;
  * As well as configuring the app, a plugin may also extend the GraphQL schema by extending existing types or adding
  * entirely new types. Database entities and resolvers can also be defined to handle the extended GraphQL types.
  *
- * @docsCategory
+ * @docsCategory plugin
  */
 export interface VendurePlugin {
     /**

@@ -18,6 +18,17 @@ import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
+/**
+ * @description
+ * An Order is created whenever a {@link Customer} adds an item to the cart. It contains all the
+ * information required to fulfill an order: which {@link ProductVariant}s in what quantities;
+ * the shipping address and price; any applicable promotions; payments etc.
+ *
+ * An Order exists in a well-defined state according to the {@link OrderState} type. A state machine
+ * is used to govern the transition from one state to another.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Order extends VendureEntity {
     constructor(input?: DeepPartial<Order>) {

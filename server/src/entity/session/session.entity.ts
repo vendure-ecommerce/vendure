@@ -6,6 +6,13 @@ import { Customer } from '../customer/customer.entity';
 import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
+/**
+ * @description
+ * A Session is created when a user makes a request to the API. A Session can be an AnonymousSession
+ * in the case of un-authenticated users, otherwise it is an AuthenticatedSession.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export abstract class Session extends VendureEntity {

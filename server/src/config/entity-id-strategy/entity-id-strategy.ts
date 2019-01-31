@@ -1,5 +1,13 @@
 import { ID } from '../../../../shared/shared-types';
 
+/**
+ * @description
+ * Defines the type of primary key used for all entities in the database.
+ * "increment" uses an auto-incrementing integer, whereas "uuid" uses a
+ * uuid string.
+ *
+ * @docsCategory entities
+ */
 export type PrimaryKeyType = 'increment' | 'uuid';
 
 /**
@@ -8,7 +16,8 @@ export type PrimaryKeyType = 'increment' | 'uuid';
  * database, as well as how they are transformed when being passed from the API to the
  * service layer.
  *
- * @docsCategory
+ * @docsCategory entities
+ * @docsWeight 1
  */
 export interface EntityIdStrategy<T extends ID = ID> {
     readonly primaryKeyType: PrimaryKeyType;

@@ -9,6 +9,12 @@ import { ProductOption } from '../product-option/product-option.entity';
 
 import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 
+/**
+ * @description
+ * A grouping of one or more {@link ProductOption}s.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class ProductOptionGroup extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ProductOptionGroup>) {

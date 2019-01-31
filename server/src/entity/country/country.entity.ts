@@ -6,6 +6,14 @@ import { VendureEntity } from '../base/base.entity';
 
 import { CountryTranslation } from './country-translation.entity';
 
+/**
+ * @description
+ * A country to which is available when creating / updating an {@link Address}. Countries are
+ * grouped together into {@link Zone}s which are in turn used to determine applicable shipping
+ * and taxes for an {@link Order}.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Country extends VendureEntity implements Translatable {
     constructor(input?: DeepPartial<Country>) {

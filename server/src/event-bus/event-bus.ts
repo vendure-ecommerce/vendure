@@ -8,16 +8,20 @@ export type EventHandler<T extends VendureEvent> = (event: T) => void;
 export type UnsubscribeFn = () => void;
 
 /**
+ * @description
  * The EventBus is used to globally publish events which can then be subscribed to.
+ *
+ * @docsCategory events
  */
 @Injectable()
 export class EventBus {
     private subscriberMap = new Map<Type<VendureEvent>, Array<EventHandler<any>>>();
 
     /**
+     * @description
      * Publish an event which any subscribers can react to.
      */
-    publish(event: VendureEvent) {
+    publish(event: VendureEvent): void {
         const eventType = (event as any).constructor;
         const handlers = this.subscriberMap.get(eventType);
         if (handlers) {
@@ -29,6 +33,7 @@ export class EventBus {
     }
 
     /**
+     * @description
      * Subscribe to the given event type. Returns an unsubscribe function which can be used
      * to unsubscribe the handler from the event.
      */

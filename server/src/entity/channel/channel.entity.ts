@@ -5,6 +5,13 @@ import { DeepPartial } from '../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Zone } from '../zone/zone.entity';
 
+/**
+ * @description
+ * A Channel represents a distinct sales channel and configures defaults for that
+ * channel.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Channel extends VendureEntity {
     constructor(input?: DeepPartial<Channel>) {

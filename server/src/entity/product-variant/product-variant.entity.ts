@@ -15,6 +15,15 @@ import { TaxRate } from '../tax-rate/tax-rate.entity';
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
 
+/**
+ * @description
+ * A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
+ * Whereas a {@link Product} is a "container" of variants, the variant itself holds the
+ * data on price, tax category etc. When one adds items to their cart, they are adding
+ * ProductVariants, not Products.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ProductVariant>) {

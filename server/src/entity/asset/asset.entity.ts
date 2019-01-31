@@ -8,6 +8,13 @@ import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';
 import { User } from '../user/user.entity';
 
+/**
+ * @description
+ * An Asset represents a file such as an image which can be associated with certain other entities
+ * such as Products.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Asset extends VendureEntity {
     constructor(input?: DeepPartial<Asset>) {

@@ -8,6 +8,16 @@ import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { Zone } from '../zone/zone.entity';
 
+/**
+ * @description
+ * A TaxRate defines the rate of tax to apply to a {@link ProductVariant} based on three factors:
+ *
+ * 1. the ProductVariant's {@link TaxCategory}
+ * 2. the applicable {@link Zone} ("applicable" being defined by the configured {@link TaxZoneStrategy})
+ * 3. the {@link CustomerGroup} of the current Customer
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class TaxRate extends AdjustmentSource {
     readonly type = AdjustmentType.TAX;

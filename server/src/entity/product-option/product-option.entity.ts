@@ -9,6 +9,12 @@ import { ProductOptionGroup } from '../product-option-group/product-option-group
 
 import { ProductOptionTranslation } from './product-option-translation.entity';
 
+/**
+ * @description
+ * A ProductOption is used to differentiate {@link ProductVariant}s from one another.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class ProductOption extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ProductOption>) {

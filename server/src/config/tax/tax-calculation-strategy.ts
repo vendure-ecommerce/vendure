@@ -3,6 +3,12 @@ import { TaxCategory, Zone } from '../../entity';
 import { TaxCalculationResult } from '../../service/helpers/tax-calculator/tax-calculator';
 import { TaxRateService } from '../../service/services/tax-rate.service';
 
+/**
+ * @description
+ * The arguments passed the the `calculate` method of the configured {@link TaxCalculationStrategy}.
+ *
+ * @docsCategory tax
+ */
 export interface TaxCalculationArgs {
     inputPrice: number;
     taxCategory: TaxCategory;

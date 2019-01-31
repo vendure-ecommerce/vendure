@@ -10,6 +10,12 @@ import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 
+/**
+ * @description
+ * A single line on an {@link Order} which contains one or more {@link OrderItem}s.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class OrderLine extends VendureEntity {
     constructor(input?: DeepPartial<OrderLine>) {

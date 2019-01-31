@@ -3,8 +3,10 @@ import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 
 /**
- * These are the default states of the Order process. They can be augmented via
- * the orderProcessOptions property in VendureConfig.
+ * @description
+ * These are the default states of the payment process.
+ *
+ * @docsCategory payment
  */
 export type PaymentState = 'Authorized' | 'Settled' | 'Declined' | 'Refunded' | 'Cancelled';
 
@@ -26,6 +28,13 @@ export const paymentStateTransitions: Transitions<PaymentState> = {
     },
 };
 
+/**
+ * @description
+ * The data which is passed to the `onStateTransitionStart` function configured when constructing
+ * a new `PaymentMethodHandler`
+ *
+ * @docsCategory payment
+ */
 export interface PaymentTransitionData {
     payment: Payment;
     order: Order;
