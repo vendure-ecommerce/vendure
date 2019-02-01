@@ -1,12 +1,15 @@
 import fuzzy, { FilterResult } from 'fuzzy';
 
+type Section = 'guides' | 'config' | 'gql';
 interface IndexItem {
+    section: Section;
     title: string;
     headings: string[];
     url: string;
 }
 
 interface DenormalizedItem {
+    section: Section;
     title: string;
     heading: string;
     url: string;
@@ -24,7 +27,7 @@ const KeyCode = {
  */
 export class SearchWidget {
 
-    private readonly MAX_RESULTS = 8;
+    private readonly MAX_RESULTS = 7;
     private searchIndex: Promise<DenormalizedItem[]> | undefined;
     private results: Array<FilterResult<DenormalizedItem>> = [];
     private selectedIndex = -1;
@@ -53,7 +56,7 @@ export class SearchWidget {
                     const selected = this.autocompleteDiv.querySelector('li.selected a') as HTMLAnchorElement;
                     if (selected) {
                         selected.click();
-                        return;
+                        this.results = [];
                     }
                     break;
                 case KeyCode.ESCAPE:
@@ -61,6 +64,11 @@ export class SearchWidget {
                     this.inputElement.blur();
                     break;
             }
+            this.render();
+        });
+
+        this.wrapperDiv.addEventListener('click', () => {
+            this.results = [];
             this.render();
         });
     }
@@ -72,15 +80,30 @@ export class SearchWidget {
         }
     }
 
+    /**
+     * Groups the results by section and renders as a list
+     */
     private render() {
-        const listItems = this.results
-            .map((result, i) => {
-                const { title, heading, url } = result.original;
+        const sections: Section[] = ['guides', 'gql', 'config'];
+        let html = '';
+        let i = 0;
+        for (const sec of sections) {
+            const matches = this.results.filter(r => r.original.section === sec);
+            if (matches.length) {
+                const sectionName = sec === 'guides' ? 'Guides' : sec === 'gql' ? 'GraphQL API' : 'Configuration';
+                html += `<li class="section">${sectionName}</li>`;
+            }
+            html += matches.map((result) => {
+                const { section, title, heading, url } = result.original;
                 const anchor = heading !== title ? '#' + heading.toLowerCase().replace(/\s/g, '-') : '';
                 const inner = `<div class="title">${title}</div><div class="heading">${result.string}</div>`;
-                return `<li class="${i === this.selectedIndex ? 'selected' : ''}"><a href="${url + anchor}">${inner}</a></li>`;
-            });
-        this.listElement.innerHTML = listItems.join('\n');
+                const selected = i === this.selectedIndex ? 'selected' : '';
+                i++;
+                return `<li class="${selected}"><a href="${url + anchor}">${inner}</a></li>`;
+            }).join('\n');
+        }
+
+        this.listElement.innerHTML = html;
     }
 
     private attachAutocomplete() {
@@ -108,7 +131,7 @@ export class SearchWidget {
 
     private async getResults(term: string) {
         const items = await this.getSearchIndex();
-        return fuzzy.filter(
+        const results = fuzzy.filter(
             term,
             items,
             {
@@ -118,7 +141,27 @@ export class SearchWidget {
                     return input.heading;
                 },
             },
-        ).slice(0, this.MAX_RESULTS);
+        );
+
+        if (this.MAX_RESULTS < results.length) {
+            // limit the maximum number of results from a particular
+            // section to prevent other possibly relevant results getting
+            // buried.
+            const guides = results.filter(r => r.original.section === 'guides');
+            const gql = results.filter(r => r.original.section === 'gql');
+            const config = results.filter(r => r.original.section === 'config');
+            let pool = [guides, gql, config].filter(p => p.length);
+            const balancedResults = [];
+            for (let i = 0; i < this.MAX_RESULTS; i ++) {
+                const next = pool[i % pool.length].shift();
+                if (next) {
+                    balancedResults.push(next);
+                }
+                pool = [guides, gql, config].filter(p => p.length);
+            }
+            return balancedResults;
+        }
+        return results;
     }
 
     private getSearchIndex(): Promise<DenormalizedItem[]> {
@@ -129,8 +172,9 @@ export class SearchWidget {
                 .then(res => eval(res))
                 .then((items: IndexItem[]) => {
                     const denormalized: DenormalizedItem[] = [];
-                    for (const { title, headings, url } of items) {
+                    for (const { section, title, headings, url } of items) {
                         denormalized.push({
+                            section,
                             title,
                             heading: title,
                             url,
@@ -138,6 +182,7 @@ export class SearchWidget {
                         if (headings.length) {
                             for (const heading of headings) {
                                 denormalized.push({
+                                    section,
                                     title,
                                     heading,
                                     url,

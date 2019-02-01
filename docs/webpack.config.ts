@@ -37,7 +37,7 @@ const config: webpack.Configuration = {
             chunkFilename: '[id].css',
         }),
     ],
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
 };
 
 export default config;
