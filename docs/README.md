@@ -18,41 +18,49 @@ This task will:
 
 Run `docs:watch` when developing the docs site. This will run all of the above in watch mode, so you can go to [http://localhost:1313](http://localhost:1313) to view the docs site. It will auto-reload the browser on any changes to the server source, the docs script/styles assets, or the Hugo templates.
 
-## API Docs Generation
+## Docs Generation
 
-The API docs are generated from the TypeScript source files by running the "generate-docs" script:
+All of the documentation for the interal APIs (configuration docs) and the GraphQL API is auto-generated.
+
+### GraphQL Docs
+
+The GraphQL API docs are generated from the `schema.json` file which is created as part of the "generate-gql-types" script.
+
+### Configuration Docs
+
+The configuration docs are generated from the TypeScript source files by running the "generate-config-docs" script:
 
 ```bash
-yarn generate-docs [-w]
+yarn generate-config-docs [-w]
 ```
 
 This script uses the TypeScript compiler API to traverse the server source code and extract data about the types as well as other information such as descriptions and default values.
 
-Currently, any `interface` which includes the JSDoc `@docCategory` tag will be extracted into a markdown file in the [content/docs/api](./content/docs/api) directory. Hugo can then build the API documentation from these markdown files. This will probably be expanded to be able to parse `class` and `type` declarations too.
+Currently, any `interface`, `class` or `type` which includes the JSDoc `@docCategory` tag will be extracted into a markdown file in the [content/docs/api](./content/docs/api) directory. Hugo can then build the API documentation from these markdown files.
 
-### Docs-specific JSDoc tags
+#### Docs-specific JSDoc tags
 
-#### `@docsCategory`
+##### `@docsCategory`
 
 This is required as its presence determines whether the declaration is extracted into the docs. Its value should be a string corresponding to the API sub-section that this declaration belongs to, e.g. "payment", "shipping" etc.
 
-#### `@description`
+##### `@description`
 
 This tag specifies the text description of the declaration. It supports markdown, but should not be used for code blocks, which should be tagged with `@example` (see below). Links to other declarations can be made with the `{@link SomeOtherDeclaration}` syntax. Also applies to class/interface members.
 
-#### `@example`
+##### `@example`
 
 This tag should be used to include any code blocks. Remember to specify the language after the opening delimiter for correct highlighting. Also applies to class/interface members.
 
-#### `@docsWeight`
+##### `@docsWeight`
 
 This is optional and when present, sets the "weight" of the markdown file in the Hugo front matter. A lower value makes the resulting doc page appear higher in the menu. If not specified, a default value of `10` is used.
 
-#### `@default`
+##### `@default`
 
 This is used to specify the default value of a property, e.g. when documenting an optional configuration option.
 
-#### Example
+##### Example
 
 ````ts
 /**

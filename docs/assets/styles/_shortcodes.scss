@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 
 /**
  Alert
@@ -54,4 +55,46 @@
 .generation-info {
     font-size: $font-size-12;
     border-bottom: 1px dashed $gray-400;
+}
+
+/**
+ GraphQL field list
+ */
+.gql-fields {
+    @include code-block;
+    &::before {
+        content: 'sdl';
+        @include code-block-lang;
+    }
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        font-family: 'Oxygen Mono', monospace;
+    }
+    em {
+        color: #776e71;
+    }
+}
+
+/**
+ GraphQL enum values
+ */
+.gql-enum-values {
+    @include code-block;
+    &::before {
+        content: 'sdl';
+        @include code-block-lang;
+    }
+    max-height: 80vh;
+    overflow-y: auto;
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        font-family: 'Oxygen Mono', monospace;
+    }
+    em {
+        color: #776e71;
+    }
 }

@@ -399,3 +399,5 @@ docs/static/main.css
 docs/public
 docs/content/docs/configuration/*
 !docs/content/docs/configuration/_index.md
+docs/content/docs/graphql-api/*
+!docs/content/docs/graphql-api/_index.md

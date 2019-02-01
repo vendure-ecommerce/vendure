@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-01-25T15:42:49+01:00
+// Generated in 2019-02-01T14:23:55+01:00
 export type Maybe<T> = T | null;
 
 
@@ -807,12 +807,7 @@ export interface UpdateGlobalSettingsInput {
   
   availableLanguages?: Maybe<LanguageCode[]>;
   
-  customFields?: Maybe<UpdateGlobalSettingsCustomFieldsInput>;
-}
-
-export interface UpdateGlobalSettingsCustomFieldsInput {
-  
-  royalMailId?: Maybe<string>;
+  customFields?: Maybe<Json>;
 }
 
 export interface PaymentInput {
@@ -5205,19 +5200,13 @@ export interface GlobalSettings {
   
   serverConfig: ServerConfig;
   
-  customFields?: Maybe<GlobalSettingsCustomFields>;
+  customFields?: Maybe<Json>;
 }
 
 
 export interface ServerConfig {
   
   customFields?: Maybe<Json>;
-}
-
-
-export interface GlobalSettingsCustomFields {
-  
-  royalMailId?: Maybe<string>;
 }
 
 

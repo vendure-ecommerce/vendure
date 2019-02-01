@@ -5,6 +5,8 @@ import ts from 'typescript';
 
 import { assertNever, notNullOrUndefined } from '../shared/shared-utils';
 
+import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
+
 // The absolute URL to the generated docs section
 const docsUrl = '/docs/configuration/';
 // The directory in which the markdown files will be saved
@@ -82,47 +84,25 @@ const tsFiles = tsSourceDirs
     .reduce((allFiles, files) => [...allFiles, ...files], [])
     .map(item => item.path);
 
-deleteGeneratedDocs();
-generateDocs(tsFiles, outputPath, globalTypeMap);
+deleteGeneratedDocs(outputPath);
+generateConfigDocs(tsFiles, outputPath, globalTypeMap);
 const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
 if (watchMode) {
     console.log(`Watching for changes to source files...`);
     tsFiles.forEach(file => {
         fs.watchFile(file, { interval: 1000 }, () => {
-            generateDocs([file], outputPath, globalTypeMap);
+            generateConfigDocs([file], outputPath, globalTypeMap);
         });
     });
-}
-
-/**
- * Delete all generated docs found in the outputPath.
- */
-function deleteGeneratedDocs() {
-    let deleteCount = 0;
-    const files = klawSync(outputPath, { nodir: true });
-    for (const file of files) {
-        const content = fs.readFileSync(file.path, 'utf-8');
-        if (isGenerated(content)) {
-            fs.unlinkSync(file.path);
-            deleteCount++;
-        }
-    }
-    console.log(`Deleted ${deleteCount} generated docs`);
-}
-
-/**
- * Returns true if the content matches that of a generated document.
- */
-function isGenerated(content: string) {
-    return /generated\: true\n---\n/.test(content);
 }
 
 /**
  * Uses the TypeScript compiler API to parse the given files and extract out the documentation
  * into markdown files
  */
-function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: TypeMap) {
+function generateConfigDocs(filePaths: string[], hugoOutputPath: string, typeMap: TypeMap) {
     const timeStart = +new Date();
+    let generatedCount = 0;
     const sourceFiles = filePaths.map(filePath => {
         return ts.createSourceFile(
             filePath,
@@ -160,7 +140,7 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
                 assertNever(info);
         }
 
-        const categoryDir = path.join(hugoApiDocsPath, info.category);
+        const categoryDir = path.join(hugoOutputPath, info.category);
         const indexFile = path.join(categoryDir, '_index.md');
         if (!fs.existsSync(categoryDir)) {
             fs.mkdirSync(categoryDir);
@@ -168,13 +148,15 @@ function generateDocs(filePaths: string[], hugoApiDocsPath: string, typeMap: Typ
         if (!fs.existsSync(indexFile)) {
             const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;
             fs.writeFileSync(indexFile, indexFileContent);
+            generatedCount ++;
         }
 
         fs.writeFileSync(path.join(categoryDir, info.fileName + '.md'), markdown);
+        generatedCount ++;
     }
 
     if (declarationInfos.length) {
-        console.log(`Generated ${declarationInfos.length} docs in ${+new Date() - timeStart}ms`);
+        console.log(`Generated ${generatedCount} configuration docs in ${+new Date() - timeStart}ms`);
     }
 }
 
@@ -498,21 +480,6 @@ function renderDescription(description: string, knownTypeMap: TypeMap): string {
         description = description.replace(re, `<a href='${docsUrl}/${val}/'>${key}</a>`);
     }
     return description;
-}
-
-/**
- * Generates the Hugo front matter with the title of the document
- */
-function generateFrontMatter(title: string, weight: number, showToc: boolean = true): string {
-    return `---
-title: "${title.replace('-', ' ')}"
-weight: ${weight}
-date: ${new Date().toISOString()}
-showtoc: ${showToc}
-generated: true
----
-<!-- This file was generated from the Vendure TypeScript source. Do not modify. Instead, re-run "generate-docs" -->
-`;
 }
 
 /**

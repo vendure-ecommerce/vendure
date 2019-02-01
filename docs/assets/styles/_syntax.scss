@@ -1,3 +1,4 @@
+@import "mixins";
 @import "variables";
 
 /**
@@ -5,26 +6,14 @@
  */
 
 pre.chroma {
-    padding: 12px;
-    font-size: 14px;
-    border-radius: 3px;
-    overflow-x: auto;
-    border: 1px solid $color-code-border;
-    position: relative;
+    @include code-block;
 
     > code::before {
         content: attr(data-lang);
-        position: absolute;
-        right: 3px;
-        top: 0;
-        font-size: 12px;
-        color: $gray-400;
-        text-transform: uppercase;
+        @include code-block-lang;
     }
 }
 
-/* Background */ .chroma { color: $color-code-text; background-color: $color-code-bg;
-                 }
 /* Error */ .chroma .err { color: #ef6155 }
 /* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
 /* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; width: auto; overflow: auto; display: block; }
