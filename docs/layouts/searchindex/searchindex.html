@@ -1,0 +1,11 @@
+{
+result :[
+    {{ range .Site.Pages -}}
+        {{ $titles := findRE "<h(2|3).*?>(.|\n)*?</h(2|3)>" .Content -}}
+        {{ $plain := apply $titles "plainify" "." -}}
+        {{ $cleaned := $plain | complement (slice "constructor" "Signature" "Members") -}}
+        {{ $quoted := apply $cleaned "replaceRE" ".*" "'$0'" "." }}
+        { title: '{{ .Title }}', headings: [{{ delimit $quoted ", " }}], url: '{{ .RelPermalink }}' },
+    {{- end }}
+]
+}

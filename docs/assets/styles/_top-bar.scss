@@ -11,6 +11,10 @@
     align-items: center;
     transition: background-color 0.7s;
 
+    @media all and (max-width: $sm-breakpoint){
+        padding: 12px;
+    }
+
     &.landing-page {
         background-color: transparent;
 
@@ -37,6 +41,9 @@
     }
 
     .right {
+        @media all and (max-width: $sm-breakpoint){
+            text-align: right;
+        }
         a {
             margin-left: 12px;
         }
@@ -46,6 +53,41 @@
         a:hover {
             color: $gray-100;
             text-decoration: none;
+        }
+    }
+
+    .search-input {
+        display: flex;
+    }
+    #searchInput {
+        width: 100%;
+        border-radius: 3px;
+        border: 1px solid $gray-900;
+        padding: 6px 9px;
+        background-color: transparentize($gray-300, 0.2);
+        color: $gray-900;
+        transition: background-color 0.2s;
+        margin: 0;
+
+        &:focus {
+            background-color: $gray-300;
+        }
+        @media all and (max-width: $sm-breakpoint){
+            background-color: $gray-300;
+        }
+    }
+    button.search-icon {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        border: none;
+        display: none;
+        img {
+            width: 24px;
+            height: 24px;
+        }
+        @media all and (max-width: $sm-breakpoint){
+            display: block;
         }
     }
 }

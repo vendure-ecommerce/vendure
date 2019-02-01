@@ -6,6 +6,14 @@
         </a>
     </div>
     <div class="flex-spacer"></div>
+    {{ if not .isLandingPage }}
+    <div class="search-input">
+        <button class="search-icon">
+            <img src="{{ "svg/clr-icon-search-light.svg" | absURL }}">
+        </button>
+        <input id="searchInput" placeholder="Search docs">
+    </div>
+    {{ end }}
     <div class="right">
         <a href="/docs">Docs</a>
         <a href="https://github.com/vendure-ecommerce/vendure">GitHub</a>

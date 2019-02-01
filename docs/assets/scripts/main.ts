@@ -1,12 +1,10 @@
-import '@webcomponents/custom-elements';
+// import '@webcomponents/custom-elements';
 
-import { initIcons } from './icons';
+import { SearchWidget } from './search-widget';
 import { TocHighlighter } from './toc-highlighter';
 
 // tslint:disable-next-line
 require('../styles/main.scss');
-
-initIcons();
 
 document.addEventListener('DOMContentLoaded', () => {
     const topBar = document.querySelector('.top-bar');
@@ -19,9 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
     const toc = document.querySelector('#TableOfContents');
     if (toc) {
         const tocHighlighter = new TocHighlighter(toc);
         tocHighlighter.highlight();
     }
+
+    const searchInput = document.querySelector('#searchInput') as HTMLInputElement;
+    const searchWidget = new SearchWidget(searchInput);
+    const searchButton = document.querySelector('button.search-icon') as HTMLButtonElement;
+    searchButton.addEventListener('click', () => searchWidget.toggleActive());
+
 }, false);
