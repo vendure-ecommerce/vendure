@@ -35,9 +35,31 @@ export type CreateContextResult = {
     channelCode: string;
 };
 
+/**
+ * @description
+ * An object which configures an particular type of transactional email.
+ *
+ * @docsCategory email
+ */
 export type EmailTypeConfig<T extends string, E extends VendureEvent = any> = {
+    /**
+     * @description
+     * Specifies the {@link VendureEvent} which triggers this type of email.
+     */
     triggerEvent: Type<E>;
+    /**
+     * @description
+     * A function which creates a context object for the email, specifying the recipient
+     * email address, the languageCode of the email and the current Channel.
+     *
+     * A return value of `undefined` means that no email will be generated and sent.
+     */
     createContext: (event: E) => CreateContextResult | undefined;
+    /**
+     * @description
+     * An object which describes how to resolve the template for the email depending on
+     * the current Channel and LanguageCode.
+     */
     templates: TemplateByChannel<EmailContext<T, E>>;
 };
 
@@ -47,6 +69,42 @@ export type EmailTypeConfig<T extends string, E extends VendureEvent = any> = {
  * trigger those emails, as well as the location of the templates to handle each
  * email type. Search the repo for the `default-email-types.ts` file for an example of how
  * the email types are defined.
+ *
+ * When defining an email type, the helper function `configEmailType` may be used to
+ * provide better type-safety.
+ *
+ * @example
+ * ```ts
+ * export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
+ *  'order-confirmation': configEmailType({
+ *    triggerEvent: OrderStateTransitionEvent,
+ *    createContext: e => {
+ *      const customer = e.order.customer;
+ *      if (customer && e.toState === 'PaymentSettled') {
+ *        return {
+ *          recipient: customer.emailAddress,
+ *          languageCode: e.ctx.languageCode,
+ *          channelCode: e.ctx.channel.code,
+ *        };
+ *      }
+ *    },
+ *    templates: {
+ *      defaultChannel: {
+ *        defaultLanguage: {
+ *          templateContext: emailContext => ({ order: emailContext.event.order }),
+ *          subject: `Order confirmation for #{{ order.code }}`,
+ *          templatePath: 'order-confirmation/order-confirmation.hbs',
+ *        },
+ *        de: {
+ *          // config for German-language templates
+ *        }
+ *      },
+ *      'other-channel-code': {
+ *        // config for a different Channel
+ *      }
+ *    },
+ *  }),
+ * ```
  *
  * @docsCategory email
  */

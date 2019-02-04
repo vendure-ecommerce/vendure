@@ -4,8 +4,23 @@ import { InternalServerError } from '../../common/error/errors';
 import { EmailTransportOptions, VendureConfig, VendurePlugin } from '../../config';
 import { defaultEmailTypes, HandlebarsMjmlGenerator } from '../../email';
 
+/**
+ * @description
+ * Configuration for the DefaultEmailPlugin.
+ *
+ * @docsCategory plugin
+ */
 export interface DefaultEmailPluginOptions {
+    /**
+     * @description
+     * The path to the location of the email templates. In a default Vendure installation,
+     * the templates are installed to `<project root>/vendure/email/templates`.
+     */
     templatePath: string;
+    /**
+     * @description
+     * Configures how the emails are sent.
+     */
     transport: EmailTransportOptions;
 }
 

@@ -12,6 +12,7 @@ export type UnsubscribeFn = () => void;
  * The EventBus is used to globally publish events which can then be subscribed to.
  *
  * @docsCategory events
+ * @docsWeight 0
  */
 @Injectable()
 export class EventBus {

@@ -4,6 +4,12 @@ import { Order } from '../../entity/order/order.entity';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEvent } from '../vendure-event';
 
+/**
+ * @description
+ * This event is fired whenever an {@link Order} transitions from one {@link OrderState} to another.
+ *
+ * @docsCategory events
+ */
 export class OrderStateTransitionEvent extends VendureEvent {
     constructor(
         public fromState: OrderState,
