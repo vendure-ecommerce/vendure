@@ -18,11 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const toc = document.querySelector('#TableOfContents');
-    if (toc) {
-        const tocHighlighter = new TocHighlighter(toc);
-        tocHighlighter.highlight();
-    }
+    const toc = document.querySelector('#TableOfContents') as HTMLDivElement;
+    const tocHighlighter = new TocHighlighter(toc);
+    tocHighlighter.highlight();
 
     const searchInput = document.querySelector('#searchInput') as HTMLInputElement;
     const searchWidget = new SearchWidget(searchInput);

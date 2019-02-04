@@ -3,7 +3,7 @@
  */
 export class TocHighlighter {
 
-    constructor(private tocElement: Element) {}
+    constructor(private tocElement: HTMLElement) {}
 
     highlight() {
         const article = document.querySelector('article');
@@ -42,9 +42,24 @@ export class TocHighlighter {
     }
 
     private highlightItem(id: string) {
-        const tocItem = this.tocElement.querySelector(`[href="#${id}"]`);
+        const tocItem = this.tocElement.querySelector(`[href="#${id}"]`) as HTMLAnchorElement;
         if (tocItem) {
             tocItem.classList.add('active');
+        }
+        // ensure the highlighted item is scrolled into view in the TOC menu
+        const padding = 12;
+        const tocHeight = this.tocElement.offsetHeight;
+        const tocScrollTop = this.tocElement.scrollTop;
+        const outOfRangeTop = tocItem.offsetTop < (tocScrollTop + padding);
+        const outofRangeBottom = tocHeight + tocScrollTop < (tocItem.offsetTop + padding);
+        if (outOfRangeTop) {
+            // console.log('¬TOP');
+            this.tocElement.scrollTo({ top: tocItem.offsetTop - (tocItem.offsetHeight) - padding });
+        }
+        if (outofRangeBottom) {
+            // console.log('$BOTTOm');
+            const delta = tocItem.offsetTop - (tocHeight + tocScrollTop);
+            this.tocElement.scrollTo({ top: tocScrollTop + delta + tocItem.offsetHeight + padding });
         }
     }
 }

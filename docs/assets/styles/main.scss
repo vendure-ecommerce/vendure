@@ -147,6 +147,19 @@ ul.contents-list {
     }
     a.active {
         font-weight: bold;
+        position: relative;
+        &::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 3px;
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: $brand-color;
+            opacity: 0.5;
+        }
     }
 }
 

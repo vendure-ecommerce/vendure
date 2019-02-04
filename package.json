@@ -2,7 +2,7 @@
   "name": "vendure",
   "version": "0.1.0",
   "scripts": {
-    "docs:watch": "concurrently -n docgen,hugo,webpack \"yarn generate-api-docs && yarn generate-config-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
+    "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-api-docs && yarn generate-config-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-api-docs && yarn generate-config-docs && cd docs && yarn webpack --prod && hugo",
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "generate-config-docs": "ts-node ./codegen/generate-config-docs.ts",
