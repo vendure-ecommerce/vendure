@@ -1,11 +1,12 @@
 {
 result :[
-    {{- range .Site.Pages -}}
+    {{- range .Site.RegularPages -}}
         {{ $titles := findRE "<h(2|3).*?>(.|\n)*?</h(2|3)>" .Content -}}
         {{ $plain := apply $titles "plainify" "." -}}
         {{ $cleaned := $plain | complement (slice "constructor" "Signature" "Members") -}}
         {{ $quoted := apply $cleaned "replaceRE" ".*" "'$0'" "." -}}
         {{ $section := cond (in .Dir "configuration") "config" (cond (in .Dir "graphql-api") "gql" "guides") }}
+
         { section: '{{ $section }}', title: '{{ .Title }}', headings: [{{ delimit $quoted ", " }}], url: '{{ .RelPermalink }}' },
     {{- end }}
 ]

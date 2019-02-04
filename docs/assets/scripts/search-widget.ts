@@ -95,7 +95,7 @@ export class SearchWidget {
             }
             html += matches.map((result) => {
                 const { section, title, heading, url } = result.original;
-                const anchor = heading !== title ? '#' + heading.toLowerCase().replace(/\s/g, '-') : '';
+                const anchor = heading !== title ? '#' + this.headingToAnchor(heading) : '';
                 const inner = `<div class="title">${title}</div><div class="heading">${result.string}</div>`;
                 const selected = i === this.selectedIndex ? 'selected' : '';
                 i++;
@@ -194,5 +194,11 @@ export class SearchWidget {
                 });
         }
         return this.searchIndex;
+    }
+
+    private headingToAnchor(heading: string): string {
+        return heading.toLowerCase()
+            .replace(/\s/g, '-')
+            .replace(/[:]/g, '');
     }
 }
