@@ -98,3 +98,31 @@
         color: #776e71;
     }
 }
+
+/**
+ Tabs
+ */
+.tab-container {
+    border-left: 2px solid $gray-200;
+    padding-left: 6px;
+    margin-left: -8px;
+    .tab-controls {
+        button.tab-control {
+            color: $gray-600;
+            border: none;
+            padding: 3px 6px;
+            border-bottom: 2px solid transparent;
+            background: none;
+            &.active {
+                border-bottom-color: $brand-color;
+                color: $gray-700;
+            }
+        }
+    }
+    .tab {
+        display: none;
+        &.active {
+            display: block;
+        }
+    }
+}

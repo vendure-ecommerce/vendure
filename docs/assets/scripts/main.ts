@@ -1,6 +1,7 @@
 // import '@webcomponents/custom-elements';
 
 import { SearchWidget } from './search-widget';
+import { initTabs } from './tabs';
 import { TocHighlighter } from './toc-highlighter';
 
 // tslint:disable-next-line
@@ -26,5 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchWidget = new SearchWidget(searchInput);
     const searchButton = document.querySelector('button.search-icon') as HTMLButtonElement;
     searchButton.addEventListener('click', () => searchWidget.toggleActive());
+
+    initTabs();
 
 }, false);
