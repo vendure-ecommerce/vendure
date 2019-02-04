@@ -63,7 +63,8 @@ interface ClassInfo extends DeclarationInfo {
 
 interface TypeAliasInfo extends DeclarationInfo {
     kind: 'typeAlias';
-    type: string;
+    members?: Array<PropertyInfo | MethodInfo>;
+    type: ts.TypeNode;
 }
 
 type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration;
@@ -224,8 +225,9 @@ function parseDeclaration(
     } else if (ts.isTypeAliasDeclaration(statement)) {
         return {
             ...info,
-            type: statement.type.getText().trim(),
+            type: statement.type,
             kind: 'typeAlias',
+            members:  ts.isTypeLiteralNode(statement.type) ? parseMembers(statement.type.members) : undefined,
         };
     } else if (ts.isClassDeclaration(statement)) {
         return {
@@ -261,11 +263,11 @@ function parseMembers(
         const isPrivate = modifiers.includes('private');
         if (
             !isPrivate && (
-            ts.isPropertySignature(member) ||
-            ts.isMethodSignature(member) ||
-            ts.isPropertyDeclaration(member) ||
-            ts.isMethodDeclaration(member) ||
-            ts.isConstructorDeclaration(member)
+                ts.isPropertySignature(member) ||
+                ts.isMethodSignature(member) ||
+                ts.isPropertyDeclaration(member) ||
+                ts.isMethodDeclaration(member) ||
+                ts.isConstructorDeclaration(member)
             )
         ) {
             const name = member.name ? member.name.getText() : 'constructor';
@@ -335,31 +337,26 @@ function renderInterfaceOrClass(info: InterfaceInfo | ClassInfo, knownTypeMap: M
     output += `## Signature\n\n`;
     output += info.kind === 'interface' ? renderInterfaceSignature(info) : renderClassSignature(info);
     output += `## Members\n\n`;
+    output += `${renderMembers(info, knownTypeMap)}\n`;
+    return output;
+}
 
-    for (const member of members) {
-        let defaultParam = '';
-        let type = '';
-        if (member.kind === 'property') {
-            type = renderType(member.type, knownTypeMap);
-            defaultParam = member.defaultValue ? `default="${member.defaultValue}" ` : '';
-        } else {
-            const args = member.parameters
-                .map(p => {
-                    return `${p.name}: ${renderType(p.type, knownTypeMap)}`;
-                })
-                .join(', ');
-            if (member.fullText === 'constructor') {
-                type = `(${args}) => ${title}`;
-            } else {
-                type = `(${args}) => ${renderType(member.type, knownTypeMap)}`;
-            }
-
-        }
-        output += `### ${member.name}\n\n`;
-        output += `{{< member-info kind="${member.kind}" type="${type}" ${defaultParam}>}}\n\n`;
-        output += `${renderDescription(member.description, knownTypeMap)}\n\n`;
+/**
+ * Render the type alias to a markdown string.
+ */
+function renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: Map<string, string>): string {
+    const { title, weight, description, type, fullText } = typeAliasInfo;
+    let output = '';
+    output += generateFrontMatter(title, weight);
+    output += `\n\n# ${title}\n\n`;
+    output += renderGenerationInfoShortcode(typeAliasInfo);
+    output += `${renderDescription(description, knownTypeMap)}\n\n`;
+    output += `## Signature\n\n`;
+    output += renderTypeAliasSignature(typeAliasInfo);
+    if (typeAliasInfo.members) {
+        output += `## Members\n\n`;
+        output += `${renderMembers(typeAliasInfo, knownTypeMap)}\n`;
     }
-
     return output;
 }
 
@@ -405,19 +402,48 @@ function renderClassSignature(classInfo: ClassInfo): string {
     return output;
 }
 
-/**
- * Render the type alias to a markdown string.
- */
-function renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: Map<string, string>): string {
-    const { title, weight, description, type, fullText } = typeAliasInfo;
+function renderTypeAliasSignature(typeAliasInfo: TypeAliasInfo): string {
+    const { fullText, members, type } = typeAliasInfo;
     let output = '';
-    output += generateFrontMatter(title, weight);
-    output += `\n\n# ${title}\n\n`;
-    output += renderGenerationInfoShortcode(typeAliasInfo);
-    output += `${renderDescription(description, knownTypeMap)}\n\n`;
-    output += `## Signature\n\n`;
-    output += `\`\`\`TypeScript\ntype ${fullText} = ${type};\n\`\`\``;
+    output += `\`\`\`TypeScript\n`;
+    output += `type ${fullText} = `;
+    if (members) {
+        output += `{\n`;
+        output += members.map(member => `  ${member.fullText}`).join(`\n`);
+        output += `\n}\n`;
+    } else {
+        output += type.getText() + `\n`;
+    }
+    output += `\`\`\`\n`;
+    return output;
+}
 
+function renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo, knownTypeMap: TypeMap): string {
+    const { members, title } = info;
+    let output = '';
+    for (const member of members || []) {
+        let defaultParam = '';
+        let type = '';
+        if (member.kind === 'property') {
+            type = renderType(member.type, knownTypeMap);
+            defaultParam = member.defaultValue ? `default="${member.defaultValue}" ` : '';
+        } else {
+            const args = member.parameters
+                .map(p => {
+                    return `${p.name}: ${renderType(p.type, knownTypeMap)}`;
+                })
+                .join(', ');
+            if (member.fullText === 'constructor') {
+                type = `(${args}) => ${title}`;
+            } else {
+                type = `(${args}) => ${renderType(member.type, knownTypeMap)}`;
+            }
+
+        }
+        output += `### ${member.name}\n\n`;
+        output += `{{< member-info kind="${member.kind}" type="${type}" ${defaultParam}>}}\n\n`;
+        output += `${renderDescription(member.description, knownTypeMap)}\n\n`;
+    }
     return output;
 }
 
