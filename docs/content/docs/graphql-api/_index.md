@@ -1,6 +1,7 @@
 ---
 title: "GraphQL API"
 weight: 3
+showtoc: false
 ---
 
 # GraphQL API Docs

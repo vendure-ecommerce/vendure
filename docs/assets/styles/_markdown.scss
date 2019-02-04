@@ -84,7 +84,16 @@ $block-border-radius: 4px;
         :last-child { margin-bottom: 0; }
     }
 
-    table tr td {
-        padding: $padding-8;
+    table {
+        width: 100%;
+        th {
+            text-align: left;
+        }
+        td, th {
+            padding: $padding-4;
+        }
+        tr:nth-child(odd) td {
+            background-color: $gray-100;
+        }
     }
 }

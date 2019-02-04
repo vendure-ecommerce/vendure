@@ -8,6 +8,7 @@
     border: 1px solid;
     border-radius: 2px;
     padding: 0 18px;
+    margin-bottom: 12px;
 
     &.primary { border-color: $color-default; background: transparentize($color-default, 0.9); }
     &.danger { border-color: $color-danger; background: transparentize($color-danger, 0.9); }

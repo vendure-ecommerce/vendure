@@ -1,6 +1,7 @@
 ---
 title: "Configuration"
 weight: 9
+showtoc: false
 ---
 
 # Vendure Configuration Docs
