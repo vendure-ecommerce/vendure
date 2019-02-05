@@ -6,10 +6,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config: webpack.Configuration = {
     mode: 'production',
-    entry: './assets/scripts/main.ts',
+    entry: {
+        main: './assets/scripts/main.ts',
+        intro: './assets/scripts/intro/intro.ts',
+    },
     output: {
         path: path.resolve(__dirname, 'static'),
-        filename: 'main.js',
+        filename: '[name].js',
     },
     resolve: {
         extensions: ['.ts', '.js'],

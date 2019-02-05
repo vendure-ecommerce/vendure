@@ -3,19 +3,12 @@
 <head>
     {{ partial "docs/html-head" . }}
     {{ partial "docs/inject/head" . }}
+    <link rel="stylesheet" href="{{ "intro.css" | absURL }}">
     <link href="https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans" rel="stylesheet">
 </head>
 <body>
 {{ partial "top-bar" (dict "isLandingPage" true) }}
-<div class="hero">
-    <div class="logo">
-        <img src="{{ "logo.png" | absURL }}" />
-        <h1>vendure</h1>
-    </div>
-    <div class="subhead">
-        A modern, headless <a href="https://graphql.org/">GraphQL</a>-based ecommerce framework built with <a href="http://www.typescriptlang.org">TypeScript</a> & <a href="https://nodejs.org">Nodejs</a>
-    </div>
-</div>
+{{ partial "intro" }}
 <div class="section-1">
     <div class="content">
         <h2 class="top-header">Ecommerce For The Modern Web
@@ -150,5 +143,6 @@
     &copy; 2018 <a href="https://www.michaelbromley.co.uk/">Michael Bromley</a>
     <a href="https://github.com/vendure-ecommerce/vendure" class="gh-link">Vendure on GitHub</a>
 </div>
+<script src="{{ "intro.js" | absURL }}"></script>
 </body>
 </html>

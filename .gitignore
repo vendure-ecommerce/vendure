@@ -396,6 +396,8 @@ server/src/email/preview/output
 docs/resources/_gen/*
 docs/static/main.js*
 docs/static/main.css*
+docs/static/intro.js*
+docs/static/intro.css*
 docs/public
 docs/content/docs/configuration/*
 !docs/content/docs/configuration/_index.md

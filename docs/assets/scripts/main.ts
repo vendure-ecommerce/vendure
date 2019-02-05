@@ -23,10 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tocHighlighter = new TocHighlighter(toc);
     tocHighlighter.highlight();
 
-    const searchInput = document.querySelector('#searchInput') as HTMLInputElement;
-    const searchWidget = new SearchWidget(searchInput);
-    const searchButton = document.querySelector('button.search-icon') as HTMLButtonElement;
-    searchButton.addEventListener('click', () => searchWidget.toggleActive());
+    const searchInput = document.querySelector('#searchInput');
+    if (searchInput) {
+        const searchWidget = new SearchWidget(searchInput as HTMLInputElement);
+        const searchButton = document.querySelector('button.search-icon') as HTMLButtonElement;
+        searchButton.addEventListener('click', () => searchWidget.toggleActive());
+    }
 
     initTabs();
 

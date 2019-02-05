@@ -1,43 +1,5 @@
 @import "variables";
 
-.hero a:link, .hero a:visited {
-    color: #d4f5ff;
-    text-decoration: none;
-}
-.hero a:hover {
-    color: #fafbff;
-}
-.hero {
-    padding: 10px;
-    text-align: center;
-    background: #1c1c1c;
-    background-image: url("/header-bg.png");
-    background-attachment: fixed;
-}
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    img {
-        width: 100%;
-        max-width: 100px;
-        height: 100%;
-        margin-right: 30px;
-    }
-    h1 {
-        margin: 0;
-        color: $brand-color;
-        font-size: 3em;
-        margin-bottom: 15px;
-        font-family: 'Didact Gothic', sans-serif;
-    }
-}
-.subhead {
-    font-size: 1em;
-    color: #74aec3;
-    max-width: 800px;
-    margin: auto;
-}
 .top-header {
     display: flex;
     align-items: center;

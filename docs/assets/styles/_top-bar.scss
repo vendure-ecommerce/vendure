@@ -10,6 +10,7 @@
     display: flex;
     align-items: center;
     transition: background-color 0.7s;
+    z-index: 10;
 
     @media all and (max-width: $sm-breakpoint){
         padding: 12px;
@@ -17,9 +18,28 @@
 
     &.landing-page {
         background-color: transparent;
+        .right {
+            a:link, a:visited {
+                color: $gray-700;
+            }
+            a:hover {
+                color: $gray-500;
+                text-decoration: none;
+            }
+        }
 
         &.floating {
             background-color: #1e1e1e;
+
+            .right {
+                a:link, a:visited {
+                    color: $gray-400;
+                }
+                a:hover {
+                    color: $gray-100;
+                    text-decoration: none;
+                }
+            }
         }
     }
 
