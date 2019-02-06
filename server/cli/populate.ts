@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 
 import { logColored } from './cli-utils';
 // tslint:disable-next-line:no-var-requires
-const { Populator, Importer } = require('vendure');
+const { Populator, Importer } = require('@vendure/core');
 
 // tslint:disable:no-console
 export async function populate() {
@@ -79,7 +79,7 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
 
     const config = index.config;
     config.silent = true;
-    const { bootstrap } = require('vendure');
+    const { bootstrap } = require('@vendure/core');
     console.log('Bootstrapping Vendure server...');
     const app = await bootstrap(config);
     return app;

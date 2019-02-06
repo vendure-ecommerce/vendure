@@ -1,4 +1,4 @@
-{{#if isTs }}import { bootstrap } from 'vendure';{{else}}const { import } = require('vendure');{{/if}}
+{{#if isTs }}import { bootstrap } from '@vendure/core';{{else}}const { import } = require('@vendure/core');{{/if}}
 {{#if isTs }}import { config } from './vendure-config';{{else}}const { config } = require('./vendure-config');{{/if}}
 
 bootstrap(config).catch(err => {

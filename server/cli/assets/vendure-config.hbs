@@ -5,7 +5,7 @@
     DefaultEmailPlugin,
     DefaultSearchPlugin,
     {{#if isTs}}VendureConfig,{{/if}}
-} {{#if isTs}}from 'vendure'; {{ else }}= require('vendure');{{/if}}
+} {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
 {{#if isTs }}
 import * as path from 'path';
 {{ else }}
