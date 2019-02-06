@@ -8,6 +8,7 @@ const textArea = document.querySelector('.vendure-intro .intro-text-area');
 const scene = document.querySelector('.vendure-intro .scene');
 const controls = document.querySelector('.vendure-intro .intro-controls');
 const title = document.querySelector('.vendure-intro .intro-title');
+const INTRO_VIEWED_KEY = 'v-intro-viewed';
 
 if (textArea && scene && controls && title) {
     const replayButton = controls.querySelector('#replay');
@@ -22,16 +23,24 @@ if (textArea && scene && controls && title) {
             active.classList.add('active');
         }
         if (className === 'scene-6') {
+            window.localStorage.setItem(INTRO_VIEWED_KEY, 'true');
             title.classList.add('visible');
             if (replayButton) {
                 replayButton.classList.add('visible');
             }
+        } else {
+            title.classList.remove('visible');
         }
     };
     const sequencer = new Sequencer(scene as HTMLDivElement, terminal, onTransition);
 
-    sequencer.play();
-
+    const introViewed = !!window.localStorage.getItem(INTRO_VIEWED_KEY);
+    // const introViewed = false;
+    if (!introViewed) {
+        sequencer.play();
+    } else {
+        sequencer.jumpTo(6);
+    }
 
     if (replayButton) {
         replayButton.addEventListener('click', () => sequencer.play());

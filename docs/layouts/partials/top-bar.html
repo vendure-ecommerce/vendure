@@ -1,21 +1,24 @@
 <div class="top-bar {{ if .isLandingPage }}landing-page{{ end }}" >
-    <div class="left">
-        <a class="logo" href="/">
-            <img src="{{ "logo.png" | absURL }}" />
-            {{ if not .isLandingPage }}vendure{{ end }}
-        </a>
-    </div>
-    <div class="flex-spacer"></div>
-    {{ if not .isLandingPage }}
-    <div class="search-input">
-        <button class="search-icon">
-            <img src="{{ "svg/clr-icon-search-light.svg" | absURL }}">
-        </button>
-        <input id="searchInput" placeholder="Search docs">
-    </div>
-    {{ end }}
-    <div class="right">
-        <a href="/docs">Docs</a>
-        <a href="https://github.com/vendure-ecommerce/vendure">GitHub</a>
+    <div class="top-bar-content">
+        <div class="left">
+            <a class="logo" href="/">
+                <img src="{{ "logo.png" | absURL }}" />
+                {{ if not .isLandingPage }}<div class="logotype">vendure</div>{{ end }}
+            </a>
+            <div class="alpha-label">alpha</div>
+        </div>
+        <div class="flex-spacer"></div>
+        {{ if not .isLandingPage }}
+        <div class="search-input">
+            <button class="search-icon">
+                <img src="{{ "svg/clr-icon-search-light.svg" | absURL }}">
+            </button>
+            <input id="searchInput" placeholder="Search docs">
+        </div>
+        {{ end }}
+        <div class="right">
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/vendure-ecommerce/vendure">GitHub</a>
+        </div>
     </div>
 </div>

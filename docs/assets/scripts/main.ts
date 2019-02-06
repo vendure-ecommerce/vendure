@@ -10,13 +10,15 @@ require('../styles/main.scss');
 document.addEventListener('DOMContentLoaded', () => {
     const topBar = document.querySelector('.top-bar');
     if (topBar) {
-        window.addEventListener('scroll', (e) => {
+        const setTopBarClass = () => {
             if (window.scrollY === 0) {
                 topBar.classList.remove('floating');
             } else {
                 topBar.classList.add('floating');
             }
-        });
+        };
+        window.addEventListener('scroll', setTopBarClass);
+        setTopBarClass();
     }
 
     const toc = document.querySelector('#TableOfContents') as HTMLDivElement;

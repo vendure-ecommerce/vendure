@@ -11,19 +11,35 @@
     --color-left: #30c6fd;
     --color-right: #13b7f3;
     --color-shadow: rgba(94, 94, 94, 0);
-    --width-unit: 10vw;
+    --width-unit: 9vw;
     --border-width: calc(.0 * var(--width-unit));
     --border-style: dashed;
     --front-border-width: 0;
     --border-color: rgb(95, 95, 95);
 
+    background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 56%, #d7d8d1 100%);
     margin: 0;
+    overflow: hidden;
     box-sizing: border-box;
     height: 100vh;
     padding-top: 10vh;
+    transition: padding-top 0.2s;
+
     @media all and (max-width: $sm-breakpoint) {
-        height: initial;
+        padding-top: 10vh;
     }
+    @media all and (min-height: 1000px) {
+        padding-top: 5vh;
+    }
+    @media all and (min-width: $lg-breakpoint) {
+        // --width-unit: 10vh;
+    }
+}
+
+.intro-container {
+    max-width: $container-max-width;
+    margin: auto;
+    position: relative;
 }
 
 .scene {
@@ -32,7 +48,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50vw;
+    height: 40vw;
     transform: rotateX(-45deg);
     transition: transform $transition-duration, perspective $transition-duration, opacity 0.2s 0.5s;
     font-family: sans-serif;
@@ -41,18 +57,18 @@
     &.visible {
         opacity: 1;
     }
-
-    @media all and (min-width: 1200px) {
-        --width-unit: 10vh;
-        height: 50vh;
+    @media all and (min-height: 1000px) {
+        height: 50vw;
     }
 
 }
 
 .intro-title {
-    text-align: center;
-    padding: 0 16px;
-    max-width: 1200px;
+    top: 18vw;
+    right: 36px;
+    position: absolute;
+    text-align: right;
+    max-width: $lg-breakpoint;
     margin: auto;
     opacity: 0;
     transform: translateY(-20px);
@@ -76,30 +92,47 @@
 
     h1 {
         color: $brand-color;
-        font-size: calc(1.1 * var(--width-unit));
+        font-size: calc(0.9 * var(--width-unit));
         margin: 0 0 15px;
         font-family: 'Didact Gothic', sans-serif;
     }
 
     .subhead {
-        font-size: calc(0.35 * var(--width-unit));
+        max-width: calc(4 * var(--width-unit));
+        font-size: calc(0.3 * var(--width-unit));
         color: desaturate($brand-color, 50%);
         margin: auto;
     }
-    @media all and (min-width: 1200px) {
+    .more-icon {
+        width: calc(1 * var(--width-unit));
+        transform: rotateZ(180deg);
+        opacity: 0.1;
+    }
+    @media all and (min-width: $lg-breakpoint) {
         h1 {
-            font-size: 7em;
+            font-size: 6em;
         }
         .subhead {
-            font-size: 2.5em;
+            font-size: 2em;
         }
+        .more-icon {
+            width: 7em;
+        };
+    }
+    @media all and (min-height: 1000px) {
+        top: 26vw;
     }
     @media all and (max-width: $sm-breakpoint) {
+        top: 60vw;
+        right: 36px;
+        text-align: center;
+        padding: 0 24px;
         h1 {
             font-size: 4em;
         }
         .subhead {
             font-size: 1.5em;
+            max-width: 100%;
         }
     }
 }
@@ -133,6 +166,10 @@
             opacity: 0.3;
         }
     }
+}
+
+.intro-gql-logo {
+    filter: saturate(0%);
 }
 
 /*
@@ -224,7 +261,7 @@
     }
     .intro-gql-logo {
         opacity: 1;
-        transition: opacity 0.6s;
+        transition: opacity 4.6s;
         img {
             transform: translateY(0);
         }
@@ -368,7 +405,9 @@
 }
 
 .scene-6 {
-    transition: none;
+    @media all and (min-width: $sm-breakpoint) {
+        transform: rotateX(-45deg) translateX(calc(-2 * var(--width-unit)));
+    }
     .cube {
         transition: none;
     }

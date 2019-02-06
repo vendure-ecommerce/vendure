@@ -1,5 +1,10 @@
+@import "variables";
+
 .flex {
     display: flex;
+    @media all and (max-width: $sm-breakpoint){
+        flex-direction: column;
+    }
 }
 
 .justify-start {

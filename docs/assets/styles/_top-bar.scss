@@ -2,15 +2,23 @@
 
 .top-bar {
     position: fixed;
-    padding: 12px 24px;
+    padding: 0 24px;
     background-color: #1e1e1e;
     width: 100%;
     top: 0;
     height: $top-bar-height;
-    display: flex;
-    align-items: center;
     transition: background-color 0.7s;
     z-index: 10;
+    display: flex;
+    align-items: center;
+
+    .top-bar-content {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        max-width: $container-max-width;
+        margin: auto;
+    }
 
     @media all and (max-width: $sm-breakpoint){
         padding: 12px;
@@ -43,9 +51,13 @@
         }
     }
 
-
     .flex-spacer {
         flex: 1;
+    }
+
+    .left {
+        display: flex;
+        align-items: center;
     }
 
     .logo {
@@ -58,6 +70,26 @@
         font-size: 24px;
         letter-spacing: 0px;
         font-weight: 600;
+
+        .logotype {
+            display: inline-block;
+            margin-right: 12px;
+            @media all and (max-width: $sm-breakpoint){
+                display: none;
+            }
+        }
+    }
+
+
+    .alpha-label {
+        display: inline-block;
+        background-color: #ffd400;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #736108;
     }
 
     .right {

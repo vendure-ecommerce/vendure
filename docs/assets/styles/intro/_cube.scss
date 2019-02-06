@@ -12,6 +12,7 @@
     transform: translateZ(calc(-1.75 * var(--width-unit)))
      translateX(calc(.25 * var(--width-unit))) 
      rotateY(45deg) ;
+    z-index: 1;
 } 
 
 .cube2 {

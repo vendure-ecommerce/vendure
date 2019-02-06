@@ -11,14 +11,14 @@ weight: 0
 
 ## What is Vendure?
 
-Vendure is a headless ecommerce framework.
+Vendure is a headless e-commerce framework.
 
-* *Headless* is a term which means that it does not concern itself with rendering the HTML pages of a website. Rather, it exposes a GraphQL API which which can be *queried* for data ("Give me a list of available products") or issued with *mutation* instructions ("Add product '123' to the current order") by a *client application*. Thus the client is responsible for how the ecommerce "storefront" looks and how it works. Vendure is responsible for the rest.
-* Vendure is a *framework* in that it supplies core ecommerce functionality, but is open to further extension by the developer.
+* *Headless* is a term which means that it does not concern itself with rendering the HTML pages of a website. Rather, it exposes a GraphQL API which which can be *queried* for data ("Give me a list of available products") or issued with *mutation* instructions ("Add product '123' to the current order") by a *client application*. Thus the client is responsible for how the e-commerce "storefront" looks and how it works. Vendure is responsible for the rest.
+* Vendure is a *framework* in that it supplies core e-commerce functionality, but is open to further extension by the developer.
 
 ## Who should use Vendure?
 
-Vendure is intended to be used by developers who wish to create a modern ecommerce solution. While we aim for a seamless and simple developer experience, Vendure is not aimed at non-technical users.
+Vendure is intended to be used by developers who wish to create a modern e-commerce solution. While we aim for a seamless and simple developer experience, Vendure is not aimed at non-technical users.
 
 ## What technologies is Vendure built on?
 
