@@ -4,7 +4,6 @@
 
 <head>
   {{ partial "docs/html-head" . }}
-  {{ partial "docs/inject/head" . }}
 </head>
 
 <body>
@@ -13,15 +12,11 @@
 
     <aside class="book-menu fixed">
       <nav role="navigation">
-        {{ partial "docs/inject/menu-before" . }}
-
         {{ if .Site.Params.BookMenuBundle }}
           {{ partial "docs/menu-bundle" . }}
         {{ else }}
           {{ partial "docs/menu-filetree" . }}
         {{ end }}
-
-        {{ partial "docs/inject/menu-after" . }}
       </nav>
     </aside>
 
@@ -36,7 +31,7 @@
     {{ template "toc" . }}
   </main>
 
-  {{ partial "docs/inject/body" . }}
+  {{ partial "top-bar" (dict "isDocsPage" true) }}
   {{ template "_internal/google_analytics_async.html" . }}
 </body>
 

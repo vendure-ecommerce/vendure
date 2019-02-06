@@ -8,6 +8,7 @@
 @import "shortcodes";
 @import "syntax";
 @import "search-widget";
+@import "blog";
 
 html {
     font-size: $font-size-base;
@@ -188,6 +189,41 @@ ul.contents-list {
 
     article {
         padding-bottom: $padding-16;
+    }
+}
+
+.footer {
+    @include texture-bg;
+    padding: 30px 10px;
+    margin-top: 120px;
+    color: $gray-600;
+
+    .gh-link {
+        margin-left: 12px;
+    }
+
+    .links {
+        margin-left: 12px;
+        margin-bottom: 60px;
+        ul {
+            font-size: 18px;
+            list-style-type: none;
+            padding-left: 0;
+            li {
+                margin: 6px 0;
+            }
+        }
+    }
+    .copyright {
+        font-size: 12px;
+        text-align: center;
+    }
+    a:link, a:visited {
+        color: $gray-500;
+        transition: color 0.2s;
+    }
+    a:hover {
+        color: $gray-200;
     }
 }
 

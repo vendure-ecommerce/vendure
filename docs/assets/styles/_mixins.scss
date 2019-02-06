@@ -9,6 +9,10 @@
     color: $color-code-text;
     background-color: $color-code-bg;
     position: relative;
+
+    code {
+        font-family: 'Source Code Pro', monospace;
+    }
 }
 
 @mixin code-block-lang {

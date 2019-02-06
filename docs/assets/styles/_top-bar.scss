@@ -3,7 +3,7 @@
 .top-bar {
     position: fixed;
     padding: 0 24px;
-    background-color: #1e1e1e;
+    background-color: #2a2929;
     width: 100%;
     top: 0;
     height: $top-bar-height;
@@ -37,7 +37,7 @@
         }
 
         &.floating {
-            background-color: #1e1e1e;
+            background-color: #2a2929;
 
             .right {
                 a:link, a:visited {
@@ -65,6 +65,8 @@
             max-width: 32px;
             margin-right: 12px;
         }
+        display: flex;
+        align-items: end;
         color: $brand-color;
         font-size: 18px;
         font-size: 24px;
@@ -72,6 +74,7 @@
         font-weight: 600;
 
         .logotype {
+            font-family: $brand-font-face;
             display: inline-block;
             margin-right: 12px;
             @media all and (max-width: $sm-breakpoint){

@@ -3,16 +3,18 @@
 $block-border-radius: 4px;
 
 .markdown {
-    line-height: 1.7;
+    line-height: 1.4;
     margin-left: 12px;
-
-    > :first-child {
-        margin-top: 0;
-        line-height: 1em;
-    }
 
     h1:first-of-type {
         text-transform: capitalize;
+        font-weight: 500;
+        margin-top: 0;
+        font-size: 2.8em;
+
+        @media all and (max-width: $sm-breakpoint){
+            font-size: 2em;
+        }
     }
 
     h2 {
@@ -25,6 +27,7 @@ $block-border-radius: 4px;
     }
 
     h1, h2, h3, h4, h5 {
+        font-family: $brand-font-face;
         font-weight: 600;
         line-height: 1.25;
 
@@ -52,8 +55,12 @@ $block-border-radius: 4px;
         }
     }
 
+    li {
+        margin-bottom: 6px;
+    }
+
     code:not([data-lang]) {
-        font-family: 'Oxygen Mono', monospace;
+        font-family: 'Source Code Pro', monospace;
         padding: 0 $padding-4;
         background: $color-code-bg;
         color: $color-code-text;

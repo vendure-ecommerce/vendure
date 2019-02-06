@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     {{ partial "docs/html-head" . }}
-    {{ partial "docs/inject/head" . }}
     <link rel="stylesheet" href="{{ "intro.css" | absURL }}">
-    <link href="https://fonts.googleapis.com/css?family=Didact+Gothic|Open+Sans" rel="stylesheet">
 </head>
 <body class="landing-page">
 {{ partial "top-bar" (dict "isLandingPage" true) }}
@@ -82,7 +80,7 @@
 <div class="section-3">
     <div class="content">
         <h2>Get Started</h2>
-        <div class="flex">
+        <div class="getting-started">
             <div class="install-code">
                 <div class="highlight">
             <pre class="chroma"><code class="language-bash" data-lang="bash">$ npm install @vendure/core
@@ -107,21 +105,7 @@ $ yarn add @vendure/core</code>
         </div>
     </div>
 </div>
-<div class="footer">
-    <div class="container">
-        <div class="links">
-            <ul>
-                <li><a href="./docs/">Documentation</a></li>
-                <li><a href="https://github.com/vendure-ecommerce/vendure">GitHub</a></li>
-                <li><a href="https://www.npmjs.com/~vendure">npm</a></li>
-                <li><a href="https://twitter.com/vendure_io">Twitter</a></li>
-            </ul>
-        </div>
-        <div class="copyright">
-            &copy; {{ now.Format "2006" }} <a href="https://www.michaelbromley.co.uk/">Michael Bromley</a>
-        </div>
-    </div>
-</div>
+{{ partial "footer" }}
 <script src="{{ "intro.js" | absURL }}"></script>
 </body>
 </html>

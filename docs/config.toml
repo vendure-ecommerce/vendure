@@ -1,6 +1,7 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "Vendure Documenation"
+title = "Vendure"
+googleAnalytics = "UA-133911942-1"
 pygmentsCodeFences = true
 pygmentsUseClasses = true
 disableKinds = [

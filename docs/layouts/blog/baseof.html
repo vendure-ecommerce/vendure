@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+{{- partial "docs/shared" -}}
+<html>
+
+<head>
+    {{ partial "docs/html-head" . }}
+</head>
+
+<body>
+<main class="container">
+        {{ template "main" . }}
+</main>
+
+{{ partial "top-bar" }}
+{{ partial "footer" }}
+{{ template "_internal/google_analytics_async.html" . }}
+</body>
+
+</html>

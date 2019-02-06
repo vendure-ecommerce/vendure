@@ -8,7 +8,7 @@
             <div class="alpha-label">alpha</div>
         </div>
         <div class="flex-spacer"></div>
-        {{ if not .isLandingPage }}
+        {{ if .isDocsPage }}
         <div class="search-input">
             <button class="search-icon">
                 <img src="{{ "svg/clr-icon-search-light.svg" | absURL }}">
@@ -18,6 +18,7 @@
         {{ end }}
         <div class="right">
             <a href="/docs">Docs</a>
+            <a href="/blog">Blog</a>
             <a href="https://github.com/vendure-ecommerce/vendure">GitHub</a>
         </div>
     </div>

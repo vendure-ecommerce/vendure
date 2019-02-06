@@ -11,6 +11,7 @@
 .landing-page {
 
     h2 {
+        font-family: $brand-font-face;
         font-size: 3em;
         font-weight: normal;
         color: $brand-color;
@@ -20,6 +21,7 @@
     }
 
     h3 {
+        font-family: $brand-font-face;
         font-size: 2.5em;
         font-weight: normal;
         color: $gray-600;
@@ -132,6 +134,12 @@
     }
 
     .section-3 {
+        .getting-started {
+            display: flex;
+            @media all and (max-width: $sm-breakpoint){
+                flex-direction: column;
+            }
+        }
         .install-code, .getting-started-link {
             flex: 1;
         }
@@ -159,43 +167,6 @@
             }
         }
     }
-
-    .footer {
-        @include texture-bg;
-        padding: 30px 10px;
-        margin-top: 120px;
-        color: $gray-600;
-
-        .gh-link {
-            margin-left: 12px;
-        }
-
-        .links {
-            margin-left: 12px;
-            margin-bottom: 60px;
-            ul {
-                font-size: 18px;
-                list-style-type: none;
-                padding-left: 0;
-                li {
-                    margin: 6px 0;
-                }
-            }
-        }
-        .copyright {
-            font-size: 12px;
-            text-align: center;
-        }
-        a:link, a:visited {
-            color: $gray-500;
-            transition: color 0.2s;
-        }
-        a:hover {
-            color: $gray-200;
-        }
-    }
-
-
 
     @media all and (min-width: 600px) {
         .hero {

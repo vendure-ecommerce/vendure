@@ -1,0 +1,34 @@
+@import "variables";
+
+.posts-list {
+    min-height: 50vh;
+
+    h2 {
+        font-family: $brand-font-face;
+        font-size: 2em;
+        font-weight: 400;
+    }
+    p {
+        line-height: 1.4em;
+    }
+}
+
+.blog-post {
+    max-width: 800px;
+    margin: auto;
+
+    header {
+        padding-top: 30px;
+        h1 {
+            font-family: $brand-font-face;
+            font-size: 3em;
+            font-weight: 400;
+            color: $brand-color;
+        }
+    }
+
+    p:first-child {
+        font-size: 22px;
+        color: $gray-700;
+    }
+}

@@ -94,7 +94,7 @@
         color: $brand-color;
         font-size: calc(0.9 * var(--width-unit));
         margin: 0 0 15px;
-        font-family: 'Didact Gothic', sans-serif;
+        font-family: $brand-font-face;
     }
 
     .subhead {
