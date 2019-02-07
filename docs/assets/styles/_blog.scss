@@ -8,6 +8,9 @@
         font-size: 2em;
         font-weight: 400;
     }
+    h5 {
+        margin-top: -24px;
+    }
     p {
         line-height: 1.4em;
     }
@@ -18,17 +21,28 @@
     margin: auto;
 
     header {
-        padding-top: 30px;
+        overflow: hidden;
+        border-bottom: 1px dashed $gray-300;
         h1 {
             font-family: $brand-font-face;
             font-size: 3em;
             font-weight: 400;
             color: $brand-color;
         }
+        .date-author {
+            // font-size: 14px;
+            color: $gray-700;
+        }
     }
 
-    p:first-child {
+    .markdown > p:first-child {
         font-size: 22px;
         color: $gray-700;
+    }
+
+    figure {
+        img {
+            max-width: 100%;
+        }
     }
 }

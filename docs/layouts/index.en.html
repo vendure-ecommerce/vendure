@@ -10,7 +10,11 @@
 <div class="section-1">
     <div class="content">
         <h2>E-commerce for the Modern Web</h2>
-        <p class="lead">Vendure is a new e-commerce framework built for the developers who are building the modern web.</p>
+        <p class="lead">Vendure is a new e-commerce framework built for the developers who are building the modern web.<br> 
+            <img src="{{ "svg/clr-icon-book-light.svg" | absURL }}" alt="check icon"> Read: <a href="{{ "blog/introducing-vendure" | absURL }}">Introducing Vendure</a></p>
+        <iframe src="https://player.vimeo.com/video/315862294" 
+            title="intro video"
+            class="vimeo-player" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         <div class="stack-logos">
             <div class="stack-logo ts-logo">
                 <img src="{{ "logo/ts-logo.svg" | absURL }}">
@@ -79,15 +83,39 @@
 </div>
 <div class="section-3">
     <div class="content">
+        <h2>Features</h2>
+        <div class="features">
+        <ul class="feature-list">
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Products & variants</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Stock management</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">On-the-fly image resize & crop</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Product facets & faceted search</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Product categories / collections</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Extensible product search via Elastic, Algolia etc.</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Payment provider integrations</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Shipping provider integrations</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Tax calculations based on category and zone</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Discounts and promotions</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Multiple administrators with fine-grained permissions</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Built-in admin interface</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Multi-language support</li>
+            <li><img src="{{ "svg/clr-icon-check-brand.svg" | absURL }}" alt="check icon">Guest checkouts</li>
+        </ul>
+        </div>
+        <p><small>The above features are either already implemented or planned for the beta release</small></p>
+    </div>
+</div>
+<div class="section-4">
+    <div class="content">
         <h2>Get Started</h2>
         <div class="getting-started">
             <div class="install-code">
                 <div class="highlight">
-            <pre class="chroma"><code class="language-bash" data-lang="bash">$ npm install @vendure/core
+            <pre class="chroma"><code class="language-bash" data-lang="bash">$ npm install @vendure/core@alpha
 
 <span class="c1"># or</span>
 
-$ yarn add @vendure/core</code>
+$ yarn add @vendure/core@alpha</code>
             </pre>
                 </div>
             </div>

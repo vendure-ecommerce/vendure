@@ -1,7 +1,7 @@
 <div class="top-bar {{ if .isLandingPage }}landing-page{{ end }}" >
     <div class="top-bar-content">
         <div class="left">
-            <a class="logo" href="/">
+            <a class="logo" href="/" title="back to landing page">
                 <img src="{{ "logo.png" | absURL }}" />
                 {{ if not .isLandingPage }}<div class="logotype">vendure</div>{{ end }}
             </a>

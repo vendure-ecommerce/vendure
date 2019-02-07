@@ -83,12 +83,24 @@ $block-border-radius: 4px;
     }
 
     blockquote {
-        border-left: $padding-1*2 solid $gray-300;
         margin: 0;
-        padding: $padding-1 $padding-16;
+        padding: $padding-16 $padding-16;
+        position: relative;
+        font-size: 22px;
+        color: $gray-700;
 
         :first-child { margin-top: 0; }
         :last-child { margin-bottom: 0; }
+
+        ::before {
+            content: '“';
+            position: absolute;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 48px;
+            top: 0px;
+            left: -6px;
+            color: $gray-500;
+        }
     }
 
     table {

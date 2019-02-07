@@ -55,10 +55,10 @@ $ yarn add --dev ts-node
 ### Install Vendure
 
 ```bash
-$ npm install @vendure/core
+$ npm install @vendure/core@alpha
 
 # or with Yarn
-$ yarn add @vendure/core
+$ yarn add @vendure/core@alpha
 ```
 
 ### Initialize with the Vendure CLI

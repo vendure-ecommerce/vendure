@@ -3,9 +3,9 @@
 <div class="blog-post">
     <header>
         <h1>{{ .Title }}</h1>
-        <h5>
-            <strong>{{ .Date.Format "January 2, 2006" }}</strong>
-        </h5>
+        <div class="date-author">
+            <strong>{{ .Date.Format "January 2, 2006" }}</strong> by {{ .Params.author }}
+        </div>
     </header>
     <article class="markdown">
         {{- .Content -}}
