@@ -20,8 +20,8 @@ as inventory, order and customer management. The code for this is located in the
 ```
 vendure/
 ├── admin-ui/       # Source of the admin ui app (an Angular CLI project)
-├── codegen/        # Scripts used to generate TypeScript types from the GraphQL schemas & documents
-├── docs/           # Documentation source (not much there yet)
+├── codegen/        # Scripts used to generate TypeScript code and docs from source
+├── docs/           # Documentation source
 ├── server/         # Source for the Vendure server
 ├── shared/         # Types and utils shared by the server & admin ui
 
@@ -47,39 +47,6 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 * `cd admin-ui && yarn`
 * `yarn start`
 * Go to http://localhost:4200 and log in with "superadmin", "superadmin"
-
-### Making a request
-
-When making an API request, it must include a `vendure-token` header with the value 
-being the channel token of the active channel. This value is set in the config by the
-`defaultChannelToken` property. If this is not set, or does not match a valid channel token,
-you will get the error `No valid channel was specified`
-
-For example:
-```TypeScript
-// bootstrap code
-bootstrap({
-    port: 3000,
-    apiPath: 'api',
-    defaultChannelToken: 'default-channel'
-    // ...
-})
-```
-
-```TypeScript
-// API call
-fetch(
-    'http://localhost:3000/api',
-    {
-        headers: {
-            'content-type': 'application/json',
-            'vendure-token': 'default-channel',
-        },
-        body: '{"query":"mutation { login(username: \\"superadmin\\", password: \\"superadmin\\") { user { id } } }"}',
-        method: 'POST',
-    },
-)
-```
 
 ### Code Generation
 
