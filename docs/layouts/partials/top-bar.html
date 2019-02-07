@@ -2,7 +2,7 @@
     <div class="top-bar-content">
         <div class="left">
             <a class="logo" href="/" title="back to landing page">
-                <img src="{{ "logo.png" | absURL }}" />
+                <img src="{{ "logo.png" | relURL }}" />
                 {{ if not .isLandingPage }}<div class="logotype">vendure</div>{{ end }}
             </a>
             <div class="alpha-label">alpha</div>
@@ -11,7 +11,7 @@
         {{ if .isDocsPage }}
         <div class="search-input">
             <button class="search-icon">
-                <img src="{{ "svg/clr-icon-search-light.svg" | absURL }}">
+                <img src="{{ "svg/clr-icon-search-light.svg" | relURL }}">
             </button>
             <input id="searchInput" placeholder="Search docs">
         </div>

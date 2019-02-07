@@ -5,10 +5,10 @@
   "scripts": {
     "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-api-docs && yarn generate-config-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-api-docs && yarn generate-config-docs && cd docs && yarn webpack --prod && hugo",
+    "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "generate-config-docs": "ts-node ./codegen/generate-config-docs.ts",
     "generate-api-docs": "ts-node ./codegen/generate-api-docs.ts",
-    "postinstall": "cd admin-ui && yarn && cd ../server && yarn",
     "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "lint:server": "cd server && yarn lint --fix",

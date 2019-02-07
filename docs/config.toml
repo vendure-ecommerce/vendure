@@ -1,6 +1,6 @@
-baseURL = "http://example.org/"
+baseURL = "http://www.vendure.io/"
 languageCode = "en-us"
-title = "Vendure"
+title = "Vendure E-commerce"
 googleAnalytics = "UA-133911942-1"
 pygmentsCodeFences = true
 pygmentsUseClasses = true

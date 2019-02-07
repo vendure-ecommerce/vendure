@@ -4,7 +4,7 @@
     {{ range sort .Paginator.Pages }}
     <article class="book-posts mx-auto">
         <h2>
-            <a href="{{ .Permalink }}">{{ .Title }}</a>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         </h2>
         <h5>
             <strong>{{ .Date.Format "January 2, 2006" }}</strong>
@@ -12,7 +12,7 @@
         <p>
             {{- .Summary -}}
             {{ if .Truncated }}
-            <a href="{{ .Permalink }}">...</a>
+            <a href="{{ .RelPermalink }}">...</a>
             {{ end }}
         </p>
     </article>

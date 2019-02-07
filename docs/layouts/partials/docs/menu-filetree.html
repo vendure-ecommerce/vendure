@@ -14,7 +14,7 @@
             <li class="section">
                 {{ $expanded := in $.CurrentPage .Permalink }}
                 <div class="section-link">
-                <img src="{{ "svg/clr-icon-angle.svg" | absURL }}" class="section-icon {{ if $expanded}}expanded{{ end }}" />
+                <img src="{{ "svg/clr-icon-angle.svg" | relURL }}" class="section-icon {{ if $expanded}}expanded{{ end }}" />
                 {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
                 </div>
                 {{ template "book-section" (dict "Section" . "CurrentPage" $.CurrentPage "Expanded" $expanded) }}
