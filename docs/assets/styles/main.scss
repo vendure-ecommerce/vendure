@@ -210,7 +210,16 @@ ul.contents-list {
             list-style-type: none;
             padding-left: 0;
             li {
-                margin: 6px 0;
+                margin: 12px 0;
+            }
+        }
+        .email-link {
+            display: flex;
+            align-items: center;
+            img {
+                width: 24px;
+                height: 24px;
+                margin-right: 6px;
             }
         }
     }
