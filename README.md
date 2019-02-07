@@ -1,20 +1,15 @@
 # Vendure [![Build Status](https://travis-ci.org/vendure-ecommerce/vendure.svg?branch=master)](https://travis-ci.org/vendure-ecommerce/vendure)
 
-![logo](admin-ui/src/assets/cube-logo-300px.png)
+A headless [GraphQL](https://graphql.org/) ecommerce framework built on [Node.js](https://nodejs.org) with [Nest](https://nestjs.com/) with [TypeScript](http://www.typescriptlang.org/).
 
-A headless [GraphQL](https://graphql.org/) ecommerce framework built on [NestJS](https://nestjs.com/) with [TypeScript](http://www.typescriptlang.org/).
-
-### Status & note on docs
-
-Currently in pre-alpha. **Alpha release coming in Q1 2019**, at which point there will be some proper documentation. This readme is currently
-a somewhat unstructured collection of development-related notes. For updates follow [twitter.com/vendure_io](https://twitter.com/vendure_io).
+### [www.vendure.io](https://www.vendure.io/)
 
 ## Structure
 
 Vendure is a headless framework, which means that it is just an API serving JSON via a GraphQL endpoint. The code for
 the server is located in the `server` directory.
 
-We will ship with an administration UI which is a stand-alone web application which can be used to perform tasks such
+We ship with an administration UI which is a stand-alone web application which can be used to perform tasks such
 as inventory, order and customer management. The code for this is located in the `admin-ui` directory.
 
 ```
@@ -29,26 +24,36 @@ vendure/
 
 ## Development
 
-### Server
+### 1. Install top-level dependencies
+
+`yarn`
+
+The root directory has a `package.json` which contains build-related dependencies for tasks including:
+
+* Building & deploying the docs 
+* Generating TypeScript types from the GraphQL schema
+* Linting, formatting & testing tasks to run on git commit & push
+
+### 2. Set up the server
 
 The server requires an SQL database to be available. I am currently using [bitnami-docker-phpmyadmin](https://github.com/bitnami/bitnami-docker-phpmyadmin) Docker image,
 which is MariaDB including phpMyAdmin.
 
 Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database which works with TypeORM.
 
-* Configure the [dev config](./server/dev-config.ts)
-* Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the config ("vendure-dev").
-* `cd server && yarn`
-* Populate mock data with `yarn populate`
-* `yarn start:dev` to start the server
+1. Configure the [dev config](./server/dev-config.ts)
+2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the config ("vendure-dev").
+3. `cd server && yarn`
+4. Populate mock data with `yarn populate`
+5. `yarn start:dev` to start the server
 
-### Admin UI
+### 3. Set up the admin ui
 
-* `cd admin-ui && yarn`
-* `yarn start`
-* Go to http://localhost:4200 and log in with "superadmin", "superadmin"
+1. `cd admin-ui && yarn`
+2. `yarn start`
+3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
-### Code Generation
+### Code generation
 
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces
 for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
@@ -117,11 +122,11 @@ Custom fields can currently be added to the following entities:
 * Customer
 * Facet
 * FacetValue
+* GlobalSettings
 * Product
+* ProductCategory
 * ProductOption
 * ProductOptionGroup
-* ProductVariant
-* User
 
 Custom fields are configured by means of a `customFields` property in the VendureConfig object passed to the `bootstrap()` function.
 

@@ -14,7 +14,7 @@ install:
   - yarn install
 
 script:
-  - cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false
-  - cd ../server && yarn test
+  - cd admin-ui && yarn && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false
+  - cd ../server && yarn && yarn test
   - yarn test:e2e
   - cd ../admin-ui && yarn build --prod
