@@ -190,29 +190,62 @@ export class FulltextSearchService {
         const { term, facetIds } = input;
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
-            qb.addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
-                .addSelect(
-                    `
+            if (this.isMySQL()) {
+                qb.addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
+                    .addSelect(
+                        `
                         (SELECT sku_score) +
                         MATCH (productName) AGAINST (:term) * 2 +
                         MATCH (productVariantName) AGAINST (:term) * 1.5 +
                         MATCH (description) AGAINST (:term)* 1`,
+                        'score',
+                    )
+                    .andWhere(
+                        new Brackets(qb1 => {
+                            qb1.where('sku LIKE :like_term')
+                                .orWhere('MATCH (productName) AGAINST (:term)')
+                                .orWhere('MATCH (productVariantName) AGAINST (:term)')
+                                .orWhere('MATCH (description) AGAINST (:term)');
+                        }),
+                    )
+                    .setParameters({ term, like_term: `%${term}%` });
+            }
+            if (this.isSQLite()) {
+                // Note: SQLite does not natively have fulltext search capabilities,
+                // so we just use a weighted LIKE match
+                qb.addSelect(
+                    `
+                            CASE WHEN sku LIKE :like_term THEN 10 ELSE 0 END +
+                            CASE WHEN productName LIKE :like_term THEN 3 ELSE 0 END +
+                            CASE WHEN productVariantName LIKE :like_term THEN 2 ELSE 0 END +
+                            CASE WHEN description LIKE :like_term THEN 1 ELSE 0 END`,
                     'score',
                 )
-                .andWhere(
-                    new Brackets(qb1 => {
-                        qb1.where('sku LIKE :like_term')
-                            .orWhere('MATCH (productName) AGAINST (:term)')
-                            .orWhere('MATCH (productVariantName) AGAINST (:term)')
-                            .orWhere('MATCH (description) AGAINST (:term)');
-                    }),
-                )
-                .setParameters({ term, like_term: `%${term}%` });
+                    .andWhere(
+                        new Brackets(qb1 => {
+                            qb1.where('sku LIKE :like_term')
+                                .orWhere('productName LIKE :like_term')
+                                .orWhere('productVariantName LIKE :like_term')
+                                .orWhere('description LIKE :like_term');
+                        }),
+                    )
+                    .setParameters({ term, like_term: `%${term}%` });
+            }
         }
         if (facetIds) {
-            for (const id of facetIds) {
-                const placeholder = '_' + id;
-                qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
+            if (this.isMySQL()) {
+                for (const id of facetIds) {
+                    const placeholder = '_' + id;
+                    qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
+                }
+            }
+            if (this.isSQLite()) {
+                for (const id of facetIds) {
+                    const placeholder = '_' + id;
+                    qb.andWhere(`(',' || facetValueIds || ',') LIKE :${placeholder}`, {
+                        [placeholder]: `%,${id},%`,
+                    });
+                }
             }
         }
         if (input.groupByProduct === true) {
@@ -269,5 +302,13 @@ export class FulltextSearchService {
         const variantFacetValueIds = variant.facetValues.map(facetValueIds);
         const productFacetValueIds = variant.product.facetValues.map(facetValueIds);
         return unique([...variantFacetValueIds, ...productFacetValueIds]);
+    }
+
+    private isMySQL(): boolean {
+        return this.connection.options.type === 'mysql' || this.connection.options.type === 'mariadb';
+    }
+
+    private isSQLite(): boolean {
+        return this.connection.options.type === 'sqlite' || this.connection.options.type === 'sqljs';
     }
 }
