@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Brackets, Connection, Like, SelectQueryBuilder } from 'typeorm';
+import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { LanguageCode, SearchInput, SearchResponse } from '../../../../shared/generated-types';
@@ -8,6 +8,7 @@ import { Omit } from '../../../../shared/omit';
 import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
+import { InternalServerError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -17,13 +18,18 @@ import { FacetValueService } from '../../service/services/facet-value.service';
 
 import { DefaultSearceReindexResonse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
+import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
+import { PostgesSearchStrategy } from './search-strategy/postges-search-strategy';
+import { SearchStrategy } from './search-strategy/search-strategy';
+import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
 
 /**
- * MySQL / MariaDB Fulltext-based product search implementation.
- * TODO: Needs implementing for postgres, sql server etc.
+ * Search indexing and full-text search for supported databases. See the various
+ * SearchStrategy implementations for db-specific code.
  */
 @Injectable()
 export class FulltextSearchService {
+    private searchStrategy: SearchStrategy;
     private readonly minTermLength = 2;
     private readonly variantRelations = [
         'product',
@@ -45,70 +51,40 @@ export class FulltextSearchService {
                 return this.update(event.ctx, event.entity);
             }
         });
+        switch (this.connection.options.type) {
+            case 'mysql':
+            case 'mariadb':
+                this.searchStrategy = new MysqlSearchStrategy(connection);
+                break;
+            case 'sqlite':
+            case 'sqljs':
+                this.searchStrategy = new SqliteSearchStrategy(connection);
+                break;
+            case 'postgres':
+                this.searchStrategy = new PostgesSearchStrategy(connection);
+                break;
+            default:
+                throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
+        }
     }
 
     /**
      * Perform a fulltext search according to the provided input arguments.
      */
     async search(ctx: RequestContext, input: SearchInput): Promise<Omit<SearchResponse, 'facetValues'>> {
-        const take = input.take || 25;
-        const skip = input.skip || 0;
-        const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
-        this.applyTermAndFilters(qb, input);
-        if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
-        }
-
-        const items = await qb
-            .take(take)
-            .skip(skip)
-            .getRawMany()
-            .then(res =>
-                res.map(r => {
-                    return {
-                        sku: r.si_sku,
-                        productVariantId: r.si_productVariantId,
-                        languageCode: r.si_languageCode,
-                        productId: r.si_productId,
-                        productName: r.si_productName,
-                        productVariantName: r.si_productVariantName,
-                        description: r.si_description,
-                        facetIds: r.si_facetIds.split(',').map(x => x.trim()),
-                        facetValueIds: r.si_facetValueIds.split(',').map(x => x.trim()),
-                        productPreview: r.si_productPreview,
-                        productVariantPreview: r.si_productVariantPreview,
-                        score: r.score || 0,
-                    };
-                }),
-            );
-
-        const innerQb = this.applyTermAndFilters(
-            this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
-            input,
-        );
-
-        const totalItemsQb = this.connection
-            .createQueryBuilder()
-            .select('COUNT(*) as total')
-            .from(`(${innerQb.getQuery()})`, 'inner')
-            .setParameters(innerQb.getParameters());
-        const totalResult = await totalItemsQb.getRawOne();
-
+        const items = await this.searchStrategy.getSearchResults(ctx, input);
+        const totalItems = await this.searchStrategy.getTotalCount(ctx, input);
         return {
             items,
-            totalItems: totalResult.total,
+            totalItems,
         };
     }
 
+    /**
+     * Return a list of all FacetValues which appear in the result set.
+     */
     async facetValues(ctx: RequestContext, input: SearchInput): Promise<Array<Translated<FacetValue>>> {
-        const facetValuesQb = this.connection
-            .getRepository(SearchIndexItem)
-            .createQueryBuilder('si')
-            .select('GROUP_CONCAT(facetValueIds)', 'allFacetValues');
-
-        const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, input).getRawOne();
-        const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
-        const facetValueIds = unique(allFacetValues.split(',').filter(x => x !== '') as string[]);
+        const facetValueIds = await this.searchStrategy.getFacetValueIds(ctx, input);
         return this.facetValueService.findByIds(facetValueIds, ctx.languageCode);
     }
 
@@ -183,77 +159,6 @@ export class FulltextSearchService {
         }
     }
 
-    private applyTermAndFilters(
-        qb: SelectQueryBuilder<SearchIndexItem>,
-        input: SearchInput,
-    ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds } = input;
-        qb.where('1 = 1');
-        if (term && term.length > this.minTermLength) {
-            if (this.isMySQL()) {
-                qb.addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
-                    .addSelect(
-                        `
-                        (SELECT sku_score) +
-                        MATCH (productName) AGAINST (:term) * 2 +
-                        MATCH (productVariantName) AGAINST (:term) * 1.5 +
-                        MATCH (description) AGAINST (:term)* 1`,
-                        'score',
-                    )
-                    .andWhere(
-                        new Brackets(qb1 => {
-                            qb1.where('sku LIKE :like_term')
-                                .orWhere('MATCH (productName) AGAINST (:term)')
-                                .orWhere('MATCH (productVariantName) AGAINST (:term)')
-                                .orWhere('MATCH (description) AGAINST (:term)');
-                        }),
-                    )
-                    .setParameters({ term, like_term: `%${term}%` });
-            }
-            if (this.isSQLite()) {
-                // Note: SQLite does not natively have fulltext search capabilities,
-                // so we just use a weighted LIKE match
-                qb.addSelect(
-                    `
-                            CASE WHEN sku LIKE :like_term THEN 10 ELSE 0 END +
-                            CASE WHEN productName LIKE :like_term THEN 3 ELSE 0 END +
-                            CASE WHEN productVariantName LIKE :like_term THEN 2 ELSE 0 END +
-                            CASE WHEN description LIKE :like_term THEN 1 ELSE 0 END`,
-                    'score',
-                )
-                    .andWhere(
-                        new Brackets(qb1 => {
-                            qb1.where('sku LIKE :like_term')
-                                .orWhere('productName LIKE :like_term')
-                                .orWhere('productVariantName LIKE :like_term')
-                                .orWhere('description LIKE :like_term');
-                        }),
-                    )
-                    .setParameters({ term, like_term: `%${term}%` });
-            }
-        }
-        if (facetIds) {
-            if (this.isMySQL()) {
-                for (const id of facetIds) {
-                    const placeholder = '_' + id;
-                    qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
-                }
-            }
-            if (this.isSQLite()) {
-                for (const id of facetIds) {
-                    const placeholder = '_' + id;
-                    qb.andWhere(`(',' || facetValueIds || ',') LIKE :${placeholder}`, {
-                        [placeholder]: `%,${id},%`,
-                    });
-                }
-            }
-        }
-        if (input.groupByProduct === true) {
-            qb.groupBy('productId');
-        }
-        return qb;
-    }
-
     /**
      * Add or update items in the search index
      */
@@ -302,13 +207,5 @@ export class FulltextSearchService {
         const variantFacetValueIds = variant.facetValues.map(facetValueIds);
         const productFacetValueIds = variant.product.facetValues.map(facetValueIds);
         return unique([...variantFacetValueIds, ...productFacetValueIds]);
-    }
-
-    private isMySQL(): boolean {
-        return this.connection.options.type === 'mysql' || this.connection.options.type === 'mariadb';
-    }
-
-    private isSQLite(): boolean {
-        return this.connection.options.type === 'sqlite' || this.connection.options.type === 'sqljs';
     }
 }

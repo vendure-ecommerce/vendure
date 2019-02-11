@@ -21,14 +21,26 @@ export const devConfig: VendureConfig = {
     port: API_PORT,
     apiPath: API_PATH,
     dbConnectionOptions: {
-        type: 'mysql',
-        synchronize: true,
+        synchronize: false,
         logging: true,
-        host: '192.168.99.100',
-        port: 3306,
-        username: 'root',
-        password: '',
-        database: 'vendure-dev',
+
+        // type: 'mysql',
+        // host: '192.168.99.100',
+        // port: 3306,
+        // username: 'root',
+        // password: '',
+        // database: 'vendure-dev',
+
+        // type: 'sqljs',
+        // database: new Uint8Array([]),
+        // location:  path.join(__dirname, 'vendure.sqlite'),
+
+        type: 'postgres',
+        host: '127.0.0.1',
+        port: 5432,
+        username: 'postgres',
+        password: 'Be70',
+        database: 'vendure',
     },
     orderProcessOptions: {} as OrderProcessOptions<any>,
     paymentOptions: {
