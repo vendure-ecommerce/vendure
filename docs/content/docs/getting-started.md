@@ -95,7 +95,7 @@ Once the init script has completed, the server can be started.
 $ npx ts-node index
 
 # or with Yarn
-$ yarn ts-node init
+$ yarn ts-node index
 ```
 {{% /tab %}}
 {{% tab "JavaScript" %}}
