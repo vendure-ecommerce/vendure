@@ -39,6 +39,12 @@ export class NoValidChannelError extends I18nError {
     }
 }
 
+export class ChannelNotFoundError extends I18nError {
+    constructor(token: string) {
+        super('error.channel-not-found', { token }, 'CHANNEL_NOT_FOUND');
+    }
+}
+
 export class EntityNotFoundError extends I18nError {
     constructor(entityName: keyof typeof coreEntitiesMap, id: ID) {
         super('error.entity-with-id-not-found', { entityName, id }, 'ENTITY_NOT_FOUND');

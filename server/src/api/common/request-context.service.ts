@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 
 import { LanguageCode, Permission } from '../../../../shared/generated-types';
-import { NoValidChannelError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';

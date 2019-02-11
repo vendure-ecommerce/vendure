@@ -81,6 +81,10 @@ export class DefaultInterceptor implements HttpInterceptor {
                             },
                         });
                     });
+                } else if (firstCode === 'CHANNEL_NOT_FOUND') {
+                    const message = graqhQLErrors.map(err => err.message).join('\n');
+                    this.displayErrorNotification(message);
+                    this.localStorageService.remove('activeChannelToken');
                 } else {
                     const message = graqhQLErrors.map(err => err.message).join('\n');
                     this.displayErrorNotification(message);

@@ -8,7 +8,7 @@ import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -52,7 +52,7 @@ export class ChannelService {
         }
         const channel = this.allChannels.find(c => c.token === token);
         if (!channel) {
-            throw new InternalServerError(`error.channel-not-found`, { token });
+            throw new ChannelNotFoundError(token);
         }
         return channel;
     }
