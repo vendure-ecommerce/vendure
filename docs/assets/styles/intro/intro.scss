@@ -40,6 +40,12 @@
     max-width: $container-max-width;
     margin: auto;
     position: relative;
+    transition: opacity 1s;
+    opacity: 0;
+
+    &.visible {
+        opacity: 1;
+    }
 }
 
 .scene {
@@ -50,13 +56,8 @@
     justify-content: center;
     height: 40vw;
     transform: rotateX(-45deg);
-    transition: transform $transition-duration, perspective $transition-duration, opacity 0.2s 0.5s;
+    transition: transform $transition-duration, perspective $transition-duration;
     font-family: sans-serif;
-    opacity: 0;
-
-    &.visible {
-        opacity: 1;
-    }
     @media all and (min-height: 1000px) {
         height: 50vw;
     }
@@ -124,7 +125,7 @@
     }
     @media all and (max-width: $sm-breakpoint) {
         top: 60vw;
-        right: 36px;
+        right: 0;
         text-align: center;
         padding: 0 24px;
         h1 {

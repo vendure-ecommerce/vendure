@@ -4,13 +4,15 @@ import { TerminalTyper } from './terminal-typer';
 // tslint:disable-next-line
 require('../../styles/intro/intro.scss');
 
+const container = document.querySelector('.intro-container');
 const textArea = document.querySelector('.vendure-intro .intro-text-area');
 const scene = document.querySelector('.vendure-intro .scene');
 const controls = document.querySelector('.vendure-intro .intro-controls');
 const title = document.querySelector('.vendure-intro .intro-title');
 const INTRO_VIEWED_KEY = 'v-intro-viewed';
 
-if (textArea && scene && controls && title) {
+if (container && textArea && scene && controls && title) {
+    container.classList.add('visible');
     const replayButton = controls.querySelector('#replay');
     const terminalCommands = `$ install @vendure/core\n` +
         `$ vendure init\n` +

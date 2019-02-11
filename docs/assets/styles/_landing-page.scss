@@ -129,6 +129,7 @@
             display: flex;
             align-items: center;
             @media screen and (max-width: $sm-breakpoint) {
+                min-width: 0;
                 flex-direction: column;
             }
             @media screen and (min-width: $lg-breakpoint) {
