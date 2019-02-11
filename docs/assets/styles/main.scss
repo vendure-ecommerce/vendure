@@ -202,6 +202,12 @@ ul.contents-list {
         margin-left: 12px;
     }
 
+    .footer-logo img {
+        width: 100px;
+        filter: saturate(0%);
+        opacity: 0.5;
+    }
+
     .links {
         margin-left: 12px;
         margin-bottom: 60px;
