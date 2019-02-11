@@ -40,6 +40,18 @@ $ yarn add mysql
 
 ```
 {{% /tab %}}
+{{% tab "PostgreSQL" %}}
+You'll need a PostgreSQL server available to your local machine.
+
+In addition, you must install the [pg driver](https://www.npmjs.com/package/pg) for Node.js:
+```bash
+$ npm install pg
+
+# or with Yarn
+$ yarn add pg
+
+```
+{{% /tab %}}
 
 ### Install ts-node
 

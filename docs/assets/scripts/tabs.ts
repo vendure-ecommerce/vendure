@@ -41,10 +41,12 @@ function groupTabs(tabs: HTMLDivElement[]): TabGroup[] {
             let nextSibling = next.nextElementSibling;
             while (nextSibling === remainingTabs[0]) {
                 if (nextSibling) {
+                    next = remainingTabs.shift();
                     // tslint:disable-next-line:no-non-null-assertion
-                    group.push(remainingTabs.shift()!);
+                    group.push(next!);
                 }
-                nextSibling = next.nextElementSibling;
+                // tslint:disable-next-line:no-non-null-assertion
+                nextSibling = next!.nextElementSibling;
             }
             tabGroups.push(group);
         }
