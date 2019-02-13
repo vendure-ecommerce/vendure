@@ -5,18 +5,18 @@ Array [
   Object {
     "assets": Array [
       Object {
-        "id": "T_6",
+        "id": "T_1",
         "name": "pps1.jpg",
       },
       Object {
-        "id": "T_7",
+        "id": "T_2",
         "name": "pps2.jpg",
       },
     ],
     "description": "A great device for stretching paper.",
     "facetValues": Array [],
     "featuredAsset": Object {
-      "id": "T_6",
+      "id": "T_1",
       "name": "pps1.jpg",
     },
     "id": "T_1",
@@ -24,7 +24,7 @@ Array [
     "optionGroups": Array [
       Object {
         "code": "perfect-paper-stretcher-size",
-        "id": "T_2",
+        "id": "T_1",
         "name": "size",
       },
     ],
@@ -39,7 +39,7 @@ Array [
               "id": "T_1",
               "name": "Brand",
             },
-            "id": "T_11",
+            "id": "T_1",
             "name": "KB",
           },
           Object {
@@ -48,7 +48,7 @@ Array [
               "id": "T_2",
               "name": "Type",
             },
-            "id": "T_12",
+            "id": "T_2",
             "name": "Accessory",
           },
         ],
@@ -58,7 +58,7 @@ Array [
         "options": Array [
           Object {
             "code": "half-imperial",
-            "id": "T_3",
+            "id": "T_1",
           },
         ],
         "price": 4530,
@@ -77,7 +77,7 @@ Array [
               "id": "T_1",
               "name": "Brand",
             },
-            "id": "T_11",
+            "id": "T_1",
             "name": "KB",
           },
           Object {
@@ -86,7 +86,7 @@ Array [
               "id": "T_2",
               "name": "Type",
             },
-            "id": "T_12",
+            "id": "T_2",
             "name": "Accessory",
           },
         ],
@@ -96,7 +96,7 @@ Array [
         "options": Array [
           Object {
             "code": "quarter-imperial",
-            "id": "T_4",
+            "id": "T_2",
           },
         ],
         "price": 3250,
@@ -115,7 +115,7 @@ Array [
               "id": "T_1",
               "name": "Brand",
             },
-            "id": "T_11",
+            "id": "T_1",
             "name": "KB",
           },
           Object {
@@ -124,7 +124,7 @@ Array [
               "id": "T_2",
               "name": "Type",
             },
-            "id": "T_12",
+            "id": "T_2",
             "name": "Accessory",
           },
         ],
@@ -134,7 +134,7 @@ Array [
         "options": Array [
           Object {
             "code": "full-imperial",
-            "id": "T_5",
+            "id": "T_3",
           },
         ],
         "price": 5950,
@@ -165,7 +165,7 @@ Array [
               "id": "T_1",
               "name": "Brand",
             },
-            "id": "T_13",
+            "id": "T_3",
             "name": "Mabef",
           },
           Object {
@@ -174,7 +174,7 @@ Array [
               "id": "T_2",
               "name": "Type",
             },
-            "id": "T_14",
+            "id": "T_4",
             "name": "Easel",
           },
         ],
@@ -201,7 +201,7 @@ Array [
     "optionGroups": Array [
       Object {
         "code": "giotto-mega-pencils-box-size",
-        "id": "T_3",
+        "id": "T_2",
         "name": "box size",
       },
     ],
@@ -210,7 +210,7 @@ Array [
       Object {
         "assets": Array [
           Object {
-            "id": "T_8",
+            "id": "T_3",
             "name": "box-of-8.jpg",
           },
         ],
@@ -221,12 +221,12 @@ Array [
               "id": "T_3",
               "name": "Collection",
             },
-            "id": "T_15",
+            "id": "T_5",
             "name": "Xmas Sale",
           },
         ],
         "featuredAsset": Object {
-          "id": "T_8",
+          "id": "T_3",
           "name": "box-of-8.jpg",
         },
         "id": "T_5",
@@ -234,7 +234,7 @@ Array [
         "options": Array [
           Object {
             "code": "box-of-8",
-            "id": "T_6",
+            "id": "T_4",
           },
         ],
         "price": 416,
@@ -247,7 +247,7 @@ Array [
       Object {
         "assets": Array [
           Object {
-            "id": "T_9",
+            "id": "T_4",
             "name": "box-of-12.jpg",
           },
         ],
@@ -258,12 +258,12 @@ Array [
               "id": "T_3",
               "name": "Collection",
             },
-            "id": "T_15",
+            "id": "T_5",
             "name": "Xmas Sale",
           },
         ],
         "featuredAsset": Object {
-          "id": "T_9",
+          "id": "T_4",
           "name": "box-of-12.jpg",
         },
         "id": "T_6",
@@ -271,7 +271,7 @@ Array [
         "options": Array [
           Object {
             "code": "box-of-12",
-            "id": "T_7",
+            "id": "T_5",
           },
         ],
         "price": 624,
@@ -292,7 +292,7 @@ Array [
           "id": "T_4",
           "name": "Material",
         },
-        "id": "T_16",
+        "id": "T_6",
         "name": "Denim",
       },
       Object {
@@ -300,7 +300,7 @@ Array [
           "id": "T_3",
           "name": "Collection",
         },
-        "id": "T_17",
+        "id": "T_7",
         "name": "clothes",
       },
     ],
@@ -310,12 +310,12 @@ Array [
     "optionGroups": Array [
       Object {
         "code": "artists-smock-size",
-        "id": "T_4",
+        "id": "T_3",
         "name": "size",
       },
       Object {
         "code": "artists-smock-colour",
-        "id": "T_5",
+        "id": "T_4",
         "name": "colour",
       },
     ],
@@ -330,11 +330,11 @@ Array [
         "options": Array [
           Object {
             "code": "small",
-            "id": "T_8",
+            "id": "T_6",
           },
           Object {
             "code": "beige",
-            "id": "T_10",
+            "id": "T_8",
           },
         ],
         "price": 1199,
@@ -353,11 +353,11 @@ Array [
         "options": Array [
           Object {
             "code": "large",
-            "id": "T_9",
+            "id": "T_7",
           },
           Object {
             "code": "beige",
-            "id": "T_10",
+            "id": "T_8",
           },
         ],
         "price": 1199,
@@ -376,11 +376,11 @@ Array [
         "options": Array [
           Object {
             "code": "small",
-            "id": "T_8",
+            "id": "T_6",
           },
           Object {
             "code": "navy",
-            "id": "T_11",
+            "id": "T_9",
           },
         ],
         "price": 1199,
@@ -399,11 +399,11 @@ Array [
         "options": Array [
           Object {
             "code": "large",
-            "id": "T_9",
+            "id": "T_7",
           },
           Object {
             "code": "navy",
-            "id": "T_11",
+            "id": "T_9",
           },
         ],
         "price": 1199,

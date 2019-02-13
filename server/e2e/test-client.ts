@@ -13,7 +13,7 @@ export class TestClient extends SimpleGraphQLClient {
     }
 
     async init() {
-        const token = await getDefaultChannelToken();
+        const token = await getDefaultChannelToken(false);
         this.setChannelToken(token);
         await this.asSuperAdmin();
     }

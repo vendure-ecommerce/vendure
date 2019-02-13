@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_PROMOTION,
@@ -44,7 +45,7 @@ describe('Promotion resolver', () => {
     beforeAll(async () => {
         await server.init(
             {
-                productCount: 1,
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
                 customerCount: 1,
             },
             {

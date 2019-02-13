@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_FACET,
@@ -44,7 +45,7 @@ describe('Facet resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            productCount: 2,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
         await client.init();
@@ -126,7 +127,7 @@ describe('Facet resolver', () => {
 
         const { items } = result.facets;
         expect(items.length).toBe(2);
-        expect(items[0].name).toBe('Brand');
+        expect(items[0].name).toBe('category');
         expect(items[1].name).toBe('Speaker Category');
 
         brandFacet = items[0];

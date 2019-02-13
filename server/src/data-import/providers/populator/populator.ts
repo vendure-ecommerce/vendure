@@ -10,19 +10,20 @@ import { TaxCategoryService } from '../../../service/services/tax-category.servi
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { ZoneService } from '../../../service/services/zone.service';
 
+type ZoneMap = Map<string, { entity: Zone; members: string[] }>;
+
 export interface CountryData {
     code: string;
     name: string;
     zone: string;
 }
+
 export interface InitialData {
     defaultLanguage: LanguageCode;
     defaultZone: string;
     countries: CountryData[];
     taxRates: Array<{ name: string; percentage: number }>;
 }
-
-type ZoneMap = Map<string, { entity: Zone; members: string[] }>;
 
 /**
  * Responsible for populating the database with initial data.

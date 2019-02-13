@@ -48,7 +48,7 @@ describe('Authorization & permissions', () => {
     beforeAll(async () => {
         const token = await server.init(
             {
-                productCount: 1,
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
                 customerCount: 1,
             },
             {
@@ -354,7 +354,7 @@ describe('Expiring registration token', () => {
     beforeAll(async () => {
         const token = await server.init(
             {
-                productCount: 1,
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
                 customerCount: 1,
             },
             {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
+import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';
 
@@ -58,9 +59,23 @@ export class Importer {
     parseAndImport(
         input: string | Stream,
         ctxOrLanguageCode: RequestContext | LanguageCode,
+        reportProgress: boolean = false,
     ): Observable<ImportProgress> {
+        let bar: ProgressBar | undefined;
+
         return new Observable(subscriber => {
             const p = this.doParseAndImport(input, ctxOrLanguageCode, progress => {
+                if (reportProgress) {
+                    if (!bar) {
+                        bar = new ProgressBar('  importing [:bar] :percent :etas  Importing: :prodName', {
+                            complete: '=',
+                            incomplete: ' ',
+                            total: progress.processed,
+                            width: 40,
+                        });
+                    }
+                    bar.tick({ prodName: progress.currentProduct });
+                }
                 subscriber.next(progress);
             }).then(value => {
                 subscriber.next({ ...value, currentProduct: 'Complete' });
@@ -98,7 +113,7 @@ export class Importer {
             }
         } else {
             return {
-                errors: ['nothing to parse!'],
+                errors: [],
                 imported: 0,
                 processed: parsed.processed,
             };

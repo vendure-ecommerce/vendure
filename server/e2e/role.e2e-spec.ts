@@ -1,6 +1,4 @@
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '../../shared/generated-types';
-import { omit } from '../../shared/omit';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../shared/shared-constants';
+import path from 'path';
 
 import {
     CREATE_ROLE,
@@ -8,6 +6,9 @@ import {
     GET_ROLES,
     UPDATE_ROLE,
 } from '../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '../../shared/generated-types';
+import { omit } from '../../shared/omit';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
@@ -22,7 +23,7 @@ describe('Role resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 1,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
         await client.init();

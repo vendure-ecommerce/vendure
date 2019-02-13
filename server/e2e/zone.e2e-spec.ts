@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     ADD_MEMBERS_TO_ZONE,
@@ -34,7 +35,7 @@ describe('Facet resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            productCount: 2,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
         await client.init();
@@ -50,14 +51,14 @@ describe('Facet resolver', () => {
     it('zones', async () => {
         const result = await client.query(GET_ZONE_LIST);
 
-        expect(result.zones.length).toBe(6);
+        expect(result.zones.length).toBe(5);
         zones = result.zones;
         oceania = zones[0];
     });
 
     it('zone', async () => {
         const result = await client.query<GetZone.Query, GetZone.Variables>(GET_ZONE, {
-            id: zones[0].id,
+            id: oceania.id,
         });
 
         expect(result.zone!.name).toBe('Oceania');
@@ -96,11 +97,8 @@ describe('Facet resolver', () => {
             },
         );
 
-        expect(result.addMembersToZone.members.map(m => m.name)).toEqual([
-            countries[0].name,
-            countries[2].name,
-            countries[3].name,
-        ]);
+        expect(!!result.addMembersToZone.members.find(m => m.name === countries[2].name)).toBe(true);
+        expect(!!result.addMembersToZone.members.find(m => m.name === countries[3].name)).toBe(true);
     });
 
     it('removeMembersFromZone', async () => {
@@ -112,7 +110,9 @@ describe('Facet resolver', () => {
             },
         );
 
-        expect(result.removeMembersFromZone.members.map(m => m.name)).toEqual([countries[3].name]);
+        expect(!!result.removeMembersFromZone.members.find(m => m.name === countries[0].name)).toBe(false);
+        expect(!!result.removeMembersFromZone.members.find(m => m.name === countries[2].name)).toBe(false);
+        expect(!!result.removeMembersFromZone.members.find(m => m.name === countries[3].name)).toBe(true);
     });
 
     describe('deletion', () => {
@@ -134,7 +134,8 @@ describe('Facet resolver', () => {
             expect(result1.deleteZone).toEqual({
                 result: DeletionResult.NOT_DELETED,
                 message:
-                    'The selected Zone cannot be deleted as it is used in the following TaxRates: Standard Tax for Oceania',
+                    'The selected Zone cannot be deleted as it is used in the following ' +
+                    'TaxRates: Standard Tax Oceania, Reduced Tax Oceania, Zero Tax Oceania',
             });
 
             const result2 = await client.query(GET_ZONE_LIST, {});

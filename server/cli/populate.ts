@@ -1,9 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
-import ProgressBar from 'progress';
-import { tap } from 'rxjs/operators';
-import { Connection } from 'typeorm';
 
 import { logColored } from './cli-utils';
 // tslint:disable-next-line:no-var-requires
@@ -114,24 +111,8 @@ async function importProductsFromFile(app: INestApplication, csvPath: string, la
     // import the csv of same product data
     const importer = app.get(Importer);
     const productData = await fs.readFile(csvPath, 'utf-8');
-    let bar: ProgressBar | undefined;
 
-    const importResult = await importer
-        .parseAndImport(productData, languageCode)
-        .pipe(
-            tap((progress: any) => {
-                if (!bar) {
-                    bar = new ProgressBar('  importing [:bar] :percent :etas  Importing: :prodName', {
-                        complete: '=',
-                        incomplete: ' ',
-                        total: progress.processed,
-                        width: 40,
-                    });
-                }
-                bar.tick({ prodName: progress.currentProduct });
-            }),
-        )
-        .toPromise();
+    const importResult = await importer.parseAndImport(productData, languageCode, true).toPromise();
     if (importResult.errors.length) {
         const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
         console.log(

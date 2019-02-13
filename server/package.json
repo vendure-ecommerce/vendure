@@ -35,7 +35,7 @@
     "@nestjs/testing": "5.5.0",
     "@nestjs/typeorm": "^5.2.2",
     "@types/progress": "^2.0.3",
-    "apollo-server-express": "^2.3.1",
+    "apollo-server-express": "^2.4.0",
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
     "commander": "^2.19.0",

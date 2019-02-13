@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_CUSTOMER_ADDRESS,
@@ -33,7 +34,7 @@ describe('Customer resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 1,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 5,
         });
         await client.init();
@@ -100,7 +101,7 @@ describe('Customer resolver', () => {
                 postalCode: 'postalCode',
                 country: {
                     code: 'GB',
-                    name: 'United Kingdom of Great Britain and Northern Ireland',
+                    name: 'United Kingdom',
                 },
                 phoneNumber: 'phoneNumber',
                 defaultShippingAddress: false,
@@ -201,7 +202,7 @@ describe('Customer resolver', () => {
                 postalCode: '',
                 country: {
                     code: 'GB',
-                    name: 'United Kingdom of Great Britain and Northern Ireland',
+                    name: 'United Kingdom',
                 },
                 phoneNumber: '',
                 defaultShippingAddress: true,

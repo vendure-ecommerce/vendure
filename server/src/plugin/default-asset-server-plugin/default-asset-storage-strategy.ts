@@ -18,8 +18,8 @@ export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
         const filePath = path.join(this.uploadPath, fileName);
         const writeStream = fs.createWriteStream(filePath, 'binary');
         return new Promise<string>((resolve, reject) => {
-            data.on('data', chunk => writeStream.write(chunk));
-            data.on('close', () => resolve(this.filePathToIdentifier(filePath)));
+            data.pipe(writeStream);
+            writeStream.on('close', () => resolve(this.filePathToIdentifier(filePath)));
             writeStream.on('error', reject);
         });
     }

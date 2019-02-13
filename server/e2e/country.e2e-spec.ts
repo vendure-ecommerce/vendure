@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_COUNTRY,
@@ -32,7 +33,7 @@ describe('Facet resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            productCount: 2,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
         await client.init();
@@ -45,7 +46,7 @@ describe('Facet resolver', () => {
     it('countries', async () => {
         const result = await client.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
 
-        expect(result.countries.totalItems).toBe(9);
+        expect(result.countries.totalItems).toBe(7);
         countries = result.countries.items;
         GB = countries.find(c => c.code === 'GB')!;
         AT = countries.find(c => c.code === 'AT')!;

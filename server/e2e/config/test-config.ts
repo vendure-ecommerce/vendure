@@ -48,7 +48,7 @@ export const testConfig: VendureConfig = {
         },
     },
     importExportOptions: {
-        importAssetsDir: path.join(__dirname, '..', 'fixtures'),
+        importAssetsDir: path.join(__dirname, '..', 'fixtures/assets'),
     },
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),

@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { devConfig } from '../dev-config';
 import { bootstrap } from '../src';
 import { VendureConfig } from '../src/config/vendure-config';
@@ -14,14 +16,17 @@ if (require.main === module) {
         authOptions: {
             tokenMethod: 'bearer',
         },
+        importExportOptions: {
+            importAssetsDir: path.join(__dirname, 'assets'),
+        },
         customFields: {},
     };
     // tslint:disable
     populate(populateConfig, bootstrap, {
         logging: true,
         customerCount: 10,
-        productCount: 20,
-        channels: ['mobile-app'],
+        productsCsvPath: path.join(__dirname, 'data-sources/products.csv'),
+        initialDataPath: path.join(__dirname, 'data-sources/initial-data'),
     })
         .then(app => app.close())
         .then(

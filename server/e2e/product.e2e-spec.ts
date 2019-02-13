@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -41,8 +42,8 @@ describe('Product resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 20,
             customerCount: 1,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
         });
         await client.init();
     }, TEST_SETUP_TIMEOUT_MS);
@@ -88,7 +89,7 @@ describe('Product resolver', () => {
                     options: {
                         filter: {
                             name: {
-                                contains: 'fish',
+                                contains: 'skateboard',
                             },
                         },
                     },
@@ -96,7 +97,7 @@ describe('Product resolver', () => {
             );
 
             expect(result.products.items.length).toBe(1);
-            expect(result.products.items[0].name).toBe('en Practical Frozen Fish');
+            expect(result.products.items[0].name).toBe('Cruiser Skateboard');
         });
 
         it('sorts by name', async () => {
@@ -147,7 +148,7 @@ describe('Product resolver', () => {
                 fail('Product not found');
                 return;
             }
-            expect(result.product.variants[0].price).toBe(745);
+            expect(result.product.variants[0].price).toBe(14374);
             expect(result.product.variants[0].taxCategory).toEqual({
                 id: 'T_1',
                 name: 'Standard Tax',
@@ -359,11 +360,11 @@ describe('Product resolver', () => {
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: 'T_2',
                 productId: newProduct.id,
             });
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
-            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_1');
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_2');
         });
 
         it(
@@ -401,10 +402,11 @@ describe('Product resolver', () => {
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                optionGroupId: '1',
-                productId: '1',
+                optionGroupId: 'T_1',
+                productId: 'T_1',
             });
-            expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(0);
+            expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(1);
+            expect(result.removeOptionGroupFromProduct.optionGroups[0].code).toBe('laptop-ram');
         });
 
         it(

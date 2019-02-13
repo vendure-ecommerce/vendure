@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import { GET_CUSTOMER_LIST } from '../../admin-ui/src/app/data/definitions/customer-definitions';
 import { CreateAddressInput, GetCustomerList } from '../../shared/generated-types';
@@ -16,7 +17,7 @@ describe('Orders', () => {
     beforeAll(async () => {
         const token = await server.init(
             {
-                productCount: 10,
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
                 customerCount: 2,
             },
             {

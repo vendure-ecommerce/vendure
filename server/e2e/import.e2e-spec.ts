@@ -11,7 +11,7 @@ describe('Import resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 0,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
             customerCount: 0,
         });
         await client.init();

@@ -5,6 +5,7 @@ import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
+import { Omit } from '../../shared/omit';
 import { populate, PopulateOptions } from '../mock-data/populate';
 import { preBootstrapConfig } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
@@ -27,7 +28,10 @@ export class TestServer {
      * The populated data is saved into an .sqlite file for each test file. On subsequent runs, this file
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
-    async init(options: PopulateOptions, customConfig: Partial<VendureConfig> = {}): Promise<void> {
+    async init(
+        options: Omit<PopulateOptions, 'initialDataPath'>,
+        customConfig: Partial<VendureConfig> = {},
+    ): Promise<void> {
         setTestEnvironment();
         const testingConfig = { ...testConfig, ...customConfig };
         if (options.logging) {
@@ -62,12 +66,18 @@ export class TestServer {
     /**
      * Populates an .sqlite database file based on the PopulateOptions.
      */
-    private async populateInitialData(testingConfig: VendureConfig, options: PopulateOptions): Promise<void> {
+    private async populateInitialData(
+        testingConfig: VendureConfig,
+        options: Omit<PopulateOptions, 'initialDataPath'>,
+    ): Promise<void> {
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
 
         const app = await populate(testingConfig, this.bootstrapForTesting, {
             logging: false,
-            ...options,
+            ...{
+                ...options,
+                initialDataPath: path.join(__dirname, 'fixtures/e2e-initial-data.ts'),
+            },
         });
         await app.close();
 

@@ -8,7 +8,7 @@ Object {
   "name": "Speaker Type",
   "translations": Array [
     Object {
-      "id": "T_3",
+      "id": "T_2",
       "languageCode": "en",
       "name": "Speaker Type",
     },
@@ -20,12 +20,12 @@ Object {
         "id": "T_2",
         "name": "Speaker Type",
       },
-      "id": "T_11",
+      "id": "T_7",
       "languageCode": "en",
       "name": "Portable",
       "translations": Array [
         Object {
-          "id": "T_21",
+          "id": "T_7",
           "languageCode": "en",
           "name": "Portable",
         },
@@ -43,12 +43,12 @@ Array [
       "id": "T_2",
       "name": "Speaker Category",
     },
-    "id": "T_13",
+    "id": "T_9",
     "languageCode": "en",
     "name": "PC Speakers",
     "translations": Array [
       Object {
-        "id": "T_23",
+        "id": "T_9",
         "languageCode": "en",
         "name": "PC Speakers",
       },
@@ -60,12 +60,12 @@ Array [
       "id": "T_2",
       "name": "Speaker Category",
     },
-    "id": "T_12",
+    "id": "T_8",
     "languageCode": "en",
     "name": "Hi Fi Speakers",
     "translations": Array [
       Object {
-        "id": "T_22",
+        "id": "T_8",
         "languageCode": "en",
         "name": "Hi Fi Speakers",
       },

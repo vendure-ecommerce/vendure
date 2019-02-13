@@ -1,10 +1,4 @@
-import {
-    Administrator,
-    CreateAdministrator,
-    GetAdministrator,
-    GetAdministrators,
-    UpdateAdministrator,
-} from '../../shared/generated-types';
+import path from 'path';
 
 import {
     CREATE_ADMINISTRATOR,
@@ -12,6 +6,13 @@ import {
     GET_ADMINISTRATORS,
     UPDATE_ADMINISTRATOR,
 } from '../../admin-ui/src/app/data/definitions/administrator-definitions';
+import {
+    Administrator,
+    CreateAdministrator,
+    GetAdministrator,
+    GetAdministrators,
+    UpdateAdministrator,
+} from '../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestClient } from './test-client';
@@ -25,7 +26,7 @@ describe('Administrator resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 1,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
         await client.init();

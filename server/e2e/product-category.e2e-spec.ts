@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import path from 'path';
 
 import {
     CREATE_PRODUCT_CATEGORY,
@@ -34,7 +35,7 @@ describe('ProductCategory resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
-            productCount: 5,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
         await client.init();
