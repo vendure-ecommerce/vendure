@@ -103,7 +103,7 @@ async function populateProducts(app: INestApplication, initialData: any) {
     await fs.copy(images, destination);
 
     // import the csv of same product data
-    const sampleProductsFile = path.join(__dirname, 'assets', 'sample-products.csv');
+    const sampleProductsFile = path.join(__dirname, 'assets', 'products.csv');
     await importProductsFromFile(app, sampleProductsFile, initialData.defaultLanguage);
 }
 

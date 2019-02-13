@@ -1,6 +1,9 @@
 import { exec } from 'child_process';
+import fs from 'fs-extra';
 import { dest, parallel, series, src } from 'gulp';
 import path from 'path';
+
+import { initialData } from '../mock-data/data-sources/initial-data';
 
 // tslint:disable:no-console
 
@@ -18,6 +21,18 @@ function copyCliAssets() {
 
 function copyCliImages() {
     return src(['../mock-data/assets/**/*']).pipe(dest('../dist/cli/assets/images'));
+}
+
+function copyCliProductData() {
+    return src(['../mock-data/data-sources/products.csv']).pipe(dest('../dist/cli/assets'));
+}
+
+function copyCliInitialData() {
+    return fs.outputFile(
+        '../dist/cli/assets/initial-data.json',
+        JSON.stringify(initialData, null, 2),
+        'utf-8',
+    );
 }
 
 function buildAdminUi() {
@@ -47,5 +62,7 @@ export const build = parallel(
     copyEmailTemplates,
     copyCliAssets,
     copyCliImages,
+    copyCliProductData,
+    copyCliInitialData,
     series(buildAdminUi, copyAdminUi),
 );
