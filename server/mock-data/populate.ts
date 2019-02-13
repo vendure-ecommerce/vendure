@@ -47,7 +47,6 @@ export async function populate(
     await client.asSuperAdmin();
     const mockDataService = new MockDataService(client, logging);
     await mockDataService.populateCustomers(options.customerCount);
-    await mockDataService.populateShippingMethods();
 
     config.authOptions.requireVerification = originalRequireVerification;
     return app;

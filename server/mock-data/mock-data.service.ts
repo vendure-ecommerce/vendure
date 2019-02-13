@@ -52,45 +52,6 @@ export class MockDataService {
         return channels;
     }
 
-    async populateShippingMethods() {
-        await this.client.query<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
-            CREATE_SHIPPING_METHOD,
-            {
-                input: {
-                    code: 'standard-flat-rate',
-                    description: 'Standard Shipping',
-                    checker: {
-                        code: defaultShippingEligibilityChecker.code,
-                        arguments: [],
-                    },
-                    calculator: {
-                        code: defaultShippingCalculator.code,
-                        arguments: [{ name: 'rate', value: '500' }],
-                    },
-                },
-            },
-        );
-        this.log(`Created standard ShippingMethod`);
-        await this.client.query<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
-            CREATE_SHIPPING_METHOD,
-            {
-                input: {
-                    code: 'express-flat-rate',
-                    description: 'Express Shipping',
-                    checker: {
-                        code: defaultShippingEligibilityChecker.code,
-                        arguments: [],
-                    },
-                    calculator: {
-                        code: defaultShippingCalculator.code,
-                        arguments: [{ name: 'rate', value: '1000' }],
-                    },
-                },
-            },
-        );
-        this.log(`Created express ShippingMethod`);
-    }
-
     async populateCustomers(count: number = 5): Promise<any> {
         for (let i = 0; i < count; i++) {
             const firstName = faker.name.firstName();

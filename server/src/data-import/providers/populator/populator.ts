@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { LanguageCode } from '../../../../../shared/generated-types';
+import { normalizeString } from '../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
+import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
 import { TaxCategory } from '../../../entity';
 import { Zone } from '../../../entity/zone/zone.entity';
+import { ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
@@ -23,6 +26,7 @@ export interface InitialData {
     defaultZone: string;
     countries: CountryData[];
     taxRates: Array<{ name: string; percentage: number }>;
+    shippingMethods: Array<{ name: string; price: number }>;
 }
 
 /**
@@ -36,6 +40,7 @@ export class Populator {
         private channelService: ChannelService,
         private taxRateService: TaxRateService,
         private taxCategoryService: TaxCategoryService,
+        private shippingMethodService: ShippingMethodService,
     ) {}
 
     async populateInitialData(data: InitialData) {
@@ -49,6 +54,7 @@ export class Populator {
 
         const zoneMap = await this.populateCountries(ctx, data.countries);
         await this.populateTaxRates(ctx, data.taxRates, zoneMap);
+        await this.populateShippingMethods(ctx, data.shippingMethods);
         await this.setChannelDefaults(zoneMap, data, channel);
     }
 
@@ -114,6 +120,26 @@ export class Populator {
                     enabled: true,
                 });
             }
+        }
+    }
+
+    private async populateShippingMethods(
+        ctx: RequestContext,
+        shippingMethods: Array<{ name: string; price: number }>,
+    ) {
+        for (const method of shippingMethods) {
+            await this.shippingMethodService.create({
+                checker: {
+                    code: defaultShippingEligibilityChecker.code,
+                    arguments: [],
+                },
+                calculator: {
+                    code: defaultShippingCalculator.code,
+                    arguments: [{ name: 'rate', value: method.price.toString() }],
+                },
+                description: method.name,
+                code: normalizeString(method.name, '-'),
+            });
         }
     }
 }
