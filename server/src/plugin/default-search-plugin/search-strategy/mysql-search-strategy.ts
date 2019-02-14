@@ -6,6 +6,7 @@ import { unique } from '../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
+import { mapToSearchResult } from './map-to-search-result';
 import { SearchStrategy } from './search-strategy';
 
 /**
@@ -40,24 +41,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res =>
-                res.map(r => {
-                    return {
-                        sku: r.si_sku,
-                        productVariantId: r.si_productVariantId,
-                        languageCode: r.si_languageCode,
-                        productId: r.si_productId,
-                        productName: r.si_productName,
-                        productVariantName: r.si_productVariantName,
-                        description: r.si_description,
-                        facetIds: r.si_facetIds.split(',').map(x => x.trim()),
-                        facetValueIds: r.si_facetValueIds.split(',').map(x => x.trim()),
-                        productPreview: r.si_productPreview,
-                        productVariantPreview: r.si_productVariantPreview,
-                        score: r.score || 0,
-                    };
-                }),
-            );
+            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput): Promise<number> {

@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-import { LanguageCode } from '../../../../shared/generated-types';
+import { CurrencyCode, LanguageCode } from '../../../../shared/generated-types';
 import { ID } from '../../../../shared/shared-types';
 import { idType } from '../../config/config-helpers';
 
@@ -36,7 +36,15 @@ export class SearchIndexItem {
     description: string;
 
     @Column()
+    slug: string;
+
+    @Column()
     sku: string;
+
+    @Column()
+    price: number;
+
+    currencyCode: CurrencyCode;
 
     @Column('simple-array')
     facetIds: string[];

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-01T14:23:55+01:00
+// Generated in 2019-02-14T13:50:27+01:00
 export type Maybe<T> = T | null;
 
 
@@ -5452,6 +5452,8 @@ export interface SearchResult {
   
   sku: string;
   
+  slug: string;
+  
   productId: string;
   
   productName: string;
@@ -5463,6 +5465,10 @@ export interface SearchResult {
   productVariantName: string;
   
   productVariantPreview: string;
+  
+  price: number;
+  
+  currencyCode: CurrencyCode;
   
   description: string;
   

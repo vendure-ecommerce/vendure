@@ -44,7 +44,7 @@ export class ProductOptionResolver {
     }
 
     @ResolveProperty()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.Public)
     async options(optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
             return Promise.resolve(optionGroup.options);

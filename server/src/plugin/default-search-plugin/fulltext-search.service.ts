@@ -19,7 +19,7 @@ import { FacetValueService } from '../../service/services/facet-value.service';
 import { DefaultSearceReindexResonse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
-import { PostgesSearchStrategy } from './search-strategy/postges-search-strategy';
+import { PostgresSearchStrategy } from './search-strategy/postgres-search-strategy';
 import { SearchStrategy } from './search-strategy/search-strategy';
 import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
 
@@ -61,7 +61,7 @@ export class FulltextSearchService {
                 this.searchStrategy = new SqliteSearchStrategy(connection);
                 break;
             case 'postgres':
-                this.searchStrategy = new PostgesSearchStrategy(connection);
+                this.searchStrategy = new PostgresSearchStrategy(connection);
                 break;
             default:
                 throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
@@ -169,6 +169,8 @@ export class FulltextSearchService {
                 v =>
                     new SearchIndexItem({
                         sku: v.sku,
+                        slug: v.product.slug,
+                        price: v.price,
                         languageCode,
                         productVariantId: v.id,
                         productId: v.product.id,

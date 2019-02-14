@@ -26,12 +26,15 @@ type SearchResponse {
 
 type SearchResult {
     sku: String!
+    slug: String!
     productId: ID!
     productName: String!
     productPreview: String!
     productVariantId: ID!
     productVariantName: String!
     productVariantPreview: String!
+    price: Int!
+    currencyCode: CurrencyCode!
     description: String!
     facetIds: [String!]!
     facetValueIds: [String!]!

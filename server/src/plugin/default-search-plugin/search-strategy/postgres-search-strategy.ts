@@ -6,12 +6,13 @@ import { unique } from '../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
+import { mapToSearchResult } from './map-to-search-result';
 import { SearchStrategy } from './search-strategy';
 
 /**
  * A weighted fulltext search for PostgeSQL.
  */
-export class PostgesSearchStrategy implements SearchStrategy {
+export class PostgresSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
     constructor(private connection: Connection) {}
@@ -20,7 +21,7 @@ export class PostgesSearchStrategy implements SearchStrategy {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
-            .select("string_agg(si.facetValueIds,',')", 'allFacetValues');
+            .select(`string_agg(si.facetValueIds,',')`, 'allFacetValues');
 
         const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, input, true).getRawOne();
         const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
@@ -43,24 +44,7 @@ export class PostgesSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res =>
-                res.map(r => {
-                    return {
-                        sku: r.si_sku,
-                        productVariantId: r.si_productVariantId,
-                        languageCode: r.si_languageCode,
-                        productId: r.si_productId,
-                        productName: r.si_productName,
-                        productVariantName: r.si_productVariantName,
-                        description: r.si_description,
-                        facetIds: r.si_facetIds.split(',').map(x => x.trim()),
-                        facetValueIds: r.si_facetValueIds.split(',').map(x => x.trim()),
-                        productPreview: r.si_productPreview,
-                        productVariantPreview: r.si_productVariantPreview,
-                        score: r.score || 0,
-                    };
-                }),
-            );
+            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput): Promise<number> {
@@ -136,6 +120,8 @@ export class PostgesSearchStrategy implements SearchStrategy {
     private createPostgresSelect(groupByProduct: boolean): string {
         return [
             'sku',
+            'slug',
+            'price',
             'productVariantId',
             'languageCode',
             'productId',
