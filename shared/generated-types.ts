@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-14T14:24:26+01:00
+// Generated in 2019-02-15T09:00:52+01:00
 export type Maybe<T> = T | null;
 
 
@@ -347,10 +347,6 @@ export interface ProductSortParameter {
   name?: Maybe<SortOrder>;
   
   slug?: Maybe<SortOrder>;
-  
-  description?: Maybe<SortOrder>;
-  
-  image?: Maybe<SortOrder>;
 }
 
 export interface ProductFilterParameter {
@@ -445,6 +441,15 @@ export interface SearchInput {
   take?: Maybe<number>;
   
   skip?: Maybe<number>;
+  
+  sort?: Maybe<SearchResultSortParameter>;
+}
+
+export interface SearchResultSortParameter {
+  
+  name?: Maybe<SortOrder>;
+  
+  price?: Maybe<SortOrder>;
 }
 
 export interface ShippingMethodListOptions {

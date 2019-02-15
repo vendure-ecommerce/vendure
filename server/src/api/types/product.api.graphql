@@ -45,8 +45,6 @@ input ProductSortParameter {
     updatedAt: SortOrder
     name: SortOrder
     slug: SortOrder
-    description: SortOrder
-    image: SortOrder
 }
 
 input ProductFilterParameter {

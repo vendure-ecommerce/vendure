@@ -16,6 +16,12 @@ input SearchInput {
     groupByProduct: Boolean
     take: Int
     skip: Int
+    sort: SearchResultSortParameter
+}
+
+input SearchResultSortParameter {
+    name: SortOrder
+    price: SortOrder
 }
 
 type SearchResponse {

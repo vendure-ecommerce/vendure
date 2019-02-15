@@ -32,10 +32,19 @@ export class SqliteSearchStrategy implements SearchStrategy {
     async getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
+        const sort = input.sort;
         const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
         this.applyTermAndFilters(qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');
+        }
+        if (sort) {
+            if (sort.name) {
+                qb.addOrderBy('productName', sort.name);
+            }
+            if (sort.price) {
+                qb.addOrderBy('price', sort.price);
+            }
         }
 
         return await qb

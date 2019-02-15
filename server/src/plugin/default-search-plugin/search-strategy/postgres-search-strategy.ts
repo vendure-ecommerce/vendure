@@ -31,6 +31,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
     async getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
+        const sort = input.sort;
         const qb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
@@ -38,6 +39,15 @@ export class PostgresSearchStrategy implements SearchStrategy {
         this.applyTermAndFilters(qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');
+        }
+
+        if (sort) {
+            if (sort.name) {
+                qb.addOrderBy('"si_productName"', sort.name);
+            }
+            if (sort.price) {
+                qb.addOrderBy('"si_price"', sort.price);
+            }
         }
 
         return qb
