@@ -62,6 +62,7 @@ export class OrderService {
                 'lines',
                 'lines.productVariant',
                 'lines.productVariant.taxCategory',
+                'lines.productVariant.options',
                 'lines.featuredAsset',
                 'lines.items',
                 'lines.taxCategory',
