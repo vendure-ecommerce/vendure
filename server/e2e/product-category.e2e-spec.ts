@@ -137,6 +137,33 @@ describe('ProductCategory resolver', () => {
                 'T_4',
             ]);
         });
+
+        it('resolves ancestorFacetValues at root', async () => {
+            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: electronicsCategory.id });
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.ancestorFacetValues.map(v => v.id)).toEqual([]);
+        });
+
+        it('resolves ancestorFacetValues 1 level deep', async () => {
+            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: laptopsCategory.id });
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.ancestorFacetValues.map(v => v.id)).toEqual(['T_1']);
+        });
+
+        it('resolves ancestorFacetValues 2 levels deep', async () => {
+            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: appleCategory.id });
+            if (!result.productCategory) {
+                fail(`did not return the category`);
+                return;
+            }
+            expect(result.productCategory.ancestorFacetValues.map(v => v.id)).toEqual(['T_1', 'T_2']);
+        });
     });
 
     describe('updateProductCategory', () => {
@@ -289,6 +316,18 @@ const GET_DECENDANT_FACET_VALUES = gql`
         productCategory(id: $id) {
             id
             descendantFacetValues {
+                id
+                name
+            }
+        }
+    }
+`;
+
+const GET_ANCESTOR_FACET_VALUES = gql`
+    query GetAncestorFacetValues($id: ID!) {
+        productCategory(id: $id) {
+            id
+            ancestorFacetValues {
                 id
                 name
             }

@@ -62,6 +62,9 @@ export class FacetValueService {
     }
 
     async findByCategoryIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
+        if (ids.length === 0) {
+            return [];
+        }
         const facetValues = await this.connection
             .getRepository(FacetValue)
             .createQueryBuilder('facetValue')

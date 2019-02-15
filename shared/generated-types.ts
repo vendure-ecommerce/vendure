@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-14T13:50:27+01:00
+// Generated in 2019-02-14T14:24:26+01:00
 export type Maybe<T> = T | null;
 
 
@@ -5279,6 +5279,8 @@ export interface ProductCategory extends Node {
   facetValues: FacetValue[];
   
   descendantFacetValues: FacetValue[];
+  
+  ancestorFacetValues: FacetValue[];
   
   translations: ProductCategoryTranslation[];
   

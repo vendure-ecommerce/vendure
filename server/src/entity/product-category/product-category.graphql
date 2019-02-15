@@ -12,6 +12,7 @@ type ProductCategory implements Node {
     children: [ProductCategory!]
     facetValues: [FacetValue!]!
     descendantFacetValues: [FacetValue!]!
+    ancestorFacetValues: [FacetValue!]!
     translations: [ProductCategoryTranslation!]!
 }
 

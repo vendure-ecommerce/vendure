@@ -56,6 +56,16 @@ export class ProductCategoryResolver {
         return this.facetValueService.findByCategoryIds(ctx, descendants.map(d => d.id));
     }
 
+    @ResolveProperty()
+    async ancestorFacetValues(
+        @Ctx() ctx: RequestContext,
+        @Parent() category: ProductCategory,
+    ): Promise<Array<Translated<FacetValue>>> {
+        const categoryId = this.idCodecService.decode(category.id);
+        const ancestors = await this.productCategoryService.getAncestors(categoryId, ctx);
+        return this.facetValueService.findByCategoryIds(ctx, ancestors.map(d => d.id));
+    }
+
     @Mutation()
     @Allow(Permission.CreateCatalog)
     @Decode('assetIds', 'featuredAssetId', 'parentId', 'facetValueIds')
