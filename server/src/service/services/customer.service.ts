@@ -13,9 +13,10 @@ import {
 } from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -32,6 +33,7 @@ import { UserService } from './user.service';
 export class CustomerService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
         private userService: UserService,
         private countryService: CountryService,
         private listQueryBuilder: ListQueryBuilder,
@@ -95,6 +97,15 @@ export class CustomerService {
     }
 
     async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
+        if (this.configService.authOptions.requireVerification) {
+            if (input.password) {
+                throw new UserInputError(`error.unexpected-password-on-registration`);
+            }
+        } else {
+            if (!input.password) {
+                throw new UserInputError(`error.missing-password-on-registration`);
+            }
+        }
         let user = await this.userService.getUserByEmailAddress(input.emailAddress);
         if (user && user.verified) {
             // If the user has already been verified, do nothing
@@ -107,7 +118,7 @@ export class CustomerService {
             lastName: input.lastName || '',
         });
         if (!user) {
-            user = await this.userService.createCustomerUser(input.emailAddress);
+            user = await this.userService.createCustomerUser(input.emailAddress, input.password || undefined);
         } else if (!user.verified) {
             user = await this.userService.setVerificationToken(user);
         }

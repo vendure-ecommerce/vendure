@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-18T13:01:33+01:00
+// Generated in 2019-02-18T15:05:52+01:00
 export type Maybe<T> = T | null;
 
 
@@ -566,6 +566,8 @@ export interface RegisterCustomerInput {
   firstName?: Maybe<string>;
   
   lastName?: Maybe<string>;
+  
+  password?: Maybe<string>;
 }
 
 export interface CreateChannelInput {
@@ -5516,9 +5518,9 @@ export interface Mutation {
   logout: boolean;
   /** Register a Customer account with the given credentials */
   registerCustomerAccount: boolean;
-  /** Verify a Customer email address with the token sent to that address */
+  /** Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true. */
   verifyCustomerAccount: LoginResult;
-  /** Regenerate and send a verification token for a new Customer registration */
+  /** Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true. */
   refreshCustomerVerification: boolean;
   /** Create a new Channel */
   createChannel: Channel;

@@ -7,9 +7,9 @@ type Mutation {
     logout: Boolean!
     "Register a Customer account with the given credentials"
     registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
-    "Verify a Customer email address with the token sent to that address"
+    "Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true."
     verifyCustomerAccount(token: String!, password: String!): LoginResult!
-    "Regenerate and send a verification token for a new Customer registration"
+    "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
     refreshCustomerVerification(emailAddress: String!): Boolean!
 }
 
@@ -28,4 +28,5 @@ input RegisterCustomerInput {
     title: String
     firstName: String
     lastName: String
+    password: String
 }

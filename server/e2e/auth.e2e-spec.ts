@@ -154,6 +154,19 @@ describe('Authorization & permissions', () => {
             sendEmailFn = jest.fn();
         });
 
+        it(
+            'errors if a password is provided',
+            assertThrowsWithMessage(async () => {
+                const input: RegisterCustomerInput = {
+                    firstName: 'Sofia',
+                    lastName: 'Green',
+                    emailAddress: 'sofia.green@test.com',
+                    password: 'test',
+                };
+                const result = await client.query(REGISTER_ACCOUNT, { input });
+            }, 'Do not provide a password when `authOptions.requireVerification` is set to "true"'),
+        );
+
         it('register a new account', async () => {
             const verificationTokenPromise = getVerificationTokenPromise();
             const input: RegisterCustomerInput = {
@@ -384,11 +397,11 @@ describe('Expiring registration token', () => {
                 lastName: 'Wallace',
                 emailAddress: 'barry.wallace@test.com',
             };
-            const result1 = await client.query(REGISTER_ACCOUNT, { input });
+            const result = await client.query(REGISTER_ACCOUNT, { input });
 
             const verificationToken = await verificationTokenPromise;
 
-            expect(result1.registerCustomerAccount).toBe(true);
+            expect(result.registerCustomerAccount).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(verificationToken).toBeDefined();
 
@@ -400,6 +413,76 @@ describe('Expiring registration token', () => {
             });
         }, `Verification token has expired. Use refreshCustomerVerification to send a new token.`),
     );
+});
+
+describe('Registration without email verification', () => {
+    const client = new TestClient();
+    const server = new TestServer();
+    const userEmailAddress = 'glen.beardsley@test.com';
+
+    beforeAll(async () => {
+        const token = await server.init(
+            {
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+                customerCount: 1,
+            },
+            {
+                emailOptions,
+                authOptions: {
+                    requireVerification: false,
+                },
+            },
+        );
+        await client.init();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    beforeEach(() => {
+        sendEmailFn = jest.fn();
+    });
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    it(
+        'errors if no password is provided',
+        assertThrowsWithMessage(async () => {
+            const input: RegisterCustomerInput = {
+                firstName: 'Glen',
+                lastName: 'Beardsley',
+                emailAddress: userEmailAddress,
+            };
+            const result = await client.query(REGISTER_ACCOUNT, { input });
+        }, 'A password must be provided when `authOptions.requireVerification` is set to "false"'),
+    );
+
+    it('register a new account with password', async () => {
+        const input: RegisterCustomerInput = {
+            firstName: 'Glen',
+            lastName: 'Beardsley',
+            emailAddress: userEmailAddress,
+            password: 'test',
+        };
+        const result = await client.query(REGISTER_ACCOUNT, { input });
+
+        expect(result.registerCustomerAccount).toBe(true);
+        expect(sendEmailFn).not.toHaveBeenCalled();
+    });
+
+    it('can login after registering', async () => {
+        await client.asUserWithCredentials(userEmailAddress, 'test');
+
+        const result = await client.query(
+            gql`
+                query {
+                    me {
+                        identifier
+                    }
+                }
+            `,
+        );
+        expect(result.me.identifier).toBe(userEmailAddress);
+    });
 });
 
 function getVerificationTokenPromise(): Promise<string> {
