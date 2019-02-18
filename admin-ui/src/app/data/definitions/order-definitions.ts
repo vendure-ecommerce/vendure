@@ -10,7 +10,7 @@ export const ADJUSTMENT_FRAGMENT = gql`
 `;
 
 export const SHIPPING_ADDRESS_FRAGMENT = gql`
-    fragment ShippingAddress on ShippingAddress {
+    fragment ShippingAddress on OrderAddress {
         fullName
         company
         streetLine1

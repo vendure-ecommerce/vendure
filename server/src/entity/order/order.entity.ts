@@ -1,12 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import {
-    Adjustment,
-    AdjustmentType,
-    BillingAddress,
-    CurrencyCode,
-    ShippingAddress,
-} from '../../../../shared/generated-types';
+import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '../../../../shared/generated-types';
 import { DeepPartial, ID } from '../../../../shared/shared-types';
 import { Calculated } from '../../common/calculated-decorator';
 import { idType } from '../../config/config-helpers';
@@ -53,9 +47,9 @@ export class Order extends VendureEntity {
 
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
-    @Column('simple-json') shippingAddress: ShippingAddress;
+    @Column('simple-json') shippingAddress: OrderAddress;
 
-    @Column('simple-json') billingAddress: BillingAddress;
+    @Column('simple-json') billingAddress: OrderAddress;
 
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];

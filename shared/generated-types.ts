@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-15T09:00:52+01:00
+// Generated in 2019-02-18T13:01:33+01:00
 export type Maybe<T> = T | null;
 
 
@@ -3628,7 +3628,7 @@ export namespace Adjustment {
 
 export namespace ShippingAddress {
   export type Fragment = {
-    __typename?: "ShippingAddress";
+    __typename?: "OrderAddress";
     
     fullName: Maybe<string>;
     
@@ -4799,9 +4799,9 @@ export interface Order extends Node {
   
   customer?: Maybe<Customer>;
   
-  shippingAddress?: Maybe<ShippingAddress>;
+  shippingAddress?: Maybe<OrderAddress>;
   
-  billingAddress?: Maybe<BillingAddress>;
+  billingAddress?: Maybe<OrderAddress>;
   
   lines: OrderLine[];
   
@@ -4825,31 +4825,7 @@ export interface Order extends Node {
 }
 
 
-export interface ShippingAddress {
-  
-  fullName?: Maybe<string>;
-  
-  company?: Maybe<string>;
-  
-  streetLine1?: Maybe<string>;
-  
-  streetLine2?: Maybe<string>;
-  
-  city?: Maybe<string>;
-  
-  province?: Maybe<string>;
-  
-  postalCode?: Maybe<string>;
-  
-  country?: Maybe<string>;
-  
-  countryCode?: Maybe<string>;
-  
-  phoneNumber?: Maybe<string>;
-}
-
-
-export interface BillingAddress {
+export interface OrderAddress {
   
   fullName?: Maybe<string>;
   
