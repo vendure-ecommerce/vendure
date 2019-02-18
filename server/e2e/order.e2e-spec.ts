@@ -183,7 +183,7 @@ describe('Orders', () => {
             'attempting to transition to ArrangingPayment throws when Order has no Customer',
             assertThrowsWithMessage(
                 () => client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' }),
-                `Cannot transition Order to the "ArrangingShipping" state without Customer details`,
+                `Cannot transition Order to the "ArrangingPayment" state without Customer details`,
             ),
         );
 
