@@ -231,7 +231,21 @@ export class OrderResolver {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 const order = await this.orderService.addPaymentToOrder(ctx, sessionOrder.id, args.input);
-
+                if (order.active === false) {
+                    const { customer } = order;
+                    // If the Customer has no addresses yet, use the shipping address data
+                    // to populate the initial default Address.
+                    if (customer && (!customer.addresses || customer.addresses.length === 0)) {
+                        const address = order.shippingAddress;
+                        await this.customerService.createAddress(ctx, customer.id as string, {
+                            ...address,
+                            streetLine1: address.streetLine1 || '',
+                            countryCode: address.countryCode || '',
+                            defaultBillingAddress: true,
+                            defaultShippingAddress: true,
+                        });
+                    }
+                }
                 if (
                     order.active === false &&
                     ctx.session &&

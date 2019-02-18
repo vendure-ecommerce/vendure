@@ -1,8 +1,11 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { GET_CUSTOMER_LIST } from '../../admin-ui/src/app/data/definitions/customer-definitions';
-import { CreateAddressInput, GetCustomerList } from '../../shared/generated-types';
+import {
+    GET_CUSTOMER,
+    GET_CUSTOMER_LIST,
+} from '../../admin-ui/src/app/data/definitions/customer-definitions';
+import { CreateAddressInput, GetCustomer, GetCustomerList } from '../../shared/generated-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -36,6 +39,7 @@ describe('Orders', () => {
     describe('as anonymous user', () => {
         let firstOrderItemId: string;
         let createdCustomerId: string;
+        let orderCode: string;
 
         beforeAll(async () => {
             await client.asAnonymousUser();
@@ -65,6 +69,7 @@ describe('Orders', () => {
             expect(result.addItemToOrder.lines[0].productVariant.id).toBe('T_1');
             expect(result.addItemToOrder.lines[0].id).toBe('T_1');
             firstOrderItemId = result.addItemToOrder.lines[0].id;
+            orderCode = result.addItemToOrder.code;
         });
 
         it(
@@ -219,10 +224,92 @@ describe('Orders', () => {
             expect(customer.id).toBe(createdCustomerId);
         });
 
+        it('setOrderShippingAddress sets shipping address', async () => {
+            const address: CreateAddressInput = {
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: 'line 2',
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                countryCode: 'US',
+                phoneNumber: '4444444',
+            };
+            const result = await client.query(SET_SHIPPING_ADDRESS, {
+                input: address,
+            });
+
+            expect(result.setOrderShippingAddress.shippingAddress).toEqual({
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: 'line 2',
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                country: 'United States of America',
+                phoneNumber: '4444444',
+            });
+        });
+
+        it('customer default Addresses are not updated before payment', async () => {
+            const result = await client.query(gql`
+                query {
+                    activeOrder {
+                        customer {
+                            addresses {
+                                id
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(result.activeOrder.customer.addresses).toEqual([]);
+        });
+
         it('can transition to ArrangingPayment once Customer has been set', async () => {
             const result = await client.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
 
             expect(result.transitionOrderToState).toEqual({ id: 'T_1', state: 'ArrangingPayment' });
+        });
+
+        it('adds a successful payment and transitions Order state', async () => {
+            const result = await client.query(ADD_PAYMENT, {
+                input: {
+                    method: testPaymentMethod.code,
+                    metadata: {},
+                },
+            });
+
+            const payment = result.addPaymentToOrder.payments[0];
+            expect(result.addPaymentToOrder.state).toBe('PaymentSettled');
+            expect(result.addPaymentToOrder.active).toBe(false);
+            expect(result.addPaymentToOrder.payments.length).toBe(1);
+            expect(payment.method).toBe(testPaymentMethod.code);
+            expect(payment.state).toBe('Settled');
+        });
+
+        it('activeOrder is null after payment', async () => {
+            const result = await client.query(GET_ACTIVE_ORDER);
+
+            expect(result.activeOrder).toBeNull();
+        });
+
+        it('customer default Addresses are updated after payment', async () => {
+            await client.asSuperAdmin();
+
+            const result = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+                id: createdCustomerId,
+            });
+
+            // tslint:disable-next-line:no-non-null-assertion
+            const address = result.customer!.addresses![0];
+            expect(address.streetLine1).toBe('12 the street');
+            expect(address.postalCode).toBe('123456');
+            expect(address.defaultBillingAddress).toBe(true);
+            expect(address.defaultShippingAddress).toBe(true);
         });
     });
 
@@ -608,6 +695,9 @@ const TEST_ORDER_FRAGMENT = gql`
             id
             code
             description
+        }
+        customer {
+            id
         }
     }
 `;
