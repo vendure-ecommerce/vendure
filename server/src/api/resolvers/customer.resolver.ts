@@ -72,7 +72,7 @@ export class CustomerResolver {
     ): Promise<PaginatedList<Order>> {
         this.checkOwnerPermissions(ctx, customer);
         const customerId = this.idCodecService.decode(customer.id);
-        return this.orderService.findByCustomerId(customerId, args.options || undefined);
+        return this.orderService.findByCustomerId(ctx, customerId, args.options || undefined);
     }
 
     @Mutation()

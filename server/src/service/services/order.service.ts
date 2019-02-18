@@ -89,12 +89,25 @@ export class OrderService {
         return order;
     }
 
-    async findByCustomerId(customerId: ID, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
+    async findByCustomerId(
+        ctx: RequestContext,
+        customerId: ID,
+        options?: ListQueryOptions<Order>,
+    ): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, { relations: ['lines', 'lines.productVariant', 'customer'] })
+            .build(Order, options, {
+                relations: ['lines', 'lines.productVariant', 'lines.productVariant.options', 'customer'],
+            })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
+                items.forEach(item => {
+                    item.lines.forEach(line => {
+                        line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
+                            'options',
+                        ]);
+                    });
+                });
                 return {
                     items,
                     totalItems,

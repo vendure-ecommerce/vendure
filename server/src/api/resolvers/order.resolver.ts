@@ -18,6 +18,7 @@ import {
 } from '../../../../shared/generated-types';
 import { PaginatedList } from '../../../../shared/shared-types';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
+import { idsAreEqual } from '../../common/utils';
 import { Order } from '../../entity/order/order.entity';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { AuthService } from '../../service/services/auth.service';
@@ -51,7 +52,8 @@ export class OrderResolver {
     async order(@Ctx() ctx: RequestContext, @Args() args: OrderQueryArgs): Promise<Order | undefined> {
         const order = await this.orderService.findOne(ctx, args.id);
         if (order && ctx.authorizedAsOwnerOnly) {
-            if (ctx.session && ctx.session.activeOrder && ctx.session.activeOrder.id === order.id) {
+            const orderUserId = order.customer && order.customer.user && order.customer.user.id;
+            if (idsAreEqual(ctx.activeUserId, orderUserId)) {
                 return order;
             } else {
                 return;
