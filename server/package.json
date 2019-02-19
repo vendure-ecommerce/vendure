@@ -1,11 +1,13 @@
 {
   "name": "@vendure/core",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "A modern, headless ecommerce framework",
   "repository": {
     "type": "git",
     "url": "https://github.com/vendure-ecommerce/vendure/"
   },
+  "keywords": ["vendure", "ecommerce", "headless", "graphql", "typescript"],
+  "readme": "README.md",
   "private": false,
   "license": "MIT",
   "scripts": {
