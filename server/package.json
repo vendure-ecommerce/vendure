@@ -6,7 +6,13 @@
     "type": "git",
     "url": "https://github.com/vendure-ecommerce/vendure/"
   },
-  "keywords": ["vendure", "ecommerce", "headless", "graphql", "typescript"],
+  "keywords": [
+    "vendure",
+    "ecommerce",
+    "headless",
+    "graphql",
+    "typescript"
+  ],
   "readme": "README.md",
   "private": false,
   "license": "MIT",
@@ -79,6 +85,7 @@
     "@types/express": "^4.0.39",
     "@types/faker": "^4.1.4",
     "@types/fs-extra": "^5.0.4",
+    "@types/graphql": "^14.0.7",
     "@types/gulp": "^4.0.5",
     "@types/handlebars": "^4.0.40",
     "@types/http-proxy-middleware": "^0.19.2",
