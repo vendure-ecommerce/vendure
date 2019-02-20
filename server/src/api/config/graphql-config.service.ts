@@ -1,16 +1,9 @@
-import { DynamicModule, Injectable } from '@nestjs/common';
-import {
-    GqlModuleAsyncOptions,
-    GqlModuleOptions,
-    GqlOptionsFactory,
-    GraphQLModule,
-    GraphQLTypesLoader,
-} from '@nestjs/graphql';
+import { DynamicModule } from '@nestjs/common';
+import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { GraphQLUpload } from 'apollo-server-core';
 import { extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
-import path from 'path';
 
 import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { ConfigModule } from '../../config/config.module';
@@ -19,6 +12,7 @@ import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
 import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
+import { generateListOptions } from './generate-list-options';
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 
 export interface GraphQLApiOptions {
@@ -77,7 +71,7 @@ function createGraphQLOptions(
         },
         playground: true,
         debug: true,
-        context: req => req,
+        context: (req: any) => req,
         extensions: [() => new TranslateErrorExtension(i18nService)],
         // This is handled by the Express cors plugin
         cors: false,
@@ -92,7 +86,8 @@ function createGraphQLOptions(
     function createTypeDefs(): string {
         const customFields = configService.customFields;
         const typeDefs = typesLoader.mergeTypesByPaths(...options.typePaths);
-        let schema = addGraphQLCustomFields(typeDefs, customFields);
+        let schema = generateListOptions(typeDefs);
+        schema = addGraphQLCustomFields(schema, customFields);
         const pluginTypes = configService.plugins
             .map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))
             .filter(notNullOrUndefined);

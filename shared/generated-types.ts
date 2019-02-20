@@ -1,13 +1,13 @@
 // tslint:disable
-// Generated in 2019-02-18T15:05:52+01:00
+// Generated in 2019-02-20T18:08:35+01:00
 export type Maybe<T> = T | null;
 
 
 export interface AdministratorListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<AdministratorSortParameter>;
   
@@ -31,22 +31,15 @@ export interface AdministratorSortParameter {
 
 export interface AdministratorFilterParameter {
   
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
   firstName?: Maybe<StringOperators>;
   
   lastName?: Maybe<StringOperators>;
   
   emailAddress?: Maybe<StringOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-}
-
-export interface StringOperators {
-  
-  eq?: Maybe<string>;
-  
-  contains?: Maybe<string>;
 }
 
 export interface DateOperators {
@@ -67,11 +60,18 @@ export interface DateRange {
   end: DateTime;
 }
 
+export interface StringOperators {
+  
+  eq?: Maybe<string>;
+  
+  contains?: Maybe<string>;
+}
+
 export interface AssetListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<AssetSortParameter>;
   
@@ -82,33 +82,59 @@ export interface AssetSortParameter {
   
   id?: Maybe<SortOrder>;
   
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
   name?: Maybe<SortOrder>;
   
-  description?: Maybe<SortOrder>;
+  fileSize?: Maybe<SortOrder>;
+  
+  mimeType?: Maybe<SortOrder>;
+  
+  source?: Maybe<SortOrder>;
+  
+  preview?: Maybe<SortOrder>;
 }
 
 export interface AssetFilterParameter {
   
   name?: Maybe<StringOperators>;
   
-  description?: Maybe<StringOperators>;
-  
   type?: Maybe<StringOperators>;
   
-  createdAt?: Maybe<DateOperators>;
+  fileSize?: Maybe<NumberOperators>;
   
-  updatedAt?: Maybe<DateOperators>;
+  mimeType?: Maybe<StringOperators>;
+  
+  source?: Maybe<StringOperators>;
+  
+  preview?: Maybe<StringOperators>;
+}
+
+export interface NumberOperators {
+  
+  eq?: Maybe<number>;
+  
+  lt?: Maybe<number>;
+  
+  lte?: Maybe<number>;
+  
+  gt?: Maybe<number>;
+  
+  gte?: Maybe<number>;
+  
+  between?: Maybe<NumberRange>;
+}
+
+export interface NumberRange {
+  
+  start: number;
+  
+  end: number;
 }
 
 export interface CountryListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<CountrySortParameter>;
   
@@ -119,28 +145,20 @@ export interface CountrySortParameter {
   
   id?: Maybe<SortOrder>;
   
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
   code?: Maybe<SortOrder>;
   
   name?: Maybe<SortOrder>;
-  
-  enabled?: Maybe<SortOrder>;
 }
 
 export interface CountryFilterParameter {
+  
+  languageCode?: Maybe<StringOperators>;
   
   code?: Maybe<StringOperators>;
   
   name?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
 }
 
 export interface BooleanOperators {
@@ -150,9 +168,9 @@ export interface BooleanOperators {
 
 export interface CustomerListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<CustomerSortParameter>;
   
@@ -167,6 +185,8 @@ export interface CustomerSortParameter {
   
   updatedAt?: Maybe<SortOrder>;
   
+  title?: Maybe<SortOrder>;
+  
   firstName?: Maybe<SortOrder>;
   
   lastName?: Maybe<SortOrder>;
@@ -178,6 +198,12 @@ export interface CustomerSortParameter {
 
 export interface CustomerFilterParameter {
   
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  title?: Maybe<StringOperators>;
+  
   firstName?: Maybe<StringOperators>;
   
   lastName?: Maybe<StringOperators>;
@@ -185,17 +211,13 @@ export interface CustomerFilterParameter {
   phoneNumber?: Maybe<StringOperators>;
   
   emailAddress?: Maybe<StringOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
 }
 
 export interface OrderListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<OrderSortParameter>;
   
@@ -211,22 +233,50 @@ export interface OrderSortParameter {
   updatedAt?: Maybe<SortOrder>;
   
   code?: Maybe<SortOrder>;
+  
+  state?: Maybe<SortOrder>;
+  
+  subTotalBeforeTax?: Maybe<SortOrder>;
+  
+  subTotal?: Maybe<SortOrder>;
+  
+  shipping?: Maybe<SortOrder>;
+  
+  totalBeforeTax?: Maybe<SortOrder>;
+  
+  total?: Maybe<SortOrder>;
 }
 
 export interface OrderFilterParameter {
   
-  code?: Maybe<StringOperators>;
-  
   createdAt?: Maybe<DateOperators>;
   
   updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  state?: Maybe<StringOperators>;
+  
+  active?: Maybe<BooleanOperators>;
+  
+  subTotalBeforeTax?: Maybe<NumberOperators>;
+  
+  subTotal?: Maybe<NumberOperators>;
+  
+  currencyCode?: Maybe<StringOperators>;
+  
+  shipping?: Maybe<NumberOperators>;
+  
+  totalBeforeTax?: Maybe<NumberOperators>;
+  
+  total?: Maybe<NumberOperators>;
 }
 
 export interface FacetListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<FacetSortParameter>;
   
@@ -248,20 +298,22 @@ export interface FacetSortParameter {
 
 export interface FacetFilterParameter {
   
-  name?: Maybe<StringOperators>;
-  
-  code?: Maybe<StringOperators>;
-  
   createdAt?: Maybe<DateOperators>;
   
   updatedAt?: Maybe<DateOperators>;
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  code?: Maybe<StringOperators>;
 }
 
 export interface PaymentMethodListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<PaymentMethodSortParameter>;
   
@@ -281,18 +333,20 @@ export interface PaymentMethodSortParameter {
 
 export interface PaymentMethodFilterParameter {
   
-  code?: Maybe<StringOperators>;
-  
   createdAt?: Maybe<DateOperators>;
   
   updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  enabled?: Maybe<BooleanOperators>;
 }
 
 export interface ProductCategoryListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<ProductCategorySortParameter>;
   
@@ -309,125 +363,24 @@ export interface ProductCategorySortParameter {
   
   name?: Maybe<SortOrder>;
   
+  position?: Maybe<SortOrder>;
+  
   description?: Maybe<SortOrder>;
 }
 
 export interface ProductCategoryFilterParameter {
   
-  name?: Maybe<StringOperators>;
-  
-  description?: Maybe<StringOperators>;
-  
   createdAt?: Maybe<DateOperators>;
   
   updatedAt?: Maybe<DateOperators>;
-}
-
-export interface ProductListOptions {
   
-  take?: Maybe<number>;
-  
-  skip?: Maybe<number>;
-  
-  sort?: Maybe<ProductSortParameter>;
-  
-  filter?: Maybe<ProductFilterParameter>;
-  
-  categoryId?: Maybe<string>;
-}
-
-export interface ProductSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  name?: Maybe<SortOrder>;
-  
-  slug?: Maybe<SortOrder>;
-}
-
-export interface ProductFilterParameter {
+  languageCode?: Maybe<StringOperators>;
   
   name?: Maybe<StringOperators>;
   
-  slug?: Maybe<StringOperators>;
+  position?: Maybe<NumberOperators>;
   
   description?: Maybe<StringOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-}
-
-export interface PromotionListOptions {
-  
-  take?: Maybe<number>;
-  
-  skip?: Maybe<number>;
-  
-  sort?: Maybe<PromotionSortParameter>;
-  
-  filter?: Maybe<PromotionFilterParameter>;
-}
-
-export interface PromotionSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  name?: Maybe<SortOrder>;
-}
-
-export interface PromotionFilterParameter {
-  
-  name?: Maybe<StringOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-  
-  type?: Maybe<StringOperators>;
-}
-
-export interface RoleListOptions {
-  
-  take?: Maybe<number>;
-  
-  skip?: Maybe<number>;
-  
-  sort?: Maybe<RoleSortParameter>;
-  
-  filter?: Maybe<RoleFilterParameter>;
-}
-
-export interface RoleSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  code?: Maybe<SortOrder>;
-  
-  description?: Maybe<SortOrder>;
-}
-
-export interface RoleFilterParameter {
-  
-  code?: Maybe<StringOperators>;
-  
-  description?: Maybe<StringOperators>;
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
 }
 
 export interface SearchInput {
@@ -452,11 +405,122 @@ export interface SearchResultSortParameter {
   price?: Maybe<SortOrder>;
 }
 
-export interface ShippingMethodListOptions {
+export interface ProductListOptions {
+  
+  skip?: Maybe<number>;
   
   take?: Maybe<number>;
   
+  sort?: Maybe<ProductSortParameter>;
+  
+  filter?: Maybe<ProductFilterParameter>;
+  
+  categoryId?: Maybe<string>;
+}
+
+export interface ProductSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+  
+  slug?: Maybe<SortOrder>;
+  
+  description?: Maybe<SortOrder>;
+}
+
+export interface ProductFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  slug?: Maybe<StringOperators>;
+  
+  description?: Maybe<StringOperators>;
+}
+
+export interface PromotionListOptions {
+  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<PromotionSortParameter>;
+  
+  filter?: Maybe<PromotionFilterParameter>;
+}
+
+export interface PromotionSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+}
+
+export interface PromotionFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  enabled?: Maybe<BooleanOperators>;
+}
+
+export interface RoleListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<RoleSortParameter>;
+  
+  filter?: Maybe<RoleFilterParameter>;
+}
+
+export interface RoleSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  code?: Maybe<SortOrder>;
+  
+  description?: Maybe<SortOrder>;
+}
+
+export interface RoleFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  description?: Maybe<StringOperators>;
+}
+
+export interface ShippingMethodListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<ShippingMethodSortParameter>;
   
@@ -478,20 +542,20 @@ export interface ShippingMethodSortParameter {
 
 export interface ShippingMethodFilterParameter {
   
-  code?: Maybe<StringOperators>;
-  
-  description?: Maybe<StringOperators>;
-  
   createdAt?: Maybe<DateOperators>;
   
   updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  description?: Maybe<StringOperators>;
 }
 
 export interface TaxRateListOptions {
   
-  take?: Maybe<number>;
-  
   skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
   
   sort?: Maybe<TaxRateSortParameter>;
   
@@ -508,20 +572,20 @@ export interface TaxRateSortParameter {
   
   name?: Maybe<SortOrder>;
   
-  enabled?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
 }
 
 export interface TaxRateFilterParameter {
   
-  code?: Maybe<StringOperators>;
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
   
   name?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
   
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
+  value?: Maybe<NumberOperators>;
 }
 
 export interface CreateAdministratorInput {
@@ -1165,28 +1229,6 @@ export interface CreateProductVariantInput {
   assetIds?: Maybe<string[]>;
   
   customFields?: Maybe<Json>;
-}
-
-export interface NumberOperators {
-  
-  eq?: Maybe<number>;
-  
-  lt?: Maybe<number>;
-  
-  lte?: Maybe<number>;
-  
-  gt?: Maybe<number>;
-  
-  gte?: Maybe<number>;
-  
-  between?: Maybe<NumberRange>;
-}
-
-export interface NumberRange {
-  
-  start: number;
-  
-  end: number;
 }
 
 export interface ProductOptionTranslationInput {
@@ -4465,6 +4507,8 @@ export interface Query {
   
   productOptionGroup?: Maybe<ProductOptionGroup>;
   
+  search: SearchResponse;
+  
   products: ProductList;
   
   product?: Maybe<Product>;
@@ -4478,8 +4522,6 @@ export interface Query {
   roles: RoleList;
   
   role?: Maybe<Role>;
-  
-  search: SearchResponse;
   
   shippingMethods: ShippingMethodList;
   
@@ -5323,6 +5365,48 @@ export interface ProductOptionGroupTranslation {
 }
 
 
+export interface SearchResponse {
+  
+  items: SearchResult[];
+  
+  totalItems: number;
+  
+  facetValues: FacetValue[];
+}
+
+
+export interface SearchResult {
+  
+  sku: string;
+  
+  slug: string;
+  
+  productId: string;
+  
+  productName: string;
+  
+  productPreview: string;
+  
+  productVariantId: string;
+  
+  productVariantName: string;
+  
+  productVariantPreview: string;
+  
+  price: number;
+  
+  currencyCode: CurrencyCode;
+  
+  description: string;
+  
+  facetIds: string[];
+  
+  facetValueIds: string[];
+  
+  score: number;
+}
+
+
 export interface ProductList extends PaginatedList {
   
   items: Product[];
@@ -5420,48 +5504,6 @@ export interface RoleList extends PaginatedList {
   items: Role[];
   
   totalItems: number;
-}
-
-
-export interface SearchResponse {
-  
-  items: SearchResult[];
-  
-  totalItems: number;
-  
-  facetValues: FacetValue[];
-}
-
-
-export interface SearchResult {
-  
-  sku: string;
-  
-  slug: string;
-  
-  productId: string;
-  
-  productName: string;
-  
-  productPreview: string;
-  
-  productVariantId: string;
-  
-  productVariantName: string;
-  
-  productVariantPreview: string;
-  
-  price: number;
-  
-  currencyCode: CurrencyCode;
-  
-  description: string;
-  
-  facetIds: string[];
-  
-  facetValueIds: string[];
-  
-  score: number;
 }
 
 
@@ -5594,6 +5636,8 @@ export interface Mutation {
   createProductOptionGroup: ProductOptionGroup;
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup;
+  
+  reindex: SearchReindexResponse;
   /** Create a new Product */
   createProduct: Product;
   /** Update an existing Product */
@@ -5618,8 +5662,6 @@ export interface Mutation {
   createRole: Role;
   /** Update an existing Role */
   updateRole: Role;
-  
-  reindex: SearchReindexResponse;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
   /** Update an existing ShippingMethod */
@@ -5790,6 +5832,10 @@ export interface ProductOptionGroupQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
 }
+export interface SearchQueryArgs {
+  
+  input: SearchInput;
+}
 export interface ProductsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -5817,10 +5863,6 @@ export interface RolesQueryArgs {
 export interface RoleQueryArgs {
   
   id: string;
-}
-export interface SearchQueryArgs {
-  
-  input: SearchInput;
 }
 export interface ShippingMethodsQueryArgs {
   

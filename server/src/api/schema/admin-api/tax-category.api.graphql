@@ -15,7 +15,6 @@ input CreateTaxCategoryInput {
     name: String!
 }
 
-
 input UpdateTaxCategoryInput {
     id: ID!
     name: String
