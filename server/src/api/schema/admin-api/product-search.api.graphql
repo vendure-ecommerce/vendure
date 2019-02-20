@@ -1,0 +1,21 @@
+type Query {
+    search(input: SearchInput!): SearchResponse!
+}
+
+type Mutation {
+    reindex: SearchReindexResponse!
+}
+
+input SearchInput {
+    term: String
+    facetIds: [String!]
+    groupByProduct: Boolean
+    take: Int
+    skip: Int
+    sort: SearchResultSortParameter
+}
+
+input SearchResultSortParameter {
+    name: SortOrder
+    price: SortOrder
+}

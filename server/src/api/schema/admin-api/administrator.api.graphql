@@ -1,0 +1,54 @@
+type Query {
+    administrators(options: AdministratorListOptions): AdministratorList!
+    administrator(id: ID!): Administrator
+}
+
+type Mutation {
+    "Create a new Administrator"
+    createAdministrator(input: CreateAdministratorInput!): Administrator!
+    "Update an existing Administrator"
+    updateAdministrator(input: UpdateAdministratorInput!): Administrator!
+    "Assign a Role to an Administrator"
+    assignRoleToAdministrator(administratorId: ID!, roleId: ID!): Administrator!
+}
+
+input AdministratorListOptions {
+    take: Int
+    skip: Int
+    sort: AdministratorSortParameter
+    filter: AdministratorFilterParameter
+}
+
+input AdministratorSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    firstName: SortOrder
+    lastName: SortOrder
+    emailAddress: SortOrder
+}
+
+input AdministratorFilterParameter {
+    firstName: StringOperators
+    lastName: StringOperators
+    emailAddress: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+
+input CreateAdministratorInput {
+    firstName: String!
+    lastName: String!
+    emailAddress: String!
+    password: String!
+    roleIds: [ID!]!
+}
+
+input UpdateAdministratorInput {
+    id: ID!
+    firstName: String
+    lastName: String
+    emailAddress: String
+    password: String
+    roleIds: [ID!]
+}

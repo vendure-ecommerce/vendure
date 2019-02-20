@@ -1,0 +1,47 @@
+type Query {
+  roles(options: RoleListOptions): RoleList!
+  role(id: ID!): Role
+}
+
+type Mutation {
+  "Create a new Role"
+  createRole(input: CreateRoleInput!): Role!
+  "Update an existing Role"
+  updateRole(input: UpdateRoleInput!): Role!
+}
+
+input RoleListOptions {
+    take: Int
+    skip: Int
+    sort: RoleSortParameter
+    filter: RoleFilterParameter
+}
+
+input RoleSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    code: SortOrder
+    description: SortOrder
+}
+
+input RoleFilterParameter {
+    code: StringOperators
+    description: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+
+input CreateRoleInput {
+    code: String!
+    description: String!
+    permissions: [Permission!]!
+}
+
+
+input UpdateRoleInput {
+    id: ID!
+    code: String
+    description: String
+    permissions: [Permission!]
+}

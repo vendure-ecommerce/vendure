@@ -1,0 +1,25 @@
+type Query {
+    customerGroups: [CustomerGroup!]!
+    customerGroup(id: ID!): CustomerGroup
+}
+
+type Mutation {
+    "Create a new CustomerGroup"
+    createCustomerGroup(input: CreateCustomerGroupInput!): CustomerGroup!
+    "Update an existing CustomerGroup"
+    updateCustomerGroup(input: UpdateCustomerGroupInput!): CustomerGroup!
+    "Add Customers to a CustomerGroup"
+    addCustomersToGroup(customerGroupId: ID!, customerIds: [ID!]!): CustomerGroup!
+    "Remove Customers from a CustomerGroup"
+    removeCustomersFromGroup(customerGroupId: ID!, customerIds: [ID!]!): CustomerGroup!
+}
+
+input CreateCustomerGroupInput {
+    name: String!
+    customerIds: [ID!]
+}
+
+input UpdateCustomerGroupInput {
+    id: ID!
+    name: String
+}

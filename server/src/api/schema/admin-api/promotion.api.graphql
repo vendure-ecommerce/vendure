@@ -1,0 +1,47 @@
+type Query {
+    promotion(id: ID!): Promotion
+    promotions(options: PromotionListOptions): PromotionList!
+    adjustmentOperations: AdjustmentOperations!
+}
+
+type Mutation {
+    createPromotion(input: CreatePromotionInput!): Promotion!
+    updatePromotion(input: UpdatePromotionInput!): Promotion!
+    deletePromotion(id: ID!): DeletionResponse!
+}
+
+input PromotionListOptions {
+    take: Int
+    skip: Int
+    sort: PromotionSortParameter
+    filter: PromotionFilterParameter
+}
+
+input PromotionSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+}
+
+input PromotionFilterParameter {
+    name: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+    type: StringOperators
+}
+
+input CreatePromotionInput {
+    name: String!
+    enabled: Boolean!
+    conditions: [AdjustmentOperationInput!]!
+    actions: [AdjustmentOperationInput!]!
+}
+
+input UpdatePromotionInput {
+    id: ID!
+    name: String
+    enabled: Boolean
+    conditions: [AdjustmentOperationInput!]
+    actions: [AdjustmentOperationInput!]
+}

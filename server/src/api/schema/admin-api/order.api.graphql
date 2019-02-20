@@ -1,0 +1,44 @@
+type Query {
+    order(id: ID!): Order
+    activeOrder: Order
+    orderByCode(code: String!): Order
+    nextOrderStates: [String!]!
+    orders(options: OrderListOptions): OrderList!
+    eligibleShippingMethods: [ShippingMethodQuote!]!
+}
+
+type Mutation {
+    addItemToOrder(productVariantId: ID!, quantity: Int!): Order
+    removeItemFromOrder(orderItemId: ID!): Order
+    adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
+    transitionOrderToState(state: String!): Order
+    setOrderShippingAddress(input: CreateAddressInput!): Order
+    setOrderShippingMethod(shippingMethodId: ID!): Order
+    addPaymentToOrder(input: PaymentInput!): Order
+    setCustomerForOrder(input: CreateCustomerInput!): Order
+}
+
+input PaymentInput {
+    method: String!
+    metadata: JSON!
+}
+
+input OrderListOptions {
+    take: Int
+    skip: Int
+    sort: OrderSortParameter
+    filter: OrderFilterParameter
+}
+
+input OrderSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    code: SortOrder
+}
+
+input OrderFilterParameter {
+    code: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}

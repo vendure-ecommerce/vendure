@@ -15,7 +15,9 @@ import { addGraphQLCustomFields } from './graphql-custom-fields';
 
 @Injectable()
 export class GraphqlConfigService implements GqlOptionsFactory {
-    readonly typePaths = path.join(__dirname, '/../../**/*.graphql');
+    readonly typePaths = ['type', 'admin-api', 'common'].map(p =>
+        path.join(__dirname, '../schema', p, '**/*.graphql'),
+    );
 
     constructor(
         private i18nService: I18nService,
@@ -62,7 +64,7 @@ export class GraphqlConfigService implements GqlOptionsFactory {
      */
     private createTypeDefs(): string {
         const customFields = this.configService.customFields;
-        const typeDefs = this.typesLoader.mergeTypesByPaths(this.typePaths);
+        const typeDefs = this.typesLoader.mergeTypesByPaths(...this.typePaths);
         let schema = addGraphQLCustomFields(typeDefs, customFields);
         const pluginTypes = this.configService.plugins
             .map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))

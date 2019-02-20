@@ -1,0 +1,67 @@
+type Query {
+    productCategories(languageCode: LanguageCode, options: ProductCategoryListOptions): ProductCategoryList!
+    productCategory(id: ID!, languageCode: LanguageCode): ProductCategory
+}
+
+type Mutation {
+    "Create a new ProductCategory"
+    createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
+
+    "Update an existing ProductCategory"
+    updateProductCategory(input: UpdateProductCategoryInput!): ProductCategory!
+
+    "Move a ProductCategory to a different parent or index"
+    moveProductCategory(input: MoveProductCategoryInput!): ProductCategory!
+}
+
+input ProductCategoryListOptions {
+    take: Int
+    skip: Int
+    sort: ProductCategorySortParameter
+    filter: ProductCategoryFilterParameter
+}
+
+input ProductCategorySortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+    description: SortOrder
+}
+
+input ProductCategoryFilterParameter {
+    name: StringOperators
+    description: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+
+input MoveProductCategoryInput {
+    categoryId: ID!
+    parentId: ID!
+    index: Int!
+}
+
+input ProductCategoryTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String
+    description: String
+}
+
+input CreateProductCategoryInput {
+    featuredAssetId: ID
+    assetIds: [ID!]
+    parentId: ID
+    facetValueIds: [ID!]
+    translations: [ProductCategoryTranslationInput!]!
+}
+
+input UpdateProductCategoryInput {
+    id: ID!
+    featuredAssetId: ID
+    parentId: ID
+    assetIds: [ID!]
+    facetValueIds: [ID!]
+    translations: [ProductCategoryTranslationInput!]!
+}

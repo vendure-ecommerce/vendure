@@ -1,0 +1,31 @@
+type ProductCategory implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode
+    name: String!
+    position: Int!
+    description: String!
+    featuredAsset: Asset
+    assets: [Asset!]!
+    parent: ProductCategory!
+    children: [ProductCategory!]
+    facetValues: [FacetValue!]!
+    descendantFacetValues: [FacetValue!]!
+    ancestorFacetValues: [FacetValue!]!
+    translations: [ProductCategoryTranslation!]!
+}
+
+type ProductCategoryTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    description: String!
+}
+
+type ProductCategoryList implements PaginatedList {
+    items: [ProductCategory!]!
+    totalItems: Int!
+}

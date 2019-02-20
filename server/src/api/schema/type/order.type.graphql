@@ -1,0 +1,82 @@
+type Order implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    code: String!
+    state: String!
+    active: Boolean!
+    customer: Customer
+    shippingAddress: OrderAddress
+    billingAddress: OrderAddress
+    lines: [OrderLine!]!
+    adjustments: [Adjustment!]!
+    payments: [Payment!]
+    subTotalBeforeTax: Int!
+    subTotal: Int!
+    currencyCode: CurrencyCode!
+    shipping: Int!
+    shippingMethod: ShippingMethod
+    totalBeforeTax: Int!
+    total: Int!
+}
+
+type OrderAddress {
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    country: String
+    countryCode: String
+    phoneNumber: String
+}
+
+type OrderList implements PaginatedList {
+    items: [Order!]!
+    totalItems: Int!
+}
+
+type ShippingMethodQuote {
+    id: ID!
+    price: Int!
+    description: String!
+}
+
+type OrderItem implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    unitPrice: Int!
+    unitPriceWithTax: Int!
+    unitPriceIncludesTax: Boolean!
+    taxRate: Float!
+    adjustments: [Adjustment!]!
+}
+
+type OrderLine implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    featuredAsset: Asset
+    unitPrice: Int!
+    unitPriceWithTax: Int!
+    quantity: Int!
+    items: [OrderItem!]!
+    totalPrice: Int!
+    adjustments: [Adjustment!]!
+    order: Order!
+}
+
+type Payment implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    method: String!
+    amount: Int!
+    state: String!
+    transactionId: String
+    metadata: JSON
+}

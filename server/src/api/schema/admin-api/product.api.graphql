@@ -1,0 +1,102 @@
+type Query {
+    products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
+    product(id: ID!, languageCode: LanguageCode): Product
+}
+
+type Mutation {
+    "Create a new Product"
+    createProduct(input: CreateProductInput!): Product!
+
+    "Update an existing Product"
+    updateProduct(input: UpdateProductInput!): Product!
+
+    "Delete a Product"
+    deleteProduct(id: ID!): DeletionResponse!
+
+    "Add an OptionGroup to a Product"
+    addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
+
+    "Remove an OptionGroup from a Product"
+    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
+
+    "Create a set of ProductVariants based on the OptionGroups assigned to the given Product"
+    generateVariantsForProduct(productId: ID!, defaultTaxCategoryId: ID, defaultPrice: Int, defaultSku: String): Product!
+
+    "Update existing ProductVariants"
+    updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
+}
+
+input ProductListOptions {
+    take: Int
+    skip: Int
+    sort: ProductSortParameter
+    filter: ProductFilterParameter
+    categoryId: ID
+}
+
+input ProductSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+    slug: SortOrder
+}
+
+input ProductFilterParameter {
+    name: StringOperators
+    slug: StringOperators
+    description: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+
+input ProductTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String
+    slug: String
+    description: String
+}
+
+input CreateProductInput {
+    featuredAssetId: ID
+    assetIds: [ID!]
+    facetValueIds: [ID!]
+    translations: [ProductTranslationInput!]!
+}
+
+input UpdateProductInput {
+    id: ID!
+    featuredAssetId: ID
+    assetIds: [ID!]
+    facetValueIds: [ID!]
+    translations: [ProductTranslationInput!]
+}
+
+input ProductVariantTranslationInput {
+    id: ID
+    languageCode: LanguageCode!
+    name: String
+}
+
+input CreateProductVariantInput {
+    translations: [ProductVariantTranslationInput!]!
+    facetValueIds: [ID!]
+    sku: String!
+    price: Int
+    taxCategoryId: ID!
+    optionIds: [ID!]
+    featuredAssetId: ID
+    assetIds: [ID!]
+}
+
+input UpdateProductVariantInput {
+    id: ID!
+    translations: [ProductVariantTranslationInput!]
+    facetValueIds: [ID!]
+    sku: String
+    taxCategoryId: ID
+    price: Int
+    featuredAssetId: ID
+    assetIds: [ID!]
+}

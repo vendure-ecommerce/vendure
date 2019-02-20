@@ -1,0 +1,37 @@
+type Query {
+    assets(options: AssetListOptions): AssetList!
+    asset(id: ID!): Asset
+}
+
+type Mutation {
+    "Create a new Asset"
+    createAssets(input: [CreateAssetInput!]!): [Asset!]!
+}
+
+input AssetListOptions {
+    take: Int
+    skip: Int
+    sort: AssetSortParameter
+    filter: AssetFilterParameter
+}
+
+input AssetSortParameter {
+    id: SortOrder
+    createdAt: SortOrder
+    updatedAt: SortOrder
+    name: SortOrder
+    description: SortOrder
+}
+
+input AssetFilterParameter {
+    name: StringOperators
+    description: StringOperators
+    type: StringOperators
+    createdAt: DateOperators
+    updatedAt: DateOperators
+}
+
+input CreateAssetInput {
+    file: Upload!
+}
+

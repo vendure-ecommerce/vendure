@@ -1,0 +1,22 @@
+type Query {
+    taxCategories: [TaxCategory!]!
+    taxCategory(id: ID!): TaxCategory
+}
+
+type Mutation {
+    "Create a new TaxCategory"
+    createTaxCategory(input: CreateTaxCategoryInput!): TaxCategory!
+
+    "Update an existing TaxCategory"
+    updateTaxCategory(input: UpdateTaxCategoryInput!): TaxCategory!
+}
+
+input CreateTaxCategoryInput {
+    name: String!
+}
+
+
+input UpdateTaxCategoryInput {
+    id: ID!
+    name: String
+}

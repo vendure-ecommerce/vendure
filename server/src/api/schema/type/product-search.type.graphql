@@ -1,0 +1,26 @@
+type SearchReindexResponse {
+    success: Boolean!
+}
+
+type SearchResponse {
+    items: [SearchResult!]!
+    totalItems: Int!
+    facetValues: [FacetValue!]!
+}
+
+type SearchResult {
+    sku: String!
+    slug: String!
+    productId: ID!
+    productName: String!
+    productPreview: String!
+    productVariantId: ID!
+    productVariantName: String!
+    productVariantPreview: String!
+    price: Int!
+    currencyCode: CurrencyCode!
+    description: String!
+    facetIds: [String!]!
+    facetValueIds: [String!]!
+    score: Float!
+}

@@ -1,0 +1,14 @@
+type ShippingMethod implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    code: String!
+    description: String!
+    checker: AdjustmentOperation!
+    calculator: AdjustmentOperation!
+}
+
+type ShippingMethodList implements PaginatedList {
+    items: [ShippingMethod!]!
+    totalItems: Int!
+}
