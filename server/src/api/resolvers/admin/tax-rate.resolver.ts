@@ -6,14 +6,14 @@ import {
     TaxRateQueryArgs,
     TaxRatesQueryArgs,
     UpdateTaxRateMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { TaxRateService } from '../../service/services/tax-rate.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
+import { TaxRateService } from '../../../service/services/tax-rate.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('TaxRate')
 export class TaxRateResolver {

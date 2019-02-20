@@ -11,20 +11,20 @@ import {
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { UnauthorizedError } from '../../common/error/errors';
-import { idsAreEqual } from '../../common/utils';
-import { Address } from '../../entity/address/address.entity';
-import { Customer } from '../../entity/customer/customer.entity';
-import { Order } from '../../entity/order/order.entity';
-import { CustomerService } from '../../service/services/customer.service';
-import { OrderService } from '../../service/services/order.service';
-import { IdCodecService } from '../common/id-codec.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { UnauthorizedError } from '../../../common/error/errors';
+import { idsAreEqual } from '../../../common/utils';
+import { Address } from '../../../entity/address/address.entity';
+import { Customer } from '../../../entity/customer/customer.entity';
+import { Order } from '../../../entity/order/order.entity';
+import { CustomerService } from '../../../service/services/customer.service';
+import { OrderService } from '../../../service/services/order.service';
+import { IdCodecService } from '../../common/id-codec.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Customer')
 export class CustomerResolver {

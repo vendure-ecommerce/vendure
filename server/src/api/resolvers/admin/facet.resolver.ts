@@ -11,19 +11,19 @@ import {
     Permission,
     UpdateFacetMutationArgs,
     UpdateFacetValuesMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError } from '../../common/error/errors';
-import { Translated } from '../../common/types/locale-types';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { Facet } from '../../entity/facet/facet.entity';
-import { FacetValueService } from '../../service/services/facet-value.service';
-import { FacetService } from '../../service/services/facet.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
+import { EntityNotFoundError } from '../../../common/error/errors';
+import { Translated } from '../../../common/types/locale-types';
+import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
+import { FacetValueService } from '../../../service/services/facet-value.service';
+import { FacetService } from '../../../service/services/facet.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Facet')
 export class FacetResolver {

@@ -9,13 +9,13 @@ import {
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneMutationArgs,
     ZoneQueryArgs,
-} from '../../../../shared/generated-types';
-import { Zone } from '../../entity/zone/zone.entity';
-import { ZoneService } from '../../service/services/zone.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { Zone } from '../../../entity/zone/zone.entity';
+import { ZoneService } from '../../../service/services/zone.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Zone')
 export class ZoneResolver {

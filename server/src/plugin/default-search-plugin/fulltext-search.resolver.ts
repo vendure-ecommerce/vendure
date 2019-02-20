@@ -5,7 +5,7 @@ import { Omit } from '../../../../shared/omit';
 import { RequestContext } from '../../api/common/request-context';
 import { Allow } from '../../api/decorators/allow.decorator';
 import { Ctx } from '../../api/decorators/request-context.decorator';
-import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/search.resolver';
+import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/admin/search.resolver';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity';
 

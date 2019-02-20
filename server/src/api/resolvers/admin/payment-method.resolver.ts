@@ -5,11 +5,11 @@ import {
     PaymentMethodsQueryArgs,
     Permission,
     UpdatePaymentMethodMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
-import { PaymentMethodService } from '../../service/services/payment-method.service';
-import { Allow } from '../decorators/allow.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { PaymentMethod } from '../../../entity/payment-method/payment-method.entity';
+import { PaymentMethodService } from '../../../service/services/payment-method.service';
+import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver('PaymentMethod')
 export class PaymentMethodResolver {

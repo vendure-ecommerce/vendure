@@ -5,12 +5,12 @@ import {
     Permission,
     TaxCategoryQueryArgs,
     UpdateTaxCategoryMutationArgs,
-} from '../../../../shared/generated-types';
-import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
-import { TaxCategoryService } from '../../service/services/tax-category.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
+import { TaxCategoryService } from '../../../service/services/tax-category.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('TaxCategory')
 export class TaxCategoryResolver {

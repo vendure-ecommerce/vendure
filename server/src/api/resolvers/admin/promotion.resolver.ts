@@ -8,13 +8,13 @@ import {
     PromotionQueryArgs,
     PromotionsQueryArgs,
     UpdatePromotionMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Promotion } from '../../entity/promotion/promotion.entity';
-import { PromotionService } from '../../service/services/promotion.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
+import { PromotionService } from '../../../service/services/promotion.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Promotion')
 export class PromotionResolver {

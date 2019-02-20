@@ -8,19 +8,19 @@ import {
     RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
     VerifyCustomerAccountMutationArgs,
-} from '../../../../shared/generated-types';
-import { VerificationTokenError } from '../../common/error/errors';
-import { ConfigService } from '../../config/config.service';
-import { User } from '../../entity/user/user.entity';
-import { AuthService } from '../../service/services/auth.service';
-import { ChannelService } from '../../service/services/channel.service';
-import { CustomerService } from '../../service/services/customer.service';
-import { UserService } from '../../service/services/user.service';
-import { extractAuthToken } from '../common/extract-auth-token';
-import { RequestContext } from '../common/request-context';
-import { setAuthToken } from '../common/set-auth-token';
-import { Allow } from '../decorators/allow.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { VerificationTokenError } from '../../../common/error/errors';
+import { ConfigService } from '../../../config/config.service';
+import { User } from '../../../entity/user/user.entity';
+import { AuthService } from '../../../service/services/auth.service';
+import { ChannelService } from '../../../service/services/channel.service';
+import { CustomerService } from '../../../service/services/customer.service';
+import { UserService } from '../../../service/services/user.service';
+import { extractAuthToken } from '../../common/extract-auth-token';
+import { RequestContext } from '../../common/request-context';
+import { setAuthToken } from '../../common/set-auth-token';
+import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Auth')
 export class AuthResolver {

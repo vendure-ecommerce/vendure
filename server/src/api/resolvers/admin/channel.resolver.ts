@@ -5,13 +5,13 @@ import {
     CreateChannelMutationArgs,
     Permission,
     UpdateChannelMutationArgs,
-} from '../../../../shared/generated-types';
-import { Channel } from '../../entity/channel/channel.entity';
-import { ChannelService } from '../../service/services/channel.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { ChannelService } from '../../../service/services/channel.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Channel')
 export class ChannelResolver {

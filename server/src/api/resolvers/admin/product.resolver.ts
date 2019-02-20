@@ -12,20 +12,20 @@ import {
     RemoveOptionGroupFromProductMutationArgs,
     UpdateProductMutationArgs,
     UpdateProductVariantsMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { Product } from '../../entity/product/product.entity';
-import { FacetValueService } from '../../service/services/facet-value.service';
-import { ProductVariantService } from '../../service/services/product-variant.service';
-import { ProductService } from '../../service/services/product.service';
-import { IdCodecService } from '../common/id-codec.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Translated } from '../../../common/types/locale-types';
+import { assertFound } from '../../../common/utils';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Product } from '../../../entity/product/product.entity';
+import { FacetValueService } from '../../../service/services/facet-value.service';
+import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ProductService } from '../../../service/services/product.service';
+import { IdCodecService } from '../../common/id-codec.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Product')
 export class ProductResolver {

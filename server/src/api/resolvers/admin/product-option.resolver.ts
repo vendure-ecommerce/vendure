@@ -6,16 +6,16 @@ import {
     ProductOptionGroupQueryArgs,
     ProductOptionGroupsQueryArgs,
     UpdateProductOptionGroupMutationArgs,
-} from '../../../../shared/generated-types';
-import { Translated } from '../../common/types/locale-types';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
-import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { ProductOptionGroupService } from '../../service/services/product-option-group.service';
-import { ProductOptionService } from '../../service/services/product-option.service';
-import { IdCodecService } from '../common/id-codec.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { Translated } from '../../../common/types/locale-types';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
+import { ProductOptionService } from '../../../service/services/product-option.service';
+import { IdCodecService } from '../../common/id-codec.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductOptionGroup')
 export class ProductOptionResolver {

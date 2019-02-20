@@ -1,11 +1,11 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
 
-import { Permission, SearchResponse } from '../../../../shared/generated-types';
-import { Omit } from '../../../../shared/omit';
-import { Allow } from '../../api/decorators/allow.decorator';
-import { InternalServerError } from '../../common/error/errors';
-import { Translated } from '../../common/types/locale-types';
-import { FacetValue } from '../../entity';
+import { Permission, SearchResponse } from '../../../../../shared/generated-types';
+import { Omit } from '../../../../../shared/omit';
+import { InternalServerError } from '../../../common/error/errors';
+import { Translated } from '../../../common/types/locale-types';
+import { FacetValue } from '../../../entity';
+import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
 export class SearchResolver {

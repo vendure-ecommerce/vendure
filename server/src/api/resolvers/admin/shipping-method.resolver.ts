@@ -7,11 +7,11 @@ import {
     ShippingMethodQueryArgs,
     ShippingMethodsQueryArgs,
     UpdateShippingMethodMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
-import { ShippingMethodService } from '../../service/services/shipping-method.service';
-import { Allow } from '../decorators/allow.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
+import { ShippingMethodService } from '../../../service/services/shipping-method.service';
+import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver('ShippingMethod')
 export class ShippingMethodResolver {

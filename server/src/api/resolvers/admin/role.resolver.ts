@@ -6,11 +6,11 @@ import {
     RoleQueryArgs,
     RolesQueryArgs,
     UpdateRoleMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Role } from '../../entity/role/role.entity';
-import { RoleService } from '../../service/services/role.service';
-import { Allow } from '../decorators/allow.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Role } from '../../../entity/role/role.entity';
+import { RoleService } from '../../../service/services/role.service';
+import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver('Roles')
 export class RoleResolver {

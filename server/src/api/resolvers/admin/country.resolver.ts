@@ -8,14 +8,14 @@ import {
     DeletionResponse,
     Permission,
     UpdateCountryMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Translated } from '../../common/types/locale-types';
-import { Country } from '../../entity/country/country.entity';
-import { CountryService } from '../../service/services/country.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Translated } from '../../../common/types/locale-types';
+import { Country } from '../../../entity/country/country.entity';
+import { CountryService } from '../../../service/services/country.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Country')
 export class CountryResolver {

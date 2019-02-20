@@ -7,18 +7,18 @@ import {
     ProductCategoriesQueryArgs,
     ProductCategoryQueryArgs,
     UpdateProductCategoryMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Translated } from '../../common/types/locale-types';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { ProductCategory } from '../../entity/product-category/product-category.entity';
-import { FacetValueService } from '../../service/services/facet-value.service';
-import { ProductCategoryService } from '../../service/services/product-category.service';
-import { IdCodecService } from '../common/id-codec.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Translated } from '../../../common/types/locale-types';
+import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { ProductCategory } from '../../../entity/product-category/product-category.entity';
+import { FacetValueService } from '../../../service/services/facet-value.service';
+import { ProductCategoryService } from '../../../service/services/product-category.service';
+import { IdCodecService } from '../../common/id-codec.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductCategory')
 export class ProductCategoryResolver {

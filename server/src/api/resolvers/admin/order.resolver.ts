@@ -15,21 +15,21 @@ import {
     SetOrderShippingMethodMutationArgs,
     ShippingMethodQuote,
     TransitionOrderToStateMutationArgs,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { ForbiddenError, InternalServerError } from '../../common/error/errors';
-import { idsAreEqual } from '../../common/utils';
-import { Order } from '../../entity/order/order.entity';
-import { OrderState } from '../../service/helpers/order-state-machine/order-state';
-import { AuthService } from '../../service/services/auth.service';
-import { CustomerService } from '../../service/services/customer.service';
-import { OrderService } from '../../service/services/order.service';
-import { ShippingMethodService } from '../../service/services/shipping-method.service';
-import { IdCodecService } from '../common/id-codec.service';
-import { RequestContext } from '../common/request-context';
-import { Allow } from '../decorators/allow.decorator';
-import { Decode } from '../decorators/decode.decorator';
-import { Ctx } from '../decorators/request-context.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
+import { idsAreEqual } from '../../../common/utils';
+import { Order } from '../../../entity/order/order.entity';
+import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
+import { AuthService } from '../../../service/services/auth.service';
+import { CustomerService } from '../../../service/services/customer.service';
+import { OrderService } from '../../../service/services/order.service';
+import { ShippingMethodService } from '../../../service/services/shipping-method.service';
+import { IdCodecService } from '../../common/id-codec.service';
+import { RequestContext } from '../../common/request-context';
+import { Allow } from '../../decorators/allow.decorator';
+import { Decode } from '../../decorators/decode.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Order')
 export class OrderResolver {

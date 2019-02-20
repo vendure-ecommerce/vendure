@@ -5,37 +5,28 @@ import {
     AssetsQueryArgs,
     CreateAssetsMutationArgs,
     Permission,
-} from '../../../../shared/generated-types';
-import { PaginatedList } from '../../../../shared/shared-types';
-import { Asset } from '../../entity/asset/asset.entity';
-import { AssetService } from '../../service/services/asset.service';
-import { Allow } from '../decorators/allow.decorator';
+} from '../../../../../shared/generated-types';
+import { PaginatedList } from '../../../../../shared/shared-types';
+import { Asset } from '../../../entity/asset/asset.entity';
+import { AssetService } from '../../../service/services/asset.service';
+import { Allow } from '../../decorators/allow.decorator';
 
-@Resolver('Assets')
+@Resolver('Asset')
 export class AssetResolver {
     constructor(private assetService: AssetService) {}
 
-    /**
-     * Returns a list of Assets
-     */
     @Query()
     @Allow(Permission.ReadCatalog)
     async asset(@Args() args: AssetQueryArgs): Promise<Asset | undefined> {
         return this.assetService.findOne(args.id);
     }
 
-    /**
-     * Returns a list of Assets
-     */
     @Query()
     @Allow(Permission.ReadCatalog)
     async assets(@Args() args: AssetsQueryArgs): Promise<PaginatedList<Asset>> {
         return this.assetService.findAll(args.options || undefined);
     }
 
-    /**
-     * Create a new Asset
-     */
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createAssets(@Args() args: CreateAssetsMutationArgs): Promise<Asset[]> {
