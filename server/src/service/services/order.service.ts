@@ -1,7 +1,8 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { CreateAddressInput, PaymentInput, ShippingMethodQuote } from '../../../../shared/generated-types';
+import { PaymentInput } from '../../../../shared/generated-shop-types';
+import { CreateAddressInput, ShippingMethodQuote } from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
@@ -45,7 +46,7 @@ export class OrderService {
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, { relations: ['lines', 'lines.productVariant', 'customer'] })
+            .build(Order, options, { relations: ['lines', 'customer', 'lines.productVariant'] })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
@@ -62,7 +63,6 @@ export class OrderService {
                 'lines',
                 'lines.productVariant',
                 'lines.productVariant.taxCategory',
-                'lines.productVariant.options',
                 'lines.featuredAsset',
                 'lines.items',
                 'lines.taxCategory',

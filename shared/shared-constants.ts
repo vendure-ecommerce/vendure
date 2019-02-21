@@ -2,8 +2,9 @@
  * This file contains constants which are shared between more than one sub-module
  * e.g. values required by both the server and admin-ui.
  */
-export const API_PORT = 5000;
-export const API_PATH = 'api';
+export const API_PORT = 3000;
+export const ADMIN_API_PATH = 'admin-api';
+export const SHOP_API_PATH = 'shop-api';
 export const DEFAULT_CHANNEL_CODE = '__default_channel__';
 export const SUPER_ADMIN_ROLE_CODE = '__super_admin_role__';
 export const SUPER_ADMIN_ROLE_DESCRIPTION = 'SuperAdmin';

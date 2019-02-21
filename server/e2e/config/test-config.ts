@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { API_PATH } from '../../../shared/shared-constants';
+import { ADMIN_API_PATH, SHOP_API_PATH } from '../../../shared/shared-constants';
 import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
 import { VendureConfig } from '../../src/config/vendure-config';
 
@@ -20,7 +20,8 @@ export const TEST_SETUP_TIMEOUT_MS = 120000;
  */
 export const testConfig: VendureConfig = {
     port: 3050,
-    apiPath: API_PATH,
+    adminApiPath: ADMIN_API_PATH,
+    shopApiPath: SHOP_API_PATH,
     cors: true,
     defaultChannelToken: 'e2e-default-channel',
     authOptions: {

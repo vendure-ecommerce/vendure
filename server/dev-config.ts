@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { API_PATH, API_PORT } from '../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../shared/shared-constants';
 
 import { examplePaymentHandler } from './src/config/payment-method/example-payment-method-config';
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
@@ -20,7 +20,8 @@ export const devConfig: VendureConfig = {
         requireVerification: false,
     },
     port: API_PORT,
-    apiPath: API_PATH,
+    adminApiPath: ADMIN_API_PATH,
+    shopApiPath: SHOP_API_PATH,
     dbConnectionOptions: {
         synchronize: false,
         logging: false,

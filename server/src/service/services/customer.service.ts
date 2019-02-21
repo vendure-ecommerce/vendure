@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
+import { RegisterCustomerInput } from '../../../../shared/generated-shop-types';
 import {
     CreateAddressInput,
     CreateCustomerInput,
     DeletionResponse,
     DeletionResult,
-    RegisterCustomerInput,
     UpdateAddressInput,
     UpdateCustomerInput,
 } from '../../../../shared/generated-types';

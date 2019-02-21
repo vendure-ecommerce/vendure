@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
     CreateProductOptionGroupMutationArgs,
@@ -9,10 +9,8 @@ import {
 } from '../../../../../shared/generated-types';
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -22,7 +20,6 @@ export class ProductOptionResolver {
     constructor(
         private productOptionGroupService: ProductOptionGroupService,
         private productOptionService: ProductOptionService,
-        private idCodecService: IdCodecService,
     ) {}
 
     @Query()
@@ -41,17 +38,6 @@ export class ProductOptionResolver {
         @Args() args: ProductOptionGroupQueryArgs,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(args.id, ctx.languageCode);
-    }
-
-    @ResolveProperty()
-    @Allow(Permission.ReadCatalog, Permission.Public)
-    async options(optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
-        if (optionGroup.options) {
-            return Promise.resolve(optionGroup.options);
-        }
-        const id = this.idCodecService.decode(optionGroup.id);
-        const group = await this.productOptionGroupService.findOne(id, optionGroup.languageCode);
-        return group ? group.options : [];
     }
 
     @Mutation()

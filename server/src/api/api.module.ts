@@ -34,6 +34,16 @@ import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolv
 import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
+import { CustomerEntityResolver } from './resolvers/entity/customer-entity.resolver';
+import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
+import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
+import { ProductCategoryEntityResolver } from './resolvers/entity/product-category-entity.resolver';
+import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
+import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
+import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
+import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
+import { ShopOrderResolver } from './resolvers/shop/shop-order.resolver';
+import { ShopProductsResolver } from './resolvers/shop/shop-products.resolver';
 
 const adminResolvers = [
     AdministratorResolver,
@@ -60,12 +70,30 @@ const adminResolvers = [
     ZoneResolver,
 ];
 
+const shopResolvers = [ShopAuthResolver, ShopCustomerResolver, ShopOrderResolver, ShopProductsResolver];
+
+const entityResolvers = [
+    CustomerEntityResolver,
+    OrderEntityResolver,
+    OrderLineEntityResolver,
+    ProductCategoryEntityResolver,
+    ProductEntityResolver,
+    ProductOptionGroupEntityResolver,
+];
+
 @Module({
     imports: [ServiceModule, DataImportModule],
-    providers: [IdCodecService, ...adminResolvers],
+    providers: [IdCodecService, ...adminResolvers, ...entityResolvers],
     exports: adminResolvers,
 })
 class AdminApiModule {}
+
+@Module({
+    imports: [ServiceModule],
+    providers: [IdCodecService, ...shopResolvers, ...entityResolvers],
+    exports: shopResolvers,
+})
+class ShopApiModule {}
 
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
@@ -77,8 +105,16 @@ class AdminApiModule {}
         ServiceModule,
         DataImportModule,
         AdminApiModule,
+        ShopApiModule,
         configureGraphQLModule(configService => ({
-            apiPath: configService.apiPath,
+            apiPath: configService.shopApiPath,
+            typePaths: ['type', 'shop-api', 'common'].map(p =>
+                path.join(__dirname, 'schema', p, '*.graphql'),
+            ),
+            resolverModule: ShopApiModule,
+        })),
+        configureGraphQLModule(configService => ({
+            apiPath: configService.adminApiPath,
             typePaths: ['type', 'admin-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
@@ -87,6 +123,7 @@ class AdminApiModule {}
         PluginModule,
     ],
     providers: [
+        ...entityResolvers,
         RequestContextService,
         IdCodecService,
         {

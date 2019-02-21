@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-20T18:08:35+01:00
+// Generated in 2019-02-21T12:58:38+01:00
 export type Maybe<T> = T | null;
 
 
@@ -621,19 +621,6 @@ export interface CreateAssetInput {
   file: Upload;
 }
 
-export interface RegisterCustomerInput {
-  
-  emailAddress: string;
-  
-  title?: Maybe<string>;
-  
-  firstName?: Maybe<string>;
-  
-  lastName?: Maybe<string>;
-  
-  password?: Maybe<string>;
-}
-
 export interface CreateChannelInput {
   
   code: string;
@@ -879,13 +866,6 @@ export interface UpdateGlobalSettingsInput {
   availableLanguages?: Maybe<LanguageCode[]>;
   
   customFields?: Maybe<Json>;
-}
-
-export interface PaymentInput {
-  
-  method: string;
-  
-  metadata: Json;
 }
 
 export interface UpdatePaymentMethodInput {
@@ -2887,10 +2867,16 @@ export namespace GetAvailableCountries {
   export type Query = {
     __typename?: "Query";
     
-    availableCountries: AvailableCountries[];
+    countries: Countries;
   }
 
-  export type AvailableCountries = {
+  export type Countries = {
+    __typename?: "CountryList";
+    
+    items: Items[];
+  } 
+
+  export type Items = {
     __typename?: "Country";
     
     id: string;
@@ -4465,8 +4451,6 @@ export interface Query {
   
   country?: Maybe<Country>;
   
-  availableCountries: Country[];
-  
   customerGroups: CustomerGroup[];
   
   customerGroup?: Maybe<CustomerGroup>;
@@ -4474,8 +4458,6 @@ export interface Query {
   customers: CustomerList;
   
   customer?: Maybe<Customer>;
-  
-  activeCustomer?: Maybe<Customer>;
   
   facets: FacetList;
   
@@ -4485,15 +4467,7 @@ export interface Query {
   
   order?: Maybe<Order>;
   
-  activeOrder?: Maybe<Order>;
-  
-  orderByCode?: Maybe<Order>;
-  
-  nextOrderStates: string[];
-  
   orders: OrderList;
-  
-  eligibleShippingMethods: ShippingMethodQuote[];
   
   paymentMethods: PaymentMethodList;
   
@@ -5235,16 +5209,6 @@ export interface ServerConfig {
 }
 
 
-export interface ShippingMethodQuote {
-  
-  id: string;
-  
-  price: number;
-  
-  description: string;
-}
-
-
 export interface PaymentMethodList extends PaginatedList {
   
   items: PaymentMethod[];
@@ -5558,12 +5522,6 @@ export interface Mutation {
   login: LoginResult;
   
   logout: boolean;
-  /** Register a Customer account with the given credentials */
-  registerCustomerAccount: boolean;
-  /** Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true. */
-  verifyCustomerAccount: LoginResult;
-  /** Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true. */
-  refreshCustomerVerification: boolean;
   /** Create a new Channel */
   createChannel: Channel;
   /** Update an existing Channel */
@@ -5608,22 +5566,6 @@ export interface Mutation {
   updateGlobalSettings: GlobalSettings;
   
   importProducts?: Maybe<ImportInfo>;
-  
-  addItemToOrder?: Maybe<Order>;
-  
-  removeItemFromOrder?: Maybe<Order>;
-  
-  adjustItemQuantity?: Maybe<Order>;
-  
-  transitionOrderToState?: Maybe<Order>;
-  
-  setOrderShippingAddress?: Maybe<Order>;
-  
-  setOrderShippingMethod?: Maybe<Order>;
-  
-  addPaymentToOrder?: Maybe<Order>;
-  
-  setCustomerForOrder?: Maybe<Order>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Create a new ProductCategory */
@@ -5731,6 +5673,16 @@ export interface SearchReindexResponse {
 }
 
 
+export interface ShippingMethodQuote {
+  
+  id: string;
+  
+  price: number;
+  
+  description: string;
+}
+
+
 
 // ====================================================
 // Arguments
@@ -5791,10 +5743,6 @@ export interface FacetQueryArgs {
 export interface OrderQueryArgs {
   
   id: string;
-}
-export interface OrderByCodeQueryArgs {
-  
-  code: string;
 }
 export interface OrdersQueryArgs {
   
@@ -5918,20 +5866,6 @@ export interface LoginMutationArgs {
   
   rememberMe?: Maybe<boolean>;
 }
-export interface RegisterCustomerAccountMutationArgs {
-  
-  input: RegisterCustomerInput;
-}
-export interface VerifyCustomerAccountMutationArgs {
-  
-  token: string;
-  
-  password: string;
-}
-export interface RefreshCustomerVerificationMutationArgs {
-  
-  emailAddress: string;
-}
 export interface CreateChannelMutationArgs {
   
   input: CreateChannelInput;
@@ -6031,42 +5965,6 @@ export interface UpdateGlobalSettingsMutationArgs {
 export interface ImportProductsMutationArgs {
   
   csvFile: Upload;
-}
-export interface AddItemToOrderMutationArgs {
-  
-  productVariantId: string;
-  
-  quantity: number;
-}
-export interface RemoveItemFromOrderMutationArgs {
-  
-  orderItemId: string;
-}
-export interface AdjustItemQuantityMutationArgs {
-  
-  orderItemId: string;
-  
-  quantity: number;
-}
-export interface TransitionOrderToStateMutationArgs {
-  
-  state: string;
-}
-export interface SetOrderShippingAddressMutationArgs {
-  
-  input: CreateAddressInput;
-}
-export interface SetOrderShippingMethodMutationArgs {
-  
-  shippingMethodId: string;
-}
-export interface AddPaymentToOrderMutationArgs {
-  
-  input: PaymentInput;
-}
-export interface SetCustomerForOrderMutationArgs {
-  
-  input: CreateCustomerInput;
 }
 export interface UpdatePaymentMethodMutationArgs {
   

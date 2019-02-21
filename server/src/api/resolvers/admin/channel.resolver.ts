@@ -30,7 +30,7 @@ export class ChannelResolver {
     }
 
     @Query()
-    @Allow(Permission.Public)
+    @Allow(Permission.Authenticated)
     async activeChannel(@Ctx() ctx: RequestContext): Promise<Channel> {
         return ctx.channel;
     }

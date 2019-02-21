@@ -1,7 +1,6 @@
 type Query {
     countries(options: CountryListOptions): CountryList!
     country(id: ID!): Country
-    availableCountries: [Country!]!
 }
 
 type Mutation {

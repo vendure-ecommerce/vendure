@@ -20,7 +20,7 @@ import { Allow } from '../../decorators/allow.decorator';
 import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
-@Resolver('ProductCategory')
+@Resolver()
 export class ProductCategoryResolver {
     constructor(
         private productCategoryService: ProductCategoryService,
@@ -29,7 +29,7 @@ export class ProductCategoryResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.Public)
+    @Allow(Permission.ReadCatalog)
     async productCategories(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoriesQueryArgs,
@@ -38,32 +38,12 @@ export class ProductCategoryResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.Public)
+    @Allow(Permission.ReadCatalog)
     async productCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoryQueryArgs,
     ): Promise<Translated<ProductCategory> | undefined> {
         return this.productCategoryService.findOne(ctx, args.id);
-    }
-
-    @ResolveProperty()
-    async descendantFacetValues(
-        @Ctx() ctx: RequestContext,
-        @Parent() category: ProductCategory,
-    ): Promise<Array<Translated<FacetValue>>> {
-        const categoryId = this.idCodecService.decode(category.id);
-        const descendants = await this.productCategoryService.getDescendants(ctx, categoryId);
-        return this.facetValueService.findByCategoryIds(ctx, descendants.map(d => d.id));
-    }
-
-    @ResolveProperty()
-    async ancestorFacetValues(
-        @Ctx() ctx: RequestContext,
-        @Parent() category: ProductCategory,
-    ): Promise<Array<Translated<FacetValue>>> {
-        const categoryId = this.idCodecService.decode(category.id);
-        const ancestors = await this.productCategoryService.getAncestors(categoryId, ctx);
-        return this.facetValueService.findByCategoryIds(ctx, ancestors.map(d => d.id));
     }
 
     @Mutation()

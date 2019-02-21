@@ -31,25 +31,6 @@ export class CountryResolver {
     }
 
     @Query()
-    @Allow(Permission.Public)
-    availableCountries(
-        @Ctx() ctx: RequestContext,
-        @Args() args: CountriesQueryArgs,
-    ): Promise<Array<Translated<Country>>> {
-        return this.countryService
-            .findAll(ctx, {
-                filter: {
-                    enabled: {
-                        eq: true,
-                    },
-                },
-                skip: 0,
-                take: 99999,
-            })
-            .then(data => data.items);
-    }
-
-    @Query()
     @Allow(Permission.ReadSettings)
     async country(
         @Ctx() ctx: RequestContext,

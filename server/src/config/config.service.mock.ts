@@ -8,7 +8,8 @@ export class MockConfigService implements MockClass<ConfigService> {
     authOptions: {};
     defaultChannelToken: 'channel-token';
     channelTokenKey: 'vendure-token';
-    apiPath = 'api';
+    adminApiPath = 'admin-api';
+    shopApiPath = 'shop-api';
     port = 3000;
     cors = false;
     defaultLanguageCode: jest.Mock<any>;

@@ -11,12 +11,12 @@ import { omit } from '../../shared/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
 describe('Role resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
     let createdRole: Role.Fragment;
     let defaultRoles: Role.Fragment[];

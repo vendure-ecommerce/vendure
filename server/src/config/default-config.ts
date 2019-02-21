@@ -1,5 +1,5 @@
 import { LanguageCode } from '../../../shared/generated-types';
-import { API_PATH, API_PORT } from '../../../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT } from '../../../shared/shared-constants';
 import { CustomFields } from '../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/types/common-types';
 
@@ -26,7 +26,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
     hostname: '',
-    port: API_PORT,
+    port: 3000,
     cors: {
         origin: true,
         credentials: true,
@@ -41,7 +41,8 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         requireVerification: true,
         verificationTokenDuration: '7d',
     },
-    apiPath: API_PATH,
+    adminApiPath: 'admin-api',
+    shopApiPath: 'shop-api',
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),

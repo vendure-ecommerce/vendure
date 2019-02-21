@@ -22,14 +22,14 @@ import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/p
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Promotion resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
 
     const promoCondition = generateTestCondition('promo_condition');

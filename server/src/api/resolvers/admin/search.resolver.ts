@@ -10,7 +10,7 @@ import { Allow } from '../../decorators/allow.decorator';
 @Resolver()
 export class SearchResolver {
     @Query()
-    @Allow(Permission.Public)
+    @Allow(Permission.ReadCatalog)
     async search(...args: any): Promise<Omit<SearchResponse, 'facetValues'>> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }

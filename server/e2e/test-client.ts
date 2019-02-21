@@ -5,16 +5,30 @@ import { testConfig } from './config/test-config';
 
 // tslint:disable:no-console
 /**
- * A GraphQL client for use in e2e tests configured to use the test server endpoint.
+ * A GraphQL client for use in e2e tests configured to use the test admin server endpoint.
  */
-export class TestClient extends SimpleGraphQLClient {
+export class TestAdminClient extends SimpleGraphQLClient {
     constructor() {
-        super(`http://localhost:${testConfig.port}/${testConfig.apiPath}`);
+        super(`http://localhost:${testConfig.port}/${testConfig.adminApiPath}`);
     }
 
     async init() {
         const token = await getDefaultChannelToken(false);
         this.setChannelToken(token);
         await this.asSuperAdmin();
+    }
+}
+
+/**
+ * A GraphQL client for use in e2e tests configured to use the test shop server endpoint.
+ */
+export class TestShopClient extends SimpleGraphQLClient {
+    constructor() {
+        super(`http://localhost:${testConfig.port}/${testConfig.shopApiPath}`);
+    }
+
+    async init() {
+        const token = await getDefaultChannelToken(false);
+        this.setChannelToken(token);
     }
 }

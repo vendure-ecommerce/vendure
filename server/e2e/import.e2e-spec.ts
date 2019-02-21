@@ -2,11 +2,11 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
 describe('Import resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
 
     beforeAll(async () => {

@@ -1,4 +1,4 @@
-import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
     AddOptionGroupToProductMutationArgs,
@@ -21,23 +21,21 @@ import { Product } from '../../../entity/product/product.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
-@Resolver('Product')
+@Resolver()
 export class ProductResolver {
     constructor(
         private productService: ProductService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
-        private idCodecService: IdCodecService,
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.Public)
+    @Allow(Permission.ReadCatalog)
     async products(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductsQueryArgs,
@@ -46,21 +44,12 @@ export class ProductResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.Public)
+    @Allow(Permission.ReadCatalog)
     async product(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductQueryArgs,
     ): Promise<Translated<Product> | undefined> {
         return this.productService.findOne(ctx, args.id);
-    }
-
-    @ResolveProperty()
-    async variants(
-        @Ctx() ctx: RequestContext,
-        @Parent() product: Product,
-    ): Promise<Array<Translated<ProductVariant>>> {
-        const productId = this.idCodecService.decode(product.id);
-        return this.productVariantService.getVariantsByProductId(ctx, productId);
     }
 
     @Mutation()

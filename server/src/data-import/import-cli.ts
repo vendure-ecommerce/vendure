@@ -37,7 +37,7 @@ async function getClient() {
     (config.dbConnectionOptions as any).logging = false;
     setConfig(config);
     const app = await bootstrap(config);
-    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.adminApiPath}`);
     client.setChannelToken(devConfig.defaultChannelToken || 'no-default-channel-token');
     await client.asSuperAdmin();
     return client;
