@@ -252,4 +252,57 @@ describe('generateListOptions()', () => {
                    }`),
         );
     });
+
+    it('generates ListOptions for nested list queries', () => {
+        const input = `
+               ${COMMON_TYPES}
+               type Query {
+                   people: PersonList
+               }
+
+               type Person {
+                   id: ID!
+                   orders(options: OrderListOptions): OrderList
+               }
+
+               type OrderList implements PaginatedList {
+                   items: [Order!]!
+                   totalItems: Int!
+               }
+
+               type Order {
+                   id: ID!
+                   code: String!
+               }
+
+               # Generated at runtime
+               input OrderListOptions
+           `;
+
+        const result = generateListOptions(buildSchema(input));
+
+        expect(printType(result.getType('OrderListOptions')!)).toBe(
+            removeLeadingWhitespace(`
+                   input OrderListOptions {
+                     skip: Int
+                     take: Int
+                     sort: OrderSortParameter
+                     filter: OrderFilterParameter
+                   }`),
+        );
+        expect(printType(result.getType('OrderSortParameter')!)).toBe(
+            removeLeadingWhitespace(`
+                   input OrderSortParameter {
+                     id: SortOrder
+                     code: SortOrder
+                   }`),
+        );
+
+        expect(printType(result.getType('OrderFilterParameter')!)).toBe(
+            removeLeadingWhitespace(`
+                   input OrderFilterParameter {
+                     code: StringOperators
+                   }`),
+        );
+    });
 });

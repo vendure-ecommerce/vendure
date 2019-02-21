@@ -28,57 +28,59 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
     if (!queryType) {
         return schema;
     }
-    const queries = queryType.getFields();
-    const { SortOrder, StringOperators, BooleanOperators, NumberOperators, DateOperators } = getCommonTypes(
-        schema,
+    const objectTypes = Object.values(schema.getTypeMap()).filter(isObjectType);
+    const allFields = objectTypes.reduce(
+        (fields, type) => {
+            const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
+            return [...fields, ...typeFields];
+        },
+        [] as Array<GraphQLField<any, any>>,
     );
     const generatedTypes: GraphQLNamedType[] = [];
 
-    for (const query of Object.values(queries)) {
-        const type = isNonNullType(query.type) ? query.type.ofType : query.type;
-        const isListQuery =
-            isObjectType(type) && !!type.getInterfaces().find(i => i.name === 'PaginatedList');
+    for (const query of allFields) {
+        const targetTypeName = unwrapNonNullType(query.type)
+            .toString()
+            .replace(/List$/, '');
+        const targetType = schema.getType(targetTypeName);
+        if (targetType && isObjectType(targetType)) {
+            const sortParameter = createSortParameter(schema, targetType);
+            const filterParameter = createFilterParameter(schema, targetType);
+            const existingListOptions = schema.getType(
+                `${targetTypeName}ListOptions`,
+            ) as GraphQLInputObjectType | null;
+            const generatedListOptions = new GraphQLInputObjectType({
+                name: `${targetTypeName}ListOptions`,
+                fields: {
+                    skip: { type: GraphQLInt },
+                    take: { type: GraphQLInt },
+                    sort: { type: sortParameter },
+                    filter: { type: filterParameter },
+                    ...(existingListOptions ? existingListOptions.getFields() : {}),
+                },
+            });
+            let listOptionsInput: GraphQLInputObjectType;
 
-        if (isListQuery) {
-            const targetTypeName = type.toString().replace(/List$/, '');
-            const targetType = schema.getType(targetTypeName);
-            if (targetType && isObjectType(targetType)) {
-                const sortParameter = createSortParameter(schema, targetType);
-                const filterParameter = createFilterParameter(schema, targetType);
-                const existingListOptions = schema.getType(
-                    `${targetTypeName}ListOptions`,
-                ) as GraphQLInputObjectType | null;
-                const generatedListOptions = new GraphQLInputObjectType({
-                    name: `${targetTypeName}ListOptions`,
-                    fields: {
-                        skip: { type: GraphQLInt },
-                        take: { type: GraphQLInt },
-                        sort: { type: sortParameter },
-                        filter: { type: filterParameter },
-                        ...(existingListOptions ? existingListOptions.getFields() : {}),
-                    },
+            listOptionsInput = generatedListOptions;
+
+            if (!query.args.find(a => a.type.toString() === `${targetTypeName}ListOptions`)) {
+                query.args.push({
+                    name: 'options',
+                    type: listOptionsInput,
                 });
-                let listOptionsInput: GraphQLInputObjectType;
-                if (existingListOptions) {
-                    generatedTypes.push(existingListOptions);
-                }
-
-                listOptionsInput = generatedListOptions;
-
-                if (!query.args.find(a => a.type.toString() === `${targetTypeName}ListOptions`)) {
-                    query.args.push({
-                        name: 'options',
-                        type: listOptionsInput,
-                    });
-                }
-
-                generatedTypes.push(filterParameter);
-                generatedTypes.push(sortParameter);
-                generatedTypes.push(listOptionsInput);
             }
+
+            generatedTypes.push(filterParameter);
+            generatedTypes.push(sortParameter);
+            generatedTypes.push(listOptionsInput);
         }
     }
     return mergeSchemas({ schemas: [schema, generatedTypes] });
+}
+
+function isListQueryType(type: GraphQLOutputType): type is GraphQLObjectType {
+    const innerType = unwrapNonNullType(type);
+    return isObjectType(innerType) && !!innerType.getInterfaces().find(i => i.name === 'PaginatedList');
 }
 
 function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectType) {
