@@ -69,7 +69,9 @@ async function runPluginConfigurations(
     config: ReadOnlyRequired<VendureConfig>,
 ): Promise<ReadOnlyRequired<VendureConfig>> {
     for (const plugin of config.plugins) {
-        config = (await plugin.configure(config)) as ReadOnlyRequired<VendureConfig>;
+        if (plugin.configure) {
+            config = (await plugin.configure(config)) as ReadOnlyRequired<VendureConfig>;
+        }
     }
     return config;
 }
@@ -77,7 +79,7 @@ async function runPluginConfigurations(
 /**
  * Run the onBootstrap() method of any configured plugins.
  */
-async function runPluginOnBootstrapMethods(
+export async function runPluginOnBootstrapMethods(
     config: ReadOnlyRequired<VendureConfig>,
     app: INestApplication,
 ): Promise<void> {

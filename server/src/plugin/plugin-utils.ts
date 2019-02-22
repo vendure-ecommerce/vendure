@@ -1,5 +1,8 @@
 import proxy from 'http-proxy-middleware';
 
+import { notNullOrUndefined } from '../../../shared/shared-utils';
+import { APIExtensionDefinition, VendurePlugin } from '../config';
+
 export interface ProxyOptions {
     route: string;
     port: number;
@@ -21,4 +24,19 @@ export function createProxyHandler(options: ProxyOptions, logging: boolean) {
         },
         logLevel: logging ? 'info' : 'silent',
     });
+}
+
+/**
+ * Given an array of VendurePlugins, returns a flattened array of all APIExtensionDefinitions.
+ */
+export function getPluginAPIExtensions(
+    plugins: VendurePlugin[],
+    apiType: 'shop' | 'admin',
+): APIExtensionDefinition[] {
+    const extensions =
+        apiType === 'shop'
+            ? plugins.map(p => (p.extendShopAPI ? p.extendShopAPI() : undefined))
+            : plugins.map(p => (p.extendAdminAPI ? p.extendAdminAPI() : undefined));
+
+    return extensions.filter(notNullOrUndefined);
 }

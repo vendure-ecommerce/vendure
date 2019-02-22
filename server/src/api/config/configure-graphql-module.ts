@@ -10,12 +10,14 @@ import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
+import { getPluginAPIExtensions } from '../../plugin/plugin-utils';
 import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
 import { generateListOptions } from './generate-list-options';
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 
 export interface GraphQLApiOptions {
+    apiType: 'shop' | 'admin';
     typePaths: string[];
     apiPath: string;
     // tslint:disable-next-line:ban-types
@@ -57,7 +59,7 @@ function createGraphQLOptions(
 
     return {
         path: '/' + options.apiPath,
-        typeDefs: createTypeDefs(),
+        typeDefs: createTypeDefs(options.apiType),
         include: [options.resolverModule],
         resolvers: {
             JSON: GraphQLJSON,
@@ -83,16 +85,17 @@ function createGraphQLOptions(
      * 2. any custom fields defined in the config
      * 3. any schema extensions defined by plugins
      */
-    function createTypeDefs(): string {
+    function createTypeDefs(apiType: 'shop' | 'admin'): string {
         const customFields = configService.customFields;
         const typeDefs = typesLoader.mergeTypesByPaths(...options.typePaths);
         let schema = generateListOptions(typeDefs);
         schema = addGraphQLCustomFields(schema, customFields);
-        const pluginTypes = configService.plugins
-            .map(p => (p.defineGraphQlTypes ? p.defineGraphQlTypes() : undefined))
-            .filter(notNullOrUndefined);
-        for (const types of pluginTypes) {
-            schema = extendSchema(schema, types);
+        const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType).map(
+            e => e.schema,
+        );
+
+        for (const documentNode of pluginSchemaExtensions) {
+            schema = extendSchema(schema, documentNode);
         }
         return printSchema(schema);
     }

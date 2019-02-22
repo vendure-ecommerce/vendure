@@ -13,6 +13,32 @@ export type InjectorFn = <T>(type: Type<T>) => T;
 
 /**
  * @description
+ * An object which allows a plugin to extend the Vendure GraphQL API.
+ */
+export interface APIExtensionDefinition {
+    /**
+     * @description
+     * The schema extensions.
+     *
+     * @example
+     * ```TypeScript
+     * const schema = gql`extend type SearchReindexResponse {
+     *     timeTaken: Int!
+     *     indexedItemCount: Int!
+     * }`;
+     * ```
+     */
+    schema: DocumentNode;
+    /**
+     * @description
+     * An array of resolvers for the schema extensions. Should be defined as Nest GraphQL resolver
+     * classes, i.e. using the Nest `@Resolver()` decorator etc.
+     */
+    resolvers: Array<Type<any>>;
+}
+
+/**
+ * @description
  * A VendurePlugin is a means of configuring and/or extending the functionality of the Vendure server. In its simplest form,
  * a plugin simply modifies the VendureConfig object. Although such configuration can be directly supplied to the bootstrap
  * function, using a plugin allows one to abstract away a set of related configuration.
@@ -28,7 +54,7 @@ export interface VendurePlugin {
      * This method is called before the app bootstraps, and can modify the VendureConfig object and perform
      * other (potentially async) tasks needed.
      */
-    configure(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
+    configure?(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
 
     /**
      * @description
@@ -40,9 +66,17 @@ export interface VendurePlugin {
 
     /**
      * @description
-     * The plugin may extend the default Vendure GraphQL schema by implementing this method.
+     * The plugin may extend the default Vendure GraphQL shop api by implementing this method and providing extended
+     * schema definitions and any required resolvers.
      */
-    defineGraphQlTypes?(): DocumentNode;
+    extendShopAPI?(): APIExtensionDefinition;
+
+    /**
+     * @description
+     * The plugin may extend the default Vendure GraphQL admin api by implementing this method and providing extended
+     * schema definitions and any required resolvers.
+     */
+    extendAdminAPI?(): APIExtensionDefinition;
 
     /**
      * @description

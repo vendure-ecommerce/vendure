@@ -7,7 +7,7 @@ import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOpti
 
 import { Omit } from '../../shared/omit';
 import { populate, PopulateOptions } from '../mock-data/populate';
-import { preBootstrapConfig } from '../src/bootstrap';
+import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
 import { VendureConfig } from '../src/config/vendure-config';
 
@@ -91,6 +91,7 @@ export class TestServer {
         const config = await preBootstrapConfig(userConfig);
         const appModule = await import('../src/app.module');
         const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
+        await runPluginOnBootstrapMethods(config, app);
         await app.listen(config.port);
         return app;
     }

@@ -8,7 +8,7 @@ import { ServiceModule } from '../service/service.module';
 
 import { IdCodecService } from './common/id-codec.service';
 import { RequestContextService } from './common/request-context.service';
-import { configureGraphQLModule } from './config/graphql-config.service';
+import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AssetInterceptor } from './middleware/asset-interceptor';
 import { AuthGuard } from './middleware/auth-guard';
 import { IdInterceptor } from './middleware/id-interceptor';
@@ -82,15 +82,15 @@ const entityResolvers = [
 ];
 
 @Module({
-    imports: [ServiceModule, DataImportModule],
-    providers: [IdCodecService, ...adminResolvers, ...entityResolvers],
+    imports: [PluginModule, ServiceModule, DataImportModule],
+    providers: [IdCodecService, ...adminResolvers, ...entityResolvers, ...PluginModule.adminApiResolvers()],
     exports: adminResolvers,
 })
 class AdminApiModule {}
 
 @Module({
-    imports: [ServiceModule],
-    providers: [IdCodecService, ...shopResolvers, ...entityResolvers],
+    imports: [PluginModule, ServiceModule],
+    providers: [IdCodecService, ...shopResolvers, ...entityResolvers, ...PluginModule.shopApiResolvers()],
     exports: shopResolvers,
 })
 class ShopApiModule {}
@@ -107,6 +107,7 @@ class ShopApiModule {}
         AdminApiModule,
         ShopApiModule,
         configureGraphQLModule(configService => ({
+            apiType: 'shop',
             apiPath: configService.shopApiPath,
             typePaths: ['type', 'shop-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
@@ -114,13 +115,13 @@ class ShopApiModule {}
             resolverModule: ShopApiModule,
         })),
         configureGraphQLModule(configService => ({
+            apiType: 'admin',
             apiPath: configService.adminApiPath,
             typePaths: ['type', 'admin-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
             resolverModule: AdminApiModule,
         })),
-        PluginModule,
     ],
     providers: [
         ...entityResolvers,
