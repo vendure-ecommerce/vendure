@@ -68,28 +68,28 @@ The `@Injectable()` decorator is part of the underlying [Nest framework](https:/
 To use decorators with TypeScript, you must set the "emitDecoratorMetadata" and "experimentalDecorators" compiler options to `true` in your tsconfig.json file.
 {{% /alert %}}
 
-### Step 3: Extend the GraphQL API
+### Step 3: Define the new mutation
 
-Next we will extend the Vendure GraphQL API to add our new mutation. This is done by implementing the [`defineGraphQlTypes` method](({{< relref "vendure-plugin" >}}#definegraphqltypes)) in our plugin.
+Next we will define how the GraphQL API should be extended:
 
 ```ts 
 import gql from 'graphql-tag';
 
 export class RandomCatPlugin implements VendurePlugin {
 
+    private schemaExtension = gql`
+        extend type Mutation {
+            addRandomCat(id: ID!): Product!
+        }
+    `;
+
     configure(config) {
         // as above
     }
-
-    defineGraphQlTypes() {
-        return gql`
-            extend type Mutation {
-                addRandomCat(id: ID!): Product!
-            }
-        `;
-    }
 }
 ```
+
+We will use this private `schemaExtension` variable in a later step.
 
 ### Step 4: Create a resolver
 
@@ -121,32 +121,44 @@ Some explanations of this code are in order:
 * The `@Resolver()` decorator tells Nest that this class contains GraphQL resolvers.
 * We are able to use Nest's dependency injection to inject an instance of our `CatFetcher` class into the constructor of the resolver. We are also injecting an instance of the built-in `ProductService` class, which is responsible for operations on Products.
 * We use the `@Mutation()` decorator to mark this method as a resolver for a mutation with the corresponding name.
-* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "enums" >}}#permission).
+* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "../graphql-api/admin/enums" >}}#permission).
 * The `@Ctx()` decorator injects the current `RequestContext` into the resolver. This provides information about the current request such as the current Session, User and Channel. It is required by most of the internal service methods.
 * The `@Args()` decorator injects the arguments passed to the mutation as an object.
 
-### Step 5: Export the providers
+### Step 5: Export any providers used in the resolver
 
-In order that the Vendure server (and the underlying Nest framework) is able to use the `CatFetcher` and `RandomCatResolver` classes, we must export them via the [`defineProviders` method](({{< relref "vendure-plugin" >}}#defineproviders)) in our plugin:
+In order that out resolver is able to use Nest's dependency injection to inject and instance of `CatFetcher`, we must export it via the [`defineProviders` method](({{< relref "vendure-plugin" >}}#defineproviders)) in our plugin:
 
 ```ts 
 export class RandomCatPlugin implements VendurePlugin {
 
-    configure(config) {
-        // as above
-    }
-
-    defineGraphQlTypes() {
-        // as above
-    }
+    // ...
 
     defineProviders() {
-        return [CatFetcher, RandomCatResolver];
+        return [CatFetcher];
     }
 }
 ```
 
-### Step 6: Add the plugin to the Vendure config
+### Step 6: Extend the GraphQL API
+
+Now that we've defined the new mutation and we have a resolver capable of handling it, we just need to tell Vendure to extend the API. This is done with the [`extendAdminAPI` method]({{< relref "vendure-plugin" >}}#extendadminapi). If we wanted to extend the Shop API, we'd use the [`extendShopAPI` method]({{< relref "vendure-plugin" >}}#extendshopapi) method instead.
+
+```ts 
+export class RandomCatPlugin implements VendurePlugin {
+
+    // ...
+    
+    extendAdminAPI() {
+        return {
+            schema: this.schemaExtension,
+            resolvers: [RandomCatResolver],
+        };
+    }
+}
+```
+
+### Step 7: Add the plugin to the Vendure config
 
 Finally we need to add an instance of our plugin to the config object with which we bootstrap out Vendure server:
 
@@ -161,9 +173,9 @@ bootstrap({
 });
 ```
 
-### Step 7: Test the plugin
+### Step 8: Test the plugin
 
-Once we have started the Vendure server with the new config, we should be able to send the following GraphQL query:
+Once we have started the Vendure server with the new config, we should be able to send the following GraphQL query to the Admin API:
 
 ```GraphQL
 mutation {
@@ -203,6 +215,13 @@ import http from 'http';
 import { Allow, Ctx, Permission, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
 
 export class RandomCatPlugin implements VendurePlugin {
+
+    private schemaExtension = gql`
+        extend type Mutation {
+            addRandomCat(id: ID!): Product!
+        }
+    `;
+
     configure(config: Required<VendureConfig>) {
         config.customFields.Product.push({
             type: 'string',
@@ -211,16 +230,15 @@ export class RandomCatPlugin implements VendurePlugin {
         return config;
     }
 
-    defineGraphQlTypes() {
-        return gql`
-            extend type Mutation {
-                addRandomCat(id: ID!): Product!
-            }
-        `;
+    defineProviders() {
+        return [CatFetcher];
     }
 
-    defineProviders() {
-        return [CatFetcher, RandomCatResolver];
+    extendAdminAPI() {
+        return {
+            schema: this.schemaExtension,
+            resolvers: [RandomCatResolver],
+        };
     }
 }
 

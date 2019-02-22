@@ -14,7 +14,9 @@ export type InjectorFn = <T>(type: Type<T>) => T;
 /**
  * @description
  * An object which allows a plugin to extend the Vendure GraphQL API.
- */
+ *
+ * @docsCategory plugin
+ * */
 export interface APIExtensionDefinition {
     /**
      * @description

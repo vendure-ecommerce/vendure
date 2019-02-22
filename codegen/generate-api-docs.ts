@@ -18,12 +18,16 @@ import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
 
 // tslint:disable:no-console
 
+type TargetApi = 'shop' | 'admin';
+
+const targetApi: TargetApi = getTargetApiFromArgs();
+
 // The path to the introspection schema json file
-const SCHEMA_FILE = path.join(__dirname, '../schema.json');
+const SCHEMA_FILE = path.join(__dirname, `../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
-const docsUrl = '/docs/graphql-api/';
+const docsUrl = `/docs/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
-const outputPath = path.join(__dirname, '../docs/content/docs/graphql-api');
+const outputPath = path.join(__dirname, `../docs/content/docs/graphql-api/${targetApi}`);
 
 const enum FileName {
     ENUM = 'enums',
@@ -35,7 +39,7 @@ const enum FileName {
 
 const schemaJson = fs.readFileSync(SCHEMA_FILE, 'utf8');
 const parsed = JSON.parse(schemaJson);
-const schema = buildClientSchema(parsed.data);
+const schema = buildClientSchema(parsed.data ? parsed.data : parsed);
 
 deleteGeneratedDocs(outputPath);
 generateApiDocs(outputPath);
@@ -57,6 +61,9 @@ function generateApiDocs(hugoOutputPath: string) {
         if (isObjectType(type)) {
             if (type.name === 'Query') {
                 for (const field of Object.values(type.getFields())) {
+                    if (field.name === 'temp__') {
+                        continue;
+                    }
                     queriesOutput += `## ${field.name}\n`;
                     queriesOutput += renderDescription(field);
                     queriesOutput += renderFields([field], false) + '\n\n';
@@ -171,4 +178,14 @@ function unwrapType(type: GraphQLType): GraphQLNamedType {
         innerType = innerType.ofType;
     }
     return innerType;
+}
+
+function getTargetApiFromArgs(): TargetApi {
+    const apiArg = process.argv.find(arg => /--api=(shop|admin)/.test(arg));
+    if (!apiArg) {
+        console.error(`\nPlease specify which GraphQL API to generate docs for: --api=<shop|admin>\n`);
+        process.exit(1);
+        return null as never;
+    }
+    return apiArg === '--api=shop' ? 'shop' : 'admin';
 }
