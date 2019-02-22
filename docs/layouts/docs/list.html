@@ -1,5 +1,6 @@
 {{ define "main" }}
 <article class="markdown">
+    {{ partial "breadcrumbs" . }}
     {{- .Content -}}
     {{ $list := .Sections }}
     {{ $list = $list | append .Pages }}

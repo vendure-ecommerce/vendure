@@ -4,7 +4,7 @@ weight: 3
 showtoc: false
 ---
 
-# GraphQL API Docs
+# GraphQL API 
 
 This section contains a description of all queries, mutations and related types available in the Vendure GraphQL API.
 
@@ -12,3 +12,4 @@ The API is split into two distinct endpoints: *Shop* and *Admin*. The Shop API i
 {{% alert %}}
 All documentation in this section is auto-generated from the Vendure GraphQL schema.
 {{% /alert %}}
+

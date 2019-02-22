@@ -1,4 +1,3 @@
-@import "~@clr/icons/clr-icons.css";
 @import "variables";
 @import "markdown";
 @import "utils";
@@ -8,6 +7,7 @@
 @import "shortcodes";
 @import "syntax";
 @import "search-widget";
+@import "breadcrumbs";
 @import "blog";
 
 html {
@@ -124,7 +124,7 @@ ul.contents-list {
     min-width: $body-min-width;
     min-height: 80vh;
     flex: 1;
-    padding: $padding-16;
+    padding: $padding-16 * 1.6;
 }
 
 .book-header {
@@ -284,11 +284,6 @@ aside nav,
 
 // Extra space for big screens
 @media screen and (min-width: $container-max-width) {
-    .book-page,
-    .book-menu nav,
-    .book-toc nav {
-        padding: $padding-16 * 2 $padding-16;
-    }
     .book-menu nav {
         padding-top: $padding-16;
     }

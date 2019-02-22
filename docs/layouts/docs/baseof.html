@@ -3,36 +3,36 @@
 <html>
 
 <head>
-  {{ partial "docs/html-head" . }}
+    {{ partial "docs/html-head" . }}
 </head>
 
 <body>
-  <input type="checkbox" style="display: none" id="menu-control" />
-  <main class="flex container">
+<input type="checkbox" style="display: none" id="menu-control" />
+<main class="flex container">
 
     <aside class="book-menu fixed">
-      <nav role="navigation">
-        {{ if .Site.Params.BookMenuBundle }}
-          {{ partial "docs/menu-bundle" . }}
-        {{ else }}
-          {{ partial "docs/menu-filetree" . }}
-        {{ end }}
-      </nav>
+        <nav role="navigation">
+            {{ if .Site.Params.BookMenuBundle }}
+            {{ partial "docs/menu-bundle" . }}
+            {{ else }}
+            {{ partial "docs/menu-filetree" . }}
+            {{ end }}
+        </nav>
     </aside>
 
     <div class="book-page">
-      {{ partial "docs/mobile-header" . }}
-      {{ template "main" . }}
-      <div class="book-footer">
+        {{ partial "docs/mobile-header" . }}
+        {{ template "main" . }}
+        <div class="book-footer">
 
-      </div>
+        </div>
     </div>
 
     {{ template "toc" . }}
-  </main>
+</main>
 
-  {{ partial "top-bar" (dict "isDocsPage" true) }}
-  {{ template "_internal/google_analytics_async.html" . }}
+{{ partial "top-bar" (dict "isDocsPage" true) }}
+{{ template "_internal/google_analytics_async.html" . }}
 </body>
 
 </html>
