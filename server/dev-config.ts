@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { API_PATH, API_PORT } from '../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../shared/shared-constants';
 
 import { examplePaymentHandler } from './src/config/payment-method/example-payment-method-config';
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
@@ -17,30 +17,31 @@ export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
         sessionSecret: 'some-secret',
+        requireVerification: false,
     },
     port: API_PORT,
-    apiPath: API_PATH,
+    adminApiPath: ADMIN_API_PATH,
+    shopApiPath: SHOP_API_PATH,
     dbConnectionOptions: {
-        synchronize: true,
+        synchronize: false,
         logging: false,
 
-        // type: 'mysql',
-        // host: '192.168.99.100',
-        // port: 3306,
-        // username: 'root',
-        // password: '',
-        // database: 'vendure-dev',
+        type: 'mysql',
+        host: '192.168.99.100',
+        port: 3306,
+        username: 'root',
+        password: '',
+        database: 'vendure-dev',
 
-        // type: 'sqljs',
-        // database: new Uint8Array([]),
-        // location:  path.join(__dirname, 'vendure.sqlite'),
+        // type: 'sqlite',
+        // database:  path.join(__dirname, 'vendure.sqlite'),
 
-        type: 'postgres',
-        host: '127.0.0.1',
-        port: 5432,
-        username: 'postgres',
-        password: 'Be70',
-        database: 'vendure',
+        // type: 'postgres',
+        // host: '127.0.0.1',
+        // port: 5432,
+        // username: 'postgres',
+        // password: 'Be70',
+        // database: 'vendure',
     },
     orderProcessOptions: {} as OrderProcessOptions<any>,
     paymentOptions: {
@@ -64,11 +65,11 @@ export const devConfig: VendureConfig = {
         new DefaultAssetServerPlugin({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
-            port: 3002,
+            port: 5002,
         }),
         new DefaultSearchPlugin(),
         new AdminUiPlugin({
-            port: 3001,
+            port: 5001,
         }),
     ],
 };

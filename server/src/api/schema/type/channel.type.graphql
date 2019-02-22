@@ -1,0 +1,12 @@
+type Channel implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    code: String!
+    token: String!
+    defaultTaxZone: Zone
+    defaultShippingZone: Zone
+    defaultLanguageCode: LanguageCode!
+    currencyCode: CurrencyCode!
+    pricesIncludeTax: Boolean!
+}

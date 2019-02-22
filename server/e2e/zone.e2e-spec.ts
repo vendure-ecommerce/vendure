@@ -20,13 +20,13 @@ import {
 } from '../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
     let countries: GetCountryList.Items[];
     let zones: Array<{ id: string; name: string }>;

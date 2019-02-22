@@ -8,8 +8,11 @@ import { assertNever } from '../../../../shared/shared-utils';
  * types with a customFields property for all entities, translations and inputs for which
  * custom fields are defined.
  */
-export function addGraphQLCustomFields(typeDefs: string, customFieldConfig: CustomFields): GraphQLSchema {
-    const schema = buildSchema(typeDefs);
+export function addGraphQLCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    customFieldConfig: CustomFields,
+): GraphQLSchema {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
 
     let customFieldTypeDefs = '';
 

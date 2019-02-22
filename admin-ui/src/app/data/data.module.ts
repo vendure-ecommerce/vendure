@@ -7,7 +7,7 @@ import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { withClientState } from 'apollo-link-state';
 import { createUploadLink } from 'apollo-upload-client';
-import { API_PATH } from 'shared/shared-constants';
+import { ADMIN_API_PATH } from 'shared/shared-constants';
 
 import { environment } from '../../environments/environment';
 import { API_URL } from '../app.config';
@@ -54,7 +54,7 @@ export function createApollo(
                 }
             }),
             createUploadLink({
-                uri: `${API_URL}/${API_PATH}`,
+                uri: `${API_URL}/${ADMIN_API_PATH}`,
                 fetch: fetchAdapter.fetch,
             }),
         ]),

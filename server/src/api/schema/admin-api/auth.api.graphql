@@ -1,0 +1,8 @@
+type Query {
+    me: CurrentUser
+}
+
+type Mutation {
+    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    logout: Boolean!
+}

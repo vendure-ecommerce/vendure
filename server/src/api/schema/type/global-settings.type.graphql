@@ -1,0 +1,11 @@
+type GlobalSettings {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    availableLanguages: [LanguageCode!]!
+    serverConfig: ServerConfig!
+}
+
+type ServerConfig {
+    customFields: JSON
+}

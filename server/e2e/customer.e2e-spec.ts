@@ -19,14 +19,15 @@ import {
 import { omit } from '../../shared/omit';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Customer resolver', () => {
-    const client = new TestClient();
+    const adminClient = new TestAdminClient();
+    const shopClient = new TestShopClient();
     const server = new TestServer();
     let firstCustomer: GetCustomerList.Items;
     let secondCustomer: GetCustomerList.Items;
@@ -37,7 +38,7 @@ describe('Customer resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 5,
         });
-        await client.init();
+        await adminClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -45,7 +46,7 @@ describe('Customer resolver', () => {
     });
 
     it('customers list', async () => {
-        const result = await client.query<GetCustomerList.Query, GetCustomerList.Variables>(
+        const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
             GET_CUSTOMER_LIST,
         );
 
@@ -63,7 +64,7 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws on invalid countryCode',
             assertThrowsWithMessage(
                 () =>
-                    client.query(CREATE_ADDRESS, {
+                    adminClient.query(CREATE_ADDRESS, {
                         id: firstCustomer.id,
                         input: {
                             streetLine1: 'streetLine1',
@@ -75,7 +76,7 @@ describe('Customer resolver', () => {
         );
 
         it('createCustomerAddress creates a new address', async () => {
-            const result = await client.query(CREATE_ADDRESS, {
+            const result = await adminClient.query(CREATE_ADDRESS, {
                 id: firstCustomer.id,
                 input: {
                     fullName: 'fullName',
@@ -110,7 +111,7 @@ describe('Customer resolver', () => {
         });
 
         it('customer query returns addresses', async () => {
-            const result = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
 
@@ -120,7 +121,7 @@ describe('Customer resolver', () => {
 
         it('updateCustomerAddress allows only a single default address', async () => {
             // set the first customer's second address to be default
-            const result1 = await client.query(UPDATE_ADDRESS, {
+            const result1 = await adminClient.query(UPDATE_ADDRESS, {
                 input: {
                     id: firstCustomerAddressIds[1],
                     defaultShippingAddress: true,
@@ -131,14 +132,14 @@ describe('Customer resolver', () => {
             expect(result1.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assert the first customer's first address is not default
-            const result2 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result2 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             expect(result2.customer!.addresses![0].defaultShippingAddress).toBe(false);
             expect(result2.customer!.addresses![0].defaultBillingAddress).toBe(false);
 
             // set the first customer's first address to be default
-            const result3 = await client.query(UPDATE_ADDRESS, {
+            const result3 = await adminClient.query(UPDATE_ADDRESS, {
                 input: {
                     id: firstCustomerAddressIds[0],
                     defaultShippingAddress: true,
@@ -149,20 +150,20 @@ describe('Customer resolver', () => {
             expect(result3.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assert the first customer's second address is not default
-            const result4 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result4 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             expect(result4.customer!.addresses![1].defaultShippingAddress).toBe(false);
             expect(result4.customer!.addresses![1].defaultBillingAddress).toBe(false);
 
             // get the second customer's address id
-            const result5 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result5 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: secondCustomer.id,
             });
             const secondCustomerAddressId = result5.customer!.addresses![0].id;
 
             // set the second customer's address to be default
-            const result6 = await client.query(UPDATE_ADDRESS, {
+            const result6 = await adminClient.query(UPDATE_ADDRESS, {
                 input: {
                     id: secondCustomerAddressId,
                     defaultShippingAddress: true,
@@ -173,7 +174,7 @@ describe('Customer resolver', () => {
             expect(result6.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assets the first customer's address defaults are unchanged
-            const result7 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result7 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             expect(result7.customer!.addresses![0].defaultShippingAddress).toBe(true);
@@ -183,7 +184,7 @@ describe('Customer resolver', () => {
         });
 
         it('createCustomerAddress with true defaults unsets existing defaults', async () => {
-            const result1 = await client.query(CREATE_ADDRESS, {
+            const result1 = await adminClient.query(CREATE_ADDRESS, {
                 id: firstCustomer.id,
                 input: {
                     streetLine1: 'new default streetline',
@@ -209,7 +210,7 @@ describe('Customer resolver', () => {
                 defaultBillingAddress: true,
             });
 
-            const result2 = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result2 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             expect(result2.customer!.addresses![0].defaultShippingAddress).toBe(false);
@@ -224,16 +225,14 @@ describe('Customer resolver', () => {
     describe('orders', () => {
         it(`lists that user\'s orders`, async () => {
             // log in as first customer
-            await client.asUserWithCredentials(firstCustomer.emailAddress, 'test');
+            await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
-            const result1 = await client.query(ADD_ITEM_TO_ORDER, {
+            const result1 = await shopClient.query(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
-            await client.asSuperAdmin();
-
-            const result2 = await client.query(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
+            const result2 = await adminClient.query(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
 
             expect(result2.customer.orders.totalItems).toBe(1);
             expect(result2.customer.orders.items[0].id).toBe(result1.addItemToOrder.id);
@@ -242,13 +241,13 @@ describe('Customer resolver', () => {
 
     describe('deletion', () => {
         it('deletes a customer', async () => {
-            const result = await client.query(DELETE_CUSTOMER, { id: thirdCustomer.id });
+            const result = await adminClient.query(DELETE_CUSTOMER, { id: thirdCustomer.id });
 
             expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted customer', async () => {
-            const result = await client.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: thirdCustomer.id,
             });
 
@@ -256,7 +255,7 @@ describe('Customer resolver', () => {
         });
 
         it('deleted customer omitted from list', async () => {
-            const result = await client.query<GetCustomerList.Query, GetCustomerList.Variables>(
+            const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
                 GET_CUSTOMER_LIST,
             );
 
@@ -267,7 +266,7 @@ describe('Customer resolver', () => {
             'updateCustomer throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    client.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
+                    adminClient.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
                         input: {
                             id: thirdCustomer.id,
                             firstName: 'updated',
@@ -281,7 +280,7 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    client.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
+                    adminClient.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
                         CREATE_CUSTOMER_ADDRESS,
                         {
                             customerId: thirdCustomer.id,

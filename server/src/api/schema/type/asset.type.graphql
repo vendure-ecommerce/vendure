@@ -1,0 +1,20 @@
+type Asset implements Node {
+    id: ID!
+    name: String!
+    type: AssetType!
+    fileSize: Int!
+    mimeType: String!
+    source: String!
+    preview: String!
+}
+
+type AssetList implements PaginatedList {
+    items: [Asset!]!
+    totalItems: Int!
+}
+
+enum AssetType {
+    IMAGE,
+    VIDEO,
+    BINARY
+}

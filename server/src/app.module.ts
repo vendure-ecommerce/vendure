@@ -18,10 +18,13 @@ export class AppModule implements NestModule {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
+        // tslint:disable-next-line:no-floating-promises
         validateCustomFieldsConfig(this.configService.customFields);
 
+        const i18nextHandler = this.i18nService.handle();
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
-            { handler: this.i18nService.handle(), route: this.configService.apiPath },
+            { handler: i18nextHandler, route: this.configService.adminApiPath },
+            { handler: i18nextHandler, route: this.configService.shopApiPath },
         ];
         if (this.configService.authOptions.tokenMethod === 'cookie') {
             defaultMiddleware.push({
@@ -30,7 +33,7 @@ export class AppModule implements NestModule {
                     secret: this.configService.authOptions.sessionSecret,
                     httpOnly: true,
                 }),
-                route: this.configService.apiPath,
+                route: this.configService.adminApiPath,
             });
         }
         const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
@@ -48,7 +51,7 @@ export class AppModule implements NestModule {
     ): { [route: string]: RequestHandler[] } {
         const result = {} as { [route: string]: RequestHandler[] };
         for (const middleware of middlewareArray) {
-            const route = middleware.route || this.configService.apiPath;
+            const route = middleware.route || this.configService.adminApiPath;
             if (!result[route]) {
                 result[route] = [];
             }

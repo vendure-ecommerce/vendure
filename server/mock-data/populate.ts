@@ -42,7 +42,7 @@ export async function populate(
     await populateProducts(app, options.productsCsvPath, logging);
 
     const defaultChannelToken = await getDefaultChannelToken(logging);
-    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.apiPath}`);
+    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.adminApiPath}`);
     client.setChannelToken(defaultChannelToken);
     await client.asSuperAdmin();
     const mockDataService = new MockDataService(client, logging);

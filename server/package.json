@@ -6,7 +6,13 @@
     "type": "git",
     "url": "https://github.com/vendure-ecommerce/vendure/"
   },
-  "keywords": ["vendure", "ecommerce", "headless", "graphql", "typescript"],
+  "keywords": [
+    "vendure",
+    "ecommerce",
+    "headless",
+    "graphql",
+    "typescript"
+  ],
   "readme": "README.md",
   "private": false,
   "license": "MIT",
@@ -31,11 +37,11 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "@nestjs/common": "5.5.0",
-    "@nestjs/core": "5.5.0",
-    "@nestjs/graphql": "5.5.0",
-    "@nestjs/testing": "5.5.0",
-    "@nestjs/typeorm": "^5.2.2",
+    "@nestjs/common": "5.7.2",
+    "@nestjs/core": "5.7.2",
+    "@nestjs/graphql": "5.5.3",
+    "@nestjs/testing": "5.7.2",
+    "@nestjs/typeorm": "^5.3.0",
     "@types/progress": "^2.0.3",
     "apollo-server-express": "^2.4.0",
     "bcrypt": "^3.0.3",

@@ -1,0 +1,9 @@
+type LoginResult {
+    user: CurrentUser!
+}
+
+type CurrentUser {
+    id: ID!
+    identifier: String!
+    channelTokens: [String!]!
+}

@@ -347,11 +347,18 @@ export interface ImportExportOptions {
 export interface VendureConfig {
     /**
      * @description
-     * The path to the GraphQL API.
+     * The path to the admin GraphQL API.
      *
-     * @default 'api'
+     * @default 'admin-api'
      */
-    apiPath?: string;
+    adminApiPath?: string;
+    /**
+     * @description
+     * The path to the admin GraphQL API.
+     *
+     * @default 'shop-api'
+     */
+    shopApiPath?: string;
     /**
      * @description
      * Configuration for the handling of Assets.

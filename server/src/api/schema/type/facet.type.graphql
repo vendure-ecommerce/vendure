@@ -1,0 +1,23 @@
+type Facet implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    code: String!
+    values: [FacetValue!]!
+    translations: [FacetTranslation!]!
+}
+
+type FacetTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+}
+
+type FacetList implements PaginatedList {
+    items: [Facet!]!
+    totalItems: Int!
+}

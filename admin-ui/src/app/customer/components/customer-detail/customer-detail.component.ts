@@ -30,7 +30,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Cus
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
-    availableCountries$: Observable<GetAvailableCountries.AvailableCountries[]>;
+    availableCountries$: Observable<GetAvailableCountries.Items[]>;
     orders$: Observable<GetCustomer.Items[]>;
     ordersCount$: Observable<number>;
     defaultShippingAddressId: string;
@@ -72,7 +72,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Cus
         this.init();
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
-            .mapSingle(result => result.availableCountries)
+            .mapSingle(result => result.countries.items)
             .pipe(shareReplay(1));
 
         const customerWithUpdates$ = this.entity$.pipe(merge(this.orderListUpdates$));

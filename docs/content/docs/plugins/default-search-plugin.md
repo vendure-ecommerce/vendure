@@ -16,5 +16,5 @@ const config: VendureConfig = {
 ```
 
 {{% alert "warning" %}}
-Note that the current implementation of the DefaultSearchPlugin is only implemented and tested against a MySQL/MariaDB database. In addition, the search result quality has not yet been optimized.
+Note that the quality of the fulltext search capabilities varies depending on the underlying database being used. For example, the MySQL & Postgres implementations will typically yield better results than the SQLite implementation.
 {{% /alert %}}

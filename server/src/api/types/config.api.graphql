@@ -1,7 +1,0 @@
-type Query {
-  config: Config!
-}
-
-type Config {
-    customFields: JSON
-}

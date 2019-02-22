@@ -21,12 +21,12 @@ import {
 import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
 describe('ProductCategory resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
     let assets: GetAssetList.Items[];
     let electronicsCategory: ProductCategory.Fragment;

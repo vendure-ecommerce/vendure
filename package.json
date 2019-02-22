@@ -8,7 +8,7 @@
     "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "generate-config-docs": "ts-node ./codegen/generate-config-docs.ts",
-    "generate-api-docs": "ts-node ./codegen/generate-api-docs.ts",
+    "generate-api-docs": "ts-node ./codegen/generate-api-docs.ts --api=shop && ts-node ./codegen/generate-api-docs.ts --api=admin",
     "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "lint:server": "cd server && yarn lint --fix",

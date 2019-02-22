@@ -1,0 +1,7 @@
+type Query {
+    search(input: SearchInput!): SearchResponse!
+}
+
+type Mutation {
+    reindex: SearchReindexResponse!
+}

@@ -54,8 +54,12 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.defaultLanguageCode;
     }
 
-    get apiPath(): string {
-        return this.activeConfig.apiPath;
+    get adminApiPath(): string {
+        return this.activeConfig.adminApiPath;
+    }
+
+    get shopApiPath(): string {
+        return this.activeConfig.shopApiPath;
     }
 
     get port(): number {

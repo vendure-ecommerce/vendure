@@ -1,0 +1,34 @@
+type Query {
+    channels: [Channel!]!
+    channel(id: ID!): Channel
+    activeChannel: Channel!
+}
+
+type Mutation {
+    "Create a new Channel"
+    createChannel(input: CreateChannelInput!): Channel!
+
+    "Update an existing Channel"
+    updateChannel(input: UpdateChannelInput!): Channel!
+}
+
+input CreateChannelInput {
+    code: String!
+    token: String!
+    defaultLanguageCode: LanguageCode!
+    pricesIncludeTax: Boolean!
+    currencyCode: CurrencyCode!
+    defaultTaxZoneId: ID
+    defaultShippingZoneId: ID
+}
+
+input UpdateChannelInput {
+    id: ID!
+    code: String
+    token: String
+    defaultLanguageCode: LanguageCode
+    pricesIncludeTax: Boolean
+    currencyCode: CurrencyCode
+    defaultTaxZoneId: ID
+    defaultShippingZoneId: ID
+}

@@ -1,0 +1,18 @@
+type FacetValue implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    facet: Facet!
+    name: String!
+    code: String!
+    translations: [FacetValueTranslation!]!
+}
+
+type FacetValueTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+}

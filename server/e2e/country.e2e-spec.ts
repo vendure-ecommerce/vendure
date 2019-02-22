@@ -3,7 +3,6 @@ import path from 'path';
 
 import {
     CREATE_COUNTRY,
-    GET_AVAILABLE_COUNTRIES,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     UPDATE_COUNTRY,
@@ -11,7 +10,6 @@ import {
 import {
     CreateCountry,
     DeletionResult,
-    GetAvailableCountries,
     GetCountry,
     GetCountryList,
     LanguageCode,
@@ -19,13 +17,13 @@ import {
 } from '../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestClient } from './test-client';
+import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const client = new TestClient();
+    const client = new TestAdminClient();
     const server = new TestServer();
     let countries: GetCountryList.Items[];
     let GB: GetCountryList.Items;
@@ -69,13 +67,6 @@ describe('Facet resolver', () => {
         });
 
         expect(result.updateCountry.enabled).toBe(false);
-    });
-
-    it('availableCountries returns enabled countries', async () => {
-        const result = await client.query<GetAvailableCountries.Query>(GET_AVAILABLE_COUNTRIES);
-
-        expect(result.availableCountries.length).toBe(countries.length - 1);
-        expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
     });
 
     it('createCountry', async () => {

@@ -11,7 +11,7 @@ import { GetAvailableCountries } from 'shared/generated-types';
 export class AddressCardComponent implements OnInit {
     editing = false;
     @Input() addressForm: FormGroup;
-    @Input() availableCountries: GetAvailableCountries.AvailableCountries[] = [];
+    @Input() availableCountries: GetAvailableCountries.Items[] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
