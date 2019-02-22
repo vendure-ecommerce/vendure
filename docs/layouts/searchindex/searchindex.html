@@ -7,7 +7,7 @@ result :[
         {{ $quoted := apply $cleaned "replaceRE" ".*" "'$0'" "." -}}
         {{ $section := cond (in .Dir "configuration") "config" (cond (in .Dir "graphql-api") "gql" "guides") }}
 
-        { section: '{{ $section }}', title: '{{ .Title }}', headings: [{{ delimit $quoted ", " }}], url: '{{ .RelPermalink }}' },
+        { section: '{{ $section }}', parent: '{{ title .Parent.Title }}', title: '{{ .Title }}', headings: [{{ delimit $quoted ", " }}], url: '{{ .RelPermalink }}' },
     {{- end }}
 ]
 }

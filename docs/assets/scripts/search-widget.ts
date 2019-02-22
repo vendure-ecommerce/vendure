@@ -4,6 +4,7 @@ type Section = 'guides' | 'config' | 'gql';
 interface IndexItem {
     section: Section;
     title: string;
+    parent: string;
     headings: string[];
     url: string;
 }
@@ -11,6 +12,7 @@ interface IndexItem {
 interface DenormalizedItem {
     section: Section;
     title: string;
+    parent: string;
     heading: string;
     url: string;
 }
@@ -94,9 +96,9 @@ export class SearchWidget {
                 html += `<li class="section">${sectionName}</li>`;
             }
             html += matches.map((result) => {
-                const { section, title, heading, url } = result.original;
+                const { section, title, parent, heading, url } = result.original;
                 const anchor = heading !== title ? '#' + this.headingToAnchor(heading) : '';
-                const inner = `<div class="title">${title}</div><div class="heading">${result.string}</div>`;
+                const inner = `<div class="title"><span class="parent">${parent}</span> › ${title}</div><div class="heading">${result.string}</div>`;
                 const selected = i === this.selectedIndex ? 'selected' : '';
                 i++;
                 return `<li class="${selected}"><a href="${url + anchor}">${inner}</a></li>`;
@@ -172,10 +174,11 @@ export class SearchWidget {
                 .then(res => eval(res))
                 .then((items: IndexItem[]) => {
                     const denormalized: DenormalizedItem[] = [];
-                    for (const { section, title, headings, url } of items) {
+                    for (const { section, title, parent, headings, url } of items) {
                         denormalized.push({
                             section,
                             title,
+                            parent,
                             heading: title,
                             url,
                         });
@@ -184,6 +187,7 @@ export class SearchWidget {
                                 denormalized.push({
                                     section,
                                     title,
+                                    parent,
                                     heading,
                                     url,
                                 });

@@ -34,7 +34,7 @@
     top: 35px;
     right: 0;
     max-height: 80vh;
-    width: 500px;
+    width: 600px;
     overflow: hidden;
 
     @media all and (max-width: $sm-breakpoint){
@@ -63,12 +63,16 @@
         }
         a {
             display: flex;
-            align-items: baseline;
+            align-items: center;
         }
         .title {
             color: $gray-800;
             width: 200px;
             font-size: 12px;
+            margin-right: 6px;
+        }
+        .parent {
+            color: $gray-600;
         }
         .heading {
             color: $gray-900;
