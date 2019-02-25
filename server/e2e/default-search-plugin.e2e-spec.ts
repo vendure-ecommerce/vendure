@@ -3,7 +3,7 @@ import path from 'path';
 import { SEARCH_PRODUCTS } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import { SearchProducts } from '../../shared/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
-import { DefaultSearchPlugin } from '../src/plugin';
+import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
