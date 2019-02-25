@@ -85,6 +85,13 @@ export class ProductVariantService {
             );
     }
 
+    getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
+        return this.connection
+            .getRepository(ProductVariant)
+            .findOne(variantId, { relations: ['options'] })
+            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+    }
+
     async create(
         ctx: RequestContext,
         product: Product,

@@ -40,6 +40,7 @@ import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.re
 import { ProductCategoryEntityResolver } from './resolvers/entity/product-category-entity.resolver';
 import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
+import { ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
 import { ShopOrderResolver } from './resolvers/shop/shop-order.resolver';
@@ -79,6 +80,7 @@ const entityResolvers = [
     ProductCategoryEntityResolver,
     ProductEntityResolver,
     ProductOptionGroupEntityResolver,
+    ProductVariantEntityResolver,
 ];
 
 @Module({
