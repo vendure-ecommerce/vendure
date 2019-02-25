@@ -24,7 +24,7 @@ import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
-describe('Orders', () => {
+describe('Shop orders', () => {
     const adminClient = new TestAdminClient();
     const shopClient = new TestShopClient();
     const server = new TestServer();

@@ -17,7 +17,6 @@ import { ProductCategoryService } from '../../../service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 
@@ -27,7 +26,6 @@ export class ShopProductsResolver {
         private productService: ProductService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
-        private idCodecService: IdCodecService,
         private productCategoryService: ProductCategoryService,
     ) {}
 

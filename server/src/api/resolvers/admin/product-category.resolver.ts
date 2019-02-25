@@ -1,4 +1,4 @@
-import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
     CreateProductCategoryMutationArgs,
@@ -10,11 +10,9 @@ import {
 } from '../../../../../shared/generated-types';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { Translated } from '../../../common/types/locale-types';
-import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductCategory } from '../../../entity/product-category/product-category.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductCategoryService } from '../../../service/services/product-category.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Decode } from '../../decorators/decode.decorator';
@@ -25,7 +23,6 @@ export class ProductCategoryResolver {
     constructor(
         private productCategoryService: ProductCategoryService,
         private facetValueService: FacetValueService,
-        private idCodecService: IdCodecService,
     ) {}
 
     @Query()

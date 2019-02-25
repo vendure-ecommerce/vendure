@@ -5,18 +5,13 @@ import { PaginatedList } from '../../../../../shared/shared-types';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(
-        private orderService: OrderService,
-        private shippingMethodService: ShippingMethodService,
-        private idCodecService: IdCodecService,
-    ) {}
+    constructor(private orderService: OrderService, private shippingMethodService: ShippingMethodService) {}
 
     @Query()
     @Allow(Permission.ReadOrder)

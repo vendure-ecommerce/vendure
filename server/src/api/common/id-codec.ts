@@ -94,7 +94,7 @@ export class IdCodec {
         const clone = Object.assign({}, target);
         if (transformKeys) {
             for (const key of transformKeys) {
-                if (target.hasOwnProperty(key)) {
+                if (target[key]) {
                     const val = target[key];
                     if (Array.isArray(val)) {
                         clone[key] = val.map(v => transformFn(v));

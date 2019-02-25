@@ -2,6 +2,7 @@ import path from 'path';
 
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../shared/shared-constants';
 
+import { TestingEntityIdStrategy } from './e2e/config/testing-entity-id-strategy';
 import { examplePaymentHandler } from './src/config/payment-method/example-payment-method-config';
 import { OrderProcessOptions, VendureConfig } from './src/config/vendure-config';
 import { defaultEmailTypes } from './src/email/default-email-types';
@@ -19,6 +20,7 @@ export const devConfig: VendureConfig = {
         sessionSecret: 'some-secret',
         requireVerification: false,
     },
+    entityIdStrategy: new TestingEntityIdStrategy(),
     port: API_PORT,
     adminApiPath: ADMIN_API_PATH,
     shopApiPath: SHOP_API_PATH,

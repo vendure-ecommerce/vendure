@@ -3,20 +3,14 @@ import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
-import { IdCodecService } from '../../common/id-codec.service';
 
 @Resolver('Order')
 export class OrderEntityResolver {
-    constructor(
-        private orderService: OrderService,
-        private shippingMethodService: ShippingMethodService,
-        private idCodecService: IdCodecService,
-    ) {}
+    constructor(private orderService: OrderService, private shippingMethodService: ShippingMethodService) {}
 
     @ResolveProperty()
     async payments(@Parent() order: Order) {
-        const orderId = this.idCodecService.decode(order.id);
-        return this.orderService.getOrderPayments(orderId);
+        return this.orderService.getOrderPayments(order.id);
     }
 
     @ResolveProperty()

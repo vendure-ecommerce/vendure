@@ -11,14 +11,13 @@ import { UnauthorizedError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { Address, Customer } from '../../../entity';
 import { CustomerService } from '../../../service/services/customer.service';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
 export class ShopCustomerResolver {
-    constructor(private customerService: CustomerService, private idCodecService: IdCodecService) {}
+    constructor(private customerService: CustomerService) {}
 
     @Query()
     @Allow(Permission.Owner)
@@ -63,7 +62,7 @@ export class ShopCustomerResolver {
      */
     private checkOwnerPermissions(ctx: RequestContext, customer: Customer) {
         if (ctx.authorizedAsOwnerOnly) {
-            const userId = customer.user && this.idCodecService.decode(customer.user.id);
+            const userId = customer.user && customer.user.id;
             if (userId && !idsAreEqual(userId, ctx.activeUserId)) {
                 throw new UnauthorizedError();
             }
