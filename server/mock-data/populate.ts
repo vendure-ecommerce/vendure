@@ -68,7 +68,7 @@ async function populateProducts(app: INestApplication, productsCsvPath: string, 
     const importer = app.get(Importer);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');
 
-    const importResult = await importer.parseAndImport(productData, LanguageCode.en, true).toPromise();
+    const importResult = await importer.parseAndImport(productData, LanguageCode.en, false).toPromise();
     if (importResult.errors && importResult.errors.length) {
         console.log(`${importResult.errors.length} errors encountered when importing product data:`);
         await console.log(importResult.errors.join('\n'));
