@@ -18,23 +18,24 @@ export class AppModule implements NestModule {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
+        const { adminApiPath, shopApiPath } = this.configService;
+
         // tslint:disable-next-line:no-floating-promises
         validateCustomFieldsConfig(this.configService.customFields);
 
         const i18nextHandler = this.i18nService.handle();
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
-            { handler: i18nextHandler, route: this.configService.adminApiPath },
-            { handler: i18nextHandler, route: this.configService.shopApiPath },
+            { handler: i18nextHandler, route: adminApiPath },
+            { handler: i18nextHandler, route: shopApiPath },
         ];
         if (this.configService.authOptions.tokenMethod === 'cookie') {
-            defaultMiddleware.push({
-                handler: cookieSession({
-                    name: 'session',
-                    secret: this.configService.authOptions.sessionSecret,
-                    httpOnly: true,
-                }),
-                route: this.configService.adminApiPath,
+            const cookieHandler = cookieSession({
+                name: 'session',
+                secret: this.configService.authOptions.sessionSecret,
+                httpOnly: true,
             });
+            defaultMiddleware.push({ handler: cookieHandler, route: adminApiPath });
+            defaultMiddleware.push({ handler: cookieHandler, route: shopApiPath });
         }
         const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
