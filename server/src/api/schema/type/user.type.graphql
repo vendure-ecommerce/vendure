@@ -3,7 +3,6 @@ type User implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     identifier: String!
-    passwordHash: String!
     verified: Boolean!
     roles: [Role!]!
     lastLogin: String

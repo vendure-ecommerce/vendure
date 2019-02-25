@@ -125,15 +125,6 @@ input CreateCustomerInput {
     emailAddress: String!
 }
 
-input UpdateCustomerInput {
-    id: ID!
-    title: String
-    firstName: String
-    lastName: String
-    phoneNumber: String
-    emailAddress: String
-}
-
 input CreateAddressInput {
     fullName: String
     company: String

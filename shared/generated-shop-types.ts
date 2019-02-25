@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-22T10:57:55+01:00
+// Generated in 2019-02-25T17:30:36+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -259,8 +259,6 @@ export interface RegisterCustomerInput {
 }
 
 export interface UpdateCustomerInput {
-    id: string;
-
     title?: Maybe<string>;
 
     firstName?: Maybe<string>;
@@ -1252,8 +1250,6 @@ export interface User extends Node {
 
     identifier: string;
 
-    passwordHash: string;
-
     verified: boolean;
 
     roles: Role[];
@@ -1509,7 +1505,7 @@ export interface Mutation {
     addPaymentToOrder?: Maybe<Order>;
 
     setCustomerForOrder?: Maybe<Order>;
-    /** Create a new Address and associate it with the Customer specified by customerId */
+    /** Create a new Customer Address */
     createCustomerAddress: Address;
 
     login: LoginResult;
@@ -1523,6 +1519,8 @@ export interface Mutation {
     updateCustomer: Customer;
     /** Update an existing Address */
     updateCustomerAddress: Address;
+    /** Delete an existing Address */
+    deleteCustomerAddress: boolean;
     /** Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true. */
     verifyCustomerAccount: LoginResult;
 }
@@ -1742,8 +1740,6 @@ export interface SetCustomerForOrderMutationArgs {
     input: CreateCustomerInput;
 }
 export interface CreateCustomerAddressMutationArgs {
-    customerId: string;
-
     input: CreateAddressInput;
 }
 export interface LoginMutationArgs {
@@ -1764,6 +1760,9 @@ export interface UpdateCustomerMutationArgs {
 }
 export interface UpdateCustomerAddressMutationArgs {
     input: UpdateAddressInput;
+}
+export interface DeleteCustomerAddressMutationArgs {
+    id: string;
 }
 export interface VerifyCustomerAccountMutationArgs {
     token: string;

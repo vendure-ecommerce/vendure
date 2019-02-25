@@ -1,13 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { Decode } from '../..';
+import { DeleteCustomerAddressMutationArgs } from '../../../../../shared/generated-shop-types';
 import {
     CreateCustomerAddressMutationArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
 } from '../../../../../shared/generated-types';
-import { UnauthorizedError } from '../../../common/error/errors';
+import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { Address, Customer } from '../../../entity';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -30,20 +30,25 @@ export class ShopCustomerResolver {
 
     @Mutation()
     @Allow(Permission.Owner)
-    async updateCustomer(@Args() args: UpdateCustomerMutationArgs): Promise<Customer> {
-        // TODO: implement for owner
-        return null as any;
+    async updateCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateCustomerMutationArgs,
+    ): Promise<Customer> {
+        const customer = await this.getCustomerForOwner(ctx);
+        return this.customerService.update({
+            id: customer.id,
+            ...args.input,
+        });
     }
 
     @Mutation()
     @Allow(Permission.Owner)
-    @Decode('customerId')
     async createCustomerAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateCustomerAddressMutationArgs,
     ): Promise<Address> {
-        // TODO: implement for owner
-        return null as any;
+        const customer = await this.getCustomerForOwner(ctx);
+        return this.customerService.createAddress(ctx, customer.id as string, args.input);
     }
 
     @Mutation()
@@ -52,20 +57,40 @@ export class ShopCustomerResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateCustomerAddressMutationArgs,
     ): Promise<Address> {
-        // TODO: implement for owner
-        return null as any;
+        const customer = await this.getCustomerForOwner(ctx);
+        const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
+        if (!customerAddresses.find(address => idsAreEqual(address.id, args.input.id))) {
+            throw new ForbiddenError();
+        }
+        return this.customerService.updateAddress(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async deleteCustomerAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteCustomerAddressMutationArgs,
+    ): Promise<boolean> {
+        const customer = await this.getCustomerForOwner(ctx);
+        const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
+        if (!customerAddresses.find(address => idsAreEqual(address.id, args.id))) {
+            throw new ForbiddenError();
+        }
+        return this.customerService.deleteAddress(args.id);
     }
 
     /**
-     * If the current request is authorized as the Owner, ensure that the userId matches that
-     * of the Customer data being requested.
+     * Returns the Customer entity associated with the current user.
      */
-    private checkOwnerPermissions(ctx: RequestContext, customer: Customer) {
-        if (ctx.authorizedAsOwnerOnly) {
-            const userId = customer.user && customer.user.id;
-            if (userId && !idsAreEqual(userId, ctx.activeUserId)) {
-                throw new UnauthorizedError();
-            }
+    private async getCustomerForOwner(ctx: RequestContext): Promise<Customer> {
+        const userId = ctx.activeUserId;
+        if (!userId) {
+            throw new ForbiddenError();
         }
+        const customer = await this.customerService.findOneByUserId(userId);
+        if (!customer) {
+            throw new InternalServerError(`error.no-customer-found-for-current-user`);
+        }
+        return customer;
     }
 }

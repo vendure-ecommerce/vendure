@@ -5,6 +5,7 @@ import {
     CreateCustomerMutationArgs,
     CustomerQueryArgs,
     CustomersQueryArgs,
+    DeleteCustomerAddressMutationArgs,
     DeleteCustomerMutationArgs,
     DeletionResponse,
     Permission,
@@ -70,6 +71,16 @@ export class CustomerResolver {
     ): Promise<Address> {
         const { input } = args;
         return this.customerService.updateAddress(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCustomer)
+    async deleteCustomerAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: DeleteCustomerAddressMutationArgs,
+    ): Promise<boolean> {
+        const { id } = args;
+        return this.customerService.deleteAddress(id);
     }
 
     @Mutation()

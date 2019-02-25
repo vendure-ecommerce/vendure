@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-22T10:57:56+01:00
+// Generated in 2019-02-25T17:30:37+01:00
 export type Maybe<T> = T | null;
 
 
@@ -4563,8 +4563,6 @@ export interface User extends Node {
   
   identifier: string;
   
-  passwordHash: string;
-  
   verified: boolean;
   
   roles: Role[];
@@ -5550,6 +5548,8 @@ export interface Mutation {
   createCustomerAddress: Address;
   /** Update an existing Address */
   updateCustomerAddress: Address;
+  /** Update an existing Address */
+  deleteCustomerAddress: boolean;
   /** Create a new Facet */
   createFacet: Facet;
   /** Update an existing Facet */
@@ -5929,6 +5929,10 @@ export interface CreateCustomerAddressMutationArgs {
 export interface UpdateCustomerAddressMutationArgs {
   
   input: UpdateAddressInput;
+}
+export interface DeleteCustomerAddressMutationArgs {
+  
+  id: string;
 }
 export interface CreateFacetMutationArgs {
   

@@ -33,8 +33,12 @@ type Mutation {
     registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
     "Update an existing Customer"
     updateCustomer(input: UpdateCustomerInput!): Customer!
+    "Create a new Customer Address"
+    createCustomerAddress(input: CreateAddressInput!): Address!
     "Update an existing Address"
     updateCustomerAddress(input: UpdateAddressInput!): Address!
+    "Delete an existing Address"
+    deleteCustomerAddress(id: ID!): Boolean!
     "Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true."
     verifyCustomerAccount(token: String!, password: String!): LoginResult!
 }
@@ -45,6 +49,14 @@ input RegisterCustomerInput {
     firstName: String
     lastName: String
     password: String
+}
+
+input UpdateCustomerInput {
+    title: String
+    firstName: String
+    lastName: String
+    phoneNumber: String
+    emailAddress: String
 }
 
 input PaymentInput {

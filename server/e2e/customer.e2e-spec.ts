@@ -59,6 +59,7 @@ describe('Customer resolver', () => {
 
     describe('addresses', () => {
         let firstCustomerAddressIds: string[] = [];
+        let firstCustomerThirdAddressId: string;
 
         it(
             'createCustomerAddress throws on invalid countryCode',
@@ -219,6 +220,30 @@ describe('Customer resolver', () => {
             expect(result2.customer!.addresses![1].defaultBillingAddress).toBe(false);
             expect(result2.customer!.addresses![2].defaultShippingAddress).toBe(true);
             expect(result2.customer!.addresses![2].defaultBillingAddress).toBe(true);
+
+            firstCustomerThirdAddressId = result2.customer!.addresses![2].id;
+        });
+
+        it('deleteCustomerAddress on default address resets defaults', async () => {
+            const result = await adminClient.query(
+                gql`
+                    mutation DeleteCustomerAddress($id: ID!) {
+                        deleteCustomerAddress(id: $id)
+                    }
+                `,
+                { id: firstCustomerThirdAddressId },
+            );
+
+            expect(result.deleteCustomerAddress).toBe(true);
+
+            const result2 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+                id: firstCustomer.id,
+            });
+            expect(result2.customer!.addresses!.length).toBe(2);
+            expect(result2.customer!.addresses![0].defaultShippingAddress).toBe(true);
+            expect(result2.customer!.addresses![0].defaultBillingAddress).toBe(true);
+            expect(result2.customer!.addresses![1].defaultShippingAddress).toBe(false);
+            expect(result2.customer!.addresses![1].defaultBillingAddress).toBe(false);
         });
     });
 

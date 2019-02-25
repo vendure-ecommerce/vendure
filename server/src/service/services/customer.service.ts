@@ -214,6 +214,13 @@ export class CustomerService {
         return updatedAddress;
     }
 
+    async deleteAddress(id: ID): Promise<boolean> {
+        const address = await getEntityOrThrow(this.connection, Address, id);
+        await this.reassignDefaultsForDeletedAddress(address);
+        await this.connection.getRepository(Address).remove(address);
+        return true;
+    }
+
     async softDelete(customerId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Customer, customerId);
         await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
@@ -242,6 +249,35 @@ export class CustomerService {
                         defaultShippingAddress: false,
                     });
                 }
+            }
+        }
+    }
+
+    /**
+     * If a Customer Address is to be deleted, check if it is assigned as a default for shipping or
+     * billing. If so, attempt to transfer default status to one of the other addresses if there are
+     * any.
+     */
+    private async reassignDefaultsForDeletedAddress(addressToDelete: Address) {
+        if (!addressToDelete.defaultBillingAddress && !addressToDelete.defaultShippingAddress) {
+            return;
+        }
+        const result = await this.connection
+            .getRepository(Address)
+            .findOne(addressToDelete.id, { relations: ['customer', 'customer.addresses'] });
+        if (result) {
+            const customerAddresses = result.customer.addresses;
+            if (1 < customerAddresses.length) {
+                const otherAddresses = customerAddresses.filter(
+                    address => !idsAreEqual(address.id, addressToDelete.id),
+                );
+                if (addressToDelete.defaultShippingAddress) {
+                    otherAddresses[0].defaultShippingAddress = true;
+                }
+                if (addressToDelete.defaultBillingAddress) {
+                    otherAddresses[0].defaultBillingAddress = true;
+                }
+                await this.connection.getRepository(Address).save(otherAddresses[0]);
             }
         }
     }
