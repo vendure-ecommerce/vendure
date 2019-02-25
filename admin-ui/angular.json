@@ -25,6 +25,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/vendure-ui-config.json",
               "src/assets",
               "src/i18n-messages"
             ],

@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { API_URL } from '../../app.config';
+import { getAppConfig } from '../../app.config';
 import { AuthService } from '../../core/providers/auth/auth.service';
 import { _ } from '../../core/providers/i18n/mark-for-extraction';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
@@ -60,7 +60,10 @@ export class DefaultInterceptor implements HttpInterceptor {
     private notifyOnError(response: HttpResponse<any> | HttpErrorResponse) {
         if (response instanceof HttpErrorResponse) {
             if (response.status === 0) {
-                this.displayErrorNotification(_(`error.could-not-connect-to-server`), { url: API_URL });
+                const { apiHost, apiPort } = getAppConfig();
+                this.displayErrorNotification(_(`error.could-not-connect-to-server`), {
+                    url: `${apiHost}:${apiPort}`,
+                });
             } else {
                 this.displayErrorNotification(response.toString());
             }

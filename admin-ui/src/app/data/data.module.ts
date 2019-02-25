@@ -7,10 +7,9 @@ import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { withClientState } from 'apollo-link-state';
 import { createUploadLink } from 'apollo-upload-client';
-import { ADMIN_API_PATH } from 'shared/shared-constants';
 
 import { environment } from '../../environments/environment';
-import { API_URL } from '../app.config';
+import { getAppConfig } from '../app.config';
 import { LocalStorageService } from '../core/providers/local-storage/local-storage.service';
 
 import { clientDefaults } from './client-state/client-defaults';
@@ -39,6 +38,7 @@ export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
 ): ApolloClientOptions<any> {
+    const { apiHost, apiPort, adminApiPath } = getAppConfig();
     return {
         link: ApolloLink.from([
             stateLink,
@@ -54,7 +54,7 @@ export function createApollo(
                 }
             }),
             createUploadLink({
-                uri: `${API_URL}/${ADMIN_API_PATH}`,
+                uri: `${apiHost}:${apiPort}/${adminApiPath}`,
                 fetch: fetchAdapter.fetch,
             }),
         ]),
