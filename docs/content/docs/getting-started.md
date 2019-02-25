@@ -106,7 +106,8 @@ $ node index
 
 Assuming the default config settings, you can now access:
 
-* The Vendure GraphQL API: [http://localhost:3000/api](http://localhost:3000/api)
+* The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
+* The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
 * The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
 {{% alert primary %}}

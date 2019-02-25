@@ -17,7 +17,8 @@ const path = require('path');
         sessionSecret: '{{ sessionSecret }}',
     },
     port: 3000,
-    apiPath: 'api',
+    adminApiPath: 'admin-api',
+    shopApiPath: 'shop-api',
     dbConnectionOptions: {
         type: '{{ dbType }}',
         {{#if requiresConnection}}
