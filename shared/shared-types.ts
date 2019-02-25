@@ -89,3 +89,12 @@ export interface HasCustomFields {
 export type MayHaveCustomFields = Partial<HasCustomFields>;
 
 export type CustomFieldsObject = { [key: string]: any; };
+
+/**
+ * This interface describes the shape of the JSON config file used by the Admin UI.
+ */
+export interface AdminUiConfig {
+    apiHost: string;
+    apiPort: number;
+    adminApiPath: string;
+}
