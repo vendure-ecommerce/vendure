@@ -105,6 +105,7 @@ export function getOrderReceiptContext():
             ...contextConfig,
             type: 'order-confirmation',
             event,
+            templateVars: {},
         });
     }
 }
@@ -126,6 +127,7 @@ export function getEmailVerificationContext():
             ...contextConfig,
             type: 'email-verification',
             event,
+            templateVars: {},
         });
     }
 }

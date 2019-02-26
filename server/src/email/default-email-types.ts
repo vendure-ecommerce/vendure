@@ -3,9 +3,14 @@ import { AccountRegistrationEvent } from '../event-bus/events/account-registrati
 import { OrderStateTransitionEvent } from '../event-bus/events/order-state-transition-event';
 import { PasswordResetEvent } from '../event-bus/events/password-reset-event';
 
+/**
+ * @description
+ * The possible types of email which are configured by default. These define the keys of the
+ * {@link EmailTypes} object.
+ *
+ * @docsCategory email
+ */
 export type DefaultEmailType = 'order-confirmation' | 'email-verification' | 'password-reset';
-
-const SHOPFRONT_URL = 'http://localhost:4201/';
 
 export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
     'order-confirmation': configEmailType({
@@ -44,7 +49,7 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
                 defaultLanguage: {
                     templateContext: emailContext => ({
                         user: emailContext.event.user,
-                        verifyUrl: SHOPFRONT_URL + 'verify',
+                        verifyUrl: emailContext.templateVars.shopUrl + 'verify',
                     }),
                     subject: `Please verify your email address`,
                     templatePath: 'email-verification/email-verification.hbs',
@@ -66,7 +71,7 @@ export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
                 defaultLanguage: {
                     templateContext: emailContext => ({
                         user: emailContext.event.user,
-                        passwordResetUrl: SHOPFRONT_URL + 'reset-password',
+                        passwordResetUrl: emailContext.templateVars.shopUrl + 'reset-password',
                     }),
                     subject: `Forgotten password reset`,
                     templatePath: 'password-reset/password-reset.hbs',

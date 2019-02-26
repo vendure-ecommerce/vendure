@@ -48,13 +48,14 @@ export class EmailModule implements OnModuleInit {
     }
 
     private async handleEvent(type: string, config: EmailTypeConfig<any>, event: VendureEvent) {
-        const { generator, transport } = this.configService.emailOptions;
+        const { generator, transport, templateVars } = this.configService.emailOptions;
         const contextConfig = config.createContext(event);
         if (contextConfig) {
             const emailContext = new EmailContext({
                 ...contextConfig,
                 type,
                 event,
+                templateVars,
             });
             const { subject, body, templateContext } = await this.templateLoader.loadTemplate(
                 type,

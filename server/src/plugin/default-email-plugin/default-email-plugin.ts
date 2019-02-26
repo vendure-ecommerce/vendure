@@ -22,11 +22,17 @@ export interface DefaultEmailPluginOptions {
      * Configures how the emails are sent.
      */
     transport: EmailTransportOptions;
+    /**
+     * @description
+     * Variables for use in email templates
+     */
+    templateVars: { [name: string]: any };
 }
 
 export interface DefaultEmailPluginDevModeOptions {
     templatePath: string;
     devMode: true;
+    templateVars: { [name: string]: any };
 }
 
 /**
@@ -35,9 +41,11 @@ export interface DefaultEmailPluginDevModeOptions {
 export class DefaultEmailPlugin implements VendurePlugin {
     private readonly templatePath: string;
     private readonly transport: EmailTransportOptions;
+    private readonly templateVars: { [name: string]: any };
 
     constructor(options: DefaultEmailPluginOptions | DefaultEmailPluginDevModeOptions) {
         this.templatePath = options.templatePath;
+        this.templateVars = options.templateVars;
         if (isDevModeOptions(options)) {
             this.transport = {
                 type: 'file',
@@ -60,6 +68,7 @@ export class DefaultEmailPlugin implements VendurePlugin {
             emailTypes: defaultEmailTypes,
             generator: new HandlebarsMjmlGenerator(),
             transport: this.transport,
+            templateVars: this.templateVars,
         };
         return config;
     }

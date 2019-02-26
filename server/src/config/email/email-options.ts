@@ -4,18 +4,28 @@ import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
 import { VendureEvent } from '../../event-bus/vendure-event';
 import { ConfigService } from '../config.service';
 
+/**
+ * @description
+ * This object defines the template location and context data used for interpolation
+ * of an email for a particular language of a particular channel.
+ *
+ * @docsCategory email
+ */
 export type TemplateConfig<C = any, R = any> = {
     /**
-     * A function which uses the EmailContext to provide a context object for the
+     * @description
+     * A function which uses the {@link EmailContext} to provide a context object for the
      * template engine. That is, the templates will have access to the object
      * returned by this function.
      */
     templateContext: (emailContext: C) => R;
     /**
+     * @description
      * The subject line for the email.
      */
     subject: string;
     /**
+     * @description
      * The path to the template file for the body of the email.
      */
     templatePath: string;

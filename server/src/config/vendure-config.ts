@@ -278,6 +278,14 @@ export interface EmailOptions<EmailType extends string> {
      * @default NoopTransportOptions
      */
     transport: EmailTransportOptions;
+    /**
+     * @description
+     * An object containing any extra variables for use in email templates. For example,
+     * the storefront URL could be defined here for use in password reset emails.
+     *
+     * @default {}
+     */
+    templateVars?: { [name: string]: any };
 }
 
 /**

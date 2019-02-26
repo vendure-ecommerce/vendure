@@ -55,6 +55,9 @@ const path = require('path');
         new DefaultEmailPlugin({
             templatePath: path.join(__dirname, 'vendure/email/templates'),
             devMode: true,
+            templateVars: {
+                shopUrl: 'http://www.example.com',
+            }
         }),
         new DefaultSearchPlugin(),
         new AdminUiPlugin({ port: 3002 }),

@@ -80,6 +80,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         transport: {
             type: 'none',
         },
+        templateVars: {},
     },
     importExportOptions: {
         importAssetsDir: __dirname,

@@ -25,7 +25,7 @@ export const devConfig: VendureConfig = {
     adminApiPath: ADMIN_API_PATH,
     shopApiPath: SHOP_API_PATH,
     dbConnectionOptions: {
-        synchronize: false,
+        synchronize: true,
         logging: false,
 
         type: 'mysql',
@@ -58,6 +58,9 @@ export const devConfig: VendureConfig = {
             type: 'file',
             raw: false,
             outputPath: path.join(__dirname, 'test-emails'),
+        },
+        templateVars: {
+            shopUrl: 'http://localhost:4201/',
         },
     },
     importExportOptions: {
