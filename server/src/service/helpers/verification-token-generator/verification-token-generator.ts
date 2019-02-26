@@ -5,7 +5,8 @@ import { generatePublicId } from '../../../common/generate-public-id';
 import { ConfigService } from '../../../config/config.service';
 
 /**
- * This class is responsible for generating and verifying the tokens issued when new accounts are registered.
+ * This class is responsible for generating and verifying the tokens issued when new accounts are registered
+ * or when a password reset is requested.
  */
 @Injectable()
 export class VerificationTokenGenerator {

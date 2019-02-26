@@ -43,6 +43,10 @@ type Mutation {
     verifyCustomerAccount(token: String!, password: String!): LoginResult!
     "Update the password of the active Customer"
     updateCustomerPassword(currentPassword: String!, newPassword: String!): Boolean
+    "Requests a password reset email to be sent"
+    requestPasswordReset(emailAddress: String!): Boolean
+    "Resets a Customer's password based on the provided token"
+    resetPassword(token: String!, password: String!): LoginResult!
 }
 
 input RegisterCustomerInput {

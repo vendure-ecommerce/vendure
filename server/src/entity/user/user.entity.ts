@@ -29,6 +29,9 @@ export class User extends VendureEntity implements HasCustomFields {
     @Column({ type: 'varchar', nullable: true })
     verificationToken: string | null;
 
+    @Column({ type: 'varchar', nullable: true })
+    passwordResetToken: string | null;
+
     @ManyToMany(type => Role)
     @JoinTable()
     roles: Role[];

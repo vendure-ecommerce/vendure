@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-26T09:46:27+01:00
+// Generated in 2019-02-26T12:18:47+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -1523,8 +1523,12 @@ export interface Mutation {
     deleteCustomerAddress: boolean;
     /** Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true. */
     verifyCustomerAccount: LoginResult;
-
+    /** Update the password of the active Customer */
     updateCustomerPassword?: Maybe<boolean>;
+    /** Requests a password reset email to be sent */
+    requestPasswordReset?: Maybe<boolean>;
+    /** Resets a Customer's password based on the provided token */
+    resetPassword: LoginResult;
 }
 
 export interface LoginResult {
@@ -1775,4 +1779,12 @@ export interface UpdateCustomerPasswordMutationArgs {
     currentPassword: string;
 
     newPassword: string;
+}
+export interface RequestPasswordResetMutationArgs {
+    emailAddress: string;
+}
+export interface ResetPasswordMutationArgs {
+    token: string;
+
+    password: string;
 }

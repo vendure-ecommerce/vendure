@@ -3,7 +3,11 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../../shared/shared-types';
-import { UnauthorizedError, VerificationTokenExpiredError } from '../../common/error/errors';
+import {
+    PasswordResetTokenExpiredError,
+    UnauthorizedError,
+    VerificationTokenExpiredError,
+} from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
@@ -79,10 +83,33 @@ export class UserService {
                 user.passwordHash = await this.passwordCipher.hash(password);
                 user.verificationToken = null;
                 user.verified = true;
-                await this.connection.getRepository(User).save(user);
-                return user;
+                return this.connection.getRepository(User).save(user);
             } else {
                 throw new VerificationTokenExpiredError();
+            }
+        }
+    }
+
+    async setPasswordResetToken(emailAddress: string): Promise<User | undefined> {
+        const user = await this.getUserByEmailAddress(emailAddress);
+        if (!user) {
+            return;
+        }
+        user.passwordResetToken = await this.verificationTokenGenerator.generateVerificationToken();
+        return this.connection.getRepository(User).save(user);
+    }
+
+    async resetPasswordByToken(passwordResetToken: string, password: string): Promise<User | undefined> {
+        const user = await this.connection.getRepository(User).findOne({
+            where: { passwordResetToken },
+        });
+        if (user) {
+            if (this.verificationTokenGenerator.verifyVerificationToken(passwordResetToken)) {
+                user.passwordHash = await this.passwordCipher.hash(password);
+                user.passwordResetToken = null;
+                return this.connection.getRepository(User).save(user);
+            } else {
+                throw new PasswordResetTokenExpiredError();
             }
         }
     }

@@ -7,10 +7,12 @@ import {
     Permission,
     RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
+    RequestPasswordResetMutationArgs,
+    ResetPasswordMutationArgs,
     UpdateCustomerPasswordMutationArgs,
     VerifyCustomerAccountMutationArgs,
 } from '../../../../../shared/generated-shop-types';
-import { VerificationTokenError } from '../../../common/error/errors';
+import { PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -71,11 +73,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ) {
-        const customer = await this.customerService.verifyCustomerEmailAddress(
-            ctx,
-            args.token,
-            args.password,
-        );
+        const customer = await this.customerService.verifyCustomerEmailAddress(args.token, args.password);
         if (customer && customer.user) {
             return super.createAuthenticatedSession(
                 ctx,
@@ -99,6 +97,38 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: RefreshCustomerVerificationMutationArgs,
     ) {
         return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
+    }
+
+    @Mutation()
+    @Allow(Permission.Public)
+    async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: RequestPasswordResetMutationArgs) {
+        return this.customerService.requestPasswordReset(ctx, args.emailAddress).then(() => true);
+    }
+
+    @Mutation()
+    @Allow(Permission.Public)
+    async resetPassword(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ResetPasswordMutationArgs,
+        @Context('req') req: Request,
+        @Context('res') res: Response,
+    ) {
+        const { token, password } = args;
+        const customer = await this.customerService.resetPassword(token, password);
+        if (customer && customer.user) {
+            return super.createAuthenticatedSession(
+                ctx,
+                {
+                    username: customer.user.identifier,
+                    password: args.password,
+                    rememberMe: true,
+                },
+                req,
+                res,
+            );
+        } else {
+            throw new PasswordResetTokenError();
+        }
     }
 
     @Mutation()

@@ -63,6 +63,18 @@ export class VerificationTokenExpiredError extends I18nError {
     }
 }
 
+export class PasswordResetTokenError extends I18nError {
+    constructor() {
+        super('error.password-reset-token-not-recognized', {}, 'BAD_PASSWORD_RESET_TOKEN');
+    }
+}
+
+export class PasswordResetTokenExpiredError extends I18nError {
+    constructor() {
+        super('error.password-reset-token-has-expired', {}, 'EXPIRED_PASSWORD_RESET_TOKEN');
+    }
+}
+
 export class NotVerifiedError extends I18nError {
     constructor() {
         super('error.email-address-not-verified', {}, 'NOT_VERIFIED');

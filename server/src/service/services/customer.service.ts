@@ -21,6 +21,7 @@ import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -130,7 +131,7 @@ export class CustomerService {
         return true;
     }
 
-    async refreshVerificationToken(ctx: RequestContext, emailAddress: string) {
+    async refreshVerificationToken(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.getUserByEmailAddress(emailAddress);
         if (user) {
             await this.userService.setVerificationToken(user);
@@ -141,14 +142,26 @@ export class CustomerService {
     }
 
     async verifyCustomerEmailAddress(
-        ctx: RequestContext,
         verificationToken: string,
         password: string,
     ): Promise<Customer | undefined> {
         const user = await this.userService.verifyUserByToken(verificationToken, password);
         if (user) {
-            const customer = await this.findOneByUserId(user.id);
-            return customer;
+            return this.findOneByUserId(user.id);
+        }
+    }
+
+    async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
+        const user = await this.userService.setPasswordResetToken(emailAddress);
+        if (user) {
+            this.eventBus.publish(new PasswordResetEvent(ctx, user));
+        }
+    }
+
+    async resetPassword(passwordResetToken: string, password: string): Promise<Customer | undefined> {
+        const user = await this.userService.resetPasswordByToken(passwordResetToken, password);
+        if (user) {
+            return this.findOneByUserId(user.id);
         }
     }
 

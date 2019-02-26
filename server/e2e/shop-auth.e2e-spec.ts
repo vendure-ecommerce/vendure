@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -6,8 +7,9 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
 } from '../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { GET_CUSTOMER } from '../../admin-ui/src/app/data/definitions/customer-definitions';
 import { RegisterCustomerInput } from '../../shared/generated-shop-types';
-import { CreateAdministrator, CreateRole, Permission } from '../../shared/generated-types';
+import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '../../shared/generated-types';
 import { NoopEmailGenerator } from '../src/config/email/noop-email-generator';
 import { defaultEmailTypes } from '../src/email/default-email-types';
 
@@ -29,6 +31,7 @@ const emailOptions = {
 
 describe('Shop auth & accounts', () => {
     const shopClient = new TestShopClient();
+    const adminClient = new TestAdminClient();
     const server = new TestServer();
 
     beforeAll(async () => {
@@ -42,6 +45,7 @@ describe('Shop auth & accounts', () => {
             },
         );
         await shopClient.init();
+        await adminClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -189,6 +193,68 @@ describe('Shop auth & accounts', () => {
         );
     });
 
+    describe('password reset', () => {
+        let passwordResetToken: string;
+        let customer: GetCustomer.Customer;
+
+        beforeAll(async () => {
+            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+                id: 'T_1',
+            });
+            customer = result.customer!;
+        });
+
+        beforeEach(() => {
+            sendEmailFn = jest.fn();
+        });
+
+        it('requestPasswordReset silently fails with invalid identifier', async () => {
+            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+                identifier: 'invalid-identifier',
+            });
+
+            await waitForSendEmailFn();
+            expect(result.requestPasswordReset).toBe(true);
+            expect(sendEmailFn).not.toHaveBeenCalled();
+            expect(passwordResetToken).not.toBeDefined();
+        });
+
+        it('requestPasswordReset sends reset token', async () => {
+            const passwordResetTokenPromise = getPasswordResetTokenPromise();
+            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+                identifier: customer.emailAddress,
+            });
+
+            passwordResetToken = await passwordResetTokenPromise;
+
+            expect(result.requestPasswordReset).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalled();
+            expect(passwordResetToken).toBeDefined();
+        });
+
+        it(
+            'resetPassword fails with wrong token',
+            assertThrowsWithMessage(
+                () =>
+                    shopClient.query(RESET_PASSWORD, {
+                        password: 'newPassword',
+                        token: 'bad-token',
+                    }),
+                `Password reset token not recognized`,
+            ),
+        );
+
+        it('resetPassword works with valid token', async () => {
+            const result = await shopClient.query(RESET_PASSWORD, {
+                token: passwordResetToken,
+                password: 'newPassword',
+            });
+
+            const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
+            expect(loginResult.user.identifier).toBe(customer.emailAddress);
+        });
+    });
+
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
         try {
             const status = await shopClient.queryStatus(operation, variables);
@@ -263,8 +329,9 @@ describe('Shop auth & accounts', () => {
     }
 });
 
-describe('Expiring registration token', () => {
+describe('Expiring tokens', () => {
     const shopClient = new TestShopClient();
+    const adminClient = new TestAdminClient();
     const server = new TestServer();
 
     beforeAll(async () => {
@@ -281,6 +348,7 @@ describe('Expiring registration token', () => {
             },
         );
         await shopClient.init();
+        await adminClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
@@ -315,6 +383,34 @@ describe('Expiring registration token', () => {
                 token: verificationToken,
             });
         }, `Verification token has expired. Use refreshCustomerVerification to send a new token.`),
+    );
+
+    it(
+        'attempting to reset password after token has expired throws',
+        assertThrowsWithMessage(async () => {
+            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
+                GET_CUSTOMER,
+                { id: 'T_1' },
+            );
+
+            const passwordResetTokenPromise = getPasswordResetTokenPromise();
+            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+                identifier: customer!.emailAddress,
+            });
+
+            const passwordResetToken = await passwordResetTokenPromise;
+
+            expect(result.requestPasswordReset).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalledTimes(1);
+            expect(passwordResetToken).toBeDefined();
+
+            await new Promise(resolve => setTimeout(resolve, 3));
+
+            return shopClient.query(RESET_PASSWORD, {
+                password: 'test',
+                token: passwordResetToken,
+            });
+        }, `Password reset token has expired.`),
     );
 });
 
@@ -396,6 +492,14 @@ function getVerificationTokenPromise(): Promise<string> {
     });
 }
 
+function getPasswordResetTokenPromise(): Promise<string> {
+    return new Promise<string>(resolve => {
+        sendEmailFn.mockImplementation(ctx => {
+            resolve(ctx.event.user.passwordResetToken);
+        });
+    });
+}
+
 const REGISTER_ACCOUNT = gql`
     mutation Register($input: RegisterCustomerInput!) {
         registerCustomerAccount(input: $input)
@@ -416,5 +520,22 @@ const VERIFY_EMAIL = gql`
 const REFRESH_TOKEN = gql`
     mutation RefreshToken($emailAddress: String!) {
         refreshCustomerVerification(emailAddress: $emailAddress)
+    }
+`;
+
+const REQUEST_PASSWORD_RESET = gql`
+    mutation RequestPasswordReset($identifier: String!) {
+        requestPasswordReset(emailAddress: $identifier)
+    }
+`;
+
+const RESET_PASSWORD = gql`
+    mutation ResetPassword($token: String!, $password: String!) {
+        resetPassword(token: $token, password: $password) {
+            user {
+                id
+                identifier
+            }
+        }
     }
 `;
