@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 
 import { LoginMutationArgs, LoginResult } from '../../../../../shared/generated-types';
+import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
 import { AuthService } from '../../../service/services/auth.service';
-import { ChannelService } from '../../../service/services/channel.service';
-import { CustomerService } from '../../../service/services/customer.service';
 import { UserService } from '../../../service/services/user.service';
 import { extractAuthToken } from '../../common/extract-auth-token';
 import { RequestContext } from '../../common/request-context';
@@ -76,6 +75,25 @@ export class BaseAuthResolver {
         return {
             user: this.publiclyAccessibleUser(session.user),
         };
+    }
+
+    /**
+     * Updates the password of an existing User.
+     */
+    protected async updatePassword(
+        ctx: RequestContext,
+        currentPassword: string,
+        newPassword: string,
+    ): Promise<boolean> {
+        const { activeUserId } = ctx;
+        if (!activeUserId) {
+            throw new InternalServerError(`error.no-active-user-id`);
+        }
+        const user = await this.userService.getUserById(activeUserId);
+        if (!user) {
+            throw new InternalServerError(`error.no-active-user-id`);
+        }
+        return this.userService.updatePassword(user, currentPassword, newPassword);
     }
 
     /**

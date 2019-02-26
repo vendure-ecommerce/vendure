@@ -7,6 +7,7 @@ import {
     Permission,
     RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
+    UpdateCustomerPasswordMutationArgs,
     VerifyCustomerAccountMutationArgs,
 } from '../../../../../shared/generated-shop-types';
 import { VerificationTokenError } from '../../../common/error/errors';
@@ -98,5 +99,14 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: RefreshCustomerVerificationMutationArgs,
     ) {
         return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async updateCustomerPassword(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateCustomerPasswordMutationArgs,
+    ): Promise<boolean> {
+        return super.updatePassword(ctx, args.currentPassword, args.newPassword);
     }
 }

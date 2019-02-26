@@ -162,6 +162,23 @@ describe('Shop customers', () => {
                 await shopClient.query(DELETE_ADDRESS, { id: 'T_2' });
             }, 'You are not currently authorized to perform this action'),
         );
+
+        it(
+            'updatePassword fails with incorrect current password',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(UPDATE_PASSWORD, { old: 'wrong', new: 'test2' });
+            }, 'The credentials did not match. Please check and try again'),
+        );
+
+        it('updatePassword works', async () => {
+            const response = await shopClient.query(UPDATE_PASSWORD, { old: 'test', new: 'test2' });
+
+            expect(response.updateCustomerPassword).toBe(true);
+
+            // Log out and log in with new password
+            const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'test2');
+            expect(loginResult.user.identifier).toBe(customer.emailAddress);
+        });
     });
 });
 
@@ -201,4 +218,10 @@ const UPDATE_CUSTOMER = gql`
         }
     }
     ${CUSTOMER_FRAGMENT}
+`;
+
+const UPDATE_PASSWORD = gql`
+    mutation UpdatePassword($old: String!, $new: String!) {
+        updateCustomerPassword(currentPassword: $old, newPassword: $new)
+    }
 `;

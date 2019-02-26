@@ -173,6 +173,7 @@ export class SimpleGraphQLClient {
                 password,
             },
         );
+        return result.login;
     }
 
     async asSuperAdmin() {

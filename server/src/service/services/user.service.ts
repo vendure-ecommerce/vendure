@@ -3,7 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import { ID } from '../../../../shared/shared-types';
-import { VerificationTokenExpiredError } from '../../common/error/errors';
+import { UnauthorizedError, VerificationTokenExpiredError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
@@ -85,5 +85,15 @@ export class UserService {
                 throw new VerificationTokenExpiredError();
             }
         }
+    }
+
+    async updatePassword(user: User, currentPassword: string, newPassword: string): Promise<boolean> {
+        const matches = await this.passwordCipher.check(currentPassword, user.passwordHash);
+        if (!matches) {
+            throw new UnauthorizedError();
+        }
+        user.passwordHash = await this.passwordCipher.hash(newPassword);
+        await this.connection.getRepository(User).save(user);
+        return true;
     }
 }
