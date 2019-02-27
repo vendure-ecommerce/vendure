@@ -1,0 +1,2 @@
+# Proxy the Vendure demo app to the /demo path
+/demo/*  http://37.139.25.167:3000/:splat  200
