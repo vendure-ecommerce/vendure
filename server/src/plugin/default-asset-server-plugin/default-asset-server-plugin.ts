@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
+import { Server } from 'http';
 import path from 'path';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
@@ -98,6 +99,7 @@ export interface DefaultAssetServerOptions {
  * results for subsequent calls.
  */
 export class DefaultAssetServerPlugin implements VendurePlugin {
+    private server: Server;
     private assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
     private readonly presets: ImageTransformPreset[] = [
@@ -139,13 +141,17 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         this.createAssetServer();
     }
 
+    onClose(): Promise<void> {
+        return new Promise(resolve => this.server.close(resolve));
+    }
+
     /**
      * Creates the image server instance
      */
     private createAssetServer() {
         const assetServer = express();
         assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
-        assetServer.listen(this.options.port);
+        this.server = assetServer.listen(this.options.port);
     }
 
     /**

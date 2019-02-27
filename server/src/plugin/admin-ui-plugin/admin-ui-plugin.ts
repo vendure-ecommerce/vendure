@@ -1,5 +1,6 @@
 import express from 'express';
 import fs from 'fs-extra';
+import { Server } from 'http';
 import path from 'path';
 
 import { AdminUiConfig } from '../../../../shared/shared-types';
@@ -54,6 +55,7 @@ export interface AdminUiOptions {
  * @docsCategory plugin
  */
 export class AdminUiPlugin implements VendurePlugin {
+    private server: Server;
     constructor(private options: AdminUiOptions) {}
 
     async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
@@ -75,7 +77,11 @@ export class AdminUiPlugin implements VendurePlugin {
         assetServer.use((req, res) => {
             res.sendFile(path.join(adminUiPath, 'index.html'));
         });
-        assetServer.listen(this.options.port);
+        this.server = assetServer.listen(this.options.port);
+    }
+
+    onClose(): Promise<void> {
+        return new Promise(resolve => this.server.close(resolve));
     }
 
     /**
