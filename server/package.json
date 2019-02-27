@@ -1,6 +1,6 @@
 {
   "name": "@vendure/core",
-  "version": "0.1.0-alpha.8",
+  "version": "0.1.0-alpha.9",
   "description": "A modern, headless ecommerce framework",
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "dateformat": "^3.0.3",
     "express": "^4.16.4",
     "fs-extra": "^7.0.1",
-    "graphql": "^14.0.0",
+    "graphql": "^14.1.1",
     "graphql-iso-date": "^3.6.1",
     "graphql-tag": "^2.10.0",
     "graphql-tools": "^4.0.3",

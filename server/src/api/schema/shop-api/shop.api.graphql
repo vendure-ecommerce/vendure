@@ -23,8 +23,6 @@ type Mutation {
     setOrderShippingMethod(shippingMethodId: ID!): Order
     addPaymentToOrder(input: PaymentInput!): Order
     setCustomerForOrder(input: CreateCustomerInput!): Order
-    "Create a new Address and associate it with the Customer specified by customerId"
-    createCustomerAddress(customerId: ID!, input: CreateAddressInput!): Address!
     login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
     "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
