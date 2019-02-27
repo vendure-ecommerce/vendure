@@ -92,3 +92,10 @@ export class TestPluginWithConfigAndBootstrap implements VendurePlugin {
         this.boostrapWasCalled(configService);
     }
 }
+
+export class TestPluginWithOnClose implements VendurePlugin {
+    constructor(private onCloseCallback: () => void) {}
+    onClose() {
+        this.onCloseCallback();
+    }
+}

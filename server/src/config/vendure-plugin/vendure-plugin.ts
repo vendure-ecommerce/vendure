@@ -68,6 +68,12 @@ export interface VendurePlugin {
 
     /**
      * @description
+     * This method is called when the app closes. It can be used for any clean-up logic such as stopping servers.
+     */
+    onClose?(): void | Promise<void>;
+
+    /**
+     * @description
      * The plugin may extend the default Vendure GraphQL shop api by implementing this method and providing extended
      * schema definitions and any required resolvers.
      */

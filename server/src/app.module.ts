@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnModuleDestroy } from '@nestjs/common';
 import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 import { GraphQLDateTime } from 'graphql-iso-date';
@@ -14,7 +14,7 @@ import { I18nService } from './i18n/i18n.service';
 @Module({
     imports: [ConfigModule, I18nModule, ApiModule, EmailModule],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleDestroy {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
@@ -41,6 +41,14 @@ export class AppModule implements NestModule {
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {
             consumer.apply(...handlers).forRoutes(route);
+        }
+    }
+
+    async onModuleDestroy() {
+        for (const plugin of this.configService.plugins) {
+            if (plugin.onClose) {
+                await plugin.onClose();
+            }
         }
     }
 

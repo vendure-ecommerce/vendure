@@ -8,6 +8,7 @@ import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
     TestAPIExtensionPlugin,
     TestPluginWithConfigAndBootstrap,
+    TestPluginWithOnClose,
     TestPluginWithProvider,
 } from './fixtures/test-plugins';
 import { TestAdminClient, TestShopClient } from './test-client';
@@ -18,6 +19,7 @@ describe('Plugins', () => {
     const shopClient = new TestShopClient();
     const server = new TestServer();
     const bootstrapMockFn = jest.fn();
+    const onCloseFn = jest.fn();
 
     beforeAll(async () => {
         const token = await server.init(
@@ -30,6 +32,7 @@ describe('Plugins', () => {
                     new TestPluginWithConfigAndBootstrap(bootstrapMockFn),
                     new TestAPIExtensionPlugin(),
                     new TestPluginWithProvider(),
+                    new TestPluginWithOnClose(onCloseFn),
                 ],
             },
         );
@@ -73,5 +76,10 @@ describe('Plugins', () => {
             }
         `);
         expect(result.names).toEqual(['seon', 'linda', 'hong']);
+    });
+
+    it('calls onClose method when app is closed', async () => {
+        await server.destroy();
+        expect(onCloseFn).toHaveBeenCalled();
     });
 });
