@@ -20,7 +20,6 @@ export const devConfig: VendureConfig = {
         sessionSecret: 'some-secret',
         requireVerification: false,
     },
-    entityIdStrategy: new TestingEntityIdStrategy(),
     port: API_PORT,
     adminApiPath: ADMIN_API_PATH,
     shopApiPath: SHOP_API_PATH,
