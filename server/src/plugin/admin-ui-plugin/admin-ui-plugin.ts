@@ -7,26 +7,64 @@ import { VendureConfig } from '../../config/vendure-config';
 import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
 import { createProxyHandler } from '../plugin-utils';
 
+/**
+ * @description
+ * Configuration options for the {@link AdminUiPlugin}.
+ *
+ * @docsCategory plugin
+ */
 export interface AdminUiOptions {
+    /**
+     * @description
+     * The hostname of the server serving the static admin ui files.
+     *
+     * @default 'localhost'
+     */
     hostname?: string;
+    /**
+     * @description
+     * The port on which the server will listen.
+     */
     port: number;
+    /**
+     * @description
+     * The hostname of the Vendure server which the admin ui will be making API calls
+     * to. If set to "auto", the admin ui app will determine the hostname from the
+     * current location (i.e. `window.location.hostname`).
+     *
+     * @default 'auto'
+     */
+    apiHost?: string | 'auto';
+    /**
+     * @description
+     * The port of the Vendure server which the admin ui will be making API calls
+     * to. If set to "auto", the admin ui app will determine the port from the
+     * current location (i.e. `window.location.port`).
+     *
+     * @default 'auto'
+     */
+    apiPort?: number | 'auto';
 }
 
 /**
+ * @description
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path
  * of the main Vendure server.
+ *
+ * @docsCategory plugin
  */
 export class AdminUiPlugin implements VendurePlugin {
     constructor(private options: AdminUiOptions) {}
 
     async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
         const route = 'admin';
-        const { hostname, port, adminApiPath } = config;
         config.middleware.push({
             handler: createProxyHandler({ ...this.options, route }, !config.silent),
             route,
         });
-        await this.overwriteAdminUiConfig(hostname, port, adminApiPath);
+        const { adminApiPath } = config;
+        const { apiHost, apiPort } = this.options;
+        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath);
         return config;
     }
 
@@ -44,7 +82,7 @@ export class AdminUiPlugin implements VendurePlugin {
      * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
      * the server admin API.
      */
-    private async overwriteAdminUiConfig(host: string, port: number, adminApiPath: string) {
+    private async overwriteAdminUiConfig(host: string | 'auto', port: number | 'auto', adminApiPath: string) {
         const adminUiConfigPath = path.join(this.getAdminUiPath(), 'vendure-ui-config.json');
         const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
         const config: AdminUiConfig = JSON.parse(adminUiConfig);

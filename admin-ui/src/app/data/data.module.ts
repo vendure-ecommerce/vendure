@@ -39,6 +39,8 @@ export function createApollo(
     fetchAdapter: FetchAdapter,
 ): ApolloClientOptions<any> {
     const { apiHost, apiPort, adminApiPath } = getAppConfig();
+    const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
+    const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : apiPort;
     return {
         link: ApolloLink.from([
             stateLink,
@@ -54,7 +56,7 @@ export function createApollo(
                 }
             }),
             createUploadLink({
-                uri: `${apiHost}:${apiPort}/${adminApiPath}`,
+                uri: `${host}${port}/${adminApiPath}`,
                 fetch: fetchAdapter.fetch,
             }),
         ]),
