@@ -12,11 +12,54 @@
 <div class="section-1">
     <div class="content">
         <h2>E-commerce for the Modern Web</h2>
-        <p class="lead">Vendure is a new e-commerce framework built for the developers who are building the modern web.<br> 
-            <img src="{{ "svg/clr-icon-book-light.svg" | relURL }}" alt="check icon"> Read: <a href="{{ "blog/introducing-vendure" | relURL }}">Introducing Vendure</a></p>
-        <iframe src="https://player.vimeo.com/video/315862294" 
-            title="intro video"
-            class="vimeo-player" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        <div class="graphql-playground-widget">
+            <div class="graphql-playground-tab" data-name="Product List">
+                query {
+                  products(options: { skip: 0 take: 3 }) {
+                    totalItems
+                    items {
+                      name
+                      variants {
+                        sku
+                        name
+                        price
+                      }
+                    }
+                  }
+                }
+            </div>
+            <div class="graphql-playground-tab" data-name="Product Search">
+                query {
+                  search(input: { term: "camera" }) {
+                    items {
+                      sku
+                      productName
+                    }
+                  }
+                }
+            </div>
+            <div class="graphql-playground-tab" data-name="Add To Order">
+                mutation {
+                  addItemToOrder(productVariantId: 5 quantity: 1) {
+                    code
+                    total
+                    state
+                    lines {
+                      productVariant {
+                        id
+                        name
+                      }
+                      unitPrice
+                      quantity
+                      totalPrice
+                    }
+                  }
+                }
+            </div>
+        </div>
+        <p class="lead">Vendure is a new e-commerce framework built for the developers who are building the modern web.<br>
+                   <img src="{{ "svg/clr-icon-book-light.svg" | relURL }}" alt="check icon"> Read: <a href="{{ "blog/introducing-vendure" | relURL }}">Introducing Vendure</a></p>
+
         <div class="stack-logos">
             <div class="stack-logo ts-logo">
                 <img src="{{ "logo/ts-logo.svg" | relURL }}">
@@ -110,6 +153,11 @@
 <div class="section-4">
     <div class="content">
         <h2>Get Started</h2>
+
+<iframe src="https://player.vimeo.com/video/315862294"
+        title="intro video"
+        class="vimeo-player" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
         <div class="getting-started">
             <div class="install-code">
                 <div class="highlight">

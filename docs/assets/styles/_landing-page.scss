@@ -53,17 +53,17 @@
         }
     }
 
+    .vimeo-player {
+        width: 100%;
+        height: 40vw;
+        max-height: 80vh;
+        margin-bottom: 30px;
+    }
+
     .section-1 {
         text-align: center;
         color: $gray-300;
         @include texture-bg;
-
-        .vimeo-player {
-            width: 100%;
-            height: 40vw;
-            max-height: 80vh;
-            margin-bottom: 30px;
-        }
 
         .stack-logos {
             display: flex;
