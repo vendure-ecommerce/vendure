@@ -15,6 +15,10 @@ function copyEmailTemplates() {
     return src(['../src/email/templates/**/*']).pipe(dest('../dist/cli/assets/email-templates'));
 }
 
+function copyI18nMessages() {
+    return src(['../src/i18n/messages/**/*']).pipe(dest('../dist/server/src/i18n/messages'));
+}
+
 function copyCliAssets() {
     return src(['../cli/assets/**/*']).pipe(dest('../dist/cli/assets'));
 }
@@ -60,6 +64,7 @@ function buildAndCopyAdminUi() {
 export const build = parallel(
     copySchemas,
     copyEmailTemplates,
+    copyI18nMessages,
     copyCliAssets,
     copyCliImages,
     copyCliProductData,
