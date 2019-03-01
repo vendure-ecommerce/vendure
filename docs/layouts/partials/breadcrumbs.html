@@ -34,7 +34,7 @@
     {{ if .currentPage.Parent }}
         {{ template "breadcrumb" dict "currentPage" .currentPage.Parent }}
     {{ end }}
-    {{ $title := cond (eq .currentPage.RelPermalink "/docs/" ) "Docs" .currentPage.Title }}
+    {{ $title := cond (eq .currentPage.RelPermalink "/docs/" ) "Docs" (title .currentPage.Title) }}
     {{ if (ne .currentPage.Parent .IsHome) }}
         <li>
             {{ if eq .id .currentPage.UniqueID }}
