@@ -14,8 +14,7 @@ import {
     AuthOptions,
     EmailOptions,
     ImportExportOptions,
-    OrderMergeOptions,
-    OrderProcessOptions,
+    OrderOptions,
     PaymentOptions,
     PromotionOptions,
     ShippingOptions,
@@ -90,12 +89,8 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.shippingOptions;
     }
 
-    get orderMergeOptions(): OrderMergeOptions {
-        return this.activeConfig.orderMergeOptions;
-    }
-
-    get orderProcessOptions(): OrderProcessOptions<any> {
-        return this.activeConfig.orderProcessOptions;
+    get orderOptions(): OrderOptions {
+        return this.activeConfig.orderOptions;
     }
 
     get paymentOptions(): PaymentOptions {

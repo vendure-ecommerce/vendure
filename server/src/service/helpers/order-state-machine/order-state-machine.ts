@@ -64,8 +64,8 @@ export class OrderStateMachine {
             transtitions,
             onTransitionStart,
             onTransitionEnd,
-            onError,
-        } = this.configService.orderProcessOptions;
+            onTransitionError,
+        } = this.configService.orderOptions.process;
 
         const allTransitions = this.mergeTransitionDefinitions(orderStateTransitions, transtitions);
         const initialState = 'AddingItems';
@@ -88,8 +88,8 @@ export class OrderStateMachine {
                 return this.onTransitionEnd(fromState, toState, data);
             },
             onError: (fromState, toState, message) => {
-                if (typeof onError === 'function') {
-                    onError(fromState, toState, message);
+                if (typeof onTransitionError === 'function') {
+                    onTransitionError(fromState, toState, message);
                 }
                 throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {
                     fromState,

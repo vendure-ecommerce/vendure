@@ -24,7 +24,7 @@ export class OrderMerger {
      */
     merge(guestOrder?: Order, existingOrder?: Order): MergeResult {
         if (guestOrder && !this.orderEmpty(guestOrder) && existingOrder && !this.orderEmpty(existingOrder)) {
-            const { mergeStrategy } = this.configService.orderMergeOptions;
+            const { mergeStrategy } = this.configService.orderOptions;
             const mergedLines = mergeStrategy.merge(guestOrder, existingOrder);
             return {
                 order: existingOrder,

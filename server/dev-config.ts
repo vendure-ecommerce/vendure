@@ -44,7 +44,6 @@ export const devConfig: VendureConfig = {
         // password: 'Be70',
         // database: 'vendure',
     },
-    orderProcessOptions: {} as OrderProcessOptions<any>,
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },

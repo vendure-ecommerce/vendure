@@ -61,10 +61,10 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
     },
-    orderProcessOptions: {},
-    orderMergeOptions: {
+    orderOptions: {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
+        process: {},
     },
     paymentOptions: {
         paymentMethodHandlers: [],

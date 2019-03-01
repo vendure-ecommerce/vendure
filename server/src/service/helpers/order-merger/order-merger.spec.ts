@@ -16,7 +16,7 @@ describe('OrderMerger', () => {
             providers: [OrderMerger, { provide: ConfigService, useClass: MockConfigService }],
         }).compile();
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
-        mockConfigService.orderMergeOptions = {
+        mockConfigService.orderOptions = {
             mergeStrategy: new MergeOrdersStrategy(),
         };
         orderMerger = module.get(OrderMerger);

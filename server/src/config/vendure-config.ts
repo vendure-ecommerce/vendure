@@ -138,13 +138,18 @@ export interface OrderProcessOptions<T extends string> {
      * @description
      * Define a custom error handler function for transition errors.
      */
-    onError?(fromState: T, toState: T, message?: string): void;
+    onTransitionError?(fromState: T, toState: T, message?: string): void;
 }
 
 /**
  * @docsCategory orders
  */
-export interface OrderMergeOptions {
+export interface OrderOptions {
+    /**
+     * @description
+     * Defines custom states and transition logic for the order process state machine.
+     */
+    process: OrderProcessOptions<string>;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
@@ -449,15 +454,9 @@ export interface VendureConfig {
     importExportOptions?: ImportExportOptions;
     /**
      * @description
-     * Define the strategies governing how Orders are merged when an existing
-     * Customer signs in.
+     * Configuration settings governing how orders are handled.
      */
-    orderMergeOptions?: OrderMergeOptions;
-    /**
-     * @description
-     * Defines custom states in the order process finite state machine.
-     */
-    orderProcessOptions?: OrderProcessOptions<any>;
+    orderOptions?: OrderOptions;
     /**
      * @description
      * Custom Express middleware for the server.
