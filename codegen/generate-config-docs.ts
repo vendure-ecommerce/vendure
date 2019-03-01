@@ -12,10 +12,7 @@ const docsUrl = '/docs/configuration/';
 // The directory in which the markdown files will be saved
 const outputPath = path.join(__dirname, '../docs/content/docs/configuration');
 // The directories to scan for TypeScript source files
-const tsSourceDirs = [
-    '/server/src/',
-    '/shared/',
-];
+const tsSourceDirs = ['/server/src/', '/shared/'];
 
 // tslint:disable:no-console
 interface MethodParameterInfo {
@@ -53,11 +50,14 @@ interface DeclarationInfo {
 
 interface InterfaceInfo extends DeclarationInfo {
     kind: 'interface';
+    extends?: string;
     members: Array<PropertyInfo | MethodInfo>;
 }
 
 interface ClassInfo extends DeclarationInfo {
     kind: 'class';
+    implements?: string;
+    extends?: string;
     members: Array<PropertyInfo | MethodInfo>;
 }
 
@@ -77,11 +77,13 @@ type TypeMap = Map<string, string>;
 const globalTypeMap: TypeMap = new Map();
 
 const tsFiles = tsSourceDirs
-    .map(scanPath => klawSync( path.join(__dirname, '../', scanPath), {
-        nodir: true,
-        filter: item => path.extname(item.path) === '.ts',
-        traverseAll: true,
-    }))
+    .map(scanPath =>
+        klawSync(path.join(__dirname, '../', scanPath), {
+            nodir: true,
+            filter: item => path.extname(item.path) === '.ts',
+            traverseAll: true,
+        }),
+    )
     .reduce((allFiles, files) => [...allFiles, ...files], [])
     .map(item => item.path);
 
@@ -149,11 +151,11 @@ function generateConfigDocs(filePaths: string[], hugoOutputPath: string, typeMap
         if (!fs.existsSync(indexFile)) {
             const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;
             fs.writeFileSync(indexFile, indexFileContent);
-            generatedCount ++;
+            generatedCount++;
         }
 
         fs.writeFileSync(path.join(categoryDir, info.fileName + '.md'), markdown);
-        generatedCount ++;
+        generatedCount++;
     }
 
     if (declarationInfos.length) {
@@ -220,6 +222,7 @@ function parseDeclaration(
         return {
             ...info,
             kind: 'interface',
+            extends: getHeritageClauseText(statement, ts.SyntaxKind.ExtendsKeyword),
             members: parseMembers(statement.members),
         };
     } else if (ts.isTypeAliasDeclaration(statement)) {
@@ -227,15 +230,35 @@ function parseDeclaration(
             ...info,
             type: statement.type,
             kind: 'typeAlias',
-            members:  ts.isTypeLiteralNode(statement.type) ? parseMembers(statement.type.members) : undefined,
+            members: ts.isTypeLiteralNode(statement.type) ? parseMembers(statement.type.members) : undefined,
         };
     } else if (ts.isClassDeclaration(statement)) {
         return {
             ...info,
             kind: 'class',
             members: parseMembers(statement.members),
+            extends: getHeritageClauseText(statement, ts.SyntaxKind.ExtendsKeyword),
+            implements: getHeritageClauseText(statement, ts.SyntaxKind.ImplementsKeyword),
         };
     }
+}
+
+/**
+ * Returns the text of any "extends" or "implements" clause of a class or interface.
+ */
+function getHeritageClauseText(
+    statement: ts.ClassDeclaration | ts.InterfaceDeclaration,
+    kind: ts.SyntaxKind.ExtendsKeyword | ts.SyntaxKind.ImplementsKeyword,
+): string | undefined {
+    const { heritageClauses } = statement;
+    if (!heritageClauses) {
+        return;
+    }
+    const clause = heritageClauses.find(cl => cl.token === kind);
+    if (!clause) {
+        return;
+    }
+    return clause.getText();
 }
 
 /**
@@ -262,13 +285,12 @@ function parseMembers(
         const modifiers = member.modifiers ? member.modifiers.map(m => m.getText()) : [];
         const isPrivate = modifiers.includes('private');
         if (
-            !isPrivate && (
-                ts.isPropertySignature(member) ||
+            !isPrivate &&
+            (ts.isPropertySignature(member) ||
                 ts.isMethodSignature(member) ||
                 ts.isPropertyDeclaration(member) ||
                 ts.isMethodDeclaration(member) ||
-                ts.isConstructorDeclaration(member)
-            )
+                ts.isConstructorDeclaration(member))
         ) {
             const name = member.name ? member.name.getText() : 'constructor';
             let description = '';
@@ -367,7 +389,11 @@ function renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
     const { fullText, members } = interfaceInfo;
     let output = '';
     output += `\`\`\`TypeScript\n`;
-    output += `interface ${fullText} {\n`;
+    output += `interface ${fullText} `;
+    if (interfaceInfo.extends) {
+        output += interfaceInfo.extends + ' ';
+    }
+    output += `{\n`;
     output += members.map(member => `  ${member.fullText}`).join(`\n`);
     output += `\n}\n`;
     output += `\`\`\`\n`;
@@ -379,23 +405,32 @@ function renderClassSignature(classInfo: ClassInfo): string {
     const { fullText, members } = classInfo;
     let output = '';
     output += `\`\`\`TypeScript\n`;
-    output += `class ${fullText} {\n`;
-    output += members.map(member => {
-        if (member.kind === 'method') {
-            const args = member.parameters
-                .map(p => {
-                    return `${p.name}: ${p.type}`;
-                })
-                .join(', ');
-            if (member.fullText === 'constructor') {
-                return `  constructor(${args})`;
+    output += `class ${fullText} `;
+    if (classInfo.extends) {
+        output += classInfo.extends + ' ';
+    }
+    if (classInfo.implements) {
+        output += classInfo.implements + ' ';
+    }
+    output += `{\n`;
+    output += members
+        .map(member => {
+            if (member.kind === 'method') {
+                const args = member.parameters
+                    .map(p => {
+                        return `${p.name}: ${p.type}`;
+                    })
+                    .join(', ');
+                if (member.fullText === 'constructor') {
+                    return `  constructor(${args})`;
+                } else {
+                    return `  ${member.fullText}(${args}) => ${member.type};`;
+                }
             } else {
-                return `  ${member.fullText}(${args}) => ${member.type};`;
+                return `  ${member.fullText}`;
             }
-        } else {
-            return `  ${member.fullText}`;
-        }
-    }).join(`\n`);
+        })
+        .join(`\n`);
     output += `\n}\n`;
     output += `\`\`\`\n`;
 
@@ -426,7 +461,9 @@ function renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo, knownTyp
         let type = '';
         if (member.kind === 'property') {
             type = renderType(member.type, knownTypeMap);
-            defaultParam = member.defaultValue ? `default="${member.defaultValue}" ` : '';
+            defaultParam = member.defaultValue
+                ? `default="${renderType(member.defaultValue, knownTypeMap)}" `
+                : '';
         } else {
             const args = member.parameters
                 .map(p => {
@@ -438,7 +475,6 @@ function renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo, knownTyp
             } else {
                 type = `(${args}) => ${renderType(member.type, knownTypeMap)}`;
             }
-
         }
         output += `### ${member.name}\n\n`;
         output += `{{< member-info kind="${member.kind}" type="${type}" ${defaultParam}>}}\n\n`;

@@ -9,7 +9,7 @@
     {{ if isset .Params "default" }}
     <div class="default">
         <div class="label">default:</div>
-        <code>{{ .Get "default" }}</code>
+        <code>{{ .Get "default" | safeHTML }}</code>
     </div>
     {{ end }}
 </div>
