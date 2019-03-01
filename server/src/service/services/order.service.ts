@@ -5,10 +5,16 @@ import { PaymentInput } from '../../../../shared/generated-shop-types';
 import { CreateAddressInput, ShippingMethodQuote } from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    IllegalOperationError,
+    OrderItemsLimitError,
+    UserInputError,
+} from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Customer } from '../../entity/customer/customer.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -33,6 +39,7 @@ import { ProductVariantService } from './product-variant.service';
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
         private productVariantService: ProductVariantService,
         private customerService: CustomerService,
         private countryService: CountryService,
@@ -168,6 +175,7 @@ export class OrderService {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
+        this.assertNotOverOrderItemsLimit(order, quantity);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
         let orderLine = order.lines.find(line => idsAreEqual(line.productVariant.id, productVariantId));
 
@@ -191,6 +199,7 @@ export class OrderService {
         this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         const currentQuantity = orderLine.quantity;
+        this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
         if (currentQuantity < quantity) {
             if (!orderLine.items) {
                 orderLine.items = [];
@@ -376,6 +385,18 @@ export class OrderService {
     private assertAddingItemsState(order: Order) {
         if (order.state !== 'AddingItems') {
             throw new IllegalOperationError(`error.order-contents-may-only-be-modified-in-addingitems-state`);
+        }
+    }
+
+    /**
+     * Throws if adding the given quantity would take the total order items over the
+     * maximum limit specified in the config.
+     */
+    private assertNotOverOrderItemsLimit(order: Order, quantityToAdd: number) {
+        const currentItemsCount = order.lines.reduce((count, line) => count + line.quantity, 0);
+        const { orderItemsLimit } = this.configService.orderOptions;
+        if (orderItemsLimit < currentItemsCount + quantityToAdd) {
+            throw new OrderItemsLimitError(orderItemsLimit);
         }
     }
 

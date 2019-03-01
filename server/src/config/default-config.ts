@@ -62,6 +62,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         shippingCalculators: [defaultShippingCalculator],
     },
     orderOptions: {
+        orderItemsLimit: 999,
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: {},

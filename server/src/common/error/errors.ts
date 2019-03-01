@@ -80,3 +80,9 @@ export class NotVerifiedError extends I18nError {
         super('error.email-address-not-verified', {}, 'NOT_VERIFIED');
     }
 }
+
+export class OrderItemsLimitError extends I18nError {
+    constructor(maxItems: number) {
+        super('error.order-items-limit-exceeded', { maxItems }, 'ORDER_ITEMS_LIMIT_EXCEEDED');
+    }
+}

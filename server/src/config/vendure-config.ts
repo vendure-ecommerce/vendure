@@ -109,6 +109,9 @@ export interface AuthOptions {
 }
 
 /**
+ * @description
+ * Defines custom states and transition logic for the order process state machine.
+ *
  * @docsCategory orders
  */
 export interface OrderProcessOptions<T extends string> {
@@ -143,25 +146,43 @@ export interface OrderProcessOptions<T extends string> {
 
 /**
  * @docsCategory orders
+ *
+ * @docsWeight 0
  */
 export interface OrderOptions {
     /**
      * @description
+     * The maximum number of individual items allowed in a single order. This option exists
+     * to prevent excessive resource usage when dealing with very large orders. For example,
+     * if an order contains a million items, then any operations on that order (modifying a quantity,
+     * adding or removing an item) will require Vendure to loop through all million items
+     * to perform price calculations against active promotions and taxes. This can have a significant
+     * performance impact for very large values.
+     *
+     * @default 999
+     */
+    orderItemsLimit?: number;
+    /**
+     * @description
      * Defines custom states and transition logic for the order process state machine.
      */
-    process: OrderProcessOptions<string>;
+    process?: OrderProcessOptions<string>;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
      * signing in.
+     *
+     * @default MergeOrdersStrategy
      */
-    mergeStrategy: OrderMergeStrategy;
+    mergeStrategy?: OrderMergeStrategy;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
      * signing in as part of the checkout flow.
+     *
+     * @default UseGuestStrategy
      */
-    checkoutMergeStrategy: OrderMergeStrategy;
+    checkoutMergeStrategy?: OrderMergeStrategy;
 }
 
 /**

@@ -18,6 +18,7 @@
     "order-contents-may-only-be-modified-in-addingitems-state": "Order contents may only be modified when in the \"AddingItems\" state",
     "order-does-not-contain-line-with-id": "This order does not contain an OrderLine with the id { id }",
     "order-item-quantity-must-be-positive": "{ quantity } is not a valid quantity for an OrderItem",
+    "order-items-limit-exceeded": "Cannot add items. An order may consist of a maximum of { maxItems } items",
     "payment-may-only-be-added-in-arrangingpayment-state": "A Payment may only be added when Order is in \"ArrangingPayment\" state",
     "password-reset-token-has-expired": "Password reset token has expired.",
     "password-reset-token-not-recognized": "Password reset token not recognized",

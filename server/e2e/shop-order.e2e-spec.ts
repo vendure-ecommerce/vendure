@@ -39,6 +39,9 @@ describe('Shop orders', () => {
                 paymentOptions: {
                     paymentMethodHandlers: [testPaymentMethod, testFailingPaymentMethod],
                 },
+                orderOptions: {
+                    orderItemsLimit: 99,
+                },
             },
         );
         await shopClient.init();
@@ -131,6 +134,16 @@ describe('Shop orders', () => {
             expect(result.addItemToOrder.lines[0].quantity).toBe(3);
         });
 
+        it(
+            'addItemToOrder errors when going beyond orderItemsLimit',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(ADD_ITEM_TO_ORDER, {
+                    productVariantId: 'T_1',
+                    quantity: 100,
+                });
+            }, 'Cannot add items. An order may consist of a maximum of 99 items'),
+        );
+
         it('adjustItemQuantity adjusts the quantity', async () => {
             const result = await shopClient.query(ADJUST_ITEM_QUENTITY, {
                 orderItemId: firstOrderItemId,
@@ -140,6 +153,16 @@ describe('Shop orders', () => {
             expect(result.adjustItemQuantity.lines.length).toBe(1);
             expect(result.adjustItemQuantity.lines[0].quantity).toBe(50);
         });
+
+        it(
+            'adjustItemQuantity errors when going beyond orderItemsLimit',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(ADJUST_ITEM_QUENTITY, {
+                    orderItemId: firstOrderItemId,
+                    quantity: 100,
+                });
+            }, 'Cannot add items. An order may consist of a maximum of 99 items'),
+        );
 
         it(
             'adjustItemQuantity errors with a negative quantity',

@@ -7,6 +7,8 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * @description
  * Merges both Orders. If the guest order contains items which are already in the
  * existing Order, the guest Order quantity will replace that of the existing Order.
+ *
+ * @docsCategory orders
  */
 export class MergeOrdersStrategy implements OrderMergeStrategy {
     merge(guestOrder: Order, existingOrder: Order): OrderLine[] {
