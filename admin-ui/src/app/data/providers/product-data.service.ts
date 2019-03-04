@@ -3,27 +3,27 @@ import { bufferCount, concatMap } from 'rxjs/operators';
 import {
     AddOptionGroupToProduct,
     CreateAssets,
+    CreateCollection,
     CreateCollectionInput,
     CreateProduct,
-    CreateProductCategory,
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     DeleteProduct,
     GenerateProductVariants,
     GetAssetList,
-    GetProductCategory,
-    GetProductCategoryList,
+    GetCollection,
+    GetCollectionList,
     GetProductList,
     GetProductOptionGroups,
     GetProductWithVariants,
+    MoveCollection,
     MoveCollectionInput,
-    MoveProductCategory,
     RemoveOptionGroupFromProduct,
     SearchProducts,
+    UpdateCollection,
     UpdateCollectionInput,
     UpdateProduct,
-    UpdateProductCategory,
     UpdateProductInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -34,22 +34,22 @@ import { getDefaultLanguage } from '../../common/utilities/get-default-language'
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_ASSETS,
+    CREATE_COLLECTION,
     CREATE_PRODUCT,
-    CREATE_PRODUCT_CATEGORY,
     CREATE_PRODUCT_OPTION_GROUP,
     DELETE_PRODUCT,
     GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
-    GET_PRODUCT_CATEGORY,
-    GET_PRODUCT_CATEGORY_LIST,
+    GET_COLLECTION,
+    GET_COLLECTION_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
-    MOVE_PRODUCT_CATEGORY,
+    MOVE_COLLECTION,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     SEARCH_PRODUCTS,
+    UPDATE_COLLECTION,
     UPDATE_PRODUCT,
-    UPDATE_PRODUCT_CATEGORY,
     UPDATE_PRODUCT_VARIANTS,
 } from '../definitions/product-definitions';
 
@@ -205,9 +205,9 @@ export class ProductDataService {
         });
     }
 
-    getProductCategories(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetProductCategoryList.Query, GetProductCategoryList.Variables>(
-            GET_PRODUCT_CATEGORY_LIST,
+    getCollections(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetCollectionList.Query, GetCollectionList.Variables>(
+            GET_COLLECTION_LIST,
             {
                 options: {
                     take,
@@ -218,19 +218,16 @@ export class ProductDataService {
         );
     }
 
-    getProductCategory(id: string) {
-        return this.baseDataService.query<GetProductCategory.Query, GetProductCategory.Variables>(
-            GET_PRODUCT_CATEGORY,
-            {
-                id,
-                languageCode: getDefaultLanguage(),
-            },
-        );
+    getCollection(id: string) {
+        return this.baseDataService.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            id,
+            languageCode: getDefaultLanguage(),
+        });
     }
 
-    createProductCategory(input: CreateCollectionInput) {
-        return this.baseDataService.mutate<CreateProductCategory.Mutation, CreateProductCategory.Variables>(
-            CREATE_PRODUCT_CATEGORY,
+    createCollection(input: CreateCollectionInput) {
+        return this.baseDataService.mutate<CreateCollection.Mutation, CreateCollection.Variables>(
+            CREATE_COLLECTION,
             {
                 input: pick(input, [
                     'translations',
@@ -243,9 +240,9 @@ export class ProductDataService {
         );
     }
 
-    updateProductCategory(input: UpdateCollectionInput) {
-        return this.baseDataService.mutate<UpdateProductCategory.Mutation, UpdateProductCategory.Variables>(
-            UPDATE_PRODUCT_CATEGORY,
+    updateCollection(input: UpdateCollectionInput) {
+        return this.baseDataService.mutate<UpdateCollection.Mutation, UpdateCollection.Variables>(
+            UPDATE_COLLECTION,
             {
                 input: pick(input, [
                     'id',
@@ -259,11 +256,11 @@ export class ProductDataService {
         );
     }
 
-    moveProductCategory(inputs: MoveCollectionInput[]) {
+    moveCollection(inputs: MoveCollectionInput[]) {
         return from(inputs).pipe(
             concatMap(input =>
-                this.baseDataService.mutate<MoveProductCategory.Mutation, MoveProductCategory.Variables>(
-                    MOVE_PRODUCT_CATEGORY,
+                this.baseDataService.mutate<MoveCollection.Mutation, MoveCollection.Variables>(
+                    MOVE_COLLECTION,
                     { input },
                 ),
             ),

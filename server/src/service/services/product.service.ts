@@ -26,8 +26,8 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
+import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
-import { ProductCategoryService } from './product-category.service';
 import { ProductVariantService } from './product-variant.service';
 import { TaxRateService } from './tax-rate.service';
 
@@ -47,7 +47,7 @@ export class ProductService {
         private channelService: ChannelService,
         private assetUpdater: AssetUpdater,
         private productVariantService: ProductVariantService,
-        private productCategoryService: ProductCategoryService,
+        private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
@@ -181,7 +181,7 @@ export class ProductService {
     }
 
     private async getProductIdsInCategory(categoryId: ID): Promise<ID[]> {
-        const facetValueIds = await this.productCategoryService.getFacetValueIdsForCategory(categoryId);
+        const facetValueIds = await this.collectionService.getFacetValueIdsForCategory(categoryId);
         const qb = this.connection
             .getRepository(Product)
             .createQueryBuilder('product')

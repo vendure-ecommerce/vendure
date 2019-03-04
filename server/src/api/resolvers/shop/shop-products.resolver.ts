@@ -1,19 +1,19 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import {
-    ProductCategoriesQueryArgs,
-    ProductCategoryQueryArgs,
+    CollectionQueryArgs,
+    CollectionsQueryArgs,
     ProductQueryArgs,
-    ProductsQueryArgs,
     SearchResponse,
-} from '../../../../../shared/generated-types';
+} from '../../../../../shared/generated-shop-types';
 import { Omit } from '../../../../../shared/omit';
 import { PaginatedList } from '../../../../../shared/shared-types';
+import { ProductsQueryArgs } from '../../../../dist/shared/generated-shop-types';
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { ProductCategoryService } from '../../../service';
+import { CollectionService } from '../../../service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
@@ -26,7 +26,7 @@ export class ShopProductsResolver {
         private productService: ProductService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
-        private productCategoryService: ProductCategoryService,
+        private collectionService: CollectionService,
     ) {}
 
     @Query()
@@ -46,19 +46,19 @@ export class ShopProductsResolver {
     }
 
     @Query()
-    async productCategories(
+    async collections(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductCategoriesQueryArgs,
+        @Args() args: CollectionsQueryArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.productCategoryService.findAll(ctx, args.options || undefined);
+        return this.collectionService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
-    async productCategory(
+    async collection(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductCategoryQueryArgs,
+        @Args() args: CollectionQueryArgs,
     ): Promise<Translated<Collection> | undefined> {
-        return this.productCategoryService.findOne(ctx, args.id);
+        return this.collectionService.findOne(ctx, args.id);
     }
 
     @Query()

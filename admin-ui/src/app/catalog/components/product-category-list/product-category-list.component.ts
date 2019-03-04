@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetProductCategoryList } from 'shared/generated-types';
+import { GetCollectionList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -15,8 +15,8 @@ import { RearrangeEvent } from '../product-category-tree/product-category-tree.c
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCategoryListComponent extends BaseListComponent<
-    GetProductCategoryList.Query,
-    GetProductCategoryList.Items
+    GetCollectionList.Query,
+    GetCollectionList.Items
 > {
     constructor(
         private dataService: DataService,
@@ -26,13 +26,13 @@ export class ProductCategoryListComponent extends BaseListComponent<
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.product.getProductCategories(99999, 0),
-            data => data.productCategories,
+            (...args: any[]) => this.dataService.product.getCollections(99999, 0),
+            data => data.collections,
         );
     }
 
     onRearrange(event: RearrangeEvent) {
-        this.dataService.product.moveProductCategory([event]).subscribe({
+        this.dataService.product.moveCollection([event]).subscribe({
             next: () => {
                 this.notificationService.success(_('common.notify-saved-changes'));
                 this.refresh();

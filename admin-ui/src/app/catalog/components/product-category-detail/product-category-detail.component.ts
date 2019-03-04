@@ -144,7 +144,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
                 take(1),
                 mergeMap(([category, languageCode]) => {
                     const input = this.getUpdatedCategory(category, this.detailForm, languageCode);
-                    return this.dataService.product.createProductCategory(input);
+                    return this.dataService.product.createCollection(input);
                 }),
             )
             .subscribe(
@@ -154,7 +154,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.createProductCategory.id], { relativeTo: this.route });
+                    this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
                 },
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {
@@ -175,7 +175,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
                         this.detailForm,
                         languageCode,
                     ) as UpdateCollectionInput;
-                    return this.dataService.product.updateProductCategory(input);
+                    return this.dataService.product.updateCollection(input);
                 }),
             )
             .subscribe(

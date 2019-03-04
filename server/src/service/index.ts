@@ -11,7 +11,7 @@ export * from './services/global-settings.service';
 export * from './services/order.service';
 export * from './services/payment-method.service';
 export * from './services/product.service';
-export * from './services/product-category.service';
+export * from './services/collection.service';
 export * from './services/product-option.service';
 export * from './services/product-option-group.service';
 export * from './services/product-variant.service';

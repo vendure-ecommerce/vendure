@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProductCategory resolver createProductCategory creates a root category 1`] = `
+exports[`Collection resolver createCollection creates a root collection 1`] = `
 Object {
   "assets": Array [
     Object {
@@ -58,7 +58,7 @@ Object {
 }
 `;
 
-exports[`ProductCategory resolver updateProductCategory updates the details 1`] = `
+exports[`Collection resolver updateCollection updates the details 1`] = `
 Object {
   "assets": Array [
     Object {

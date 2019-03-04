@@ -1,11 +1,6 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import {
-    CreateProductCategoryInput,
-    MoveProductCategoryInput,
-    UpdateProductCategoryInput,
-} from '../../../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
@@ -25,7 +20,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
-export class ProductCategoryService {
+export class CollectionService {
     private rootCategories: { [channelCode: string]: Collection } = {};
 
     constructor(
@@ -51,9 +46,9 @@ export class ProductCategoryService {
                 orderBy: { position: 'ASC' },
             })
             .getManyAndCount()
-            .then(async ([productCategories, totalItems]) => {
-                const items = productCategories.map(productCategory =>
-                    translateDeep(productCategory, ctx.languageCode, [
+            .then(async ([collections, totalItems]) => {
+                const items = collections.map(collection =>
+                    translateDeep(collection, ctx.languageCode, [
                         'facetValues',
                         'parent',
                         ['facetValues', 'facet'],
@@ -68,13 +63,13 @@ export class ProductCategoryService {
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Collection> | undefined> {
         const relations = ['featuredAsset', 'assets', 'facetValues', 'channels', 'parent'];
-        const productCategory = await this.connection.getRepository(Collection).findOne(productId, {
+        const collection = await this.connection.getRepository(Collection).findOne(productId, {
             relations,
         });
-        if (!productCategory) {
+        if (!collection) {
             return;
         }
-        return translateDeep(productCategory, ctx.languageCode, ['facetValues', 'parent']);
+        return translateDeep(collection, ctx.languageCode, ['facetValues', 'parent']);
     }
 
     /**
@@ -98,7 +93,7 @@ export class ProductCategoryService {
     }
 
     /**
-     * Returns the descendants of a ProductCategory as a flat array.
+     * Returns the descendants of a Collection as a flat array.
      */
     async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<Collection>>> {
         const getChildren = async (id, _descendants: Collection[] = []) => {
@@ -154,8 +149,8 @@ export class ProductCategoryService {
             });
     }
 
-    async create(ctx: RequestContext, input: CreateProductCategoryInput): Promise<Translated<Collection>> {
-        const productCategory = await this.translatableSaver.create({
+    async create(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
+        const collection = await this.translatableSaver.create({
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
@@ -172,11 +167,11 @@ export class ProductCategoryService {
                 await this.assetUpdater.updateEntityAssets(category, input);
             },
         });
-        return assertFound(this.findOne(ctx, productCategory.id));
+        return assertFound(this.findOne(ctx, collection.id));
     }
 
-    async update(ctx: RequestContext, input: UpdateProductCategoryInput): Promise<Translated<Collection>> {
-        const productCategory = await this.translatableSaver.update({
+    async update(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
+        const collection = await this.translatableSaver.update({
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
@@ -187,10 +182,10 @@ export class ProductCategoryService {
                 await this.assetUpdater.updateEntityAssets(category, input);
             },
         });
-        return assertFound(this.findOne(ctx, productCategory.id));
+        return assertFound(this.findOne(ctx, collection.id));
     }
 
-    async move(ctx: RequestContext, input: MoveProductCategoryInput): Promise<Translated<Collection>> {
+    async move(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
         const target = await getEntityOrThrow(this.connection, Collection, input.categoryId, {
             relations: ['parent'],
         });
@@ -200,7 +195,7 @@ export class ProductCategoryService {
             idsAreEqual(input.parentId, target.id) ||
             descendants.some(cat => idsAreEqual(input.parentId, cat.id))
         ) {
-            throw new IllegalOperationError(`error.cannot-move-product-category-into-self`);
+            throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
         }
 
         const siblings = await this.connection
@@ -288,7 +283,7 @@ export class ProductCategoryService {
             new CollectionTranslation({
                 languageCode: DEFAULT_LANGUAGE_CODE,
                 name: ROOT_CATEGORY_NAME,
-                description: 'The root of the ProductCategory tree.',
+                description: 'The root of the Collection tree.',
             }),
         );
 

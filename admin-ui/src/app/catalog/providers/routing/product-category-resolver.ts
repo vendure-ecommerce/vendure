@@ -22,7 +22,7 @@ export class ProductCategoryResolver extends BaseEntityResolver<Collection.Fragm
                 parent: {} as any,
                 children: null,
             },
-            id => this.dataService.product.getProductCategory(id).mapStream(data => data.productCategory),
+            id => this.dataService.product.getCollection(id).mapStream(data => data.collection),
         );
     }
 }

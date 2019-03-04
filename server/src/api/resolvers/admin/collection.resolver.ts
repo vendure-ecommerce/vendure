@@ -1,78 +1,75 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
-    CreateProductCategoryMutationArgs,
-    MoveProductCategoryMutationArgs,
+    CollectionQueryArgs,
+    CollectionsQueryArgs,
+    CreateCollectionMutationArgs,
+    MoveCollectionMutationArgs,
     Permission,
-    ProductCategoriesQueryArgs,
-    ProductCategoryQueryArgs,
-    UpdateProductCategoryMutationArgs,
+    UpdateCollectionMutationArgs,
 } from '../../../../../shared/generated-types';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
+import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
-import { ProductCategoryService } from '../../../service/services/product-category.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
-export class ProductCategoryResolver {
-    constructor(
-        private productCategoryService: ProductCategoryService,
-        private facetValueService: FacetValueService,
-    ) {}
+export class CollectionResolver {
+    constructor(private collectionService: CollectionService, private facetValueService: FacetValueService) {}
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async productCategories(
+    async collections(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductCategoriesQueryArgs,
+        @Args() args: CollectionsQueryArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.productCategoryService.findAll(ctx, args.options || undefined);
+        return this.collectionService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async productCategory(
+    async collection(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductCategoryQueryArgs,
+        @Args() args: CollectionQueryArgs,
     ): Promise<Translated<Collection> | undefined> {
-        return this.productCategoryService.findOne(ctx, args.id);
+        return this.collectionService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
     @Decode('assetIds', 'featuredAssetId', 'parentId', 'facetValueIds')
-    async createProductCategory(
+    async createCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateProductCategoryMutationArgs,
+        @Args() args: CreateCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.productCategoryService.create(ctx, input);
+        return this.collectionService.create(ctx, input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
-    async updateProductCategory(
+    async updateCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateProductCategoryMutationArgs,
+        @Args() args: UpdateCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.productCategoryService.update(ctx, input);
+        return this.collectionService.update(ctx, input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     @Decode('categoryId', 'parentId')
-    async moveProductCategory(
+    async moveCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: MoveProductCategoryMutationArgs,
+        @Args() args: MoveCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.productCategoryService.move(ctx, input);
+        return this.collectionService.move(ctx, input);
     }
 }

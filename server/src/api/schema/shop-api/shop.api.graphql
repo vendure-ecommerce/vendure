@@ -2,13 +2,13 @@ type Query {
     activeCustomer: Customer
     activeOrder: Order
     availableCountries: [Country!]!
+    collections(languageCode: LanguageCode, options: CollectionListOptions): CollectionList!
+    collection(id: ID!, languageCode: LanguageCode): Collection
     eligibleShippingMethods: [ShippingMethodQuote!]!
     me: CurrentUser
     nextOrderStates: [String!]!
     order(id: ID!): Order
     orderByCode(code: String!): Order
-    productCategories(languageCode: LanguageCode, options: CollectionListOptions): CollectionList!
-    productCategory(id: ID!, languageCode: LanguageCode): Collection
     product(id: ID!, languageCode: LanguageCode): Product
     products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
     search(input: SearchInput!): SearchResponse!

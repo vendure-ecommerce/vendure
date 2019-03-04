@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-04T11:06:07+01:00
+// Generated in 2019-03-04T11:47:05+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -750,6 +750,10 @@ export interface Query {
 
     availableCountries: Country[];
 
+    collections: CollectionList;
+
+    collection?: Maybe<Collection>;
+
     eligibleShippingMethods: ShippingMethodQuote[];
 
     me?: Maybe<CurrentUser>;
@@ -759,10 +763,6 @@ export interface Query {
     order?: Maybe<Order>;
 
     orderByCode?: Maybe<Order>;
-
-    productCategories: CollectionList;
-
-    productCategory?: Maybe<Collection>;
 
     product?: Maybe<Product>;
 
@@ -1297,22 +1297,6 @@ export interface Channel extends Node {
     pricesIncludeTax: boolean;
 }
 
-export interface ShippingMethodQuote {
-    id: string;
-
-    price: number;
-
-    description: string;
-}
-
-export interface CurrentUser {
-    id: string;
-
-    identifier: string;
-
-    channelTokens: string[];
-}
-
 export interface CollectionList extends PaginatedList {
     items: Collection[];
 
@@ -1365,6 +1349,22 @@ export interface CollectionTranslation {
     name: string;
 
     description: string;
+}
+
+export interface ShippingMethodQuote {
+    id: string;
+
+    price: number;
+
+    description: string;
+}
+
+export interface CurrentUser {
+    id: string;
+
+    identifier: string;
+
+    channelTokens: string[];
 }
 
 export interface Product extends Node {
@@ -1685,21 +1685,21 @@ export interface TaxRateList extends PaginatedList {
 // Arguments
 // ====================================================
 
+export interface CollectionsQueryArgs {
+    languageCode?: Maybe<LanguageCode>;
+
+    options?: Maybe<CollectionListOptions>;
+}
+export interface CollectionQueryArgs {
+    id: string;
+
+    languageCode?: Maybe<LanguageCode>;
+}
 export interface OrderQueryArgs {
     id: string;
 }
 export interface OrderByCodeQueryArgs {
     code: string;
-}
-export interface ProductCategoriesQueryArgs {
-    languageCode?: Maybe<LanguageCode>;
-
-    options?: Maybe<CollectionListOptions>;
-}
-export interface ProductCategoryQueryArgs {
-    id: string;
-
-    languageCode?: Maybe<LanguageCode>;
 }
 export interface ProductQueryArgs {
     id: string;

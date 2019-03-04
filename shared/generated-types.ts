@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-04T11:06:09+01:00
+// Generated in 2019-03-04T11:47:06+01:00
 export type Maybe<T> = T | null;
 
 
@@ -128,6 +128,47 @@ export interface NumberRange {
   start: number;
   
   end: number;
+}
+
+export interface CollectionListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<CollectionSortParameter>;
+  
+  filter?: Maybe<CollectionFilterParameter>;
+}
+
+export interface CollectionSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+  
+  position?: Maybe<SortOrder>;
+  
+  description?: Maybe<SortOrder>;
+}
+
+export interface CollectionFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  position?: Maybe<NumberOperators>;
+  
+  description?: Maybe<StringOperators>;
 }
 
 export interface CountryListOptions {
@@ -340,47 +381,6 @@ export interface PaymentMethodFilterParameter {
   code?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
-}
-
-export interface CollectionListOptions {
-  
-  skip?: Maybe<number>;
-  
-  take?: Maybe<number>;
-  
-  sort?: Maybe<CollectionSortParameter>;
-  
-  filter?: Maybe<CollectionFilterParameter>;
-}
-
-export interface CollectionSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  name?: Maybe<SortOrder>;
-  
-  position?: Maybe<SortOrder>;
-  
-  description?: Maybe<SortOrder>;
-}
-
-export interface CollectionFilterParameter {
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-  
-  languageCode?: Maybe<StringOperators>;
-  
-  name?: Maybe<StringOperators>;
-  
-  position?: Maybe<NumberOperators>;
-  
-  description?: Maybe<StringOperators>;
 }
 
 export interface SearchInput {
@@ -657,6 +657,60 @@ export interface UpdateChannelInput {
   defaultShippingZoneId?: Maybe<string>;
 }
 
+export interface CreateCollectionInput {
+  
+  featuredAssetId?: Maybe<string>;
+  
+  assetIds?: Maybe<string[]>;
+  
+  parentId?: Maybe<string>;
+  
+  facetValueIds?: Maybe<string[]>;
+  
+  translations: CollectionTranslationInput[];
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface CollectionTranslationInput {
+  
+  id?: Maybe<string>;
+  
+  languageCode: LanguageCode;
+  
+  name?: Maybe<string>;
+  
+  description?: Maybe<string>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface UpdateCollectionInput {
+  
+  id: string;
+  
+  featuredAssetId?: Maybe<string>;
+  
+  parentId?: Maybe<string>;
+  
+  assetIds?: Maybe<string[]>;
+  
+  facetValueIds?: Maybe<string[]>;
+  
+  translations: CollectionTranslationInput[];
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface MoveCollectionInput {
+  
+  categoryId: string;
+  
+  parentId: string;
+  
+  index: number;
+}
+
 export interface CreateCountryInput {
   
   code: string;
@@ -884,60 +938,6 @@ export interface ConfigArgInput {
   name: string;
   
   value: string;
-}
-
-export interface CreateCollectionInput {
-  
-  featuredAssetId?: Maybe<string>;
-  
-  assetIds?: Maybe<string[]>;
-  
-  parentId?: Maybe<string>;
-  
-  facetValueIds?: Maybe<string[]>;
-  
-  translations: CollectionTranslationInput[];
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface CollectionTranslationInput {
-  
-  id?: Maybe<string>;
-  
-  languageCode: LanguageCode;
-  
-  name?: Maybe<string>;
-  
-  description?: Maybe<string>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface UpdateCollectionInput {
-  
-  id: string;
-  
-  featuredAssetId?: Maybe<string>;
-  
-  parentId?: Maybe<string>;
-  
-  assetIds?: Maybe<string[]>;
-  
-  facetValueIds?: Maybe<string[]>;
-  
-  translations: CollectionTranslationInput[];
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface MoveCollectionInput {
-  
-  categoryId: string;
-  
-  parentId: string;
-  
-  index: number;
 }
 
 export interface CreateProductOptionGroupInput {
@@ -2581,7 +2581,7 @@ export namespace CreateAssets {
   export type CreateAssets = Asset.Fragment
 }
 
-export namespace GetProductCategoryList {
+export namespace GetCollectionList {
   export type Variables = {
     options?: Maybe<CollectionListOptions>;
     languageCode?: Maybe<LanguageCode>;
@@ -2590,10 +2590,10 @@ export namespace GetProductCategoryList {
   export type Query = {
     __typename?: "Query";
     
-    productCategories: ProductCategories;
+    collections: Collections;
   }
 
-  export type ProductCategories = {
+  export type Collections = {
     __typename?: "CollectionList";
     
     items: Items[];
@@ -2646,7 +2646,7 @@ export namespace GetProductCategoryList {
   } 
 }
 
-export namespace GetProductCategory {
+export namespace GetCollection {
   export type Variables = {
     id: string;
     languageCode?: Maybe<LanguageCode>;
@@ -2655,13 +2655,13 @@ export namespace GetProductCategory {
   export type Query = {
     __typename?: "Query";
     
-    productCategory: Maybe<ProductCategory>;
+    collection: Maybe<Collection>;
   }
 
-  export type ProductCategory = Collection.Fragment
+  export type Collection = Collection.Fragment
 }
 
-export namespace CreateProductCategory {
+export namespace CreateCollection {
   export type Variables = {
     input: CreateCollectionInput;
   }
@@ -2669,13 +2669,13 @@ export namespace CreateProductCategory {
   export type Mutation = {
     __typename?: "Mutation";
     
-    createProductCategory: CreateProductCategory;
+    createCollection: CreateCollection;
   }
 
-  export type CreateProductCategory = Collection.Fragment
+  export type CreateCollection = Collection.Fragment
 }
 
-export namespace UpdateProductCategory {
+export namespace UpdateCollection {
   export type Variables = {
     input: UpdateCollectionInput;
   }
@@ -2683,13 +2683,13 @@ export namespace UpdateProductCategory {
   export type Mutation = {
     __typename?: "Mutation";
     
-    updateProductCategory: UpdateProductCategory;
+    updateCollection: UpdateCollection;
   }
 
-  export type UpdateProductCategory = Collection.Fragment
+  export type UpdateCollection = Collection.Fragment
 }
 
-export namespace MoveProductCategory {
+export namespace MoveCollection {
   export type Variables = {
     input: MoveCollectionInput;
   }
@@ -2697,10 +2697,10 @@ export namespace MoveProductCategory {
   export type Mutation = {
     __typename?: "Mutation";
     
-    moveProductCategory: MoveProductCategory;
+    moveCollection: MoveCollection;
   }
 
-  export type MoveProductCategory = Collection.Fragment
+  export type MoveCollection = Collection.Fragment
 }
 
 export namespace SearchProducts {
@@ -4445,6 +4445,10 @@ export interface Query {
   
   activeChannel: Channel;
   
+  collections: CollectionList;
+  
+  collection?: Maybe<Collection>;
+  
   config: Config;
   
   countries: CountryList;
@@ -4472,10 +4476,6 @@ export interface Query {
   paymentMethods: PaymentMethodList;
   
   paymentMethod?: Maybe<PaymentMethod>;
-  
-  productCategories: CollectionList;
-  
-  productCategory?: Maybe<Collection>;
   
   productOptionGroups: ProductOptionGroup[];
   
@@ -4692,6 +4692,138 @@ export interface CurrentUser {
   identifier: string;
   
   channelTokens: string[];
+}
+
+
+export interface CollectionList extends PaginatedList {
+  
+  items: Collection[];
+  
+  totalItems: number;
+}
+
+
+export interface Collection extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode?: Maybe<LanguageCode>;
+  
+  name: string;
+  
+  position: number;
+  
+  description: string;
+  
+  featuredAsset?: Maybe<Asset>;
+  
+  assets: Asset[];
+  
+  parent: Collection;
+  
+  children?: Maybe<Collection[]>;
+  
+  facetValues: FacetValue[];
+  
+  descendantFacetValues: FacetValue[];
+  
+  ancestorFacetValues: FacetValue[];
+  
+  translations: CollectionTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface FacetValue extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  facet: Facet;
+  
+  name: string;
+  
+  code: string;
+  
+  translations: FacetValueTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface Facet extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+  
+  code: string;
+  
+  values: FacetValue[];
+  
+  translations: FacetTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface FacetTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+}
+
+
+export interface FacetValueTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+}
+
+
+export interface CollectionTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+  
+  description: string;
 }
 
 
@@ -5001,78 +5133,6 @@ export interface ProductOptionTranslation {
 }
 
 
-export interface FacetValue extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  facet: Facet;
-  
-  name: string;
-  
-  code: string;
-  
-  translations: FacetValueTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface Facet extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-  
-  code: string;
-  
-  values: FacetValue[];
-  
-  translations: FacetTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface FacetTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-}
-
-
-export interface FacetValueTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-}
-
-
 export interface ProductVariantTranslation {
   
   id: string;
@@ -5228,66 +5288,6 @@ export interface PaymentMethod extends Node {
   enabled: boolean;
   
   configArgs: ConfigArg[];
-}
-
-
-export interface CollectionList extends PaginatedList {
-  
-  items: Collection[];
-  
-  totalItems: number;
-}
-
-
-export interface Collection extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode?: Maybe<LanguageCode>;
-  
-  name: string;
-  
-  position: number;
-  
-  description: string;
-  
-  featuredAsset?: Maybe<Asset>;
-  
-  assets: Asset[];
-  
-  parent: Collection;
-  
-  children?: Maybe<Collection[]>;
-  
-  facetValues: FacetValue[];
-  
-  descendantFacetValues: FacetValue[];
-  
-  ancestorFacetValues: FacetValue[];
-  
-  translations: CollectionTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface CollectionTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-  
-  description: string;
 }
 
 
@@ -5524,6 +5524,12 @@ export interface Mutation {
   createChannel: Channel;
   /** Update an existing Channel */
   updateChannel: Channel;
+  /** Create a new Collection */
+  createCollection: Collection;
+  /** Update an existing Collection */
+  updateCollection: Collection;
+  /** Move a Collection to a different parent or index */
+  moveCollection: Collection;
   /** Create a new Country */
   createCountry: Country;
   /** Update an existing Country */
@@ -5568,12 +5574,6 @@ export interface Mutation {
   importProducts?: Maybe<ImportInfo>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
-  /** Create a new Collection */
-  createProductCategory: Collection;
-  /** Update an existing Collection */
-  updateProductCategory: Collection;
-  /** Move a Collection to a different parent or index */
-  moveProductCategory: Collection;
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup;
   /** Update an existing ProductOptionGroup */
@@ -5708,6 +5708,18 @@ export interface ChannelQueryArgs {
   
   id: string;
 }
+export interface CollectionsQueryArgs {
+  
+  languageCode?: Maybe<LanguageCode>;
+  
+  options?: Maybe<CollectionListOptions>;
+}
+export interface CollectionQueryArgs {
+  
+  id: string;
+  
+  languageCode?: Maybe<LanguageCode>;
+}
 export interface CountriesQueryArgs {
   
   options?: Maybe<CountryListOptions>;
@@ -5755,18 +5767,6 @@ export interface PaymentMethodsQueryArgs {
 export interface PaymentMethodQueryArgs {
   
   id: string;
-}
-export interface ProductCategoriesQueryArgs {
-  
-  languageCode?: Maybe<LanguageCode>;
-  
-  options?: Maybe<CollectionListOptions>;
-}
-export interface ProductCategoryQueryArgs {
-  
-  id: string;
-  
-  languageCode?: Maybe<LanguageCode>;
 }
 export interface ProductOptionGroupsQueryArgs {
   
@@ -5874,6 +5874,18 @@ export interface UpdateChannelMutationArgs {
   
   input: UpdateChannelInput;
 }
+export interface CreateCollectionMutationArgs {
+  
+  input: CreateCollectionInput;
+}
+export interface UpdateCollectionMutationArgs {
+  
+  input: UpdateCollectionInput;
+}
+export interface MoveCollectionMutationArgs {
+  
+  input: MoveCollectionInput;
+}
 export interface CreateCountryMutationArgs {
   
   input: CreateCountryInput;
@@ -5973,18 +5985,6 @@ export interface ImportProductsMutationArgs {
 export interface UpdatePaymentMethodMutationArgs {
   
   input: UpdatePaymentMethodInput;
-}
-export interface CreateProductCategoryMutationArgs {
-  
-  input: CreateCollectionInput;
-}
-export interface UpdateProductCategoryMutationArgs {
-  
-  input: UpdateCollectionInput;
-}
-export interface MoveProductCategoryMutationArgs {
-  
-  input: MoveCollectionInput;
 }
 export interface CreateProductOptionGroupMutationArgs {
   

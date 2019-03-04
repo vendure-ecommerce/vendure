@@ -285,7 +285,7 @@ export const CREATE_ASSETS = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const PRODUCT_CATEGORY_FRAGMENT = gql`
+export const COLLECTION_FRAGMENT = gql`
     fragment Collection on Collection {
         id
         name
@@ -320,9 +320,9 @@ export const PRODUCT_CATEGORY_FRAGMENT = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const GET_PRODUCT_CATEGORY_LIST = gql`
-    query GetProductCategoryList($options: CollectionListOptions, $languageCode: LanguageCode) {
-        productCategories(languageCode: $languageCode, options: $options) {
+export const GET_COLLECTION_LIST = gql`
+    query GetCollectionList($options: CollectionListOptions, $languageCode: LanguageCode) {
+        collections(languageCode: $languageCode, options: $options) {
             items {
                 id
                 name
@@ -349,40 +349,40 @@ export const GET_PRODUCT_CATEGORY_LIST = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const GET_PRODUCT_CATEGORY = gql`
-    query GetProductCategory($id: ID!, $languageCode: LanguageCode) {
-        productCategory(id: $id, languageCode: $languageCode) {
+export const GET_COLLECTION = gql`
+    query GetCollection($id: ID!, $languageCode: LanguageCode) {
+        collection(id: $id, languageCode: $languageCode) {
             ...Collection
         }
     }
-    ${PRODUCT_CATEGORY_FRAGMENT}
+    ${COLLECTION_FRAGMENT}
 `;
 
-export const CREATE_PRODUCT_CATEGORY = gql`
-    mutation CreateProductCategory($input: CreateCollectionInput!) {
-        createProductCategory(input: $input) {
+export const CREATE_COLLECTION = gql`
+    mutation CreateCollection($input: CreateCollectionInput!) {
+        createCollection(input: $input) {
             ...Collection
         }
     }
-    ${PRODUCT_CATEGORY_FRAGMENT}
+    ${COLLECTION_FRAGMENT}
 `;
 
-export const UPDATE_PRODUCT_CATEGORY = gql`
-    mutation UpdateProductCategory($input: UpdateCollectionInput!) {
-        updateProductCategory(input: $input) {
+export const UPDATE_COLLECTION = gql`
+    mutation UpdateCollection($input: UpdateCollectionInput!) {
+        updateCollection(input: $input) {
             ...Collection
         }
     }
-    ${PRODUCT_CATEGORY_FRAGMENT}
+    ${COLLECTION_FRAGMENT}
 `;
 
-export const MOVE_PRODUCT_CATEGORY = gql`
-    mutation MoveProductCategory($input: MoveCollectionInput!) {
-        moveProductCategory(input: $input) {
+export const MOVE_COLLECTION = gql`
+    mutation MoveCollection($input: MoveCollectionInput!) {
+        moveCollection(input: $input) {
             ...Collection
         }
     }
-    ${PRODUCT_CATEGORY_FRAGMENT}
+    ${COLLECTION_FRAGMENT}
 `;
 
 export const SEARCH_PRODUCTS = gql`

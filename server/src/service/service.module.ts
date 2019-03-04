@@ -19,6 +19,7 @@ import { AdministratorService } from './services/administrator.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
 import { ChannelService } from './services/channel.service';
+import { CollectionService } from './services/collection.service';
 import { CountryService } from './services/country.service';
 import { CustomerGroupService } from './services/customer-group.service';
 import { CustomerService } from './services/customer.service';
@@ -27,7 +28,6 @@ import { FacetService } from './services/facet.service';
 import { GlobalSettingsService } from './services/global-settings.service';
 import { OrderService } from './services/order.service';
 import { PaymentMethodService } from './services/payment-method.service';
-import { ProductCategoryService } from './services/product-category.service';
 import { ProductOptionGroupService } from './services/product-option-group.service';
 import { ProductOptionService } from './services/product-option.service';
 import { ProductVariantService } from './services/product-variant.service';
@@ -54,7 +54,7 @@ const exportedProviders = [
     GlobalSettingsService,
     OrderService,
     PaymentMethodService,
-    ProductCategoryService,
+    CollectionService,
     ProductOptionService,
     ProductOptionGroupService,
     ProductService,
