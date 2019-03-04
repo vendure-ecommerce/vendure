@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-26T12:18:48+01:00
+// Generated in 2019-03-04T11:06:09+01:00
 export type Maybe<T> = T | null;
 
 
@@ -342,18 +342,18 @@ export interface PaymentMethodFilterParameter {
   enabled?: Maybe<BooleanOperators>;
 }
 
-export interface ProductCategoryListOptions {
+export interface CollectionListOptions {
   
   skip?: Maybe<number>;
   
   take?: Maybe<number>;
   
-  sort?: Maybe<ProductCategorySortParameter>;
+  sort?: Maybe<CollectionSortParameter>;
   
-  filter?: Maybe<ProductCategoryFilterParameter>;
+  filter?: Maybe<CollectionFilterParameter>;
 }
 
-export interface ProductCategorySortParameter {
+export interface CollectionSortParameter {
   
   id?: Maybe<SortOrder>;
   
@@ -368,7 +368,7 @@ export interface ProductCategorySortParameter {
   description?: Maybe<SortOrder>;
 }
 
-export interface ProductCategoryFilterParameter {
+export interface CollectionFilterParameter {
   
   createdAt?: Maybe<DateOperators>;
   
@@ -886,7 +886,7 @@ export interface ConfigArgInput {
   value: string;
 }
 
-export interface CreateProductCategoryInput {
+export interface CreateCollectionInput {
   
   featuredAssetId?: Maybe<string>;
   
@@ -896,12 +896,12 @@ export interface CreateProductCategoryInput {
   
   facetValueIds?: Maybe<string[]>;
   
-  translations: ProductCategoryTranslationInput[];
+  translations: CollectionTranslationInput[];
   
   customFields?: Maybe<Json>;
 }
 
-export interface ProductCategoryTranslationInput {
+export interface CollectionTranslationInput {
   
   id?: Maybe<string>;
   
@@ -914,7 +914,7 @@ export interface ProductCategoryTranslationInput {
   customFields?: Maybe<Json>;
 }
 
-export interface UpdateProductCategoryInput {
+export interface UpdateCollectionInput {
   
   id: string;
   
@@ -926,12 +926,12 @@ export interface UpdateProductCategoryInput {
   
   facetValueIds?: Maybe<string[]>;
   
-  translations: ProductCategoryTranslationInput[];
+  translations: CollectionTranslationInput[];
   
   customFields?: Maybe<Json>;
 }
 
-export interface MoveProductCategoryInput {
+export interface MoveCollectionInput {
   
   categoryId: string;
   
@@ -2583,7 +2583,7 @@ export namespace CreateAssets {
 
 export namespace GetProductCategoryList {
   export type Variables = {
-    options?: Maybe<ProductCategoryListOptions>;
+    options?: Maybe<CollectionListOptions>;
     languageCode?: Maybe<LanguageCode>;
   }
 
@@ -2594,7 +2594,7 @@ export namespace GetProductCategoryList {
   }
 
   export type ProductCategories = {
-    __typename?: "ProductCategoryList";
+    __typename?: "CollectionList";
     
     items: Items[];
     
@@ -2602,7 +2602,7 @@ export namespace GetProductCategoryList {
   } 
 
   export type Items = {
-    __typename?: "ProductCategory";
+    __typename?: "Collection";
     
     id: string;
     
@@ -2640,7 +2640,7 @@ export namespace GetProductCategoryList {
   } 
 
   export type Parent = {
-    __typename?: "ProductCategory";
+    __typename?: "Collection";
     
     id: string;
   } 
@@ -2658,12 +2658,12 @@ export namespace GetProductCategory {
     productCategory: Maybe<ProductCategory>;
   }
 
-  export type ProductCategory = ProductCategory.Fragment
+  export type ProductCategory = Collection.Fragment
 }
 
 export namespace CreateProductCategory {
   export type Variables = {
-    input: CreateProductCategoryInput;
+    input: CreateCollectionInput;
   }
 
   export type Mutation = {
@@ -2672,12 +2672,12 @@ export namespace CreateProductCategory {
     createProductCategory: CreateProductCategory;
   }
 
-  export type CreateProductCategory = ProductCategory.Fragment
+  export type CreateProductCategory = Collection.Fragment
 }
 
 export namespace UpdateProductCategory {
   export type Variables = {
-    input: UpdateProductCategoryInput;
+    input: UpdateCollectionInput;
   }
 
   export type Mutation = {
@@ -2686,12 +2686,12 @@ export namespace UpdateProductCategory {
     updateProductCategory: UpdateProductCategory;
   }
 
-  export type UpdateProductCategory = ProductCategory.Fragment
+  export type UpdateProductCategory = Collection.Fragment
 }
 
 export namespace MoveProductCategory {
   export type Variables = {
-    input: MoveProductCategoryInput;
+    input: MoveCollectionInput;
   }
 
   export type Mutation = {
@@ -2700,7 +2700,7 @@ export namespace MoveProductCategory {
     moveProductCategory: MoveProductCategory;
   }
 
-  export type MoveProductCategory = ProductCategory.Fragment
+  export type MoveProductCategory = Collection.Fragment
 }
 
 export namespace SearchProducts {
@@ -4086,9 +4086,9 @@ export namespace ProductOptionGroup {
   }
 }
 
-export namespace ProductCategory {
+export namespace Collection {
   export type Fragment = {
-    __typename?: "ProductCategory";
+    __typename?: "Collection";
     
     id: string;
     
@@ -4126,7 +4126,7 @@ export namespace ProductCategory {
   }
 
   export type Translations = {
-    __typename?: "ProductCategoryTranslation";
+    __typename?: "CollectionTranslation";
     
     id: string;
     
@@ -4138,7 +4138,7 @@ export namespace ProductCategory {
   }
 
   export type Parent = {
-    __typename?: "ProductCategory";
+    __typename?: "Collection";
     
     id: string;
     
@@ -4146,7 +4146,7 @@ export namespace ProductCategory {
   }
 
   export type Children = {
-    __typename?: "ProductCategory";
+    __typename?: "Collection";
     
     id: string;
     
@@ -4473,9 +4473,9 @@ export interface Query {
   
   paymentMethod?: Maybe<PaymentMethod>;
   
-  productCategories: ProductCategoryList;
+  productCategories: CollectionList;
   
-  productCategory?: Maybe<ProductCategory>;
+  productCategory?: Maybe<Collection>;
   
   productOptionGroups: ProductOptionGroup[];
   
@@ -5231,15 +5231,15 @@ export interface PaymentMethod extends Node {
 }
 
 
-export interface ProductCategoryList extends PaginatedList {
+export interface CollectionList extends PaginatedList {
   
-  items: ProductCategory[];
+  items: Collection[];
   
   totalItems: number;
 }
 
 
-export interface ProductCategory extends Node {
+export interface Collection extends Node {
   
   id: string;
   
@@ -5259,9 +5259,9 @@ export interface ProductCategory extends Node {
   
   assets: Asset[];
   
-  parent: ProductCategory;
+  parent: Collection;
   
-  children?: Maybe<ProductCategory[]>;
+  children?: Maybe<Collection[]>;
   
   facetValues: FacetValue[];
   
@@ -5269,13 +5269,13 @@ export interface ProductCategory extends Node {
   
   ancestorFacetValues: FacetValue[];
   
-  translations: ProductCategoryTranslation[];
+  translations: CollectionTranslation[];
   
   customFields?: Maybe<Json>;
 }
 
 
-export interface ProductCategoryTranslation {
+export interface CollectionTranslation {
   
   id: string;
   
@@ -5568,12 +5568,12 @@ export interface Mutation {
   importProducts?: Maybe<ImportInfo>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
-  /** Create a new ProductCategory */
-  createProductCategory: ProductCategory;
-  /** Update an existing ProductCategory */
-  updateProductCategory: ProductCategory;
-  /** Move a ProductCategory to a different parent or index */
-  moveProductCategory: ProductCategory;
+  /** Create a new Collection */
+  createProductCategory: Collection;
+  /** Update an existing Collection */
+  updateProductCategory: Collection;
+  /** Move a Collection to a different parent or index */
+  moveProductCategory: Collection;
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup;
   /** Update an existing ProductOptionGroup */
@@ -5760,7 +5760,7 @@ export interface ProductCategoriesQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
   
-  options?: Maybe<ProductCategoryListOptions>;
+  options?: Maybe<CollectionListOptions>;
 }
 export interface ProductCategoryQueryArgs {
   
@@ -5976,15 +5976,15 @@ export interface UpdatePaymentMethodMutationArgs {
 }
 export interface CreateProductCategoryMutationArgs {
   
-  input: CreateProductCategoryInput;
+  input: CreateCollectionInput;
 }
 export interface UpdateProductCategoryMutationArgs {
   
-  input: UpdateProductCategoryInput;
+  input: UpdateCollectionInput;
 }
 export interface MoveProductCategoryMutationArgs {
   
-  input: MoveProductCategoryInput;
+  input: MoveCollectionInput;
 }
 export interface CreateProductOptionGroupMutationArgs {
   

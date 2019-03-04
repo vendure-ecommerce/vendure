@@ -11,7 +11,7 @@ import { Omit } from '../../../../../shared/omit';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { ProductCategory } from '../../../entity';
+import { Collection } from '../../../entity/collection/collection.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductCategoryService } from '../../../service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -49,7 +49,7 @@ export class ShopProductsResolver {
     async productCategories(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoriesQueryArgs,
-    ): Promise<PaginatedList<Translated<ProductCategory>>> {
+    ): Promise<PaginatedList<Translated<Collection>>> {
         return this.productCategoryService.findAll(ctx, args.options || undefined);
     }
 
@@ -57,7 +57,7 @@ export class ShopProductsResolver {
     async productCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoryQueryArgs,
-    ): Promise<Translated<ProductCategory> | undefined> {
+    ): Promise<Translated<Collection> | undefined> {
         return this.productCategoryService.findOne(ctx, args.id);
     }
 

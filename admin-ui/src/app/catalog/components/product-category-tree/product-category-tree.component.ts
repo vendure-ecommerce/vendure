@@ -8,7 +8,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { ProductCategory } from 'shared/generated-types';
+import { Collection } from 'shared/generated-types';
 
 import { arrayToTree, HasParent, RootNode } from './array-to-tree';
 
@@ -21,9 +21,9 @@ export type RearrangeEvent = { categoryId: string; parentId: string; index: numb
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCategoryTreeComponent implements OnChanges {
-    @Input() productCategories: ProductCategory.Fragment[];
+    @Input() productCategories: Collection.Fragment[];
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
-    categoryTree: RootNode<ProductCategory.Fragment>;
+    categoryTree: RootNode<Collection.Fragment>;
 
     ngOnChanges(changes: SimpleChanges) {
         if ('productCategories' in changes && this.productCategories) {
@@ -31,12 +31,12 @@ export class ProductCategoryTreeComponent implements OnChanges {
         }
     }
 
-    onDrop(event: CdkDragDrop<ProductCategory.Fragment | RootNode<ProductCategory.Fragment>>) {
-        const item = event.item.data as ProductCategory.Fragment;
+    onDrop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
+        const item = event.item.data as Collection.Fragment;
         const newParent = event.container.data;
         const newParentId = newParent.id;
         if (newParentId == null) {
-            throw new Error(`Could not determine the ID of the root ProductCategory`);
+            throw new Error(`Could not determine the ID of the root Collection`);
         }
         this.rearrange.emit({
             categoryId: item.id,

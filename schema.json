@@ -592,7 +592,7 @@
                 "description": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "ProductCategoryListOptions",
+                  "name": "CollectionListOptions",
                   "ofType": null
                 },
                 "defaultValue": null
@@ -603,7 +603,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "ProductCategoryList",
+                "name": "CollectionList",
                 "ofType": null
               }
             },
@@ -641,7 +641,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "ProductCategory",
+              "name": "Collection",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1858,7 +1858,7 @@
           },
           {
             "kind": "OBJECT",
-            "name": "ProductCategoryList",
+            "name": "CollectionList",
             "ofType": null
           },
           {
@@ -2026,7 +2026,7 @@
           },
           {
             "kind": "OBJECT",
-            "name": "ProductCategory",
+            "name": "Collection",
             "ofType": null
           },
           {
@@ -10618,7 +10618,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "ProductCategoryListOptions",
+        "name": "CollectionListOptions",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -10647,7 +10647,7 @@
             "description": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "ProductCategorySortParameter",
+              "name": "CollectionSortParameter",
               "ofType": null
             },
             "defaultValue": null
@@ -10657,7 +10657,7 @@
             "description": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "ProductCategoryFilterParameter",
+              "name": "CollectionFilterParameter",
               "ofType": null
             },
             "defaultValue": null
@@ -10669,7 +10669,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "ProductCategorySortParameter",
+        "name": "CollectionSortParameter",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -10740,7 +10740,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "ProductCategoryFilterParameter",
+        "name": "CollectionFilterParameter",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -10811,7 +10811,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ProductCategoryList",
+        "name": "CollectionList",
         "description": null,
         "fields": [
           {
@@ -10829,7 +10829,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ProductCategory",
+                    "name": "Collection",
                     "ofType": null
                   }
                 }
@@ -10868,7 +10868,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ProductCategory",
+        "name": "Collection",
         "description": null,
         "fields": [
           {
@@ -11024,7 +11024,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "ProductCategory",
+                "name": "Collection",
                 "ofType": null
               }
             },
@@ -11043,7 +11043,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "OBJECT",
-                  "name": "ProductCategory",
+                  "name": "Collection",
                   "ofType": null
                 }
               }
@@ -11138,7 +11138,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "ProductCategoryTranslation",
+                    "name": "CollectionTranslation",
                     "ofType": null
                   }
                 }
@@ -11173,7 +11173,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "ProductCategoryTranslation",
+        "name": "CollectionTranslation",
         "description": null,
         "fields": [
           {
@@ -14861,7 +14861,7 @@
           },
           {
             "name": "createProductCategory",
-            "description": "Create a new ProductCategory",
+            "description": "Create a new Collection",
             "args": [
               {
                 "name": "input",
@@ -14871,7 +14871,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "CreateProductCategoryInput",
+                    "name": "CreateCollectionInput",
                     "ofType": null
                   }
                 },
@@ -14883,7 +14883,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "ProductCategory",
+                "name": "Collection",
                 "ofType": null
               }
             },
@@ -14892,7 +14892,7 @@
           },
           {
             "name": "updateProductCategory",
-            "description": "Update an existing ProductCategory",
+            "description": "Update an existing Collection",
             "args": [
               {
                 "name": "input",
@@ -14902,7 +14902,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "UpdateProductCategoryInput",
+                    "name": "UpdateCollectionInput",
                     "ofType": null
                   }
                 },
@@ -14914,7 +14914,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "ProductCategory",
+                "name": "Collection",
                 "ofType": null
               }
             },
@@ -14923,7 +14923,7 @@
           },
           {
             "name": "moveProductCategory",
-            "description": "Move a ProductCategory to a different parent or index",
+            "description": "Move a Collection to a different parent or index",
             "args": [
               {
                 "name": "input",
@@ -14933,7 +14933,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "MoveProductCategoryInput",
+                    "name": "MoveCollectionInput",
                     "ofType": null
                   }
                 },
@@ -14945,7 +14945,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "ProductCategory",
+                "name": "Collection",
                 "ofType": null
               }
             },
@@ -18139,7 +18139,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "CreateProductCategoryInput",
+        "name": "CreateCollectionInput",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -18213,7 +18213,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "ProductCategoryTranslationInput",
+                    "name": "CollectionTranslationInput",
                     "ofType": null
                   }
                 }
@@ -18238,7 +18238,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "ProductCategoryTranslationInput",
+        "name": "CollectionTranslationInput",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -18303,7 +18303,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "UpdateProductCategoryInput",
+        "name": "UpdateCollectionInput",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -18391,7 +18391,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "ProductCategoryTranslationInput",
+                    "name": "CollectionTranslationInput",
                     "ofType": null
                   }
                 }
@@ -18416,7 +18416,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "MoveProductCategoryInput",
+        "name": "MoveCollectionInput",
         "description": null,
         "fields": null,
         "inputFields": [

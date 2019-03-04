@@ -1,6 +1,6 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
-import { ProductCategory } from 'shared/generated-types';
+import { Collection } from 'shared/generated-types';
 
 import { RootNode, TreeNode } from './array-to-tree';
 import { ProductCategoryTreeComponent } from './product-category-tree.component';
@@ -14,7 +14,7 @@ import { ProductCategoryTreeComponent } from './product-category-tree.component'
 export class ProductCategoryTreeNodeComponent implements OnInit {
     depth = 0;
     parentName: string;
-    @Input() categoryTree: TreeNode<ProductCategory.Fragment>;
+    @Input() categoryTree: TreeNode<Collection.Fragment>;
 
     constructor(
         @SkipSelf() @Optional() private parent: ProductCategoryTreeNodeComponent,
@@ -29,7 +29,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         this.parentName = this.categoryTree.name || '<root>';
     }
 
-    getMoveListItems(category: ProductCategory.Fragment): Array<{ path: string; id: string }> {
+    getMoveListItems(category: Collection.Fragment): Array<{ path: string; id: string }> {
         const visit = (
             node: TreeNode<any>,
             parentPath: string[],
@@ -47,7 +47,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         return visit(this.root.categoryTree, [], []);
     }
 
-    move(category: ProductCategory.Fragment, parentId: string) {
+    move(category: Collection.Fragment, parentId: string) {
         this.root.onMove({
             index: 0,
             parentId,
@@ -55,7 +55,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         });
     }
 
-    moveUp(category: ProductCategory.Fragment, currentIndex: number) {
+    moveUp(category: Collection.Fragment, currentIndex: number) {
         this.root.onMove({
             index: currentIndex - 1,
             parentId: category.parent.id,
@@ -63,7 +63,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         });
     }
 
-    moveDown(category: ProductCategory.Fragment, currentIndex: number) {
+    moveDown(category: Collection.Fragment, currentIndex: number) {
         this.root.onMove({
             index: currentIndex + 1,
             parentId: category.parent.id,
@@ -71,7 +71,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
         });
     }
 
-    drop(event: CdkDragDrop<ProductCategory.Fragment | RootNode<ProductCategory.Fragment>>) {
+    drop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
         this.root.onDrop(event);
     }
 }

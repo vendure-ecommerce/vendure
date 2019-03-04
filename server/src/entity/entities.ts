@@ -2,6 +2,8 @@ import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
+import { CollectionTranslation } from './collection/collection-translation.entity';
+import { Collection } from './collection/collection.entity';
 import { CountryTranslation } from './country/country-translation.entity';
 import { Country } from './country/country.entity';
 import { CustomerGroup } from './customer-group/customer-group.entity';
@@ -16,8 +18,6 @@ import { OrderLine } from './order-line/order-line.entity';
 import { Order } from './order/order.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
-import { ProductCategoryTranslation } from './product-category/product-category-translation.entity';
-import { ProductCategory } from './product-category/product-category.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from './product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from './product-option/product-option-translation.entity';
@@ -63,8 +63,8 @@ export const coreEntitiesMap = {
     Payment,
     PaymentMethod,
     Product,
-    ProductCategory,
-    ProductCategoryTranslation,
+    Collection,
+    CollectionTranslation,
     ProductOption,
     ProductOptionGroup,
     ProductOptionGroupTranslation,

@@ -40,7 +40,7 @@ export function createApollo(
 ): ApolloClientOptions<any> {
     const { apiHost, apiPort, adminApiPath } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
-    const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : apiPort;
+    const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : `:${apiPort}`;
     return {
         link: ApolloLink.from([
             stateLink,

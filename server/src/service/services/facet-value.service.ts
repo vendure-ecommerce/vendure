@@ -69,11 +69,11 @@ export class FacetValueService {
             .getRepository(FacetValue)
             .createQueryBuilder('facetValue')
             .leftJoinAndSelect(
-                'product_category_facet_values_facet_value',
+                'collection_facet_values_facet_value',
                 'joinTable',
                 'joinTable.facetValueId = facetValue.id',
             )
-            .where('joinTable.productCategoryId IN (:...ids)', { ids })
+            .where('joinTable.collectionId IN (:...ids)', { ids })
             .getMany();
         return this.findByIds(facetValues.map(v => v.id)).then(values =>
             values.map(value => translateDeep(value, ctx.languageCode)),

@@ -1,4 +1,4 @@
-type ProductCategory implements Node {
+type Collection implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -8,15 +8,15 @@ type ProductCategory implements Node {
     description: String!
     featuredAsset: Asset
     assets: [Asset!]!
-    parent: ProductCategory!
-    children: [ProductCategory!]
+    parent: Collection!
+    children: [Collection!]
     facetValues: [FacetValue!]!
     descendantFacetValues: [FacetValue!]!
     ancestorFacetValues: [FacetValue!]!
-    translations: [ProductCategoryTranslation!]!
+    translations: [CollectionTranslation!]!
 }
 
-type ProductCategoryTranslation {
+type CollectionTranslation {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -25,7 +25,7 @@ type ProductCategoryTranslation {
     description: String!
 }
 
-type ProductCategoryList implements PaginatedList {
-    items: [ProductCategory!]!
+type CollectionList implements PaginatedList {
+    items: [Collection!]!
     totalItems: Int!
 }

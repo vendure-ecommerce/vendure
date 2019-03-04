@@ -16,14 +16,14 @@ import { LocaleString, Translatable, Translation } from '../../common/types/loca
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
-import { CustomProductCategoryFields } from '../custom-entity-fields';
+import { CustomCollectionFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 
-import { ProductCategoryTranslation } from './product-category-translation.entity';
+import { CollectionTranslation } from './collection-translation.entity';
 
 /**
  * @description
- * A ProductCategory is a grouping of {@link Product}s based on {@link FacetValue}s.
+ * A Collection is a grouping of {@link Product}s based on {@link FacetValue}s.
  *
  * @docsCategory entities
  */
@@ -33,8 +33,8 @@ import { ProductCategoryTranslation } from './product-category-translation.entit
 // Therefore we will just use an adjacency list which will have a perf impact when needing to lookup
 // decendants or ancestors more than 1 level removed.
 // @Tree('closure-table')
-export class ProductCategory extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
-    constructor(input?: DeepPartial<ProductCategory>) {
+export class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
+    constructor(input?: DeepPartial<Collection>) {
         super(input);
     }
 
@@ -48,8 +48,8 @@ export class ProductCategory extends VendureEntity implements Translatable, HasC
 
     description: LocaleString;
 
-    @OneToMany(type => ProductCategoryTranslation, translation => translation.base, { eager: true })
-    translations: Array<Translation<ProductCategory>>;
+    @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<Collection>>;
 
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
@@ -62,14 +62,14 @@ export class ProductCategory extends VendureEntity implements Translatable, HasC
     @JoinTable()
     facetValues: FacetValue[];
 
-    @Column(type => CustomProductCategoryFields)
-    customFields: CustomProductCategoryFields;
+    @Column(type => CustomCollectionFields)
+    customFields: CustomCollectionFields;
 
     @TreeChildren()
-    children: ProductCategory[];
+    children: Collection[];
 
     @TreeParent()
-    parent: ProductCategory;
+    parent: Collection;
 
     @ManyToMany(type => Channel)
     @JoinTable()

@@ -66,12 +66,12 @@ export interface CustomFieldConfig {
  */
 export interface CustomFields {
     Address?: CustomFieldConfig[];
+    Collection?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
-    ProductCategory?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];

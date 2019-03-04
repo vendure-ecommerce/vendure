@@ -3,9 +3,9 @@ import { bufferCount, concatMap } from 'rxjs/operators';
 import {
     AddOptionGroupToProduct,
     CreateAssets,
+    CreateCollectionInput,
     CreateProduct,
     CreateProductCategory,
-    CreateProductCategoryInput,
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
@@ -17,13 +17,13 @@ import {
     GetProductList,
     GetProductOptionGroups,
     GetProductWithVariants,
+    MoveCollectionInput,
     MoveProductCategory,
-    MoveProductCategoryInput,
     RemoveOptionGroupFromProduct,
     SearchProducts,
+    UpdateCollectionInput,
     UpdateProduct,
     UpdateProductCategory,
-    UpdateProductCategoryInput,
     UpdateProductInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -228,7 +228,7 @@ export class ProductDataService {
         );
     }
 
-    createProductCategory(input: CreateProductCategoryInput) {
+    createProductCategory(input: CreateCollectionInput) {
         return this.baseDataService.mutate<CreateProductCategory.Mutation, CreateProductCategory.Variables>(
             CREATE_PRODUCT_CATEGORY,
             {
@@ -243,7 +243,7 @@ export class ProductDataService {
         );
     }
 
-    updateProductCategory(input: UpdateProductCategoryInput) {
+    updateProductCategory(input: UpdateCollectionInput) {
         return this.baseDataService.mutate<UpdateProductCategory.Mutation, UpdateProductCategory.Variables>(
             UPDATE_PRODUCT_CATEGORY,
             {
@@ -259,7 +259,7 @@ export class ProductDataService {
         );
     }
 
-    moveProductCategory(inputs: MoveProductCategoryInput[]) {
+    moveProductCategory(inputs: MoveCollectionInput[]) {
         return from(inputs).pipe(
             concatMap(input =>
                 this.baseDataService.mutate<MoveProductCategory.Mutation, MoveProductCategory.Variables>(

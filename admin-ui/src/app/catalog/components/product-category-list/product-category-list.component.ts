@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, scan, startWith, switchMap, tap } from 'rxjs/operators';
-import { GetProductCategoryList, MoveProductCategoryInput } from 'shared/generated-types';
+import { GetProductCategoryList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';

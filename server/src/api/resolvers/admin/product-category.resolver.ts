@@ -10,7 +10,7 @@ import {
 } from '../../../../../shared/generated-types';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { Translated } from '../../../common/types/locale-types';
-import { ProductCategory } from '../../../entity/product-category/product-category.entity';
+import { Collection } from '../../../entity/collection/collection.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductCategoryService } from '../../../service/services/product-category.service';
 import { RequestContext } from '../../common/request-context';
@@ -30,7 +30,7 @@ export class ProductCategoryResolver {
     async productCategories(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoriesQueryArgs,
-    ): Promise<PaginatedList<Translated<ProductCategory>>> {
+    ): Promise<PaginatedList<Translated<Collection>>> {
         return this.productCategoryService.findAll(ctx, args.options || undefined);
     }
 
@@ -39,7 +39,7 @@ export class ProductCategoryResolver {
     async productCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: ProductCategoryQueryArgs,
-    ): Promise<Translated<ProductCategory> | undefined> {
+    ): Promise<Translated<Collection> | undefined> {
         return this.productCategoryService.findOne(ctx, args.id);
     }
 
@@ -49,7 +49,7 @@ export class ProductCategoryResolver {
     async createProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: CreateProductCategoryMutationArgs,
-    ): Promise<Translated<ProductCategory>> {
+    ): Promise<Translated<Collection>> {
         const { input } = args;
         return this.productCategoryService.create(ctx, input);
     }
@@ -60,7 +60,7 @@ export class ProductCategoryResolver {
     async updateProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: UpdateProductCategoryMutationArgs,
-    ): Promise<Translated<ProductCategory>> {
+    ): Promise<Translated<Collection>> {
         const { input } = args;
         return this.productCategoryService.update(ctx, input);
     }
@@ -71,7 +71,7 @@ export class ProductCategoryResolver {
     async moveProductCategory(
         @Ctx() ctx: RequestContext,
         @Args() args: MoveProductCategoryMutationArgs,
-    ): Promise<Translated<ProductCategory>> {
+    ): Promise<Translated<Collection>> {
         const { input } = args;
         return this.productCategoryService.move(ctx, input);
     }

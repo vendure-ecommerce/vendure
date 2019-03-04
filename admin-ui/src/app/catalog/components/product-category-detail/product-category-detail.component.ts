@@ -13,12 +13,12 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import {
-    CreateProductCategoryInput,
+    Collection,
+    CreateCollectionInput,
     FacetValue,
     FacetWithValues,
     LanguageCode,
-    ProductCategory,
-    UpdateProductCategoryInput,
+    UpdateCollectionInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
 import { unique } from 'shared/unique';
@@ -39,7 +39,7 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
     styleUrls: ['./product-category-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductCategory.Fragment>
+export class ProductCategoryDetailComponent extends BaseDetailComponent<Collection.Fragment>
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
@@ -58,7 +58,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
         private modalService: ModalService,
     ) {
         super(route, router, serverConfigService);
-        this.customFields = this.getCustomFieldConfig('ProductCategory');
+        this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             description: '',
@@ -174,7 +174,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
                         category,
                         this.detailForm,
                         languageCode,
-                    ) as UpdateProductCategoryInput;
+                    ) as UpdateCollectionInput;
                     return this.dataService.product.updateProductCategory(input);
                 }),
             )
@@ -197,7 +197,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
     /**
      * Sets the values of the form on changes to the category or current language.
      */
-    protected setFormValues(category: ProductCategory.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(category: Collection.Fragment, languageCode: LanguageCode) {
         const currentTranslation = category.translations.find(t => t.languageCode === languageCode);
 
         this.detailForm.patchValue({
@@ -228,10 +228,10 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<ProductC
      * can then be persisted to the API.
      */
     private getUpdatedCategory(
-        category: ProductCategory.Fragment,
+        category: Collection.Fragment,
         form: FormGroup,
         languageCode: LanguageCode,
-    ): CreateProductCategoryInput | UpdateProductCategoryInput {
+    ): CreateCollectionInput | UpdateCollectionInput {
         const updatedCategory = createUpdatedTranslatable({
             translatable: category,
             updatedFields: form.value,

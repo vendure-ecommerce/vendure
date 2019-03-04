@@ -1,8 +1,7 @@
 import { LanguageCode } from '../../../../../shared/generated-types';
-
 import { Translatable, Translation } from '../../../common/types/locale-types';
-import { ProductCategoryTranslation } from '../../../entity/product-category/product-category-translation.entity';
-import { ProductCategory } from '../../../entity/product-category/product-category.entity';
+import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
+import { Collection } from '../../../entity/collection/collection.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
@@ -259,39 +258,39 @@ describe('translateDeep()', () => {
 });
 
 describe('translateTree()', () => {
-    let cat1: ProductCategory;
-    let cat11: ProductCategory;
-    let cat12: ProductCategory;
-    let cat111: ProductCategory;
+    let cat1: Collection;
+    let cat11: Collection;
+    let cat12: Collection;
+    let cat111: Collection;
 
     beforeEach(() => {
-        cat1 = new ProductCategory({
+        cat1 = new Collection({
             translations: [
-                new ProductCategoryTranslation({
+                new CollectionTranslation({
                     languageCode: LanguageCode.en,
                     name: 'cat1 en',
                 }),
             ],
         });
-        cat11 = new ProductCategory({
+        cat11 = new Collection({
             translations: [
-                new ProductCategoryTranslation({
+                new CollectionTranslation({
                     languageCode: LanguageCode.en,
                     name: 'cat11 en',
                 }),
             ],
         });
-        cat12 = new ProductCategory({
+        cat12 = new Collection({
             translations: [
-                new ProductCategoryTranslation({
+                new CollectionTranslation({
                     languageCode: LanguageCode.en,
                     name: 'cat12 en',
                 }),
             ],
         });
-        cat111 = new ProductCategory({
+        cat111 = new Collection({
             translations: [
-                new ProductCategoryTranslation({
+                new CollectionTranslation({
                     languageCode: LanguageCode.en,
                     name: 'cat111 en',
                 }),

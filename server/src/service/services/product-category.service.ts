@@ -14,8 +14,8 @@ import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { ProductCategoryTranslation } from '../../entity/product-category/product-category-translation.entity';
-import { ProductCategory } from '../../entity/product-category/product-category.entity';
+import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
+import { Collection } from '../../entity/collection/collection.entity';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -26,7 +26,7 @@ import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
 export class ProductCategoryService {
-    private rootCategories: { [channelCode: string]: ProductCategory } = {};
+    private rootCategories: { [channelCode: string]: Collection } = {};
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -39,12 +39,12 @@ export class ProductCategoryService {
 
     async findAll(
         ctx: RequestContext,
-        options?: ListQueryOptions<ProductCategory>,
-    ): Promise<PaginatedList<Translated<ProductCategory>>> {
+        options?: ListQueryOptions<Collection>,
+    ): Promise<PaginatedList<Translated<Collection>>> {
         const relations = ['featuredAsset', 'facetValues', 'facetValues.facet', 'parent', 'channels'];
 
         return this.listQueryBuilder
-            .build(ProductCategory, options, {
+            .build(Collection, options, {
                 relations,
                 channelId: ctx.channelId,
                 where: { isRoot: false },
@@ -66,9 +66,9 @@ export class ProductCategoryService {
             });
     }
 
-    async findOne(ctx: RequestContext, productId: ID): Promise<Translated<ProductCategory> | undefined> {
+    async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Collection> | undefined> {
         const relations = ['featuredAsset', 'assets', 'facetValues', 'channels', 'parent'];
-        const productCategory = await this.connection.getRepository(ProductCategory).findOne(productId, {
+        const productCategory = await this.connection.getRepository(Collection).findOne(productId, {
             relations,
         });
         if (!productCategory) {
@@ -84,7 +84,7 @@ export class ProductCategoryService {
      */
     async getFacetValueIdsForCategory(categoryId: ID): Promise<ID[]> {
         const category = await this.connection
-            .getRepository(ProductCategory)
+            .getRepository(Collection)
             .findOne(categoryId, { relations: ['facetValues'] });
         if (!category) {
             return [];
@@ -100,10 +100,10 @@ export class ProductCategoryService {
     /**
      * Returns the descendants of a ProductCategory as a flat array.
      */
-    async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<ProductCategory>>> {
-        const getChildren = async (id, _descendants: ProductCategory[] = []) => {
+    async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<Collection>>> {
+        const getChildren = async (id, _descendants: Collection[] = []) => {
             const children = await this.connection
-                .getRepository(ProductCategory)
+                .getRepository(Collection)
                 .find({ where: { parent: { id } } });
             for (const child of children) {
                 _descendants.push(child);
@@ -121,17 +121,17 @@ export class ProductCategoryService {
      * will produce more queries the deeper the category is in the tree.
      * @param categoryId
      */
-    getAncestors(categoryId: ID): Promise<ProductCategory[]>;
-    getAncestors(categoryId: ID, ctx: RequestContext): Promise<Array<Translated<ProductCategory>>>;
+    getAncestors(categoryId: ID): Promise<Collection[]>;
+    getAncestors(categoryId: ID, ctx: RequestContext): Promise<Array<Translated<Collection>>>;
     async getAncestors(
         categoryId: ID,
         ctx?: RequestContext,
-    ): Promise<Array<Translated<ProductCategory> | ProductCategory>> {
-        const getParent = async (id, _ancestors: ProductCategory[] = []): Promise<ProductCategory[]> => {
+    ): Promise<Array<Translated<Collection> | Collection>> {
+        const getParent = async (id, _ancestors: Collection[] = []): Promise<Collection[]> => {
             const parent = await this.connection
-                .getRepository(ProductCategory)
+                .getRepository(Collection)
                 .createQueryBuilder()
-                .relation(ProductCategory, 'parent')
+                .relation(Collection, 'parent')
                 .of(id)
                 .loadOne();
             if (parent) {
@@ -145,7 +145,7 @@ export class ProductCategoryService {
         const ancestors = await getParent(categoryId);
 
         return this.connection
-            .getRepository(ProductCategory)
+            .getRepository(Collection)
             .findByIds(ancestors.map(c => c.id), {
                 relations: ['facetValues'],
             })
@@ -154,14 +154,11 @@ export class ProductCategoryService {
             });
     }
 
-    async create(
-        ctx: RequestContext,
-        input: CreateProductCategoryInput,
-    ): Promise<Translated<ProductCategory>> {
+    async create(ctx: RequestContext, input: CreateProductCategoryInput): Promise<Translated<Collection>> {
         const productCategory = await this.translatableSaver.create({
             input,
-            entityType: ProductCategory,
-            translationType: ProductCategoryTranslation,
+            entityType: Collection,
+            translationType: CollectionTranslation,
             beforeSave: async category => {
                 await this.channelService.assignToChannels(category, ctx);
                 const parent = await this.getParentCategory(ctx, input.parentId);
@@ -178,14 +175,11 @@ export class ProductCategoryService {
         return assertFound(this.findOne(ctx, productCategory.id));
     }
 
-    async update(
-        ctx: RequestContext,
-        input: UpdateProductCategoryInput,
-    ): Promise<Translated<ProductCategory>> {
+    async update(ctx: RequestContext, input: UpdateProductCategoryInput): Promise<Translated<Collection>> {
         const productCategory = await this.translatableSaver.update({
             input,
-            entityType: ProductCategory,
-            translationType: ProductCategoryTranslation,
+            entityType: Collection,
+            translationType: CollectionTranslation,
             beforeSave: async category => {
                 if (input.facetValueIds) {
                     category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
@@ -196,8 +190,8 @@ export class ProductCategoryService {
         return assertFound(this.findOne(ctx, productCategory.id));
     }
 
-    async move(ctx: RequestContext, input: MoveProductCategoryInput): Promise<Translated<ProductCategory>> {
-        const target = await getEntityOrThrow(this.connection, ProductCategory, input.categoryId, {
+    async move(ctx: RequestContext, input: MoveProductCategoryInput): Promise<Translated<Collection>> {
+        const target = await getEntityOrThrow(this.connection, Collection, input.categoryId, {
             relations: ['parent'],
         });
         const descendants = await this.getDescendants(ctx, input.categoryId);
@@ -210,7 +204,7 @@ export class ProductCategoryService {
         }
 
         const siblings = await this.connection
-            .getRepository(ProductCategory)
+            .getRepository(Collection)
             .createQueryBuilder('category')
             .leftJoin('category.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
@@ -227,14 +221,14 @@ export class ProductCategoryService {
                 });
             }
         } else {
-            target.parent = new ProductCategory({ id: input.parentId });
+            target.parent = new Collection({ id: input.parentId });
             siblings.splice(normalizedIndex, 0, target);
             siblings.forEach((cat, index) => {
                 cat.position = index;
             });
         }
 
-        await this.connection.getRepository(ProductCategory).save(siblings);
+        await this.connection.getRepository(Collection).save(siblings);
         return assertFound(this.findOne(ctx, input.categoryId));
     }
 
@@ -244,7 +238,7 @@ export class ProductCategoryService {
     async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
         const parentId = maybeParentId || (await this.getRootCategory(ctx)).id;
         const result = await this.connection
-            .getRepository(ProductCategory)
+            .getRepository(Collection)
             .createQueryBuilder('category')
             .leftJoin('category.parent', 'parent')
             .select('MAX(category.position)', 'index')
@@ -256,10 +250,10 @@ export class ProductCategoryService {
     private async getParentCategory(
         ctx: RequestContext,
         parentId?: ID | null,
-    ): Promise<ProductCategory | undefined> {
+    ): Promise<Collection | undefined> {
         if (parentId) {
             return this.connection
-                .getRepository(ProductCategory)
+                .getRepository(Collection)
                 .createQueryBuilder('category')
                 .leftJoin('category.channels', 'channel')
                 .where('category.id = :id', { id: parentId })
@@ -270,7 +264,7 @@ export class ProductCategoryService {
         }
     }
 
-    private async getRootCategory(ctx: RequestContext): Promise<ProductCategory> {
+    private async getRootCategory(ctx: RequestContext): Promise<Collection> {
         const cachedRoot = this.rootCategories[ctx.channel.code];
 
         if (cachedRoot) {
@@ -278,7 +272,7 @@ export class ProductCategoryService {
         }
 
         const existingRoot = await this.connection
-            .getRepository(ProductCategory)
+            .getRepository(Collection)
             .createQueryBuilder('category')
             .leftJoin('category.channels', 'channel')
             .where('category.isRoot = :isRoot', { isRoot: true })
@@ -290,22 +284,22 @@ export class ProductCategoryService {
             return existingRoot;
         }
 
-        const rootTranslation = await this.connection.getRepository(ProductCategoryTranslation).save(
-            new ProductCategoryTranslation({
+        const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
+            new CollectionTranslation({
                 languageCode: DEFAULT_LANGUAGE_CODE,
                 name: ROOT_CATEGORY_NAME,
                 description: 'The root of the ProductCategory tree.',
             }),
         );
 
-        const newRoot = new ProductCategory({
+        const newRoot = new Collection({
             isRoot: true,
             position: 0,
             translations: [rootTranslation],
             channels: [ctx.channel],
         });
 
-        await this.connection.getRepository(ProductCategory).save(newRoot);
+        await this.connection.getRepository(Collection).save(newRoot);
         this.rootCategories[ctx.channel.code] = newRoot;
         return newRoot;
     }

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-02-26T12:18:47+01:00
+// Generated in 2019-03-04T11:06:07+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -104,17 +104,17 @@ export interface NumberRange {
     end: number;
 }
 
-export interface ProductCategoryListOptions {
+export interface CollectionListOptions {
     skip?: Maybe<number>;
 
     take?: Maybe<number>;
 
-    sort?: Maybe<ProductCategorySortParameter>;
+    sort?: Maybe<CollectionSortParameter>;
 
-    filter?: Maybe<ProductCategoryFilterParameter>;
+    filter?: Maybe<CollectionFilterParameter>;
 }
 
-export interface ProductCategorySortParameter {
+export interface CollectionSortParameter {
     id?: Maybe<SortOrder>;
 
     createdAt?: Maybe<SortOrder>;
@@ -128,7 +128,7 @@ export interface ProductCategorySortParameter {
     description?: Maybe<SortOrder>;
 }
 
-export interface ProductCategoryFilterParameter {
+export interface CollectionFilterParameter {
     createdAt?: Maybe<DateOperators>;
 
     updatedAt?: Maybe<DateOperators>;
@@ -760,9 +760,9 @@ export interface Query {
 
     orderByCode?: Maybe<Order>;
 
-    productCategories: ProductCategoryList;
+    productCategories: CollectionList;
 
-    productCategory?: Maybe<ProductCategory>;
+    productCategory?: Maybe<Collection>;
 
     product?: Maybe<Product>;
 
@@ -1313,13 +1313,13 @@ export interface CurrentUser {
     channelTokens: string[];
 }
 
-export interface ProductCategoryList extends PaginatedList {
-    items: ProductCategory[];
+export interface CollectionList extends PaginatedList {
+    items: Collection[];
 
     totalItems: number;
 }
 
-export interface ProductCategory extends Node {
+export interface Collection extends Node {
     id: string;
 
     createdAt: DateTime;
@@ -1338,9 +1338,9 @@ export interface ProductCategory extends Node {
 
     assets: Asset[];
 
-    parent: ProductCategory;
+    parent: Collection;
 
-    children?: Maybe<ProductCategory[]>;
+    children?: Maybe<Collection[]>;
 
     facetValues: FacetValue[];
 
@@ -1348,12 +1348,12 @@ export interface ProductCategory extends Node {
 
     ancestorFacetValues: FacetValue[];
 
-    translations: ProductCategoryTranslation[];
+    translations: CollectionTranslation[];
 
     customFields?: Maybe<Json>;
 }
 
-export interface ProductCategoryTranslation {
+export interface CollectionTranslation {
     id: string;
 
     createdAt: DateTime;
@@ -1505,8 +1505,6 @@ export interface Mutation {
     addPaymentToOrder?: Maybe<Order>;
 
     setCustomerForOrder?: Maybe<Order>;
-    /** Create a new Customer Address */
-    createCustomerAddress: Address;
 
     login: LoginResult;
 
@@ -1517,6 +1515,8 @@ export interface Mutation {
     registerCustomerAccount: boolean;
     /** Update an existing Customer */
     updateCustomer: Customer;
+    /** Create a new Customer Address */
+    createCustomerAddress: Address;
     /** Update an existing Address */
     updateCustomerAddress: Address;
     /** Delete an existing Address */
@@ -1694,7 +1694,7 @@ export interface OrderByCodeQueryArgs {
 export interface ProductCategoriesQueryArgs {
     languageCode?: Maybe<LanguageCode>;
 
-    options?: Maybe<ProductCategoryListOptions>;
+    options?: Maybe<CollectionListOptions>;
 }
 export interface ProductCategoryQueryArgs {
     id: string;
@@ -1745,9 +1745,6 @@ export interface AddPaymentToOrderMutationArgs {
 export interface SetCustomerForOrderMutationArgs {
     input: CreateCustomerInput;
 }
-export interface CreateCustomerAddressMutationArgs {
-    input: CreateAddressInput;
-}
 export interface LoginMutationArgs {
     username: string;
 
@@ -1763,6 +1760,9 @@ export interface RegisterCustomerAccountMutationArgs {
 }
 export interface UpdateCustomerMutationArgs {
     input: UpdateCustomerInput;
+}
+export interface CreateCustomerAddressMutationArgs {
+    input: CreateAddressInput;
 }
 export interface UpdateCustomerAddressMutationArgs {
     input: UpdateAddressInput;

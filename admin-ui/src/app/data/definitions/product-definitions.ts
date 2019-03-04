@@ -286,7 +286,7 @@ export const CREATE_ASSETS = gql`
 `;
 
 export const PRODUCT_CATEGORY_FRAGMENT = gql`
-    fragment ProductCategory on ProductCategory {
+    fragment Collection on Collection {
         id
         name
         description
@@ -321,7 +321,7 @@ export const PRODUCT_CATEGORY_FRAGMENT = gql`
 `;
 
 export const GET_PRODUCT_CATEGORY_LIST = gql`
-    query GetProductCategoryList($options: ProductCategoryListOptions, $languageCode: LanguageCode) {
+    query GetProductCategoryList($options: CollectionListOptions, $languageCode: LanguageCode) {
         productCategories(languageCode: $languageCode, options: $options) {
             items {
                 id
@@ -352,34 +352,34 @@ export const GET_PRODUCT_CATEGORY_LIST = gql`
 export const GET_PRODUCT_CATEGORY = gql`
     query GetProductCategory($id: ID!, $languageCode: LanguageCode) {
         productCategory(id: $id, languageCode: $languageCode) {
-            ...ProductCategory
+            ...Collection
         }
     }
     ${PRODUCT_CATEGORY_FRAGMENT}
 `;
 
 export const CREATE_PRODUCT_CATEGORY = gql`
-    mutation CreateProductCategory($input: CreateProductCategoryInput!) {
+    mutation CreateProductCategory($input: CreateCollectionInput!) {
         createProductCategory(input: $input) {
-            ...ProductCategory
+            ...Collection
         }
     }
     ${PRODUCT_CATEGORY_FRAGMENT}
 `;
 
 export const UPDATE_PRODUCT_CATEGORY = gql`
-    mutation UpdateProductCategory($input: UpdateProductCategoryInput!) {
+    mutation UpdateProductCategory($input: UpdateCollectionInput!) {
         updateProductCategory(input: $input) {
-            ...ProductCategory
+            ...Collection
         }
     }
     ${PRODUCT_CATEGORY_FRAGMENT}
 `;
 
 export const MOVE_PRODUCT_CATEGORY = gql`
-    mutation MoveProductCategory($input: MoveProductCategoryInput!) {
+    mutation MoveProductCategory($input: MoveCollectionInput!) {
         moveProductCategory(input: $input) {
-            ...ProductCategory
+            ...Collection
         }
     }
     ${PRODUCT_CATEGORY_FRAGMENT}

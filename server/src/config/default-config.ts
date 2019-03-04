@@ -88,12 +88,12 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     customFields: {
         Address: [],
+        Collection: [],
         Customer: [],
         Facet: [],
         FacetValue: [],
         GlobalSettings: [],
         Product: [],
-        ProductCategory: [],
         ProductOption: [],
         ProductOptionGroup: [],
         ProductVariant: [],

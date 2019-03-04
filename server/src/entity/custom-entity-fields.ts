@@ -23,9 +23,9 @@ export class CustomProductFields {}
 @Entity()
 export class CustomProductFieldsTranslation {}
 @Entity()
-export class CustomProductCategoryFields {}
+export class CustomCollectionFields {}
 @Entity()
-export class CustomProductCategoryFieldsTranslation {}
+export class CustomCollectionFieldsTranslation {}
 @Entity()
 export class CustomProductOptionFields {}
 @Entity()
@@ -149,6 +149,8 @@ function assertNoLocaleStringFields(entity: Type<any>, customFields: CustomField
  */
 export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Address', CustomAddressFields);
+    registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
+    registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
@@ -156,8 +158,6 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
-    registerCustomFieldsForEntity(config, 'ProductCategory', CustomProductCategoryFields);
-    registerCustomFieldsForEntity(config, 'ProductCategory', CustomProductCategoryFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOptionGroup', CustomProductOptionGroupFields);
