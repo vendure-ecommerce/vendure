@@ -2,12 +2,12 @@
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
-            {{ 'catalog.create-new-product-category' | translate }}
+            {{ 'catalog.create-new-collection' | translate }}
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-product-category-tree
+<vdr-collection-tree
     [productCategories]="items$ | async"
     (rearrange)="onRearrange($event)"
-></vdr-product-category-tree>
+></vdr-collection-tree>

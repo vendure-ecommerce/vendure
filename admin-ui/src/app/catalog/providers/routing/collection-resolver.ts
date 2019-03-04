@@ -6,7 +6,7 @@ import { getDefaultLanguage } from '../../../common/utilities/get-default-langua
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
-export class ProductCategoryResolver extends BaseEntityResolver<Collection.Fragment> {
+export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> {
     constructor(private dataService: DataService) {
         super(
             {

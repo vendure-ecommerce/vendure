@@ -3,22 +3,22 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf }
 import { Collection } from 'shared/generated-types';
 
 import { RootNode, TreeNode } from './array-to-tree';
-import { ProductCategoryTreeComponent } from './product-category-tree.component';
+import { CollectionTreeComponent } from './collection-tree.component';
 
 @Component({
-    selector: 'vdr-product-category-tree-node',
-    templateUrl: './product-category-tree-node.component.html',
-    styleUrls: ['./product-category-tree-node.component.scss'],
+    selector: 'vdr-collection-tree-node',
+    templateUrl: './collection-tree-node.component.html',
+    styleUrls: ['./collection-tree-node.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCategoryTreeNodeComponent implements OnInit {
+export class CollectionTreeNodeComponent implements OnInit {
     depth = 0;
     parentName: string;
-    @Input() categoryTree: TreeNode<Collection.Fragment>;
+    @Input() collectionTree: TreeNode<Collection.Fragment>;
 
     constructor(
-        @SkipSelf() @Optional() private parent: ProductCategoryTreeNodeComponent,
-        private root: ProductCategoryTreeComponent,
+        @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
+        private root: CollectionTreeComponent,
     ) {
         if (parent) {
             this.depth = parent.depth + 1;
@@ -26,7 +26,7 @@ export class ProductCategoryTreeNodeComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.parentName = this.categoryTree.name || '<root>';
+        this.parentName = this.collectionTree.name || '<root>';
     }
 
     getMoveListItems(category: Collection.Fragment): Array<{ path: string; id: string }> {

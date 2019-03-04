@@ -6,15 +6,15 @@ import { BaseListComponent } from '../../../common/base-list.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
-import { RearrangeEvent } from '../product-category-tree/product-category-tree.component';
+import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
 @Component({
-    selector: 'vdr-product-category-list',
-    templateUrl: './product-category-list.component.html',
-    styleUrls: ['./product-category-list.component.scss'],
+    selector: 'vdr-collection-list',
+    templateUrl: './collection-list.component.html',
+    styleUrls: ['./collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCategoryListComponent extends BaseListComponent<
+export class CollectionListComponent extends BaseListComponent<
     GetCollectionList.Query,
     GetCollectionList.Items
 > {

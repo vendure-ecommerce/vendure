@@ -34,12 +34,12 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 
 @Component({
-    selector: 'vdr-product-category-detail',
-    templateUrl: './product-category-detail.component.html',
-    styleUrls: ['./product-category-detail.component.scss'],
+    selector: 'vdr-collection-detail',
+    templateUrl: './collection-detail.component.html',
+    styleUrls: ['./collection-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCategoryDetailComponent extends BaseDetailComponent<Collection.Fragment>
+export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fragment>
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
@@ -150,7 +150,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
             .subscribe(
                 data => {
                     this.notificationService.success(_('common.notify-create-success'), {
-                        entity: 'ProductCategory',
+                        entity: 'Collection',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
@@ -158,7 +158,7 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
                 },
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'ProductCategory',
+                        entity: 'Collection',
                     });
                 },
             );
@@ -183,12 +183,12 @@ export class ProductCategoryDetailComponent extends BaseDetailComponent<Collecti
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'ProductCategory',
+                        entity: 'Collection',
                     });
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'ProductCategory',
+                        entity: 'Collection',
                     });
                 },
             );

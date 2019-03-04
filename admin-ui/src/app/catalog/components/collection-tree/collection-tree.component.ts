@@ -15,12 +15,12 @@ import { arrayToTree, HasParent, RootNode } from './array-to-tree';
 export type RearrangeEvent = { categoryId: string; parentId: string; index: number };
 
 @Component({
-    selector: 'vdr-product-category-tree',
-    templateUrl: 'product-category-tree.component.html',
-    styleUrls: ['./product-category-tree.component.scss'],
+    selector: 'vdr-collection-tree',
+    templateUrl: 'collection-tree.component.html',
+    styleUrls: ['./collection-tree.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductCategoryTreeComponent implements OnChanges {
+export class CollectionTreeComponent implements OnChanges {
     @Input() productCategories: Collection.Fragment[];
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     categoryTree: RootNode<Collection.Fragment>;

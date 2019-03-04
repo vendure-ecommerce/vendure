@@ -7,14 +7,14 @@ import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { AssetListComponent } from './components/asset-list/asset-list.component';
+import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
+import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
-import { ProductCategoryDetailComponent } from './components/product-category-detail/product-category-detail.component';
-import { ProductCategoryListComponent } from './components/product-category-list/product-category-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
-import { ProductCategoryResolver } from './providers/routing/product-category-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 
 export const catalogRoutes: Route[] = [
@@ -51,19 +51,19 @@ export const catalogRoutes: Route[] = [
         },
     },
     {
-        path: 'categories',
-        component: ProductCategoryListComponent,
+        path: 'collections',
+        component: CollectionListComponent,
         data: {
-            breadcrumb: _('breadcrumb.categories'),
+            breadcrumb: _('breadcrumb.collections'),
         },
     },
     {
-        path: 'categories/:id',
-        component: ProductCategoryDetailComponent,
-        resolve: createResolveData(ProductCategoryResolver),
+        path: 'collections/:id',
+        component: CollectionDetailComponent,
+        resolve: createResolveData(CollectionResolver),
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
-            breadcrumb: productCategoryBreadcrumb,
+            breadcrumb: collectionBreadcrumb,
         },
     },
     {
@@ -95,12 +95,12 @@ export function facetBreadcrumb(data: any, params: any) {
     });
 }
 
-export function productCategoryBreadcrumb(data: any, params: any) {
+export function collectionBreadcrumb(data: any, params: any) {
     return detailBreadcrumb<FacetWithValues.Fragment>({
         entity: data.entity,
         id: params.id,
-        breadcrumbKey: 'breadcrumb.categories',
+        breadcrumbKey: 'breadcrumb.collections',
         getName: facet => facet.name,
-        route: 'categories',
+        route: 'collections',
     });
 }

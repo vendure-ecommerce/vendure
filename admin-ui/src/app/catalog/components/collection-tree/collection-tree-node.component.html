@@ -2,30 +2,30 @@
     cdkDropList
     class="tree-node"
     #dropList
-    [cdkDropListData]="categoryTree"
+    [cdkDropListData]="collectionTree"
     [cdkDropListDisabled]="true"
     (cdkDropListDropped)="drop($event)"
 >
     <div
         class="category"
-        *ngFor="let category of categoryTree.children; index as i"
+        *ngFor="let collection of collectionTree.children; index as i"
         cdkDrag
-        [cdkDragData]="category"
+        [cdkDragData]="collection"
     >
         <div class="category-detail" [ngClass]="'depth-' + depth">
             <div class="name">
                 <clr-icon shape="folder"></clr-icon>
-                {{ category.name }}
+                {{ collection.name }}
             </div>
             <div class="flex-spacer">
                 <vdr-facet-value-chip
-                    *ngFor="let facetValue of category.facetValues"
+                    *ngFor="let facetValue of collection.facetValues"
                     [facetValue]="facetValue"
                     [displayFacetName]="false"
                     [removable]="false"
                 ></vdr-facet-value-chip>
             </div>
-            <a class="btn btn-link btn-sm" [routerLink]="['./', category.id]">
+            <a class="btn btn-link btn-sm" [routerLink]="['./', collection.id]">
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}
             </a>
@@ -44,7 +44,7 @@
                         type="button"
                         class="dropdown-item"
                         [disabled]="i === 0"
-                        (click)="moveUp(category, i)"
+                        (click)="moveUp(collection, i)"
                     >
                         <clr-icon shape="caret up"></clr-icon>
                         {{ 'catalog.move-up' | translate }}
@@ -52,8 +52,8 @@
                     <button
                         type="button"
                         class="dropdown-item"
-                        [disabled]="i === categoryTree.children.length - 1"
-                        (click)="moveDown(category, i)"
+                        [disabled]="i === collectionTree.children.length - 1"
+                        (click)="moveDown(collection, i)"
                     >
                         <clr-icon shape="caret down"></clr-icon>
                         {{ 'catalog.move-down' | translate }}
@@ -62,8 +62,8 @@
                     <button
                         type="button"
                         class="dropdown-item"
-                        *ngFor="let item of getMoveListItems(category)"
-                        (click)="move(category, item.id)"
+                        *ngFor="let item of getMoveListItems(collection)"
+                        (click)="move(collection, item.id)"
                     >
                         <clr-icon shape="child-arrow"></clr-icon>
                         {{ item.path }}
@@ -71,6 +71,6 @@
                 </clr-dropdown-menu>
             </clr-dropdown>
         </div>
-        <vdr-product-category-tree-node [categoryTree]="category"></vdr-product-category-tree-node>
+        <vdr-collection-tree-node [collectionTree]="collection"></vdr-collection-tree-node>
     </div>
 </div>
