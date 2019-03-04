@@ -406,3 +406,4 @@ docs/content/docs/graphql-api/*
 !docs/content/docs/graphql-api/_index.md
 !docs/content/docs/graphql-api/shop/_index.md
 !docs/content/docs/graphql-api/admin/_index.md
+.vscode/
