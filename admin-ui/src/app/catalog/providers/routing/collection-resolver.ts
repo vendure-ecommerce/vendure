@@ -18,7 +18,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 featuredAsset: null,
                 assets: [],
                 translations: [],
-                facetValues: [],
+                filters: [],
                 parent: {} as any,
                 children: null,
             },

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-04T11:47:05+01:00
+// Generated in 2019-03-05T13:49:42+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -140,6 +140,52 @@ export interface CollectionFilterParameter {
     position?: Maybe<NumberOperators>;
 
     description?: Maybe<StringOperators>;
+}
+
+export interface ProductVariantListOptions {
+    skip?: Maybe<number>;
+
+    take?: Maybe<number>;
+
+    sort?: Maybe<ProductVariantSortParameter>;
+
+    filter?: Maybe<ProductVariantFilterParameter>;
+}
+
+export interface ProductVariantSortParameter {
+    id?: Maybe<SortOrder>;
+
+    createdAt?: Maybe<SortOrder>;
+
+    updatedAt?: Maybe<SortOrder>;
+
+    sku?: Maybe<SortOrder>;
+
+    name?: Maybe<SortOrder>;
+
+    price?: Maybe<SortOrder>;
+
+    priceWithTax?: Maybe<SortOrder>;
+}
+
+export interface ProductVariantFilterParameter {
+    createdAt?: Maybe<DateOperators>;
+
+    updatedAt?: Maybe<DateOperators>;
+
+    languageCode?: Maybe<StringOperators>;
+
+    sku?: Maybe<StringOperators>;
+
+    name?: Maybe<StringOperators>;
+
+    price?: Maybe<NumberOperators>;
+
+    currencyCode?: Maybe<StringOperators>;
+
+    priceIncludesTax?: Maybe<BooleanOperators>;
+
+    priceWithTax?: Maybe<NumberOperators>;
 }
 
 export interface ProductListOptions {
@@ -1326,13 +1372,11 @@ export interface Collection extends Node {
 
     children?: Maybe<Collection[]>;
 
-    facetValues: FacetValue[];
-
-    descendantFacetValues: FacetValue[];
-
-    ancestorFacetValues: FacetValue[];
+    filters: AdjustmentOperation[];
 
     translations: CollectionTranslation[];
+
+    productVariants: ProductVariantList;
 
     customFields?: Maybe<Json>;
 }
@@ -1349,6 +1393,12 @@ export interface CollectionTranslation {
     name: string;
 
     description: string;
+}
+
+export interface ProductVariantList extends PaginatedList {
+    items: ProductVariant[];
+
+    totalItems: number;
 }
 
 export interface ShippingMethodQuote {
@@ -1716,6 +1766,9 @@ export interface SearchQueryArgs {
 }
 export interface OrdersCustomerArgs {
     options?: Maybe<OrderListOptions>;
+}
+export interface ProductVariantsCollectionArgs {
+    options?: Maybe<ProductVariantListOptions>;
 }
 export interface AddItemToOrderMutationArgs {
     productVariantId: string;

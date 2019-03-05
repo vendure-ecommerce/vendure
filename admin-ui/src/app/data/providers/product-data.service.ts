@@ -13,6 +13,7 @@ import {
     GenerateProductVariants,
     GetAssetList,
     GetCollection,
+    GetCollectionFilters,
     GetCollectionList,
     GetProductList,
     GetProductOptionGroups,
@@ -41,6 +42,7 @@ import {
     GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
     GET_COLLECTION,
+    GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
@@ -205,6 +207,10 @@ export class ProductDataService {
         });
     }
 
+    getCollectionFilters() {
+        return this.baseDataService.query<GetCollectionFilters.Query>(GET_COLLECTION_FILTERS);
+    }
+
     getCollections(take: number = 10, skip: number = 0) {
         return this.baseDataService.query<GetCollectionList.Query, GetCollectionList.Variables>(
             GET_COLLECTION_LIST,
@@ -233,7 +239,7 @@ export class ProductDataService {
                     'translations',
                     'assetIds',
                     'featuredAssetId',
-                    'facetValueIds',
+                    'filters',
                     'customFields',
                 ]),
             },
@@ -249,7 +255,7 @@ export class ProductDataService {
                     'translations',
                     'assetIds',
                     'featuredAssetId',
-                    'facetValueIds',
+                    'filters',
                     'customFields',
                 ]),
             },

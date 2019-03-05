@@ -1,6 +1,7 @@
 type Query {
     collections(languageCode: LanguageCode, options: CollectionListOptions): CollectionList!
     collection(id: ID!, languageCode: LanguageCode): Collection
+    collectionFilters: [AdjustmentOperation!]!
 }
 
 type Mutation {
@@ -34,7 +35,7 @@ input CreateCollectionInput {
     featuredAssetId: ID
     assetIds: [ID!]
     parentId: ID
-    facetValueIds: [ID!]
+    filters: [AdjustmentOperationInput!]!
     translations: [CollectionTranslationInput!]!
 }
 
@@ -43,6 +44,6 @@ input UpdateCollectionInput {
     featuredAssetId: ID
     parentId: ID
     assetIds: [ID!]
-    facetValueIds: [ID!]
+    filters: [AdjustmentOperationInput!]!
     translations: [CollectionTranslationInput!]!
 }

@@ -5,11 +5,11 @@ import {
     ManyToMany,
     ManyToOne,
     OneToMany,
-    Tree,
     TreeChildren,
     TreeParent,
 } from 'typeorm';
 
+import { AdjustmentOperation } from '../../../../shared/generated-types';
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -17,13 +17,13 @@ import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomCollectionFields } from '../custom-entity-fields';
-import { FacetValue } from '../facet-value/facet-value.entity';
+import { ProductVariant } from '../product-variant/product-variant.entity';
 
 import { CollectionTranslation } from './collection-translation.entity';
 
 /**
  * @description
- * A Collection is a grouping of {@link Product}s based on {@link FacetValue}s.
+ * A Collection is a grouping of {@link Product}s based on various configurable criteria.
  *
  * @docsCategory entities
  */
@@ -58,9 +58,11 @@ export class Collection extends VendureEntity implements Translatable, HasCustom
     @JoinTable()
     assets: Asset[];
 
-    @ManyToMany(type => FacetValue)
+    @Column('simple-json') filters: AdjustmentOperation[];
+
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
     @JoinTable()
-    facetValues: FacetValue[];
+    productVariants: ProductVariant[];
 
     @Column(type => CustomCollectionFields)
     customFields: CustomCollectionFields;

@@ -19,18 +19,21 @@ import {
     UpdateCollection,
 } from '../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
+import { facetValueCollectionFilter } from '../src/config/collection/collection-filter';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './test-utils';
 
+// TODO: test collection without filters has no ProductVariants
+
 describe('Collection resolver', () => {
     const client = new TestAdminClient();
     const server = new TestServer();
     let assets: GetAssetList.Items[];
     let electronicsCategory: Collection.Fragment;
-    let laptopsCategory: Collection.Fragment;
+    let computersCategory: Collection.Fragment;
     let appleCategory: Collection.Fragment;
 
     beforeAll(async () => {
@@ -61,7 +64,12 @@ describe('Collection resolver', () => {
                     input: {
                         assetIds: [assets[0].id, assets[1].id],
                         featuredAssetId: assets[1].id,
-                        facetValueIds: ['T_1'],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [{ name: 'facetValueIds', value: `["T_1"]` }],
+                            },
+                        ],
                         translations: [
                             { languageCode: LanguageCode.en, name: 'Electronics', description: '' },
                         ],
@@ -80,13 +88,18 @@ describe('Collection resolver', () => {
                 {
                     input: {
                         parentId: electronicsCategory.id,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Laptops', description: '' }],
-                        facetValueIds: ['T_2'],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Computers', description: '' }],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [{ name: 'facetValueIds', value: `["T_2"]` }],
+                            },
+                        ],
                     },
                 },
             );
-            laptopsCategory = result.createCollection;
-            expect(laptopsCategory.parent.name).toBe(electronicsCategory.name);
+            computersCategory = result.createCollection;
+            expect(computersCategory.parent.name).toBe(electronicsCategory.name);
         });
 
         it('creates a 2nd level nested category', async () => {
@@ -94,92 +107,43 @@ describe('Collection resolver', () => {
                 CREATE_COLLECTION,
                 {
                     input: {
-                        parentId: laptopsCategory.id,
+                        parentId: computersCategory.id,
                         translations: [{ languageCode: LanguageCode.en, name: 'Apple', description: '' }],
-                        facetValueIds: ['T_3', 'T_4'],
+                        filters: [],
                     },
                 },
             );
             appleCategory = result.createCollection;
-            expect(appleCategory.parent.name).toBe(laptopsCategory.name);
+            expect(appleCategory.parent.name).toBe(computersCategory.name);
         });
     });
 
-    describe('collection query', () => {
-        it('returns a category', async () => {
-            const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-                id: laptopsCategory.id,
-            });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.id).toBe(laptopsCategory.id);
+    it('collection query', async () => {
+        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            id: computersCategory.id,
         });
-
-        it('resolves descendantFacetValues 1 level deep', async () => {
-            const result = await client.query(GET_DECENDANT_FACET_VALUES, { id: laptopsCategory.id });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.descendantFacetValues.map(v => v.id)).toEqual(['T_3', 'T_4']);
-        });
-
-        it('resolves descendantFacetValues 2 levels deep', async () => {
-            const result = await client.query(GET_DECENDANT_FACET_VALUES, { id: electronicsCategory.id });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.descendantFacetValues.map(v => v.id)).toEqual(['T_2', 'T_3', 'T_4']);
-        });
-
-        it('resolves ancestorFacetValues at root', async () => {
-            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: electronicsCategory.id });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.ancestorFacetValues.map(v => v.id)).toEqual([]);
-        });
-
-        it('resolves ancestorFacetValues 1 level deep', async () => {
-            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: laptopsCategory.id });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.ancestorFacetValues.map(v => v.id)).toEqual(['T_1']);
-        });
-
-        it('resolves ancestorFacetValues 2 levels deep', async () => {
-            const result = await client.query(GET_ANCESTOR_FACET_VALUES, { id: appleCategory.id });
-            if (!result.collection) {
-                fail(`did not return the category`);
-                return;
-            }
-            expect(result.collection.ancestorFacetValues.map(v => v.id)).toEqual(['T_1', 'T_2']);
-        });
+        if (!result.collection) {
+            fail(`did not return the category`);
+            return;
+        }
+        expect(result.collection.id).toBe(computersCategory.id);
     });
 
-    describe('updateCollection', () => {
-        it('updates the details', async () => {
-            const result = await client.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
-                UPDATE_COLLECTION,
-                {
-                    input: {
-                        id: appleCategory.id,
-                        assetIds: [assets[1].id],
-                        featuredAssetId: assets[1].id,
-                        facetValueIds: ['T_3'],
-                        translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
-                    },
+    it('updateCollection', async () => {
+        const result = await client.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
+            UPDATE_COLLECTION,
+            {
+                input: {
+                    id: appleCategory.id,
+                    assetIds: [assets[1].id],
+                    featuredAssetId: assets[1].id,
+                    filters: [],
+                    translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
                 },
-            );
+            },
+        );
 
-            expect(result.updateCollection).toMatchSnapshot();
-        });
+        expect(result.updateCollection).toMatchSnapshot();
     });
 
     describe('moveCollection', () => {
@@ -198,7 +162,7 @@ describe('Collection resolver', () => {
             expect(result.moveCollection.parent.id).toBe(electronicsCategory.id);
 
             const positions = await getChildrenOf(electronicsCategory.id);
-            expect(positions.map(i => i.id)).toEqual([appleCategory.id, laptopsCategory.id]);
+            expect(positions.map(i => i.id)).toEqual([appleCategory.id, computersCategory.id]);
         });
 
         it('alters the position in the current parent', async () => {
@@ -211,7 +175,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCategory.id);
-            expect(afterResult.map(i => i.id)).toEqual([laptopsCategory.id, appleCategory.id]);
+            expect(afterResult.map(i => i.id)).toEqual([computersCategory.id, appleCategory.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
@@ -224,7 +188,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCategory.id);
-            expect(afterResult.map(i => i.id)).toEqual([appleCategory.id, laptopsCategory.id]);
+            expect(afterResult.map(i => i.id)).toEqual([appleCategory.id, computersCategory.id]);
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
@@ -237,7 +201,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCategory.id);
-            expect(afterResult.map(i => i.id)).toEqual([laptopsCategory.id, appleCategory.id]);
+            expect(afterResult.map(i => i.id)).toEqual([computersCategory.id, appleCategory.id]);
         });
 
         it(
@@ -271,14 +235,23 @@ describe('Collection resolver', () => {
         );
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
-            const result = await client.query(GET_CATEGORIES);
+            const result = await client.query(GET_COLLECTIONS);
             return result.collections.items.filter(i => i.parent.id === parentId);
         }
     });
+
+    /*describe('filters', () => {
+        it('facetValue filter', async () => {
+            const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: electronicsCategory.id });
+            expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
+                '',
+            ]);
+        });
+    });*/
 });
 
-const GET_CATEGORIES = gql`
-    query GetCategories {
+const GET_COLLECTIONS = gql`
+    query GetCollections {
         collections(languageCode: en) {
             items {
                 id
@@ -293,25 +266,17 @@ const GET_CATEGORIES = gql`
     }
 `;
 
-const GET_DECENDANT_FACET_VALUES = gql`
-    query GetDescendantFacetValues($id: ID!) {
+const GET_COLLECTION_PRODUCT_VARIANTS = gql`
+    query GetCollectionProducts($id: ID!) {
         collection(id: $id) {
-            id
-            descendantFacetValues {
-                id
-                name
-            }
-        }
-    }
-`;
-
-const GET_ANCESTOR_FACET_VALUES = gql`
-    query GetAncestorFacetValues($id: ID!) {
-        collection(id: $id) {
-            id
-            ancestorFacetValues {
-                id
-                name
+            productVariants {
+                items {
+                    id
+                    name
+                    facetValues {
+                        code
+                    }
+                }
             }
         }
     }

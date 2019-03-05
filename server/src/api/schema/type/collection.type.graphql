@@ -10,10 +10,9 @@ type Collection implements Node {
     assets: [Asset!]!
     parent: Collection!
     children: [Collection!]
-    facetValues: [FacetValue!]!
-    descendantFacetValues: [FacetValue!]!
-    ancestorFacetValues: [FacetValue!]!
+    filters: [AdjustmentOperation!]!
     translations: [CollectionTranslation!]!
+    productVariants(options: ProductVariantListOptions): ProductVariantList!
 }
 
 type CollectionTranslation {
@@ -29,3 +28,11 @@ type CollectionList implements PaginatedList {
     items: [Collection!]!
     totalItems: Int!
 }
+
+
+type ProductVariantList implements PaginatedList {
+    items: [ProductVariant!]!
+    totalItems: Int!
+}
+
+input ProductVariantListOptions

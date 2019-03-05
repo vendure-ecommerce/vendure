@@ -5,6 +5,7 @@ import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
+import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
@@ -93,4 +94,7 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
+
+    @ManyToMany(type => Collection, collection => collection.productVariants)
+    collections: Collection[];
 }

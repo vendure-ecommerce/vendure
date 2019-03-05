@@ -24,13 +24,6 @@ Object {
   ],
   "children": null,
   "description": "",
-  "facetValues": Array [
-    Object {
-      "code": "electronics",
-      "id": "T_1",
-      "name": "electronics",
-    },
-  ],
   "featuredAsset": Object {
     "fileSize": 4,
     "id": "T_1",
@@ -40,6 +33,19 @@ Object {
     "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
     "type": "IMAGE",
   },
+  "filters": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "facetValueIds",
+          "type": "facetValueIds",
+          "value": "[\\"T_1\\"]",
+        },
+      ],
+      "code": "facet-value-filter",
+      "description": "Filter by FacetValues",
+    },
+  ],
   "id": "T_2",
   "languageCode": "en",
   "name": "Electronics",
@@ -58,7 +64,7 @@ Object {
 }
 `;
 
-exports[`Collection resolver updateCollection updates the details 1`] = `
+exports[`Collection resolver updateCollection 1`] = `
 Object {
   "assets": Array [
     Object {
@@ -73,13 +79,6 @@ Object {
   ],
   "children": null,
   "description": "Apple stuff ",
-  "facetValues": Array [
-    Object {
-      "code": "photo",
-      "id": "T_3",
-      "name": "photo",
-    },
-  ],
   "featuredAsset": Object {
     "fileSize": 4,
     "id": "T_1",
@@ -89,12 +88,13 @@ Object {
     "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
     "type": "IMAGE",
   },
+  "filters": Array [],
   "id": "T_4",
   "languageCode": "en",
   "name": "Apple",
   "parent": Object {
     "id": "T_3",
-    "name": "Laptops",
+    "name": "Computers",
   },
   "translations": Array [
     Object {

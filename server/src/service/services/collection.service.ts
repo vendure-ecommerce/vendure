@@ -1,16 +1,24 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
+import {
+    AdjustmentOperation,
+    CreateCollectionInput,
+    MoveCollectionInput,
+    UpdateCollectionInput,
+} from '../../../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { IllegalOperationError } from '../../common/error/errors';
+import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { CollectionFilter, facetValueCollectionFilter } from '../../config/collection/collection-filter';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -22,6 +30,7 @@ import { FacetValueService } from './facet-value.service';
 
 export class CollectionService {
     private rootCategories: { [channelCode: string]: Collection } = {};
+    private availableFilters: Array<CollectionFilter<any>> = [facetValueCollectionFilter];
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -36,7 +45,7 @@ export class CollectionService {
         ctx: RequestContext,
         options?: ListQueryOptions<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        const relations = ['featuredAsset', 'facetValues', 'facetValues.facet', 'parent', 'channels'];
+        const relations = ['featuredAsset', 'parent', 'channels'];
 
         return this.listQueryBuilder
             .build(Collection, options, {
@@ -48,11 +57,7 @@ export class CollectionService {
             .getManyAndCount()
             .then(async ([collections, totalItems]) => {
                 const items = collections.map(collection =>
-                    translateDeep(collection, ctx.languageCode, [
-                        'facetValues',
-                        'parent',
-                        ['facetValues', 'facet'],
-                    ]),
+                    translateDeep(collection, ctx.languageCode, ['parent']),
                 );
                 return {
                     items,
@@ -62,34 +67,18 @@ export class CollectionService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Collection> | undefined> {
-        const relations = ['featuredAsset', 'assets', 'facetValues', 'channels', 'parent'];
+        const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
         const collection = await this.connection.getRepository(Collection).findOne(productId, {
             relations,
         });
         if (!collection) {
             return;
         }
-        return translateDeep(collection, ctx.languageCode, ['facetValues', 'parent']);
+        return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    /**
-     * Given a categoryId, returns an array of all the facetValueIds assigned to that
-     * category and its ancestors. A Product is considered to be "in" a category when it has *all*
-     * of these facetValues assigned to it.
-     */
-    async getFacetValueIdsForCategory(categoryId: ID): Promise<ID[]> {
-        const category = await this.connection
-            .getRepository(Collection)
-            .findOne(categoryId, { relations: ['facetValues'] });
-        if (!category) {
-            return [];
-        }
-        const ancestors = await this.getAncestors(categoryId);
-        const facetValueIds = [category, ...ancestors].reduce(
-            (flat, c) => [...flat, ...c.facetValues.map(fv => fv.id)],
-            [] as ID[],
-        );
-        return facetValueIds;
+    getAvailableFilters(): Array<CollectionFilter<any>> {
+        return this.availableFilters;
     }
 
     /**
@@ -149,43 +138,41 @@ export class CollectionService {
             });
     }
 
-    async create(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
+    async create(ctx: RequestContext, input: CreateCollectionInput): Promise<Translated<Collection>> {
         const collection = await this.translatableSaver.create({
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
-            beforeSave: async category => {
-                await this.channelService.assignToChannels(category, ctx);
+            beforeSave: async coll => {
+                await this.channelService.assignToChannels(coll, ctx);
                 const parent = await this.getParentCategory(ctx, input.parentId);
                 if (parent) {
-                    category.parent = parent;
+                    coll.parent = parent;
                 }
-                category.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
-                if (input.facetValueIds) {
-                    category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
-                }
-                await this.assetUpdater.updateEntityAssets(category, input);
+                coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
+                coll.filters = this.getCollectionFiltersFromInput(input);
+                coll.productVariants = await this.applyCollectionFilters(coll.filters);
+                await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
         return assertFound(this.findOne(ctx, collection.id));
     }
 
-    async update(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
+    async update(ctx: RequestContext, input: UpdateCollectionInput): Promise<Translated<Collection>> {
         const collection = await this.translatableSaver.update({
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
-            beforeSave: async category => {
-                if (input.facetValueIds) {
-                    category.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
-                }
-                await this.assetUpdater.updateEntityAssets(category, input);
+            beforeSave: async coll => {
+                coll.filters = this.getCollectionFiltersFromInput(input);
+                coll.productVariants = await this.applyCollectionFilters(coll.filters);
+                await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
         return assertFound(this.findOne(ctx, collection.id));
     }
 
-    async move(ctx: RequestContext, input: any): Promise<Translated<Collection>> {
+    async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
         const target = await getEntityOrThrow(this.connection, Collection, input.categoryId, {
             relations: ['parent'],
         });
@@ -227,10 +214,44 @@ export class CollectionService {
         return assertFound(this.findOne(ctx, input.categoryId));
     }
 
+    private getCollectionFiltersFromInput(
+        input: CreateCollectionInput | UpdateCollectionInput,
+    ): AdjustmentOperation[] {
+        const filters: AdjustmentOperation[] = [];
+        if (input.filters) {
+            for (const filter of input.filters) {
+                const match = this.getFilterByCode(filter.code);
+                const output = {
+                    code: filter.code,
+                    description: match.description,
+                    args: filter.arguments.map((inputArg, i) => {
+                        return {
+                            name: inputArg.name,
+                            type: match.args[inputArg.name],
+                            value: inputArg.value,
+                        };
+                    }),
+                };
+                filters.push(output);
+            }
+        }
+        return filters;
+    }
+
+    private async applyCollectionFilters(filters: AdjustmentOperation[]): Promise<ProductVariant[]> {
+        let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
+        for (const filter of filters) {
+            if (filter.code === facetValueCollectionFilter.code) {
+                qb = facetValueCollectionFilter.apply(qb, filter.args);
+            }
+        }
+        return qb.getMany();
+    }
+
     /**
      * Returns the next position value in the given parent category.
      */
-    async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
+    private async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
         const parentId = maybeParentId || (await this.getRootCategory(ctx)).id;
         const result = await this.connection
             .getRepository(Collection)
@@ -292,10 +313,19 @@ export class CollectionService {
             position: 0,
             translations: [rootTranslation],
             channels: [ctx.channel],
+            filters: [],
         });
 
         await this.connection.getRepository(Collection).save(newRoot);
         this.rootCategories[ctx.channel.code] = newRoot;
         return newRoot;
+    }
+
+    private getFilterByCode(code: string): CollectionFilter<any> {
+        const match = this.availableFilters.find(a => a.code === code);
+        if (!match) {
+            throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
+        }
+        return match;
     }
 }

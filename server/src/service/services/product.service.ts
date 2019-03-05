@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection, FindConditions, In } from 'typeorm';
+import { Connection } from 'typeorm';
 
 import {
     CreateProductInput,
@@ -26,7 +26,6 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
-import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
 import { ProductVariantService } from './product-variant.service';
 import { TaxRateService } from './tax-rate.service';
@@ -47,7 +46,6 @@ export class ProductService {
         private channelService: ChannelService,
         private assetUpdater: AssetUpdater,
         private productVariantService: ProductVariantService,
-        private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private listQueryBuilder: ListQueryBuilder,
@@ -57,19 +55,13 @@ export class ProductService {
 
     async findAll(
         ctx: RequestContext,
-        options?: ListQueryOptions<Product> & { categoryId?: string | null },
+        options?: ListQueryOptions<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        let where: FindConditions<Product> | undefined;
-        if (options && options.categoryId) {
-            where = {
-                id: In(await this.getProductIdsInCategory(options.categoryId)),
-            };
-        }
         return this.listQueryBuilder
             .build(Product, options, {
                 relations: this.relations,
                 channelId: ctx.channelId,
-                where: { ...where, deletedAt: null },
+                where: { deletedAt: null },
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
@@ -178,22 +170,6 @@ export class ProductService {
 
         await this.connection.manager.save(product);
         return assertFound(this.findOne(ctx, productId));
-    }
-
-    private async getProductIdsInCategory(categoryId: ID): Promise<ID[]> {
-        const facetValueIds = await this.collectionService.getFacetValueIdsForCategory(categoryId);
-        const qb = this.connection
-            .getRepository(Product)
-            .createQueryBuilder('product')
-            .select(['product.id'])
-            .innerJoin('product.facetValues', 'facetValue', 'facetValue.id IN (:...facetValueIds)', {
-                facetValueIds,
-            })
-            .groupBy('product.id')
-            .having('count(distinct facetValue.id) = :idCount', { idCount: facetValueIds.length });
-
-        const productIds = await qb.getRawMany().then(rows => rows.map(r => r.product_id));
-        return productIds;
     }
 
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {

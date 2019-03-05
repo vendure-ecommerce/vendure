@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-04T11:47:06+01:00
+// Generated in 2019-03-05T13:49:43+01:00
 export type Maybe<T> = T | null;
 
 
@@ -171,6 +171,60 @@ export interface CollectionFilterParameter {
   description?: Maybe<StringOperators>;
 }
 
+export interface ProductVariantListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<ProductVariantSortParameter>;
+  
+  filter?: Maybe<ProductVariantFilterParameter>;
+}
+
+export interface ProductVariantSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  sku?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+  
+  price?: Maybe<SortOrder>;
+  
+  priceWithTax?: Maybe<SortOrder>;
+}
+
+export interface ProductVariantFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  sku?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  price?: Maybe<NumberOperators>;
+  
+  currencyCode?: Maybe<StringOperators>;
+  
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  
+  priceWithTax?: Maybe<NumberOperators>;
+}
+
+export interface BooleanOperators {
+  
+  eq?: Maybe<boolean>;
+}
+
 export interface CountryListOptions {
   
   skip?: Maybe<number>;
@@ -200,11 +254,6 @@ export interface CountryFilterParameter {
   name?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
-}
-
-export interface BooleanOperators {
-  
-  eq?: Maybe<boolean>;
 }
 
 export interface CustomerListOptions {
@@ -414,8 +463,6 @@ export interface ProductListOptions {
   sort?: Maybe<ProductSortParameter>;
   
   filter?: Maybe<ProductFilterParameter>;
-  
-  categoryId?: Maybe<string>;
 }
 
 export interface ProductSortParameter {
@@ -665,11 +712,25 @@ export interface CreateCollectionInput {
   
   parentId?: Maybe<string>;
   
-  facetValueIds?: Maybe<string[]>;
+  filters: AdjustmentOperationInput[];
   
   translations: CollectionTranslationInput[];
   
   customFields?: Maybe<Json>;
+}
+
+export interface AdjustmentOperationInput {
+  
+  code: string;
+  
+  arguments: ConfigArgInput[];
+}
+
+export interface ConfigArgInput {
+  
+  name: string;
+  
+  value: string;
 }
 
 export interface CollectionTranslationInput {
@@ -695,7 +756,7 @@ export interface UpdateCollectionInput {
   
   assetIds?: Maybe<string[]>;
   
-  facetValueIds?: Maybe<string[]>;
+  filters: AdjustmentOperationInput[];
   
   translations: CollectionTranslationInput[];
   
@@ -933,13 +994,6 @@ export interface UpdatePaymentMethodInput {
   configArgs?: Maybe<ConfigArgInput[]>;
 }
 
-export interface ConfigArgInput {
-  
-  name: string;
-  
-  value: string;
-}
-
 export interface CreateProductOptionGroupInput {
   
   code: string;
@@ -1066,13 +1120,6 @@ export interface CreatePromotionInput {
   conditions: AdjustmentOperationInput[];
   
   actions: AdjustmentOperationInput[];
-}
-
-export interface AdjustmentOperationInput {
-  
-  code: string;
-  
-  arguments: ConfigArgInput[];
 }
 
 export interface UpdatePromotionInput {
@@ -2581,6 +2628,19 @@ export namespace CreateAssets {
   export type CreateAssets = Asset.Fragment
 }
 
+export namespace GetCollectionFilters {
+  export type Variables = {
+  }
+
+  export type Query = {
+    __typename?: "Query";
+    
+    collectionFilters: CollectionFilters[];
+  }
+
+  export type CollectionFilters = AdjustmentOperation.Fragment
+}
+
 export namespace GetCollectionList {
   export type Variables = {
     options?: Maybe<CollectionListOptions>;
@@ -2612,32 +2672,10 @@ export namespace GetCollectionList {
     
     featuredAsset: Maybe<FeaturedAsset>;
     
-    facetValues: FacetValues[];
-    
     parent: Parent;
   } 
 
   export type FeaturedAsset = Asset.Fragment
-
-  export type FacetValues = {
-    __typename?: "FacetValue";
-    
-    id: string;
-    
-    code: string;
-    
-    name: string;
-    
-    facet: Facet;
-  } 
-
-  export type Facet = {
-    __typename?: "Facet";
-    
-    id: string;
-    
-    name: string;
-  } 
 
   export type Parent = {
     __typename?: "Collection";
@@ -4102,7 +4140,7 @@ export namespace Collection {
     
     assets: Assets[];
     
-    facetValues: FacetValues[];
+    filters: Filters[];
     
     translations: Translations[];
     
@@ -4115,15 +4153,7 @@ export namespace Collection {
 
   export type Assets =Asset.Fragment
 
-  export type FacetValues = {
-    __typename?: "FacetValue";
-    
-    id: string;
-    
-    name: string;
-    
-    code: string;
-  }
+  export type Filters =AdjustmentOperation.Fragment
 
   export type Translations = {
     __typename?: "CollectionTranslation";
@@ -4449,6 +4479,8 @@ export interface Query {
   
   collection?: Maybe<Collection>;
   
+  collectionFilters: AdjustmentOperation[];
+  
   config: Config;
   
   countries: CountryList;
@@ -4727,15 +4759,177 @@ export interface Collection extends Node {
   
   children?: Maybe<Collection[]>;
   
-  facetValues: FacetValue[];
-  
-  descendantFacetValues: FacetValue[];
-  
-  ancestorFacetValues: FacetValue[];
+  filters: AdjustmentOperation[];
   
   translations: CollectionTranslation[];
   
+  productVariants: ProductVariantList;
+  
   customFields?: Maybe<Json>;
+}
+
+
+export interface AdjustmentOperation {
+  
+  code: string;
+  
+  args: ConfigArg[];
+  
+  description: string;
+}
+
+
+export interface ConfigArg {
+  
+  name: string;
+  
+  type: string;
+  
+  value?: Maybe<string>;
+}
+
+
+export interface CollectionTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+  
+  description: string;
+}
+
+
+export interface ProductVariantList extends PaginatedList {
+  
+  items: ProductVariant[];
+  
+  totalItems: number;
+}
+
+
+export interface ProductVariant extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  sku: string;
+  
+  name: string;
+  
+  featuredAsset?: Maybe<Asset>;
+  
+  assets: Asset[];
+  
+  price: number;
+  
+  currencyCode: CurrencyCode;
+  
+  priceIncludesTax: boolean;
+  
+  priceWithTax: number;
+  
+  taxRateApplied: TaxRate;
+  
+  taxCategory: TaxCategory;
+  
+  options: ProductOption[];
+  
+  facetValues: FacetValue[];
+  
+  translations: ProductVariantTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface TaxRate extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  name: string;
+  
+  enabled: boolean;
+  
+  value: number;
+  
+  category: TaxCategory;
+  
+  zone: Zone;
+  
+  customerGroup?: Maybe<CustomerGroup>;
+}
+
+
+export interface TaxCategory extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  name: string;
+}
+
+
+export interface CustomerGroup extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  name: string;
+}
+
+
+export interface ProductOption extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode?: Maybe<LanguageCode>;
+  
+  code?: Maybe<string>;
+  
+  name?: Maybe<string>;
+  
+  translations: ProductOptionTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface ProductOptionTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
 }
 
 
@@ -4811,7 +5005,7 @@ export interface FacetValueTranslation {
 }
 
 
-export interface CollectionTranslation {
+export interface ProductVariantTranslation {
   
   id: string;
   
@@ -4822,8 +5016,6 @@ export interface CollectionTranslation {
   languageCode: LanguageCode;
   
   name: string;
-  
-  description: string;
 }
 
 
@@ -4838,18 +5030,6 @@ export interface CountryList extends PaginatedList {
   items: Country[];
   
   totalItems: number;
-}
-
-
-export interface CustomerGroup extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  name: string;
 }
 
 
@@ -5025,128 +5205,6 @@ export interface OrderLine extends Node {
 }
 
 
-export interface ProductVariant extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  sku: string;
-  
-  name: string;
-  
-  featuredAsset?: Maybe<Asset>;
-  
-  assets: Asset[];
-  
-  price: number;
-  
-  currencyCode: CurrencyCode;
-  
-  priceIncludesTax: boolean;
-  
-  priceWithTax: number;
-  
-  taxRateApplied: TaxRate;
-  
-  taxCategory: TaxCategory;
-  
-  options: ProductOption[];
-  
-  facetValues: FacetValue[];
-  
-  translations: ProductVariantTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface TaxRate extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  name: string;
-  
-  enabled: boolean;
-  
-  value: number;
-  
-  category: TaxCategory;
-  
-  zone: Zone;
-  
-  customerGroup?: Maybe<CustomerGroup>;
-}
-
-
-export interface TaxCategory extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  name: string;
-}
-
-
-export interface ProductOption extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode?: Maybe<LanguageCode>;
-  
-  code?: Maybe<string>;
-  
-  name?: Maybe<string>;
-  
-  translations: ProductOptionTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface ProductOptionTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-}
-
-
-export interface ProductVariantTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-}
-
-
 export interface OrderItem extends Node {
   
   id: string;
@@ -5214,26 +5272,6 @@ export interface ShippingMethod extends Node {
   checker: AdjustmentOperation;
   
   calculator: AdjustmentOperation;
-}
-
-
-export interface AdjustmentOperation {
-  
-  code: string;
-  
-  args: ConfigArg[];
-  
-  description: string;
-}
-
-
-export interface ConfigArg {
-  
-  name: string;
-  
-  type: string;
-  
-  value?: Maybe<string>;
 }
 
 
@@ -5835,6 +5873,10 @@ export interface TaxRateQueryArgs {
 export interface ZoneQueryArgs {
   
   id: string;
+}
+export interface ProductVariantsCollectionArgs {
+  
+  options?: Maybe<ProductVariantListOptions>;
 }
 export interface OrdersCustomerArgs {
   

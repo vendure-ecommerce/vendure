@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
+    AdjustmentOperation,
     CollectionQueryArgs,
     CollectionsQueryArgs,
     CreateCollectionMutationArgs,
@@ -10,6 +11,7 @@ import {
 } from '../../../../../shared/generated-types';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { Translated } from '../../../common/types/locale-types';
+import { CollectionFilter } from '../../../config/collection/collection-filter';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -21,6 +23,23 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver()
 export class CollectionResolver {
     constructor(private collectionService: CollectionService, private facetValueService: FacetValueService) {}
+
+    @Query()
+    @Allow(Permission.ReadCatalog)
+    async collectionFilters(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CollectionsQueryArgs,
+    ): Promise<AdjustmentOperation[]> {
+        // TODO: extract to common util bc it is used in at least 3 places.
+        const toAdjustmentOperation = (source: CollectionFilter<any>) => {
+            return {
+                code: source.code,
+                description: source.description,
+                args: Object.entries(source.args).map(([name, type]) => ({ name, type })),
+            };
+        };
+        return this.collectionService.getAvailableFilters().map(toAdjustmentOperation);
+    }
 
     @Query()
     @Allow(Permission.ReadCatalog)

@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+import { ADJUSTMENT_OPERATION_FRAGMENT } from './promotion-definitions';
+
 export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
         id
@@ -285,6 +287,15 @@ export const CREATE_ASSETS = gql`
     ${ASSET_FRAGMENT}
 `;
 
+export const GET_COLLECTION_FILTERS = gql`
+    query GetCollectionFilters {
+        collectionFilters {
+            ...AdjustmentOperation
+        }
+    }
+    ${ADJUSTMENT_OPERATION_FRAGMENT}
+`;
+
 export const COLLECTION_FRAGMENT = gql`
     fragment Collection on Collection {
         id
@@ -297,10 +308,8 @@ export const COLLECTION_FRAGMENT = gql`
         assets {
             ...Asset
         }
-        facetValues {
-            id
-            name
-            code
+        filters {
+            ...AdjustmentOperation
         }
         translations {
             id
@@ -318,6 +327,7 @@ export const COLLECTION_FRAGMENT = gql`
         }
     }
     ${ASSET_FRAGMENT}
+    ${ADJUSTMENT_OPERATION_FRAGMENT}
 `;
 
 export const GET_COLLECTION_LIST = gql`
@@ -329,15 +339,6 @@ export const GET_COLLECTION_LIST = gql`
                 description
                 featuredAsset {
                     ...Asset
-                }
-                facetValues {
-                    id
-                    code
-                    name
-                    facet {
-                        id
-                        name
-                    }
                 }
                 parent {
                     id

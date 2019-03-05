@@ -3,16 +3,16 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import { CreateProductVariantInput, UpdateProductVariantInput } from '../../../../shared/generated-types';
-import { ID } from '../../../../shared/shared-types';
+import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { generateAllCombinations } from '../../../../shared/shared-utils';
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TaxCategory } from '../../entity';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -20,6 +20,7 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -43,6 +44,7 @@ export class ProductVariantService {
         private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -83,6 +85,37 @@ export class ProductVariantService {
                     ]);
                 }),
             );
+    }
+
+    getVariantsByCollectionId(
+        ctx: RequestContext,
+        collectionId: ID,
+        options: ListQueryOptions<ProductVariant>,
+    ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        const relations = ['product', 'product.featuredAsset', 'taxCategory'];
+
+        return this.listQueryBuilder
+            .build(ProductVariant, options, {
+                relations,
+                channelId: ctx.channelId,
+            })
+            .leftJoin('productvariant.collections', 'collection')
+            .where('collection.id = :collectionId', { collectionId })
+            .getManyAndCount()
+            .then(async ([variants, totalItems]) => {
+                const items = variants.map(variant => {
+                    const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
+                    return translateDeep(variantWithPrices, ctx.languageCode, [
+                        'options',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]);
+                });
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {

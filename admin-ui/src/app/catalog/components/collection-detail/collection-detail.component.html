@@ -61,20 +61,38 @@
             ></vdr-product-assets>
         </div>
     </div>
-    <div class="clr-row">
+    <div class="clr-row" formArrayName="filters">
         <div class="clr-col">
-            <h4>{{ 'catalog.facets' | translate }}</h4>
-            <div class="facets">
-                <vdr-facet-value-chip
-                    *ngFor="let facetValue of (facetValues$ | async)"
-                    [facetValue]="facetValue"
-                    (remove)="removeValueFacet(facetValue.id)"
-                ></vdr-facet-value-chip>
+            <label>{{ 'catalog.filters' | translate }}</label>
+            <ng-container *ngFor="let filter of filters; index as i">
+                <vdr-adjustment-operation-input
+                    (remove)="removeFilter($event)"
+                    [facets]="facets$ | async"
+                    [operation]="filter"
+                    [formControlName]="i"
+                ></vdr-adjustment-operation-input>
+            </ng-container>
+
+            <div>
+                <clr-dropdown>
+                    <div clrDropdownTrigger>
+                        <button class="btn btn-outline">
+                            <clr-icon shape="plus"></clr-icon>
+                            {{ 'marketing.add-condition' | translate }}
+                        </button>
+                    </div>
+                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                        <button
+                            *ngFor="let filter of allFilters"
+                            type="button"
+                            clrDropdownItem
+                            (click)="addFilter(filter)"
+                        >
+                            {{ filter.code }}
+                        </button>
+                    </clr-dropdown-menu>
+                </clr-dropdown>
             </div>
-            <button class="btn btn-secondary" (click)="addFacetValue()">
-                <clr-icon shape="plus"></clr-icon>
-                {{ 'catalog.add-facet' | translate }}
-            </button>
         </div>
     </div>
 </form>
