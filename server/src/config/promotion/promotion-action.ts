@@ -4,7 +4,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-} from '../../common/types/configurable-operation';
+} from '../../common/configurable-operation';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';

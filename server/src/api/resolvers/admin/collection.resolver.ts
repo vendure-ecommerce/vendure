@@ -30,15 +30,7 @@ export class CollectionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionsQueryArgs,
     ): Promise<ConfigurableOperation[]> {
-        // TODO: extract to common util bc it is used in at least 3 places.
-        const toAdjustmentOperation = (source: CollectionFilter<any>) => {
-            return {
-                code: source.code,
-                description: source.description,
-                args: Object.entries(source.args).map(([name, type]) => ({ name, type })),
-            };
-        };
-        return this.collectionService.getAvailableFilters().map(toAdjustmentOperation);
+        return this.collectionService.getAvailableFilters();
     }
 
     @Query()

@@ -13,6 +13,7 @@ import {
 import { omit } from '../../../../shared/omit';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
+import { configurableDefToOperation } from '../../common/configurable-operation';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -68,16 +69,9 @@ export class PromotionService {
         conditions: ConfigurableOperation[];
         actions: ConfigurableOperation[];
     } {
-        const toAdjustmentOperation = (source: PromotionCondition | PromotionAction) => {
-            return {
-                code: source.code,
-                description: source.description,
-                args: Object.entries(source.args).map(([name, type]) => ({ name, type })),
-            };
-        };
         return {
-            conditions: this.availableConditions.map(toAdjustmentOperation),
-            actions: this.availableActions.map(toAdjustmentOperation),
+            conditions: this.availableConditions.map(configurableDefToOperation),
+            actions: this.availableActions.map(configurableDefToOperation),
         };
     }
 

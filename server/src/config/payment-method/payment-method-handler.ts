@@ -1,7 +1,7 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../../common/types/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMetadata } from '../../entity/payment/payment.entity';
 import {

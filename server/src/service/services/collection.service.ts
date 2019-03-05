@@ -10,6 +10,7 @@ import {
 import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
+import { configurableDefToOperation } from '../../common/configurable-operation';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -78,8 +79,8 @@ export class CollectionService {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    getAvailableFilters(): Array<CollectionFilter<any>> {
-        return this.availableFilters;
+    getAvailableFilters(): ConfigurableOperation[] {
+        return this.availableFilters.map(configurableDefToOperation);
     }
 
     /**

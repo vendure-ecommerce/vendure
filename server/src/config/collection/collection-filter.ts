@@ -6,7 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-} from '../../common/types/configurable-operation';
+} from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 export type CollectionFilterArgType = 'facetValueIds';

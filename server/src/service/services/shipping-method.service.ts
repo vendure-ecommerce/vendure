@@ -10,6 +10,7 @@ import {
 } from '../../../../shared/generated-types';
 import { omit } from '../../../../shared/omit';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
+import { configurableDefToOperation } from '../../common/configurable-operation';
 import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -97,23 +98,15 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(): ConfigurableOperation[] {
-        return this.shippingEligibilityCheckers.map(this.toAdjustmentOperation);
+        return this.shippingEligibilityCheckers.map(configurableDefToOperation);
     }
 
     getShippingCalculators(): ConfigurableOperation[] {
-        return this.shippingCalculators.map(this.toAdjustmentOperation);
+        return this.shippingCalculators.map(configurableDefToOperation);
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
         return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
-    }
-
-    private toAdjustmentOperation(source: ShippingCalculator | ShippingEligibilityChecker) {
-        return {
-            code: source.code,
-            description: source.description,
-            args: Object.entries(source.args).map(([name, type]) => ({ name, type })),
-        };
     }
 
     /**

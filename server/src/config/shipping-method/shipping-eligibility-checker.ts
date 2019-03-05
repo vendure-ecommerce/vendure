@@ -1,7 +1,7 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
-import { ConfigArgs, ConfigurableOperationDef } from '../../common/types/configurable-operation';
-import { argsArrayToHash, ConfigArgValues } from '../../common/types/configurable-operation';
+import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
+import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
 export type ShippingEligibilityCheckerArgType = 'int' | 'money' | 'string' | 'boolean';

@@ -1,7 +1,7 @@
 // prettier-ignore
-import { ConfigArg } from '../../../../shared/generated-types';
-import { PromotionActionArgs, PromotionActionConfig } from '../../config/promotion/promotion-action';
-import { InternalServerError } from '../error/errors';
+import { ConfigArg, ConfigurableOperation } from '../../../shared/generated-types';
+
+import { InternalServerError } from './error/errors';
 
 /**
  * Certain entities allow arbitrary configuration arguments to be specified which can then
@@ -40,6 +40,28 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
 };
 
 /**
+ * Defines a ConfigurableOperation, which is a method which can be configured
+ * by the Administrator via the Admin API.
+ */
+export interface ConfigurableOperationDef {
+    code: string;
+    args: ConfigArgs<any>;
+    description: string;
+}
+
+/**
+ * Convert a ConfigurableOperationDef into a ConfigurableOperation object, typically
+ * so that it can be sent via the API.
+ */
+export function configurableDefToOperation(def: ConfigurableOperationDef): ConfigurableOperation {
+    return {
+        code: def.code,
+        description: def.description,
+        args: Object.entries(def.args).map(([name, type]) => ({ name, type })),
+    };
+}
+
+/**
  * Coverts an array of ConfigArgs into a hash object:
  *
  * from:
@@ -76,14 +98,4 @@ function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
         default:
             return (arg.value as string) as any;
     }
-}
-
-/**
- * Defines a ConfigurableOperation, which is a method which can be configured
- * by the Administrator via the Admin API.
- */
-export interface ConfigurableOperationDef {
-    code: string;
-    args: ConfigArgs<any>;
-    description: string;
 }
