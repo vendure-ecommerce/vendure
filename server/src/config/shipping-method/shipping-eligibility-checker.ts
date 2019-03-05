@@ -1,7 +1,8 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
+import { ConfigArgs, ConfigurableOperationDef } from '../../common/types/configurable-operation';
+import { argsArrayToHash, ConfigArgValues } from '../../common/types/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type ShippingEligibilityCheckerArgType = 'int' | 'money' | 'string' | 'boolean';
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
@@ -17,7 +18,8 @@ export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheck
  *
  * @docsCategory shipping
  */
-export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}> {
+export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}>
+    implements ConfigurableOperationDef {
     readonly code: string;
     readonly description: string;
     readonly args: ShippingEligibilityCheckerArgs;

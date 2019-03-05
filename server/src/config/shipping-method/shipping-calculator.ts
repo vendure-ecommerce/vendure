@@ -1,7 +1,8 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
+import { ConfigArgs, ConfigurableOperationDef } from '../../common/types/configurable-operation';
+import { argsArrayToHash, ConfigArgValues } from '../../common/types/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type ShippingCalculatorArgType = 'int' | 'money' | 'string' | 'boolean';
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
@@ -16,7 +17,7 @@ export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
  *
  * @docsCategory shipping
  */
-export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> {
+export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implements ConfigurableOperationDef {
     readonly code: string;
     readonly description: string;
     readonly args: ShippingCalculatorArgs;

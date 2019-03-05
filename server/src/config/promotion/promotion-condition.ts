@@ -1,9 +1,14 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
 import { ID } from '../../../../shared/shared-types';
+import {
+    argsArrayToHash,
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDef,
+} from '../../common/types/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type PromotionConditionArgType = 'int' | 'money' | 'string' | 'datetime' | 'boolean' | 'facetValueIds';
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
@@ -45,7 +50,7 @@ export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
  *
  * @docsCategory promotions
  */
-export class PromotionCondition<T extends PromotionConditionArgs = {}> {
+export class PromotionCondition<T extends PromotionConditionArgs = {}> implements ConfigurableOperationDef {
     readonly code: string;
     readonly description: string;
     readonly args: PromotionConditionArgs;

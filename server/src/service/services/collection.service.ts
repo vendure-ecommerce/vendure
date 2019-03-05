@@ -15,7 +15,8 @@ import { IllegalOperationError, UserInputError } from '../../common/error/errors
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { CollectionFilter, facetValueCollectionFilter } from '../../config/collection/collection-filter';
+import { CollectionFilter } from '../../config/collection/collection-filter';
+import { facetValueCollectionFilter } from '../../config/collection/default-collection-filters';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';

@@ -1,13 +1,13 @@
 import { ConfigArg } from '../../../../shared/generated-types';
 
 import { StateMachineConfig } from '../../common/finite-state-machine';
+import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../../common/types/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMetadata } from '../../entity/payment/payment.entity';
 import {
     PaymentState,
     PaymentTransitionData,
 } from '../../service/helpers/payment-state-machine/payment-state';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 export type PaymentMethodArgType = 'int' | 'string' | 'boolean';
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;

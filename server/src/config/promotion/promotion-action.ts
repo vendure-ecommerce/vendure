@@ -1,8 +1,13 @@
 import { ConfigArg } from '../../../../shared/generated-types';
+import {
+    argsArrayToHash,
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDef,
+} from '../../common/types/configurable-operation';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../common/config-args';
 
 import { PromotionUtils } from './promotion-condition';
 
@@ -40,7 +45,8 @@ export interface PromotionOrderActionConfig<T extends PromotionActionArgs> exten
  *
  * @docsCategory promotions
  */
-export abstract class PromotionAction<T extends PromotionActionArgs = {}> {
+export abstract class PromotionAction<T extends PromotionActionArgs = {}>
+    implements ConfigurableOperationDef {
     readonly code: string;
     readonly args: PromotionActionArgs;
     readonly description: string;

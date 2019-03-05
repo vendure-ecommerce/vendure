@@ -19,7 +19,7 @@ import {
     UpdateCollection,
 } from '../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
-import { facetValueCollectionFilter } from '../src/config/collection/collection-filter';
+import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

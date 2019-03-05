@@ -1,5 +1,7 @@
+// prettier-ignore
 import { ConfigArg } from '../../../../shared/generated-types';
-import { InternalServerError } from '../../common/error/errors';
+import { PromotionActionArgs, PromotionActionConfig } from '../../config/promotion/promotion-action';
+import { InternalServerError } from '../error/errors';
 
 /**
  * Certain entities allow arbitrary configuration arguments to be specified which can then
@@ -21,7 +23,6 @@ export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: T;
 };
 
-// prettier-ignore
 /**
  * Represents the ConfigArgs once they have been coerced into JavaScript values for use
  * in business logic.
@@ -30,14 +31,23 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
     [K in keyof T]: T[K] extends 'int' | 'money' | 'percentage'
         ? number
         : T[K] extends 'datetime'
-            ? Date
-            : T[K] extends 'boolean'
-                ? boolean
-                : T[K] extends 'facetValueIds'
-                    ? string[]
-                    : string
+        ? Date
+        : T[K] extends 'boolean'
+        ? boolean
+        : T[K] extends 'facetValueIds'
+        ? string[]
+        : string
 };
 
+/**
+ * Coverts an array of ConfigArgs into a hash object:
+ *
+ * from:
+ * [{ name: 'foo', type: 'string', value: 'bar'}]
+ *
+ * to:
+ * { foo: 'bar' }
+ **/
 export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
     const output: ConfigArgValues<T> = {} as any;
     for (const arg of args) {
@@ -66,4 +76,14 @@ function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
         default:
             return (arg.value as string) as any;
     }
+}
+
+/**
+ * Defines a ConfigurableOperation, which is a method which can be configured
+ * by the Administrator via the Admin API.
+ */
+export interface ConfigurableOperationDef {
+    code: string;
+    args: ConfigArgs<any>;
+    description: string;
 }
