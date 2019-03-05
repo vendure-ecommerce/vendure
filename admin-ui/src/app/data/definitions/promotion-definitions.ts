@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-export const ADJUSTMENT_OPERATION_FRAGMENT = gql`
-    fragment AdjustmentOperation on AdjustmentOperation {
+export const CONFIGURABLE_FRAGMENT = gql`
+    fragment ConfigurableOperation on ConfigurableOperation {
         args {
             name
             type
@@ -20,13 +20,13 @@ export const PROMOTION_FRAGMENT = gql`
         name
         enabled
         conditions {
-            ...AdjustmentOperation
+            ...ConfigurableOperation
         }
         actions {
-            ...AdjustmentOperation
+            ...ConfigurableOperation
         }
     }
-    ${ADJUSTMENT_OPERATION_FRAGMENT}
+    ${CONFIGURABLE_FRAGMENT}
 `;
 
 export const GET_PROMOTION_LIST = gql`
@@ -54,14 +54,14 @@ export const GET_ADJUSTMENT_OPERATIONS = gql`
     query GetAdjustmentOperations {
         adjustmentOperations {
             actions {
-                ...AdjustmentOperation
+                ...ConfigurableOperation
             }
             conditions {
-                ...AdjustmentOperation
+                ...ConfigurableOperation
             }
         }
     }
-    ${ADJUSTMENT_OPERATION_FRAGMENT}
+    ${CONFIGURABLE_FRAGMENT}
 `;
 
 export const CREATE_PROMOTION = gql`

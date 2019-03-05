@@ -3,8 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     CreatePromotionInput,
     DeletionResponse,
     DeletionResult,
@@ -65,8 +65,8 @@ export class PromotionService {
      * Returns all available AdjustmentOperations.
      */
     getAdjustmentOperations(): {
-        conditions: AdjustmentOperation[];
-        actions: AdjustmentOperation[];
+        conditions: ConfigurableOperation[];
+        actions: ConfigurableOperation[];
     } {
         const toAdjustmentOperation = (source: PromotionCondition | PromotionAction) => {
             return {
@@ -135,10 +135,10 @@ export class PromotionService {
      */
     private parseOperationArgs(
         type: 'condition' | 'action',
-        input: AdjustmentOperationInput,
-    ): AdjustmentOperation {
+        input: ConfigurableOperationInput,
+    ): ConfigurableOperation {
         const match = this.getAdjustmentOperationByCode(type, input.code);
-        const output: AdjustmentOperation = {
+        const output: ConfigurableOperation = {
             code: input.code,
             description: match.description,
             args: input.arguments.map((inputArg, i) => {

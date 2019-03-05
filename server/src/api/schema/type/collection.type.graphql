@@ -10,7 +10,7 @@ type Collection implements Node {
     assets: [Asset!]!
     parent: Collection!
     children: [Collection!]
-    filters: [AdjustmentOperation!]!
+    filters: [ConfigurableOperation!]!
     translations: [CollectionTranslation!]!
     productVariants(options: ProductVariantListOptions): ProductVariantList!
 }

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-05T13:49:43+01:00
+// Generated in 2019-03-05T20:52:08+01:00
 export type Maybe<T> = T | null;
 
 
@@ -712,14 +712,14 @@ export interface CreateCollectionInput {
   
   parentId?: Maybe<string>;
   
-  filters: AdjustmentOperationInput[];
+  filters: ConfigurableOperationInput[];
   
   translations: CollectionTranslationInput[];
   
   customFields?: Maybe<Json>;
 }
 
-export interface AdjustmentOperationInput {
+export interface ConfigurableOperationInput {
   
   code: string;
   
@@ -756,7 +756,7 @@ export interface UpdateCollectionInput {
   
   assetIds?: Maybe<string[]>;
   
-  filters: AdjustmentOperationInput[];
+  filters: ConfigurableOperationInput[];
   
   translations: CollectionTranslationInput[];
   
@@ -1117,9 +1117,9 @@ export interface CreatePromotionInput {
   
   enabled: boolean;
   
-  conditions: AdjustmentOperationInput[];
+  conditions: ConfigurableOperationInput[];
   
-  actions: AdjustmentOperationInput[];
+  actions: ConfigurableOperationInput[];
 }
 
 export interface UpdatePromotionInput {
@@ -1130,9 +1130,9 @@ export interface UpdatePromotionInput {
   
   enabled?: Maybe<boolean>;
   
-  conditions?: Maybe<AdjustmentOperationInput[]>;
+  conditions?: Maybe<ConfigurableOperationInput[]>;
   
-  actions?: Maybe<AdjustmentOperationInput[]>;
+  actions?: Maybe<ConfigurableOperationInput[]>;
 }
 
 export interface CreateRoleInput {
@@ -1161,9 +1161,9 @@ export interface CreateShippingMethodInput {
   
   description: string;
   
-  checker: AdjustmentOperationInput;
+  checker: ConfigurableOperationInput;
   
-  calculator: AdjustmentOperationInput;
+  calculator: ConfigurableOperationInput;
 }
 
 export interface UpdateShippingMethodInput {
@@ -1174,9 +1174,9 @@ export interface UpdateShippingMethodInput {
   
   description?: Maybe<string>;
   
-  checker?: Maybe<AdjustmentOperationInput>;
+  checker?: Maybe<ConfigurableOperationInput>;
   
-  calculator?: Maybe<AdjustmentOperationInput>;
+  calculator?: Maybe<ConfigurableOperationInput>;
 }
 
 export interface CreateTaxCategoryInput {
@@ -2638,7 +2638,7 @@ export namespace GetCollectionFilters {
     collectionFilters: CollectionFilters[];
   }
 
-  export type CollectionFilters = AdjustmentOperation.Fragment
+  export type CollectionFilters = ConfigurableOperation.Fragment
 }
 
 export namespace GetCollectionList {
@@ -2833,9 +2833,9 @@ export namespace GetAdjustmentOperations {
     conditions: Conditions[];
   } 
 
-  export type Actions = AdjustmentOperation.Fragment
+  export type Actions = ConfigurableOperation.Fragment
 
-  export type Conditions = AdjustmentOperation.Fragment
+  export type Conditions = ConfigurableOperation.Fragment
 }
 
 export namespace CreatePromotion {
@@ -3427,9 +3427,9 @@ export namespace GetShippingMethodOperations {
     shippingCalculators: ShippingCalculators[];
   }
 
-  export type ShippingEligibilityCheckers = AdjustmentOperation.Fragment
+  export type ShippingEligibilityCheckers = ConfigurableOperation.Fragment
 
-  export type ShippingCalculators = AdjustmentOperation.Fragment
+  export type ShippingCalculators = ConfigurableOperation.Fragment
 }
 
 export namespace CreateShippingMethod {
@@ -4153,7 +4153,7 @@ export namespace Collection {
 
   export type Assets =Asset.Fragment
 
-  export type Filters =AdjustmentOperation.Fragment
+  export type Filters =ConfigurableOperation.Fragment
 
   export type Translations = {
     __typename?: "CollectionTranslation";
@@ -4184,9 +4184,9 @@ export namespace Collection {
   }
 }
 
-export namespace AdjustmentOperation {
+export namespace ConfigurableOperation {
   export type Fragment = {
-    __typename?: "AdjustmentOperation";
+    __typename?: "ConfigurableOperation";
     
     args: Args[];
     
@@ -4225,9 +4225,9 @@ export namespace Promotion {
     actions: Actions[];
   }
 
-  export type Conditions =AdjustmentOperation.Fragment
+  export type Conditions =ConfigurableOperation.Fragment
 
-  export type Actions =AdjustmentOperation.Fragment
+  export type Actions =ConfigurableOperation.Fragment
 }
 
 export namespace Country {
@@ -4413,9 +4413,9 @@ export namespace ShippingMethod {
     calculator: Calculator;
   }
 
-  export type Checker =AdjustmentOperation.Fragment
+  export type Checker =ConfigurableOperation.Fragment
 
-  export type Calculator =AdjustmentOperation.Fragment
+  export type Calculator =ConfigurableOperation.Fragment
 }
 
 
@@ -4479,7 +4479,7 @@ export interface Query {
   
   collection?: Maybe<Collection>;
   
-  collectionFilters: AdjustmentOperation[];
+  collectionFilters: ConfigurableOperation[];
   
   config: Config;
   
@@ -4533,9 +4533,9 @@ export interface Query {
   
   shippingMethod?: Maybe<ShippingMethod>;
   
-  shippingEligibilityCheckers: AdjustmentOperation[];
+  shippingEligibilityCheckers: ConfigurableOperation[];
   
-  shippingCalculators: AdjustmentOperation[];
+  shippingCalculators: ConfigurableOperation[];
   
   taxCategories: TaxCategory[];
   
@@ -4759,7 +4759,7 @@ export interface Collection extends Node {
   
   children?: Maybe<Collection[]>;
   
-  filters: AdjustmentOperation[];
+  filters: ConfigurableOperation[];
   
   translations: CollectionTranslation[];
   
@@ -4769,7 +4769,7 @@ export interface Collection extends Node {
 }
 
 
-export interface AdjustmentOperation {
+export interface ConfigurableOperation {
   
   code: string;
   
@@ -5269,9 +5269,9 @@ export interface ShippingMethod extends Node {
   
   description: string;
   
-  checker: AdjustmentOperation;
+  checker: ConfigurableOperation;
   
-  calculator: AdjustmentOperation;
+  calculator: ConfigurableOperation;
 }
 
 
@@ -5477,9 +5477,9 @@ export interface Promotion extends Node {
   
   enabled: boolean;
   
-  conditions: AdjustmentOperation[];
+  conditions: ConfigurableOperation[];
   
-  actions: AdjustmentOperation[];
+  actions: ConfigurableOperation[];
 }
 
 
@@ -5493,9 +5493,9 @@ export interface PromotionList extends PaginatedList {
 
 export interface AdjustmentOperations {
   
-  conditions: AdjustmentOperation[];
+  conditions: ConfigurableOperation[];
   
-  actions: AdjustmentOperation[];
+  actions: ConfigurableOperation[];
 }
 
 

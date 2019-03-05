@@ -29,12 +29,12 @@
         <div class="clr-col" formArrayName="conditions">
             <label>{{ 'marketing.conditions' | translate }}</label>
             <ng-container *ngFor="let condition of conditions; index as i">
-                <vdr-adjustment-operation-input
+                <vdr-configurable-input
                     (remove)="removeCondition($event)"
                     [facets]="facets$ | async"
                     [operation]="condition"
                     [formControlName]="i"
-                ></vdr-adjustment-operation-input>
+                ></vdr-configurable-input>
             </ng-container>
 
             <div>
@@ -60,13 +60,13 @@
         </div>
         <div class="clr-col" formArrayName="actions">
             <label>{{ 'marketing.actions' | translate }}</label>
-            <vdr-adjustment-operation-input
+            <vdr-configurable-input
                 *ngFor="let action of actions; index as i"
                 (remove)="removeAction($event)"
                 [facets]="facets$ | async"
                 [operation]="action"
                 [formControlName]="i"
-            ></vdr-adjustment-operation-input>
+            ></vdr-configurable-input>
             <div>
                 <clr-dropdown>
                     <div clrDropdownTrigger>

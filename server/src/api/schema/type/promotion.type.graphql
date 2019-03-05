@@ -4,13 +4,13 @@ type Promotion implements Node {
     updatedAt: DateTime!
     name: String!
     enabled: Boolean!
-    conditions: [AdjustmentOperation!]!
-    actions: [AdjustmentOperation!]!
+    conditions: [ConfigurableOperation!]!
+    actions: [ConfigurableOperation!]!
 }
 
 type AdjustmentOperations {
-    conditions: [AdjustmentOperation!]!
-    actions: [AdjustmentOperation!]!
+    conditions: [ConfigurableOperation!]!
+    actions: [ConfigurableOperation!]!
 }
 
 type PromotionList implements PaginatedList {

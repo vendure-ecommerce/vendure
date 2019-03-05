@@ -12,10 +12,10 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
-import { AdjustmentOperationInputComponent } from './components/adjustment-operation-input/adjustment-operation-input.component';
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { ChipComponent } from './components/chip/chip.component';
+import { ConfigurableInputComponent } from './components/configurable-input/configurable-input.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
@@ -58,7 +58,7 @@ const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
-    AdjustmentOperationInputComponent,
+    ConfigurableInputComponent,
     AffixedInputComponent,
     BackgroundColorFromDirective,
     ChipComponent,

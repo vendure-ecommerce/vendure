@@ -37,12 +37,12 @@
     <div class="clr-row">
         <div class="clr-col">
             <label>{{ 'settings.shipping-eligibility-checker' | translate }}</label>
-            <vdr-adjustment-operation-input
+            <vdr-configurable-input
                 *ngIf="selectedChecker"
                 [operation]="selectedChecker"
                 (remove)="selectedChecker = null"
                 formControlName="checker"
-            ></vdr-adjustment-operation-input>
+            ></vdr-configurable-input>
             <div *ngIf="!selectedChecker">
                 <clr-dropdown>
                     <div clrDropdownTrigger>
@@ -66,12 +66,12 @@
         </div>
         <div class="clr-col">
             <label>{{ 'settings.shipping-calculator' | translate }}</label>
-            <vdr-adjustment-operation-input
+            <vdr-configurable-input
                 *ngIf="selectedCalculator"
                 [operation]="selectedCalculator"
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"
-            ></vdr-adjustment-operation-input>
+            ></vdr-configurable-input>
             <div *ngIf="!selectedCalculator">
                 <clr-dropdown>
                     <div clrDropdownTrigger>

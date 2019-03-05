@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-import { ADJUSTMENT_OPERATION_FRAGMENT } from './promotion-definitions';
+import { CONFIGURABLE_FRAGMENT } from './promotion-definitions';
 
 export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
@@ -290,10 +290,10 @@ export const CREATE_ASSETS = gql`
 export const GET_COLLECTION_FILTERS = gql`
     query GetCollectionFilters {
         collectionFilters {
-            ...AdjustmentOperation
+            ...ConfigurableOperation
         }
     }
-    ${ADJUSTMENT_OPERATION_FRAGMENT}
+    ${CONFIGURABLE_FRAGMENT}
 `;
 
 export const COLLECTION_FRAGMENT = gql`
@@ -309,7 +309,7 @@ export const COLLECTION_FRAGMENT = gql`
             ...Asset
         }
         filters {
-            ...AdjustmentOperation
+            ...ConfigurableOperation
         }
         translations {
             id
@@ -327,7 +327,7 @@ export const COLLECTION_FRAGMENT = gql`
         }
     }
     ${ASSET_FRAGMENT}
-    ${ADJUSTMENT_OPERATION_FRAGMENT}
+    ${CONFIGURABLE_FRAGMENT}
 `;
 
 export const GET_COLLECTION_LIST = gql`

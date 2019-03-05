@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
-    AdjustmentOperation,
+    ConfigurableOperation,
     CreateShippingMethodMutationArgs,
     Permission,
     ShippingMethodQueryArgs,
@@ -31,13 +31,13 @@ export class ShippingMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingEligibilityCheckers(@Args() args: ShippingMethodQueryArgs): AdjustmentOperation[] {
+    shippingEligibilityCheckers(@Args() args: ShippingMethodQueryArgs): ConfigurableOperation[] {
         return this.shippingMethodService.getShippingEligibilityCheckers();
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingCalculators(@Args() args: ShippingMethodQueryArgs): AdjustmentOperation[] {
+    shippingCalculators(@Args() args: ShippingMethodQueryArgs): ConfigurableOperation[] {
         return this.shippingMethodService.getShippingCalculators();
     }
 

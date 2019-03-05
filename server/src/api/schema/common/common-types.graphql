@@ -26,7 +26,7 @@ type ConfigArg {
     value: String
 }
 
-type AdjustmentOperation {
+type ConfigurableOperation {
     code: String!
     args: [ConfigArg!]!
     description: String!
@@ -49,7 +49,7 @@ input ConfigArgInput {
     value: String!
 }
 
-input AdjustmentOperationInput {
+input ConfigurableOperationInput {
     code: String!
     arguments: [ConfigArgInput!]!
 }

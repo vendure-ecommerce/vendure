@@ -9,7 +9,7 @@ import {
     TreeParent,
 } from 'typeorm';
 
-import { AdjustmentOperation } from '../../../../shared/generated-types';
+import { ConfigurableOperation } from '../../../../shared/generated-types';
 import { DeepPartial, HasCustomFields } from '../../../../shared/shared-types';
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -58,7 +58,7 @@ export class Collection extends VendureEntity implements Translatable, HasCustom
     @JoinTable()
     assets: Asset[];
 
-    @Column('simple-json') filters: AdjustmentOperation[];
+    @Column('simple-json') filters: ConfigurableOperation[];
 
     @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
     @JoinTable()

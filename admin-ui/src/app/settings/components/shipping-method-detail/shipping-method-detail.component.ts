@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, take } from 'rxjs/operators';
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     CreateShippingMethodInput,
     ShippingMethod,
     UpdateShippingMethodInput,
@@ -26,10 +26,10 @@ import { ServerConfigService } from '../../../data/server-config';
 export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingMethod.Fragment>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
-    checkers: AdjustmentOperation[] = [];
-    calculators: AdjustmentOperation[] = [];
-    selectedChecker?: AdjustmentOperation;
-    selectedCalculator?: AdjustmentOperation;
+    checkers: ConfigurableOperation[] = [];
+    calculators: ConfigurableOperation[] = [];
+    selectedChecker?: ConfigurableOperation;
+    selectedCalculator?: ConfigurableOperation;
 
     constructor(
         router: Router,
@@ -62,11 +62,11 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         this.destroy();
     }
 
-    selectChecker(checker: AdjustmentOperation) {
+    selectChecker(checker: ConfigurableOperation) {
         this.selectedChecker = checker;
     }
 
-    selectCalculator(calculator: AdjustmentOperation) {
+    selectCalculator(calculator: ConfigurableOperation) {
         this.selectedCalculator = calculator;
     }
 
@@ -139,9 +139,9 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
      * Maps an array of conditions or actions to the input format expected by the GraphQL API.
      */
     private toAdjustmentOperationInput(
-        operation: AdjustmentOperation,
+        operation: ConfigurableOperation,
         formValueOperations: any,
-    ): AdjustmentOperationInput {
+    ): ConfigurableOperationInput {
         return {
             code: operation.code,
             arguments: Object.values(formValueOperations.args || {}).map((value, j) => ({

@@ -1,10 +1,10 @@
-import { AdjustmentOperation } from 'shared/generated-types';
+import { ConfigurableOperation } from 'shared/generated-types';
 
 /**
- * Interpolates the description of an AdjustmentOperation with the given values.
+ * Interpolates the description of an ConfigurableOperation with the given values.
  */
 export function interpolateDescription(
-    operation: AdjustmentOperation,
+    operation: ConfigurableOperation,
     values: { [name: string]: any },
 ): string {
     if (!operation) {

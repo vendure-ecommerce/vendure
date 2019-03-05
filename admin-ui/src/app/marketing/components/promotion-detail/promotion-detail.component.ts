@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     CreatePromotionInput,
     FacetWithValues,
     LanguageCode,
@@ -29,12 +29,12 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     implements OnInit, OnDestroy {
     promotion$: Observable<Promotion.Fragment>;
     detailForm: FormGroup;
-    conditions: AdjustmentOperation[] = [];
-    actions: AdjustmentOperation[] = [];
+    conditions: ConfigurableOperation[] = [];
+    actions: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
 
-    private allConditions: AdjustmentOperation[];
-    private allActions: AdjustmentOperation[];
+    private allConditions: ConfigurableOperation[];
+    private allActions: ConfigurableOperation[];
 
     constructor(
         router: Router,
@@ -71,11 +71,11 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.destroy();
     }
 
-    getAvailableConditions(): AdjustmentOperation[] {
+    getAvailableConditions(): ConfigurableOperation[] {
         return this.allConditions.filter(o => !this.conditions.find(c => c.code === o.code));
     }
 
-    getAvailableActions(): AdjustmentOperation[] {
+    getAvailableActions(): ConfigurableOperation[] {
         return this.allActions.filter(o => !this.actions.find(a => a.code === o.code));
     }
 
@@ -88,22 +88,22 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         );
     }
 
-    addCondition(condition: AdjustmentOperation) {
+    addCondition(condition: ConfigurableOperation) {
         this.addOperation('conditions', condition);
         this.detailForm.markAsDirty();
     }
 
-    addAction(action: AdjustmentOperation) {
+    addAction(action: ConfigurableOperation) {
         this.addOperation('actions', action);
         this.detailForm.markAsDirty();
     }
 
-    removeCondition(condition: AdjustmentOperation) {
+    removeCondition(condition: ConfigurableOperation) {
         this.removeOperation('conditions', condition);
         this.detailForm.markAsDirty();
     }
 
-    removeAction(action: AdjustmentOperation) {
+    removeAction(action: ConfigurableOperation) {
         this.removeOperation('actions', action);
         this.detailForm.markAsDirty();
     }
@@ -187,9 +187,9 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
      * Maps an array of conditions or actions to the input format expected by the GraphQL API.
      */
     private mapOperationsToInputs(
-        operations: AdjustmentOperation[],
+        operations: ConfigurableOperation[],
         formValueOperations: any,
-    ): AdjustmentOperationInput[] {
+    ): ConfigurableOperationInput[] {
         return operations.map((o, i) => {
             return {
                 code: o.code,
@@ -204,7 +204,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     /**
      * Adds a new condition or action to the promotion.
      */
-    private addOperation(key: 'conditions' | 'actions', operation: AdjustmentOperation) {
+    private addOperation(key: 'conditions' | 'actions', operation: ConfigurableOperation) {
         const operationsArray = this.formArrayOf(key);
         const collection = key === 'conditions' ? this.conditions : this.actions;
         const index = operationsArray.value.findIndex(o => o.code === operation.code);
@@ -229,7 +229,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     /**
      * Removes a condition or action from the promotion.
      */
-    private removeOperation(key: 'conditions' | 'actions', operation: AdjustmentOperation) {
+    private removeOperation(key: 'conditions' | 'actions', operation: ConfigurableOperation) {
         const operationsArray = this.formArrayOf(key);
         const collection = key === 'conditions' ? this.conditions : this.actions;
         const index = operationsArray.value.findIndex(o => o.code === operation.code);

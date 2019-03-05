@@ -289,7 +289,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -1051,7 +1051,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -1075,7 +1075,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -6278,7 +6278,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -6364,7 +6364,7 @@
       },
       {
         "kind": "OBJECT",
-        "name": "AdjustmentOperation",
+        "name": "ConfigurableOperation",
         "description": null,
         "fields": [
           {
@@ -10846,7 +10846,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "AdjustmentOperation",
+                "name": "ConfigurableOperation",
                 "ofType": null
               }
             },
@@ -10862,7 +10862,7 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "AdjustmentOperation",
+                "name": "ConfigurableOperation",
                 "ofType": null
               }
             },
@@ -13022,7 +13022,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -13046,7 +13046,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -13297,7 +13297,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -13321,7 +13321,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "AdjustmentOperation",
+                    "name": "ConfigurableOperation",
                     "ofType": null
                   }
                 }
@@ -17113,7 +17113,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "AdjustmentOperationInput",
+                    "name": "ConfigurableOperationInput",
                     "ofType": null
                   }
                 }
@@ -17160,7 +17160,7 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "AdjustmentOperationInput",
+        "name": "ConfigurableOperationInput",
         "description": null,
         "fields": null,
         "inputFields": [
@@ -17381,7 +17381,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "AdjustmentOperationInput",
+                    "name": "ConfigurableOperationInput",
                     "ofType": null
                   }
                 }
@@ -19628,7 +19628,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "AdjustmentOperationInput",
+                    "name": "ConfigurableOperationInput",
                     "ofType": null
                   }
                 }
@@ -19650,7 +19650,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "AdjustmentOperationInput",
+                    "name": "ConfigurableOperationInput",
                     "ofType": null
                   }
                 }
@@ -19714,7 +19714,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "INPUT_OBJECT",
-                  "name": "AdjustmentOperationInput",
+                  "name": "ConfigurableOperationInput",
                   "ofType": null
                 }
               }
@@ -19732,7 +19732,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "INPUT_OBJECT",
-                  "name": "AdjustmentOperationInput",
+                  "name": "ConfigurableOperationInput",
                   "ofType": null
                 }
               }
@@ -19910,7 +19910,7 @@
               "name": null,
               "ofType": {
                 "kind": "INPUT_OBJECT",
-                "name": "AdjustmentOperationInput",
+                "name": "ConfigurableOperationInput",
                 "ofType": null
               }
             },
@@ -19924,7 +19924,7 @@
               "name": null,
               "ofType": {
                 "kind": "INPUT_OBJECT",
-                "name": "AdjustmentOperationInput",
+                "name": "ConfigurableOperationInput",
                 "ofType": null
               }
             },
@@ -19980,7 +19980,7 @@
             "description": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "AdjustmentOperationInput",
+              "name": "ConfigurableOperationInput",
               "ofType": null
             },
             "defaultValue": null
@@ -19990,7 +19990,7 @@
             "description": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "AdjustmentOperationInput",
+              "name": "ConfigurableOperationInput",
               "ofType": null
             },
             "defaultValue": null

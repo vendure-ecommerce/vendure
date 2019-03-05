@@ -21,36 +21,35 @@ import {
     Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AdjustmentOperation, FacetWithValues } from 'shared/generated-types';
+import { ConfigurableOperation, FacetWithValues } from 'shared/generated-types';
 
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**
- * A form input which renders a card with the internal form fields of the given AdjustmentOperation.
+ * A form input which renders a card with the internal form fields of the given ConfigurableOperation.
  */
 @Component({
-    selector: 'vdr-adjustment-operation-input',
-    templateUrl: './adjustment-operation-input.component.html',
-    styleUrls: ['./adjustment-operation-input.component.scss'],
+    selector: 'vdr-configurable-input',
+    templateUrl: './configurable-input.component.html',
+    styleUrls: ['./configurable-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            useExisting: AdjustmentOperationInputComponent,
+            useExisting: ConfigurableInputComponent,
             multi: true,
         },
         {
             provide: NG_VALIDATORS,
-            useExisting: forwardRef(() => AdjustmentOperationInputComponent),
+            useExisting: forwardRef(() => ConfigurableInputComponent),
             multi: true,
         },
     ],
 })
-export class AdjustmentOperationInputComponent
-    implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
-    @Input() operation: AdjustmentOperation;
+export class ConfigurableInputComponent implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
+    @Input() operation: ConfigurableOperation;
     @Input() facets: FacetWithValues.Fragment[] = [];
-    @Output() remove = new EventEmitter<AdjustmentOperation>();
+    @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;
     onTouch: () => void;

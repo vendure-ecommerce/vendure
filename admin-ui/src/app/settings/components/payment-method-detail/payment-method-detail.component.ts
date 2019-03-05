@@ -3,9 +3,9 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, take } from 'rxjs/operators';
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
     ConfigArg,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     PaymentMethod,
     UpdatePaymentMethodInput,
 } from 'shared/generated-types';

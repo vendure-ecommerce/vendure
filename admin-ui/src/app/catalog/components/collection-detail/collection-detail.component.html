@@ -65,12 +65,12 @@
         <div class="clr-col">
             <label>{{ 'catalog.filters' | translate }}</label>
             <ng-container *ngFor="let filter of filters; index as i">
-                <vdr-adjustment-operation-input
+                <vdr-configurable-input
                     (remove)="removeFilter($event)"
                     [facets]="facets$ | async"
                     [operation]="filter"
                     [formControlName]="i"
-                ></vdr-adjustment-operation-input>
+                ></vdr-configurable-input>
             </ng-container>
 
             <div>

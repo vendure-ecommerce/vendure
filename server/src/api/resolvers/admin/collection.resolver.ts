@@ -1,9 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
-    AdjustmentOperation,
     CollectionQueryArgs,
     CollectionsQueryArgs,
+    ConfigurableOperation,
     CreateCollectionMutationArgs,
     MoveCollectionMutationArgs,
     Permission,
@@ -29,7 +29,7 @@ export class CollectionResolver {
     async collectionFilters(
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionsQueryArgs,
-    ): Promise<AdjustmentOperation[]> {
+    ): Promise<ConfigurableOperation[]> {
         // TODO: extract to common util bc it is used in at least 3 places.
         const toAdjustmentOperation = (source: CollectionFilter<any>) => {
             return {

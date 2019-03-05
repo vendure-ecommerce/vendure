@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
     Collection,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     CreateCollectionInput,
     FacetWithValues,
     LanguageCode,
@@ -33,8 +33,8 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
-    filters: AdjustmentOperation[] = [];
-    allFilters: AdjustmentOperation[] = [];
+    filters: ConfigurableOperation[] = [];
+    allFilters: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
 
     constructor(
@@ -83,7 +83,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         return !!Object.values(this.assetChanges).length;
     }
 
-    addFilter(collectionFilter: AdjustmentOperation) {
+    addFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
         const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
         if (index === -1) {
@@ -104,7 +104,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         }
     }
 
-    removeFilter(collectionFilter: AdjustmentOperation) {
+    removeFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
         const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
         if (index !== -1) {
@@ -232,9 +232,9 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
      * Maps an array of conditions or actions to the input format expected by the GraphQL API.
      */
     private mapOperationsToInputs(
-        operations: AdjustmentOperation[],
+        operations: ConfigurableOperation[],
         formValueOperations: any,
-    ): AdjustmentOperationInput[] {
+    ): ConfigurableOperationInput[] {
         return operations.map((o, i) => {
             return {
                 code: o.code,

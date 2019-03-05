@@ -4,8 +4,8 @@ type ShippingMethod implements Node {
     updatedAt: DateTime!
     code: String!
     description: String!
-    checker: AdjustmentOperation!
-    calculator: AdjustmentOperation!
+    checker: ConfigurableOperation!
+    calculator: ConfigurableOperation!
 }
 
 type ShippingMethodList implements PaginatedList {

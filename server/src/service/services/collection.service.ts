@@ -2,7 +2,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import {
-    AdjustmentOperation,
+    ConfigurableOperation,
     CreateCollectionInput,
     MoveCollectionInput,
     UpdateCollectionInput,
@@ -216,8 +216,8 @@ export class CollectionService {
 
     private getCollectionFiltersFromInput(
         input: CreateCollectionInput | UpdateCollectionInput,
-    ): AdjustmentOperation[] {
-        const filters: AdjustmentOperation[] = [];
+    ): ConfigurableOperation[] {
+        const filters: ConfigurableOperation[] = [];
         if (input.filters) {
             for (const filter of input.filters) {
                 const match = this.getFilterByCode(filter.code);
@@ -238,7 +238,7 @@ export class CollectionService {
         return filters;
     }
 
-    private async applyCollectionFilters(filters: AdjustmentOperation[]): Promise<ProductVariant[]> {
+    private async applyCollectionFilters(filters: ConfigurableOperation[]): Promise<ProductVariant[]> {
         let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
         for (const filter of filters) {
             if (filter.code === facetValueCollectionFilter.code) {

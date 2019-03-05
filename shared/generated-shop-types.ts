@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-05T13:49:42+01:00
+// Generated in 2019-03-05T20:52:07+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -346,16 +346,16 @@ export interface UpdateAddressInput {
     customFields?: Maybe<Json>;
 }
 
-export interface AdjustmentOperationInput {
-    code: string;
-
-    arguments: ConfigArgInput[];
-}
-
 export interface ConfigArgInput {
     name: string;
 
     value: string;
+}
+
+export interface ConfigurableOperationInput {
+    code: string;
+
+    arguments: ConfigArgInput[];
 }
 /** ISO 639-1 language code */
 export enum LanguageCode {
@@ -1266,12 +1266,12 @@ export interface ShippingMethod extends Node {
 
     description: string;
 
-    checker: AdjustmentOperation;
+    checker: ConfigurableOperation;
 
-    calculator: AdjustmentOperation;
+    calculator: ConfigurableOperation;
 }
 
-export interface AdjustmentOperation {
+export interface ConfigurableOperation {
     code: string;
 
     args: ConfigArg[];
@@ -1372,7 +1372,7 @@ export interface Collection extends Node {
 
     children?: Maybe<Collection[]>;
 
-    filters: AdjustmentOperation[];
+    filters: ConfigurableOperation[];
 
     translations: CollectionTranslation[];
 
@@ -1586,9 +1586,9 @@ export interface LoginResult {
 }
 
 export interface AdjustmentOperations {
-    conditions: AdjustmentOperation[];
+    conditions: ConfigurableOperation[];
 
-    actions: AdjustmentOperation[];
+    actions: ConfigurableOperation[];
 }
 
 export interface Administrator extends Node {
@@ -1694,9 +1694,9 @@ export interface Promotion extends Node {
 
     enabled: boolean;
 
-    conditions: AdjustmentOperation[];
+    conditions: ConfigurableOperation[];
 
-    actions: AdjustmentOperation[];
+    actions: ConfigurableOperation[];
 }
 
 export interface PromotionList extends PaginatedList {

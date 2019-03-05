@@ -1,8 +1,8 @@
 type Query {
     shippingMethods(options: ShippingMethodListOptions): ShippingMethodList!
     shippingMethod(id: ID!): ShippingMethod
-    shippingEligibilityCheckers: [AdjustmentOperation!]!
-    shippingCalculators: [AdjustmentOperation!]!
+    shippingEligibilityCheckers: [ConfigurableOperation!]!
+    shippingCalculators: [ConfigurableOperation!]!
 }
 
 type Mutation {
@@ -18,14 +18,14 @@ input ShippingMethodListOptions
 input CreateShippingMethodInput {
     code: String!
     description: String!
-    checker: AdjustmentOperationInput!
-    calculator: AdjustmentOperationInput!
+    checker: ConfigurableOperationInput!
+    calculator: ConfigurableOperationInput!
 }
 
 input UpdateShippingMethodInput {
     id: ID!
     code: String
     description: String
-    checker: AdjustmentOperationInput
-    calculator: AdjustmentOperationInput
+    checker: ConfigurableOperationInput
+    calculator: ConfigurableOperationInput
 }

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import {
-    AdjustmentOperation,
+    ConfigurableOperation,
     CreateTaxCategoryInput,
     LanguageCode,
     TaxCategory,
@@ -28,8 +28,8 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
     taxCategory$: Observable<TaxCategory.Fragment>;
     detailForm: FormGroup;
 
-    private taxCondition: AdjustmentOperation;
-    private taxAction: AdjustmentOperation;
+    private taxCondition: ConfigurableOperation;
+    private taxAction: ConfigurableOperation;
 
     constructor(
         router: Router,

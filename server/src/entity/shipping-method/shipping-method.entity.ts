@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../shared/generated-types';
+import { Adjustment, AdjustmentType, ConfigurableOperation } from '../../../../shared/generated-types';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
@@ -38,9 +38,9 @@ export class ShippingMethod extends AdjustmentSource implements ChannelAware {
 
     @Column() description: string;
 
-    @Column('simple-json') checker: AdjustmentOperation;
+    @Column('simple-json') checker: ConfigurableOperation;
 
-    @Column('simple-json') calculator: AdjustmentOperation;
+    @Column('simple-json') calculator: ConfigurableOperation;
 
     @ManyToMany(type => Channel)
     @JoinTable()

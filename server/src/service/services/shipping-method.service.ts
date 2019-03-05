@@ -3,8 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import {
-    AdjustmentOperation,
-    AdjustmentOperationInput,
+    ConfigurableOperation,
+    ConfigurableOperationInput,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
 } from '../../../../shared/generated-types';
@@ -96,11 +96,11 @@ export class ShippingMethodService {
         return assertFound(this.findOne(shippingMethod.id));
     }
 
-    getShippingEligibilityCheckers(): AdjustmentOperation[] {
+    getShippingEligibilityCheckers(): ConfigurableOperation[] {
         return this.shippingEligibilityCheckers.map(this.toAdjustmentOperation);
     }
 
-    getShippingCalculators(): AdjustmentOperation[] {
+    getShippingCalculators(): ConfigurableOperation[] {
         return this.shippingCalculators.map(this.toAdjustmentOperation);
     }
 
@@ -120,10 +120,10 @@ export class ShippingMethodService {
      * Converts the input values of the "create" and "update" mutations into the format expected by the ShippingMethod entity.
      */
     private parseOperationArgs(
-        input: AdjustmentOperationInput,
+        input: ConfigurableOperationInput,
         adjustmentSource: ShippingEligibilityChecker | ShippingCalculator,
-    ): AdjustmentOperation {
-        const output: AdjustmentOperation = {
+    ): ConfigurableOperation {
+        const output: ConfigurableOperation = {
             code: input.code,
             description: adjustmentSource.description,
             args: input.arguments.map((inputArg, i) => {

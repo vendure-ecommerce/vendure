@@ -16,14 +16,14 @@ input PromotionListOptions
 input CreatePromotionInput {
     name: String!
     enabled: Boolean!
-    conditions: [AdjustmentOperationInput!]!
-    actions: [AdjustmentOperationInput!]!
+    conditions: [ConfigurableOperationInput!]!
+    actions: [ConfigurableOperationInput!]!
 }
 
 input UpdatePromotionInput {
     id: ID!
     name: String
     enabled: Boolean
-    conditions: [AdjustmentOperationInput!]
-    actions: [AdjustmentOperationInput!]
+    conditions: [ConfigurableOperationInput!]
+    actions: [ConfigurableOperationInput!]
 }

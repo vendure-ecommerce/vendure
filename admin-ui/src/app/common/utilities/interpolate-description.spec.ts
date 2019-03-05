@@ -1,10 +1,10 @@
-import { AdjustmentOperation } from 'shared/generated-types';
+import { ConfigurableOperation } from 'shared/generated-types';
 
 import { interpolateDescription } from './interpolate-description';
 
 describe('interpolateDescription()', () => {
     it('works for single argument', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'foo', type: 'string' }],
             description: 'The value is { foo }',
         };
@@ -14,7 +14,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('works for multiple arguments', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
             description: 'The value is { foo } and { bar }',
         };
@@ -24,7 +24,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('is case-insensitive', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'foo', type: 'string' }],
             description: 'The value is { FOo }',
         };
@@ -34,7 +34,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('ignores whitespaces in interpolation', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
             description: 'The value is {foo} and {      bar    }',
         };
@@ -44,7 +44,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('formats money as a decimal', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'price', type: 'money' }],
             description: 'The price is { price }',
         };
@@ -54,7 +54,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('formats Date object as human-readable', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'date', type: 'datetime' }],
             description: 'The date is { date }',
         };
@@ -65,7 +65,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('formats date string object as human-readable', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'date', type: 'datetime' }],
             description: 'The date is { date }',
         };
@@ -76,7 +76,7 @@ describe('interpolateDescription()', () => {
     });
 
     it('correctly interprets falsy-looking values', () => {
-        const operation: Partial<AdjustmentOperation> = {
+        const operation: Partial<ConfigurableOperation> = {
             args: [{ name: 'foo', type: 'int' }],
             description: 'The value is { foo }',
         };

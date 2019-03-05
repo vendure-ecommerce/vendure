@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { Adjustment, AdjustmentOperation, AdjustmentType } from '../../../../shared/generated-types';
+import { Adjustment, AdjustmentType, ConfigurableOperation } from '../../../../shared/generated-types';
 import { DeepPartial } from '../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
@@ -70,9 +70,9 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @JoinTable()
     channels: Channel[];
 
-    @Column('simple-json') conditions: AdjustmentOperation[];
+    @Column('simple-json') conditions: ConfigurableOperation[];
 
-    @Column('simple-json') actions: AdjustmentOperation[];
+    @Column('simple-json') actions: ConfigurableOperation[];
 
     /**
      * The PriorityScore is used to determine the sequence in which multiple promotions are tested
