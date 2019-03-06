@@ -698,7 +698,7 @@ describe('Shop orders', () => {
 
 const testPaymentMethod = new PaymentMethodHandler({
     code: 'test-payment-method',
-    name: 'Test Payment Method',
+    description: 'Test Payment Method',
     args: {},
     createPayment: (order, args, metadata) => {
         return {
@@ -712,7 +712,7 @@ const testPaymentMethod = new PaymentMethodHandler({
 
 const testFailingPaymentMethod = new PaymentMethodHandler({
     code: 'test-failing-payment-method',
-    name: 'Test Failing Payment Method',
+    description: 'Test Failing Payment Method',
     args: {},
     createPayment: (order, args, metadata) => {
         return {

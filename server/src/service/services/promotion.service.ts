@@ -135,13 +135,7 @@ export class PromotionService {
         const output: ConfigurableOperation = {
             code: input.code,
             description: match.description,
-            args: input.arguments.map((inputArg, i) => {
-                return {
-                    name: inputArg.name,
-                    type: match.args[inputArg.name],
-                    value: inputArg.value,
-                };
-            }),
+            args: input.arguments,
         };
         return output;
     }

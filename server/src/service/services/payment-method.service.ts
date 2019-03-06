@@ -55,11 +55,7 @@ export class PaymentMethodService {
                 h => h.code === paymentMethod.code,
             );
             if (handler) {
-                updatedPaymentMethod.configArgs = input.configArgs.map(a => ({
-                    name: a.name,
-                    type: handler.args[a.name],
-                    value: a.value,
-                }));
+                updatedPaymentMethod.configArgs = input.configArgs;
             }
         }
         return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);

@@ -1,6 +1,11 @@
 import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 
-import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../../common/configurable-operation';
+import {
+    argsArrayToHash,
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDef,
+} from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMetadata } from '../../entity/payment/payment.entity';
@@ -59,9 +64,9 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
     code: string;
     /**
      * @description
-     * A human-readable name for the payment method.
+     * A human-readable description for the payment method.
      */
-    name: string;
+    description: string;
     /**
      * @description
      * This function provides the actual logic for creating a payment. For example,
@@ -105,7 +110,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * export const examplePaymentHandler = new PaymentMethodHandler({
  *     code: 'example-payment-provider',
- *     name: 'Example Payment Provider',
+ *     description: 'Example Payment Provider',
  *     args: {
  *         apiKey: 'string',
  *     },
@@ -134,20 +139,20 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     },
  * });
  * ```
- * // TODO: Refactor to implement ConfigurableOperationDef interface
  *
  * @docsCategory payment
  */
-export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArgs> {
+export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArgs>
+    implements ConfigurableOperationDef {
     readonly code: string;
-    readonly name: string;
+    readonly description: string;
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
         this.code = config.code;
-        this.name = config.name;
+        this.description = config.description;
         this.args = config.args;
         this.createPaymentFn = config.createPayment;
         this.onTransitionStartFn = config.onStateTransitionStart;

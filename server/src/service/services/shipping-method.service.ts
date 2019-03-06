@@ -119,13 +119,7 @@ export class ShippingMethodService {
         const output: ConfigurableOperation = {
             code: input.code,
             description: adjustmentSource.description,
-            args: input.arguments.map((inputArg, i) => {
-                return {
-                    name: inputArg.name,
-                    type: adjustmentSource.args[inputArg.name],
-                    value: inputArg.value,
-                };
-            }),
+            args: input.arguments,
         };
         return output;
     }

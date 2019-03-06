@@ -23,7 +23,7 @@ const gripeSDK = {
  */
 export const examplePaymentHandler = new PaymentMethodHandler({
     code: 'example-payment-provider',
-    name: 'Example Payment Provider',
+    description: 'Example Payment Provider',
     args: {
         apiKey: ConfigArgType.STRING,
     },
