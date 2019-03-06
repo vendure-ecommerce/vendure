@@ -11,7 +11,6 @@ import {
 } from '../../../../../shared/generated-types';
 import { PaginatedList } from '../../../../../shared/shared-types';
 import { Translated } from '../../../common/types/locale-types';
-import { CollectionFilter } from '../../../config/collection/collection-filter';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -44,7 +43,10 @@ export class CollectionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionsQueryArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.collectionService.findAll(ctx, args.options || undefined);
+        return this.collectionService.findAll(ctx, args.options || undefined).then(res => {
+            res.items.forEach(this.encodeFilters);
+            return res;
+        });
     }
 
     @Query()
@@ -53,7 +55,7 @@ export class CollectionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionQueryArgs,
     ): Promise<Translated<Collection> | undefined> {
-        return this.collectionService.findOne(ctx, args.id);
+        return this.collectionService.findOne(ctx, args.id).then(this.encodeFilters);
     }
 
     @Mutation()
@@ -64,7 +66,8 @@ export class CollectionResolver {
         @Args() args: CreateCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.collectionService.create(ctx, input);
+        this.idCodecService.decodeConfigurableOperation(input.filters);
+        return this.collectionService.create(ctx, input).then(this.encodeFilters);
     }
 
     @Mutation()
@@ -75,7 +78,8 @@ export class CollectionResolver {
         @Args() args: UpdateCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.collectionService.update(ctx, input);
+        this.idCodecService.decodeConfigurableOperation(input.filters);
+        return this.collectionService.update(ctx, input).then(this.encodeFilters);
     }
 
     @Mutation()
@@ -86,6 +90,16 @@ export class CollectionResolver {
         @Args() args: MoveCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.collectionService.move(ctx, input);
+        return this.collectionService.move(ctx, input).then(this.encodeFilters);
     }
+
+    /**
+     * Encodes any entity IDs used in the filter arguments.
+     */
+    private encodeFilters = <T extends Collection | undefined>(collection: T): T => {
+        if (collection) {
+            this.idCodecService.encodeConfigurableOperation(collection.filters);
+        }
+        return collection;
+    };
 }

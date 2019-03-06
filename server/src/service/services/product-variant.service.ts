@@ -13,6 +13,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TaxCategory } from '../../entity';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -123,6 +124,15 @@ export class ProductVariantService {
             .getRepository(ProductVariant)
             .findOne(variantId, { relations: ['options'] })
             .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+    }
+
+    getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
+        return this.connection
+            .getRepository(ProductVariant)
+            .findOne(variantId, { relations: ['facetValues', 'facetValues.facet'] })
+            .then(variant =>
+                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+            );
     }
 
     async create(

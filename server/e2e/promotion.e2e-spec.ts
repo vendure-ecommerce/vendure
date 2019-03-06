@@ -79,7 +79,13 @@ describe('Promotion resolver', () => {
                     actions: [
                         {
                             code: promoAction.code,
-                            arguments: [{ name: 'percentage', value: '50', type: ConfigArgType.PERCENTAGE }],
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: '["T_1"]',
+                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                },
+                            ],
                         },
                     ],
                 },
@@ -197,7 +203,7 @@ function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
         description: `description for ${code}`,
-        args: { percentage: ConfigArgType.PERCENTAGE },
+        args: { facetValueIds: ConfigArgType.FACET_VALUE_IDS },
         execute: (order, args) => {
             return 42;
         },

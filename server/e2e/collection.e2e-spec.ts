@@ -253,14 +253,36 @@ describe('Collection resolver', () => {
         }
     });
 
-    /*describe('filters', () => {
+    describe('filters', () => {
         it('facetValue filter', async () => {
-            const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: electronicsCategory.id });
+            const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: electronicsCategory.id,
+            });
             expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
-                '',
+                'Laptop 13 inch 8GB',
+                'Laptop 15 inch 8GB',
+                'Laptop 13 inch 16GB',
+                'Laptop 15 inch 16GB',
+                'Curvy Monitor 24 inch',
+                'Curvy Monitor 27 inch',
+                'Gaming PC i7-8700 240GB SSD',
+                'Gaming PC R7-2700 240GB SSD',
+                'Gaming PC i7-8700 120GB SSD',
+                'Gaming PC R7-2700 120GB SSD',
+                'Hard Drive 1TB',
+                'Hard Drive 2TB',
+                'Hard Drive 3TB',
+                'Hard Drive 4TB',
+                'Hard Drive 6TB',
+                'Clacky Keyboard',
+                'USB Cable',
+                'Instant Camera',
+                'Camera Lens',
+                'Tripod',
+                'SLR Camera',
             ]);
         });
-    });*/
+    });
 });
 
 const GET_COLLECTIONS = gql`

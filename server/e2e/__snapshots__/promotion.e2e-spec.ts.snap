@@ -6,8 +6,8 @@ Object {
     Object {
       "args": Array [
         Object {
-          "name": "percentage",
-          "type": "PERCENTAGE",
+          "name": "facetValueIds",
+          "type": "FACET_VALUE_IDS",
           "value": null,
         },
       ],
@@ -48,9 +48,9 @@ Object {
     Object {
       "args": Array [
         Object {
-          "name": "percentage",
-          "type": "PERCENTAGE",
-          "value": "50",
+          "name": "facetValueIds",
+          "type": "FACET_VALUE_IDS",
+          "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",
@@ -81,9 +81,9 @@ Object {
     Object {
       "args": Array [
         Object {
-          "name": "percentage",
-          "type": "PERCENTAGE",
-          "value": "50",
+          "name": "facetValueIds",
+          "type": "FACET_VALUE_IDS",
+          "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",
