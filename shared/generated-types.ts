@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-06T10:36:48+01:00
+// Generated in 2019-03-06T21:22:26+01:00
 export type Maybe<T> = T | null;
 
 
@@ -758,7 +758,7 @@ export interface UpdateCollectionInput {
   
   assetIds?: Maybe<string[]>;
   
-  filters: ConfigurableOperationInput[];
+  filters?: Maybe<ConfigurableOperationInput[]>;
   
   translations: CollectionTranslationInput[];
   
@@ -767,7 +767,7 @@ export interface UpdateCollectionInput {
 
 export interface MoveCollectionInput {
   
-  categoryId: string;
+  collectionId: string;
   
   parentId: string;
   

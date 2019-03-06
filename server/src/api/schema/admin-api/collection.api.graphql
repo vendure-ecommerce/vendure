@@ -19,7 +19,7 @@ type Mutation {
 input CollectionListOptions
 
 input MoveCollectionInput {
-    categoryId: ID!
+    collectionId: ID!
     parentId: ID!
     index: Int!
 }
@@ -44,6 +44,6 @@ input UpdateCollectionInput {
     featuredAssetId: ID
     parentId: ID
     assetIds: [ID!]
-    filters: [ConfigurableOperationInput!]!
+    filters: [ConfigurableOperationInput!]
     translations: [CollectionTranslationInput!]!
 }

@@ -1,3 +1,4 @@
+import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
@@ -9,6 +10,7 @@ import {
 } from '../../../../shared/generated-types';
 import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
+import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
@@ -21,6 +23,8 @@ import { facetValueCollectionFilter } from '../../config/collection/default-coll
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -30,7 +34,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
-export class CollectionService {
+export class CollectionService implements OnModuleInit {
     private rootCategories: { [channelCode: string]: Collection } = {};
     private availableFilters: Array<CollectionFilter<any>> = [facetValueCollectionFilter];
 
@@ -41,7 +45,17 @@ export class CollectionService {
         private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
+        private eventBus: EventBus,
     ) {}
+
+    onModuleInit() {
+        this.eventBus.subscribe(CatalogModificationEvent, async event => {
+            const collections = await this.connection.getRepository(Collection).find();
+            for (const collection of collections) {
+                await this.applyCollectionFilters(collection);
+            }
+        });
+    }
 
     async findAll(
         ctx: RequestContext,
@@ -103,14 +117,13 @@ export class CollectionService {
     }
 
     /**
-     * Gets the ancestors of a given category. Note that since ProductCategories are implemented as an adjacency list, this method
-     * will produce more queries the deeper the category is in the tree.
-     * @param categoryId
+     * Gets the ancestors of a given collection. Note that since ProductCategories are implemented as an adjacency list, this method
+     * will produce more queries the deeper the collection is in the tree.
      */
-    getAncestors(categoryId: ID): Promise<Collection[]>;
-    getAncestors(categoryId: ID, ctx: RequestContext): Promise<Array<Translated<Collection>>>;
+    getAncestors(collectionId: ID): Promise<Collection[]>;
+    getAncestors(collectionId: ID, ctx: RequestContext): Promise<Array<Translated<Collection>>>;
     async getAncestors(
-        categoryId: ID,
+        collectionId: ID,
         ctx?: RequestContext,
     ): Promise<Array<Translated<Collection> | Collection>> {
         const getParent = async (id, _ancestors: Collection[] = []): Promise<Collection[]> => {
@@ -128,13 +141,11 @@ export class CollectionService {
             }
             return _ancestors;
         };
-        const ancestors = await getParent(categoryId);
+        const ancestors = await getParent(collectionId);
 
         return this.connection
             .getRepository(Collection)
-            .findByIds(ancestors.map(c => c.id), {
-                relations: ['facetValues'],
-            })
+            .findByIds(ancestors.map(c => c.id))
             .then(categories => {
                 return ctx ? categories.map(c => translateDeep(c, ctx.languageCode)) : categories;
             });
@@ -147,16 +158,16 @@ export class CollectionService {
             translationType: CollectionTranslation,
             beforeSave: async coll => {
                 await this.channelService.assignToChannels(coll, ctx);
-                const parent = await this.getParentCategory(ctx, input.parentId);
+                const parent = await this.getParentCollection(ctx, input.parentId);
                 if (parent) {
                     coll.parent = parent;
                 }
                 coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
                 coll.filters = this.getCollectionFiltersFromInput(input);
-                coll.productVariants = await this.applyCollectionFilters(coll.filters);
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
+        await this.applyCollectionFilters(collection);
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -166,19 +177,23 @@ export class CollectionService {
             entityType: Collection,
             translationType: CollectionTranslation,
             beforeSave: async coll => {
-                coll.filters = this.getCollectionFiltersFromInput(input);
-                coll.productVariants = await this.applyCollectionFilters(coll.filters);
+                if (input.filters) {
+                    coll.filters = this.getCollectionFiltersFromInput(input);
+                }
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
+        if (input.filters) {
+            await this.applyCollectionFilters(collection);
+        }
         return assertFound(this.findOne(ctx, collection.id));
     }
 
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
-        const target = await getEntityOrThrow(this.connection, Collection, input.categoryId, {
+        const target = await getEntityOrThrow(this.connection, Collection, input.collectionId, {
             relations: ['parent'],
         });
-        const descendants = await this.getDescendants(ctx, input.categoryId);
+        const descendants = await this.getDescendants(ctx, input.collectionId);
 
         if (
             idsAreEqual(input.parentId, target.id) ||
@@ -189,15 +204,15 @@ export class CollectionService {
 
         const siblings = await this.connection
             .getRepository(Collection)
-            .createQueryBuilder('category')
-            .leftJoin('category.parent', 'parent')
+            .createQueryBuilder('collection')
+            .leftJoin('collection.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
-            .orderBy('category.position', 'ASC')
+            .orderBy('collection.position', 'ASC')
             .getMany();
         const normalizedIndex = Math.max(Math.min(input.index, siblings.length), 0);
 
         if (idsAreEqual(target.parent.id, input.parentId)) {
-            const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.categoryId));
+            const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.collectionId));
             if (currentIndex !== normalizedIndex) {
                 siblings.splice(normalizedIndex, 0, siblings.splice(currentIndex, 1)[0]);
                 siblings.forEach((cat, index) => {
@@ -213,7 +228,8 @@ export class CollectionService {
         }
 
         await this.connection.getRepository(Collection).save(siblings);
-        return assertFound(this.findOne(ctx, input.categoryId));
+        await this.applyCollectionFilters(target);
+        return assertFound(this.findOne(ctx, input.collectionId));
     }
 
     private getCollectionFiltersFromInput(
@@ -240,49 +256,79 @@ export class CollectionService {
         return filters;
     }
 
-    private async applyCollectionFilters(filters: ConfigurableOperation[]): Promise<ProductVariant[]> {
+    private async applyCollectionFilters(collection: Collection) {
+        const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
+            ancestors.reduce(
+                (filters, c) => [...filters, ...(c.filters || [])],
+                [] as ConfigurableOperation[],
+            ),
+        );
+        collection.productVariants = await this.getFilteredProductVariants([
+            ...ancestorFilters,
+            ...(collection.filters || []),
+        ]);
+        await this.connection.getRepository(Collection).save(collection);
+    }
+
+    /**
+     * Applies the CollectionFilters and returns an array of ProductVariant entities which match.
+     */
+    private async getFilteredProductVariants(filters: ConfigurableOperation[]): Promise<ProductVariant[]> {
+        if (filters.length === 0) {
+            return [];
+        }
+        const facetFilters = filters.filter(f => f.code === facetValueCollectionFilter.code);
         let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
-        for (const filter of filters) {
-            if (filter.code === facetValueCollectionFilter.code) {
-                qb = facetValueCollectionFilter.apply(qb, filter.args);
-            }
+        if (facetFilters) {
+            const mergedArgs = facetFilters
+                .map(f => f.args[0].value)
+                .filter(notNullOrUndefined)
+                .map(value => JSON.parse(value))
+                .reduce((all, ids) => [...all, ...ids]);
+            qb = facetValueCollectionFilter.apply(qb, [
+                {
+                    name: facetFilters[0].args[0].name,
+                    type: facetFilters[0].args[0].type,
+                    value: JSON.stringify(Array.from(new Set(mergedArgs))),
+                },
+            ]);
         }
         return qb.getMany();
     }
 
     /**
-     * Returns the next position value in the given parent category.
+     * Returns the next position value in the given parent collection.
      */
     private async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
-        const parentId = maybeParentId || (await this.getRootCategory(ctx)).id;
+        const parentId = maybeParentId || (await this.getRootCollection(ctx)).id;
         const result = await this.connection
             .getRepository(Collection)
-            .createQueryBuilder('category')
-            .leftJoin('category.parent', 'parent')
-            .select('MAX(category.position)', 'index')
+            .createQueryBuilder('collection')
+            .leftJoin('collection.parent', 'parent')
+            .select('MAX(collection.position)', 'index')
             .where('parent.id = :id', { id: parentId })
             .getRawOne();
         return (result.index || 0) + 1;
     }
 
-    private async getParentCategory(
+    private async getParentCollection(
         ctx: RequestContext,
         parentId?: ID | null,
     ): Promise<Collection | undefined> {
         if (parentId) {
             return this.connection
                 .getRepository(Collection)
-                .createQueryBuilder('category')
-                .leftJoin('category.channels', 'channel')
-                .where('category.id = :id', { id: parentId })
+                .createQueryBuilder('collection')
+                .leftJoin('collection.channels', 'channel')
+                .where('collection.id = :id', { id: parentId })
                 .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
                 .getOne();
         } else {
-            return this.getRootCategory(ctx);
+            return this.getRootCollection(ctx);
         }
     }
 
-    private async getRootCategory(ctx: RequestContext): Promise<Collection> {
+    private async getRootCollection(ctx: RequestContext): Promise<Collection> {
         const cachedRoot = this.rootCategories[ctx.channel.code];
 
         if (cachedRoot) {
@@ -291,9 +337,9 @@ export class CollectionService {
 
         const existingRoot = await this.connection
             .getRepository(Collection)
-            .createQueryBuilder('category')
-            .leftJoin('category.channels', 'channel')
-            .where('category.isRoot = :isRoot', { isRoot: true })
+            .createQueryBuilder('collection')
+            .leftJoin('collection.channels', 'channel')
+            .where('collection.isRoot = :isRoot', { isRoot: true })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getOne();
 

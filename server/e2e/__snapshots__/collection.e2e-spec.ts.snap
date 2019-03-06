@@ -88,10 +88,22 @@ Object {
     "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
     "type": "IMAGE",
   },
-  "filters": Array [],
+  "filters": Array [
+    Object {
+      "args": Array [
+        Object {
+          "name": "facetValueIds",
+          "type": "FACET_VALUE_IDS",
+          "value": "[\\"T_3\\"]",
+        },
+      ],
+      "code": "facet-value-filter",
+      "description": "Filter by FacetValues",
+    },
+  ],
   "id": "T_4",
   "languageCode": "en",
-  "name": "Apple",
+  "name": "Pear",
   "parent": Object {
     "id": "T_3",
     "name": "Computers",
@@ -101,7 +113,7 @@ Object {
       "description": "Apple stuff ",
       "id": "T_4",
       "languageCode": "en",
-      "name": "Apple",
+      "name": "Pear",
     },
   ],
 }

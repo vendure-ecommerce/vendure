@@ -26,7 +26,7 @@ export const facetValueCollectionFilter = new CollectionFilter({
                 }),
             )
             .groupBy('productVariant.id')
-            .having(`COUNT(1) = :count`, { count: args.facetValueIds.length });
+            .having(`COUNT(1) >= :count`, { count: args.facetValueIds.length });
         return qb;
     },
 });

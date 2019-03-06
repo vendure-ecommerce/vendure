@@ -12,7 +12,7 @@ import { Collection } from 'shared/generated-types';
 
 import { arrayToTree, HasParent, RootNode } from './array-to-tree';
 
-export type RearrangeEvent = { categoryId: string; parentId: string; index: number };
+export type RearrangeEvent = { collectionId: string; parentId: string; index: number };
 
 @Component({
     selector: 'vdr-collection-tree',
@@ -39,7 +39,7 @@ export class CollectionTreeComponent implements OnChanges {
             throw new Error(`Could not determine the ID of the root Collection`);
         }
         this.rearrange.emit({
-            categoryId: item.id,
+            collectionId: item.id,
             parentId: newParentId,
             index: event.currentIndex,
         });

@@ -121,7 +121,11 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             .pipe(
                 take(1),
                 mergeMap(([category, languageCode]) => {
-                    const input = this.getUpdatedCollection(category, this.detailForm, languageCode);
+                    const input = this.getUpdatedCollection(
+                        category,
+                        this.detailForm,
+                        languageCode,
+                    ) as CreateCollectionInput;
                     return this.dataService.product.createCollection(input);
                 }),
             )

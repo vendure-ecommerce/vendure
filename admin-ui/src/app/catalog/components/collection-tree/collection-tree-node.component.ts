@@ -51,7 +51,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         this.root.onMove({
             index: 0,
             parentId,
-            categoryId: category.id,
+            collectionId: category.id,
         });
     }
 
@@ -59,7 +59,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         this.root.onMove({
             index: currentIndex - 1,
             parentId: category.parent.id,
-            categoryId: category.id,
+            collectionId: category.id,
         });
     }
 
@@ -67,7 +67,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         this.root.onMove({
             index: currentIndex + 1,
             parentId: category.parent.id,
-            categoryId: category.id,
+            collectionId: category.id,
         });
     }
 

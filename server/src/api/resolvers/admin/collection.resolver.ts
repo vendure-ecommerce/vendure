@@ -78,13 +78,13 @@ export class CollectionResolver {
         @Args() args: UpdateCollectionMutationArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        this.idCodecService.decodeConfigurableOperation(input.filters);
+        this.idCodecService.decodeConfigurableOperation(input.filters || []);
         return this.collectionService.update(ctx, input).then(this.encodeFilters);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('categoryId', 'parentId')
+    @Decode('collectionId', 'parentId')
     async moveCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MoveCollectionMutationArgs,
