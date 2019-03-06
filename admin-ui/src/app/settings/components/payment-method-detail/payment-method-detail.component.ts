@@ -1,14 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, take } from 'rxjs/operators';
-import {
-    ConfigArg,
-    ConfigurableOperation,
-    ConfigurableOperationInput,
-    PaymentMethod,
-    UpdatePaymentMethodInput,
-} from 'shared/generated-types';
+import { ConfigArg, ConfigArgType, PaymentMethod, UpdatePaymentMethodInput } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -55,15 +49,16 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         this.entity$
             .pipe(
                 take(1),
-                mergeMap(({ id }) => {
+                mergeMap(({ id, configArgs }) => {
                     const formValue = this.detailForm.value;
                     const input: UpdatePaymentMethodInput = {
                         id,
                         code: formValue.code,
                         enabled: formValue.enabled,
-                        configArgs: Object.entries(formValue.configArgs).map(([name, value]) => ({
+                        configArgs: Object.entries(formValue.configArgs).map(([name, value], i) => ({
                             name,
                             value: value.toString(),
+                            type: configArgs[i].type,
                         })),
                     };
                     return this.dataService.settings.updatePaymentMethod(input);
@@ -105,9 +100,9 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
 
     private parseArgValue(arg: ConfigArg): string | number | boolean {
         switch (arg.type) {
-            case 'int':
+            case ConfigArgType.INT:
                 return Number.parseInt(arg.value || '0', 10);
-            case 'boolean':
+            case ConfigArgType.BOOLEAN:
                 return arg.value === 'false' ? false : true;
             default:
                 return arg.value || '';

@@ -9,6 +9,7 @@ import {
     UPDATE_PROMOTION,
 } from '../../admin-ui/src/app/data/definitions/promotion-definitions';
 import {
+    ConfigArgType,
     CreatePromotion,
     DeletionResult,
     GetAdjustmentOperations,
@@ -72,13 +73,13 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '500' }],
+                            arguments: [{ name: 'arg', value: '500', type: ConfigArgType.MONEY }],
                         },
                     ],
                     actions: [
                         {
                             code: promoAction.code,
-                            arguments: [{ name: 'percentage', value: '50' }],
+                            arguments: [{ name: 'percentage', value: '50', type: ConfigArgType.PERCENTAGE }],
                         },
                     ],
                 },
@@ -97,11 +98,11 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '90' }],
+                            arguments: [{ name: 'arg', value: '90', type: ConfigArgType.MONEY }],
                         },
                         {
                             code: promoCondition2.code,
-                            arguments: [{ name: 'arg', value: '10' }],
+                            arguments: [{ name: 'arg', value: '10', type: ConfigArgType.MONEY }],
                         },
                     ],
                 },
@@ -187,7 +188,7 @@ function generateTestCondition(code: string): PromotionCondition<any> {
     return new PromotionCondition({
         code,
         description: `description for ${code}`,
-        args: { arg: 'money' },
+        args: { arg: ConfigArgType.MONEY },
         check: (order, args) => true,
     });
 }
@@ -196,7 +197,7 @@ function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
         description: `description for ${code}`,
-        args: { percentage: 'percentage' },
+        args: { percentage: ConfigArgType.PERCENTAGE },
         execute: (order, args) => {
             return 42;
         },

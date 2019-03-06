@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-05T20:52:08+01:00
+// Generated in 2019-03-06T10:36:48+01:00
 export type Maybe<T> = T | null;
 
 
@@ -730,7 +730,9 @@ export interface ConfigArgInput {
   
   name: string;
   
-  value: string;
+  type: ConfigArgType;
+  
+  value?: Maybe<string>;
 }
 
 export interface CollectionTranslationInput {
@@ -1652,6 +1654,16 @@ export interface ProductOptionTranslationInput {
     IMAGE = "IMAGE",
     VIDEO = "VIDEO",
     BINARY = "BINARY",
+  }
+/** Certain entities allow arbitrary configuration arguments to be specified which can then be set in the admin-ui and used in the business logic of the app. These are the valid data types of such arguments. The data type influences: 1. How the argument form field is rendered in the admin-ui 2. The JavaScript type into which the value is coerced before being passed to the business logic. */
+  export enum ConfigArgType {
+    PERCENTAGE = "PERCENTAGE",
+    MONEY = "MONEY",
+    INT = "INT",
+    STRING = "STRING",
+    DATETIME = "DATETIME",
+    BOOLEAN = "BOOLEAN",
+    FACET_VALUE_IDS = "FACET_VALUE_IDS",
   }
 
   export enum AdjustmentType {
@@ -4200,7 +4212,7 @@ export namespace ConfigurableOperation {
     
     name: string;
     
-    type: string;
+    type: ConfigArgType;
     
     value: Maybe<string>;
   }
@@ -4380,7 +4392,7 @@ export namespace PaymentMethod {
     
     name: string;
     
-    type: string;
+    type: ConfigArgType;
     
     value: Maybe<string>;
   }
@@ -4783,7 +4795,7 @@ export interface ConfigArg {
   
   name: string;
   
-  type: string;
+  type: ConfigArgType;
   
   value?: Maybe<string>;
 }

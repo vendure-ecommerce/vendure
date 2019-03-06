@@ -10,6 +10,7 @@ import {
 } from '../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     Collection,
+    ConfigArgType,
     CreateCollection,
     GetAssetList,
     GetCollection,
@@ -67,7 +68,13 @@ describe('Collection resolver', () => {
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
-                                arguments: [{ name: 'facetValueIds', value: `["T_1"]` }],
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["T_1"]`,
+                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                    },
+                                ],
                             },
                         ],
                         translations: [
@@ -92,7 +99,13 @@ describe('Collection resolver', () => {
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
-                                arguments: [{ name: 'facetValueIds', value: `["T_2"]` }],
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["T_2"]`,
+                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                    },
+                                ],
                             },
                         ],
                     },

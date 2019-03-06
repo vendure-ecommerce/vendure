@@ -1,23 +1,7 @@
 // prettier-ignore
-import { ConfigArg, ConfigurableOperation } from '../../../shared/generated-types';
+import { ConfigArg, ConfigArgType, ConfigurableOperation } from '../../../shared/generated-types';
 
 import { InternalServerError } from './error/errors';
-
-/**
- * Certain entities allow arbitrary configuration arguments to be specified which can then
- * be set in the admin-ui and used in the business logic of the app. These are the valid
- * data types of such arguments. The data type influences:
- * 1. How the argument form field is rendered in the admin-ui
- * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
- */
-export type ConfigArgType =
-    | 'percentage'
-    | 'money'
-    | 'int'
-    | 'string'
-    | 'datetime'
-    | 'boolean'
-    | 'facetValueIds';
 
 export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: T;
@@ -28,13 +12,13 @@ export type ConfigArgs<T extends ConfigArgType> = {
  * in business logic.
  */
 export type ConfigArgValues<T extends ConfigArgs<any>> = {
-    [K in keyof T]: T[K] extends 'int' | 'money' | 'percentage'
+    [K in keyof T]: T[K] extends ConfigArgType.INT | ConfigArgType.MONEY | ConfigArgType.PERCENTAGE
         ? number
-        : T[K] extends 'datetime'
+        : T[K] extends ConfigArgType.DATETIME
         ? Date
-        : T[K] extends 'boolean'
+        : T[K] extends ConfigArgType.BOOLEAN
         ? boolean
-        : T[K] extends 'facetValueIds'
+        : T[K] extends ConfigArgType.FACET_VALUE_IDS
         ? string[]
         : string
 };
@@ -82,14 +66,18 @@ export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
 
 function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
     switch (arg.type as ConfigArgType) {
-        case 'int':
-        case 'money':
+        case ConfigArgType.STRING:
+            return arg.value as any;
+        case ConfigArgType.INT:
+        case ConfigArgType.MONEY:
             return Number.parseInt(arg.value || '', 10) as any;
-        case 'datetime':
+        case ConfigArgType.DATETIME:
             return Date.parse(arg.value || '') as any;
-        case 'boolean':
+        case ConfigArgType.BOOLEAN:
             return !!arg.value as any;
-        case 'facetValueIds':
+        case ConfigArgType.PERCENTAGE:
+            return arg.value as any;
+        case ConfigArgType.FACET_VALUE_IDS:
             try {
                 return JSON.parse(arg.value as any);
             } catch (err) {

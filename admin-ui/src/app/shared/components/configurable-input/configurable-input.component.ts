@@ -21,7 +21,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { ConfigurableOperation, FacetWithValues } from 'shared/generated-types';
+import { ConfigArgType, ConfigurableOperation, FacetWithValues } from 'shared/generated-types';
 
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
@@ -54,6 +54,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     onChange: (val: any) => void;
     onTouch: () => void;
     form = new FormGroup({});
+    ConfigArgType = ConfigArgType;
     private subscription: Subscription;
 
     interpolateDescription(): string {

@@ -1,11 +1,11 @@
-import { ConfigurableOperation } from 'shared/generated-types';
+import { ConfigArgType, ConfigurableOperation } from 'shared/generated-types';
 
 import { interpolateDescription } from './interpolate-description';
 
 describe('interpolateDescription()', () => {
     it('works for single argument', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'foo', type: 'string' }],
+            args: [{ name: 'foo', type: ConfigArgType.STRING }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -15,7 +15,7 @@ describe('interpolateDescription()', () => {
 
     it('works for multiple arguments', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
+            args: [{ name: 'foo', type: ConfigArgType.STRING }, { name: 'bar', type: ConfigArgType.STRING }],
             description: 'The value is { foo } and { bar }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val1', bar: 'val2' });
@@ -25,7 +25,7 @@ describe('interpolateDescription()', () => {
 
     it('is case-insensitive', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'foo', type: 'string' }],
+            args: [{ name: 'foo', type: ConfigArgType.STRING }],
             description: 'The value is { FOo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -35,7 +35,7 @@ describe('interpolateDescription()', () => {
 
     it('ignores whitespaces in interpolation', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
+            args: [{ name: 'foo', type: ConfigArgType.STRING }, { name: 'bar', type: ConfigArgType.STRING }],
             description: 'The value is {foo} and {      bar    }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val1', bar: 'val2' });
@@ -45,7 +45,7 @@ describe('interpolateDescription()', () => {
 
     it('formats money as a decimal', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'price', type: 'money' }],
+            args: [{ name: 'price', type: ConfigArgType.MONEY }],
             description: 'The price is { price }',
         };
         const result = interpolateDescription(operation as any, { price: 1234 });
@@ -55,7 +55,7 @@ describe('interpolateDescription()', () => {
 
     it('formats Date object as human-readable', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'date', type: 'datetime' }],
+            args: [{ name: 'date', type: ConfigArgType.DATETIME }],
             description: 'The date is { date }',
         };
         const date = new Date('2017-09-15 00:00:00');
@@ -66,7 +66,7 @@ describe('interpolateDescription()', () => {
 
     it('formats date string object as human-readable', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'date', type: 'datetime' }],
+            args: [{ name: 'date', type: ConfigArgType.DATETIME }],
             description: 'The date is { date }',
         };
         const date = '2017-09-15';
@@ -77,7 +77,7 @@ describe('interpolateDescription()', () => {
 
     it('correctly interprets falsy-looking values', () => {
         const operation: Partial<ConfigurableOperation> = {
-            args: [{ name: 'foo', type: 'int' }],
+            args: [{ name: 'foo', type: ConfigArgType.INT }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 0 });

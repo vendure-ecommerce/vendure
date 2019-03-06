@@ -38,7 +38,7 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "facetValueIds",
+          "type": "FACET_VALUE_IDS",
           "value": "[\\"T_1\\"]",
         },
       ],

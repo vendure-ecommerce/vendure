@@ -1,6 +1,6 @@
 import { SelectQueryBuilder } from 'typeorm';
 
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 import {
     argsArrayToHash,
     ConfigArgs,
@@ -9,7 +9,7 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = 'facetValueIds';
+export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (

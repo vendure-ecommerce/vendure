@@ -9,36 +9,36 @@
                     <label [for]="arg.name"></label>
                 </div>
                 <input
-                    *ngIf="arg.type === 'int'"
+                    *ngIf="arg.type === ConfigArgType.INT"
                     [name]="arg.name"
                     type="number"
                     step="1"
                     [formControlName]="arg.name"
                 />
                 <input
-                    *ngIf="arg.type === 'string'"
+                    *ngIf="arg.type === ConfigArgType.STRING"
                     [name]="arg.name"
                     type="text"
                     [formControlName]="arg.name"
                 />
                 <input
-                    *ngIf="arg.type === 'datetime'"
+                    *ngIf="arg.type === ConfigArgType.DATETIME"
                     [name]="arg.name"
                     type="date"
                     [formControlName]="arg.name"
                 />
                 <vdr-currency-input
-                    *ngIf="arg.type === 'money'"
+                    *ngIf="arg.type === ConfigArgType.MONEY"
                     [formControlName]="arg.name"
                 ></vdr-currency-input>
                 <vdr-percentage-suffix-input
-                    *ngIf="arg.type === 'percentage'"
+                    *ngIf="arg.type === ConfigArgType.PERCENTAGE"
                     [formControlName]="arg.name"
                 ></vdr-percentage-suffix-input>
                 <vdr-facet-value-selector
                     [facets]="facets"
                     [formControlName]="arg.name"
-                    *ngIf="arg.type === 'facetValueIds' && facets"
+                    *ngIf="arg.type === ConfigArgType.FACET_VALUE_IDS && facets"
                 ></vdr-facet-value-selector>
             </div>
         </form>

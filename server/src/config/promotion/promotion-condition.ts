@@ -1,4 +1,4 @@
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 
 import { ID } from '../../../../shared/shared-types';
 import {
@@ -10,7 +10,13 @@ import {
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
 
-export type PromotionConditionArgType = 'int' | 'money' | 'string' | 'datetime' | 'boolean' | 'facetValueIds';
+export type PromotionConditionArgType =
+    | ConfigArgType.INT
+    | ConfigArgType.MONEY
+    | ConfigArgType.STRING
+    | ConfigArgType.DATETIME
+    | ConfigArgType.BOOLEAN
+    | ConfigArgType.FACET_VALUE_IDS;
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 
 /**

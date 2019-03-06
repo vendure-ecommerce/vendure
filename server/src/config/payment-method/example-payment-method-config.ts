@@ -1,3 +1,5 @@
+import { ConfigArgType } from '../../../../shared/generated-types';
+
 import { PaymentConfig, PaymentMethodHandler } from './payment-method-handler';
 
 /**
@@ -23,7 +25,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
     code: 'example-payment-provider',
     name: 'Example Payment Provider',
     args: {
-        apiKey: 'string',
+        apiKey: ConfigArgType.STRING,
     },
     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
         try {

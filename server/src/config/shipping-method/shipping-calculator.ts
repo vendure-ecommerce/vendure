@@ -1,10 +1,14 @@
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 
 import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingCalculatorArgType = 'int' | 'money' | 'string' | 'boolean';
+export type ShippingCalculatorArgType =
+    | ConfigArgType.INT
+    | ConfigArgType.MONEY
+    | ConfigArgType.STRING
+    | ConfigArgType.BOOLEAN;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,

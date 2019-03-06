@@ -1,5 +1,7 @@
 import { Brackets } from 'typeorm';
 
+import { ConfigArgType } from '../../../../shared/generated-types';
+
 import { CollectionFilter } from './collection-filter';
 
 /**
@@ -7,7 +9,7 @@ import { CollectionFilter } from './collection-filter';
  */
 export const facetValueCollectionFilter = new CollectionFilter({
     args: {
-        facetValueIds: 'facetValueIds',
+        facetValueIds: ConfigArgType.FACET_VALUE_IDS,
     },
     code: 'facet-value-filter',
     description: 'Filter by FacetValues',

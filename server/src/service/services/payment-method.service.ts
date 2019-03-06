@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
-import { UpdatePaymentMethodInput } from '../../../../shared/generated-types';
+import { ConfigArgType, UpdatePaymentMethodInput } from '../../../../shared/generated-types';
 import { omit } from '../../../../shared/omit';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { assertNever } from '../../../../shared/shared-utils';
@@ -120,11 +120,11 @@ export class PaymentMethodService {
 
     private getDefaultValue(type: PaymentMethodArgType): string {
         switch (type) {
-            case 'string':
+            case ConfigArgType.STRING:
                 return '';
-            case 'boolean':
+            case ConfigArgType.BOOLEAN:
                 return 'false';
-            case 'int':
+            case ConfigArgType.INT:
                 return '0';
             default:
                 assertNever(type);

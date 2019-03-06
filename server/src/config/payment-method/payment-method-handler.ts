@@ -1,4 +1,4 @@
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 
 import { argsArrayToHash, ConfigArgs, ConfigArgValues } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
@@ -9,7 +9,7 @@ import {
     PaymentTransitionData,
 } from '../../service/helpers/payment-state-machine/payment-state';
 
-export type PaymentMethodArgType = 'int' | 'string' | 'boolean';
+export type PaymentMethodArgType = ConfigArgType.INT | ConfigArgType.STRING | ConfigArgType.BOOLEAN;
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
 
@@ -134,6 +134,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     },
  * });
  * ```
+ * // TODO: Refactor to implement ConfigurableOperationDef interface
  *
  * @docsCategory payment
  */

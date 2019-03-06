@@ -7,7 +7,7 @@ Object {
       "args": Array [
         Object {
           "name": "percentage",
-          "type": "percentage",
+          "type": "PERCENTAGE",
           "value": null,
         },
       ],
@@ -20,7 +20,7 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "money",
+          "type": "MONEY",
           "value": null,
         },
       ],
@@ -31,7 +31,7 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "money",
+          "type": "MONEY",
           "value": null,
         },
       ],
@@ -49,7 +49,7 @@ Object {
       "args": Array [
         Object {
           "name": "percentage",
-          "type": "percentage",
+          "type": "PERCENTAGE",
           "value": "50",
         },
       ],
@@ -62,7 +62,7 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "money",
+          "type": "MONEY",
           "value": "500",
         },
       ],
@@ -82,7 +82,7 @@ Object {
       "args": Array [
         Object {
           "name": "percentage",
-          "type": "percentage",
+          "type": "PERCENTAGE",
           "value": "50",
         },
       ],
@@ -95,7 +95,7 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "money",
+          "type": "MONEY",
           "value": "90",
         },
       ],
@@ -106,7 +106,7 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "money",
+          "type": "MONEY",
           "value": "10",
         },
       ],

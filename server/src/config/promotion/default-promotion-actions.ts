@@ -1,8 +1,10 @@
-import { PromotionAction, PromotionItemAction, PromotionOrderAction } from './promotion-action';
+import { ConfigArgType } from '../../../../shared/generated-types';
+
+import { PromotionItemAction, PromotionOrderAction } from './promotion-action';
 
 export const orderPercentageDiscount = new PromotionOrderAction({
     code: 'order_percentage_discount',
-    args: { discount: 'percentage' },
+    args: { discount: ConfigArgType.PERCENTAGE },
     execute(order, args) {
         return -order.subTotal * (args.discount / 100);
     },
@@ -11,7 +13,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
 
 export const itemPercentageDiscount = new PromotionItemAction({
     code: 'item_percentage_discount',
-    args: { discount: 'percentage' },
+    args: { discount: ConfigArgType.PERCENTAGE },
     execute(orderItem, orderLine, args) {
         return -orderLine.unitPrice * (args.discount / 100);
     },
@@ -35,7 +37,7 @@ export const buy1Get1Free = new PromotionItemAction({
 
 export const discountOnItemWithFacets = new PromotionItemAction({
     code: 'facet_based_discount',
-    args: { discount: 'percentage', facets: 'facetValueIds' },
+    args: { discount: ConfigArgType.PERCENTAGE, facets: ConfigArgType.FACET_VALUE_IDS },
     async execute(orderItem, orderLine, args, { hasFacetValues }) {
         if (await hasFacetValues(orderLine, args.facets)) {
             return -orderLine.unitPrice * (args.discount / 100);

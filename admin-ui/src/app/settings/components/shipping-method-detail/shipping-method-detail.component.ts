@@ -147,6 +147,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             arguments: Object.values(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
                 value: value.toString(),
+                type: operation.args[j].type,
             })),
         };
     }

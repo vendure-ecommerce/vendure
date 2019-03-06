@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { LanguageCode } from '../../../../../shared/generated-types';
+import { ConfigArgType, LanguageCode } from '../../../../../shared/generated-types';
 import { normalizeString } from '../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
@@ -135,7 +135,7 @@ export class Populator {
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
-                    arguments: [{ name: 'rate', value: method.price.toString() }],
+                    arguments: [{ name: 'rate', value: method.price.toString(), type: ConfigArgType.MONEY }],
                 },
                 description: method.name,
                 code: normalizeString(method.name, '-'),

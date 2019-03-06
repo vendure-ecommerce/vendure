@@ -1,10 +1,14 @@
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 
 import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingEligibilityCheckerArgType = 'int' | 'money' | 'string' | 'boolean';
+export type ShippingEligibilityCheckerArgType =
+    | ConfigArgType.INT
+    | ConfigArgType.MONEY
+    | ConfigArgType.STRING
+    | ConfigArgType.BOOLEAN;
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
     order: Order,

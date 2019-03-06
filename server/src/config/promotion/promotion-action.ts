@@ -1,4 +1,4 @@
-import { ConfigArg } from '../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '../../../../shared/generated-types';
 import {
     argsArrayToHash,
     ConfigArgs,
@@ -11,7 +11,11 @@ import { Order } from '../../entity/order/order.entity';
 
 import { PromotionUtils } from './promotion-condition';
 
-export type PromotionActionArgType = 'percentage' | 'money' | 'int' | 'facetValueIds';
+export type PromotionActionArgType =
+    | ConfigArgType.PERCENTAGE
+    | ConfigArgType.MONEY
+    | ConfigArgType.INT
+    | ConfigArgType.FACET_VALUE_IDS;
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
