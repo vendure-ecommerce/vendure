@@ -6,9 +6,9 @@ import {
     ProductQueryArgs,
     SearchResponse,
 } from '../../../../../shared/generated-shop-types';
+import { ProductsQueryArgs } from '../../../../../shared/generated-shop-types';
 import { Omit } from '../../../../../shared/omit';
 import { PaginatedList } from '../../../../../shared/shared-types';
-import { ProductsQueryArgs } from '../../../../dist/shared/generated-shop-types';
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
