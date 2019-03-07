@@ -31,6 +31,7 @@ type ProductList implements PaginatedList {
 
 type ProductVariant implements Node {
     id: ID!
+    productId: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
     languageCode: LanguageCode!

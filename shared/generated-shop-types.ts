@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-06T21:22:24+01:00
+// Generated in 2019-03-07T10:54:02+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -154,6 +154,8 @@ export interface ProductVariantListOptions {
 
 export interface ProductVariantSortParameter {
     id?: Maybe<SortOrder>;
+
+    productId?: Maybe<SortOrder>;
 
     createdAt?: Maybe<SortOrder>;
 
@@ -1011,6 +1013,8 @@ export interface OrderLine extends Node {
 
 export interface ProductVariant extends Node {
     id: string;
+
+    productId: string;
 
     createdAt: DateTime;
 

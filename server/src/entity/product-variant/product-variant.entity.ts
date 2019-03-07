@@ -84,6 +84,9 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @ManyToOne(type => Product, product => product.variants)
     product: Product;
 
+    @Column({ nullable: true })
+    productId: number;
+
     @ManyToMany(type => ProductOption)
     @JoinTable()
     options: ProductOption[];
