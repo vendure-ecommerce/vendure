@@ -82,6 +82,7 @@ export class Populator {
                     {
                         languageCode: ctx.languageCode,
                         name: collectionDef.name,
+                        description: '',
                     },
                 ],
                 parentId,

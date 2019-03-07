@@ -18,7 +18,7 @@ export class CollectionTranslation extends VendureEntity implements Translation<
 
     @Column() name: string;
 
-    @Column({ nullable: true }) description: string;
+    @Column() description: string;
 
     @ManyToOne(type => Collection, base => base.translations)
     base: Collection;
