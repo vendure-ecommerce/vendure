@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, forkJoin, merge, Observable } from 'rxjs';
-import { map, mergeMap, skip, take, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, mergeMap, skip, take, withLatestFrom } from 'rxjs/operators';
 import {
     CreateProductInput,
     FacetWithValues,
@@ -109,15 +109,21 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         // are concatenated onto the initial array.
         const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
         const allFacetValues$ = this.facets$.pipe(map(flattenFacetValues));
-
         const productGroup = this.getProductFormGroup();
+
+        const formFacetValueIdChanges$ = productGroup.valueChanges.pipe(
+            map(val => val.facetValueIds as string[]),
+            distinctUntilChanged(),
+        );
         const formChangeFacetValues$ = combineLatest(
-            productGroup.valueChanges.pipe(map(val => val.facetValueIds as string[])),
+            formFacetValueIdChanges$,
+            productFacetValues$,
             allFacetValues$,
         ).pipe(
-            map(([facetValueIds, facetValues]) =>
-                facetValueIds.map(id => facetValues.find(fv => fv.id === id)).filter(notNullOrUndefined),
-            ),
+            map(([ids, productFacetValues, allFacetValues]) => {
+                const combined = [...productFacetValues, ...allFacetValues];
+                return ids.map(id => combined.find(fv => fv.id === id)).filter(notNullOrUndefined);
+            }),
         );
 
         this.facetValues$ = merge(productFacetValues$, formChangeFacetValues$);
@@ -182,6 +188,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         productGroup.patchValue({
             facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
         });
+        productGroup.markAsDirty();
     }
 
     /**
