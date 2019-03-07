@@ -1,0 +1,112 @@
+import { from } from 'rxjs';
+import { bufferCount, concatMap } from 'rxjs/operators';
+import {
+    CreateCollection,
+    CreateCollectionInput,
+    GetCollection,
+    GetCollectionContents,
+    GetCollectionFilters,
+    GetCollectionList,
+    MoveCollection,
+    MoveCollectionInput,
+    UpdateCollection,
+    UpdateCollectionInput,
+} from 'shared/generated-types';
+import { pick } from 'shared/pick';
+
+import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import {
+    CREATE_COLLECTION,
+    GET_COLLECTION,
+    GET_COLLECTION_CONTENTS,
+    GET_COLLECTION_FILTERS,
+    GET_COLLECTION_LIST,
+    MOVE_COLLECTION,
+    UPDATE_COLLECTION,
+} from '../definitions/collection-definitions';
+
+import { BaseDataService } from './base-data.service';
+
+export class CollectionDataService {
+    constructor(private baseDataService: BaseDataService) {}
+
+    getCollectionFilters() {
+        return this.baseDataService.query<GetCollectionFilters.Query>(GET_COLLECTION_FILTERS);
+    }
+
+    getCollections(take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetCollectionList.Query, GetCollectionList.Variables>(
+            GET_COLLECTION_LIST,
+            {
+                options: {
+                    take,
+                    skip,
+                },
+                languageCode: getDefaultLanguage(),
+            },
+        );
+    }
+
+    getCollection(id: string) {
+        return this.baseDataService.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            id,
+            languageCode: getDefaultLanguage(),
+        });
+    }
+
+    createCollection(input: CreateCollectionInput) {
+        return this.baseDataService.mutate<CreateCollection.Mutation, CreateCollection.Variables>(
+            CREATE_COLLECTION,
+            {
+                input: pick(input, [
+                    'translations',
+                    'assetIds',
+                    'featuredAssetId',
+                    'filters',
+                    'customFields',
+                ]),
+            },
+        );
+    }
+
+    updateCollection(input: UpdateCollectionInput) {
+        return this.baseDataService.mutate<UpdateCollection.Mutation, UpdateCollection.Variables>(
+            UPDATE_COLLECTION,
+            {
+                input: pick(input, [
+                    'id',
+                    'translations',
+                    'assetIds',
+                    'featuredAssetId',
+                    'filters',
+                    'customFields',
+                ]),
+            },
+        );
+    }
+
+    moveCollection(inputs: MoveCollectionInput[]) {
+        return from(inputs).pipe(
+            concatMap(input =>
+                this.baseDataService.mutate<MoveCollection.Mutation, MoveCollection.Variables>(
+                    MOVE_COLLECTION,
+                    { input },
+                ),
+            ),
+            bufferCount(inputs.length),
+        );
+    }
+
+    getCollectionContents(id: string, take: number = 10, skip: number = 0) {
+        return this.baseDataService.query<GetCollectionContents.Query, GetCollectionContents.Variables>(
+            GET_COLLECTION_CONTENTS,
+            {
+                id,
+                options: {
+                    skip,
+                    take,
+                },
+            },
+        );
+    }
+}

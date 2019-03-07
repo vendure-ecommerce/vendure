@@ -4,6 +4,7 @@ import { AdministratorDataService } from './administrator-data.service';
 import { AuthDataService } from './auth-data.service';
 import { BaseDataService } from './base-data.service';
 import { ClientDataService } from './client-data.service';
+import { CollectionDataService } from './collection-data.service';
 import { CustomerDataService } from './customer-data.service';
 import { FacetDataService } from './facet-data.service';
 import { OrderDataService } from './order-data.service';
@@ -17,6 +18,7 @@ export class DataService {
     promotion: PromotionDataService;
     administrator: AdministratorDataService;
     auth: AuthDataService;
+    collection: CollectionDataService;
     product: ProductDataService;
     client: ClientDataService;
     facet: FacetDataService;
@@ -29,6 +31,7 @@ export class DataService {
         this.promotion = new PromotionDataService(baseDataService);
         this.administrator = new AdministratorDataService(baseDataService);
         this.auth = new AuthDataService(baseDataService);
+        this.collection = new CollectionDataService(baseDataService);
         this.product = new ProductDataService(baseDataService);
         this.client = new ClientDataService(baseDataService);
         this.facet = new FacetDataService(baseDataService);

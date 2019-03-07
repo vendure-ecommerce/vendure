@@ -7,12 +7,16 @@
     (cdkDropListDropped)="drop($event)"
 >
     <div
-        class="category"
+        class="collection"
         *ngFor="let collection of collectionTree.children; index as i"
         cdkDrag
         [cdkDragData]="collection"
     >
-        <div class="category-detail" [ngClass]="'depth-' + depth">
+        <div
+            class="collection-detail"
+            [ngClass]="'depth-' + depth"
+            [class.active]="collection.id === activeCollectionId"
+        >
             <div class="name">
                 <clr-icon shape="folder"></clr-icon>
                 {{ collection.name }}
@@ -25,6 +29,10 @@
                     [removable]="false"
                 ></vdr-facet-value-chip>
             </div>
+            <a class="btn btn-link btn-sm" [routerLink]="['./', { contents: collection.id }]">
+                <clr-icon shape="view-list"></clr-icon>
+                {{ 'catalog.view-contents' | translate }}
+            </a>
             <a class="btn btn-link btn-sm" [routerLink]="['./', collection.id]">
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}
@@ -71,6 +79,9 @@
                 </clr-dropdown-menu>
             </clr-dropdown>
         </div>
-        <vdr-collection-tree-node [collectionTree]="collection"></vdr-collection-tree-node>
+        <vdr-collection-tree-node
+            [collectionTree]="collection"
+            [activeCollectionId]="activeCollectionId"
+        ></vdr-collection-tree-node>
     </div>
 </div>

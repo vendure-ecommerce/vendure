@@ -24,7 +24,6 @@
   "catalog": {
     "add-asset": "Add asset",
     "add-asset-to-product": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}} to product",
-    "add-facet": "Add facet",
     "add-facet-value": "Add facet value",
     "add-facets": "Add facets",
     "assets-selected-count": "{ count } assets selected",
@@ -41,8 +40,8 @@
     "drop-files-to-upload": "Drop files to upload",
     "facet": "Facet",
     "facet-values": "Facet values",
-    "facets": "Facets",
     "filter-by-group-name": "Filter by group name",
+    "filters": "Filters",
     "generate-product-variants": "Generate product variants",
     "generate-variants-default-only": "This product does not have options",
     "generate-variants-with-options": "This product has options",
@@ -79,7 +78,8 @@
     "taxes": "Taxes",
     "truncated-options-count": "{count} further {count, plural, one {option} other {options}}",
     "upload-assets": "Upload assets",
-    "values": "Values"
+    "values": "Values",
+    "view-contents": "View contents"
   },
   "common": {
     "ID": "ID",
@@ -124,6 +124,7 @@
     "password": "Password",
     "remember-me": "Remember me",
     "remove": "Remove",
+    "results-count": "{ count } {count, plural, one {result} other {results}}",
     "select": "Select...",
     "there-are-unsaved-changes": "There are unsaved changes. Navigating away will cause these changes to be lost.",
     "update": "Update",

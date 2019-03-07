@@ -21,13 +21,14 @@ export type RearrangeEvent = { collectionId: string; parentId: string; index: nu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionTreeComponent implements OnChanges {
-    @Input() productCategories: Collection.Fragment[];
+    @Input() collections: Collection.Fragment[];
+    @Input() activeCollectionId: string;
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
-    categoryTree: RootNode<Collection.Fragment>;
+    collectionTree: RootNode<Collection.Fragment>;
 
     ngOnChanges(changes: SimpleChanges) {
-        if ('productCategories' in changes && this.productCategories) {
-            this.categoryTree = arrayToTree(this.productCategories);
+        if ('collections' in changes && this.collections) {
+            this.collectionTree = arrayToTree(this.collections);
         }
     }
 

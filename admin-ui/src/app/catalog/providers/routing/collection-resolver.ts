@@ -22,7 +22,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 parent: {} as any,
                 children: null,
             },
-            id => this.dataService.product.getCollection(id).mapStream(data => data.collection),
+            id => this.dataService.collection.getCollection(id).mapStream(data => data.collection),
         );
     }
 }

@@ -3,17 +3,21 @@
 :host {
     display: block;
 }
-.category {
+.collection {
     background-color: white;
     color: rgba(0, 0, 0, 0.87);
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 
-    .category-detail {
-        padding: 12px;
+    .collection-detail {
+        padding: 6px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid $color-grey-2;
+
+        &.active {
+            background-color: $color-grey-2;
+        }
 
         &.depth-1 { padding-left: 12px + 24px; }
         &.depth-2 { padding-left: 12px + 48px; }
@@ -29,7 +33,6 @@
 .tree-node {
     display: block;
     background: white;
-    border-radius: 4px;
     overflow: hidden;
 }
 

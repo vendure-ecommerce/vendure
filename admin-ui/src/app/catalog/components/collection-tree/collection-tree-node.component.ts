@@ -15,6 +15,7 @@ export class CollectionTreeNodeComponent implements OnInit {
     depth = 0;
     parentName: string;
     @Input() collectionTree: TreeNode<Collection.Fragment>;
+    @Input() activeCollectionId: string;
 
     constructor(
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
@@ -44,7 +45,7 @@ export class CollectionTreeNodeComponent implements OnInit {
             }
             return output;
         };
-        return visit(this.root.categoryTree, [], []);
+        return visit(this.root.collectionTree, [], []);
     }
 
     move(category: Collection.Fragment, parentId: string) {

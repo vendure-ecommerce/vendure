@@ -66,7 +66,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             .mapSingle(data => data.facets.items)
             .pipe(shareReplay(1));
 
-        this.dataService.product.getCollectionFilters().single$.subscribe(res => {
+        this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
     }
@@ -126,7 +126,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                         this.detailForm,
                         languageCode,
                     ) as CreateCollectionInput;
-                    return this.dataService.product.createCollection(input);
+                    return this.dataService.collection.createCollection(input);
                 }),
             )
             .subscribe(
@@ -156,7 +156,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                         this.detailForm,
                         languageCode,
                     ) as UpdateCollectionInput;
-                    return this.dataService.product.updateCollection(input);
+                    return this.dataService.collection.updateCollection(input);
                 }),
             )
             .subscribe(

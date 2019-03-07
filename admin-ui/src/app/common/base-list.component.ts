@@ -25,7 +25,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         ({ options: { skip, take } } as any);
     private refresh$ = new BehaviorSubject<undefined>(undefined);
 
-    constructor(private router: Router, private route: ActivatedRoute) {}
+    constructor(protected router: Router, protected route: ActivatedRoute) {}
 
     /**
      * Sets the fetch function for the list being implemented.

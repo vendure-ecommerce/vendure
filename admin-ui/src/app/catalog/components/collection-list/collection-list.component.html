@@ -6,8 +6,42 @@
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
+<div class="collection-wrapper">
+    <vdr-collection-tree
+        [collections]="items$ | async"
+        [activeCollectionId]="activeCollectionId$ | async"
+        (rearrange)="onRearrange($event)"
+    ></vdr-collection-tree>
 
-<vdr-collection-tree
-    [productCategories]="items$ | async"
-    (rearrange)="onRearrange($event)"
-></vdr-collection-tree>
+    <div class="collection-contents" [class.expanded]="activeCollectionId$ | async">
+        <div class="contents-header">
+            <div class="collection-title">
+                {{ activeCollectionTitle$ | async }} ({{
+                    'common.results-count' | translate: { count: contentsTotalItems$ | async }
+                }})
+            </div>
+            <button type="button" class="close-button" (click)="closeContents()">
+                <clr-icon shape="close"></clr-icon>
+            </button>
+        </div>
+        <vdr-data-table
+            [items]="contents$ | async"
+            [itemsPerPage]="contentsItemsPerPage$ | async"
+            [totalItems]="contentsTotalItems$ | async"
+            [currentPage]="contentsCurrentPage$ | async"
+            (pageChange)="setContentsPageNumber($event)"
+            (itemsPerPageChange)="setContentsItemsPerPage($event)"
+        >
+            <ng-template let-variant="item">
+                <td class="left align-middle">{{ variant.name }}</td>
+                <td class="right align-middle">
+                    <vdr-table-row-action
+                        iconShape="edit"
+                        [label]="'common.edit' | translate"
+                        [linkTo]="['../products', variant.productId, { tab: 'variants' }]"
+                    ></vdr-table-row-action>
+                </td>
+            </ng-template>
+        </vdr-data-table>
+    </div>
+</div>

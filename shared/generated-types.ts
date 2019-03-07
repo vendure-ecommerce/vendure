@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-07T10:54:03+01:00
+// Generated in 2019-03-07T11:46:05+01:00
 export type Maybe<T> = T | null;
 
 
@@ -2021,6 +2021,160 @@ export namespace GetUiState {
   } 
 }
 
+export namespace GetCollectionFilters {
+  export type Variables = {
+  }
+
+  export type Query = {
+    __typename?: "Query";
+    
+    collectionFilters: CollectionFilters[];
+  }
+
+  export type CollectionFilters = ConfigurableOperation.Fragment
+}
+
+export namespace GetCollectionList {
+  export type Variables = {
+    options?: Maybe<CollectionListOptions>;
+    languageCode?: Maybe<LanguageCode>;
+  }
+
+  export type Query = {
+    __typename?: "Query";
+    
+    collections: Collections;
+  }
+
+  export type Collections = {
+    __typename?: "CollectionList";
+    
+    items: Items[];
+    
+    totalItems: number;
+  } 
+
+  export type Items = {
+    __typename?: "Collection";
+    
+    id: string;
+    
+    name: string;
+    
+    description: string;
+    
+    featuredAsset: Maybe<FeaturedAsset>;
+    
+    parent: Parent;
+  } 
+
+  export type FeaturedAsset = Asset.Fragment
+
+  export type Parent = {
+    __typename?: "Collection";
+    
+    id: string;
+  } 
+}
+
+export namespace GetCollection {
+  export type Variables = {
+    id: string;
+    languageCode?: Maybe<LanguageCode>;
+  }
+
+  export type Query = {
+    __typename?: "Query";
+    
+    collection: Maybe<Collection>;
+  }
+
+  export type Collection = Collection.Fragment
+}
+
+export namespace CreateCollection {
+  export type Variables = {
+    input: CreateCollectionInput;
+  }
+
+  export type Mutation = {
+    __typename?: "Mutation";
+    
+    createCollection: CreateCollection;
+  }
+
+  export type CreateCollection = Collection.Fragment
+}
+
+export namespace UpdateCollection {
+  export type Variables = {
+    input: UpdateCollectionInput;
+  }
+
+  export type Mutation = {
+    __typename?: "Mutation";
+    
+    updateCollection: UpdateCollection;
+  }
+
+  export type UpdateCollection = Collection.Fragment
+}
+
+export namespace MoveCollection {
+  export type Variables = {
+    input: MoveCollectionInput;
+  }
+
+  export type Mutation = {
+    __typename?: "Mutation";
+    
+    moveCollection: MoveCollection;
+  }
+
+  export type MoveCollection = Collection.Fragment
+}
+
+export namespace GetCollectionContents {
+  export type Variables = {
+    id: string;
+    options?: Maybe<ProductVariantListOptions>;
+  }
+
+  export type Query = {
+    __typename?: "Query";
+    
+    collection: Maybe<Collection>;
+  }
+
+  export type Collection = {
+    __typename?: "Collection";
+    
+    id: string;
+    
+    name: string;
+    
+    productVariants: ProductVariants;
+  } 
+
+  export type ProductVariants = {
+    __typename?: "ProductVariantList";
+    
+    items: Items[];
+    
+    totalItems: number;
+  } 
+
+  export type Items = {
+    __typename?: "ProductVariant";
+    
+    id: string;
+    
+    productId: string;
+    
+    name: string;
+  } 
+}
+
 export namespace GetCustomerList {
   export type Variables = {
     options?: Maybe<CustomerListOptions>;
@@ -3436,6 +3590,66 @@ export namespace CurrentUser {
     identifier: string;
     
     channelTokens: string[];
+  }
+}
+
+export namespace Collection {
+  export type Fragment = {
+    __typename?: "Collection";
+    
+    id: string;
+    
+    name: string;
+    
+    description: string;
+    
+    languageCode: Maybe<LanguageCode>;
+    
+    featuredAsset: Maybe<FeaturedAsset>;
+    
+    assets: Assets[];
+    
+    filters: Filters[];
+    
+    translations: Translations[];
+    
+    parent: Parent;
+    
+    children: Maybe<Children[]>;
+  }
+
+  export type FeaturedAsset =Asset.Fragment
+
+  export type Assets =Asset.Fragment
+
+  export type Filters =ConfigurableOperation.Fragment
+
+  export type Translations = {
+    __typename?: "CollectionTranslation";
+    
+    id: string;
+    
+    languageCode: LanguageCode;
+    
+    name: string;
+    
+    description: string;
+  }
+
+  export type Parent = {
+    __typename?: "Collection";
+    
+    id: string;
+    
+    name: string;
+  }
+
+  export type Children = {
+    __typename?: "Collection";
+    
+    id: string;
+    
+    name: string;
   }
 }
 

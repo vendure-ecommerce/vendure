@@ -101,7 +101,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
             .mapSingle(data => data.taxCategories);
-        this.activeTab$ = this.route.queryParamMap.pipe(map(qpm => qpm.get('tab') as any));
+        this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
         // FacetValues are provided initially by the nested array of the
         // Product entity, but once a fetch to get all Facets is made (as when
@@ -128,10 +128,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     navigateToTab(tabName: TabName) {
-        this.router.navigate(['./'], {
-            queryParams: { tab: tabName },
+        this.router.navigate(['./', { tab: tabName }], {
             relativeTo: this.route,
-            queryParamsHandling: 'merge',
         });
     }
 
