@@ -38,8 +38,9 @@ export async function populate(
     await clearAllTables(config.dbConnectionOptions, logging);
     const app = await bootstrapFn(config);
 
-    await populateInitialData(app, options.initialDataPath);
+    await populateInitialData(app, options.initialDataPath, logging);
     await populateProducts(app, options.productsCsvPath, logging);
+    await populateCollections(app, options.initialDataPath, logging);
 
     const defaultChannelToken = await getDefaultChannelToken(logging);
     const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.adminApiPath}`);
@@ -52,12 +53,32 @@ export async function populate(
     return app;
 }
 
-async function populateInitialData(app: INestApplication, initialDataPath: string) {
+async function populateInitialData(app: INestApplication, initialDataPath: string, logging: boolean) {
     const { Populator } = await import('../src/data-import/providers/populator/populator');
     const { initialData } = await import(initialDataPath);
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData);
+        if (logging) {
+            console.log(`\nPopulated initial data`);
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+async function populateCollections(app: INestApplication, initialDataPath: string, logging: boolean) {
+    const { Populator } = await import('../src/data-import/providers/populator/populator');
+    const { initialData } = await import(initialDataPath);
+    if (!initialData.collections.length) {
+        return;
+    }
+    const populator = app.get(Populator);
+    try {
+        await populator.populateCollections(initialData);
+        if (logging) {
+            console.log(`\nCreated ${initialData.collections.length} Collections`);
+        }
     } catch (err) {
         console.error(err.message);
     }

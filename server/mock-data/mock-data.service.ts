@@ -102,15 +102,10 @@ export class MockDataService {
                     customerId: customer.id,
                 };
 
-                await this.client.query(query2, variables2).then(
-                    data => {
-                        this.log(`Created Customer ${i + 1}:`, data);
-                        return data as Customer;
-                    },
-                    err => this.log(err),
-                );
+                await this.client.query(query2, variables2).catch(err => this.log(err));
             }
         }
+        this.log(`Created ${count} Customers`);
     }
 
     private log(...args: any[]) {

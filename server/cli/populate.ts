@@ -14,6 +14,7 @@ export async function populate() {
         const initialData = require('./assets/initial-data.json');
         await populateInitialData(app, initialData);
         await populateProducts(app, initialData);
+        await populateCollections(app, initialData);
         logColored('\nDone!');
         await app.close();
         process.exit(0);
@@ -91,6 +92,15 @@ async function populateInitialData(app: INestApplication, initialData: any) {
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData);
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+async function populateCollections(app: INestApplication, initialData: any) {
+    const populator = app.get(Populator);
+    try {
+        await populator.populateCollections(initialData);
     } catch (err) {
         console.error(err.message);
     }

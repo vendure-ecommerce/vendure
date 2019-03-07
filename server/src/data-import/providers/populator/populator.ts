@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 import { ConfigArgType, LanguageCode } from '../../../../../shared/generated-types';
 import { normalizeString } from '../../../../../shared/normalize-string';
+import { notNullOrUndefined } from '../../../../../shared/shared-utils';
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
-import { TaxCategory } from '../../../entity';
+import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';
+import { Collection, TaxCategory } from '../../../entity';
 import { Zone } from '../../../entity/zone/zone.entity';
-import { ShippingMethodService } from '../../../service';
+import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
@@ -27,6 +29,7 @@ export interface InitialData {
     countries: CountryData[];
     taxRates: Array<{ name: string; percentage: number }>;
     shippingMethods: Array<{ name: string; price: number }>;
+    collections: Array<{ name: string; facetNames: string[]; parentName?: string }>;
 }
 
 /**
@@ -41,9 +44,65 @@ export class Populator {
         private taxRateService: TaxRateService,
         private taxCategoryService: TaxCategoryService,
         private shippingMethodService: ShippingMethodService,
+        private collectionService: CollectionService,
+        private facetValueService: FacetValueService,
     ) {}
 
+    /**
+     * Should be run *before* populating the products, so that there are TaxRates by which
+     * product prices can be set.
+     */
     async populateInitialData(data: InitialData) {
+        const { channel, ctx } = await this.createRequestContext(data);
+
+        const zoneMap = await this.populateCountries(ctx, data.countries);
+        await this.populateTaxRates(ctx, data.taxRates, zoneMap);
+        await this.populateShippingMethods(ctx, data.shippingMethods);
+        await this.setChannelDefaults(zoneMap, data, channel);
+    }
+
+    /**
+     * Should be run *after* the products have been populated, otherwise the expected FacetValues will not
+     * yet exist.
+     */
+    async populateCollections(data: InitialData) {
+        const { ctx } = await this.createRequestContext(data);
+
+        const allFacetValues = await this.facetValueService.findAll(ctx.languageCode);
+        const collectionMap = new Map<string, Collection>();
+        for (const collectionDef of data.collections) {
+            const facetValueIds = collectionDef.facetNames
+                .map(name => allFacetValues.find(fv => fv.name === name))
+                .filter(notNullOrUndefined)
+                .map(fv => fv.id);
+            const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
+            const parentId = parent ? parent.id.toString() : undefined;
+            const collection = await this.collectionService.create(ctx, {
+                translations: [
+                    {
+                        languageCode: ctx.languageCode,
+                        name: collectionDef.name,
+                    },
+                ],
+                parentId,
+                filters: [
+                    {
+                        code: facetValueCollectionFilter.code,
+                        arguments: [
+                            {
+                                name: 'facetValueIds',
+                                type: ConfigArgType.FACET_VALUE_IDS,
+                                value: JSON.stringify(facetValueIds),
+                            },
+                        ],
+                    },
+                ],
+            });
+            collectionMap.set(collectionDef.name, collection);
+        }
+    }
+
+    private async createRequestContext(data: InitialData) {
         const channel = await this.channelService.getDefaultChannel();
         const ctx = new RequestContext({
             isAuthorized: true,
@@ -51,11 +110,7 @@ export class Populator {
             channel,
             languageCode: data.defaultLanguage,
         });
-
-        const zoneMap = await this.populateCountries(ctx, data.countries);
-        await this.populateTaxRates(ctx, data.taxRates, zoneMap);
-        await this.populateShippingMethods(ctx, data.shippingMethods);
-        await this.setChannelDefaults(zoneMap, data, channel);
+        return { channel, ctx };
     }
 
     private async setChannelDefaults(zoneMap, data: InitialData, channel) {

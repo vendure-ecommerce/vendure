@@ -10,6 +10,15 @@ export const initialData: InitialData = {
         { name: 'Zero Tax', percentage: 0 },
     ],
     shippingMethods: [{ name: 'Standard Shipping', price: 500 }, { name: 'Express Shipping', price: 1000 }],
+    collections: [
+        { name: 'Electronics', facetNames: ['electronics'] },
+        { name: 'Computers', facetNames: ['computers'], parentName: 'Electronics' },
+        { name: 'Camera & Photo', facetNames: ['photo'], parentName: 'Electronics' },
+        { name: 'Home & Garden', facetNames: ['home & garden'] },
+        { name: 'Furniture', facetNames: ['furniture'], parentName: 'Home & Garden' },
+        { name: 'Plants', facetNames: ['plants'], parentName: 'Home & Garden' },
+        { name: 'Sports Equipment', facetNames: ['sports equipment'] },
+    ],
     countries: [
         { name: 'Afghanistan', code: 'AF', zone: 'Asia' },
         { name: 'Åland Islands', code: 'AX', zone: 'Europe' },

@@ -61,25 +61,6 @@ export class FacetValueService {
         }
     }
 
-    async findByCategoryIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
-        if (ids.length === 0) {
-            return [];
-        }
-        const facetValues = await this.connection
-            .getRepository(FacetValue)
-            .createQueryBuilder('facetValue')
-            .leftJoinAndSelect(
-                'collection_facet_values_facet_value',
-                'joinTable',
-                'joinTable.facetValueId = facetValue.id',
-            )
-            .where('joinTable.collectionId IN (:...ids)', { ids })
-            .getMany();
-        return this.findByIds(facetValues.map(v => v.id)).then(values =>
-            values.map(value => translateDeep(value, ctx.languageCode)),
-        );
-    }
-
     async create(
         facet: Facet,
         input: CreateFacetValueInput | CreateFacetValueWithFacetInput,
