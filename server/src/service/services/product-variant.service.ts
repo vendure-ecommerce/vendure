@@ -101,7 +101,7 @@ export class ProductVariantService {
                 channelId: ctx.channelId,
             })
             .leftJoin('productvariant.collections', 'collection')
-            .where('collection.id = :collectionId', { collectionId })
+            .andWhere('collection.id = :collectionId', { collectionId })
             .getManyAndCount()
             .then(async ([variants, totalItems]) => {
                 const items = variants.map(variant => {
