@@ -15,14 +15,22 @@
 
     <div class="collection-contents" [class.expanded]="activeCollectionId$ | async">
         <div class="contents-header">
-            <div class="collection-title">
-                {{ activeCollectionTitle$ | async }} ({{
-                    'common.results-count' | translate: { count: contentsTotalItems$ | async }
-                }})
+            <div class="header-title-row">
+                <div class="collection-title">
+                    {{ activeCollectionTitle$ | async }} ({{
+                        'common.results-count' | translate: { count: contentsTotalItems$ | async }
+                    }})
+                </div>
+                <button type="button" class="close-button" (click)="closeContents()">
+                    <clr-icon shape="close"></clr-icon>
+                </button>
             </div>
-            <button type="button" class="close-button" (click)="closeContents()">
-                <clr-icon shape="close"></clr-icon>
-            </button>
+            <input
+                type="text"
+                [placeholder]="'catalog.filter-by-name' | translate"
+                class="clr-input"
+                [formControl]="filterTermControl"
+            />
         </div>
         <vdr-data-table
             [items]="contents$ | async"

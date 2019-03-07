@@ -31,9 +31,6 @@
         }
 
         .contents-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             background-color: $color-grey-1;
             position: sticky;
             top: 0;
@@ -41,8 +38,10 @@
             z-index: 1;
             border-bottom: 1px solid $color-grey-3;
 
-            .collection-title {
-
+            .header-title-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
 
             .close-button {
@@ -50,6 +49,10 @@
                 background: none;
                 border: none;
                 cursor: pointer;
+            }
+
+            .clr-input {
+                width: 100%;
             }
         }
         ::ng-deep table {

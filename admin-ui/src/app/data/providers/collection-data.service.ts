@@ -1,6 +1,7 @@
 import { from } from 'rxjs';
 import { bufferCount, concatMap } from 'rxjs/operators';
 import {
+    CollectionFilterParameter,
     CreateCollection,
     CreateCollectionInput,
     GetCollection,
@@ -97,7 +98,10 @@ export class CollectionDataService {
         );
     }
 
-    getCollectionContents(id: string, take: number = 10, skip: number = 0) {
+    getCollectionContents(id: string, take: number = 10, skip: number = 0, filterTerm?: string) {
+        const filter = filterTerm
+            ? ({ name: { contains: filterTerm } } as CollectionFilterParameter)
+            : undefined;
         return this.baseDataService.query<GetCollectionContents.Query, GetCollectionContents.Variables>(
             GET_COLLECTION_CONTENTS,
             {
@@ -105,6 +109,7 @@ export class CollectionDataService {
                 options: {
                     skip,
                     take,
+                    filter,
                 },
             },
         );

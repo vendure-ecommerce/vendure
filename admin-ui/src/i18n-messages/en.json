@@ -41,6 +41,7 @@
     "facet": "Facet",
     "facet-values": "Facet values",
     "filter-by-group-name": "Filter by group name",
+    "filter-by-name": "Filter by name",
     "filters": "Filters",
     "generate-product-variants": "Generate product variants",
     "generate-variants-default-only": "This product does not have options",

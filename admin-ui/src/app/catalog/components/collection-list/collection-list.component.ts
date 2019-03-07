@@ -1,7 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    map,
+    startWith,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 import { GetCollectionContents, GetCollectionList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
@@ -25,6 +34,7 @@ export class CollectionListComponent
     contentsCurrentPage$: Observable<number>;
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
+    filterTermControl = new FormControl('');
 
     constructor(
         private dataService: DataService,
@@ -59,18 +69,25 @@ export class CollectionListComponent
             distinctUntilChanged(),
         );
 
+        const filterTerm$ = this.filterTermControl.valueChanges.pipe(
+            debounceTime(250),
+            tap(() => this.setContentsPageNumber(1)),
+            startWith(''),
+        );
+
         const collection$ = combineLatest(
             this.activeCollectionId$,
             this.contentsCurrentPage$,
             this.contentsItemsPerPage$,
+            filterTerm$,
         ).pipe(
             takeUntil(this.destroy$),
-            switchMap(([id, currentPage, itemsPerPage]) => {
+            switchMap(([id, currentPage, itemsPerPage, filterTerm]) => {
                 if (id) {
                     const take = itemsPerPage;
                     const skip = (currentPage - 1) * itemsPerPage;
                     return this.dataService.collection
-                        .getCollectionContents(id, take, skip)
+                        .getCollectionContents(id, take, skip, filterTerm)
                         .mapSingle(data => data.collection);
                 } else {
                     return of(null);
