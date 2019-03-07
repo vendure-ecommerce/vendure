@@ -13,7 +13,7 @@
  *
  * Learn more in https://angular.io/docs/ts/latest/guide/browser-support.html
  */
-
+// tslint:disable:ordered-imports
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
@@ -74,8 +74,8 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
-
 import '@clr/icons';
+import '@clr/icons/shapes/chart-shapes';
 import '@clr/icons/shapes/commerce-shapes';
 import '@clr/icons/shapes/essential-shapes';
 import '@clr/icons/shapes/media-shapes';

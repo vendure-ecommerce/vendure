@@ -1,0 +1,14 @@
+@import "variables";
+
+.placeholder {
+    color: $color-grey-3;
+    text-align: center;
+    .version {
+        font-size: 3em;
+        margin: 24px;
+        line-height: 1em;
+    }
+    ::ng-deep .clr-i-outline {
+        fill: $color-grey-2;
+    }
+}

@@ -1,3 +1,5 @@
+@import "variables";
+
 .login-wrapper {
     background-image: url("/assets/dark-triangles.png");
     background-repeat: repeat;
@@ -7,4 +9,12 @@
 
 .title {
     text-align: center;
+}
+
+.version {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    color: $color-grey-3;
 }

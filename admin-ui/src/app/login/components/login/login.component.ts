@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/providers/auth/auth.service';
 import { AUTH_REDIRECT_PARAM } from '../../../data/providers/interceptor';
 
@@ -13,6 +14,7 @@ export class LoginComponent {
     username = '';
     password = '';
     rememberMe = false;
+    version = environment.version;
 
     constructor(private authService: AuthService, private router: Router) {}
 
