@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
@@ -21,6 +28,7 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
 @Component({
     selector: 'vdr-collection-detail',
@@ -36,6 +44,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
+    @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
         router: Router,
@@ -166,6 +175,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Collection',
                     });
+                    this.contentsComponent.refresh();
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {

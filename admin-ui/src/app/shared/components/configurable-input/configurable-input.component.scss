@@ -5,7 +5,9 @@
 
 .operation-inputs {
 
-    .arg-row {
+    padding-top: 0;
+
+    .arg-row:not(:last-child) {
         margin-bottom: 24px;
     }
 

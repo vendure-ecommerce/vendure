@@ -94,5 +94,16 @@
                 </clr-dropdown>
             </div>
         </div>
+        <div class="clr-col">
+            <vdr-collection-contents [collectionId]="id" #collectionContents>
+                <ng-template let-count>
+                    <div class="contents-title">
+                        {{ 'catalog.collection-contents' | translate }} ({{
+                            'common.results-count' | translate: { count: count }
+                        }})
+                    </div>
+                </ng-template>
+            </vdr-collection-contents>
+        </div>
     </div>
 </form>

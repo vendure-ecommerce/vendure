@@ -41,6 +41,7 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     contentsCurrentPage$: Observable<number>;
     filterTermControl = new FormControl('');
     private collectionIdChange$ = new BehaviorSubject<string>('');
+    private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 
     constructor(private route: ActivatedRoute, private router: Router, private dataService: DataService) {}
@@ -71,6 +72,7 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
             this.contentsCurrentPage$,
             this.contentsItemsPerPage$,
             filterTerm$,
+            this.refresh$,
         ).pipe(
             takeUntil(this.destroy$),
             switchMap(([id, currentPage, itemsPerPage, filterTerm]) => {
@@ -109,6 +111,10 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
 
     setContentsItemsPerPage(perPage: number) {
         this.setParam('contentsPerPage', perPage);
+    }
+
+    refresh() {
+        this.refresh$.next(true);
     }
 
     private setParam(key: string, value: any) {
