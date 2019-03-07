@@ -1,0 +1,26 @@
+@import "variables";
+
+.contents-header {
+    background-color: $color-grey-1;
+    position: sticky;
+    top: 0;
+    padding: 6px;
+    z-index: 1;
+    border-bottom: 1px solid $color-grey-3;
+
+    .header-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .clr-input {
+        width: 100%;
+    }
+}
+
+:host {
+    ::ng-deep table {
+        margin-top: -1px;
+    }
+}

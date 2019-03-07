@@ -1,0 +1,32 @@
+<div class="contents-header">
+    <div class="header-title-row">
+        <ng-container
+            *ngTemplateOutlet="headerTemplate; context: { $implicit: contentsTotalItems$ | async }"
+        ></ng-container>
+    </div>
+    <input
+        type="text"
+        [placeholder]="'catalog.filter-by-name' | translate"
+        class="clr-input"
+        [formControl]="filterTermControl"
+    />
+</div>
+<vdr-data-table
+    [items]="contents$ | async"
+    [itemsPerPage]="contentsItemsPerPage$ | async"
+    [totalItems]="contentsTotalItems$ | async"
+    [currentPage]="contentsCurrentPage$ | async"
+    (pageChange)="setContentsPageNumber($event)"
+    (itemsPerPageChange)="setContentsItemsPerPage($event)"
+>
+    <ng-template let-variant="item">
+        <td class="left align-middle">{{ variant.name }}</td>
+        <td class="right align-middle">
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['../products', variant.productId, { tab: 'variants' }]"
+            ></vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>
