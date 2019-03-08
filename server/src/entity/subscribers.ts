@@ -26,7 +26,7 @@ export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
                 for (const property of prototype[CALCULATED_PROPERTIES]) {
                     const getterDescriptor = Object.getOwnPropertyDescriptor(prototype, property);
                     const getFn = getterDescriptor && getterDescriptor.get;
-                    if (getFn) {
+                    if (getFn && !entity.hasOwnProperty(property)) {
                         const boundGetFn = getFn.bind(entity);
                         Object.defineProperties(entity, {
                             [property]: {

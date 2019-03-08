@@ -25,6 +25,7 @@ import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
+import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -50,9 +51,14 @@ export class CollectionService implements OnModuleInit {
 
     onModuleInit() {
         this.eventBus.subscribe(CatalogModificationEvent, async event => {
-            const collections = await this.connection.getRepository(Collection).find();
+            const collections = await this.connection.getRepository(Collection).find({
+                relations: ['productVariants'],
+            });
             for (const collection of collections) {
-                await this.applyCollectionFilters(collection);
+                const affectedVariantIds = await this.applyCollectionFilters(collection);
+                this.eventBus.publish(
+                    new CollectionModificationEvent(event.ctx, collection, affectedVariantIds),
+                );
             }
         });
     }
@@ -167,7 +173,8 @@ export class CollectionService implements OnModuleInit {
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
-        await this.applyCollectionFilters(collection);
+        const affectedVariantIds = await this.applyCollectionFilters(collection);
+        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -183,9 +190,11 @@ export class CollectionService implements OnModuleInit {
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
+        let affectedVariantIds: ID[] = [];
         if (input.filters) {
-            await this.applyCollectionFilters(collection);
+            affectedVariantIds = await this.applyCollectionFilters(collection);
         }
+        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -256,18 +265,47 @@ export class CollectionService implements OnModuleInit {
         return filters;
     }
 
-    private async applyCollectionFilters(collection: Collection) {
+    /**
+     * Applies the CollectionFilters and returns an array of all affected ProductVariant ids.
+     */
+    private async applyCollectionFilters(collection: Collection): Promise<ID[]> {
         const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
             ancestors.reduce(
                 (filters, c) => [...filters, ...(c.filters || [])],
                 [] as ConfigurableOperation[],
             ),
         );
+        const preIds = await this.getCollectionProductVariantIds(collection);
         collection.productVariants = await this.getFilteredProductVariants([
             ...ancestorFilters,
             ...(collection.filters || []),
         ]);
         await this.connection.getRepository(Collection).save(collection);
+        const postIds = collection.productVariants.map(v => v.id);
+
+        const preIdsSet = new Set(preIds);
+        const postIdsSet = new Set(postIds);
+        const difference = [
+            ...preIds.filter(id => !postIdsSet.has(id)),
+            ...postIds.filter(id => !preIdsSet.has(id)),
+        ];
+        return difference;
+    }
+
+    /**
+     * Returns the IDs of the Collection's ProductVariants.
+     */
+    private async getCollectionProductVariantIds(collection: Collection): Promise<ID[]> {
+        if (collection.productVariants) {
+            return collection.productVariants.map(v => v.id);
+        } else {
+            const productVariants = await this.connection
+                .getRepository(ProductVariant)
+                .createQueryBuilder('variant')
+                .innerJoin('variant.collections', 'collection', 'collection.id = :id', { id: collection.id })
+                .getMany();
+            return productVariants.map(v => v.id);
+        }
     }
 
     /**

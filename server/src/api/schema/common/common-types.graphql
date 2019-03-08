@@ -126,6 +126,7 @@ input DateOperators {
 input SearchInput {
     term: String
     facetIds: [String!]
+    collectionId: String
     groupByProduct: Boolean
     take: Int
     skip: Int

@@ -1,8 +1,20 @@
 import path from 'path';
 
-import { SEARCH_PRODUCTS } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { SearchProducts } from '../../shared/generated-types';
+import {
+    CREATE_COLLECTION,
+    UPDATE_COLLECTION,
+} from '../../admin-ui/src/app/data/definitions/collection-definitions';
+import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../admin-ui/src/app/data/definitions/product-definitions';
+import {
+    ConfigArgType,
+    CreateCollection,
+    LanguageCode,
+    SearchProducts,
+    UpdateCollection,
+    UpdateProduct,
+} from '../../shared/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
+import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -81,15 +93,19 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    describe('admin api', () => {
-        it('group by product', () => testGroupByProduct(adminClient));
-
-        it('no grouping', () => testNoGrouping(adminClient));
-
-        it('matches search term', () => testMatchSearchTerm(adminClient));
-
-        it('matches by facetId', () => testMatchFacetIds(adminClient));
-    });
+    async function testMatchCollectionId(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            input: {
+                collectionId: 'T_2',
+                groupByProduct: true,
+            },
+        });
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Spiky Cactus',
+            'Orchid',
+            'Bonsai Tree',
+        ]);
+    }
 
     describe('shop api', () => {
         it('group by product', () => testGroupByProduct(shopClient));
@@ -99,5 +115,132 @@ describe('Default search plugin', () => {
         it('matches search term', () => testMatchSearchTerm(shopClient));
 
         it('matches by facetId', () => testMatchFacetIds(shopClient));
+
+        it('matches by collectionId', () => testMatchCollectionId(shopClient));
+    });
+
+    describe('admin api', () => {
+        it('group by product', () => testGroupByProduct(adminClient));
+
+        it('no grouping', () => testNoGrouping(adminClient));
+
+        it('matches search term', () => testMatchSearchTerm(adminClient));
+
+        it('matches by facetId', () => testMatchFacetIds(adminClient));
+
+        it('matches by collectionId', () => testMatchCollectionId(adminClient));
+
+        it('updates index when a Product is changed', async () => {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                input: {
+                    id: 'T_1',
+                    facetValueIds: [],
+                },
+            });
+
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        facetIds: ['T_2'],
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toEqual([
+                'Curvy Monitor',
+                'Gaming PC',
+                'Hard Drive',
+                'Clacky Keyboard',
+                'USB Cable',
+            ]);
+        });
+
+        it('updates index when a Collection is changed', async () => {
+            await adminClient.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
+                UPDATE_COLLECTION,
+                {
+                    input: {
+                        id: 'T_2',
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["T_4"]`,
+                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+            );
+
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        collectionId: 'T_2',
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toEqual([
+                'Road Bike',
+                'Skipping Rope',
+                'Boxing Gloves',
+                'Tent',
+                'Cruiser Skateboard',
+                'Football',
+                'Running Shoe',
+            ]);
+        });
+
+        it('updates index when a Collection created', async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Photo',
+                            description: '',
+                        },
+                    ],
+                    filters: [
+                        {
+                            code: facetValueCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: `["T_3"]`,
+                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        collectionId: createCollection.id,
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toEqual([
+                'Instant Camera',
+                'Camera Lens',
+                'Tripod',
+                'SLR Camera',
+            ]);
+        });
     });
 });

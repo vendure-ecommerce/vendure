@@ -52,6 +52,9 @@ export class SearchIndexItem {
     @Column('simple-array')
     facetValueIds: string[];
 
+    @Column('simple-array')
+    collectionIds: string[];
+
     @Column()
     productPreview: string;
 

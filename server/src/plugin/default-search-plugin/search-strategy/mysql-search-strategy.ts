@@ -71,7 +71,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds } = input;
+        const { term, facetIds, collectionId } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -99,6 +99,9 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 const placeholder = '_' + id;
                 qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
             }
+        }
+        if (collectionId) {
+            qb.andWhere(`FIND_IN_SET (:collectionId, collectionIds)`, { collectionId });
         }
         if (input.groupByProduct === true) {
             qb.groupBy('productId');

@@ -13,6 +13,7 @@ import { Translated } from '../../common/types/locale-types';
 import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
+import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { FacetValueService } from '../../service/services/facet-value.service';
 
@@ -39,6 +40,7 @@ export class FulltextSearchService {
         'featuredAsset',
         'facetValues',
         'facetValues.facet',
+        'collections',
     ];
 
     constructor(
@@ -48,24 +50,14 @@ export class FulltextSearchService {
     ) {
         eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return this.update(event.ctx, event.entity);
+                return this.updateProductOrVariant(event.ctx, event.entity);
             }
         });
-        switch (this.connection.options.type) {
-            case 'mysql':
-            case 'mariadb':
-                this.searchStrategy = new MysqlSearchStrategy(connection);
-                break;
-            case 'sqlite':
-            case 'sqljs':
-                this.searchStrategy = new SqliteSearchStrategy(connection);
-                break;
-            case 'postgres':
-                this.searchStrategy = new PostgresSearchStrategy(connection);
-                break;
-            default:
-                throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
-        }
+        eventBus.subscribe(CollectionModificationEvent, event => {
+            return this.updateVariantsById(event.ctx, event.productVariantIds);
+        });
+
+        this.setSearchStrategy();
     }
 
     /**
@@ -111,7 +103,7 @@ export class FulltextSearchService {
     /**
      * Updates the search index only for the affected entities.
      */
-    async update(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
+    async updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
         let updatedVariants: ProductVariant[] = [];
         let removedVariantIds: ID[] = [];
         if (updatedEntity instanceof Product) {
@@ -145,6 +137,15 @@ export class FulltextSearchService {
         }
     }
 
+    async updateVariantsById(ctx: RequestContext, ids: ID[]) {
+        if (ids.length) {
+            const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
+                relations: this.variantRelations,
+            });
+            await this.saveSearchIndexItems(ctx.languageCode, updatedVariants);
+        }
+    }
+
     /**
      * Checks to see if the index is empty, and if so triggers a re-index operation.
      */
@@ -156,6 +157,27 @@ export class FulltextSearchService {
         });
         if (indexSize === 0) {
             await this.reindex(languageCode);
+        }
+    }
+
+    /**
+     * Sets the SearchStrategy appropriate to th configured database type.
+     */
+    private setSearchStrategy() {
+        switch (this.connection.options.type) {
+            case 'mysql':
+            case 'mariadb':
+                this.searchStrategy = new MysqlSearchStrategy(this.connection);
+                break;
+            case 'sqlite':
+            case 'sqljs':
+                this.searchStrategy = new SqliteSearchStrategy(this.connection);
+                break;
+            case 'postgres':
+                this.searchStrategy = new PostgresSearchStrategy(this.connection);
+                break;
+            default:
+                throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
         }
     }
 
@@ -181,6 +203,7 @@ export class FulltextSearchService {
                         productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
                         facetIds: this.getFacetIds(v),
                         facetValueIds: this.getFacetValueIds(v),
+                        collectionIds: v.collections.map(c => c.id.toString()),
                     }),
             );
         await this.connection.getRepository(SearchIndexItem).save(items);

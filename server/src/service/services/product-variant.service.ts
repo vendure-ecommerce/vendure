@@ -93,11 +93,9 @@ export class ProductVariantService {
         collectionId: ID,
         options: ListQueryOptions<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
-        const relations = ['product', 'product.featuredAsset', 'taxCategory'];
-
         return this.listQueryBuilder
             .build(ProductVariant, options, {
-                relations,
+                relations: ['taxCategory'],
                 channelId: ctx.channelId,
             })
             .leftJoin('productvariant.collections', 'collection')
@@ -106,11 +104,7 @@ export class ProductVariantService {
             .then(async ([variants, totalItems]) => {
                 const items = variants.map(variant => {
                     const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
-                    return translateDeep(variantWithPrices, ctx.languageCode, [
-                        'options',
-                        'facetValues',
-                        ['facetValues', 'facet'],
-                    ]);
+                    return translateDeep(variantWithPrices, ctx.languageCode);
                 });
                 return {
                     items,

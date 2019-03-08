@@ -22,5 +22,6 @@ type SearchResult {
     description: String!
     facetIds: [String!]!
     facetValueIds: [String!]!
+    collectionIds: [String!]!
     score: Float!
 }

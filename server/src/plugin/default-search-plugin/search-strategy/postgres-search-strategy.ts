@@ -79,7 +79,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds } = input;
+        const { term, facetIds, collectionId } = input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term ? term.trim().replace(/\s+/, ' & ') : '';
 
@@ -116,6 +116,9 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 });
             }
         }
+        if (collectionId) {
+            qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
+        }
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
         }
@@ -140,6 +143,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             'description',
             'facetIds',
             'facetValueIds',
+            'collectionIds',
             'productPreview',
             'productVariantPreview',
         ]
@@ -147,7 +151,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
                 if (groupByProduct && col !== 'productId') {
-                    if (col === 'facetIds' || col === 'facetValueIds') {
+                    if (col === 'facetIds' || col === 'facetValueIds' || col === 'collectionIds') {
                         return `string_agg(${qualifiedName}, ',') as "${alias}"`;
                     } else {
                         return `MIN(${qualifiedName}) as "${alias}"`;

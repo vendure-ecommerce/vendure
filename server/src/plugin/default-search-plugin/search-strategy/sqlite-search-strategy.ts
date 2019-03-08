@@ -72,7 +72,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds } = input;
+        const { term, facetIds, collectionId } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -103,6 +103,11 @@ export class SqliteSearchStrategy implements SearchStrategy {
                     [placeholder]: `%,${id},%`,
                 });
             }
+        }
+        if (collectionId) {
+            qb.andWhere(`(',' || collectionIds || ',') LIKE :collectionId`, {
+                collectionId: `%,${collectionId},%`,
+            });
         }
         if (input.groupByProduct === true) {
             qb.groupBy('productId');

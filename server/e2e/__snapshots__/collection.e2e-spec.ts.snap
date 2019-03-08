@@ -46,7 +46,7 @@ Object {
       "description": "Filter by FacetValues",
     },
   ],
-  "id": "T_2",
+  "id": "T_3",
   "languageCode": "en",
   "name": "Electronics",
   "parent": Object {
@@ -56,7 +56,7 @@ Object {
   "translations": Array [
     Object {
       "description": "",
-      "id": "T_1",
+      "id": "T_3",
       "languageCode": "en",
       "name": "Electronics",
     },
@@ -101,17 +101,17 @@ Object {
       "description": "Filter by FacetValues",
     },
   ],
-  "id": "T_4",
+  "id": "T_5",
   "languageCode": "en",
   "name": "Pear",
   "parent": Object {
-    "id": "T_3",
+    "id": "T_4",
     "name": "Computers",
   },
   "translations": Array [
     Object {
       "description": "Apple stuff ",
-      "id": "T_4",
+      "id": "T_5",
       "languageCode": "en",
       "name": "Pear",
     },

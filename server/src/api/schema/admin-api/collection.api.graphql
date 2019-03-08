@@ -45,5 +45,5 @@ input UpdateCollectionInput {
     parentId: ID
     assetIds: [ID!]
     filters: [ConfigurableOperationInput!]
-    translations: [CollectionTranslationInput!]!
+    translations: [CollectionTranslationInput!]
 }

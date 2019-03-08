@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-07T11:46:05+01:00
+// Generated in 2019-03-08T12:05:06+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -232,6 +232,8 @@ export interface SearchInput {
     term?: Maybe<string>;
 
     facetIds?: Maybe<string[]>;
+
+    collectionId?: Maybe<string>;
 
     groupByProduct?: Maybe<boolean>;
 
@@ -1551,6 +1553,8 @@ export interface SearchResult {
     facetIds: string[];
 
     facetValueIds: string[];
+
+    collectionIds: string[];
 
     score: number;
 }
