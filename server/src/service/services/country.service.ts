@@ -88,7 +88,7 @@ export class CountryService {
         const addressesUsingCountry = await this.connection
             .getRepository(Address)
             .createQueryBuilder('address')
-            .where('address.countryId = :id', { id })
+            .where('address.country = :id', { id })
             .getCount();
 
         if (0 < addressesUsingCountry) {

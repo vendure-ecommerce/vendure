@@ -67,7 +67,7 @@ export class CustomerService {
             .createQueryBuilder('address')
             .leftJoinAndSelect('address.country', 'country')
             .leftJoinAndSelect('country.translations', 'countryTranslation')
-            .where('address.customerId = :id', { id: customerId })
+            .where('address.customer = :id', { id: customerId })
             .getMany()
             .then(addresses => {
                 addresses.forEach(address => {

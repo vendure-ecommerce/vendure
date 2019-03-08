@@ -78,7 +78,7 @@ export class ZoneService implements OnModuleInit {
         const taxRatesUsingZone = await this.connection
             .getRepository(TaxRate)
             .createQueryBuilder('taxRate')
-            .where('taxRate.zoneId = :id', { id })
+            .where('taxRate.zone = :id', { id })
             .getMany();
 
         if (0 < taxRatesUsingZone.length) {
