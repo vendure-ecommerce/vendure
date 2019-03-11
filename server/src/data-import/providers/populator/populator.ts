@@ -11,6 +11,7 @@ import { Zone } from '../../../entity/zone/zone.entity';
 import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
+import { SearchService } from '../../../service/services/search.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { ZoneService } from '../../../service/services/zone.service';
@@ -46,6 +47,7 @@ export class Populator {
         private shippingMethodService: ShippingMethodService,
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
+        private searchService: SearchService,
     ) {}
 
     /**
@@ -101,6 +103,10 @@ export class Populator {
             });
             collectionMap.set(collectionDef.name, collection);
         }
+        // Wait for the created collection operations to complete before running
+        // the reindex of the search index.
+        await new Promise(resolve => setTimeout(resolve, 50));
+        await this.searchService.reindex(ctx.languageCode);
     }
 
     private async createRequestContext(data: InitialData) {

@@ -12,12 +12,11 @@ import { InternalServerError } from '../../common/error/errors';
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
-import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { FacetValueService } from '../../service/services/facet-value.service';
+import { SearchService } from '../../service/services/search.service';
 
-import { DefaultSearceReindexResonse } from './default-search-plugin';
+import { DefaultSearchReindexResponse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
 import { PostgresSearchStrategy } from './search-strategy/postgres-search-strategy';
@@ -29,7 +28,7 @@ import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
  * SearchStrategy implementations for db-specific code.
  */
 @Injectable()
-export class FulltextSearchService {
+export class FulltextSearchService implements SearchService {
     private searchStrategy: SearchStrategy;
     private readonly minTermLength = 2;
     private readonly variantRelations = [
@@ -48,15 +47,6 @@ export class FulltextSearchService {
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
     ) {
-        eventBus.subscribe(CatalogModificationEvent, event => {
-            if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return this.updateProductOrVariant(event.ctx, event.entity);
-            }
-        });
-        eventBus.subscribe(CollectionModificationEvent, event => {
-            return this.updateVariantsById(event.ctx, event.productVariantIds);
-        });
-
         this.setSearchStrategy();
     }
 
@@ -83,7 +73,7 @@ export class FulltextSearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(languageCode: LanguageCode): Promise<DefaultSearceReindexResonse> {
+    async reindex(languageCode: LanguageCode): Promise<DefaultSearchReindexResponse> {
         const timeStart = Date.now();
         const qb = await this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
@@ -143,20 +133,6 @@ export class FulltextSearchService {
                 relations: this.variantRelations,
             });
             await this.saveSearchIndexItems(ctx.languageCode, updatedVariants);
-        }
-    }
-
-    /**
-     * Checks to see if the index is empty, and if so triggers a re-index operation.
-     */
-    async checkIndex(languageCode: LanguageCode) {
-        const indexSize = await this.connection.getRepository(SearchIndexItem).count({
-            where: {
-                languageCode,
-            },
-        });
-        if (indexSize === 0) {
-            await this.reindex(languageCode);
         }
     }
 

@@ -10,7 +10,7 @@ import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/admin/
 import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity';
 
-import { DefaultSearceReindexResonse } from './default-search-plugin';
+import { DefaultSearchReindexResponse } from './default-search-plugin';
 import { FulltextSearchService } from './fulltext-search.service';
 
 @Resolver('SearchResponse')
@@ -60,7 +60,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindex(@Ctx() ctx: RequestContext): Promise<DefaultSearceReindexResonse> {
+    async reindex(@Ctx() ctx: RequestContext): Promise<DefaultSearchReindexResponse> {
         return this.fulltextSearchService.reindex(ctx.languageCode);
     }
 }
