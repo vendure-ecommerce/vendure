@@ -1,3 +1,4 @@
+import { Provider } from '@nestjs/common';
 import { DocumentNode } from 'graphql';
 
 import { Type } from '../../../../shared/shared-types';
@@ -88,9 +89,9 @@ export interface VendurePlugin {
 
     /**
      * @description
-     * The plugin may define custom providers (including GraphQL resolvers) which can then be injected via the Nest DI container.
+     * The plugin may define custom providers which can then be injected via the Nest DI container.
      */
-    defineProviders?(): Array<Type<any>>;
+    defineProviders?(): Provider[];
 
     /**
      * @description
