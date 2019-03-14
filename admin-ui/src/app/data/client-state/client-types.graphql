@@ -1,10 +1,10 @@
-type Query {
+extend type Query {
     networkStatus: NetworkStatus!
     userStatus: UserStatus!
     uiState: UiState!
 }
 
-type Mutation {
+extend type Mutation {
     requestStarted: Int!
     requestCompleted: Int!
     setAsLoggedIn(username: String!, loginTime: String!): UserStatus!

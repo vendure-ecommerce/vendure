@@ -1,0 +1,5 @@
+{
+    "schemaPath": "schema.json",
+    "excludes": ["server/**"]
+}
+
