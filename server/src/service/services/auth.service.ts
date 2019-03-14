@@ -48,7 +48,12 @@ export class AuthService {
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
-        await this.deleteSessionsByUser(user);
+        // TODO: this line is commented out so that the same user may be logged
+        // in more than once concurrently. At this time, it is needed in order
+        // for the online demo to work properly, but it may be desirable to keep it
+        // this way by design. See https://github.com/vendure-ecommerce/vendure/issues/53
+        // await this.deleteSessionsByUser(user);
+
         if (ctx.session && ctx.session.activeOrder) {
             await this.deleteSessionsByActiveOrder(ctx.session && ctx.session.activeOrder);
         }
