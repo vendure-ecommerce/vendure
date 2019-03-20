@@ -18,8 +18,4 @@ export class OmitTypenameLink extends ApolloLink {
             return forward ? forward(operation) : null;
         });
     }
-
-    private omitTypename(key: string, value: string): string | undefined {
-        return key === '__typename' ? undefined : value;
-    }
 }
