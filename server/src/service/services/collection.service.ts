@@ -3,12 +3,14 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 import {
+    CollectionBreadcrumb,
     ConfigurableOperation,
     CreateCollectionInput,
     MoveCollectionInput,
     UpdateCollectionInput,
 } from '../../../../shared/generated-types';
-import { ROOT_CATEGORY_NAME } from '../../../../shared/shared-constants';
+import { pick } from '../../../../shared/pick';
+import { ROOT_COLLECTION_NAME } from '../../../../shared/shared-constants';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
 import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { RequestContext } from '../../api/common/request-context';
@@ -101,6 +103,22 @@ export class CollectionService implements OnModuleInit {
 
     getAvailableFilters(): ConfigurableOperation[] {
         return this.availableFilters.map(configurableDefToOperation);
+    }
+
+    async getBreadcrumbs(
+        ctx: RequestContext,
+        collection: Collection,
+    ): Promise<Array<{ name: string; id: ID }>> {
+        const rootCollection = await this.getRootCollection(ctx);
+        if (idsAreEqual(collection.id, rootCollection.id)) {
+            return [pick(rootCollection, ['id', 'name'])];
+        }
+        const ancestors = await this.getAncestors(collection.id, ctx);
+        return [
+            pick(rootCollection, ['id', 'name']),
+            ...ancestors.map(pick(['id', 'name'])),
+            pick(collection, ['id', 'name']),
+        ];
     }
 
     /**
@@ -377,19 +395,20 @@ export class CollectionService implements OnModuleInit {
             .getRepository(Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.channels', 'channel')
+            .leftJoinAndSelect('collection.translations', 'translation')
             .where('collection.isRoot = :isRoot', { isRoot: true })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getOne();
 
         if (existingRoot) {
-            this.rootCategories[ctx.channel.code] = existingRoot;
+            this.rootCategories[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
             return existingRoot;
         }
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
             new CollectionTranslation({
                 languageCode: DEFAULT_LANGUAGE_CODE,
-                name: ROOT_CATEGORY_NAME,
+                name: ROOT_COLLECTION_NAME,
                 description: 'The root of the Collection tree.',
             }),
         );

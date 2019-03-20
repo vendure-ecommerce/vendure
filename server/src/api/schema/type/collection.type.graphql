@@ -4,6 +4,7 @@ type Collection implements Node {
     updatedAt: DateTime!
     languageCode: LanguageCode
     name: String!
+    breadcrumbs: [CollectionBreadcrumb!]!
     position: Int!
     description: String!
     featuredAsset: Asset
@@ -13,6 +14,11 @@ type Collection implements Node {
     filters: [ConfigurableOperation!]!
     translations: [CollectionTranslation!]!
     productVariants(options: ProductVariantListOptions): ProductVariantList!
+}
+
+type CollectionBreadcrumb {
+    id: ID!
+    name: String!
 }
 
 type CollectionTranslation {

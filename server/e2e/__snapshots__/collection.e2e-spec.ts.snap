@@ -51,7 +51,7 @@ Object {
   "name": "Electronics",
   "parent": Object {
     "id": "T_1",
-    "name": "__root_category__",
+    "name": "__root_collection__",
   },
   "translations": Array [
     Object {

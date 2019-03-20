@@ -30,7 +30,7 @@ import {
     UpdateProduct,
     UpdateProductVariants,
 } from '../../shared/generated-types';
-import { ROOT_CATEGORY_NAME } from '../../shared/shared-constants';
+import { ROOT_COLLECTION_NAME } from '../../shared/shared-constants';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -101,7 +101,7 @@ describe('Collection resolver', () => {
 
             electronicsCollection = result.createCollection;
             expect(electronicsCollection).toMatchSnapshot();
-            expect(electronicsCollection.parent.name).toBe(ROOT_CATEGORY_NAME);
+            expect(electronicsCollection.parent.name).toBe(ROOT_COLLECTION_NAME);
         });
 
         it('creates a nested category', async () => {
@@ -162,10 +162,37 @@ describe('Collection resolver', () => {
             id: computersCollection.id,
         });
         if (!result.collection) {
-            fail(`did not return the category`);
+            fail(`did not return the collection`);
             return;
         }
         expect(result.collection.id).toBe(computersCollection.id);
+    });
+
+    it('breadcrumbs', async () => {
+        const result = await client.query(GET_COLLECTION_BREADCRUMBS, {
+            id: pearCollection.id,
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.breadcrumbs).toEqual([
+            { id: 'T_1', name: ROOT_COLLECTION_NAME },
+            { id: electronicsCollection.id, name: electronicsCollection.name },
+            { id: computersCollection.id, name: computersCollection.name },
+            { id: pearCollection.id, name: pearCollection.name },
+        ]);
+    });
+
+    it('breadcrumbs for root collection', async () => {
+        const result = await client.query(GET_COLLECTION_BREADCRUMBS, {
+            id: 'T_1',
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.breadcrumbs).toEqual([{ id: 'T_1', name: ROOT_COLLECTION_NAME }]);
     });
 
     it('updateCollection', async () => {
@@ -185,7 +212,7 @@ describe('Collection resolver', () => {
     });
 
     describe('moveCollection', () => {
-        it('moves a category to a new parent', async () => {
+        it('moves a collection to a new parent', async () => {
             const result = await client.query<MoveCollection.Mutation, MoveCollection.Variables>(
                 MOVE_COLLECTION,
                 {
@@ -543,6 +570,17 @@ const CREATE_COLLECTION_SELECT_VARIANTS = gql`
                     name
                 }
                 totalItems
+            }
+        }
+    }
+`;
+
+const GET_COLLECTION_BREADCRUMBS = gql`
+    query GetCollectionBreadcrumbs($id: ID!) {
+        collection(id: $id) {
+            breadcrumbs {
+                id
+                name
             }
         }
     }

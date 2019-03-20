@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-08T12:05:07+01:00
+// Generated in 2019-03-20T14:52:48+01:00
 export type Maybe<T> = T | null;
 
 
@@ -4804,6 +4804,8 @@ export interface Collection extends Node {
   
   name: string;
   
+  breadcrumbs: CollectionBreadcrumb[];
+  
   position: number;
   
   description: string;
@@ -4823,6 +4825,14 @@ export interface Collection extends Node {
   productVariants: ProductVariantList;
   
   customFields?: Maybe<Json>;
+}
+
+
+export interface CollectionBreadcrumb {
+  
+  id: string;
+  
+  name: string;
 }
 
 
