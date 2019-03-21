@@ -12,6 +12,7 @@ type Product implements Node {
     optionGroups: [ProductOptionGroup!]!
     facetValues: [FacetValue!]!
     translations: [ProductTranslation!]!
+    collections: [Collection!]!
 }
 
 type ProductTranslation {

@@ -24,7 +24,7 @@ export const devConfig: VendureConfig = {
     adminApiPath: ADMIN_API_PATH,
     shopApiPath: SHOP_API_PATH,
     dbConnectionOptions: {
-        synchronize: true,
+        synchronize: false,
         logging: false,
 
         type: 'mysql',

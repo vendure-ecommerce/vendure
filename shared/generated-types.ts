@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-20T14:52:48+01:00
+// Generated in 2019-03-21T09:29:56+01:00
 export type Maybe<T> = T | null;
 
 
@@ -2067,7 +2067,7 @@ export namespace GetCollectionList {
     
     featuredAsset: Maybe<FeaturedAsset>;
     
-    parent: Parent;
+    parent: Maybe<Parent>;
   } 
 
   export type FeaturedAsset = Asset.Fragment
@@ -3615,7 +3615,7 @@ export namespace Collection {
     
     translations: Translations[];
     
-    parent: Parent;
+    parent: Maybe<Parent>;
     
     children: Maybe<Children[]>;
   }
@@ -4814,7 +4814,7 @@ export interface Collection extends Node {
   
   assets: Asset[];
   
-  parent: Collection;
+  parent?: Maybe<Collection>;
   
   children?: Maybe<Collection[]>;
   
@@ -5513,6 +5513,8 @@ export interface Product extends Node {
   facetValues: FacetValue[];
   
   translations: ProductTranslation[];
+  
+  collections: Collection[];
   
   customFields?: Maybe<Json>;
 }

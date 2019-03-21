@@ -101,7 +101,7 @@ describe('Collection resolver', () => {
 
             electronicsCollection = result.createCollection;
             expect(electronicsCollection).toMatchSnapshot();
-            expect(electronicsCollection.parent.name).toBe(ROOT_COLLECTION_NAME);
+            expect(electronicsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
         });
 
         it('creates a nested category', async () => {
@@ -127,7 +127,7 @@ describe('Collection resolver', () => {
                 },
             );
             computersCollection = result.createCollection;
-            expect(computersCollection.parent.name).toBe(electronicsCollection.name);
+            expect(computersCollection.parent!.name).toBe(electronicsCollection.name);
         });
 
         it('creates a 2nd level nested category', async () => {
@@ -153,7 +153,7 @@ describe('Collection resolver', () => {
                 },
             );
             pearCollection = result.createCollection;
-            expect(pearCollection.parent.name).toBe(computersCollection.name);
+            expect(pearCollection.parent!.name).toBe(computersCollection.name);
         });
     });
 
@@ -224,7 +224,7 @@ describe('Collection resolver', () => {
                 },
             );
 
-            expect(result.moveCollection.parent.id).toBe(electronicsCollection.id);
+            expect(result.moveCollection.parent!.id).toBe(electronicsCollection.id);
 
             const positions = await getChildrenOf(electronicsCollection.id);
             expect(positions.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
@@ -508,6 +508,17 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('Product collections property', () => {
+        it('returns all collections to which the Product belongs', async () => {
+            const result = await client.query(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+            expect(result.products.items[0].collections).toEqual([
+                { id: 'T_3', name: 'Electronics' },
+                { id: 'T_5', name: 'Pear' },
+                { id: 'T_7', name: 'Photo Pear' },
+            ]);
+        });
+    });
+
     function getFacetValueId(code: string): string {
         const match = facetValues.find(fv => fv.code === code);
         if (!match) {
@@ -581,6 +592,21 @@ const GET_COLLECTION_BREADCRUMBS = gql`
             breadcrumbs {
                 id
                 name
+            }
+        }
+    }
+`;
+
+const GET_COLLECTIONS_FOR_PRODUCTS = gql`
+    query GetCollectionsForProducts($term: String!) {
+        products(options: { filter: { name: { contains: $term } } }) {
+            items {
+                id
+                name
+                collections {
+                    id
+                    name
+                }
             }
         }
     }

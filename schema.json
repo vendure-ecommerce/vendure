@@ -6256,13 +6256,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Collection",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Collection",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -12947,6 +12943,30 @@
                   "ofType": {
                     "kind": "OBJECT",
                     "name": "ProductTranslation",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "collections",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Collection",
                     "ofType": null
                   }
                 }

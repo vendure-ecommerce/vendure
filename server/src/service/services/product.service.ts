@@ -26,6 +26,7 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
+import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
 import { ProductVariantService } from './product-variant.service';
 import { TaxRateService } from './tax-rate.service';
@@ -48,6 +49,7 @@ export class ProductService {
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
+        private collectionService: CollectionService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,

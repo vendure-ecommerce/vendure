@@ -9,7 +9,7 @@ type Collection implements Node {
     description: String!
     featuredAsset: Asset
     assets: [Asset!]!
-    parent: Collection!
+    parent: Collection
     children: [Collection!]
     filters: [ConfigurableOperation!]!
     translations: [CollectionTranslation!]!

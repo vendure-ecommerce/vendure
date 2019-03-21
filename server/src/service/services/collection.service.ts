@@ -105,6 +105,25 @@ export class CollectionService implements OnModuleInit {
         return this.availableFilters.map(configurableDefToOperation);
     }
 
+    async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
+        const parent = await this.connection
+            .getRepository(Collection)
+            .createQueryBuilder('collection')
+            .leftJoinAndSelect('collection.translations', 'translation')
+            .where(
+                qb =>
+                    `collection.id = ${qb
+                        .subQuery()
+                        .select('child.parentId')
+                        .from(Collection, 'child')
+                        .where('child.id = :id', { id: collectionId })
+                        .getQuery()}`,
+            )
+            .getOne();
+
+        return parent && translateDeep(parent, ctx.languageCode);
+    }
+
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
@@ -119,6 +138,23 @@ export class CollectionService implements OnModuleInit {
             ...ancestors.map(pick(['id', 'name'])),
             pick(collection, ['id', 'name']),
         ];
+    }
+
+    async getCollectionsByProductId(
+        ctx: RequestContext,
+        productId: ID,
+    ): Promise<Array<Translated<Collection>>> {
+        const result = await this.connection
+            .getRepository(Collection)
+            .createQueryBuilder('collection')
+            .leftJoinAndSelect('collection.translations', 'translation')
+            .leftJoin('collection.productVariants', 'variant')
+            .where('variant.product = :productId', { productId })
+            .groupBy('collection.id')
+            .orderBy('collection.id', 'ASC')
+            .getMany();
+
+        return result.map(collection => translateDeep(collection, ctx.languageCode));
     }
 
     /**

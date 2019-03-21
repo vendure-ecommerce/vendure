@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-20T14:52:47+01:00
+// Generated in 2019-03-21T09:29:54+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -1388,7 +1388,7 @@ export interface Collection extends Node {
 
     assets: Asset[];
 
-    parent: Collection;
+    parent?: Maybe<Collection>;
 
     children?: Maybe<Collection[]>;
 
@@ -1469,6 +1469,8 @@ export interface Product extends Node {
     facetValues: FacetValue[];
 
     translations: ProductTranslation[];
+
+    collections: Collection[];
 
     customFields?: Maybe<Json>;
 }

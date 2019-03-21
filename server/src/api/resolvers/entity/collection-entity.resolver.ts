@@ -32,4 +32,12 @@ export class CollectionEntityResolver {
     ): Promise<CollectionBreadcrumb[]> {
         return this.collectionService.getBreadcrumbs(ctx, collection) as any;
     }
+
+    @ResolveProperty()
+    async parent(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection> {
+        if (collection.parent) {
+            return collection.parent;
+        }
+        return this.collectionService.getParent(ctx, collection.id) as any;
+    }
 }
