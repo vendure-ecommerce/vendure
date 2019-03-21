@@ -1,4 +1,4 @@
-export type HasParent = { id: string; parent: { id: string } };
+export type HasParent = { id: string; parent?: { id: string } | null };
 export type TreeNode<T extends HasParent> = T & { children: Array<TreeNode<T>> };
 export type RootNode<T extends HasParent> = { id?: string; children: Array<TreeNode<T>> };
 
@@ -18,19 +18,24 @@ export function arrayToTree<T extends HasParent>(nodes: T[]): RootNode<T> {
     for (const id of nodes.map(n => n.id)) {
         if (mappedArr.hasOwnProperty(id)) {
             const mappedElem = mappedArr[id];
+            const parent = mappedElem.parent;
+            if (!parent) {
+                continue;
+            }
             // If the element is not at the root level, add it to its parent array of children.
-            const parentIsRoot = !mappedArr[mappedElem.parent.id];
+            const parentIsRoot = !mappedArr[parent.id];
             if (!parentIsRoot) {
-                if (mappedArr[mappedElem.parent.id]) {
-                    mappedArr[mappedElem.parent.id].children.push(mappedElem);
+                if (mappedArr[parent.id]) {
+                    mappedArr[parent.id].children.push(mappedElem);
                 } else {
-                    mappedArr[mappedElem.parent.id] = { children: [mappedElem] } as any;
+                    mappedArr[parent.id] = { children: [mappedElem] } as any;
                 }
             } else {
                 topLevelNodes.push(mappedElem);
             }
         }
     }
-    const rootId = topLevelNodes.length ? topLevelNodes[0].parent.id : undefined;
+    // tslint:disable-next-line:no-non-null-assertion
+    const rootId = topLevelNodes.length ? topLevelNodes[0].parent!.id : undefined;
     return { id: rootId, children: topLevelNodes };
 }

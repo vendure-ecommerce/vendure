@@ -30,15 +30,16 @@ export class CollectionTreeNodeComponent implements OnInit {
         this.parentName = this.collectionTree.name || '<root>';
     }
 
-    getMoveListItems(category: Collection.Fragment): Array<{ path: string; id: string }> {
+    getMoveListItems(collection: Collection.Fragment): Array<{ path: string; id: string }> {
         const visit = (
             node: TreeNode<any>,
             parentPath: string[],
             output: Array<{ path: string; id: string }>,
         ) => {
-            if (node.id !== category.id) {
+            if (node.id !== collection.id) {
                 const path = parentPath.concat(node.name);
-                if (node.id !== category.parent.id) {
+                const parentId = collection.parent && collection.parent.id;
+                if (node.id !== parentId) {
                     output.push({ path: path.slice(1).join(' / ') || 'root', id: node.id });
                 }
                 node.children.forEach(child => visit(child, path, output));
@@ -48,27 +49,33 @@ export class CollectionTreeNodeComponent implements OnInit {
         return visit(this.root.collectionTree, [], []);
     }
 
-    move(category: Collection.Fragment, parentId: string) {
+    move(collection: Collection.Fragment, parentId: string) {
         this.root.onMove({
             index: 0,
             parentId,
-            collectionId: category.id,
+            collectionId: collection.id,
         });
     }
 
-    moveUp(category: Collection.Fragment, currentIndex: number) {
+    moveUp(collection: Collection.Fragment, currentIndex: number) {
+        if (!collection.parent) {
+            return;
+        }
         this.root.onMove({
             index: currentIndex - 1,
-            parentId: category.parent.id,
-            collectionId: category.id,
+            parentId: collection.parent.id,
+            collectionId: collection.id,
         });
     }
 
-    moveDown(category: Collection.Fragment, currentIndex: number) {
+    moveDown(collection: Collection.Fragment, currentIndex: number) {
+        if (!collection.parent) {
+            return;
+        }
         this.root.onMove({
             index: currentIndex + 1,
-            parentId: category.parent.id,
-            collectionId: category.id,
+            parentId: collection.parent.id,
+            collectionId: collection.id,
         });
     }
 
