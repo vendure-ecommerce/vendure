@@ -132,12 +132,9 @@ export class CollectionService implements OnModuleInit {
         if (idsAreEqual(collection.id, rootCollection.id)) {
             return [pick(rootCollection, ['id', 'name'])];
         }
+        const pickProps = pick(['id', 'name']);
         const ancestors = await this.getAncestors(collection.id, ctx);
-        return [
-            pick(rootCollection, ['id', 'name']),
-            ...ancestors.map(pick(['id', 'name'])),
-            pick(collection, ['id', 'name']),
-        ];
+        return [pickProps(rootCollection), ...ancestors.map(pickProps), pickProps(collection)];
     }
 
     async getCollectionsByProductId(
