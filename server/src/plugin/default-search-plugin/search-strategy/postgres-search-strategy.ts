@@ -23,7 +23,11 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(`string_agg(si.facetValueIds,',')`, 'allFacetValues');
 
-        const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, input, true).getRawOne();
+        const facetValuesResult = await this.applyTermAndFilters(
+            facetValuesQb,
+            { ...input, groupByProduct: false },
+            true,
+        ).getRawOne();
         const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
         return unique(allFacetValues.split(',').filter(x => x !== ''));
     }

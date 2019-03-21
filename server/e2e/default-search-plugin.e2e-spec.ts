@@ -1,3 +1,4 @@
+import gql from 'graphql-tag';
 import path from 'path';
 
 import {
@@ -117,6 +118,38 @@ describe('Default search plugin', () => {
         it('matches by facetId', () => testMatchFacetIds(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
+
+        it('returns correct facetValues when not grouped by product', async () => {
+            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: false,
+                },
+            });
+            expect(result.search.facetValues).toEqual([
+                { id: 'T_1', name: 'electronics' },
+                { id: 'T_2', name: 'computers' },
+                { id: 'T_3', name: 'photo' },
+                { id: 'T_4', name: 'sports equipment' },
+                { id: 'T_5', name: 'home & garden' },
+                { id: 'T_6', name: 'plants' },
+            ]);
+        });
+
+        it('returns correct facetValues when grouped by product', async () => {
+            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: true,
+                },
+            });
+            expect(result.search.facetValues).toEqual([
+                { id: 'T_1', name: 'electronics' },
+                { id: 'T_2', name: 'computers' },
+                { id: 'T_3', name: 'photo' },
+                { id: 'T_4', name: 'sports equipment' },
+                { id: 'T_5', name: 'home & garden' },
+                { id: 'T_6', name: 'plants' },
+            ]);
+        });
     });
 
     describe('admin api', () => {
@@ -244,3 +277,15 @@ describe('Default search plugin', () => {
         });
     });
 });
+
+export const SEARCH_GET_FACET_VALUES = gql`
+    query SearchProducts($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            facetValues {
+                id
+                name
+            }
+        }
+    }
+`;

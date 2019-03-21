@@ -23,7 +23,10 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select('GROUP_CONCAT(si.facetValueIds)', 'allFacetValues');
 
-        const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, input).getRawOne();
+        const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, {
+            ...input,
+            groupByProduct: false,
+        }).getRawOne();
         const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
         return unique(allFacetValues.split(',').filter(x => x !== ''));
     }
