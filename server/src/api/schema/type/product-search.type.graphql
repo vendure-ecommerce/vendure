@@ -5,7 +5,16 @@ type SearchReindexResponse {
 type SearchResponse {
     items: [SearchResult!]!
     totalItems: Int!
-    facetValues: [FacetValue!]!
+    facetValues: [FacetValueResult!]!
+}
+
+"""
+Which FacetValues are present in the products returned
+by the search, and in what quantity.
+"""
+type FacetValueResult {
+    facetValue: FacetValue!
+    count: Int!
 }
 
 type SearchResult {
@@ -22,6 +31,8 @@ type SearchResult {
     description: String!
     facetIds: [String!]!
     facetValueIds: [String!]!
+    "An array of ids of the Collections in which this result appears"
     collectionIds: [String!]!
+    "A relevence score for the result. Differs between database implementations."
     score: Float!
 }

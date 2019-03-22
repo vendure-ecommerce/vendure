@@ -126,12 +126,12 @@ describe('Default search plugin', () => {
                 },
             });
             expect(result.search.facetValues).toEqual([
-                { id: 'T_1', name: 'electronics' },
-                { id: 'T_2', name: 'computers' },
-                { id: 'T_3', name: 'photo' },
-                { id: 'T_4', name: 'sports equipment' },
-                { id: 'T_5', name: 'home & garden' },
-                { id: 'T_6', name: 'plants' },
+                { count: 21, facetValue: { id: 'T_1', name: 'electronics' } },
+                { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
+                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
+                { count: 10, facetValue: { id: 'T_4', name: 'sports equipment' } },
+                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -142,12 +142,12 @@ describe('Default search plugin', () => {
                 },
             });
             expect(result.search.facetValues).toEqual([
-                { id: 'T_1', name: 'electronics' },
-                { id: 'T_2', name: 'computers' },
-                { id: 'T_3', name: 'photo' },
-                { id: 'T_4', name: 'sports equipment' },
-                { id: 'T_5', name: 'home & garden' },
-                { id: 'T_6', name: 'plants' },
+                { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
+                { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
+                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
+                { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
+                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
     });
@@ -283,8 +283,11 @@ export const SEARCH_GET_FACET_VALUES = gql`
         search(input: $input) {
             totalItems
             facetValues {
-                id
-                name
+                count
+                facetValue {
+                    id
+                    name
+                }
             }
         }
     }

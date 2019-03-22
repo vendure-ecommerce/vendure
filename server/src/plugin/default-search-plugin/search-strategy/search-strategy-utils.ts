@@ -1,4 +1,6 @@
 import { CurrencyCode, SearchResult } from '../../../../../shared/generated-types';
+import { ID } from '../../../../../shared/shared-types';
+import { unique } from '../../../../../shared/unique';
 
 /**
  * Maps a raw database result to a SearchResult.
@@ -21,4 +23,21 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         productVariantPreview: raw.si_productVariantPreview,
         score: raw.score || 0,
     };
+}
+
+/**
+ * Given the raw query results containing rows with a `facetValues` property line "1,2,1,2",
+ * this function returns a map of FacetValue ids => count of how many times they occur.
+ */
+export function createFacetIdCountMap(facetValuesResult: Array<{ facetValues: string }>) {
+    const result = new Map<ID, number>();
+    for (const res of facetValuesResult) {
+        const facetValueIds: ID[] = unique(res.facetValues.split(',').filter(x => x !== ''));
+        for (const id of facetValueIds) {
+            const count = result.get(id);
+            const newCount = count ? count + 1 : 1;
+            result.set(id, newCount);
+        }
+    }
+    return result;
 }

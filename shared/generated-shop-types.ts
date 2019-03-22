@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-21T09:29:54+01:00
+// Generated in 2019-03-21T15:11:51+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -1534,7 +1534,7 @@ export interface SearchResponse {
 
     totalItems: number;
 
-    facetValues: FacetValue[];
+    facetValues: FacetValueResult[];
 }
 
 export interface SearchResult {
@@ -1567,6 +1567,12 @@ export interface SearchResult {
     collectionIds: string[];
 
     score: number;
+}
+
+export interface FacetValueResult {
+    facetValue: FacetValue;
+
+    count: number;
 }
 
 export interface Mutation {

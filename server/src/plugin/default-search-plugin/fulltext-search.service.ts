@@ -9,7 +9,6 @@ import { ID } from '../../../../shared/shared-types';
 import { unique } from '../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
-import { Translated } from '../../common/types/locale-types';
 import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
@@ -65,9 +64,21 @@ export class FulltextSearchService implements SearchService {
     /**
      * Return a list of all FacetValues which appear in the result set.
      */
-    async facetValues(ctx: RequestContext, input: SearchInput): Promise<Array<Translated<FacetValue>>> {
-        const facetValueIds = await this.searchStrategy.getFacetValueIds(ctx, input);
-        return this.facetValueService.findByIds(facetValueIds, ctx.languageCode);
+    async facetValues(
+        ctx: RequestContext,
+        input: SearchInput,
+    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
+        const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input);
+        const facetValues = await this.facetValueService.findByIds(
+            Array.from(facetValueIdsMap.keys()),
+            ctx.languageCode,
+        );
+        return facetValues.map((facetValue, index) => {
+            return {
+                facetValue,
+                count: facetValueIdsMap.get(facetValue.id.toString()) as number,
+            };
+        });
     }
 
     /**

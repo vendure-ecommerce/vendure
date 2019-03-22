@@ -6,8 +6,8 @@ import { unique } from '../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
-import { mapToSearchResult } from './map-to-search-result';
 import { SearchStrategy } from './search-strategy';
+import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
  * A weighted fulltext search for MySQL / MariaDB.
@@ -17,18 +17,19 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<ID[]> {
+    async getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
-            .select('GROUP_CONCAT(si.facetValueIds)', 'allFacetValues');
+            .select(['productId', 'productVariantId'])
+            .addSelect('GROUP_CONCAT(facetValueIds)', 'facetValues');
 
-        const facetValuesResult = await this.applyTermAndFilters(facetValuesQb, {
-            ...input,
-            groupByProduct: false,
-        }).getRawOne();
-        const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
-        return unique(allFacetValues.split(',').filter(x => x !== ''));
+        this.applyTermAndFilters(facetValuesQb, input);
+        if (!input.groupByProduct) {
+            facetValuesQb.groupBy('productVariantId');
+        }
+        const facetValuesResult = await facetValuesQb.getRawMany();
+        return createFacetIdCountMap(facetValuesResult);
     }
 
     async getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]> {

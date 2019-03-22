@@ -6,8 +6,8 @@ import { unique } from '../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
-import { mapToSearchResult } from './map-to-search-result';
 import { SearchStrategy } from './search-strategy';
+import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
  * A weighted fulltext search for PostgeSQL.
@@ -17,19 +17,19 @@ export class PostgresSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<ID[]> {
+    async getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
-            .select(`string_agg(si.facetValueIds,',')`, 'allFacetValues');
+            .select(['"si.productId"', '"si.productVariantId"'])
+            .addSelect(`string_agg(si.facetValueIds,',')`, 'facetValues');
 
-        const facetValuesResult = await this.applyTermAndFilters(
-            facetValuesQb,
-            { ...input, groupByProduct: false },
-            true,
-        ).getRawOne();
-        const allFacetValues = facetValuesResult ? facetValuesResult.allFacetValues || '' : '';
-        return unique(allFacetValues.split(',').filter(x => x !== ''));
+        this.applyTermAndFilters(facetValuesQb, input, true);
+        if (!input.groupByProduct) {
+            facetValuesQb.groupBy('si.productVariantId');
+        }
+        const facetValuesResult = await facetValuesQb.getRawMany();
+        return createFacetIdCountMap(facetValuesResult);
     }
 
     async getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]> {

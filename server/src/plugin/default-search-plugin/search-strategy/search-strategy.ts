@@ -9,5 +9,9 @@ import { RequestContext } from '../../../api';
 export interface SearchStrategy {
     getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]>;
     getTotalCount(ctx: RequestContext, input: SearchInput): Promise<number>;
-    getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<ID[]>;
+    /**
+     * Returns a map of `facetValueId` => `count`, providing the number of times that
+     * facetValue occurs in the result set.
+     */
+    getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<Map<ID, number>>;
 }

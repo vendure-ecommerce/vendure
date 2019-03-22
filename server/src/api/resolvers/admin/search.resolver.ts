@@ -16,7 +16,7 @@ export class SearchResolver {
     }
 
     @ResolveProperty()
-    async facetValues(...args: any[]): Promise<Array<Translated<FacetValue>>> {
+    async facetValues(...args: any[]): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 

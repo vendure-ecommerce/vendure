@@ -31,7 +31,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Context() context: any,
-    ): Promise<Array<Translated<FacetValue>>> {
+    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input);
     }
 }
@@ -54,7 +54,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Context() context: any,
-    ): Promise<Array<Translated<FacetValue>>> {
+    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input);
     }
 
