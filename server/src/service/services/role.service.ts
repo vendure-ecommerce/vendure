@@ -98,7 +98,7 @@ export class RoleService {
             await this.create({
                 code: SUPER_ADMIN_ROLE_CODE,
                 description: SUPER_ADMIN_ROLE_DESCRIPTION,
-                permissions: Object.values(Permission),
+                permissions: Object.values(Permission).filter(p => p !== Permission.Owner),
             });
         }
     }

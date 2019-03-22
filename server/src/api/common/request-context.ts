@@ -6,6 +6,7 @@ import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
+import { User } from '../../entity/user/user.entity';
 
 /**
  * The RequestContext is intended to hold information relevant to the current request, which may be
@@ -54,9 +55,16 @@ export class RequestContext {
     }
 
     get activeUserId(): ID | undefined {
+        const user = this.activeUser;
+        if (user) {
+            return user.id;
+        }
+    }
+
+    get activeUser(): User | undefined {
         if (this.session) {
             if (this.isAuthenticatedSession(this.session)) {
-                return this.session.user.id;
+                return this.session.user;
             }
         }
     }
