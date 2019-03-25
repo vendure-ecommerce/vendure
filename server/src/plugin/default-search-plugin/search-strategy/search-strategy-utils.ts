@@ -1,4 +1,4 @@
-import { CurrencyCode, SearchResult } from '../../../../../shared/generated-types';
+import { CurrencyCode, PriceRange, SearchResult, SinglePrice } from '../../../../../shared/generated-types';
 import { ID } from '../../../../../shared/shared-types';
 import { unique } from '../../../../../shared/unique';
 
@@ -6,10 +6,14 @@ import { unique } from '../../../../../shared/unique';
  * Maps a raw database result to a SearchResult.
  */
 export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchResult {
+    const price =
+        raw.minPrice !== undefined
+            ? ({ min: raw.minPrice, max: raw.maxPrice } as PriceRange)
+            : ({ value: raw.si_price } as SinglePrice);
     return {
         sku: raw.si_sku,
         slug: raw.si_slug,
-        price: raw.si_price,
+        price,
         currencyCode,
         productVariantId: raw.si_productVariantId,
         productId: raw.si_productId,

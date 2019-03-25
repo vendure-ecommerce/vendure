@@ -77,6 +77,11 @@ function createGraphQLOptions(
             Node: dummyResolveType,
             PaginatedList: dummyResolveType,
             Upload: GraphQLUpload || dummyResolveType,
+            SearchResultPrice: {
+                __resolveType(value: any) {
+                    return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
+                },
+            },
         },
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,

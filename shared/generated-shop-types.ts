@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-21T15:11:51+01:00
+// Generated in 2019-03-25T12:30:38+01:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -550,17 +550,6 @@ export enum LanguageCode {
     za = 'za',
     zu = 'zu',
 }
-
-export enum SortOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
-
-export enum AssetType {
-    IMAGE = 'IMAGE',
-    VIDEO = 'VIDEO',
-    BINARY = 'BINARY',
-}
 /** ISO 4217 currency code */
 export enum CurrencyCode {
     AED = 'AED',
@@ -722,6 +711,17 @@ export enum CurrencyCode {
     ZWL = 'ZWL',
 }
 
+export enum SortOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
+export enum AssetType {
+    IMAGE = 'IMAGE',
+    VIDEO = 'VIDEO',
+    BINARY = 'BINARY',
+}
+
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
@@ -806,6 +806,8 @@ export interface PaginatedList {
 // ====================================================
 
 export interface Query {
+    activeChannel: Channel;
+
     activeCustomer?: Maybe<Customer>;
 
     activeOrder?: Maybe<Order>;
@@ -833,6 +835,66 @@ export interface Query {
     search: SearchResponse;
 
     temp__?: Maybe<boolean>;
+}
+
+export interface Channel extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    code: string;
+
+    token: string;
+
+    defaultTaxZone?: Maybe<Zone>;
+
+    defaultShippingZone?: Maybe<Zone>;
+
+    defaultLanguageCode: LanguageCode;
+
+    currencyCode: CurrencyCode;
+
+    pricesIncludeTax: boolean;
+}
+
+export interface Zone extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    name: string;
+
+    members: Country[];
+}
+
+export interface Country extends Node {
+    id: string;
+
+    languageCode: LanguageCode;
+
+    code: string;
+
+    name: string;
+
+    enabled: boolean;
+
+    translations: CountryTranslation[];
+}
+
+export interface CountryTranslation {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    languageCode: LanguageCode;
+
+    name: string;
 }
 
 export interface Customer extends Node {
@@ -891,32 +953,6 @@ export interface Address extends Node {
     defaultBillingAddress?: Maybe<boolean>;
 
     customFields?: Maybe<Json>;
-}
-
-export interface Country extends Node {
-    id: string;
-
-    languageCode: LanguageCode;
-
-    code: string;
-
-    name: string;
-
-    enabled: boolean;
-
-    translations: CountryTranslation[];
-}
-
-export interface CountryTranslation {
-    id: string;
-
-    createdAt: DateTime;
-
-    updatedAt: DateTime;
-
-    languageCode: LanguageCode;
-
-    name: string;
 }
 
 export interface OrderList extends PaginatedList {
@@ -1097,18 +1133,6 @@ export interface TaxCategory extends Node {
     updatedAt: DateTime;
 
     name: string;
-}
-
-export interface Zone extends Node {
-    id: string;
-
-    createdAt: DateTime;
-
-    updatedAt: DateTime;
-
-    name: string;
-
-    members: Country[];
 }
 
 export interface CustomerGroup extends Node {
@@ -1339,28 +1363,6 @@ export interface Role extends Node {
     channels: Channel[];
 }
 
-export interface Channel extends Node {
-    id: string;
-
-    createdAt: DateTime;
-
-    updatedAt: DateTime;
-
-    code: string;
-
-    token: string;
-
-    defaultTaxZone?: Maybe<Zone>;
-
-    defaultShippingZone?: Maybe<Zone>;
-
-    defaultLanguageCode: LanguageCode;
-
-    currencyCode: CurrencyCode;
-
-    pricesIncludeTax: boolean;
-}
-
 export interface CollectionList extends PaginatedList {
     items: Collection[];
 
@@ -1554,7 +1556,7 @@ export interface SearchResult {
 
     productVariantPreview: string;
 
-    price: number;
+    price: SearchResultPrice;
 
     currencyCode: CurrencyCode;
 
@@ -1563,12 +1565,23 @@ export interface SearchResult {
     facetIds: string[];
 
     facetValueIds: string[];
-
+    /** An array of ids of the Collections in which this result appears */
     collectionIds: string[];
-
+    /** A relevence score for the result. Differs between database implementations. */
     score: number;
 }
 
+export interface PriceRange {
+    min: number;
+
+    max: number;
+}
+
+export interface SinglePrice {
+    value: number;
+}
+
+/** Which FacetValues are present in the products returned by the search, and in what quantity. */
 export interface FacetValueResult {
     facetValue: FacetValue;
 
@@ -1877,3 +1890,9 @@ export interface ResetPasswordMutationArgs {
 
     password: string;
 }
+
+// ====================================================
+// Unions
+// ====================================================
+
+export type SearchResultPrice = PriceRange | SinglePrice;

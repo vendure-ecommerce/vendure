@@ -21,12 +21,12 @@ export class PostgresSearchStrategy implements SearchStrategy {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
-            .select(['"si.productId"', '"si.productVariantId"'])
-            .addSelect(`string_agg(si.facetValueIds,',')`, 'facetValues');
+            .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
+            .addSelect(`string_agg("si"."facetValueIds",',')`, 'facetValues');
 
         this.applyTermAndFilters(facetValuesQb, input, true);
         if (!input.groupByProduct) {
-            facetValuesQb.groupBy('si.productVariantId');
+            facetValuesQb.groupBy('"si"."productVariantId", "si"."productId"');
         }
         const facetValuesResult = await facetValuesQb.getRawMany();
         return createFacetIdCountMap(facetValuesResult);
@@ -40,6 +40,9 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
             .select(this.createPostgresSelect(!!input.groupByProduct));
+        if (input.groupByProduct) {
+            qb.addSelect('MIN(price)', 'minPrice').addSelect('MAX(price)', 'maxPrice');
+        }
         this.applyTermAndFilters(qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');

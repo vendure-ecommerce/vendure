@@ -299,22 +299,6 @@
             "deprecationReason": null
           },
           {
-            "name": "config",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Config",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "countries",
             "description": null,
             "args": [
@@ -8532,29 +8516,6 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
-        "name": "Config",
-        "description": null,
-        "fields": [
-          {
-            "name": "customFields",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "JSON",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "CountryListOptions",
         "description": null,
@@ -12318,8 +12279,8 @@
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
+                "kind": "UNION",
+                "name": "SearchResultPrice",
                 "ofType": null
               }
             },
@@ -12408,7 +12369,7 @@
           },
           {
             "name": "collectionIds",
-            "description": null,
+            "description": "An array of ids of the Collections in which this result appears",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -12432,7 +12393,7 @@
           },
           {
             "name": "score",
-            "description": null,
+            "description": "A relevence score for the result. Differs between database implementations.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -12453,9 +12414,100 @@
         "possibleTypes": null
       },
       {
+        "kind": "UNION",
+        "name": "SearchResultPrice",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "PriceRange",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "SinglePrice",
+            "ofType": null
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PriceRange",
+        "description": null,
+        "fields": [
+          {
+            "name": "min",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "max",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "SinglePrice",
+        "description": null,
+        "fields": [
+          {
+            "name": "value",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "FacetValueResult",
-        "description": null,
+        "description": "Which FacetValues are present in the products returned\nby the search, and in what quantity.",
         "fields": [
           {
             "name": "facetValue",

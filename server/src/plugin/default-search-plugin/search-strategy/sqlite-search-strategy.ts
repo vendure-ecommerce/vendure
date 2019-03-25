@@ -38,6 +38,9 @@ export class SqliteSearchStrategy implements SearchStrategy {
         const skip = input.skip || 0;
         const sort = input.sort;
         const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
+        if (input.groupByProduct) {
+            qb.addSelect('MIN(price)', 'minPrice').addSelect('MAX(price)', 'maxPrice');
+        }
         this.applyTermAndFilters(qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');

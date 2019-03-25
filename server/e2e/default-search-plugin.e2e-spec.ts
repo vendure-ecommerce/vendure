@@ -10,6 +10,7 @@ import {
     ConfigArgType,
     CreateCollection,
     LanguageCode,
+    SearchInput,
     SearchProducts,
     UpdateCollection,
     UpdateProduct,
@@ -108,6 +109,34 @@ describe('Default search plugin', () => {
         ]);
     }
 
+    async function testSinglePrices(client: SimpleGraphQLClient) {
+        const result = await client.query(SEARCH_GET_PRICES, {
+            input: {
+                groupByProduct: false,
+                take: 3,
+            } as SearchInput,
+        });
+        expect(result.search.items.map(i => i.price)).toEqual([
+            { value: 129900 },
+            { value: 139900 },
+            { value: 219900 },
+        ]);
+    }
+
+    async function testPriceRanges(client: SimpleGraphQLClient) {
+        const result = await client.query(SEARCH_GET_PRICES, {
+            input: {
+                groupByProduct: true,
+                take: 3,
+            } as SearchInput,
+        });
+        expect(result.search.items.map(i => i.price)).toEqual([
+            { min: 129900, max: 229900 },
+            { min: 14374, max: 16994 },
+            { min: 93120, max: 109995 },
+        ]);
+    }
+
     describe('shop api', () => {
         it('group by product', () => testGroupByProduct(shopClient));
 
@@ -118,6 +147,10 @@ describe('Default search plugin', () => {
         it('matches by facetId', () => testMatchFacetIds(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
+
+        it('single prices', () => testSinglePrices(shopClient));
+
+        it('price ranges', () => testPriceRanges(shopClient));
 
         it('returns correct facetValues when not grouped by product', async () => {
             const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
@@ -162,6 +195,10 @@ describe('Default search plugin', () => {
         it('matches by facetId', () => testMatchFacetIds(adminClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
+
+        it('single prices', () => testSinglePrices(shopClient));
+
+        it('price ranges', () => testPriceRanges(shopClient));
 
         it('updates index when a Product is changed', async () => {
             await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
@@ -287,6 +324,24 @@ export const SEARCH_GET_FACET_VALUES = gql`
                 facetValue {
                     id
                     name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_PRICES = gql`
+    query SearchGetPrices($input: SearchInput!) {
+        search(input: $input) {
+            items {
+                price {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
                 }
             }
         }

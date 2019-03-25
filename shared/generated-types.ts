@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-21T15:11:52+01:00
+// Generated in 2019-03-25T12:30:39+01:00
 export type Maybe<T> = T | null;
 
 
@@ -4538,8 +4538,6 @@ export interface Query {
   
   collectionFilters: ConfigurableOperation[];
   
-  config: Config;
-  
   countries: CountryList;
   
   country?: Maybe<Country>;
@@ -5088,12 +5086,6 @@ export interface ProductVariantTranslation {
 }
 
 
-export interface Config {
-  
-  customFields?: Maybe<Json>;
-}
-
-
 export interface CountryList extends PaginatedList {
   
   items: Country[];
@@ -5462,7 +5454,7 @@ export interface SearchResult {
   
   productVariantPreview: string;
   
-  price: number;
+  price: SearchResultPrice;
   
   currencyCode: CurrencyCode;
   
@@ -5471,13 +5463,27 @@ export interface SearchResult {
   facetIds: string[];
   
   facetValueIds: string[];
-  
+  /** An array of ids of the Collections in which this result appears */
   collectionIds: string[];
-  
+  /** A relevence score for the result. Differs between database implementations. */
   score: number;
 }
 
 
+export interface PriceRange {
+  
+  min: number;
+  
+  max: number;
+}
+
+
+export interface SinglePrice {
+  
+  value: number;
+}
+
+/** Which FacetValues are present in the products returned by the search, and in what quantity. */
 export interface FacetValueResult {
   
   facetValue: FacetValue;
@@ -6233,5 +6239,14 @@ export interface SetUiLanguageMutationArgs {
   
   languageCode?: Maybe<LanguageCode>;
 }
+
+
+// ====================================================
+// Unions
+// ====================================================
+
+
+
+export type SearchResultPrice = PriceRange | SinglePrice;
 
 
