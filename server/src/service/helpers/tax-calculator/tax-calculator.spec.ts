@@ -3,8 +3,8 @@ import { Connection } from 'typeorm';
 
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
-import { MergeOrdersStrategy } from '../../../config/order-merge-strategy/merge-orders-strategy';
 import { DefaultTaxCalculationStrategy } from '../../../config/tax/default-tax-calculation-strategy';
+import { EventBus } from '../../../event-bus/event-bus';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 
@@ -35,6 +35,7 @@ describe('TaxCalculator', () => {
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: Connection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
+                { provide: EventBus, useValue: { publish: () => ({}) } },
             ],
         }).compile();
 

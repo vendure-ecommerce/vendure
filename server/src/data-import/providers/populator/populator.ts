@@ -106,7 +106,7 @@ export class Populator {
         // Wait for the created collection operations to complete before running
         // the reindex of the search index.
         await new Promise(resolve => setTimeout(resolve, 50));
-        await this.searchService.reindex(ctx.languageCode);
+        await this.searchService.reindex(ctx);
     }
 
     private async createRequestContext(data: InitialData) {
@@ -174,7 +174,7 @@ export class Populator {
             const category = await this.taxCategoryService.create({ name: taxRate.name });
 
             for (const { entity } of zoneMap.values()) {
-                await this.taxRateService.create({
+                await this.taxRateService.create(ctx, {
                     zoneId: entity.id as string,
                     value: taxRate.percentage,
                     categoryId: category.id as string,

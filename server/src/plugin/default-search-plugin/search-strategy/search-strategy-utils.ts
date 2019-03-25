@@ -10,10 +10,15 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         raw.minPrice !== undefined
             ? ({ min: raw.minPrice, max: raw.maxPrice } as PriceRange)
             : ({ value: raw.si_price } as SinglePrice);
+    const priceWithTax =
+        raw.minPriceWithTax !== undefined
+            ? ({ min: raw.minPriceWithTax, max: raw.maxPriceWithTax } as PriceRange)
+            : ({ value: raw.si_priceWithTax } as SinglePrice);
     return {
         sku: raw.si_sku,
         slug: raw.si_slug,
         price,
+        priceWithTax,
         currencyCode,
         productVariantId: raw.si_productVariantId,
         productId: raw.si_productId,

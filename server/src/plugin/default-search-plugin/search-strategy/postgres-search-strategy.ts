@@ -41,7 +41,10 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(this.createPostgresSelect(!!input.groupByProduct));
         if (input.groupByProduct) {
-            qb.addSelect('MIN(price)', 'minPrice').addSelect('MAX(price)', 'maxPrice');
+            qb.addSelect('MIN(price)', 'minPrice')
+                .addSelect('MAX(price)', 'maxPrice')
+                .addSelect('MIN("priceWithTax")', 'minPriceWithTax')
+                .addSelect('MAX("priceWithTax")', 'maxPriceWithTax');
         }
         this.applyTermAndFilters(qb, input);
         if (input.term && input.term.length > this.minTermLength) {
@@ -142,6 +145,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             'sku',
             'slug',
             'price',
+            'priceWithTax',
             'productVariantId',
             'languageCode',
             'productId',

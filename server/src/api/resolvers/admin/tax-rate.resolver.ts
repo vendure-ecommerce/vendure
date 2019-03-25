@@ -34,14 +34,20 @@ export class TaxRateResolver {
     @Mutation()
     @Allow(Permission.CreateSettings)
     @Decode('categoryId', 'zoneId', 'customerGroupId')
-    async createTaxRate(@Args() args: CreateTaxRateMutationArgs): Promise<TaxRate> {
-        return this.taxRateService.create(args.input);
+    async createTaxRate(
+        @Ctx() ctx: RequestContext,
+        @Args() args: CreateTaxRateMutationArgs,
+    ): Promise<TaxRate> {
+        return this.taxRateService.create(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
     @Decode('categoryId', 'zoneId', 'customerGroupId')
-    async updateTaxRate(@Args() args: UpdateTaxRateMutationArgs): Promise<TaxRate> {
-        return this.taxRateService.update(args.input);
+    async updateTaxRate(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateTaxRateMutationArgs,
+    ): Promise<TaxRate> {
+        return this.taxRateService.update(ctx, args.input);
     }
 }

@@ -3,12 +3,14 @@ import gql from 'graphql-tag';
 
 import { SearchReindexResponse } from '../../../../shared/generated-types';
 import { Type } from '../../../../shared/shared-types';
+import { idsAreEqual } from '../../common/utils';
 import { APIExtensionDefinition, VendurePlugin } from '../../config';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
+import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { SearchService } from '../../service/services/search.service';
 
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
@@ -31,6 +33,12 @@ export class DefaultSearchPlugin implements VendurePlugin {
         });
         eventBus.subscribe(CollectionModificationEvent, event => {
             return fulltextSearchService.updateVariantsById(event.ctx, event.productVariantIds);
+        });
+        eventBus.subscribe(TaxRateModificationEvent, event => {
+            const defaultTaxZone = event.ctx.channel.defaultTaxZone;
+            if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
+                return fulltextSearchService.reindex(event.ctx);
+            }
         });
     }
 

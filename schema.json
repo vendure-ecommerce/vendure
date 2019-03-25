@@ -12288,6 +12288,22 @@
             "deprecationReason": null
           },
           {
+            "name": "priceWithTax",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "UNION",
+                "name": "SearchResultPrice",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "currencyCode",
             "description": null,
             "args": [],
@@ -12437,7 +12453,7 @@
       {
         "kind": "OBJECT",
         "name": "PriceRange",
-        "description": null,
+        "description": "The price range where the result has more than one price",
         "fields": [
           {
             "name": "min",
@@ -12480,7 +12496,7 @@
       {
         "kind": "OBJECT",
         "name": "SinglePrice",
-        "description": null,
+        "description": "The price value where the result has a single price",
         "fields": [
           {
             "name": "value",

@@ -61,6 +61,6 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async reindex(@Ctx() ctx: RequestContext): Promise<DefaultSearchReindexResponse> {
-        return this.fulltextSearchService.reindex(ctx.languageCode);
+        return this.fulltextSearchService.reindex(ctx);
     }
 }

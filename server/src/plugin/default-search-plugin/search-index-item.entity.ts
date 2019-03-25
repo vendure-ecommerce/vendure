@@ -44,6 +44,9 @@ export class SearchIndexItem {
     @Column()
     price: number;
 
+    @Column()
+    priceWithTax: number;
+
     currencyCode: CurrencyCode;
 
     @Column('simple-array')

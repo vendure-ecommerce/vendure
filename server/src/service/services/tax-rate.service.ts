@@ -3,6 +3,7 @@ import { Connection } from 'typeorm';
 
 import { CreateTaxRateInput, UpdateTaxRateInput } from '../../../../shared/generated-types';
 import { ID, PaginatedList } from '../../../../shared/shared-types';
+import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -10,6 +11,8 @@ import { CustomerGroup } from '../../entity/customer-group/customer-group.entity
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -29,6 +32,7 @@ export class TaxRateService {
 
     constructor(
         @InjectConnection() private connection: Connection,
+        private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
@@ -52,7 +56,7 @@ export class TaxRateService {
         });
     }
 
-    async create(input: CreateTaxRateInput): Promise<TaxRate> {
+    async create(ctx: RequestContext, input: CreateTaxRateInput): Promise<TaxRate> {
         const taxRate = new TaxRate(input);
         taxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
         taxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
@@ -65,10 +69,11 @@ export class TaxRateService {
         }
         const newTaxRate = await this.connection.getRepository(TaxRate).save(taxRate);
         await this.updateActiveTaxRates();
+        this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
         return assertFound(this.findOne(newTaxRate.id));
     }
 
-    async update(input: UpdateTaxRateInput): Promise<TaxRate> {
+    async update(ctx: RequestContext, input: UpdateTaxRateInput): Promise<TaxRate> {
         const taxRate = await this.findOne(input.id);
         if (!taxRate) {
             throw new EntityNotFoundError('TaxRate', input.id);
@@ -78,7 +83,7 @@ export class TaxRateService {
             updatedTaxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
         }
         if (input.zoneId) {
-            updatedTaxRate.category = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+            updatedTaxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
         }
         if (input.customerGroupId) {
             updatedTaxRate.customerGroup = await getEntityOrThrow(
@@ -89,6 +94,7 @@ export class TaxRateService {
         }
         await this.connection.getRepository(TaxRate).save(updatedTaxRate);
         await this.updateActiveTaxRates();
+        this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
         return assertFound(this.findOne(taxRate.id));
     }
 

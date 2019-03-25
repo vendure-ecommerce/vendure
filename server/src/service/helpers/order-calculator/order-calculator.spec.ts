@@ -14,6 +14,7 @@ import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
+import { EventBus } from '../../../event-bus/event-bus';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
@@ -40,6 +41,7 @@ describe('OrderCalculator', () => {
                 { provide: Connection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: ConfigService, useClass: MockConfigService },
+                { provide: EventBus, useValue: { publish: () => ({}) } },
                 { provide: ZoneService, useValue: { findAll: () => [] } },
             ],
         }).compile();

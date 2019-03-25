@@ -27,6 +27,7 @@ type SearchResult {
     productVariantName: String!
     productVariantPreview: String!
     price: SearchResultPrice!
+    priceWithTax: SearchResultPrice!
     currencyCode: CurrencyCode!
     description: String!
     facetIds: [String!]!

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { LanguageCode, SearchReindexResponse } from '../../../../shared/generated-types';
+import { SearchReindexResponse } from '../../../../shared/generated-types';
+import { RequestContext } from '../../api/common/request-context';
 
 /**
  * This service should be overridden by a VendurePlugin which implements search.
@@ -15,7 +16,7 @@ import { LanguageCode, SearchReindexResponse } from '../../../../shared/generate
  */
 @Injectable()
 export class SearchService {
-    async reindex(languageCode: LanguageCode): Promise<SearchReindexResponse> {
+    async reindex(ctx: RequestContext): Promise<SearchReindexResponse> {
         if (!process.env.CI) {
             // tslint:disable-next-line:no-console
             console.warn(`The SearchService should be overridden by an appropriate search plugin.`);

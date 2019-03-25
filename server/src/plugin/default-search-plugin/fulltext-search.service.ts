@@ -13,6 +13,7 @@ import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { FacetValueService } from '../../service/services/facet-value.service';
+import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 
 import { DefaultSearchReindexResponse } from './default-search-plugin';
@@ -39,12 +40,14 @@ export class FulltextSearchService implements SearchService {
         'facetValues',
         'facetValues.facet',
         'collections',
+        'taxCategory',
     ];
 
     constructor(
         @InjectConnection() private connection: Connection,
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
+        private productVariantService: ProductVariantService,
     ) {
         this.setSearchStrategy();
     }
@@ -84,7 +87,7 @@ export class FulltextSearchService implements SearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(languageCode: LanguageCode): Promise<DefaultSearchReindexResponse> {
+    async reindex(ctx: RequestContext): Promise<DefaultSearchReindexResponse> {
         const timeStart = Date.now();
         const qb = await this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
@@ -92,8 +95,8 @@ export class FulltextSearchService implements SearchService {
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
         const variants = await qb.where('variants_product.deletedAt IS NULL').getMany();
-        await this.connection.getRepository(SearchIndexItem).delete({ languageCode });
-        await this.saveSearchIndexItems(languageCode, variants);
+        await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
+        await this.saveSearchIndexItems(ctx, variants);
         return {
             success: true,
             indexedItemCount: variants.length,
@@ -131,7 +134,7 @@ export class FulltextSearchService implements SearchService {
             }
         }
         if (updatedVariants.length) {
-            await this.saveSearchIndexItems(ctx.languageCode, updatedVariants);
+            await this.saveSearchIndexItems(ctx, updatedVariants);
         }
         if (removedVariantIds.length) {
             await this.removeSearchIndexItems(ctx.languageCode, removedVariantIds);
@@ -143,7 +146,7 @@ export class FulltextSearchService implements SearchService {
             const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
                 relations: this.variantRelations,
             });
-            await this.saveSearchIndexItems(ctx.languageCode, updatedVariants);
+            await this.saveSearchIndexItems(ctx, updatedVariants);
         }
     }
 
@@ -171,16 +174,18 @@ export class FulltextSearchService implements SearchService {
     /**
      * Add or update items in the search index
      */
-    private async saveSearchIndexItems(languageCode: LanguageCode, variants: ProductVariant[]) {
+    private async saveSearchIndexItems(ctx: RequestContext, variants: ProductVariant[]) {
         const items = variants
-            .map(v => translateDeep(v, languageCode, ['product']))
+            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
+            .map(v => translateDeep(v, ctx.languageCode, ['product']))
             .map(
                 v =>
                     new SearchIndexItem({
                         sku: v.sku,
                         slug: v.product.slug,
                         price: v.price,
-                        languageCode,
+                        priceWithTax: v.priceWithTax,
+                        languageCode: ctx.languageCode,
                         productVariantId: v.id,
                         productId: v.product.id,
                         productName: v.product.name,

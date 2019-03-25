@@ -6,6 +6,7 @@ import {
     UPDATE_COLLECTION,
 } from '../../admin-ui/src/app/data/definitions/collection-definitions';
 import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../admin-ui/src/app/data/definitions/product-definitions';
+import { UPDATE_TAX_RATE } from '../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     ConfigArgType,
     CreateCollection,
@@ -14,6 +15,7 @@ import {
     SearchProducts,
     UpdateCollection,
     UpdateProduct,
+    UpdateTaxRate,
 } from '../../shared/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
@@ -116,10 +118,19 @@ describe('Default search plugin', () => {
                 take: 3,
             } as SearchInput,
         });
-        expect(result.search.items.map(i => i.price)).toEqual([
-            { value: 129900 },
-            { value: 139900 },
-            { value: 219900 },
+        expect(result.search.items).toEqual([
+            {
+                price: { value: 129900 },
+                priceWithTax: { value: 155880 },
+            },
+            {
+                price: { value: 139900 },
+                priceWithTax: { value: 167880 },
+            },
+            {
+                price: { value: 219900 },
+                priceWithTax: { value: 263880 },
+            },
         ]);
     }
 
@@ -130,10 +141,19 @@ describe('Default search plugin', () => {
                 take: 3,
             } as SearchInput,
         });
-        expect(result.search.items.map(i => i.price)).toEqual([
-            { min: 129900, max: 229900 },
-            { min: 14374, max: 16994 },
-            { min: 93120, max: 109995 },
+        expect(result.search.items).toEqual([
+            {
+                price: { min: 129900, max: 229900 },
+                priceWithTax: { min: 155880, max: 275880 },
+            },
+            {
+                price: { min: 14374, max: 16994 },
+                priceWithTax: { min: 17249, max: 20393 },
+            },
+            {
+                price: { min: 93120, max: 109995 },
+                priceWithTax: { min: 111744, max: 131994 },
+            },
         ]);
     }
 
@@ -312,6 +332,29 @@ describe('Default search plugin', () => {
                 'SLR Camera',
             ]);
         });
+
+        it('updates index when a taxRate is changed', async () => {
+            await adminClient.query<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+                input: {
+                    // Default Channel's defaultTaxZone is Europe (id 2) and the id of the standard TaxRate
+                    // to Europe is 2.
+                    id: 'T_2',
+                    value: 50,
+                },
+            });
+            const result = await adminClient.query(SEARCH_GET_PRICES, {
+                input: {
+                    groupByProduct: true,
+                    term: 'laptop',
+                } as SearchInput,
+            });
+            expect(result.search.items).toEqual([
+                {
+                    price: { min: 129900, max: 229900 },
+                    priceWithTax: { min: 194850, max: 344850 },
+                },
+            ]);
+        });
     });
 });
 
@@ -335,6 +378,15 @@ export const SEARCH_GET_PRICES = gql`
         search(input: $input) {
             items {
                 price {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
                     ... on PriceRange {
                         min
                         max

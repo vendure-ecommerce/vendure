@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-25T12:30:39+01:00
+// Generated in 2019-03-25T13:48:50+01:00
 export type Maybe<T> = T | null;
 
 
@@ -5456,6 +5456,8 @@ export interface SearchResult {
   
   price: SearchResultPrice;
   
+  priceWithTax: SearchResultPrice;
+  
   currencyCode: CurrencyCode;
   
   description: string;
@@ -5469,7 +5471,7 @@ export interface SearchResult {
   score: number;
 }
 
-
+/** The price range where the result has more than one price */
 export interface PriceRange {
   
   min: number;
@@ -5477,7 +5479,7 @@ export interface PriceRange {
   max: number;
 }
 
-
+/** The price value where the result has a single price */
 export interface SinglePrice {
   
   value: number;
