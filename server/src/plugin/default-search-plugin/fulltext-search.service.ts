@@ -94,7 +94,7 @@ export class FulltextSearchService implements SearchService {
             relations: this.variantRelations,
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
-        const variants = await qb.where('variants_product.deletedAt IS NULL').getMany();
+        const variants = await qb.where('variants__product.deletedAt IS NULL').getMany();
         await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
         await this.saveSearchIndexItems(ctx, variants);
         return {

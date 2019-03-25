@@ -14,7 +14,7 @@ describe('parseChannelParam()', () => {
             fail('Result should be defined');
             return;
         }
-        expect(result.clause).toEqual('product_channels.id = :channelId');
+        expect(result.clause).toEqual('product__channels.id = :channelId');
         expect(result.parameters).toEqual({ channelId: 123 });
     });
 

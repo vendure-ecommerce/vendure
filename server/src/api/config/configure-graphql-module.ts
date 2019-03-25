@@ -52,13 +52,13 @@ export function configureGraphQLModule(
     });
 }
 
-function createGraphQLOptions(
+async function createGraphQLOptions(
     i18nService: I18nService,
     configService: ConfigService,
     idCodecService: IdCodecService,
     typesLoader: GraphQLTypesLoader,
     options: GraphQLApiOptions,
-): GqlModuleOptions {
+): Promise<GqlModuleOptions> {
     // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
     // See https://github.com/apollographql/apollo-server/issues/1075
     const dummyResolveType = {
@@ -69,7 +69,7 @@ function createGraphQLOptions(
 
     return {
         path: '/' + options.apiPath,
-        typeDefs: createTypeDefs(options.apiType),
+        typeDefs: await createTypeDefs(options.apiType),
         include: [options.resolverModule],
         resolvers: {
             JSON: GraphQLJSON,
@@ -103,9 +103,9 @@ function createGraphQLOptions(
      * 2. any custom fields defined in the config
      * 3. any schema extensions defined by plugins
      */
-    function createTypeDefs(apiType: 'shop' | 'admin'): string {
+    async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
         const customFields = configService.customFields;
-        const typeDefs = typesLoader.mergeTypesByPaths(...options.typePaths);
+        const typeDefs = await typesLoader.mergeTypesByPaths(options.typePaths);
         let schema = generateListOptions(typeDefs);
         schema = addGraphQLCustomFields(schema, customFields);
         const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType).map(

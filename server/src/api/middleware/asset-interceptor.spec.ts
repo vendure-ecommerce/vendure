@@ -1,4 +1,5 @@
-import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context.host';
+import { CallHandler } from '@nestjs/common';
+import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { of } from 'rxjs';
 
 import { MockConfigService } from '../../config/config.service.mock';
@@ -17,9 +18,9 @@ describe('AssetInterceptor', () => {
             configService.assetOptions.assetStorageStrategy = { toAbsoluteUrl };
             const interceptor = new AssetInterceptor(configService as any);
             const executionContext = new ExecutionContextHost([0, 0, { req: {} }]);
-            const call$ = of(response);
+            const next: CallHandler = { handle: () => of(response) };
 
-            interceptor.intercept(executionContext, call$).subscribe(result => {
+            interceptor.intercept(executionContext, next).subscribe(result => {
                 assertFn(response, result, toAbsoluteUrl);
                 done();
             });

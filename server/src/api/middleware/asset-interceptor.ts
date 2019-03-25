@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -25,14 +25,14 @@ export class AssetInterceptor implements NestInterceptor {
         }
     }
 
-    intercept<T = any>(context: ExecutionContext, call$: Observable<T>): Observable<T> {
+    intercept<T = any>(context: ExecutionContext, next: CallHandler<T>): Observable<T> {
         const toAbsoluteUrl = this.toAbsoluteUrl;
         if (toAbsoluteUrl === undefined) {
-            return call$;
+            return next.handle();
         }
         const ctx = GqlExecutionContext.create(context).getContext();
         const request = ctx.req;
-        return call$.pipe(
+        return next.handle().pipe(
             map(data => {
                 visitType(data, [Asset, 'productPreview', 'productVariantPreview'], asset => {
                     if (asset instanceof Asset) {

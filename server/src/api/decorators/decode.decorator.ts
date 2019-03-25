@@ -1,4 +1,4 @@
-import { ReflectMetadata } from '@nestjs/common';
+import { SetMetadata } from '@nestjs/common';
 
 export const DECODE_METADATA_KEY = '__decode__';
 
@@ -16,4 +16,4 @@ export const DECODE_METADATA_KEY = '__decode__';
  *  }
  * ```
  */
-export const Decode = (...transformKeys: string[]) => ReflectMetadata(DECODE_METADATA_KEY, transformKeys);
+export const Decode = (...transformKeys: string[]) => SetMetadata(DECODE_METADATA_KEY, transformKeys);

@@ -22,7 +22,7 @@ export function parseChannelParam<T extends VendureEntity>(
         return;
     }
     return {
-        clause: `${alias}_channels.id = :channelId`,
+        clause: `${alias}__channels.id = :channelId`,
         parameters: { channelId },
     };
 }

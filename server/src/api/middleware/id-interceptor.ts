@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
@@ -17,7 +17,7 @@ import { DECODE_METADATA_KEY } from '../decorators/decode.decorator';
 export class IdInterceptor implements NestInterceptor {
     constructor(private idCodecService: IdCodecService, private readonly reflector: Reflector) {}
 
-    intercept(context: ExecutionContext, call$: Observable<any>): Observable<any> {
+    intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
         const args = GqlExecutionContext.create(context).getArgs();
         const transformKeys = this.reflector.get<string[]>(DECODE_METADATA_KEY, context.getHandler());
         const gqlRoot = context.getArgByIndex(0);
@@ -27,6 +27,6 @@ export class IdInterceptor implements NestInterceptor {
             // be already decoded.
             Object.assign(args, this.idCodecService.decode(args, transformKeys));
         }
-        return call$;
+        return next.handle();
     }
 }
