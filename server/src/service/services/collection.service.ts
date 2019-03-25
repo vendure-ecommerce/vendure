@@ -147,7 +147,7 @@ export class CollectionService implements OnModuleInit {
             .leftJoinAndSelect('collection.translations', 'translation')
             .leftJoin('collection.productVariants', 'variant')
             .where('variant.product = :productId', { productId })
-            .groupBy('collection.id')
+            .groupBy('collection.id, translation.id')
             .orderBy('collection.id', 'ASC')
             .getMany();
 
