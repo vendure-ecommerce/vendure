@@ -37,6 +37,7 @@ import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-opt
 import { ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
+import { ShopEnvironmentResolver } from './resolvers/shop/shop-environment.resolver';
 import { ShopOrderResolver } from './resolvers/shop/shop-order.resolver';
 import { ShopProductsResolver } from './resolvers/shop/shop-products.resolver';
 
@@ -65,7 +66,13 @@ const adminResolvers = [
     ZoneResolver,
 ];
 
-const shopResolvers = [ShopAuthResolver, ShopCustomerResolver, ShopOrderResolver, ShopProductsResolver];
+const shopResolvers = [
+    ShopAuthResolver,
+    ShopCustomerResolver,
+    ShopOrderResolver,
+    ShopProductsResolver,
+    ShopEnvironmentResolver,
+];
 
 export const entityResolvers = [
     CollectionEntityResolver,
