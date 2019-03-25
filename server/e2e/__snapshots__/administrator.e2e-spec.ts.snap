@@ -18,7 +18,6 @@ Object {
         "permissions": Array [
           "Authenticated",
           "SuperAdmin",
-          "Owner",
           "Public",
           "CreateCatalog",
           "ReadCatalog",
