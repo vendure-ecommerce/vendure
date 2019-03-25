@@ -40,10 +40,14 @@ export class TestServer {
         const dbFilePath = this.getDbFilePath();
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {
-            console.log(`Test data not found. Populating database and saving to "${dbFilePath}"`);
+            if (options.logging) {
+                console.log(`Test data not found. Populating database and caching...`);
+            }
             await this.populateInitialData(testingConfig, options);
         }
-        console.log(`Loading test data from "${dbFilePath}"`);
+        if (options.logging) {
+            console.log(`Loading test data from "${dbFilePath}"`);
+        }
         this.app = await this.bootstrapForTesting(testingConfig);
     }
 

@@ -16,8 +16,10 @@ import { LanguageCode, SearchReindexResponse } from '../../../../shared/generate
 @Injectable()
 export class SearchService {
     async reindex(languageCode: LanguageCode): Promise<SearchReindexResponse> {
-        // tslint:disable-next-line:no-console
-        console.error(`The SearchService should be overridden by an appropriate search plugin.`);
+        if (!process.env.CI) {
+            // tslint:disable-next-line:no-console
+            console.warn(`The SearchService should be overridden by an appropriate search plugin.`);
+        }
         return {
             indexedItemCount: 0,
             success: false,
