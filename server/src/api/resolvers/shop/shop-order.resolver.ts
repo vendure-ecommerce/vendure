@@ -234,6 +234,7 @@ export class ShopOrderResolver {
                         await this.customerService.createAddress(ctx, customer.id as string, {
                             ...address,
                             streetLine1: address.streetLine1 || '',
+                            streetLine2: address.streetLine2 || '',
                             countryCode: address.countryCode || '',
                             defaultBillingAddress: true,
                             defaultShippingAddress: true,
