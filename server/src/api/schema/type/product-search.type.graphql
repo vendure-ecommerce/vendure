@@ -34,10 +34,11 @@ type SearchResult {
     facetValueIds: [String!]!
     "An array of ids of the Collections in which this result appears"
     collectionIds: [String!]!
-    "A relevence score for the result. Differs between database implementations."
+    "A relevence score for the result. Differs between database implementations"
     score: Float!
 }
 
+"The price of a search result product, either as a range or as a single price"
 union SearchResultPrice = PriceRange | SinglePrice
 
 "The price value where the result has a single price"

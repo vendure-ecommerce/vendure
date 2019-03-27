@@ -63,6 +63,7 @@
  */
 .gql-fields {
     @include code-block;
+    font-family: 'Oxygen Mono', monospace;
     &::before {
         content: 'sdl';
         @include code-block-lang;

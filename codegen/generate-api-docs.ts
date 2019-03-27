@@ -6,11 +6,13 @@ import {
     GraphQLNamedType,
     GraphQLObjectType,
     GraphQLType,
+    GraphQLUnionType,
     isEnumType,
     isInputObjectType,
     isNamedType,
     isObjectType,
     isScalarType,
+    isUnionType,
 } from 'graphql';
 import path from 'path';
 
@@ -105,6 +107,12 @@ function generateApiDocs(hugoOutputPath: string) {
             inputTypesOutput += renderFields(type);
             inputTypesOutput += `\n`;
         }
+
+        if (isUnionType(type)) {
+            objectTypesOutput += `## ${type.name}\n\n`;
+            objectTypesOutput += renderDescription(type);
+            objectTypesOutput += renderUnion(type);
+        }
     }
 
     fs.writeFileSync(path.join(hugoOutputPath, FileName.QUERY + '.md'), queriesOutput);
@@ -141,6 +149,14 @@ function renderFields(
     return output;
 }
 
+function renderUnion(type: GraphQLUnionType): string {
+    const unionTypes = type.getTypes().map(t => renderTypeAsLink(t)).join(' | ');
+    let output = '{{% gql-fields %}}\n';
+    output += `union ${type.name} = ${unionTypes}\n`;
+    output += '{{% /gql-fields %}}\n\n';
+    return output;
+}
+
 /**
  * Renders a field signature including any argument and output type
  */
@@ -160,8 +176,8 @@ function renderTypeAsLink(type: GraphQLType): string {
     const fileName = isEnumType(innerType)
         ? FileName.ENUM
         : isInputObjectType(innerType)
-        ? FileName.INPUT
-        : FileName.OBJECT;
+            ? FileName.INPUT
+            : FileName.OBJECT;
     const url = `${docsUrl}${fileName}#${innerType.name.toLowerCase()}`;
     return type.toString().replace(innerType.name, `[${innerType.name}](${url})`);
 }
