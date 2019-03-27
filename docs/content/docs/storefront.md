@@ -24,3 +24,7 @@ Keep up with development here: [github.com/vendure-ecommerce/storefront](https:/
 Here's a video showing how to quickly get started with Vendure + DEITY Falcon: 
 
 {{< vimeo 322812102 >}}
+
+## Gatsby
+
+We are also working on a [Gatsby](https://www.gatsbyjs.org/)-based storefront app: [vendure-ecommerce/gatsby-storefront](https://github.com/vendure-ecommerce/gatsby-storefront)
