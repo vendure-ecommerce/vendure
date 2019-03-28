@@ -5,6 +5,7 @@
     "declaration": false
   },
   "files": [
-    "../cli/vendure-cli.ts"
+    "../cli/vendure-cli.ts",
+    "../typings.d.ts"
   ]
 }

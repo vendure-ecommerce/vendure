@@ -126,7 +126,7 @@ export class SimpleGraphQLClient {
                 `${getConfig().channelTokenKey}: ${this.channelToken}`,
             ]);
             curl.perform();
-            curl.on('end', (statusCode, body) => {
+            curl.on('end', (statusCode: any, body: any) => {
                 curl.close();
                 const response = JSON.parse(body);
                 if (response.errors && response.errors.length) {
@@ -137,7 +137,7 @@ export class SimpleGraphQLClient {
                 resolve(response.data);
             });
 
-            curl.on('error', err => {
+            curl.on('error', (err: any) => {
                 curl.close();
                 console.log(err);
                 reject(err);

@@ -26,17 +26,13 @@ import {
     UPDATE_COLLECTION,
 } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
 import { FACET_VALUE_FRAGMENT } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-import {
-    GET_ASSET_LIST,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { GET_ASSET_LIST, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS, } from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Collection resolver', () => {
     const client = new TestAdminClient();
@@ -227,7 +223,7 @@ describe('Collection resolver', () => {
             expect(result.moveCollection.parent!.id).toBe(electronicsCollection.id);
 
             const positions = await getChildrenOf(electronicsCollection.id);
-            expect(positions.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(positions.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('re-evaluates Collection contents on move', async () => {
@@ -251,7 +247,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map((i: any) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
@@ -264,7 +260,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(afterResult.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
@@ -277,7 +273,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map((i: any) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it(
@@ -332,7 +328,7 @@ describe('Collection resolver', () => {
                 const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
-                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -361,7 +357,7 @@ describe('Collection resolver', () => {
                 const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
-                expect(result.collection.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -404,7 +400,7 @@ describe('Collection resolver', () => {
                         ],
                     } as CreateCollectionInput,
                 });
-                expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.createCollection.productVariants.items.map((i: any) => i.name)).toEqual([
                     'Instant Camera',
                 ]);
             });

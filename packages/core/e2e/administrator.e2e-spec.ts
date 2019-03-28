@@ -1,10 +1,4 @@
-import {
-    Administrator,
-    CreateAdministrator,
-    GetAdministrator,
-    GetAdministrators,
-    UpdateAdministrator,
-} from '@vendure/common/generated-types';
+import { Administrator, CreateAdministrator, GetAdministrator, GetAdministrators, UpdateAdministrator, } from '@vendure/common/generated-types';
 import path from 'path';
 
 import {
@@ -17,7 +11,7 @@ import {
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
     const client = new TestAdminClient();

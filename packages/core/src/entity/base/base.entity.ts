@@ -16,7 +16,7 @@ export abstract class VendureEntity {
     protected constructor(input?: DeepPartial<VendureEntity>) {
         if (input) {
             for (const [key, value] of Object.entries(input)) {
-                this[key] = value;
+                (this as any)[key] = value;
             }
         }
     }

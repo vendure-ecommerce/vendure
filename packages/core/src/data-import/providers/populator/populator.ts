@@ -6,7 +6,7 @@ import { notNullOrUndefined } from '@vendure/common/shared-utils';
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
 import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';
-import { Collection, TaxCategory } from '../../../entity';
+import { Collection, TaxCategory, Channel } from '../../../entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -120,7 +120,7 @@ export class Populator {
         return { channel, ctx };
     }
 
-    private async setChannelDefaults(zoneMap, data: InitialData, channel) {
+    private async setChannelDefaults(zoneMap: ZoneMap, data: InitialData, channel: Channel) {
         const defaultZone = zoneMap.get(data.defaultZone);
         if (!defaultZone) {
             throw new Error(

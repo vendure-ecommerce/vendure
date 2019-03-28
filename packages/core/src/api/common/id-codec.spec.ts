@@ -122,7 +122,7 @@ describe('IdCodecService', () => {
         });
 
         it('does not throw with an empty list', () => {
-            const input = [];
+            const input: any[] = [];
 
             const result = idCodec.encode(input);
             expect(() => idCodec.encode(input)).not.toThrow();

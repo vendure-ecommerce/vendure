@@ -83,18 +83,18 @@ export function translateDeep<T extends Translatable>(
 
         if (Array.isArray(path) && path.length === 2) {
             const [path0, path1] = path as any;
-            const valueLevel0 = translatable[path0];
+            const valueLevel0 = (translatable as any)[path0];
 
             if (Array.isArray(valueLevel0)) {
                 valueLevel0.forEach((nested1, index) => {
-                    object = translatedEntity[path0][index];
+                    object = (translatedEntity as any)[path0][index];
                     property = path1;
                     object[property] = translateLeaf(object, property, languageCode);
                 });
                 property = '';
                 object = null;
             } else {
-                object = translatedEntity[path0];
+                object = (translatedEntity as any)[path0];
                 property = path1;
                 value = translateLeaf(object, property, languageCode);
             }
@@ -112,10 +112,10 @@ export function translateDeep<T extends Translatable>(
     return translatedEntity;
 }
 
-function translateLeaf(object: object | undefined, property: string, languageCode: LanguageCode): any {
+function translateLeaf(object: { [key: string]: any } | undefined, property: string, languageCode: LanguageCode): any {
     if (object && object[property]) {
         if (Array.isArray(object[property])) {
-            return object[property].map(nested2 => translateEntity(nested2, languageCode));
+            return object[property].map((nested2: any) => translateEntity(nested2, languageCode));
         } else if (object[property]) {
             return translateEntity(object[property], languageCode);
         }

@@ -57,7 +57,7 @@ export class FSM<T extends string, Data = any> {
      * Attempts to transition from the current state to the given state. If this transition is not allowed
      * per the config, then an error will be logged.
      */
-    transitionTo(state: T, data?: Data);
+    transitionTo(state: T, data?: Data): void;
     async transitionTo(state: T, data: Data) {
         if (this.canTransitionTo(state)) {
             // If the onTransitionStart callback is defined, invoke it. If it returns false,

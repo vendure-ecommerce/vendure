@@ -3,17 +3,12 @@ import { omit } from '@vendure/common/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/shared-constants';
 import path from 'path';
 
-import {
-    CREATE_ROLE,
-    GET_ROLE,
-    GET_ROLES,
-    UPDATE_ROLE,
-} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { CREATE_ROLE, GET_ROLE, GET_ROLES, UPDATE_ROLE, } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Role resolver', () => {
     const client = new TestAdminClient();

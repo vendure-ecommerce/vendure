@@ -82,8 +82,8 @@ export class IdCodec {
         } else {
             target = this.transform(target, transformFn, transformKeys);
             for (const key of Object.keys(target)) {
-                if (this.isObject(target[key])) {
-                    target[key] = this.transformRecursive(target[key], transformFn, transformKeys);
+                if (this.isObject(target[key as keyof T])) {
+                    target[key as keyof T] = this.transformRecursive(target[key as keyof T], transformFn, transformKeys);
                 }
             }
         }
@@ -94,12 +94,12 @@ export class IdCodec {
         const clone = Object.assign({}, target);
         if (transformKeys) {
             for (const key of transformKeys) {
-                if (target[key]) {
-                    const val = target[key];
+                if (target[key as keyof T]) {
+                    const val = target[key as keyof T];
                     if (Array.isArray(val)) {
-                        clone[key] = val.map(v => transformFn(v));
+                        (clone as any)[key] = val.map(v => transformFn(v));
                     } else {
-                        clone[key] = transformFn(val);
+                        (clone as any)[key] = transformFn(val);
                     }
                 }
             }

@@ -26,17 +26,17 @@ export function mergeConfig<T extends VendureConfig>(target: T, source: DeepPart
 
     if (isObject(target) && isObject(source)) {
         for (const key in source) {
-            if (isObject(source[key])) {
-                if (!target[key]) {
-                    Object.assign(target, { [key]: {} });
+            if (isObject((source as any)[key])) {
+                if (!(target as any)[key]) {
+                    Object.assign((target as any), { [key]: {} });
                 }
-                if (!isClassInstance(source[key])) {
-                    mergeConfig(target[key], source[key]);
+                if (!isClassInstance((source as any)[key])) {
+                    mergeConfig((target as any)[key], (source as any)[key]);
                 } else {
-                    target[key] = source[key];
+                    (target as any)[key] = (source as any)[key];
                 }
             } else {
-                Object.assign(target, { [key]: source[key] });
+                Object.assign(target, { [key]: (source as any)[key] });
             }
         }
     }

@@ -16,6 +16,7 @@
     "postcommit": "git update-index --again",
     "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
     "dev-server": "ts-node packages/dev-server/index",
+    "dev-server:populate": "ts-node packages/dev-server/populate-cli",
     "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
     "test:common": "jest --config packages/common/jest.config.js",
     "test:server": "jest --config packages/core/jest.config.js",

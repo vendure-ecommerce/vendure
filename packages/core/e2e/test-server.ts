@@ -12,7 +12,7 @@ import { Mutable } from '../src/common/types/common-types';
 import { VendureConfig } from '../src/config/vendure-config';
 
 import { testConfig } from './config/test-config';
-import { setTestEnvironment } from './test-utils';
+import { setTestEnvironment } from './utils/test-environment';
 
 // tslint:disable:no-console
 /**

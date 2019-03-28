@@ -25,7 +25,7 @@ import { PromotionCondition } from '../src/config/promotion/promotion-condition'
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 

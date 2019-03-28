@@ -9,7 +9,7 @@ export class SearchIndexItem {
     constructor(input?: Partial<SearchIndexItem>) {
         if (input) {
             for (const [key, value] of Object.entries(input)) {
-                this[key] = value;
+                (this as any)[key] = value;
             }
         }
     }

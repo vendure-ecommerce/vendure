@@ -170,7 +170,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
      * transformed image, save it to cache, and serve the result as a response.
      */
     private generateTransformedImage() {
-        return async (err, req: Request, res: Response, next: NextFunction) => {
+        return async (err: any, req: Request, res: Response, next: NextFunction) => {
             if (err && err.status === 404) {
                 if (req.query) {
                     let file: Buffer;

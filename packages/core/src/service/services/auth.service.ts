@@ -21,7 +21,7 @@ import { OrderService } from './order.service';
  */
 @Injectable()
 export class AuthService {
-    private readonly sessionDurationInMs;
+    private readonly sessionDurationInMs: number;
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -29,7 +29,7 @@ export class AuthService {
         private configService: ConfigService,
         private orderService: OrderService,
     ) {
-        this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration);
+        this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration as string);
     }
 
     /**

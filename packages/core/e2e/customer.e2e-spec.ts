@@ -1,11 +1,4 @@
-import {
-    CreateCustomerAddress,
-    DeletionResult,
-    GetCustomer,
-    GetCustomerList,
-    UpdateCustomer,
-    UpdateCustomerAddress,
-} from '@vendure/common/generated-types';
+import { CreateCustomerAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer, } from '@vendure/common/generated-types';
 import { omit } from '@vendure/common/omit';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -15,13 +8,12 @@ import {
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
     UPDATE_CUSTOMER,
-    UPDATE_CUSTOMER_ADDRESS,
 } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 

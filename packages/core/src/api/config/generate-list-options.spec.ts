@@ -42,8 +42,8 @@ describe('generateListOptions()', () => {
     }
     `;
 
-    const removeLeadingWhitespace = s => {
-        const indent = s.match(/^\s+/m)[0].replace(/\n/, '');
+    const removeLeadingWhitespace = (s: string) => {
+        const indent = s.match(/^\s+/m)![0].replace(/\n/, '');
         return s.replace(new RegExp(`^${indent}`, 'gm'), '').trim();
     };
 

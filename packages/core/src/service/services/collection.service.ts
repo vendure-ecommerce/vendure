@@ -158,7 +158,7 @@ export class CollectionService implements OnModuleInit {
      * Returns the descendants of a Collection as a flat array.
      */
     async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<Collection>>> {
-        const getChildren = async (id, _descendants: Collection[] = []) => {
+        const getChildren = async (id: ID, _descendants: Collection[] = []) => {
             const children = await this.connection
                 .getRepository(Collection)
                 .find({ where: { parent: { id } } });
@@ -183,7 +183,7 @@ export class CollectionService implements OnModuleInit {
         collectionId: ID,
         ctx?: RequestContext,
     ): Promise<Array<Translated<Collection> | Collection>> {
-        const getParent = async (id, _ancestors: Collection[] = []): Promise<Collection[]> => {
+        const getParent = async (id: ID, _ancestors: Collection[] = []): Promise<Collection[]> => {
             const parent = await this.connection
                 .getRepository(Collection)
                 .createQueryBuilder()

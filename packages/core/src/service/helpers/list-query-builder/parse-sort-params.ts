@@ -34,7 +34,7 @@ export function parseSortParams<T extends VendureEntity>(
         translationColumns = columns.concat(translationMetadata.columns.filter(c => !c.relationMetadata));
     }
 
-    const output = {};
+    const output: OrderByCondition = {};
     const alias = metadata.name.toLowerCase();
 
     for (const [key, order] of Object.entries(sortParams)) {

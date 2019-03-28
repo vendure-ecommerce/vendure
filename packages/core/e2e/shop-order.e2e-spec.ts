@@ -1,28 +1,16 @@
 /* tslint:disable:no-non-null-assertion */
-import {
-    CreateAddressInput,
-    GetCountryList,
-    GetCustomer,
-    GetCustomerList,
-    UpdateCountry,
-} from '@vendure/common/generated-types';
+import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    GET_CUSTOMER,
-    GET_CUSTOMER_LIST,
-} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import {
-    GET_COUNTRY_LIST,
-    UPDATE_COUNTRY,
-} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
+import { GET_CUSTOMER, GET_CUSTOMER_LIST } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
+import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop orders', () => {
     const adminClient = new TestAdminClient();
@@ -65,7 +53,7 @@ describe('Shop orders', () => {
 
         const result = await shopClient.query(GET_AVAILABLE_COUNTRIES);
         expect(result.availableCountries.length).toBe(countries.items.length - 1);
-        expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
+        expect(result.availableCountries.find((c: GetCountryList.Items) => c.id === AT.id)).toBeUndefined();
     });
 
     describe('ordering as anonymous user', () => {
@@ -194,13 +182,13 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             expect(result1.addItemToOrder.lines.length).toBe(2);
-            expect(result1.addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(result1.addItemToOrder.lines.map((i: any) => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const result2 = await shopClient.query(REMOVE_ITEM_FROM_ORDER, {
                 orderItemId: firstOrderItemId,
             });
             expect(result2.removeItemFromOrder.lines.length).toBe(1);
-            expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(result2.removeItemFromOrder.lines.map((i: any) => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it(
@@ -431,13 +419,13 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             expect(result1.addItemToOrder.lines.length).toBe(2);
-            expect(result1.addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(result1.addItemToOrder.lines.map((i: any) => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const result2 = await shopClient.query(REMOVE_ITEM_FROM_ORDER, {
                 orderItemId: firstOrderItemId,
             });
             expect(result2.removeItemFromOrder.lines.length).toBe(1);
-            expect(result2.removeItemFromOrder.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(result2.removeItemFromOrder.lines.map((i: any) => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it('nextOrderStates returns next valid states', async () => {

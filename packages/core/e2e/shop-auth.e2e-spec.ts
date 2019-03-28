@@ -5,10 +5,7 @@ import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    CREATE_ADMINISTRATOR,
-    CREATE_ROLE,
-} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { CREATE_ADMINISTRATOR, CREATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 import { NoopEmailGenerator } from '../src/config/email/noop-email-generator';
 import { defaultEmailTypes } from '../src/email/default-email-types';
@@ -16,7 +13,7 @@ import { defaultEmailTypes } from '../src/email/default-email-types';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 let sendEmailFn: jest.Mock;
 const emailOptions = {
@@ -25,7 +22,7 @@ const emailOptions = {
     generator: new NoopEmailGenerator(),
     transport: {
         type: 'testing' as 'testing',
-        onSend: ctx => sendEmailFn(ctx),
+        onSend: (ctx: any) => sendEmailFn(ctx),
     },
 };
 

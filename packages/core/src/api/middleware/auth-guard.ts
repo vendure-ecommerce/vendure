@@ -38,7 +38,7 @@ export class AuthGuard implements CanActivate {
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         const session = await this.getSession(req, res, hasOwnerPermission);
         const requestContext = await this.requestContextService.fromRequest(req, permissions, session);
-        req[REQUEST_CONTEXT_KEY] = requestContext;
+        (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
 
         if (authDisabled || !permissions || isPublic) {
             return true;

@@ -110,7 +110,8 @@ export class OrderStateMachine {
             return defaultTranstions;
         }
         const merged = defaultTranstions;
-        for (const key of Object.keys(customTranstitions)) {
+        for (const k of Object.keys(customTranstitions)) {
+            const key = k as T;
             if (merged.hasOwnProperty(key)) {
                 merged[key].to = merged[key].to.concat(customTranstitions[key].to);
             } else {

@@ -125,7 +125,7 @@ describe('Facet resolver', () => {
             });
 
             const result2 = await client.query(GET_ZONE_LIST, {});
-            expect(result2.zones.find(c => c.id === pangaea.id)).toBeUndefined();
+            expect(result2.zones.find((c: any) => c.id === pangaea.id)).toBeUndefined();
         });
 
         it('does not delete Zone that is used in one or more TaxRates', async () => {
@@ -139,7 +139,7 @@ describe('Facet resolver', () => {
             });
 
             const result2 = await client.query(GET_ZONE_LIST, {});
-            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+            expect(result2.zones.find((c: any) => c.id === oceania.id)).not.toBeUndefined();
         });
     });
 });

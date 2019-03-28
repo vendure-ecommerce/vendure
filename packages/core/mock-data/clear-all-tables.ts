@@ -1,6 +1,6 @@
 import { ConnectionOptions, createConnection } from 'typeorm';
 
-import { isTestEnvironment } from '../e2e/test-utils';
+import { isTestEnvironment } from '../e2e/utils/test-environment';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises

@@ -6,7 +6,7 @@ export const CALCULATED_PROPERTIES = '__calculatedProperties__';
  * to transfer the getter function from the prototype to the entity instance.
  */
 export function Calculated(): MethodDecorator {
-    return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+    return (target: object & { [key: string]: any }, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
         if (target[CALCULATED_PROPERTIES]) {
             if (!target[CALCULATED_PROPERTIES].includes(propertyKey)) {
                 target[CALCULATED_PROPERTIES].push(propertyKey);

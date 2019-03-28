@@ -2,9 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../dist",
-    "rootDirs": ["../src", "../../../shared"]
+    "rootDirs": ["../src"]
   },
   "files": [
-    "../src/index.ts"
+    "../src/index.ts",
+    "../typings.d.ts"
   ]
 }

@@ -331,7 +331,7 @@ export class Importer {
         const regex = new RegExp(name, 'i');
         const found = taxCategories.find(tc => !!tc.name.match(regex));
         const match = found ? found : taxCategories[0];
-        this.taxCategoryService[name] = match.id;
+        this.taxCategoryMatches[name] = match.id as string;
         return match.id as string;
     }
 }

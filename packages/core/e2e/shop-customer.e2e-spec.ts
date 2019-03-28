@@ -1,23 +1,16 @@
 /* tslint:disable:no-non-null-assertion */
-import {
-    CreateAddressInput,
-    UpdateAddressInput,
-    UpdateCustomerInput,
-} from '@vendure/common/generated-shop-types';
+import { CreateAddressInput, UpdateAddressInput, UpdateCustomerInput, } from '@vendure/common/generated-shop-types';
 import { AttemptLogin, GetCustomer } from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { ATTEMPT_LOGIN } from '../../../admin-ui/src/app/data/definitions/auth-definitions';
-import {
-    CUSTOMER_FRAGMENT,
-    GET_CUSTOMER,
-} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
+import { CUSTOMER_FRAGMENT, GET_CUSTOMER, } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
-import { assertThrowsWithMessage } from './test-utils';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop customers', () => {
     const shopClient = new TestShopClient();

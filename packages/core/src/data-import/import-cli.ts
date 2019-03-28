@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { devConfig } from '../../dev-config';
+import { devConfig } from '../../../dev-server/dev-config';
 import { SimpleGraphQLClient } from '../../mock-data/simple-graphql-client';
 import { bootstrap } from '../bootstrap';
 import { setConfig } from '../config/config-helpers';
@@ -27,7 +27,7 @@ if (require.main === module) {
 
 async function getClient() {
     const config: VendureConfig = {
-        ...devConfig,
+        ...devConfig as any,
         port: 3020,
         authOptions: {
             tokenMethod: 'bearer',

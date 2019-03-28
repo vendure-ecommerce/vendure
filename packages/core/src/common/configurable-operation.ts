@@ -55,7 +55,7 @@ export function configurableDefToOperation(def: ConfigurableOperationDef): Confi
  * { foo: 'bar' }
  **/
 export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
-    const output: ConfigArgValues<T> = {} as any;
+    const output: ConfigArgValues<T> & { [key: string]: any } = {} as any;
     for (const arg of args) {
         if (arg.value != null) {
             output[arg.name] = coerceValueToType<T>(arg);
