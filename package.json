@@ -1,6 +1,6 @@
 {
   "name": "vendure",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.17",
   "private": true,
   "scripts": {
     "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-api-docs && yarn generate-config-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
