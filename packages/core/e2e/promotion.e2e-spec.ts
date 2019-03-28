@@ -7,7 +7,7 @@ import {
     GET_PROMOTION,
     GET_PROMOTION_LIST,
     UPDATE_PROMOTION,
-} from '../../admin-ui/src/app/data/definitions/promotion-definitions';
+} from '../../../admin-ui/src/app/data/definitions/promotion-definitions';
 import {
     ConfigArgType,
     CreatePromotion,
@@ -18,7 +18,7 @@ import {
     Promotion,
     UpdatePromotion,
 } from '../../../shared/generated-types';
-import { pick } from '../../shared/pick';
+import { pick } from '../../../shared/pick';
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 

@@ -9,14 +9,16 @@
     "generate-gql-types": "ts-node ./codegen/generate-graphql-types.ts",
     "generate-config-docs": "ts-node ./codegen/generate-config-docs.ts",
     "generate-api-docs": "ts-node ./codegen/generate-api-docs.ts --api=shop && ts-node ./codegen/generate-api-docs.ts --api=admin",
-    "test": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "lint:server": "cd server && yarn lint --fix",
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
     "precommit": "lint-staged",
     "postcommit": "git update-index --again",
-    "prepush": "yarn test && cd admin-ui && yarn build --prod",
-    "dev-server": "ts-node packages/dev-server/index"
+    "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
+    "dev-server": "ts-node packages/dev-server/index",
+    "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
+    "test:server": "jest --config packages/core/jest.config.js",
+    "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand"
   },
   "devDependencies": {
     "@types/graphql": "^14.0.5",
@@ -32,10 +34,12 @@
     "graphql-codegen-typescript-server": "^0.16.0",
     "graphql-tools": "^4.0.0",
     "husky": "^0.14.3",
+    "jest": "^24.5.0",
     "klaw-sync": "^6.0.0",
     "lerna": "^3.13.1",
     "lint-staged": "^7.2.0",
     "prettier": "^1.15.2",
+    "ts-jest": "^24.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.2.4"

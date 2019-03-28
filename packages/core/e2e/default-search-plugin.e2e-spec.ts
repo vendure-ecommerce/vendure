@@ -4,9 +4,9 @@ import path from 'path';
 import {
     CREATE_COLLECTION,
     UPDATE_COLLECTION,
-} from '../../admin-ui/src/app/data/definitions/collection-definitions';
-import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../admin-ui/src/app/data/definitions/product-definitions';
-import { UPDATE_TAX_RATE } from '../../admin-ui/src/app/data/definitions/settings-definitions';
+} from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     ConfigArgType,
     CreateCollection,

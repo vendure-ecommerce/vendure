@@ -1,8 +1,8 @@
 import faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 
-import { CREATE_CHANNEL } from '../../admin-ui/src/app/data/definitions/settings-definitions';
-import { CREATE_SHIPPING_METHOD } from '../../admin-ui/src/app/data/definitions/shipping-definitions';
+import { CREATE_CHANNEL } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
+import { CREATE_SHIPPING_METHOD } from '../../../admin-ui/src/app/data/definitions/shipping-definitions';
 import {
     Channel,
     CreateAddressInput,

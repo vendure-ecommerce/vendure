@@ -8,13 +8,13 @@ import {
     GET_FACET_WITH_VALUES,
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
-} from '../../admin-ui/src/app/data/definitions/facet-definitions';
+} from '../../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
+} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     CreateFacet,
     CreateFacetValues,

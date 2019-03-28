@@ -2,8 +2,8 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { GET_CUSTOMER_LIST } from '../../admin-ui/src/app/data/definitions/customer-definitions';
-import { GET_ORDER, GET_ORDERS_LIST } from '../../admin-ui/src/app/data/definitions/order-definitions';
+import { GET_CUSTOMER_LIST } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
+import { GET_ORDER, GET_ORDERS_LIST } from '../../../admin-ui/src/app/data/definitions/order-definitions';
 import { GetCustomerList, GetOrder, GetOrderList } from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

@@ -6,7 +6,7 @@ import {
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     UPDATE_COUNTRY,
-} from '../../admin-ui/src/app/data/definitions/settings-definitions';
+} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     CreateCountry,
     DeletionResult,

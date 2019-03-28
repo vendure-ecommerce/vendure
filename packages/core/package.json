@@ -18,11 +18,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "tslint --project tsconfig.json -c tslint.json",
-    "test": "jest --runInBand",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand",
-    "test:e2e:watch": "jest --config ./e2e/config/jest-e2e.json --watch --runInBand",
+    "test:e2e": "jest --config ../../e2e/config/jest-e2e.json --runInBand",
+    "test:e2e:watch": "jest --config ../../e2e/config/jest-e2e.json --watch --runInBand",
     "generate-email-preview": "node -r ts-node/register src/email/preview/generate-email-preview.ts",
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "publish:alpha": "yarn build && npm publish --access public --tag alpha"
@@ -98,33 +95,11 @@
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",
     "gulp": "^4.0.0",
-    "jest": "^23.6.0",
     "node-libcurl": "^1.3.3",
     "opn": "^5.4.0",
     "pg": "^7.8.0",
     "rimraf": "^2.6.3",
     "sql.js": "^0.5.0",
-    "sqlite3": "^4.0.6",
-    "ts-jest": "~23.10.5"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "moduleNameMapper": {
-      "shared/(.*)": "<rootDir>/../../shared/$1.ts"
-    },
-    "roots": [
-      "src",
-      "../../shared",
-      "mock-data"
-    ],
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "coverageDirectory": "../coverage",
-    "preset": "ts-jest"
+    "sqlite3": "^4.0.6"
   }
 }

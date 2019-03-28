@@ -5,7 +5,7 @@ import {
     GET_ADMINISTRATOR,
     GET_ADMINISTRATORS,
     UPDATE_ADMINISTRATOR,
-} from '../../admin-ui/src/app/data/definitions/administrator-definitions';
+} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import {
     Administrator,
     CreateAdministrator,

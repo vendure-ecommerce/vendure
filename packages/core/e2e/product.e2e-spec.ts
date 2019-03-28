@@ -11,7 +11,7 @@ import {
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
+} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     AddOptionGroupToProduct,
     CreateProduct,

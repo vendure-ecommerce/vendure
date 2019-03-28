@@ -2,16 +2,16 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
+import { ATTEMPT_LOGIN } from '../../../admin-ui/src/app/data/definitions/auth-definitions';
 import {
     CUSTOMER_FRAGMENT,
     GET_CUSTOMER,
-} from '../../admin-ui/src/app/data/definitions/customer-definitions';
+} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 import {
     CreateAddressInput,
     UpdateAddressInput,
     UpdateCustomerInput,
-} from '../../shared/generated-shop-types';
+} from '../../../shared/generated-shop-types';
 import { AttemptLogin, GetCustomer } from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

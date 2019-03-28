@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "populate": "node -r ts-node/register mock-data/populate-cli.ts",
     "start:dev": "nodemon --config nodemon-debug.json"

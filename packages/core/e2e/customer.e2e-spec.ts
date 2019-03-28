@@ -7,7 +7,7 @@ import {
     GET_CUSTOMER_LIST,
     UPDATE_CUSTOMER,
     UPDATE_CUSTOMER_ADDRESS,
-} from '../../admin-ui/src/app/data/definitions/customer-definitions';
+} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 import {
     CreateCustomerAddress,
     DeletionResult,

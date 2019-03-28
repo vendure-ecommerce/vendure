@@ -5,13 +5,13 @@ import path from 'path';
 import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
-} from '../../admin-ui/src/app/data/definitions/administrator-definitions';
-import { ATTEMPT_LOGIN } from '../../admin-ui/src/app/data/definitions/auth-definitions';
+} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { ATTEMPT_LOGIN } from '../../../admin-ui/src/app/data/definitions/auth-definitions';
 import {
     CREATE_PRODUCT,
     GET_PRODUCT_LIST,
     UPDATE_PRODUCT,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
+} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     CreateAdministrator,
     CreateProductMutationArgs,

@@ -8,7 +8,7 @@ import {
     GET_ZONE,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_ZONE,
-} from '../../admin-ui/src/app/data/definitions/settings-definitions';
+} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     AddMembersToZone,
     CreateZone,

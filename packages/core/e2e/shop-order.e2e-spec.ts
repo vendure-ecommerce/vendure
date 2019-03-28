@@ -5,11 +5,11 @@ import path from 'path';
 import {
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
-} from '../../admin-ui/src/app/data/definitions/customer-definitions';
+} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 import {
     GET_COUNTRY_LIST,
     UPDATE_COUNTRY,
-} from '../../admin-ui/src/app/data/definitions/settings-definitions';
+} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     CreateAddressInput,
     GetCountryList,

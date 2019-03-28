@@ -6,9 +6,9 @@ import path from 'path';
 import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
-} from '../../admin-ui/src/app/data/definitions/administrator-definitions';
-import { GET_CUSTOMER } from '../../admin-ui/src/app/data/definitions/customer-definitions';
-import { RegisterCustomerInput } from '../../shared/generated-shop-types';
+} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
+import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
+import { RegisterCustomerInput } from '../../../shared/generated-shop-types';
 import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '../../../shared/generated-types';
 import { NoopEmailGenerator } from '../src/config/email/noop-email-generator';
 import { defaultEmailTypes } from '../src/email/default-email-types';
@@ -20,7 +20,7 @@ import { assertThrowsWithMessage } from './test-utils';
 
 let sendEmailFn: jest.Mock;
 const emailOptions = {
-    emailTemplatePath: 'src/email/templates',
+    emailTemplatePath: path.join(__dirname, '../src/email/templates'),
     emailTypes: defaultEmailTypes,
     generator: new NoopEmailGenerator(),
     transport: {

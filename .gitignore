@@ -383,10 +383,10 @@ Temporary Items
 docker-compose.yml
 .env
 dist
-packages/core/e2e/__data__/*
+e2e/__data__/*
 packages/core/assets
 packages/core/dist
-packages/core/*.sqlite
+packages/core/e2e/__data__/*.sqlite
 !packages/core/e2e/__data__/.gitkeep
 packages/core/test-emails
 packages/core/src/email/preview/output

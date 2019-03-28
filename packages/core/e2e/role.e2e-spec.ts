@@ -5,7 +5,7 @@ import {
     GET_ROLE,
     GET_ROLES,
     UPDATE_ROLE,
-} from '../../admin-ui/src/app/data/definitions/administrator-definitions';
+} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '../../../shared/generated-types';
 import { omit } from '../../../shared/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../../shared/shared-constants';

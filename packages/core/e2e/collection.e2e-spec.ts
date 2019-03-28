@@ -7,13 +7,13 @@ import {
     GET_COLLECTION,
     MOVE_COLLECTION,
     UPDATE_COLLECTION,
-} from '../../admin-ui/src/app/data/definitions/collection-definitions';
-import { FACET_VALUE_FRAGMENT } from '../../admin-ui/src/app/data/definitions/facet-definitions';
+} from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { FACET_VALUE_FRAGMENT } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
 import {
     GET_ASSET_LIST,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../admin-ui/src/app/data/definitions/product-definitions';
+} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     Collection,
     ConfigArgType,
