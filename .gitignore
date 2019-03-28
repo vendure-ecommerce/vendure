@@ -120,7 +120,7 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
-server/yarn-error.log
+packages/core/yarn-error.log
 *.vspscc
 *.vssscc
 .builds
@@ -222,10 +222,6 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
@@ -387,13 +383,13 @@ Temporary Items
 docker-compose.yml
 .env
 dist
-server/e2e/__data__/*
-server/assets
-server/dist
-server/*.sqlite
-!server/e2e/__data__/.gitkeep
-server/test-emails
-server/src/email/preview/output
+packages/core/e2e/__data__/*
+packages/core/assets
+packages/core/dist
+packages/core/*.sqlite
+!packages/core/e2e/__data__/.gitkeep
+packages/core/test-emails
+packages/core/src/email/preview/output
 docs/resources/_gen/*
 docs/static/main.js*
 docs/static/main.css*

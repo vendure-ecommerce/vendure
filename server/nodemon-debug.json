@@ -1,6 +1,0 @@
-{
-  "watch": ["src", "index-dev.ts"],
-  "ext": "ts",
-  "ignore": ["src/**/*.spec.ts", "mock-data/**/*"],
-  "exec": "node --inspect=5858 -r ts-node/register index-dev.ts"
-}

@@ -1,4 +1,4 @@
-/// <reference types="../server/node_modules/@types/jest" />
+/// <reference types="../packages/core/node_modules/@types/jest" />
 
 import { generateAllCombinations } from './shared-utils';
 

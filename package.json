@@ -15,7 +15,8 @@
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
     "precommit": "lint-staged",
     "postcommit": "git update-index --again",
-    "prepush": "yarn test && cd admin-ui && yarn build --prod"
+    "prepush": "yarn test && cd admin-ui && yarn build --prod",
+    "dev-server": "ts-node packages/dev-server/index"
   },
   "devDependencies": {
     "@types/graphql": "^14.0.5",
@@ -32,6 +33,7 @@
     "graphql-tools": "^4.0.0",
     "husky": "^0.14.3",
     "klaw-sync": "^6.0.0",
+    "lerna": "^3.13.1",
     "lint-staged": "^7.2.0",
     "prettier": "^1.15.2",
     "ts-node": "^7.0.1",
