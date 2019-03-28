@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { filterAsync } from '@vendure/common/filter-async';
+import { AdjustmentType } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
 import { Connection } from 'typeorm';
 
-import { filterAsync } from '../../../../../../shared/filter-async';
-import { AdjustmentType } from '../../../../../../shared/generated-types';
-import { ID } from '../../../../../../shared/shared-types';
-import { unique } from '../../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
 import { PromotionUtils } from '../../../config';

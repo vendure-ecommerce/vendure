@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { LoginMutationArgs, LoginResult, Permission } from '@vendure/common/generated-types';
 import { Request, Response } from 'express';
 
-import { LoginMutationArgs, LoginResult, Permission } from '../../../../../../shared/generated-types';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { ChannelService } from '../../../service/services/channel.service';

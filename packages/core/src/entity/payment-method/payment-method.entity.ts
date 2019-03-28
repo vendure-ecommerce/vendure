@@ -1,7 +1,7 @@
+import { ConfigArg } from '@vendure/common/generated-types';
+import { DeepPartial } from '@vendure/common/shared-types';
 import { Column, Entity } from 'typeorm';
 
-import { ConfigArg } from '../../../../../shared/generated-types';
-import { DeepPartial } from '../../../../../shared/shared-types';
 import { UserInputError } from '../../common/error/errors';
 import { getConfig } from '../../config/config-helpers';
 import { VendureEntity } from '../base/base.entity';

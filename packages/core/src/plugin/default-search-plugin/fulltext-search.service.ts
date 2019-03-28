@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { LanguageCode, SearchInput, SearchResponse } from '@vendure/common/generated-types';
+import { Omit } from '@vendure/common/omit';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
 import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
-import { LanguageCode, SearchInput, SearchResponse } from '../../../../../shared/generated-types';
-import { Omit } from '../../../../../shared/omit';
-import { ID } from '../../../../../shared/shared-types';
-import { unique } from '../../../../../shared/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { FacetValue, Product, ProductVariant } from '../../entity';

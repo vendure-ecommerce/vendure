@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/shared-constants';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
 import { Connection } from 'typeorm';
 
-import { CreateAdministratorInput, UpdateAdministratorInput } from '../../../../../shared/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../../../../shared/shared-constants';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Administrator } from '../../entity/administrator/administrator.entity';

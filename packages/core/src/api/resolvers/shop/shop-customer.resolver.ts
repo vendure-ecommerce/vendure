@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
-import { DeleteCustomerAddressMutationArgs } from '../../../../../shared/generated-shop-types';
+import { DeleteCustomerAddressMutationArgs } from '@vendure/common/generated-shop-types';
 import {
     CreateCustomerAddressMutationArgs,
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
-} from '../../../../../../shared/generated-types';
+} from '@vendure/common/generated-types';
+
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { Address, Customer } from '../../../entity';

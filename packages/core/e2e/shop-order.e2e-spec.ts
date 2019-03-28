@@ -1,4 +1,11 @@
 /* tslint:disable:no-non-null-assertion */
+import {
+    CreateAddressInput,
+    GetCountryList,
+    GetCustomer,
+    GetCustomerList,
+    UpdateCountry,
+} from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -10,13 +17,6 @@ import {
     GET_COUNTRY_LIST,
     UPDATE_COUNTRY,
 } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import {
-    CreateAddressInput,
-    GetCountryList,
-    GetCustomer,
-    GetCustomerList,
-    UpdateCountry,
-} from '../../../shared/generated-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

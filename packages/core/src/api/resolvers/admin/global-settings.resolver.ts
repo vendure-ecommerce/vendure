@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission, UpdateGlobalSettingsMutationArgs } from '@vendure/common/generated-types';
 
-import { Permission, UpdateGlobalSettingsMutationArgs } from '../../../../../../shared/generated-types';
 import { VendureConfig } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';

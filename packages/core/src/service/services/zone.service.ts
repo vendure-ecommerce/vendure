@@ -1,7 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     AddMembersToZoneMutationArgs,
     CreateZoneInput,
@@ -9,9 +7,11 @@ import {
     DeletionResult,
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneInput,
-} from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
-import { unique } from '../../../../../shared/unique';
+} from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
 import { TaxRate } from '../../entity';

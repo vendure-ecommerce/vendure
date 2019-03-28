@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 
-import { Permission } from '../../../../../shared/generated-types';
+import { Permission } from '@vendure/common/generated-types';
 
 export const PERMISSIONS_METADATA_KEY = '__permissions__';
 

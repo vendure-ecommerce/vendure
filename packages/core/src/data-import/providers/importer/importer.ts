@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { ImportInfo, LanguageCode } from '@vendure/common/generated-types';
+import { normalizeString } from '@vendure/common/normalize-string';
 import fs from 'fs-extra';
 import path from 'path';
 import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';
 
-import { ImportInfo, LanguageCode } from '../../../../../../shared/generated-types';
-import { normalizeString } from '../../../../../../shared/normalize-string';
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';

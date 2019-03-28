@@ -1,3 +1,18 @@
+import {
+    CreateFacet,
+    CreateFacetValues,
+    DeletionResult,
+    FacetWithValues,
+    GetFacetList,
+    GetFacetWithValues,
+    GetProductList,
+    GetProductWithVariants,
+    LanguageCode,
+    UpdateFacet,
+    UpdateFacetValues,
+    UpdateProduct,
+    UpdateProductVariants,
+} from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -15,21 +30,6 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import {
-    CreateFacet,
-    CreateFacetValues,
-    DeletionResult,
-    FacetWithValues,
-    GetFacetList,
-    GetFacetWithValues,
-    GetProductList,
-    GetProductWithVariants,
-    LanguageCode,
-    UpdateFacet,
-    UpdateFacetValues,
-    UpdateProduct,
-    UpdateProductVariants,
-} from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

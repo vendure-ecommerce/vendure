@@ -1,6 +1,6 @@
 import { AbstractRepository, EntityManager, Repository } from 'typeorm';
 
-import { Type } from '../../../../shared/shared-types';
+import { Type } from '@vendure/common/shared-types';
 
 import { MockClass } from './testing-types';
 

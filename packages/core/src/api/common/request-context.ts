@@ -1,7 +1,7 @@
+import { LanguageCode } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
 import i18next from 'i18next';
 
-import { LanguageCode } from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';

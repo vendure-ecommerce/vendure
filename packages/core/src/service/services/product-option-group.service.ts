@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection, FindManyOptions, Like } from 'typeorm';
-
 import {
     CreateProductOptionGroupInput,
     LanguageCode,
     UpdateProductOptionGroupInput,
-} from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { Connection, FindManyOptions, Like } from 'typeorm';
+
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';

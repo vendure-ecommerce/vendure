@@ -1,6 +1,6 @@
+import { ConfigArg, ConfigArgType } from '@vendure/common/generated-types';
 import { SelectQueryBuilder } from 'typeorm';
 
-import { ConfigArg, ConfigArgType } from '../../../../../shared/generated-types';
 import {
     argsArrayToHash,
     ConfigArgs,

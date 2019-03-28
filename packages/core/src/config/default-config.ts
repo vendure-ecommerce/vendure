@@ -1,6 +1,7 @@
-import { LanguageCode } from '../../../../shared/generated-types';
-import { ADMIN_API_PATH, API_PORT } from '../../../../shared/shared-constants';
-import { CustomFields } from '../../../../shared/shared-types';
+import { LanguageCode } from '@vendure/common/generated-types';
+import { ADMIN_API_PATH, API_PORT } from '@vendure/common/shared-constants';
+import { CustomFields } from '@vendure/common/shared-types';
+
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';

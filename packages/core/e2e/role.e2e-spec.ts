@@ -1,3 +1,6 @@
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '@vendure/common/generated-types';
+import { omit } from '@vendure/common/omit';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/shared-constants';
 import path from 'path';
 
 import {
@@ -6,9 +9,6 @@ import {
     GET_ROLES,
     UPDATE_ROLE,
 } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '../../../shared/generated-types';
-import { omit } from '../../../shared/omit';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '../../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

@@ -1,6 +1,6 @@
 import { printSchema } from 'graphql';
 
-import { CustomFields } from '../../../../../shared/shared-types';
+import { CustomFields } from '@vendure/common/shared-types';
 
 import { addGraphQLCustomFields } from './graphql-custom-fields';
 

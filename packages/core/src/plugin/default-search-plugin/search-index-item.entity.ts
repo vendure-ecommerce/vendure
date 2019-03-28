@@ -1,7 +1,7 @@
+import { CurrencyCode, LanguageCode } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-import { CurrencyCode, LanguageCode } from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
 import { idType } from '../../config/config-helpers';
 
 @Entity()

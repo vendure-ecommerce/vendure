@@ -1,8 +1,8 @@
 import { Provider } from '@nestjs/common';
+import { SearchReindexResponse } from '@vendure/common/generated-types';
+import { Type } from '@vendure/common/shared-types';
 import gql from 'graphql-tag';
 
-import { SearchReindexResponse } from '../../../../../shared/generated-types';
-import { Type } from '../../../../../shared/shared-types';
 import { idsAreEqual } from '../../common/utils';
 import { APIExtensionDefinition, VendurePlugin } from '../../config';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';

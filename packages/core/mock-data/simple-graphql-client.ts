@@ -1,3 +1,5 @@
+import { CreateAssets, ImportInfo } from '@vendure/common/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/shared-constants';
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
 import gql from 'graphql-tag';
@@ -5,8 +7,6 @@ import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
 
 import { CREATE_ASSETS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import { CreateAssets, ImportInfo } from '../../../shared/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../../shared/shared-constants';
 import { getConfig } from '../src/config/config-helpers';
 
 import { createUploadPostData } from './create-upload-post-data';

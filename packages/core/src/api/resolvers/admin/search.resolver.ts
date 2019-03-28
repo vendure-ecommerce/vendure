@@ -1,7 +1,7 @@
 import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission, SearchResponse } from '@vendure/common/generated-types';
+import { Omit } from '@vendure/common/omit';
 
-import { Permission, SearchResponse } from '../../../../../../shared/generated-types';
-import { Omit } from '../../../../../../shared/omit';
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { FacetValue } from '../../../entity';

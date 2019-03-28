@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Permission } from '@vendure/common/generated-types';
 import { Request, Response } from 'express';
 
-import { Permission } from '../../../../../shared/generated-types';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';

@@ -1,6 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import ms from 'ms';
-
 import {
     AddItemToOrderMutationArgs,
     AddPaymentToOrderMutationArgs,
@@ -14,8 +12,10 @@ import {
     SetOrderShippingMethodMutationArgs,
     ShippingMethodQuote,
     TransitionOrderToStateMutationArgs,
-} from '../../../../../shared/generated-shop-types';
-import { CountriesQueryArgs } from '../../../../../../shared/generated-types';
+} from '@vendure/common/generated-shop-types';
+import { CountriesQueryArgs } from '@vendure/common/generated-types';
+import ms from 'ms';
+
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';

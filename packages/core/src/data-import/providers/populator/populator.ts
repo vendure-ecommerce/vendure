@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigArgType, LanguageCode } from '@vendure/common/generated-types';
+import { normalizeString } from '@vendure/common/normalize-string';
+import { notNullOrUndefined } from '@vendure/common/shared-utils';
 
-import { ConfigArgType, LanguageCode } from '../../../../../../shared/generated-types';
-import { normalizeString } from '../../../../../../shared/normalize-string';
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
 import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';

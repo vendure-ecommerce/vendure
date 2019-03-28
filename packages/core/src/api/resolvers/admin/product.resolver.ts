@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     AddOptionGroupToProductMutationArgs,
     CreateProductMutationArgs,
@@ -12,8 +11,9 @@ import {
     RemoveOptionGroupFromProductMutationArgs,
     UpdateProductMutationArgs,
     UpdateProductVariantsMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { Translated } from '../../../common/types/locale-types';
 import { assertFound } from '../../../common/utils';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';

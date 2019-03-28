@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     CollectionQueryArgs,
     CollectionsQueryArgs,
@@ -8,8 +7,9 @@ import {
     MoveCollectionMutationArgs,
     Permission,
     UpdateCollectionMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
@@ -101,5 +101,5 @@ export class CollectionResolver {
             this.idCodecService.encodeConfigurableOperation(collection.filters);
         }
         return collection;
-    };
+    }
 }

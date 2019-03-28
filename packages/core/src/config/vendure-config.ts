@@ -1,10 +1,10 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { LanguageCode } from '@vendure/common/generated-types';
+import { CustomFields } from '@vendure/common/shared-types';
 import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
-import { LanguageCode } from '../../../../shared/generated-types';
-import { CustomFields } from '../../../../shared/shared-types';
 import { Transitions } from '../common/finite-state-machine';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';

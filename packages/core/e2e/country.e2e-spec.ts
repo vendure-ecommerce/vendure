@@ -1,3 +1,11 @@
+import {
+    CreateCountry,
+    DeletionResult,
+    GetCountry,
+    GetCountryList,
+    LanguageCode,
+    UpdateCountry,
+} from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -7,14 +15,6 @@ import {
     GET_COUNTRY_LIST,
     UPDATE_COUNTRY,
 } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import {
-    CreateCountry,
-    DeletionResult,
-    GetCountry,
-    GetCountryList,
-    LanguageCode,
-    UpdateCountry,
-} from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

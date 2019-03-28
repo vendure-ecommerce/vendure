@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { notNullOrUndefined } from '@vendure/common/shared-utils';
 
-import { notNullOrUndefined } from '../../../../../../shared/shared-utils';
 import { RequestContext } from '../../../api/common/request-context';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';

@@ -1,7 +1,7 @@
 import { buildSchema, extendSchema, GraphQLSchema, parse } from 'graphql';
 
-import { CustomFieldConfig, CustomFields, CustomFieldType } from '../../../../../shared/shared-types';
-import { assertNever } from '../../../../../shared/shared-utils';
+import { CustomFieldConfig, CustomFields, CustomFieldType } from '@vendure/common/shared-types';
+import { assertNever } from '@vendure/common/shared-utils';
 
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in

@@ -1,9 +1,9 @@
+import { AdminUiConfig } from '@vendure/common/shared-types';
 import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { AdminUiConfig } from '../../../../../shared/shared-types';
 import { VendureConfig } from '../../config/vendure-config';
 import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
 import { createProxyHandler } from '../plugin-utils';

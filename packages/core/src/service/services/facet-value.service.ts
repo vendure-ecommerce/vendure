@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     CreateFacetValueInput,
     CreateFacetValueWithFacetInput,
@@ -9,8 +7,10 @@ import {
     DeletionResult,
     LanguageCode,
     UpdateFacetValueInput,
-} from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';

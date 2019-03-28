@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     CreatePromotionMutationArgs,
     DeletePromotionMutationArgs,
@@ -8,8 +7,9 @@ import {
     PromotionQueryArgs,
     PromotionsQueryArgs,
     UpdatePromotionMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { PromotionService } from '../../../service/services/promotion.service';
 import { IdCodecService } from '../../common/id-codec.service';
@@ -83,5 +83,5 @@ export class PromotionResolver {
             this.idCodecService.encodeConfigurableOperation(collection.actions);
         }
         return collection;
-    };
+    }
 }

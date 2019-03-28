@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     AddMembersToZoneMutationArgs,
     CreateZoneMutationArgs,
@@ -9,7 +8,8 @@ import {
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneMutationArgs,
     ZoneQueryArgs,
-} from '../../../../../../shared/generated-types';
+} from '@vendure/common/generated-types';
+
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ZoneService } from '../../../service/services/zone.service';
 import { RequestContext } from '../../common/request-context';

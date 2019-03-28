@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     CreateFacetMutationArgs,
     CreateFacetValuesMutationArgs,
@@ -11,8 +10,9 @@ import {
     Permission,
     UpdateFacetMutationArgs,
     UpdateFacetValuesMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';

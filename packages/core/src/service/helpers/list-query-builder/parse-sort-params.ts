@@ -1,8 +1,8 @@
+import { Type } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
 import { Connection, OrderByCondition } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { Type } from '../../../../../../shared/shared-types';
-import { unique } from '../../../../../../shared/unique';
 import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';

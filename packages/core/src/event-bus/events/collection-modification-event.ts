@@ -1,4 +1,5 @@
-import { ID } from '../../../../../shared/shared-types';
+import { ID } from '@vendure/common/shared-types';
+
 import { RequestContext } from '../../api/common/request-context';
 import { Collection } from '../../entity';
 import { VendureEvent } from '../vendure-event';

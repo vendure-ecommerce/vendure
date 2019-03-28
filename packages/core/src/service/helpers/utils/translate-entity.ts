@@ -1,4 +1,4 @@
-import { LanguageCode } from '../../../../../../shared/generated-types';
+import { LanguageCode } from '@vendure/common/generated-types';
 
 import { UnwrappedArray } from '../../../common/types/common-types';
 

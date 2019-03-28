@@ -1,8 +1,8 @@
+import { LanguageCode } from '@vendure/common/generated-types';
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity } from 'typeorm';
 
 import { VendureEntity } from '..';
-import { LanguageCode } from '../../../../../shared/generated-types';
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { CustomGlobalSettingsFields } from '../custom-entity-fields';
 
 @Entity()

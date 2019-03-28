@@ -1,8 +1,8 @@
+import { Type } from '@vendure/common/shared-types';
+import { assertNever } from '@vendure/common/shared-utils';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { Type } from '../../../../../../shared/shared-types';
-import { assertNever } from '../../../../../../shared/shared-utils';
 import { UserInputError } from '../../../common/error/errors';
 import {
     BooleanOperators,

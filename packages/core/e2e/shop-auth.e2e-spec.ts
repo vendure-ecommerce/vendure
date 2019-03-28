@@ -1,4 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
+import { RegisterCustomerInput } from '@vendure/common/generated-shop-types';
+import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '@vendure/common/generated-types';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -8,8 +10,6 @@ import {
     CREATE_ROLE,
 } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import { RegisterCustomerInput } from '../../../shared/generated-shop-types';
-import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '../../../shared/generated-types';
 import { NoopEmailGenerator } from '../src/config/email/noop-email-generator';
 import { defaultEmailTypes } from '../src/email/default-email-types';
 

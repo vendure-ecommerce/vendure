@@ -1,6 +1,6 @@
+import { ID, Type } from '@vendure/common/shared-types';
 import { Connection } from 'typeorm';
 
-import { ID, Type } from '../../../../../../shared/shared-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { WhereCondition } from './parse-filter-params';

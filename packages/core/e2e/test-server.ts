@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Omit } from '@vendure/common/omit';
 import fs from 'fs';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
-import { Omit } from '../../../shared/omit';
 import { populate, PopulateOptions } from '../mock-data/populate';
 import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';

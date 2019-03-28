@@ -1,6 +1,6 @@
 import { ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission } from '@vendure/common/generated-types';
 
-import { Permission } from '../../../../../../shared/generated-types';
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';

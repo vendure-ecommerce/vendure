@@ -1,6 +1,6 @@
-import { ConfigArg, ConfigArgType } from '../../../../../shared/generated-types';
+import { ConfigArg, ConfigArgType } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
 
-import { ID } from '../../../../../shared/shared-types';
 import {
     argsArrayToHash,
     ConfigArgs,

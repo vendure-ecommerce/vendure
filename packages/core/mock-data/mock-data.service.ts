@@ -1,8 +1,3 @@
-import faker from 'faker/locale/en_GB';
-import gql from 'graphql-tag';
-
-import { CREATE_CHANNEL } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import { CREATE_SHIPPING_METHOD } from '../../../admin-ui/src/app/data/definitions/shipping-definitions';
 import {
     Channel,
     CreateAddressInput,
@@ -12,7 +7,12 @@ import {
     CurrencyCode,
     LanguageCode,
     ProductVariant,
-} from '../../../shared/generated-types';
+} from '@vendure/common/generated-types';
+import faker from 'faker/locale/en_GB';
+import gql from 'graphql-tag';
+
+import { CREATE_CHANNEL } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
+import { CREATE_SHIPPING_METHOD } from '../../../admin-ui/src/app/data/definitions/shipping-definitions';
 import { defaultShippingCalculator } from '../src/config/shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from '../src/config/shipping-method/default-shipping-eligibility-checker';
 import { Customer } from '../src/entity/customer/customer.entity';

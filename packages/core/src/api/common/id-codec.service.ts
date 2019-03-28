@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-
 import {
     ConfigArgType,
     ConfigurableOperation,
     ConfigurableOperationInput,
-} from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+
 import { ConfigService } from '../../config/config.service';
 
 import { IdCodec } from './id-codec';

@@ -1,8 +1,8 @@
+import { CreateFacet, LanguageCode } from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { CREATE_FACET } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-import { CreateFacet, LanguageCode } from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestShopClient } from './test-client';

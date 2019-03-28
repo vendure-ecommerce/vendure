@@ -1,7 +1,7 @@
+import { CurrencyCode } from '@vendure/common/generated-types';
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { CurrencyCode } from '../../../../../shared/generated-types';
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';

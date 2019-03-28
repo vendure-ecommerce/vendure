@@ -1,8 +1,8 @@
+import { AssetType } from '@vendure/common/generated-types';
+import { DeepPartial } from '@vendure/common/shared-types';
+import { HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
-import { AssetType } from '../../../../../shared/generated-types';
-import { DeepPartial } from '../../../../../shared/shared-types';
-import { HasCustomFields } from '../../../../../shared/shared-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomCustomerFields } from '../custom-entity-fields';

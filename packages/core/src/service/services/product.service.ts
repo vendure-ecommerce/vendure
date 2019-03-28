@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
     UpdateProductInput,
-} from '../../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';

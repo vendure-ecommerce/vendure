@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission, SearchQueryArgs, SearchResponse } from '@vendure/common/generated-types';
+import { Omit } from '@vendure/common/omit';
 
-import { Permission, SearchQueryArgs, SearchResponse } from '../../../../../shared/generated-types';
-import { Omit } from '../../../../../shared/omit';
 import { Decode } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { Allow } from '../../api/decorators/allow.decorator';

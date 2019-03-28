@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     ConfigurableOperation,
     CreateShippingMethodMutationArgs,
@@ -7,8 +6,9 @@ import {
     ShippingMethodQueryArgs,
     ShippingMethodsQueryArgs,
     UpdateShippingMethodMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { Allow } from '../../decorators/allow.decorator';

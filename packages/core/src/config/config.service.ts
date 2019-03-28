@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { LanguageCode } from '@vendure/common/generated-types';
+import { CustomFields } from '@vendure/common/shared-types';
 import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
-import { LanguageCode } from '../../../../shared/generated-types';
-import { CustomFields } from '../../../../shared/shared-types';
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { getConfig } from './config-helpers';

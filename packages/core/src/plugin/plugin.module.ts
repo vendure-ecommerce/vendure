@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { Type } from '@vendure/common/shared-types';
+import { notNullOrUndefined } from '@vendure/common/shared-utils';
 
-import { Type } from '../../../../shared/shared-types';
-import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
 import { EventBusModule } from '../event-bus/event-bus.module';

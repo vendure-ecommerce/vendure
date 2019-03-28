@@ -1,6 +1,6 @@
+import { DeepPartial } from '@vendure/common/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { DeepPartial } from '../../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Country } from '../country/country.entity';
 

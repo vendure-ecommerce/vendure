@@ -1,6 +1,6 @@
+import { notNullOrUndefined } from '@vendure/common/shared-utils';
 import proxy from 'http-proxy-middleware';
 
-import { notNullOrUndefined } from '../../../../shared/shared-utils';
 import { APIExtensionDefinition, VendurePlugin } from '../config';
 
 export interface ProxyOptions {

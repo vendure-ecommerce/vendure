@@ -24,8 +24,8 @@
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "publish:alpha": "yarn build && npm publish --access public --tag alpha"
   },
-  "main": "dist/server/src/index.js",
-  "types": "dist/server/src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "vendure": "dist/cli/vendure-cli.js"
   },
@@ -40,6 +40,7 @@
     "@nestjs/testing": "^6.0.2",
     "@nestjs/typeorm": "^6.0.0",
     "@types/progress": "^2.0.3",
+    "@vendure/common": "^1.0.0",
     "apollo-server-express": "^2.4.0",
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",

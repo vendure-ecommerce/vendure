@@ -1,6 +1,6 @@
+import { LoginMutationArgs, LoginResult } from '@vendure/common/generated-types';
 import { Request, Response } from 'express';
 
-import { LoginMutationArgs, LoginResult } from '../../../../../../shared/generated-types';
 import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';

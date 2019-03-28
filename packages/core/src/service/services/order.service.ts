@@ -1,9 +1,9 @@
 import { InjectConnection } from '@nestjs/typeorm';
+import { PaymentInput } from '@vendure/common/generated-shop-types';
+import { CreateAddressInput, ShippingMethodQuote } from '@vendure/common/generated-types';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
 import { Connection } from 'typeorm';
 
-import { PaymentInput } from '../../../../shared/generated-shop-types';
-import { CreateAddressInput, ShippingMethodQuote } from '../../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import {
     EntityNotFoundError,

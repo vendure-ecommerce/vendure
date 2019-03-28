@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     AdministratorList,
     AdministratorQueryArgs,
@@ -8,8 +7,9 @@ import {
     CreateAdministratorMutationArgs,
     Permission,
     UpdateAdministratorMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { Allow } from '../../decorators/allow.decorator';

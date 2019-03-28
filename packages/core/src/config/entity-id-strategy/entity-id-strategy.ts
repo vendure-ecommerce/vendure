@@ -1,4 +1,4 @@
-import { ID } from '../../../../../shared/shared-types';
+import { ID } from '@vendure/common/shared-types';
 
 /**
  * @description

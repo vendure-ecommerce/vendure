@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { EntitySubscriberInterface } from 'typeorm';
 
-import { Type } from '../../../shared/shared-types';
+import { Type } from '@vendure/common/shared-types';
 
 import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';

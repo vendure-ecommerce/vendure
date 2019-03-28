@@ -1,3 +1,12 @@
+import {
+    CreateAdministrator,
+    CreateProductMutationArgs,
+    CreateRole,
+    LoginMutationArgs,
+    Permission,
+    UpdateProductMutationArgs,
+} from '@vendure/common/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/shared-constants';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -12,15 +21,6 @@ import {
     GET_PRODUCT_LIST,
     UPDATE_PRODUCT,
 } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import {
-    CreateAdministrator,
-    CreateProductMutationArgs,
-    CreateRole,
-    LoginMutationArgs,
-    Permission,
-    UpdateProductMutationArgs,
-} from '../../../shared/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../../shared/shared-constants';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

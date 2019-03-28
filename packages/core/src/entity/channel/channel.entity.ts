@@ -1,7 +1,7 @@
+import { CurrencyCode, LanguageCode } from '@vendure/common/generated-types';
+import { DeepPartial } from '@vendure/common/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { CurrencyCode, LanguageCode } from '../../../../../shared/generated-types';
-import { DeepPartial } from '../../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Zone } from '../zone/zone.entity';
 

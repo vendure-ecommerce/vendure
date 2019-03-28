@@ -1,5 +1,6 @@
-import { SearchInput, SearchResult } from '../../../../../../shared/generated-types';
-import { ID } from '../../../../../../shared/shared-types';
+import { SearchInput, SearchResult } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+
 import { RequestContext } from '../../../api';
 
 /**

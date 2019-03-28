@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     ConfigurableOperation,
     ConfigurableOperationInput,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
-} from '../../../../../shared/generated-types';
-import { omit } from '../../../../../shared/omit';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { omit } from '@vendure/common/omit';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { Connection } from 'typeorm';
+
 import { configurableDefToOperation } from '../../common/configurable-operation';
 import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';

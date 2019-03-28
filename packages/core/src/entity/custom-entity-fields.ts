@@ -1,7 +1,7 @@
+import { CustomFieldConfig, CustomFields, CustomFieldType, Type } from '@vendure/common/shared-types';
+import { assertNever } from '@vendure/common/shared-utils';
 import { Column, ColumnType, Connection, ConnectionOptions, Entity, getConnection } from 'typeorm';
 
-import { CustomFieldConfig, CustomFields, CustomFieldType, Type } from '../../../../shared/shared-types';
-import { assertNever } from '../../../../shared/shared-utils';
 import { VendureConfig } from '../config/vendure-config';
 
 import { VendureEntity } from './base/base.entity';

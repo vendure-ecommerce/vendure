@@ -1,6 +1,4 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Request, Response } from 'express';
-
 import {
     LoginMutationArgs,
     LoginResult,
@@ -11,7 +9,9 @@ import {
     ResetPasswordMutationArgs,
     UpdateCustomerPasswordMutationArgs,
     VerifyCustomerAccountMutationArgs,
-} from '../../../../../shared/generated-shop-types';
+} from '@vendure/common/generated-shop-types';
+import { Request, Response } from 'express';
+
 import { PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';

@@ -1,3 +1,10 @@
+import {
+    Administrator,
+    CreateAdministrator,
+    GetAdministrator,
+    GetAdministrators,
+    UpdateAdministrator,
+} from '@vendure/common/generated-types';
 import path from 'path';
 
 import {
@@ -6,13 +13,6 @@ import {
     GET_ADMINISTRATORS,
     UPDATE_ADMINISTRATOR,
 } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-import {
-    Administrator,
-    CreateAdministrator,
-    GetAdministrator,
-    GetAdministrators,
-    UpdateAdministrator,
-} from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     AddCustomersToGroupMutationArgs,
     CreateCustomerGroupInput,
     RemoveCustomersFromGroupMutationArgs,
     UpdateCustomerGroupInput,
-} from '../../../../../shared/generated-types';
-import { ID } from '../../../../../shared/shared-types';
-import { unique } from '../../../../../shared/unique';
+} from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
+import { Connection } from 'typeorm';
+
 import { assertFound } from '../../common/utils';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';

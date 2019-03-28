@@ -45,7 +45,7 @@ function isObject(input: any): input is object {
 /**
  * When running in the Node environment, there is no native File object.
  */
-function isFileObject(input): boolean {
+function isFileObject(input: any): boolean {
     if (typeof File === 'undefined') {
         return false;
     } else {

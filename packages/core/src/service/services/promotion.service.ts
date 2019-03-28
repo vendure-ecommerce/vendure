@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     ConfigurableOperation,
     ConfigurableOperationInput,
@@ -9,9 +7,11 @@ import {
     DeletionResponse,
     DeletionResult,
     UpdatePromotionInput,
-} from '../../../../../shared/generated-types';
-import { omit } from '../../../../../shared/omit';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { omit } from '@vendure/common/omit';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
 import { UserInputError } from '../../common/error/errors';

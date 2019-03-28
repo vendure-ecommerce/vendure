@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { normalizeString } from '../../../../../shared/normalize-string';
+import { normalizeString } from '@vendure/common/normalize-string';
 
 import { AssetNamingStrategy } from './asset-naming-strategy';
 

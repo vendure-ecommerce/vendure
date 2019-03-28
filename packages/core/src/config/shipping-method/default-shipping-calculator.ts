@@ -1,4 +1,4 @@
-import { ConfigArgType } from '../../../../../shared/generated-types';
+import { ConfigArgType } from '@vendure/common/generated-types';
 
 import { ShippingCalculator } from './shipping-calculator';
 

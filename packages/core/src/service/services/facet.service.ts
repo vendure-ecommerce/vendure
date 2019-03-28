@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     CreateFacetInput,
     DeletionResponse,
     DeletionResult,
     LanguageCode,
     UpdateFacetInput,
-} from '../../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ListQueryOptions } from '../../common/types/common-types';

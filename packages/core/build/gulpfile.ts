@@ -8,7 +8,7 @@ import { initialData } from '../mock-data/data-sources/initial-data';
 // tslint:disable:no-console
 
 function copySchemas() {
-    return src(['../src/**/*.graphql']).pipe(dest('../dist/server/src'));
+    return src(['../src/**/*.graphql']).pipe(dest('../dist'));
 }
 
 function copyEmailTemplates() {
@@ -16,7 +16,7 @@ function copyEmailTemplates() {
 }
 
 function copyI18nMessages() {
-    return src(['../src/i18n/messages/**/*']).pipe(dest('../dist/server/src/i18n/messages'));
+    return src(['../src/i18n/messages/**/*']).pipe(dest('../dist/i18n/messages'));
 }
 
 function copyCliAssets() {
@@ -43,7 +43,7 @@ function buildAdminUi() {
     return exec(
         'yarn build --prod=true',
         {
-            cwd: path.join(__dirname, '../../admin-ui'),
+            cwd: path.join(__dirname, '../../../admin-ui'),
         },
         error => {
             if (error) {
@@ -54,7 +54,7 @@ function buildAdminUi() {
 }
 
 function copyAdminUi() {
-    return src(['../../admin-ui/dist/vendure-admin/**/*']).pipe(dest('../dist/admin-ui'));
+    return src(['../../../admin-ui/dist/vendure-admin/**/*']).pipe(dest('../dist/admin-ui'));
 }
 
 function buildAndCopyAdminUi() {
@@ -69,5 +69,5 @@ export const build = parallel(
     copyCliImages,
     copyCliProductData,
     copyCliInitialData,
-    series(buildAdminUi, copyAdminUi),
+    // series(buildAdminUi, copyAdminUi),
 );

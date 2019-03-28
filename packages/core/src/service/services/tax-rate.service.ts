@@ -1,8 +1,8 @@
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateTaxRateInput, UpdateTaxRateInput } from '@vendure/common/generated-types';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
 import { Connection } from 'typeorm';
 
-import { CreateTaxRateInput, UpdateTaxRateInput } from '../../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';

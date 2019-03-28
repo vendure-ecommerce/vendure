@@ -1,4 +1,5 @@
-import { LanguageCode } from '../../../../shared/generated-types';
+import { LanguageCode } from '@vendure/common/generated-types';
+
 import { InitialData } from '../../src/data-import';
 
 export const initialData: InitialData = {

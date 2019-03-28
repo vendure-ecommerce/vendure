@@ -1,12 +1,3 @@
-import gql from 'graphql-tag';
-import path from 'path';
-
-import {
-    CREATE_COLLECTION,
-    UPDATE_COLLECTION,
-} from '../../../admin-ui/src/app/data/definitions/collection-definitions';
-import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import {
     ConfigArgType,
     CreateCollection,
@@ -16,7 +7,16 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateTaxRate,
-} from '../../../shared/generated-types';
+} from '@vendure/common/generated-types';
+import gql from 'graphql-tag';
+import path from 'path';
+
+import {
+    CREATE_COLLECTION,
+    UPDATE_COLLECTION,
+} from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';

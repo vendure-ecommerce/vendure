@@ -1,14 +1,14 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-
 import {
     CollectionQueryArgs,
     CollectionsQueryArgs,
     ProductQueryArgs,
     SearchResponse,
-} from '../../../../../shared/generated-shop-types';
-import { ProductsQueryArgs } from '../../../../../shared/generated-shop-types';
-import { Omit } from '../../../../../../shared/omit';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-shop-types';
+import { ProductsQueryArgs } from '@vendure/common/generated-shop-types';
+import { Omit } from '@vendure/common/omit';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';

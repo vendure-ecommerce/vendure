@@ -1,3 +1,12 @@
+import {
+    AddMembersToZone,
+    CreateZone,
+    DeletionResult,
+    GetCountryList,
+    GetZone,
+    RemoveMembersFromZone,
+    UpdateZone,
+} from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -9,15 +18,6 @@ import {
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_ZONE,
 } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import {
-    AddMembersToZone,
-    CreateZone,
-    DeletionResult,
-    GetCountryList,
-    GetZone,
-    RemoveMembersFromZone,
-    UpdateZone,
-} from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

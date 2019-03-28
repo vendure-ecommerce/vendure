@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
+import { ConfigArgType } from '@vendure/common/generated-types';
+import { Omit } from '@vendure/common/omit';
 import { Connection } from 'typeorm';
 
-import { ConfigArgType } from '../../../../../../shared/generated-types';
-import { Omit } from '../../../../../../shared/omit';
 import { PromotionItemAction, PromotionOrderAction } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';

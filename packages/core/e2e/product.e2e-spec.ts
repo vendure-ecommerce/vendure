@@ -1,17 +1,3 @@
-import gql from 'graphql-tag';
-import path from 'path';
-
-import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
-    CREATE_PRODUCT,
-    GENERATE_PRODUCT_VARIANTS,
-    GET_ASSET_LIST,
-    GET_PRODUCT_LIST,
-    GET_PRODUCT_WITH_VARIANTS,
-    REMOVE_OPTION_GROUP_FROM_PRODUCT,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
@@ -26,8 +12,22 @@ import {
     SortOrder,
     UpdateProduct,
     UpdateProductVariants,
-} from '../../../shared/generated-types';
-import { omit } from '../../../shared/omit';
+} from '@vendure/common/generated-types';
+import { omit } from '@vendure/common/omit';
+import gql from 'graphql-tag';
+import path from 'path';
+
+import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
+    CREATE_PRODUCT,
+    GENERATE_PRODUCT_VARIANTS,
+    GET_ASSET_LIST,
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
+    REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+} from '../../../admin-ui/src/app/data/definitions/product-definitions';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';

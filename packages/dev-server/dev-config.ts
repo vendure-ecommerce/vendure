@@ -9,7 +9,7 @@ import {
 } from '@vendure/core';
 import path from 'path';
 
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../common/shared-constants';
 
 /**
  * Config settings used during development
@@ -71,8 +71,8 @@ export const devConfig: VendureConfig = {
             port: 5002,
         }),
         new DefaultSearchPlugin(),
-        new AdminUiPlugin({
+       /* new AdminUiPlugin({
             port: 5001,
-        }),
+        }),*/
     ],
 };

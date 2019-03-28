@@ -1,7 +1,7 @@
+import { AssetType } from '@vendure/common/generated-types';
 import path from 'path';
 import sharp from 'sharp';
 
-import { AssetType } from '../../../../../shared/generated-types';
 import { getAssetType } from '../../common/utils';
 import { AssetPreviewStrategy } from '../../config/asset-preview-strategy/asset-preview-strategy';
 

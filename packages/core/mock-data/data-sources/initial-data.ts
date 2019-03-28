@@ -1,4 +1,5 @@
-import { LanguageCode } from '../../../../shared/generated-types';
+import { LanguageCode } from '@vendure/common/generated-types';
+
 import { InitialData } from '../../src/data-import';
 
 export const initialData: InitialData = {
@@ -73,7 +74,7 @@ export const initialData: InitialData = {
         { name: 'Congo (Democratic Republic of the)', code: 'CD', zone: 'Africa' },
         { name: 'Cook Islands', code: 'CK', zone: 'Oceania' },
         { name: 'Costa Rica', code: 'CR', zone: 'Americas' },
-        { name: "Côte d'Ivoire", code: 'CI', zone: 'Africa' },
+        { name: 'Côte d\'Ivoire', code: 'CI', zone: 'Africa' },
         { name: 'Croatia', code: 'HR', zone: 'Europe' },
         { name: 'Cuba', code: 'CU', zone: 'Americas' },
         { name: 'Curaçao', code: 'CW', zone: 'Americas' },
@@ -137,11 +138,11 @@ export const initialData: InitialData = {
         { name: 'Kazakhstan', code: 'KZ', zone: 'Asia' },
         { name: 'Kenya', code: 'KE', zone: 'Africa' },
         { name: 'Kiribati', code: 'KI', zone: 'Oceania' },
-        { name: "Korea (Democratic People's Republic of)", code: 'KP', zone: 'Asia' },
+        { name: 'Korea (Democratic People\'s Republic of)', code: 'KP', zone: 'Asia' },
         { name: 'Korea (Republic of)', code: 'KR', zone: 'Asia' },
         { name: 'Kuwait', code: 'KW', zone: 'Asia' },
         { name: 'Kyrgyzstan', code: 'KG', zone: 'Asia' },
-        { name: "Lao People's Democratic Republic", code: 'LA', zone: 'Asia' },
+        { name: 'Lao People\'s Democratic Republic', code: 'LA', zone: 'Asia' },
         { name: 'Latvia', code: 'LV', zone: 'Europe' },
         { name: 'Lebanon', code: 'LB', zone: 'Asia' },
         { name: 'Lesotho', code: 'LS', zone: 'Africa' },

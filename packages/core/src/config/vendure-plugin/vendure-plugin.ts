@@ -1,7 +1,7 @@
 import { Provider } from '@nestjs/common';
+import { Type } from '@vendure/common/shared-types';
 import { DocumentNode } from 'graphql';
 
-import { Type } from '../../../../../shared/shared-types';
 import { VendureConfig } from '../vendure-config';
 
 /**

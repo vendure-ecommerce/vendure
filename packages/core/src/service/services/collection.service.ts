@@ -1,18 +1,18 @@
 import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-
 import {
     CollectionBreadcrumb,
     ConfigurableOperation,
     CreateCollectionInput,
     MoveCollectionInput,
     UpdateCollectionInput,
-} from '../../../../../shared/generated-types';
-import { pick } from '../../../../shared/pick';
-import { ROOT_COLLECTION_NAME } from '../../../../../shared/shared-constants';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
-import { notNullOrUndefined } from '../../../../../shared/shared-utils';
+} from '@vendure/common/generated-types';
+import { pick } from '@vendure/common/pick';
+import { ROOT_COLLECTION_NAME } from '@vendure/common/shared-constants';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { notNullOrUndefined } from '@vendure/common/shared-utils';
+import { Connection } from 'typeorm';
+
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';

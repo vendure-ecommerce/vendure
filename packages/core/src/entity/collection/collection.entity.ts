@@ -1,3 +1,5 @@
+import { ConfigurableOperation } from '@vendure/common/generated-types';
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import {
     Column,
     Entity,
@@ -9,8 +11,6 @@ import {
     TreeParent,
 } from 'typeorm';
 
-import { ConfigurableOperation } from '../../../../../shared/generated-types';
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';

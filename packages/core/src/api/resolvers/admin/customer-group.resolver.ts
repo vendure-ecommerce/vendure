@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     AddCustomersToGroupMutationArgs,
     CreateCustomerGroupMutationArgs,
@@ -7,7 +6,8 @@ import {
     Permission,
     RemoveCustomersFromGroupMutationArgs,
     UpdateCustomerGroupMutationArgs,
-} from '../../../../../../shared/generated-types';
+} from '@vendure/common/generated-types';
+
 import { CustomerGroup } from '../../../entity/customer-group/customer-group.entity';
 import { CustomerGroupService } from '../../../service/services/customer-group.service';
 import { RequestContext } from '../../common/request-context';

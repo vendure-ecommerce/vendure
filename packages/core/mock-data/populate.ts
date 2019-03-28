@@ -1,9 +1,9 @@
 /* tslint:disable:no-console */
 import { INestApplication } from '@nestjs/common';
+import { LanguageCode } from '@vendure/common/generated-types';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { LanguageCode } from '../../../shared/generated-types';
 import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig } from '../src/config/config-helpers';
 import { VendureConfig } from '../src/config/vendure-config';

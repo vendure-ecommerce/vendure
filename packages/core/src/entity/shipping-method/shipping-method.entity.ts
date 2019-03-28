@@ -1,7 +1,7 @@
+import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/generated-types';
+import { DeepPartial } from '@vendure/common/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { Adjustment, AdjustmentType, ConfigurableOperation } from '../../../../../shared/generated-types';
-import { DeepPartial } from '../../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';

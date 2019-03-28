@@ -1,4 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
+import {
+    CreateAddressInput,
+    UpdateAddressInput,
+    UpdateCustomerInput,
+} from '@vendure/common/generated-shop-types';
+import { AttemptLogin, GetCustomer } from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -7,12 +13,6 @@ import {
     CUSTOMER_FRAGMENT,
     GET_CUSTOMER,
 } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import {
-    CreateAddressInput,
-    UpdateAddressInput,
-    UpdateCustomerInput,
-} from '../../../shared/generated-shop-types';
-import { AttemptLogin, GetCustomer } from '../../../shared/generated-types';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';

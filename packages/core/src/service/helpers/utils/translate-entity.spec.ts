@@ -1,4 +1,5 @@
-import { LanguageCode } from '../../../../../../shared/generated-types';
+import { LanguageCode } from '@vendure/common/generated-types';
+
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
 import { Collection } from '../../../entity/collection/collection.entity';

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { CreateAssetInput } from '@vendure/common/generated-types';
+import { ID, PaginatedList } from '@vendure/common/shared-types';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
 import { Connection } from 'typeorm';
 
-import { CreateAssetInput } from '../../../../../shared/generated-types';
-import { ID, PaginatedList } from '../../../../../shared/shared-types';
 import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';

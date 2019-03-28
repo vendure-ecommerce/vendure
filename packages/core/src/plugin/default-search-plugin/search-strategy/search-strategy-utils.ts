@@ -1,6 +1,6 @@
-import { CurrencyCode, PriceRange, SearchResult, SinglePrice } from '../../../../../../shared/generated-types';
-import { ID } from '../../../../../../shared/shared-types';
-import { unique } from '../../../../../../shared/unique';
+import { CurrencyCode, PriceRange, SearchResult, SinglePrice } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
 
 /**
  * Maps a raw database result to a SearchResult.

@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-
 import {
     CreateCustomerAddressMutationArgs,
     CreateCustomerMutationArgs,
@@ -11,8 +10,9 @@ import {
     Permission,
     UpdateCustomerAddressMutationArgs,
     UpdateCustomerMutationArgs,
-} from '../../../../../../shared/generated-types';
-import { PaginatedList } from '../../../../../../shared/shared-types';
+} from '@vendure/common/generated-types';
+import { PaginatedList } from '@vendure/common/shared-types';
+
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { CustomerService } from '../../../service/services/customer.service';

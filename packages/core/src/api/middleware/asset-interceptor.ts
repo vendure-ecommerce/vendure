@@ -1,9 +1,9 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Type } from '@vendure/common/shared-types';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Type } from '../../../../../shared/shared-types';
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { ConfigService } from '../../config/config.service';
 import { Asset } from '../../entity/asset/asset.entity';

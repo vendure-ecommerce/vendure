@@ -1,7 +1,7 @@
+import { Adjustment, AdjustmentType } from '@vendure/common/generated-types';
+import { DeepPartial } from '@vendure/common/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Adjustment, AdjustmentType } from '../../../../../shared/generated-types';
-import { DeepPartial } from '../../../../../shared/shared-types';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { idsAreEqual } from '../../common/utils';
 import { CustomerGroup } from '../customer-group/customer-group.entity';

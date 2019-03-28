@@ -1,4 +1,5 @@
-import { ConfigArgType } from '../../../../../shared/generated-types';
+import { ConfigArgType } from '@vendure/common/generated-types';
+
 import { Order } from '../../entity/order/order.entity';
 
 import { PromotionCondition } from './promotion-condition';

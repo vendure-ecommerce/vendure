@@ -1,6 +1,6 @@
 import { Brackets } from 'typeorm';
 
-import { ConfigArgType } from '../../../../../shared/generated-types';
+import { ConfigArgType } from '@vendure/common/generated-types';
 
 import { CollectionFilter } from './collection-filter';
 

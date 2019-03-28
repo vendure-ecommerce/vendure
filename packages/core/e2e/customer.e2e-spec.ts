@@ -1,3 +1,12 @@
+import {
+    CreateCustomerAddress,
+    DeletionResult,
+    GetCustomer,
+    GetCustomerList,
+    UpdateCustomer,
+    UpdateCustomerAddress,
+} from '@vendure/common/generated-types';
+import { omit } from '@vendure/common/omit';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -8,15 +17,6 @@ import {
     UPDATE_CUSTOMER,
     UPDATE_CUSTOMER_ADDRESS,
 } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import {
-    CreateCustomerAddress,
-    DeletionResult,
-    GetCustomer,
-    GetCustomerList,
-    UpdateCustomer,
-    UpdateCustomerAddress,
-} from '../../../shared/generated-types';
-import { omit } from '../../../shared/omit';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';

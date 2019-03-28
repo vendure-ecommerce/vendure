@@ -1,8 +1,8 @@
+import { SearchInput, SearchResult } from '@vendure/common/generated-types';
+import { ID } from '@vendure/common/shared-types';
+import { unique } from '@vendure/common/unique';
 import { Brackets, Connection, SelectQueryBuilder } from 'typeorm';
 
-import { SearchInput, SearchResult } from '../../../../../../shared/generated-types';
-import { ID } from '../../../../../../shared/shared-types';
-import { unique } from '../../../../../../shared/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 

@@ -1,6 +1,6 @@
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';

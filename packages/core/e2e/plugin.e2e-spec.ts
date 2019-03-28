@@ -1,7 +1,7 @@
+import { LanguageCode } from '@vendure/common/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { LanguageCode } from '../../../shared/generated-types';
 import { ConfigService } from '../src/config/config.service';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

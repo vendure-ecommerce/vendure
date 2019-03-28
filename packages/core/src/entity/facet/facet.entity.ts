@@ -1,6 +1,6 @@
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, OneToMany } from 'typeorm';
 
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomFacetFields } from '../custom-entity-fields';

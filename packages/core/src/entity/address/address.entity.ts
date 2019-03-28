@@ -1,6 +1,6 @@
+import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { DeepPartial, HasCustomFields } from '../../../../../shared/shared-types';
 import { VendureEntity } from '../base/base.entity';
 import { Country } from '../country/country.entity';
 import { CustomAddressFields } from '../custom-entity-fields';

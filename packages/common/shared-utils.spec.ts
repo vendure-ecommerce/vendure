@@ -1,5 +1,3 @@
-/// <reference types="../packages/core/node_modules/@types/jest" />
-
 import { generateAllCombinations } from './shared-utils';
 
 describe('generateAllCombinations()', () => {

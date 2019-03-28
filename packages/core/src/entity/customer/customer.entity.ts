@@ -1,7 +1,7 @@
+import { DeepPartial } from '@vendure/common/shared-types';
+import { HasCustomFields } from '@vendure/common/shared-types';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 
-import { DeepPartial } from '../../../../../shared/shared-types';
-import { HasCustomFields } from '../../../../../shared/shared-types';
 import { SoftDeletable } from '../../common/types/common-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';

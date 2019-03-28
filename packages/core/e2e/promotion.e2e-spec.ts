@@ -1,3 +1,14 @@
+import {
+    ConfigArgType,
+    CreatePromotion,
+    DeletionResult,
+    GetAdjustmentOperations,
+    GetPromotion,
+    GetPromotionList,
+    Promotion,
+    UpdatePromotion,
+} from '@vendure/common/generated-types';
+import { pick } from '@vendure/common/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -8,17 +19,6 @@ import {
     GET_PROMOTION_LIST,
     UPDATE_PROMOTION,
 } from '../../../admin-ui/src/app/data/definitions/promotion-definitions';
-import {
-    ConfigArgType,
-    CreatePromotion,
-    DeletionResult,
-    GetAdjustmentOperations,
-    GetPromotion,
-    GetPromotionList,
-    Promotion,
-    UpdatePromotion,
-} from '../../../shared/generated-types';
-import { pick } from '../../../shared/pick';
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 

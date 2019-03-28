@@ -1,6 +1,6 @@
+import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/shared-constants';
 import path from 'path';
 
-import { ADMIN_API_PATH, SHOP_API_PATH } from '../../../../shared/shared-constants';
 import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
 import { VendureConfig } from '../../src/config/vendure-config';
 

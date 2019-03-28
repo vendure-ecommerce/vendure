@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { LanguageCode, Permission } from '@vendure/common/generated-types';
 import { Request } from 'express';
 
-import { LanguageCode, Permission } from '../../../../../shared/generated-types';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
