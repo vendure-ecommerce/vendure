@@ -7,7 +7,7 @@ images:
     - "./blog/introducing-vendure/introducing-vendure.jpg"
 ---
 
-Vendure is a new open-source headless e-commerce framework built on [Node.js](https://nodejs.org) with [TypeScript](http://www.typescriptlang.org/) and exposing a [GraphQL](https://graphql.org/) API. Today it is available to try with its first alpha release. In this post I'll outline of the of major features and give some background to its development.
+Vendure is a new open-source headless e-commerce framework built on [Node.js](https://nodejs.org) with [TypeScript](http://www.typescriptlang.org/) and exposing a [GraphQL](https://graphql.org/) API. Today it is available to try with its first alpha release. In this post I'll outline some of the of major features and give some background to its development.
 
 {{< figure src="/blog/introducing-vendure/introducing-vendure.jpg" >}}
 
