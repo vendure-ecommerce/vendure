@@ -1,13 +1,12 @@
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiPlugin,
-    defaultEmailTypes,
     DefaultSearchPlugin,
     examplePaymentHandler,
-    HandlebarsMjmlGenerator,
     VendureConfig,
 } from '@vendure/core';
 import { DefaultAssetServerPlugin } from '@vendure/default-asset-server-plugin';
+import { DefaultEmailPlugin } from '@vendure/default-email-plugin';
 import path from 'path';
 
 /**
@@ -17,7 +16,7 @@ export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
         sessionSecret: 'some-secret',
-        requireVerification: false,
+        requireVerification: true,
     },
     port: API_PORT,
     adminApiPath: ADMIN_API_PATH,
@@ -47,19 +46,6 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
-    emailOptions: {
-        emailTemplatePath: path.join(__dirname, '../core/src/email/templates'),
-        emailTypes: defaultEmailTypes,
-        generator: new HandlebarsMjmlGenerator(),
-        transport: {
-            type: 'file',
-            raw: false,
-            outputPath: path.join(__dirname, 'test-emails'),
-        },
-        templateVars: {
-            shopUrl: 'http://localhost:4201/',
-        },
-    },
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -70,6 +56,11 @@ export const devConfig: VendureConfig = {
             port: 5002,
         }),
         new DefaultSearchPlugin(),
+        new DefaultEmailPlugin({
+            devMode: true,
+            templatePath: path.join(__dirname, '../default-email-plugin/templates'),
+            outputPath: path.join(__dirname, 'test-emails'),
+        }),
        /* new AdminUiPlugin({
             port: 5001,
         }),*/

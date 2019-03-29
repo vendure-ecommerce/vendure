@@ -1,6 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-
-import { VendureEvent } from '../event-bus/vendure-event';
+import { VendureEvent } from '@vendure/core';
 
 /**
  * @description

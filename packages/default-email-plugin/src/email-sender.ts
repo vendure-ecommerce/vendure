@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import fs from 'fs-extra';
@@ -8,9 +7,8 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import path from 'path';
 import { Stream } from 'stream';
 
-import { EmailTransportOptions, FileTransportOptions } from '../config/email/email-transport-options';
-
 import { GeneratedEmailContext } from './email-context';
+import { EmailTransportOptions } from './types';
 
 export type StreamTransportInfo = {
     envelope: {
@@ -21,7 +19,6 @@ export type StreamTransportInfo = {
     message: Stream;
 };
 
-@Injectable()
 export class EmailSender {
     async send(email: GeneratedEmailContext, options: EmailTransportOptions) {
         let transporter: Mail;

@@ -7,7 +7,6 @@ import { ReadOnlyRequired } from '../common/types/common-types';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
-import { NoopEmailGenerator } from './email/noop-email-generator';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strategy';
 import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
@@ -74,15 +73,6 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),
         taxCalculationStrategy: new DefaultTaxCalculationStrategy(),
-    },
-    emailOptions: {
-        emailTemplatePath: __dirname,
-        emailTypes: {},
-        generator: new NoopEmailGenerator(),
-        transport: {
-            type: 'none',
-        },
-        templateVars: {},
     },
     importExportOptions: {
         importAssetsDir: __dirname,

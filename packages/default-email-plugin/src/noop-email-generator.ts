@@ -1,6 +1,5 @@
-import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
-
-import { EmailGenerator } from './email-options';
+import { EmailContext, GeneratedEmailContext } from './email-context';
+import { EmailGenerator } from './types';
 
 /**
  * Simply passes through the subject and template content without modification.

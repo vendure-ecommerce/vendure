@@ -6,13 +6,12 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { EmailModule } from './email/email.module';
 import { validateCustomFieldsConfig } from './entity/custom-entity-fields';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule, EmailModule],
+    imports: [ConfigModule, I18nModule, ApiModule],
 })
 export class AppModule implements NestModule, OnModuleDestroy {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}

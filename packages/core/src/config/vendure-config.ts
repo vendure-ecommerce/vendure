@@ -12,8 +12,6 @@ import { OrderState } from '../service/helpers/order-state-machine/order-state';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
-import { EmailGenerator, EmailTypes } from './email/email-options';
-import { EmailTransportOptions } from './email/email-transport-options';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
@@ -264,57 +262,6 @@ export interface ShippingOptions {
 }
 
 /**
- * @description
- * Defines how transactional emails (account verification, order confirmation etc) are generated and sent.
- *
- * {{% alert %}}
- * It is usually not recommended to configure these yourself.
- * You should use the `DefaultEmailPlugin`.
- * {{% /alert %}}
- *
- * @docsCategory email
- * @docsWeight 0
- */
-export interface EmailOptions<EmailType extends string> {
-    /**
-     * @description
-     * Path to the email template files.
-     *
-     * @default __dirname
-     */
-    emailTemplatePath: string;
-    /**
-     * @description
-     * Configuration for the creation and templating of each email type
-     *
-     * @default {}
-     */
-    emailTypes?: EmailTypes<EmailType>;
-    /**
-     * @description
-     * The EmailGenerator uses the EmailContext and template to generate the email body
-     *
-     * @default NoopEmailGenerator
-     */
-    generator?: EmailGenerator;
-    /**
-     * @description
-     * Configuration for the transport (email sending) method
-     *
-     * @default NoopTransportOptions
-     */
-    transport: EmailTransportOptions;
-    /**
-     * @description
-     * An object containing any extra variables for use in email templates. For example,
-     * the storefront URL could be defined here for use in password reset emails.
-     *
-     * @default {}
-     */
-    templateVars?: { [name: string]: any };
-}
-
-/**
  * @docsCategory payment
  *
  * @docsWeight 0
@@ -446,11 +393,6 @@ export interface VendureConfig {
      * @default LanguageCode.en
      */
     defaultLanguageCode?: LanguageCode;
-    /**
-     * @description
-     * Configures the handling of transactional emails.
-     */
-    emailOptions?: EmailOptions<any>;
     /**
      * @description
      * Defines the strategy used for both storing the primary keys of entities

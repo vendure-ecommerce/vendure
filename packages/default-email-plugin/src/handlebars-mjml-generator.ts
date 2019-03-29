@@ -1,27 +1,25 @@
+import { ConfigService, InternalServerError } from '@vendure/core';
 import dateFormat from 'dateformat';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 import path from 'path';
 
-import { InternalServerError } from '../common/error/errors';
-import { ConfigService } from '../config/config.service';
-import { EmailGenerator } from '../config/email/email-options';
-
 import { EmailContext, GeneratedEmailContext } from './email-context';
+import { EmailGenerator, EmailOptions } from './types';
 
 /**
  * Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
  * compiled down to responsive email HTML.
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-    onInit(config: ConfigService) {
-        if (!config.emailOptions.emailTemplatePath) {
+    onInit(options: EmailOptions<any>) {
+        if (!options.emailTemplatePath) {
             throw new InternalServerError(
                 `When using the HandlebarsMjmlGenerator, the emailTemplatePath config option must be set`,
             );
         }
-        const partialsPath = path.join(config.emailOptions.emailTemplatePath, 'partials');
+        const partialsPath = path.join(options.emailTemplatePath, 'partials');
         this.registerPartials(partialsPath);
         this.registerHelpers();
     }

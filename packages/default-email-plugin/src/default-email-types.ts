@@ -1,7 +1,6 @@
-import { configEmailType, EmailTypes } from '../config/email/email-options';
-import { AccountRegistrationEvent } from '../event-bus/events/account-registration-event';
-import { OrderStateTransitionEvent } from '../event-bus/events/order-state-transition-event';
-import { PasswordResetEvent } from '../event-bus/events/password-reset-event';
+import { AccountRegistrationEvent, OrderStateTransitionEvent, PasswordResetEvent } from '@vendure/core';
+
+import { configEmailType, EmailTypes } from './types';
 
 /**
  * @description

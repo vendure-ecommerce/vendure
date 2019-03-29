@@ -7,8 +7,10 @@ import path from 'path';
 
 import { CREATE_ADMINISTRATOR, CREATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import { NoopEmailGenerator } from '../src/config/email/noop-email-generator';
-import { defaultEmailTypes } from '../src/email/default-email-types';
+import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
+import { EventBus } from '../src/event-bus/event-bus';
+import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
+import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
@@ -16,15 +18,6 @@ import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 let sendEmailFn: jest.Mock;
-const emailOptions = {
-    emailTemplatePath: path.join(__dirname, '../src/email/templates'),
-    emailTypes: defaultEmailTypes,
-    generator: new NoopEmailGenerator(),
-    transport: {
-        type: 'testing' as 'testing',
-        onSend: (ctx: any) => sendEmailFn(ctx),
-    },
-};
 
 describe('Shop auth & accounts', () => {
     const shopClient = new TestShopClient();
@@ -38,7 +31,7 @@ describe('Shop auth & accounts', () => {
                 customerCount: 1,
             },
             {
-                emailOptions,
+                plugins: [new TestEmailPlugin()],
             },
         );
         await shopClient.init();
@@ -89,8 +82,8 @@ describe('Shop auth & accounts', () => {
 
         it('issues a new token if attempting to register a second time', async () => {
             const sendEmail = new Promise<string>(resolve => {
-                sendEmailFn.mockImplementation(ctx => {
-                    resolve(ctx.event.user.verificationToken);
+                sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
+                    resolve(event.user.verificationToken!);
                 });
             });
             const input: RegisterCustomerInput = {
@@ -111,8 +104,8 @@ describe('Shop auth & accounts', () => {
 
         it('refreshCustomerVerification issues a new token', async () => {
             const sendEmail = new Promise<string>(resolve => {
-                sendEmailFn.mockImplementation(ctx => {
-                    resolve(ctx.event.user.verificationToken);
+                sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
+                    resolve(event.user.verificationToken!);
                 });
             });
             const result = await shopClient.query(REFRESH_TOKEN, { emailAddress });
@@ -301,7 +294,7 @@ describe('Shop auth & accounts', () => {
         const adminResult = await shopClient.query<
             CreateAdministrator.Mutation,
             CreateAdministrator.Variables
-        >(CREATE_ADMINISTRATOR, {
+            >(CREATE_ADMINISTRATOR, {
             input: {
                 emailAddress: identifier,
                 firstName: code,
@@ -338,7 +331,7 @@ describe('Expiring tokens', () => {
                 customerCount: 1,
             },
             {
-                emailOptions,
+                plugins: [new TestEmailPlugin()],
                 authOptions: {
                     verificationTokenDuration: '1ms',
                 },
@@ -423,7 +416,7 @@ describe('Registration without email verification', () => {
                 customerCount: 1,
             },
             {
-                emailOptions,
+                plugins: [new TestEmailPlugin()],
                 authOptions: {
                     requireVerification: false,
                 },
@@ -481,18 +474,35 @@ describe('Registration without email verification', () => {
     });
 });
 
+
+/**
+ * This mock plugin simulates an EmailPlugin which would send emails
+ * on the registration & password reset events.
+ */
+class TestEmailPlugin implements VendurePlugin {
+    onBootstrap(inject: InjectorFn) {
+        const eventBus = inject(EventBus);
+        eventBus.subscribe(AccountRegistrationEvent, event => {
+            sendEmailFn(event);
+        });
+        eventBus.subscribe(PasswordResetEvent, event => {
+            sendEmailFn(event);
+        });
+    }
+}
+
 function getVerificationTokenPromise(): Promise<string> {
-    return new Promise<string>(resolve => {
-        sendEmailFn.mockImplementation(ctx => {
-            resolve(ctx.event.user.verificationToken);
+    return new Promise<any>(resolve => {
+        sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
+            resolve(event.user.verificationToken);
         });
     });
 }
 
 function getPasswordResetTokenPromise(): Promise<string> {
-    return new Promise<string>(resolve => {
-        sendEmailFn.mockImplementation(ctx => {
-            resolve(ctx.event.user.passwordResetToken);
+    return new Promise<any>(resolve => {
+        sendEmailFn.mockImplementation((event: PasswordResetEvent) => {
+            resolve(event.user.passwordResetToken);
         });
     });
 }
