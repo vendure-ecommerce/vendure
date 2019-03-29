@@ -12,14 +12,6 @@ docker-compose.yml
 lerna-debug.log
 dist
 e2e/__data__/*
-packages/core/assets
-packages/core/dist
-packages/core/e2e/__data__/*.sqlite
-!packages/core/e2e/__data__/.gitkeep
-packages/core/test-emails
-packages/core/src/email/preview/output
-packages/dev-server/assets
-packages/dev-server/vendure
 docs/resources/_gen/*
 docs/static/main.js*
 docs/static/main.css*

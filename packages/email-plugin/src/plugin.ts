@@ -7,12 +7,12 @@ import { EmailContext } from './email-context';
 import { EmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { TemplateLoader } from './template-loader';
-import { DefaultEmailPluginDevModeOptions, DefaultEmailPluginOptions, EmailOptions, EmailTransportOptions, EmailTypeConfig } from './types';
+import { EmailOptions, EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, EmailTypeConfig } from './types';
 
 /**
  * Configures the server to use the Handlebars / MJML email generator.
  */
-export class DefaultEmailPlugin implements VendurePlugin {
+export class EmailPlugin implements VendurePlugin {
     private readonly templatePath: string;
     private readonly transport: EmailTransportOptions;
     private readonly templateVars: { [name: string]: any };
@@ -21,7 +21,7 @@ export class DefaultEmailPlugin implements VendurePlugin {
     private emailSender: EmailSender;
     private readonly emailOptions: EmailOptions<DefaultEmailType>;
 
-    constructor(options: DefaultEmailPluginOptions | DefaultEmailPluginDevModeOptions) {
+    constructor(options: EmailPluginOptions | EmailPluginDevModeOptions) {
         this.templatePath = options.templatePath;
         this.templateVars = options.templateVars || {};
         if (isDevModeOptions(options)) {
@@ -100,7 +100,7 @@ export class DefaultEmailPlugin implements VendurePlugin {
 }
 
 function isDevModeOptions(
-    input: DefaultEmailPluginOptions | DefaultEmailPluginDevModeOptions,
-): input is DefaultEmailPluginDevModeOptions {
-    return (input as DefaultEmailPluginDevModeOptions).devMode === true;
+    input: EmailPluginOptions | EmailPluginDevModeOptions,
+): input is EmailPluginDevModeOptions {
+    return (input as EmailPluginDevModeOptions).devMode === true;
 }

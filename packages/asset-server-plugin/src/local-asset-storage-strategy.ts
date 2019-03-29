@@ -8,7 +8,7 @@ import { Stream } from 'stream';
 /**
  * A persistence strategy which saves files to the local file system.
  */
-export class DefaultAssetStorageStrategy implements AssetStorageStrategy {
+export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     constructor(private readonly uploadPath: string, private readonly route: string) {
         this.ensureUploadPathExists(this.uploadPath);
     }

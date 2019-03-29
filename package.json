@@ -17,9 +17,9 @@
     "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
     "dev-server": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
-    "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../server && yarn test && yarn test:e2e",
+    "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../ && yarn test:common && yarn test:core && yarn test:e2e",
     "test:common": "jest --config packages/common/jest.config.js",
-    "test:server": "jest --config packages/core/jest.config.js",
+    "test:core": "jest --config packages/core/jest.config.js",
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "test:admin-ui": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "build": "lerna run build"

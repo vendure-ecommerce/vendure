@@ -1,3 +1,4 @@
+import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiPlugin,
@@ -5,8 +6,7 @@ import {
     examplePaymentHandler,
     VendureConfig,
 } from '@vendure/core';
-import { DefaultAssetServerPlugin } from '@vendure/default-asset-server-plugin';
-import { DefaultEmailPlugin } from '@vendure/default-email-plugin';
+import { EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 
 /**
@@ -50,15 +50,15 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
-        new DefaultAssetServerPlugin({
+        new AssetServerPlugin({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
             port: 5002,
         }),
         new DefaultSearchPlugin(),
-        new DefaultEmailPlugin({
+        new EmailPlugin({
             devMode: true,
-            templatePath: path.join(__dirname, '../default-email-plugin/templates'),
+            templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
         }),
        /* new AdminUiPlugin({

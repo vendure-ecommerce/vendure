@@ -57,11 +57,11 @@ export interface EmailOptions<EmailType extends string> {
 
 /**
  * @description
- * Configuration for the DefaultEmailPlugin.
+ * Configuration for the EmailPlugin.
  *
  * @docsCategory plugin
  */
-export interface DefaultEmailPluginOptions {
+export interface EmailPluginOptions {
     /**
      * @description
      * The path to the location of the email templates. In a default Vendure installation,
@@ -80,7 +80,7 @@ export interface DefaultEmailPluginOptions {
     templateVars: { [name: string]: any };
 }
 
-export interface DefaultEmailPluginDevModeOptions {
+export interface EmailPluginDevModeOptions {
     templatePath: string;
     outputPath: string;
     devMode: true;

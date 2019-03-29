@@ -1,5 +1,5 @@
 {
-  "name": "@vendure/default-asset-server-plugin",
+  "name": "@vendure/asset-server-plugin",
   "version": "1.0.0",
   "module": "./lib/index.js",
   "files": ["./lib"],
@@ -21,5 +21,8 @@
     "http-proxy-middleware": "^0.19.1",
     "sharp": "^0.22.0",
     "typescript": "^3.3.4000"
+  },
+  "peerDependencies": {
+    "@vendure/core": "1.0.0"
   }
 }

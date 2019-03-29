@@ -3,7 +3,7 @@ import { AssetPreviewStrategy, getAssetType } from '@vendure/core';
 import path from 'path';
 import sharp from 'sharp';
 
-export class DefaultAssetPreviewStrategy implements AssetPreviewStrategy {
+export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
     constructor(
         private config: {
             maxHeight: number;

@@ -1,5 +1,5 @@
 {
-  "name": "@vendure/default-email-plugin",
+  "name": "@vendure/email-plugin",
   "version": "1.0.0",
   "module": "./lib/index.js",
   "files": [

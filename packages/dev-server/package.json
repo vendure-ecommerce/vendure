@@ -11,8 +11,8 @@
   "dependencies": {
     "@vendure/common": "1.0.0",
     "@vendure/core": "1.0.0",
-    "@vendure/default-asset-server-plugin": "1.0.0",
-    "@vendure/default-email-plugin": "1.0.0",
+    "@vendure/asset-server-plugin": "1.0.0",
+    "@vendure/email-plugin": "1.0.0",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {

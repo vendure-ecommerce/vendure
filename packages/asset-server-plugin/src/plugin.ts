@@ -4,8 +4,8 @@ import { Server } from 'http';
 import proxy from 'http-proxy-middleware';
 import path from 'path';
 
-import { DefaultAssetPreviewStrategy } from './default-asset-preview-strategy';
-import { DefaultAssetStorageStrategy } from './default-asset-storage-strategy';
+import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
+import { LocalAssetStorageStrategy } from './local-asset-storage-strategy';
 import { transformImage } from './transform-image';
 
 /**
@@ -50,7 +50,7 @@ export interface ImageTransformPreset {
  *
  * @docsCategory plugin
  */
-export interface DefaultAssetServerOptions {
+export interface AssetServerOptions {
     hostname?: string;
     /**
      * @description
@@ -91,11 +91,11 @@ export interface DefaultAssetServerOptions {
 }
 
 /**
- * The DefaultAssetServerPlugin instantiates a static Express server which is used to
+ * The AssetServerPlugin instantiates a static Express server which is used to
  * serve the assets. It can also perform on-the-fly image transformations and caches the
  * results for subsequent calls.
  */
-export class DefaultAssetServerPlugin implements VendurePlugin {
+export class AssetServerPlugin implements VendurePlugin {
     private server: Server;
     private assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
@@ -107,7 +107,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
 
-    constructor(private options: DefaultAssetServerOptions) {
+    constructor(private options: AssetServerOptions) {
         if (options.presets) {
             for (const preset of options.presets) {
                 const existingIndex = this.presets.findIndex(p => p.name === preset.name);
@@ -121,8 +121,8 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
     }
 
     configure(config: Required<VendureConfig>) {
-        this.assetStorage = new DefaultAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
-        config.assetOptions.assetPreviewStrategy = new DefaultAssetPreviewStrategy({
+        this.assetStorage = new LocalAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
+        config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth || 1600,
             maxHeight: this.options.previewMaxHeight || 1600,
         });
