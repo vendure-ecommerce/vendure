@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import parse from 'csv-parse';
 import { Stream } from 'stream';
 
-import { normalizeString } from '@vendure/common/normalize-string';
-import { unique } from '@vendure/common/unique';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { unique } from '@vendure/common/lib/unique';
 
 export type BaseProductRecord = {
     name?: string;

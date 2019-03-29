@@ -4,8 +4,8 @@ import {
     CreateProductOptionGroupInput,
     LanguageCode,
     UpdateProductOptionGroupInput,
-} from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Connection, FindManyOptions, Like } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';

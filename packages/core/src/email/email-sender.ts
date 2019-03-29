@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { normalizeString } from '@vendure/common/normalize-string';
-import { assertNever } from '@vendure/common/shared-utils';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';

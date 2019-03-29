@@ -1,6 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { LanguageCode } from '@vendure/common/generated-types';
-import { CustomFields } from '@vendure/common/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { CustomFields } from '@vendure/common/lib/shared-types';
 import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';

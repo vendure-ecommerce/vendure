@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Collection } from '../../entity';

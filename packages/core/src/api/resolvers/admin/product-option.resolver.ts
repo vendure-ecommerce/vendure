@@ -5,7 +5,7 @@ import {
     ProductOptionGroupQueryArgs,
     ProductOptionGroupsQueryArgs,
     UpdateProductOptionGroupMutationArgs,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';

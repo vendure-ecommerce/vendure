@@ -1,4 +1,4 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/generated-types';
+import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {

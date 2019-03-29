@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { ConfigArgType } from '@vendure/common/generated-types';
-import { Omit } from '@vendure/common/omit';
+import { ConfigArgType } from '@vendure/common/lib/generated-types';
+import { Omit } from '@vendure/common/lib/omit';
 import { Connection } from 'typeorm';
 
 import { PromotionItemAction, PromotionOrderAction } from '../../../config';

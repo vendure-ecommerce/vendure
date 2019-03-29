@@ -1,5 +1,5 @@
-import { LanguageCode } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import i18next from 'i18next';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';

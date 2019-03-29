@@ -10,8 +10,8 @@ import {
     Permission,
     UpdateFacetMutationArgs,
     UpdateFacetValuesMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { EntityNotFoundError } from '../../../common/error/errors';

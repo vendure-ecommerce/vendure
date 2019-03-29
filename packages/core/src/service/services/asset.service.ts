@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAssetInput } from '@vendure/common/generated-types';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
+import { CreateAssetInput } from '@vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';

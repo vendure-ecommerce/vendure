@@ -1,5 +1,5 @@
-import { CreateCustomerAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer } from '@vendure/common/generated-types';
-import { omit } from '@vendure/common/omit';
+import { CreateCustomerAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer } from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
 import gql from 'graphql-tag';
 import path from 'path';
 

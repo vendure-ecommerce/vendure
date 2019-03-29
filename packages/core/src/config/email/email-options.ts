@@ -1,5 +1,5 @@
-import { LanguageCode } from '@vendure/common/generated-types';
-import { Type } from '@vendure/common/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { Type } from '@vendure/common/lib/shared-types';
 
 import { EmailContext, GeneratedEmailContext } from '../../email/email-context';
 import { VendureEvent } from '../../event-bus/vendure-event';

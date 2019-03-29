@@ -1,6 +1,6 @@
 import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { CollectionBreadcrumb, ProductVariantListOptions } from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+import { CollectionBreadcrumb, ProductVariantListOptions } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { Collection, ProductVariant } from '../../../entity';

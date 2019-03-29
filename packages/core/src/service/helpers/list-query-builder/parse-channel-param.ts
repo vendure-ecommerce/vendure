@@ -1,4 +1,4 @@
-import { ID, Type } from '@vendure/common/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { VendureEntity } from '../../../entity/base/base.entity';

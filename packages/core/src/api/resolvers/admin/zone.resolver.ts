@@ -8,7 +8,7 @@ import {
     RemoveMembersFromZoneMutationArgs,
     UpdateZoneMutationArgs,
     ZoneQueryArgs,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ZoneService } from '../../../service/services/zone.service';

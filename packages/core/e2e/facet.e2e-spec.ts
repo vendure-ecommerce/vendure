@@ -12,7 +12,7 @@ import {
     UpdateFacetValues,
     UpdateProduct,
     UpdateProductVariants,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

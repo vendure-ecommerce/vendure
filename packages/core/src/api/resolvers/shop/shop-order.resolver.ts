@@ -12,8 +12,8 @@ import {
     SetOrderShippingMethodMutationArgs,
     ShippingMethodQuote,
     TransitionOrderToStateMutationArgs,
-} from '@vendure/common/generated-shop-types';
-import { CountriesQueryArgs } from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-shop-types';
+import { CountriesQueryArgs } from '@vendure/common/lib/generated-types';
 import ms from 'ms';
 
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';

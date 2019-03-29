@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { UpdateGlobalSettingsInput } from '@vendure/common/generated-types';
+import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 import { Connection } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';

@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
-import { RegisterCustomerInput } from '@vendure/common/generated-shop-types';
-import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '@vendure/common/generated-types';
+import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
+import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '@vendure/common/lib/generated-types';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';

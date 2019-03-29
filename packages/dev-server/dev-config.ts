@@ -1,4 +1,4 @@
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/shared-constants';
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiPlugin,
     DefaultAssetServerPlugin,

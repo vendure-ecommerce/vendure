@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { coreEntitiesMap } from '../../entity/entities';
 import { I18nError } from '../../i18n/i18n-error';

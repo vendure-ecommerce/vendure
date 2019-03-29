@@ -1,4 +1,4 @@
-import { LoginMutationArgs, LoginResult } from '@vendure/common/generated-types';
+import { LoginMutationArgs, LoginResult } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { InternalServerError } from '../../../common/error/errors';

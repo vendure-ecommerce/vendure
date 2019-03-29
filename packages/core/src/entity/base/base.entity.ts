@@ -1,4 +1,4 @@
-import { DeepPartial, ID } from '@vendure/common/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { primaryKeyType } from '../../config/config-helpers';

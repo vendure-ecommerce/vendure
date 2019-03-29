@@ -1,5 +1,5 @@
-import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/generated-types';
-import { DeepPartial } from '@vendure/common/shared-types';
+import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { AdjustmentSource } from '../../common/types/adjustment-source';

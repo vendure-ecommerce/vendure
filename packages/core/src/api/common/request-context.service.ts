@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LanguageCode, Permission } from '@vendure/common/generated-types';
+import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { Request } from 'express';
 
 import { idsAreEqual } from '../../common/utils';

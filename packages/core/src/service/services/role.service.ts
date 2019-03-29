@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateRoleInput, Permission, UpdateRoleInput } from '@vendure/common/generated-types';
+import { CreateRoleInput, Permission, UpdateRoleInput } from '@vendure/common/lib/generated-types';
 import {
     CUSTOMER_ROLE_CODE,
     CUSTOMER_ROLE_DESCRIPTION,
     SUPER_ADMIN_ROLE_CODE,
     SUPER_ADMIN_ROLE_DESCRIPTION,
-} from '@vendure/common/shared-constants';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/shared-constants';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';

@@ -6,8 +6,8 @@ import {
     ShippingMethodQueryArgs,
     ShippingMethodsQueryArgs,
     UpdateShippingMethodMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';

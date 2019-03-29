@@ -4,7 +4,7 @@ import {
     GetAdministrator,
     GetAdministrators,
     UpdateAdministrator,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 import path from 'path';
 
 import {

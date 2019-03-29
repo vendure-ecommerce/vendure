@@ -1,6 +1,6 @@
-import { LanguageCode } from '@vendure/common/generated-types';
-import { ADMIN_API_PATH, API_PORT } from '@vendure/common/shared-constants';
-import { CustomFields } from '@vendure/common/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { ADMIN_API_PATH, API_PORT } from '@vendure/common/lib/shared-constants';
+import { CustomFields } from '@vendure/common/lib/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 

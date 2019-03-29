@@ -7,8 +7,8 @@ import {
     GetPromotionList,
     Promotion,
     UpdatePromotion,
-} from '@vendure/common/generated-types';
-import { pick } from '@vendure/common/pick';
+} from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 

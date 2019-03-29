@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { EntityManager } from 'typeorm';
 
 import { EntityNotFoundError } from '../../../common/error/errors';

@@ -7,8 +7,8 @@ import {
     DeletionResult,
     LanguageCode,
     UpdateFacetValueInput,
-} from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

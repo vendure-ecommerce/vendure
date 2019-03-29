@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { omit } from '@vendure/common/omit';
-import { ID, Type } from '@vendure/common/shared-types';
+import { omit } from '@vendure/common/lib/omit';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';

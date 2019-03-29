@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductOptionInput, LanguageCode } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+import { CreateProductOptionInput, LanguageCode } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';

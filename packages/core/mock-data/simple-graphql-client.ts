@@ -1,5 +1,5 @@
-import { CreateAssets, ImportInfo } from '@vendure/common/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/shared-constants';
+import { CreateAssets, ImportInfo } from '@vendure/common/lib/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
 import gql from 'graphql-tag';

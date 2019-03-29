@@ -1,5 +1,5 @@
-import { Type } from '@vendure/common/shared-types';
-import { unique } from '@vendure/common/unique';
+import { Type } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection, OrderByCondition } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 

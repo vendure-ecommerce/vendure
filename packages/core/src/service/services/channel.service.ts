@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateChannelInput, CurrencyCode, UpdateChannelInput } from '@vendure/common/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/shared-constants';
-import { ID } from '@vendure/common/shared-types';
-import { unique } from '@vendure/common/unique';
+import { CreateChannelInput, CurrencyCode, UpdateChannelInput } from '@vendure/common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

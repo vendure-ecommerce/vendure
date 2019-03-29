@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 
 import { VendureConfig } from './vendure-config';
 

@@ -1,4 +1,4 @@
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/shared-constants';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ConnectionOptions, getConnection } from 'typeorm';
 
 import { Channel } from '../src/entity/channel/channel.entity';

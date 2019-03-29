@@ -9,7 +9,7 @@ import {
     ResetPasswordMutationArgs,
     UpdateCustomerPasswordMutationArgs,
     VerifyCustomerAccountMutationArgs,
-} from '@vendure/common/generated-shop-types';
+} from '@vendure/common/lib/generated-shop-types';
 import { Request, Response } from 'express';
 
 import { PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';

@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
-import { SearchReindexResponse } from '@vendure/common/generated-types';
-import { Type } from '@vendure/common/shared-types';
+import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
+import { Type } from '@vendure/common/lib/shared-types';
 import gql from 'graphql-tag';
 
 import { idsAreEqual } from '../../common/utils';

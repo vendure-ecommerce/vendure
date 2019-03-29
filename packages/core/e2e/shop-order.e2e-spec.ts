@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from '@vendure/common/generated-types';
+import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

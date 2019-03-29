@@ -6,7 +6,7 @@ import {
     Permission,
     RemoveCustomersFromGroupMutationArgs,
     UpdateCustomerGroupMutationArgs,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 
 import { CustomerGroup } from '../../../entity/customer-group/customer-group.entity';
 import { CustomerGroupService } from '../../../service/services/customer-group.service';

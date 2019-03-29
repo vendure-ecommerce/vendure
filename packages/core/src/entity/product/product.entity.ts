@@ -1,4 +1,4 @@
-import { DeepPartial, HasCustomFields } from '@vendure/common/shared-types';
+import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';

@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
-import { CreateAddressInput, UpdateAddressInput, UpdateCustomerInput } from '@vendure/common/generated-shop-types';
-import { AttemptLogin, GetCustomer } from '@vendure/common/generated-types';
+import { CreateAddressInput, UpdateAddressInput, UpdateCustomerInput } from '@vendure/common/lib/generated-shop-types';
+import { AttemptLogin, GetCustomer } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

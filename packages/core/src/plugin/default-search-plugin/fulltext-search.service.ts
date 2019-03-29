@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { LanguageCode, SearchInput, SearchResponse } from '@vendure/common/generated-types';
-import { Omit } from '@vendure/common/omit';
-import { ID } from '@vendure/common/shared-types';
-import { unique } from '@vendure/common/unique';
+import { LanguageCode, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
+import { Omit } from '@vendure/common/lib/omit';
+import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 

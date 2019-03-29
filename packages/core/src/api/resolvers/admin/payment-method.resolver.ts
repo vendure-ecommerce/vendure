@@ -4,8 +4,8 @@ import {
     PaymentMethodsQueryArgs,
     Permission,
     UpdatePaymentMethodMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { PaymentMethod } from '../../../entity/payment-method/payment-method.entity';
 import { PaymentMethodService } from '../../../service/services/payment-method.service';

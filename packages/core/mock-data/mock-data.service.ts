@@ -7,7 +7,7 @@ import {
     CurrencyCode,
     LanguageCode,
     ProductVariant,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 import faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 

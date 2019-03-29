@@ -1,6 +1,6 @@
-import { SearchInput, SearchResult } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
-import { unique } from '@vendure/common/unique';
+import { SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Brackets, Connection, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';

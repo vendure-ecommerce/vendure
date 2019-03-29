@@ -14,8 +14,8 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-} from '@vendure/common/generated-types';
-import { ROOT_COLLECTION_NAME } from '@vendure/common/shared-constants';
+} from '@vendure/common/lib/generated-types';
+import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import gql from 'graphql-tag';
 import path from 'path';
 

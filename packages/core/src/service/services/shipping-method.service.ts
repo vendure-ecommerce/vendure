@@ -5,9 +5,9 @@ import {
     ConfigurableOperationInput,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
-} from '@vendure/common/generated-types';
-import { omit } from '@vendure/common/omit';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { configurableDefToOperation } from '../../common/configurable-operation';

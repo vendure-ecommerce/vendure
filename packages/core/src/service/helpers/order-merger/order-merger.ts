@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';

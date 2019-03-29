@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { RegisterCustomerInput } from '@vendure/common/generated-shop-types';
+import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import {
     CreateAddressInput,
     CreateCustomerInput,
@@ -8,8 +8,8 @@ import {
     DeletionResult,
     UpdateAddressInput,
     UpdateCustomerInput,
-} from '@vendure/common/generated-types';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

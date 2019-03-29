@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 
 import { InitialData } from '../../src/data-import';
 

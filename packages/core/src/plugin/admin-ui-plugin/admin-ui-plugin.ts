@@ -1,4 +1,4 @@
-import { AdminUiConfig } from '@vendure/common/shared-types';
+import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';

@@ -7,7 +7,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateTaxRate,
-} from '@vendure/common/generated-types';
+} from ''@vendure/common/lib/$1'generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

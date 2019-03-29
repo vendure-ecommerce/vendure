@@ -1,5 +1,5 @@
 // prettier-ignore
-import { ConfigArg, ConfigArgType, ConfigurableOperation } from '@vendure/common/generated-types';
+import { ConfigArg, ConfigArgType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
 
 import { InternalServerError } from './error/errors';
 

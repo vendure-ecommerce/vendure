@@ -1,4 +1,4 @@
-import { ConfigArgType } from '@vendure/common/generated-types';
+import { ConfigArgType } from '@vendure/common/lib/generated-types';
 
 import { Order } from '../../entity/order/order.entity';
 

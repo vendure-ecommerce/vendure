@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SearchReindexResponse } from '@vendure/common/generated-types';
+import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 

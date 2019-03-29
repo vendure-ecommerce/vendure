@@ -6,11 +6,11 @@ import {
     CreateCollectionInput,
     MoveCollectionInput,
     UpdateCollectionInput,
-} from '@vendure/common/generated-types';
-import { pick } from '@vendure/common/pick';
-import { ROOT_COLLECTION_NAME } from '@vendure/common/shared-constants';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
-import { notNullOrUndefined } from '@vendure/common/shared-utils';
+} from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
+import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

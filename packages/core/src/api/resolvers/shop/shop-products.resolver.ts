@@ -4,10 +4,10 @@ import {
     CollectionsQueryArgs,
     ProductQueryArgs,
     SearchResponse,
-} from '@vendure/common/generated-shop-types';
-import { ProductsQueryArgs } from '@vendure/common/generated-shop-types';
-import { Omit } from '@vendure/common/omit';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-shop-types';
+import { ProductsQueryArgs } from '@vendure/common/lib/generated-shop-types';
+import { Omit } from '@vendure/common/lib/omit';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';

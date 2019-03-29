@@ -1,4 +1,4 @@
-import { ID, Type } from '@vendure/common/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { Connection, FindOneOptions } from 'typeorm';
 
 import { EntityNotFoundError } from '../../../common/error/errors';

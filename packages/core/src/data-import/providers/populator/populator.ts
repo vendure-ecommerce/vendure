@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigArgType, LanguageCode } from '@vendure/common/generated-types';
-import { normalizeString } from '@vendure/common/normalize-string';
-import { notNullOrUndefined } from '@vendure/common/shared-utils';
+import { ConfigArgType, LanguageCode } from '@vendure/common/lib/generated-types';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';

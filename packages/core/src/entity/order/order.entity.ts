@@ -1,5 +1,5 @@
-import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '@vendure/common/generated-types';
-import { DeepPartial, ID } from '@vendure/common/shared-types';
+import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '@vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';

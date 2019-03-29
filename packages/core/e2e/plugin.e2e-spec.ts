@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

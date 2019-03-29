@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { notNullOrUndefined } from '@vendure/common/shared-utils';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Order } from '../../../entity/order/order.entity';

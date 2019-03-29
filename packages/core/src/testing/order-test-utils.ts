@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { OrderItem } from '../entity/order-item/order-item.entity';
 import { OrderLine } from '../entity/order-line/order-line.entity';

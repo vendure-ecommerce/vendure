@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductVariantInput, UpdateProductVariantInput } from '@vendure/common/generated-types';
-import { ID, PaginatedList } from '@vendure/common/shared-types';
-import { generateAllCombinations } from '@vendure/common/shared-utils';
+import { CreateProductVariantInput, UpdateProductVariantInput } from '@vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

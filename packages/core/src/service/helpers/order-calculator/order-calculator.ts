@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { filterAsync } from '@vendure/common/filter-async';
-import { AdjustmentType } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
-import { unique } from '@vendure/common/unique';
+import { filterAsync } from '@vendure/common/lib/filter-async';
+import { AdjustmentType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';

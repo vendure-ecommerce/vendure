@@ -7,8 +7,8 @@ import {
     PromotionQueryArgs,
     PromotionsQueryArgs,
     UpdatePromotionMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { PromotionService } from '../../../service/services/promotion.service';

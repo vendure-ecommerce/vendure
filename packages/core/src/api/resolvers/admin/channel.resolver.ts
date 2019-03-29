@@ -4,7 +4,7 @@ import {
     CreateChannelMutationArgs,
     Permission,
     UpdateChannelMutationArgs,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ChannelService } from '../../../service/services/channel.service';

@@ -1,6 +1,6 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { OrderQueryArgs, OrdersQueryArgs, Permission } from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+import { OrderQueryArgs, OrdersQueryArgs, Permission } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../../service/services/order.service';

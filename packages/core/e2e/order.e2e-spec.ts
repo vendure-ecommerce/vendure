@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { GetCustomerList, GetOrder, GetOrderList } from '@vendure/common/generated-types';
+import { GetCustomerList, GetOrder, GetOrderList } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 

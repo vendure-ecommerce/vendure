@@ -1,5 +1,5 @@
-import { AssetType } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+import { AssetType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 /**
  * Takes a predicate function and returns a negated version.

@@ -1,6 +1,6 @@
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '@vendure/common/generated-types';
-import { omit } from '@vendure/common/omit';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/shared-constants';
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import path from 'path';
 
 import { CREATE_ROLE, GET_ROLE, GET_ROLES, UPDATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';

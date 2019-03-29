@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';

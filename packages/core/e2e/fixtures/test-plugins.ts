@@ -1,5 +1,5 @@
 import { Query, Resolver } from '@nestjs/graphql';
-import { LanguageCode } from '@vendure/common/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 
 import { APIExtensionDefinition, InjectorFn, VendureConfig, VendurePlugin } from '../../src/config';

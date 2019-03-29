@@ -5,8 +5,8 @@ import {
     RoleQueryArgs,
     RolesQueryArgs,
     UpdateRoleMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Role } from '../../../entity/role/role.entity';
 import { RoleService } from '../../../service/services/role.service';

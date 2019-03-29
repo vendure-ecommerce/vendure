@@ -1,5 +1,5 @@
-import { LanguageCode } from '@vendure/common/generated-types';
-import { CustomFieldsObject, ID } from '@vendure/common/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { CustomFieldsObject, ID } from '@vendure/common/lib/shared-types';
 
 import { TranslatableRelationsKeys } from '../../service/helpers/utils/translate-entity';
 

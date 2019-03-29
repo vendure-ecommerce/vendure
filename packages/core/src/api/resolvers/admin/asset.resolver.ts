@@ -4,8 +4,8 @@ import {
     AssetsQueryArgs,
     CreateAssetsMutationArgs,
     Permission,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Asset } from '../../../entity/asset/asset.entity';
 import { AssetService } from '../../../service/services/asset.service';

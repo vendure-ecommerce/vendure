@@ -5,8 +5,8 @@ import {
     LoginMutationArgs,
     Permission,
     UpdateProductMutationArgs,
-} from '@vendure/common/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/shared-constants';
+} from '@vendure/common/lib/generated-types';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';

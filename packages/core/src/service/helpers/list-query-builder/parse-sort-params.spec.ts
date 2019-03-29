@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/shared-types';
+import { Type } from '@vendure/common/lib/shared-types';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Omit } from '@vendure/common/omit';
+import { Omit } from '@vendure/common/lib/omit';
 import fs from 'fs';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';

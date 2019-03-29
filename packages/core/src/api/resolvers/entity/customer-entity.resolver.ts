@@ -1,6 +1,6 @@
 import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { OrdersCustomerArgs } from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+import { OrdersCustomerArgs } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';

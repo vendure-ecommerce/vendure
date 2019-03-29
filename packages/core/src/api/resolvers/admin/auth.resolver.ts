@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { LoginMutationArgs, LoginResult, Permission } from '@vendure/common/generated-types';
+import { LoginMutationArgs, LoginResult, Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../../config/config.service';

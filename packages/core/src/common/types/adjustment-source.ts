@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/generated-types';
+import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 

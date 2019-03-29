@@ -1,5 +1,5 @@
-import { Type } from '@vendure/common/shared-types';
-import { assertNever } from '@vendure/common/shared-utils';
+import { Type } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 

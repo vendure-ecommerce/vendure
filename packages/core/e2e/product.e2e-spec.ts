@@ -12,8 +12,8 @@ import {
     SortOrder,
     UpdateProduct,
     UpdateProductVariants,
-} from '@vendure/common/generated-types';
-import { omit } from '@vendure/common/omit';
+} from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
 import gql from 'graphql-tag';
 import path from 'path';
 

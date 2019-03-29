@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateTaxCategoryInput, UpdateTaxCategoryInput } from '@vendure/common/generated-types';
-import { ID } from '@vendure/common/shared-types';
+import { CreateTaxCategoryInput, UpdateTaxCategoryInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { EntityNotFoundError } from '../../common/error/errors';

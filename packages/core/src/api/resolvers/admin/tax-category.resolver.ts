@@ -4,7 +4,7 @@ import {
     Permission,
     TaxCategoryQueryArgs,
     UpdateTaxCategoryMutationArgs,
-} from '@vendure/common/generated-types';
+} from '@vendure/common/lib/generated-types';
 
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';

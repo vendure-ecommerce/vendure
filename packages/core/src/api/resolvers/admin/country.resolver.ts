@@ -7,8 +7,8 @@ import {
     DeletionResponse,
     Permission,
     UpdateCountryMutationArgs,
-} from '@vendure/common/generated-types';
-import { PaginatedList } from '@vendure/common/shared-types';
+} from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { Country } from '../../../entity/country/country.entity';

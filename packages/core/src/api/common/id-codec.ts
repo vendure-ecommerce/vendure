@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';

@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Type } from '@vendure/common/shared-types';
+import { Type } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 

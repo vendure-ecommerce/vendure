@@ -1,5 +1,5 @@
-import { ConfigArg } from '@vendure/common/generated-types';
-import { DeepPartial } from '@vendure/common/shared-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity } from 'typeorm';
 
 import { UserInputError } from '../../common/error/errors';
