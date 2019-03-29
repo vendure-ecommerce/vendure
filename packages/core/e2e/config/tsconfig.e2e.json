@@ -4,7 +4,8 @@
     "types": ["jest", "node"],
     "lib": ["es2015"],
     "skipLibCheck": false,
-    "inlineSourceMap": true
+    "inlineSourceMap": true,
+    "allowJs": true
   },
   "include": ["../**/*.e2e-spec.ts", "../**/*.d.ts"]
 }
