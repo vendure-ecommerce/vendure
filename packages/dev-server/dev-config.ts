@@ -1,13 +1,13 @@
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiPlugin,
-    DefaultAssetServerPlugin,
     defaultEmailTypes,
     DefaultSearchPlugin,
     examplePaymentHandler,
     HandlebarsMjmlGenerator,
     VendureConfig,
 } from '@vendure/core';
+import { DefaultAssetServerPlugin } from '@vendure/default-asset-server-plugin';
 import path from 'path';
 
 /**

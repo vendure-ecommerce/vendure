@@ -1,0 +1,25 @@
+{
+  "name": "@vendure/default-asset-server-plugin",
+  "version": "1.0.0",
+  "module": "./lib/index.js",
+  "files": ["./lib"],
+  "scripts": {
+    "build": "rimraf dist && tsc -p ./tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.39",
+    "@types/fs-extra": "^5.0.4",
+    "@types/http-proxy-middleware": "^0.19.2",
+    "@types/sharp": "^0.22.1",
+    "@vendure/common": "1.0.0",
+    "@vendure/core": "1.0.0",
+    "express": "^4.16.4",
+    "rimraf": "^2.6.3"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "http-proxy-middleware": "^0.19.1",
+    "sharp": "^0.22.0",
+    "typescript": "^3.3.4000"
+  }
+}

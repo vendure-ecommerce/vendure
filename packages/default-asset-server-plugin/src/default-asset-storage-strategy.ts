@@ -1,10 +1,9 @@
+import { AssetStorageStrategy } from '@vendure/core';
 import { Request } from 'express';
 import { ReadStream } from 'fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { Stream } from 'stream';
-
-import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 
 /**
  * A persistence strategy which saves files to the local file system.

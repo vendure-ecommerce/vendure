@@ -1,9 +1,7 @@
-import { AssetType } from '@vendure/common/generated-types';
+import { AssetType } from '@vendure/common/lib/generated-types';
+import { AssetPreviewStrategy, getAssetType } from '@vendure/core';
 import path from 'path';
 import sharp from 'sharp';
-
-import { getAssetType } from '../../common/utils';
-import { AssetPreviewStrategy } from '../../config/asset-preview-strategy/asset-preview-strategy';
 
 export class DefaultAssetPreviewStrategy implements AssetPreviewStrategy {
     constructor(

@@ -1,11 +1,8 @@
+import { AssetStorageStrategy, InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
 import express, { NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
+import proxy from 'http-proxy-middleware';
 import path from 'path';
-
-import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
-import { VendureConfig } from '../../config/vendure-config';
-import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
-import { createProxyHandler } from '../plugin-utils';
 
 import { DefaultAssetPreviewStrategy } from './default-asset-preview-strategy';
 import { DefaultAssetStorageStrategy } from './default-asset-storage-strategy';
@@ -142,7 +139,7 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
     }
 
     onClose(): Promise<void> {
-        return new Promise(resolve => this.server.close(resolve));
+        return new Promise(resolve => { this.server.close(() => resolve()); });
     }
 
     /**
@@ -211,4 +208,27 @@ export class DefaultAssetServerPlugin implements VendurePlugin {
         const baseName = path.basename(fileName, ext);
         return `${baseName}${suffix}${ext}`;
     }
+}
+
+export interface ProxyOptions {
+    route: string;
+    port: number;
+    hostname?: string;
+}
+
+/**
+ * Configures the proxy middleware which will be passed to the main Vendure server. This
+ * will proxy all asset requests to the dedicated asset server.
+ */
+function createProxyHandler(options: ProxyOptions, logging: boolean) {
+    const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
+    const proxyHostname = options.hostname || 'localhost';
+    return proxy({
+        // TODO: how do we detect https?
+        target: `http://${proxyHostname}:${options.port}`,
+        pathRewrite: {
+            [`^${route}`]: `/`,
+        },
+        logLevel: logging ? 'info' : 'silent',
+    });
 }
