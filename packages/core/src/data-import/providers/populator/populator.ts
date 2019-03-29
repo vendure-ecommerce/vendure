@@ -6,7 +6,7 @@ import { notNullOrUndefined } from '@vendure/common/shared-utils';
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
 import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';
-import { Collection, TaxCategory, Channel } from '../../../entity';
+import { Channel, Collection, TaxCategory } from '../../../entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';

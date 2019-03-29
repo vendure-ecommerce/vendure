@@ -5,7 +5,7 @@ import { isTestEnvironment } from '../e2e/utils/test-environment';
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
 /**
- * A Class used for generating mock data directly into the database via TypeORM.
+ * Clears all tables in the detabase sepcified by the connectionOptions
  */
 export async function clearAllTables(connectionOptions: ConnectionOptions, logging = true) {
     (connectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];

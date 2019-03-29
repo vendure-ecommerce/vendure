@@ -5,11 +5,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "populate": "node -r ts-node/register populate-cli.ts",
-    "start:dev": "nodemon --config nodemon-debug.json"
+    "populate": "node -r ts-node/register populate-dev-server.ts",
+    "start": "nodemon --config nodemon-debug.json"
   },
   "dependencies": {
-    "@vendure/core": "1.0.0"
+    "@vendure/core": "1.0.0",
+    "@vendure/common": "1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.9"

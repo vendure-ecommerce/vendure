@@ -2,16 +2,13 @@
 import { INestApplication } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/generated-types';
 import fs from 'fs-extra';
-import path from 'path';
 
 import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig } from '../src/config/config-helpers';
 import { VendureConfig } from '../src/config/vendure-config';
 
 import { clearAllTables } from './clear-all-tables';
-import { getDefaultChannelToken } from './get-default-channel-token';
-import { MockDataService } from './mock-data.service';
-import { SimpleGraphQLClient } from './simple-graphql-client';
+import { populateCustomers } from './populate-customers';
 
 export interface PopulateOptions {
     logging?: boolean;
@@ -24,7 +21,7 @@ export interface PopulateOptions {
 /**
  * Clears all tables from the database and populates with (deterministic) random data.
  */
-export async function populate(
+export async function populateForTesting(
     config: VendureConfig,
     bootstrapFn: VendureBootstrapFunction,
     options: PopulateOptions,
@@ -41,13 +38,7 @@ export async function populate(
     await populateInitialData(app, options.initialDataPath, logging);
     await populateProducts(app, options.productsCsvPath, logging);
     await populateCollections(app, options.initialDataPath, logging);
-
-    const defaultChannelToken = await getDefaultChannelToken(logging);
-    const client = new SimpleGraphQLClient(`http://localhost:${config.port}/${config.adminApiPath}`);
-    client.setChannelToken(defaultChannelToken);
-    await client.asSuperAdmin();
-    const mockDataService = new MockDataService(client, logging);
-    await mockDataService.populateCustomers(options.customerCount);
+    await populateCustomers(options.customerCount, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
     return app;
@@ -80,7 +71,7 @@ async function populateCollections(app: INestApplication, initialDataPath: strin
             console.log(`\nCreated ${initialData.collections.length} Collections`);
         }
     } catch (err) {
-        console.error(err.message);
+        console.error(err);
     }
 }
 

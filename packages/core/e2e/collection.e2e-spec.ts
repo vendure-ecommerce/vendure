@@ -26,7 +26,7 @@ import {
     UPDATE_COLLECTION,
 } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
 import { FACET_VALUE_FRAGMENT } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-import { GET_ASSET_LIST, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS, } from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { GET_ASSET_LIST, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';

@@ -1,4 +1,10 @@
-import { Administrator, CreateAdministrator, GetAdministrator, GetAdministrators, UpdateAdministrator, } from '@vendure/common/generated-types';
+import {
+    Administrator,
+    CreateAdministrator,
+    GetAdministrator,
+    GetAdministrators,
+    UpdateAdministrator,
+} from '@vendure/common/generated-types';
 import path from 'path';
 
 import {

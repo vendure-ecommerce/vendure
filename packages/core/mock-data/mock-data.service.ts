@@ -31,27 +31,6 @@ export class MockDataService {
         faker.seed(1);
     }
 
-    async populateChannels(channelCodes: string[]): Promise<Channel.Fragment[]> {
-        const channels: Channel.Fragment[] = [];
-        for (const code of channelCodes) {
-            const channel = await this.client.query<CreateChannel.Mutation, CreateChannel.Variables>(
-                CREATE_CHANNEL,
-                {
-                    input: {
-                        code,
-                        pricesIncludeTax: true,
-                        token: `${code}_token`,
-                        currencyCode: CurrencyCode.USD,
-                        defaultLanguageCode: LanguageCode.en,
-                    },
-                },
-            );
-            channels.push(channel.createChannel);
-            this.log(`Created Channel: ${channel.createChannel.code}`);
-        }
-        return channels;
-    }
-
     async populateCustomers(count: number = 5): Promise<any> {
         for (let i = 0; i < count; i++) {
             const firstName = faker.name.firstName();

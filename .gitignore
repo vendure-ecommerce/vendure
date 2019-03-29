@@ -7,6 +7,32 @@
 ../.idea/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+docker-compose.yml
+.env
+lerna-debug.log
+dist
+e2e/__data__/*
+packages/core/assets
+packages/core/dist
+packages/core/e2e/__data__/*.sqlite
+!packages/core/e2e/__data__/.gitkeep
+packages/core/test-emails
+packages/core/src/email/preview/output
+packages/dev-server/assets
+packages/dev-server/vendure
+docs/resources/_gen/*
+docs/static/main.js*
+docs/static/main.css*
+docs/static/intro.js*
+docs/static/intro.css*
+docs/public
+docs/content/docs/configuration/*
+!docs/content/docs/configuration/_index.md
+docs/content/docs/graphql-api/*
+!docs/content/docs/graphql-api/_index.md
+!docs/content/docs/graphql-api/shop/_index.md
+!docs/content/docs/graphql-api/admin/_index.md
+.vscode/
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -377,29 +403,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-=======
-# Local
-docker-compose.yml
-.env
-dist
-e2e/__data__/*
-packages/core/assets
-packages/core/dist
-packages/core/e2e/__data__/*.sqlite
-!packages/core/e2e/__data__/.gitkeep
-packages/core/test-emails
-packages/core/src/email/preview/output
-docs/resources/_gen/*
-docs/static/main.js*
-docs/static/main.css*
-docs/static/intro.js*
-docs/static/intro.css*
-docs/public
-docs/content/docs/configuration/*
-!docs/content/docs/configuration/_index.md
-docs/content/docs/graphql-api/*
-!docs/content/docs/graphql-api/_index.md
-!docs/content/docs/graphql-api/shop/_index.md
-!docs/content/docs/graphql-api/admin/_index.md
-.vscode/

@@ -6,7 +6,7 @@ import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
-import { populate, PopulateOptions } from '../mock-data/populate';
+import { populateForTesting, PopulateOptions } from '../mock-data/populate-for-testing';
 import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
 import { VendureConfig } from '../src/config/vendure-config';
@@ -76,7 +76,7 @@ export class TestServer {
     ): Promise<void> {
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
 
-        const app = await populate(testingConfig, this.bootstrapForTesting, {
+        const app = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
             ...{
                 ...options,

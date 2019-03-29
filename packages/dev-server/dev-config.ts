@@ -1,3 +1,4 @@
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/shared-constants';
 import {
     AdminUiPlugin,
     DefaultAssetServerPlugin,
@@ -8,8 +9,6 @@ import {
     VendureConfig,
 } from '@vendure/core';
 import path from 'path';
-
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../common/shared-constants';
 
 /**
  * Config settings used during development

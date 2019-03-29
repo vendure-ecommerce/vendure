@@ -3,22 +3,42 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { logColored } from './cli-utils';
-// tslint:disable-next-line:no-var-requires
-const { Populator, Importer } = require('@vendure/core');
+// tslint:disable:no-var-requires
+let Populator: any;
+let Importer: any;
+try {
+    Populator = require('@vendure/core').Populator;
+    Importer = require('@vendure/core').Importer;
+} catch (e) {
+    Populator = require('../src/data-import/providers/populator/populator').Populator;
+    Importer = require('../src/data-import/providers/importer/importer').Importer;
+}
 
 // tslint:disable:no-console
-export async function populate() {
+export async function populateFromCli() {
     logColored('\nPopulating... (this may take a minute or two)\n');
-    const app = await getApplicationRef();
-    if (app) {
-        const initialData = require('./assets/initial-data.json');
-        await populateInitialData(app, initialData);
-        await populateProducts(app, initialData);
-        await populateCollections(app, initialData);
-        logColored('\nDone!');
-        await app.close();
-        process.exit(0);
+    const initialDataPath = './assets/initial-data.json';
+    const sampleProductsFile = path.join(__dirname, 'assets', 'products.csv');
+    const imageSourcePath = path.join(__dirname, 'assets', 'images');
+    const app = await populate(getApplicationRef, initialDataPath, sampleProductsFile, imageSourcePath);
+    await app.close();
+    process.exit(0);
+}
+
+export async function populate(bootstrapFn: () => Promise<INestApplication | undefined>,
+                               initialDataPath: string,
+                               productsCsvPath: string,
+                               imageSourcePath: string): Promise<INestApplication> {
+    const app = await bootstrapFn();
+    if (!app) {
+        throw new Error('Could not bootstrap the Vendure app');
     }
+    const initialData = require(initialDataPath);
+    await populateInitialData(app, initialData);
+    await populateProducts(app, initialData, productsCsvPath, imageSourcePath);
+    await populateCollections(app, initialData);
+    logColored('\nDone!');
+    return app;
 }
 
 export async function importProducts(csvPath: string, languageCode: string) {
@@ -106,15 +126,11 @@ async function populateCollections(app: INestApplication, initialData: any) {
     }
 }
 
-async function populateProducts(app: INestApplication, initialData: any) {
+async function populateProducts(app: INestApplication, initialData: any, csvPath: string, imageSourcePath: string) {
     // copy the images to the import folder
-    const images = path.join(__dirname, 'assets', 'images');
     const destination = path.join(process.cwd(), 'vendure', 'import-assets');
-    await fs.copy(images, destination);
-
-    // import the csv of same product data
-    const sampleProductsFile = path.join(__dirname, 'assets', 'products.csv');
-    await importProductsFromFile(app, sampleProductsFile, initialData.defaultLanguage);
+    await fs.copy(imageSourcePath, destination);
+    await importProductsFromFile(app, csvPath, initialData.defaultLanguage);
 }
 
 async function importProductsFromFile(app: INestApplication, csvPath: string, languageCode: string) {
