@@ -3,6 +3,7 @@
   "version": "0.1.0-alpha.17",
   "private": true,
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-api-docs && yarn generate-config-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-api-docs && yarn generate-config-docs && cd docs && yarn webpack --prod && hugo",
     "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
@@ -21,7 +22,7 @@
     "test:common": "jest --config packages/common/jest.config.js",
     "test:core": "jest --config packages/core/jest.config.js",
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
-    "test:admin-ui": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
+    "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build"
   },
   "devDependencies": {
