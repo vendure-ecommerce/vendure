@@ -13,7 +13,7 @@ cache: yarn
 install:
   - yarn install
   - yarn bootstrap
-  - cd admin-ui && yarn install
+  - cd admin-ui && yarn install && cd ..
 
 script:
   - yarn test:all
