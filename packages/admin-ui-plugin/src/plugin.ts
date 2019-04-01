@@ -1,12 +1,10 @@
 import { AdminUiConfig } from '@vendure/common/lib/shared-types';
+import { InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';
+import proxy from 'http-proxy-middleware';
 import path from 'path';
-
-import { VendureConfig } from '../../config/vendure-config';
-import { InjectorFn, VendurePlugin } from '../../config/vendure-plugin/vendure-plugin';
-import { createProxyHandler } from '../plugin-utils';
 
 /**
  * @description
@@ -81,7 +79,7 @@ export class AdminUiPlugin implements VendurePlugin {
     }
 
     onClose(): Promise<void> {
-        return new Promise(resolve => this.server.close(resolve));
+        return new Promise(resolve => this.server.close(() => resolve()));
     }
 
     /**
@@ -99,17 +97,39 @@ export class AdminUiPlugin implements VendurePlugin {
     }
 
     private getAdminUiPath(): string {
-        // attempt to read the index.html file from the Vendure dist bundle (as when installed
-        // in an end-user project)
-        const prodPath = path.join(__dirname, '../../../../admin-ui');
+        // attempt to read from the path location on a production npm install
+        const prodPath = path.join(__dirname, '../admin-ui');
         if (fs.existsSync(path.join(prodPath, 'index.html'))) {
             return prodPath;
         }
-        // attempt to read from the built admin-ui in the /server/dist/ folder when developing
-        const devPath = path.join(__dirname, '../../../dist/admin-ui');
+        // attempt to read from the path on a development install
+        const devPath = path.join(__dirname, '../lib/admin-ui');
         if (fs.existsSync(path.join(devPath, 'index.html'))) {
             return devPath;
         }
         throw new Error(`AdminUiPlugin: admin-ui app not found`);
     }
+}
+
+export interface ProxyOptions {
+    route: string;
+    port: number;
+    hostname?: string;
+}
+
+/**
+ * Configures the proxy middleware which will be passed to the main Vendure server. This
+ * will proxy all asset requests to the dedicated asset server.
+ */
+function createProxyHandler(options: ProxyOptions, logging: boolean) {
+    const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
+    const proxyHostname = options.hostname || 'localhost';
+    return proxy({
+        // TODO: how do we detect https?
+        target: `http://${proxyHostname}:${options.port}`,
+        pathRewrite: {
+            [`^${route}`]: `/`,
+        },
+        logLevel: logging ? 'info' : 'silent',
+    });
 }

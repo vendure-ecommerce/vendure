@@ -57,10 +57,6 @@ function copyAdminUi() {
     return src(['../../../admin-ui/dist/vendure-admin/**/*']).pipe(dest('../dist/admin-ui'));
 }
 
-function buildAndCopyAdminUi() {
-    return src(['../mock-data/assets/**/*']).pipe(dest('../dist/cli/assets/images'));
-}
-
 export const build = parallel(
     copySchemas,
     copyEmailTemplates,

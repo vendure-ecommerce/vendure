@@ -1,7 +1,7 @@
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    AdminUiPlugin,
     DefaultSearchPlugin,
     examplePaymentHandler,
     VendureConfig,
@@ -61,8 +61,8 @@ export const devConfig: VendureConfig = {
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
         }),
-       /* new AdminUiPlugin({
+        new AdminUiPlugin({
             port: 5001,
-        }),*/
+        }),
     ],
 };
