@@ -1,6 +1,6 @@
 {
   "name": "@vendure/email-plugin",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "module": "./lib/index.js",
   "files": [
     "./lib"
@@ -23,10 +23,10 @@
     "@types/handlebars": "^4.0.40",
     "@types/mjml": "^4.0.2",
     "@types/nodemailer": "^4.6.5",
-    "@vendure/common": "1.0.0",
-    "@vendure/core": "1.0.0"
+    "@vendure/common": ">=0.1.0-alpha.1",
+    "@vendure/core": ">=0.1.0-alpha.1"
   },
   "peerDependencies": {
-    "@vendure/core": "1.0.0"
+    "@vendure/core": ">=0.1.0-alpha.1"
   }
 }

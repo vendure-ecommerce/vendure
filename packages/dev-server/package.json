@@ -9,11 +9,11 @@
     "start": "nodemon --config nodemon-debug.json"
   },
   "dependencies": {
-    "@vendure/common": "1.0.0",
-    "@vendure/core": "1.0.0",
-    "@vendure/asset-server-plugin": "1.0.0",
-    "@vendure/admin-ui-plugin": "1.0.0",
-    "@vendure/email-plugin": "1.0.0",
+    "@vendure/common": ">=0.1.0-alpha.1",
+    "@vendure/core": ">=0.1.0-alpha.1",
+    "@vendure/asset-server-plugin": ">=0.1.0-alpha.1",
+    "@vendure/admin-ui-plugin": ">=0.1.0-alpha.1",
+    "@vendure/email-plugin": ">=0.1.0-alpha.1",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {

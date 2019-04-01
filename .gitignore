@@ -25,6 +25,7 @@ docs/content/docs/graphql-api/*
 !docs/content/docs/graphql-api/shop/_index.md
 !docs/content/docs/graphql-api/admin/_index.md
 .vscode/
+yarn-error.log
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
