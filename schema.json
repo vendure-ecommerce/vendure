@@ -12409,7 +12409,7 @@
           },
           {
             "name": "score",
-            "description": "A relevence score for the result. Differs between database implementations.",
+            "description": "A relevence score for the result. Differs between database implementations",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -12432,7 +12432,7 @@
       {
         "kind": "UNION",
         "name": "SearchResultPrice",
-        "description": null,
+        "description": "The price of a search result product, either as a range or as a single price",
         "fields": null,
         "inputFields": null,
         "interfaces": null,

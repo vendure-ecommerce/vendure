@@ -2,8 +2,8 @@ import fs from 'fs';
 import { makeExecutableSchema } from 'graphql-tools';
 import path from 'path';
 
-const CLIENT_SCHEMA_FILE = '../admin-ui/src/app/data/client-state/client-types.graphql';
-const LANGUAGE_CODE_FILE = '../server/src/api/schema/common/language-code.graphql';
+const CLIENT_SCHEMA_FILE = '../../admin-ui/src/app/data/client-state/client-types.graphql';
+const LANGUAGE_CODE_FILE = '../../packages/core/src/api/schema/common/language-code.graphql';
 
 function loadGraphQL(file: string): string {
     const filePath = path.join(__dirname, file);

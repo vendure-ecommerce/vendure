@@ -15,11 +15,10 @@ as inventory, order and customer management. The code for this is located in the
 ```
 vendure/
 ├── admin-ui/       # Source of the admin ui app (an Angular CLI project)
-├── codegen/        # Scripts used to generate TypeScript code and docs from source
 ├── docs/           # Documentation source
-├── server/         # Source for the Vendure server
-├── shared/         # Types and utils shared by the server & admin ui
-
+├── packages/       # Source for the Vendure server & plugin packages
+├── scripts/
+    ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
 ```
 
 ## Development
@@ -58,8 +57,8 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces
 for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
 
-Run `yarn generate-gql-types` to generate TypeScript interfaces based on these queries. The generated
-types are located at [`./shared/generated-types.ts`](./shared/generated-types.ts).
+Run `yarn codegen` to generate TypeScript interfaces based on these queries. The generated
+types are located at [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts) & [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts).
 
 ### Testing
 

@@ -5,13 +5,13 @@ import { TypeScriptNamingConventionMap } from 'graphql-codegen-typescript-common
 import { mergeSchemas } from 'graphql-tools';
 import path from 'path';
 
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../../packages/common/src/shared-constants';
 
 import { downloadIntrospectionSchema } from './download-introspection-schema';
 
-const CLIENT_QUERY_FILES = path.join(__dirname, '../admin-ui/src/app/data/definitions/**/*.ts');
-const ADMIN_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../schema-admin.json');
-const SHOP_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../schema-shop.json');
+const CLIENT_QUERY_FILES = path.join(__dirname, '../../admin-ui/src/app/data/definitions/**/*.ts');
+const ADMIN_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-admin.json');
+const SHOP_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-shop.json');
 
 // tslint:disable:no-console
 
@@ -31,7 +31,7 @@ Promise.all([
         const combinedSchemas = mergeSchemas({ schemas: [adminSchema, shopSchema]});
 
         const combinedJson = graphqlSync(combinedSchemas, introspectionQuery).data;
-        fs.writeFileSync(path.join(__dirname, '../schema.json'), JSON.stringify(combinedJson, null, 2));
+        fs.writeFileSync(path.join(__dirname, '../../schema.json'), JSON.stringify(combinedJson, null, 2));
 
         const namingConventionConfig = {
             namingConvention: {
@@ -41,7 +41,7 @@ Promise.all([
         return generate({
             overwrite: true,
             generates: {
-                [path.join(__dirname, '../shared/generated-types.ts')]: {
+                [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
                     plugins: [
@@ -52,7 +52,7 @@ Promise.all([
                         'typescript-server'],
                     config: namingConventionConfig,
                 },
-                [path.join(__dirname, '../shared/generated-shop-types.ts')]: {
+                [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     plugins: [
                         { add: '// tslint:disable' },

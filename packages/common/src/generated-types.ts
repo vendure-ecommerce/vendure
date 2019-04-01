@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-03-25T13:48:50+01:00
+// Generated in 2019-04-01T11:03:13+02:00
 export type Maybe<T> = T | null;
 
 
@@ -5467,7 +5467,7 @@ export interface SearchResult {
   facetValueIds: string[];
   /** An array of ids of the Collections in which this result appears */
   collectionIds: string[];
-  /** A relevence score for the result. Differs between database implementations. */
+  /** A relevence score for the result. Differs between database implementations */
   score: number;
 }
 
@@ -6248,7 +6248,7 @@ export interface SetUiLanguageMutationArgs {
 // ====================================================
 
 
-
+/** The price of a search result product, either as a range or as a single price */
 export type SearchResultPrice = PriceRange | SinglePrice;
 
 

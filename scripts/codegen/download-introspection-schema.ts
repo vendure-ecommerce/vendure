@@ -2,7 +2,7 @@ import fs from 'fs';
 import { introspectionQuery } from 'graphql';
 import http from 'http';
 
-import { ADMIN_API_PATH, API_PORT } from '../shared/shared-constants';
+import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-constants';
 
 // tslint:disable:no-console
 
