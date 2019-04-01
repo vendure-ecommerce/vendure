@@ -1,10 +1,9 @@
 {
   "name": "@vendure/email-plugin",
   "version": "0.1.0-alpha.1",
-  "module": "./lib/index.js",
-  "files": [
-    "./lib"
-  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/**/*", "templates/**/*"],
   "scripts": {
     "build": "rimraf dist && tsc -p ./tsconfig.build.json && node build.js"
   },

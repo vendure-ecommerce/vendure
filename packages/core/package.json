@@ -13,7 +13,6 @@
     "graphql",
     "typescript"
   ],
-  "readme": "README.md",
   "private": false,
   "license": "MIT",
   "scripts": {

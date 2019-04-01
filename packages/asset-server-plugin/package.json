@@ -1,8 +1,9 @@
 {
   "name": "@vendure/asset-server-plugin",
   "version": "0.1.0-alpha.1",
-  "module": "./lib/index.js",
-  "files": ["./lib"],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/**/*"],
   "scripts": {
     "build": "rimraf lib && tsc -p ./tsconfig.build.json"
   },
