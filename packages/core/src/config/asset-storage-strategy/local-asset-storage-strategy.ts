@@ -1,16 +1,22 @@
-import { AssetStorageStrategy } from '@vendure/core';
 import { Request } from 'express';
 import { ReadStream } from 'fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { Stream } from 'stream';
 
+import { AssetStorageStrategy } from './asset-storage-strategy';
+
 /**
  * A persistence strategy which saves files to the local file system.
  */
 export class LocalAssetStorageStrategy implements AssetStorageStrategy {
-    constructor(private readonly uploadPath: string, private readonly route: string) {
+    toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
+
+    constructor(private readonly uploadPath: string, private readonly toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string) {
         this.ensureUploadPathExists(this.uploadPath);
+        if (toAbsoluteUrlFn) {
+            this.toAbsoluteUrl = toAbsoluteUrlFn;
+        }
     }
 
     writeFileFromStream(fileName: string, data: ReadStream): Promise<string> {
@@ -44,13 +50,6 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     readFileToStream(identifier: string): Promise<Stream> {
         const readStream = fs.createReadStream(this.identifierToFilePath(identifier), 'binary');
         return Promise.resolve(readStream);
-    }
-
-    toAbsoluteUrl(request: Request, identifier: string): string {
-        if (!identifier) {
-            return '';
-        }
-        return `${request.protocol}://${request.get('host')}/${this.route}/${identifier}`;
     }
 
     private ensureUploadPathExists(uploadDir: string): void {

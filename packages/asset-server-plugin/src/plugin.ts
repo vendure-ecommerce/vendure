@@ -1,11 +1,10 @@
-import { AssetStorageStrategy, InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
+import { AssetStorageStrategy, InjectorFn, LocalAssetStorageStrategy, VendureConfig, VendurePlugin } from '@vendure/core';
 import express, { NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import proxy from 'http-proxy-middleware';
 import path from 'path';
 
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
-import { LocalAssetStorageStrategy } from './local-asset-storage-strategy';
 import { transformImage } from './transform-image';
 
 /**
@@ -121,7 +120,7 @@ export class AssetServerPlugin implements VendurePlugin {
     }
 
     configure(config: Required<VendureConfig>) {
-        this.assetStorage = new LocalAssetStorageStrategy(this.options.assetUploadDir, this.options.route);
+        this.assetStorage = this.createAssetStorageStrategy();
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth || 1600,
             maxHeight: this.options.previewMaxHeight || 1600,
@@ -140,6 +139,16 @@ export class AssetServerPlugin implements VendurePlugin {
 
     onClose(): Promise<void> {
         return new Promise(resolve => { this.server.close(() => resolve()); });
+    }
+
+    private createAssetStorageStrategy() {
+        const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
+            if (!identifier) {
+                return '';
+            }
+            return `${request.protocol}://${request.get('host')}/${this.options.route}/${identifier}`;
+        };
+        return new LocalAssetStorageStrategy(this.options.assetUploadDir, toAbsoluteUrlFn);
     }
 
     /**
