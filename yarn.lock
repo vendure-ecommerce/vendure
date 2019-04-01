@@ -989,18 +989,18 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nestjs/common@^6.0.2":
+"@nestjs/common@^6.0.5":
   version "6.0.5"
-  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-6.0.5.tgz#2e33ced50e629a5c32df3b9a09efde61d4b5a2df"
+  resolved "http://localhost:4873/@nestjs%2fcommon/-/common-6.0.5.tgz#2e33ced50e629a5c32df3b9a09efde61d4b5a2df"
   integrity sha512-CbXtgBW/irevfUZF+rURDLFjhmT0Q6dmzbEYkuMg8bSjPmvgG6VzOBG6PwoPZbd+8PrPc2XLjN2A2Hg9mImp7A==
   dependencies:
     axios "0.18.0"
     cli-color "1.4.0"
     uuid "3.3.2"
 
-"@nestjs/core@^6.0.2":
+"@nestjs/core@^6.0.5":
   version "6.0.5"
-  resolved "https://registry.yarnpkg.com/@nestjs/core/-/core-6.0.5.tgz#f17b91c7c0fcee178791040279be06ffc3785faf"
+  resolved "http://localhost:4873/@nestjs%2fcore/-/core-6.0.5.tgz#f17b91c7c0fcee178791040279be06ffc3785faf"
   integrity sha512-diLLr9qb9vGKyvfkt8JFGox21rpgj4YiToCRb3Tbdab0bvssLopznh/f7cdEBNmk5Adtl3IvXjtdVRj+XH7VCw==
   dependencies:
     "@nuxtjs/opencollective" "0.2.1"
@@ -1010,9 +1010,9 @@
     optional "0.1.4"
     uuid "3.3.2"
 
-"@nestjs/graphql@^6.0.2":
+"@nestjs/graphql@^6.0.5":
   version "6.0.4"
-  resolved "https://registry.yarnpkg.com/@nestjs/graphql/-/graphql-6.0.4.tgz#dc5d381c293cbe61ea539c81d73d585277076bae"
+  resolved "http://localhost:4873/@nestjs%2fgraphql/-/graphql-6.0.4.tgz#dc5d381c293cbe61ea539c81d73d585277076bae"
   integrity sha512-2VAT+7QD8P5KkseBlfSUTneDWIofrZwtWY6MvP6l2iyPAy27jh4lrvEAteDp6gtfUBYLZ1EMxCndqV2f1WzHPg==
   dependencies:
     "@types/graphql" "14.0.7"
@@ -1025,9 +1025,9 @@
     ts-morph "1.3.1"
     uuid "3.3.2"
 
-"@nestjs/platform-express@^6.0.2":
+"@nestjs/platform-express@^6.0.5":
   version "6.0.5"
-  resolved "https://registry.yarnpkg.com/@nestjs/platform-express/-/platform-express-6.0.5.tgz#148811f480583ecadc2958fd1a794e71fc55a5df"
+  resolved "http://localhost:4873/@nestjs%2fplatform-express/-/platform-express-6.0.5.tgz#148811f480583ecadc2958fd1a794e71fc55a5df"
   integrity sha512-N3P0IcEN/tQlA4DkFmbKQSyCkwAG00uKDQ0ntkE+3FzMOunlI49+qKFCCUc0xlselTgJtVcZRg5eNot3vA1P/Q==
   dependencies:
     body-parser "1.18.3"
@@ -1035,9 +1035,9 @@
     express "4.16.4"
     multer "1.4.1"
 
-"@nestjs/testing@^6.0.2":
+"@nestjs/testing@^6.0.5":
   version "6.0.5"
-  resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-6.0.5.tgz#c5b8072181b6d23318818f463aca5b2ed0626232"
+  resolved "http://localhost:4873/@nestjs%2ftesting/-/testing-6.0.5.tgz#c5b8072181b6d23318818f463aca5b2ed0626232"
   integrity sha512-LrPBckONn/ZalBC8GU5LxvgIS8DJNrdwZE4gMJz0ugodwl0c1IL3e2gIukBkUJtHYPtzN12nYevnaGYT/V1aDQ==
   dependencies:
     optional "0.1.4"
