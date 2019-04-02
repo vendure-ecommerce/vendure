@@ -25,11 +25,11 @@ type TargetApi = 'shop' | 'admin';
 const targetApi: TargetApi = getTargetApiFromArgs();
 
 // The path to the introspection schema json file
-const SCHEMA_FILE = path.join(__dirname, `../schema-${targetApi}.json`);
+const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
 const docsUrl = `/docs/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
-const outputPath = path.join(__dirname, `../docs/content/docs/graphql-api/${targetApi}`);
+const outputPath = path.join(__dirname, `../../docs/content/docs/graphql-api/${targetApi}`);
 
 const enum FileName {
     ENUM = 'enums',
@@ -44,9 +44,9 @@ const parsed = JSON.parse(schemaJson);
 const schema = buildClientSchema(parsed.data ? parsed.data : parsed);
 
 deleteGeneratedDocs(outputPath);
-generateApiDocs(outputPath);
+generateGraphqlDocs(outputPath);
 
-function generateApiDocs(hugoOutputPath: string) {
+function generateGraphqlDocs(hugoOutputPath: string) {
     const timeStart = +new Date();
     let queriesOutput = generateFrontMatter('Queries', 1) + `\n\n# Queries\n\n`;
     let mutationsOutput = generateFrontMatter('Mutations', 2) + `\n\n# Mutations\n\n`;

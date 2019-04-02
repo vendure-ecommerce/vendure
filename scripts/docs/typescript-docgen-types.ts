@@ -1,0 +1,57 @@
+import ts from 'typescript';
+
+export interface MethodParameterInfo {
+    name: string;
+    type: string;
+}
+
+export interface MemberInfo {
+    name: string;
+    description: string;
+    type: string;
+    fullText: string;
+}
+
+export interface PropertyInfo extends MemberInfo {
+    kind: 'property';
+    defaultValue: string;
+}
+
+export interface MethodInfo extends MemberInfo {
+    kind: 'method';
+    parameters: MethodParameterInfo[];
+}
+
+export interface DeclarationInfo {
+    sourceFile: string;
+    sourceLine: number;
+    title: string;
+    fullText: string;
+    weight: number;
+    category: string;
+    description: string;
+    fileName: string;
+}
+
+export interface InterfaceInfo extends DeclarationInfo {
+    kind: 'interface';
+    extends?: string;
+    members: Array<PropertyInfo | MethodInfo>;
+}
+
+export interface ClassInfo extends DeclarationInfo {
+    kind: 'class';
+    implements?: string;
+    extends?: string;
+    members: Array<PropertyInfo | MethodInfo>;
+}
+
+export interface TypeAliasInfo extends DeclarationInfo {
+    kind: 'typeAlias';
+    members?: Array<PropertyInfo | MethodInfo>;
+    type: ts.TypeNode;
+}
+
+export type ParsedDeclaration = TypeAliasInfo | ClassInfo | InterfaceInfo;
+export type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration;
+export type TypeMap = Map<string, string>;
