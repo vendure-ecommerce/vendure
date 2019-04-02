@@ -16,5 +16,6 @@ install:
   - cd admin-ui && yarn install && cd ..
 
 script:
+  - yarn lerna run build
   - yarn test:all
   - cd admin-ui && yarn build --prod
