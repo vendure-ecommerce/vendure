@@ -1,36 +1,37 @@
 /* tslint:disable:no-console */
-import fs from 'fs';
 import klawSync from 'klaw-sync';
 import path from 'path';
-import ts from 'typescript';
 
 import { deleteGeneratedDocs } from './docgen-utils';
 import { TypeMap } from './typescript-docgen-types';
 import { TypescriptDocsParser } from './typescript-docs-parser';
 import { TypescriptDocsRenderer } from './typescript-docs-renderer';
 
-// The absolute URL to the generated docs section
-const DOCS_URL = '/docs/configuration/';
-// The directory in which the markdown files will be saved
-const OUTPUT_PATH = path.join(__dirname, '../../docs/content/docs/configuration');
-// The directories to scan for TypeScript source files
-const TS_SOURCE_DIRS = ['packages/core/src/', 'packages/common/src/'];
+interface DocsSectionCofig {
+    sourceDirs: string[];
+    outputPath: string;
+}
 
-const tsFiles = TS_SOURCE_DIRS
-    .map(scanPath =>
-        klawSync(path.join(__dirname, '../../', scanPath), {
-            nodir: true,
-            filter: item => path.extname(item.path) === '.ts',
-            traverseAll: true,
-        }),
-    )
-    .reduce((allFiles, files) => [...allFiles, ...files], [])
-    .map(item => item.path);
+generateTypescriptDocs([
+    {
+        sourceDirs: ['packages/core/src/', 'packages/common/src/'],
+        outputPath: 'typescript-api',
+    },
+    {
+        sourceDirs: ['packages/asset-server-plugin/src/'],
+        outputPath: 'plugins',
+    },
+    {
+        sourceDirs: ['packages/email-plugin/src/'],
+        outputPath: 'plugins',
+    },
+    {
+        sourceDirs: ['packages/admin-ui-plugin/src/'],
+        outputPath: 'plugins',
+    },
+]);
 
-deleteGeneratedDocs(OUTPUT_PATH);
-generateTypescriptDocs(tsFiles, OUTPUT_PATH, DOCS_URL);
-
-const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
+/*const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
 if (watchMode) {
     console.log(`Watching for changes to source files...`);
     tsFiles.forEach(file => {
@@ -38,26 +39,56 @@ if (watchMode) {
             generateTypescriptDocs([file], OUTPUT_PATH, DOCS_URL);
         });
     });
-}
+}*/
 
 /**
  * Uses the TypeScript compiler API to parse the given files and extract out the documentation
  * into markdown files
  */
-function generateTypescriptDocs(filePaths: string[], hugoOutputPath: string, docsUrl: string) {
+function generateTypescriptDocs(config: DocsSectionCofig[]) {
     const timeStart = +new Date();
 
     // This map is used to cache types and their corresponding Hugo path. It is used to enable
     // hyperlinking from a member's "type" to the definition of that type.
     const globalTypeMap: TypeMap = new Map();
 
-    const parsedDeclarations = new TypescriptDocsParser().parse(filePaths);
-    for (const info of parsedDeclarations) {
-        globalTypeMap.set(info.title, info.category + '/' + info.fileName);
+    for (const { outputPath, sourceDirs } of config) {
+        deleteGeneratedDocs(absOutputPath(outputPath));
     }
-    const generatedCount = new TypescriptDocsRenderer().render(parsedDeclarations, docsUrl, OUTPUT_PATH, globalTypeMap);
 
-    if (generatedCount) {
-        console.log(`Generated ${generatedCount} typescript api docs in ${+new Date() - timeStart}ms`);
+    for (const { outputPath, sourceDirs } of config) {
+        const sourceFilePaths = getSourceFilePaths(sourceDirs);
+        const parsedDeclarations = new TypescriptDocsParser().parse(sourceFilePaths);
+        for (const info of parsedDeclarations) {
+            globalTypeMap.set(info.title, info.category + '/' + info.fileName);
+        }
+        const docsUrl = `/docs/${outputPath}`;
+        const generatedCount = new TypescriptDocsRenderer().render(
+            parsedDeclarations,
+            docsUrl,
+            absOutputPath(outputPath),
+            globalTypeMap,
+        );
+
+        if (generatedCount) {
+            console.log(`Generated ${generatedCount} typescript api docs for "${outputPath}" in ${+new Date() - timeStart}ms`);
+        }
     }
+}
+
+function absOutputPath(outputPath: string): string {
+    return path.join(__dirname, '../../docs/content/docs/', outputPath);
+}
+
+function getSourceFilePaths(sourceDirs: string[]): string[] {
+    return sourceDirs
+        .map(scanPath =>
+            klawSync(path.join(__dirname, '../../', scanPath), {
+                nodir: true,
+                filter: item => path.extname(item.path) === '.ts',
+                traverseAll: true,
+            }),
+        )
+        .reduce((allFiles, files) => [...allFiles, ...files], [])
+        .map(item => item.path);
 }

@@ -16,13 +16,13 @@ import { transformImage } from './transform-image';
  * * resize: Preserving aspect ratio, resizes the image to be as large as possible
  * while ensuring its dimensions are less than or equal to both those specified.
  *
- * @docsCategory plugin
+ * @docsCategory AssetServerPlugin
  */
 export type ImageTransformMode = 'crop' | 'resize';
 
 /**
  * @description
- * A configuration option for an image size preset for the DefaultAssetServerPlugin.
+ * A configuration option for an image size preset for the AssetServerPlugin.
  *
  * Presets allow a shorthand way to generate a thumbnail preview of an asset. For example,
  * the built-in "tiny" preset generates a 50px x 50px cropped preview, which can be accessed
@@ -34,7 +34,7 @@ export type ImageTransformMode = 'crop' | 'resize';
  *
  * `http://localhost:3000/assets/some-asset.jpg?w=50&h=50&mode=crop`
  *
- * @docsCategory plugin
+ * @docsCategory AssetServerPlugin
  */
 export interface ImageTransformPreset {
     name: string;
@@ -45,15 +45,15 @@ export interface ImageTransformPreset {
 
 /**
  * @description
- * The configuration options for the DefaultAssetServerPlugin.
+ * The configuration options for the AssetServerPlugin.
  *
- * @docsCategory plugin
+ * @docsCategory AssetServerPlugin
  */
 export interface AssetServerOptions {
     hostname?: string;
     /**
      * @description
-     * The local port that the server will run on. Note that the DefaultAssetServerPlugin
+     * The local port that the server will run on. Note that the AssetServerPlugin
      * includes a proxy server which allows the asset server to be accessed on the same
      * port as the main Vendure server.
      */
@@ -90,9 +90,73 @@ export interface AssetServerOptions {
 }
 
 /**
- * The AssetServerPlugin instantiates a static Express server which is used to
- * serve the assets. It can also perform on-the-fly image transformations and caches the
- * results for subsequent calls.
+ * @description
+ * The `AssetServerPlugin` serves assets (images and other files) from the local file system. It can also perform on-the-fly image transformations
+ * and caches the results for subsequent calls.
+ *
+ * @example
+ * ```ts
+ * const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     new AssetServerPlugin({
+ *       route: 'assets',
+ *       assetUploadDir: path.join(__dirname, 'assets'),
+ *       port: 4000,
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
+ * The full configuration is documented at [AssetServerOptions]({{< relref "asset-server-options" >}})
+ *
+ * ## Image transformation
+ *
+ * Asset preview images can be transformed (resized & cropped) on the fly by appending query parameters to the url:
+ *
+ * `http://localhost:3000/assets/some-asset.jpg?w=500&h=300&mode=resize`
+ *
+ * The above URL will return `some-asset.jpg`, resized to fit in the bounds of a 500px x 300px rectangle.
+ *
+ * ### Preview mode
+ *
+ * The `mode` parameter can be either `crop` or `resize`. See the [ImageTransformMode]({{< relref "image-transform-mode" >}}) docs for details.
+ *
+ * ### Transform presets
+ *
+ * Presets can be defined which allow a single preset name to be used instead of specifying the width, height and mode. Presets are
+ * configured via the AssetServerOptions [presets property]({{< relref "asset-server-options" >}}#presets).
+ *
+ * For example, defining the following preset:
+ *
+ * ```ts
+ * new AssetServerPlugin({
+ *   // ...
+ *   presets: [
+ *     { name: 'my-preset', width: 85, height: 85, mode: 'crop' },
+ *   ],
+ * }),
+ * ```
+ *
+ * means that a request to:
+ *
+ * `http://localhost:3000/assets/some-asset.jpg?preset=my-preset`
+ *
+ * is equivalent to:
+ *
+ * `http://localhost:3000/assets/some-asset.jpg?w=85&h=85&mode=crop`
+ *
+ * The AssetServerPlugin comes pre-configured with the following presets:
+ *
+ * name | width | height | mode
+ * -----|-------|--------|-----
+ * tiny | 50px | 50px | crop
+ * thumb | 150px | 150px | crop
+ * small | 300px | 300px | resize
+ * medium | 500px | 500px | resize
+ * large | 800px | 800px | resize
+ *
+ * @docsCategory AssetServerPlugin
  */
 export class AssetServerPlugin implements VendurePlugin {
     private server: Server;

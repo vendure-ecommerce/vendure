@@ -188,7 +188,7 @@ export interface OrderOptions {
  * The AssetOptions define how assets (images and other files) are named and stored, and how preview images are generated.
  *
  * {{% alert %}}
- * If you are using the `DefaultAssetServerPlugin`,
+ * If you are using the `AssetServerPlugin`,
  * it is not necessary to configure these options.
  * {{% /alert %}}
  *

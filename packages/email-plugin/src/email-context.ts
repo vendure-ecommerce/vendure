@@ -7,7 +7,7 @@ import { VendureEvent } from '@vendure/core';
  * It is used in the `templateContext` method of the {@link TemplateConfig} object
  * to define which data get passed to the email template engine for interpolation.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export class EmailContext<T extends string = any, E extends VendureEvent = any> {
     /**
@@ -65,7 +65,7 @@ export class EmailContext<T extends string = any, E extends VendureEvent = any> 
 /**
  *
  *
- * @docsCateogry email
+ * @docsCateogry EmailPlugin
  */
 export class GeneratedEmailContext<T extends string = any, E extends VendureEvent = any> extends EmailContext<
     T,

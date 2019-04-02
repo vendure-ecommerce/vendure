@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import fs from 'fs';
+import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 import ts from 'typescript';
@@ -13,6 +13,9 @@ export class TypescriptDocsRenderer {
 
     render(parsedDeclarations: ParsedDeclaration[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
         let generatedCount = 0;
+        if (!fs.existsSync(outputPath)) {
+            fs.mkdirs(outputPath);
+        }
         for (const info of parsedDeclarations) {
             let markdown = '';
             switch (info.kind) {
@@ -32,7 +35,7 @@ export class TypescriptDocsRenderer {
             const categoryDir = path.join(outputPath, info.category);
             const indexFile = path.join(categoryDir, '_index.md');
             if (!fs.existsSync(categoryDir)) {
-                fs.mkdirSync(categoryDir);
+                fs.mkdirs(categoryDir);
             }
             if (!fs.existsSync(indexFile)) {
                 const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;

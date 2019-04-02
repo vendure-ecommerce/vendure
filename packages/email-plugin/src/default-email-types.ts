@@ -7,7 +7,7 @@ import { configEmailType, EmailTypes } from './types';
  * The possible types of email which are configured by default. These define the keys of the
  * {@link EmailTypes} object.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export type DefaultEmailType = 'order-confirmation' | 'email-verification' | 'password-reset';
 

@@ -5,16 +5,12 @@ import { ConfigService, VendureEvent } from '@vendure/core';
 import { EmailContext, GeneratedEmailContext } from './email-context';
 
 /**
- * @description
  * Defines how transactional emails (account verification, order confirmation etc) are generated and sent.
  *
  * {{% alert %}}
  * It is usually not recommended to configure these yourself.
  * You should use the `DefaultEmailPlugin`.
  * {{% /alert %}}
- *
- * @docsCategory email
- * @docsWeight 0
  */
 export interface EmailOptions<EmailType extends string> {
     /**
@@ -59,7 +55,7 @@ export interface EmailOptions<EmailType extends string> {
  * @description
  * Configuration for the EmailPlugin.
  *
- * @docsCategory plugin
+ * @docsCategory EmailPlugin
  */
 export interface EmailPluginOptions {
     /**
@@ -80,6 +76,12 @@ export interface EmailPluginOptions {
     templateVars: { [name: string]: any };
 }
 
+/**
+ * @description
+ * Configuration for running the EmailPlugin in development mode.
+ *
+ * @docsCategory EmailPlugin
+ */
 export interface EmailPluginDevModeOptions {
     templatePath: string;
     outputPath: string;
@@ -98,7 +100,7 @@ export interface SMTPCredentials {
  * @description
  * A subset of the SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface SMTPTransportOptions {
     type: 'smtp';
@@ -153,7 +155,7 @@ export interface SMTPTransportOptions {
  * @description
  * Uses the local Sendmail program to send the email.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface SendmailTransportOptions {
     type: 'sendmail';
@@ -167,7 +169,7 @@ export interface SendmailTransportOptions {
  * @description
  * Outputs the email as an HTML file for development purposes.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface FileTransportOptions {
     type: 'file';
@@ -181,7 +183,7 @@ export interface FileTransportOptions {
  * @description
  * Does nothing with the generated email. Mainly intended for use in testing where we don't care about the email transport.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface NoopTransportOptions {
     type: 'none';
@@ -191,7 +193,7 @@ export interface NoopTransportOptions {
  * @description
  * Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface TestingTransportOptions {
     type: 'testing';
@@ -206,7 +208,7 @@ export interface TestingTransportOptions {
  * @description
  * A union of all the possible transport options for sending emails.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export type EmailTransportOptions =
     | SMTPTransportOptions
@@ -220,7 +222,7 @@ export type EmailTransportOptions =
  * This object defines the template location and context data used for interpolation
  * of an email for a particular language of a particular channel.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export type TemplateConfig<C = any, R = any> = {
     /**
@@ -260,7 +262,7 @@ export type CreateContextResult = {
  * @description
  * An object which configures an particular type of transactional email.
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export type EmailTypeConfig<T extends string, E extends VendureEvent = any> = {
     /**
@@ -327,7 +329,7 @@ export type EmailTypeConfig<T extends string, E extends VendureEvent = any> = {
  *  }),
  * ```
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export type EmailTypes<T extends string> = { [emailType in T]: EmailTypeConfig<T> };
 
@@ -341,7 +343,7 @@ export function configEmailType<T extends string, E extends VendureEvent = Vendu
  * @description
  * The EmailGenerator uses the {@link EmailContext} and template to generate the email body
  *
- * @docsCategory email
+ * @docsCategory EmailPlugin
  */
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     /**

@@ -42,12 +42,6 @@ export const testConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    emailOptions: {
-        emailTemplatePath: __dirname,
-        transport: {
-            type: 'none',
-        },
-    },
     importExportOptions: {
         importAssetsDir: path.join(__dirname, '..', 'fixtures/assets'),
     },

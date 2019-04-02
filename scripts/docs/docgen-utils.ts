@@ -1,5 +1,6 @@
 import fs from 'fs';
 import klawSync from 'klaw-sync';
+import { basename } from 'path';
 // tslint:disable:no-console
 
 /**
@@ -7,7 +8,7 @@ import klawSync from 'klaw-sync';
  */
 export function generateFrontMatter(title: string, weight: number, showToc: boolean = true): string {
     return `---
-title: "${title.replace('-', ' ')}"
+title: "${title.replace(/-/g, ' ')}"
 weight: ${weight}
 date: ${new Date().toISOString()}
 showtoc: ${showToc}
@@ -21,16 +22,27 @@ generated: true
  * Delete all generated docs found in the outputPath.
  */
 export function deleteGeneratedDocs(outputPath: string) {
-    let deleteCount = 0;
-    const files = klawSync(outputPath, {nodir: true});
-    for (const file of files) {
-        const content = fs.readFileSync(file.path, 'utf-8');
-        if (isGenerated(content)) {
-            fs.unlinkSync(file.path);
-            deleteCount++;
-        }
+    if (!fs.existsSync(outputPath)) {
+        return;
     }
-    console.log(`Deleted ${deleteCount} generated docs`);
+    try {
+        let deleteCount = 0;
+        const files = klawSync(outputPath, {nodir: true});
+        for (const file of files) {
+            const content = fs.readFileSync(file.path, 'utf-8');
+            if (isGenerated(content)) {
+                fs.unlinkSync(file.path);
+                deleteCount++;
+            }
+        }
+        if (deleteCount) {
+            console.log(`Deleted ${deleteCount} generated docs from ${outputPath}`);
+        }
+    } catch (e) {
+        console.error('Could not delete generated docs!');
+        console.log(e);
+        process.exitCode = 1;
+    }
 }
 
 /**

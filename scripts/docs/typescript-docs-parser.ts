@@ -85,10 +85,8 @@ export class TypescriptDocsParser {
         const fullText = this.getDeclarationFullText(statement);
         const weight = this.getDeclarationWeight(statement);
         const description = this.getDeclarationDescription(statement);
-        const fileName = title
-            .split(/(?=[A-Z])/)
-            .join('-')
-            .toLowerCase();
+        const normalizedTitle = this.kebabCase(title);
+        const fileName = normalizedTitle === category ? '_index' : normalizedTitle;
 
         const info = {
             sourceFile,
@@ -260,8 +258,8 @@ export class TypescriptDocsParser {
         this.parseTags(statement, {
             docsCategory: tag => (category = tag.comment || ''),
         });
-        return category;
-    }
+        return this.kebabCase(category);
+    };
 
     /**
      * Type guard for the types of statement which can ge processed by the doc generator.
@@ -296,6 +294,13 @@ export class TypescriptDocsParser {
      */
     private formatExampleCode(example: string = ''): string {
         return '\n\n*Example*\n\n' + example.replace(/\n\s+\*\s/g, '\n');
+    }
+
+    private kebabCase<T extends string | undefined>(input: T): T {
+        if (input == null) {
+            return input;
+        }
+        return input.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase() as T;
     }
 
 }

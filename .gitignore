@@ -18,9 +18,11 @@ docs/static/main.css*
 docs/static/intro.js*
 docs/static/intro.css*
 docs/public
-docs/content/docs/configuration/*
-!docs/content/docs/configuration/_index.md
+docs/content/docs/typescript-api/*
+!docs/content/docs/typescript-api/_index.md
 docs/content/docs/graphql-api/*
+docs/content/docs/plugins/*
+!docs/content/docs/plugins/*.md
 !docs/content/docs/graphql-api/_index.md
 !docs/content/docs/graphql-api/shop/_index.md
 !docs/content/docs/graphql-api/admin/_index.md
