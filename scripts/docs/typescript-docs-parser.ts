@@ -87,8 +87,10 @@ export class TypescriptDocsParser {
         const description = this.getDeclarationDescription(statement);
         const normalizedTitle = this.kebabCase(title);
         const fileName = normalizedTitle === category ? '_index' : normalizedTitle;
+        const packageName = this.getPackageName(sourceFile);
 
         const info = {
+            packageName,
             sourceFile,
             sourceLine,
             fullText,
@@ -152,6 +154,15 @@ export class TypescriptDocsParser {
             typeParams = '<' + declaration.typeParameters.map(tp => tp.getText()).join(', ') + '>';
         }
         return name + typeParams;
+    }
+
+    private getPackageName(sourceFile: string): string {
+        const matches = sourceFile.match(/\/packages\/([^/]+)\//);
+        if (matches) {
+            return `@vendure/${matches[1]}`;
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -259,7 +270,7 @@ export class TypescriptDocsParser {
             docsCategory: tag => (category = tag.comment || ''),
         });
         return this.kebabCase(category);
-    };
+    }
 
     /**
      * Type guard for the types of statement which can ge processed by the doc generator.

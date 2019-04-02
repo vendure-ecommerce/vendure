@@ -23,6 +23,7 @@ export interface MethodInfo extends MemberInfo {
 }
 
 export interface DeclarationInfo {
+    packageName: string;
     sourceFile: string;
     sourceLine: number;
     title: string;

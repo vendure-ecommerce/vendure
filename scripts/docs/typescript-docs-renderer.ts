@@ -187,7 +187,7 @@ export class TypescriptDocsRenderer {
     }
 
     private renderGenerationInfoShortcode(info: DeclarationInfo): string {
-        return `{{< generation-info sourceFile="${info.sourceFile}" sourceLine="${info.sourceLine}">}}\n\n`;
+        return `{{< generation-info sourceFile="${info.sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}">}}\n\n`;
     }
 
     /**
