@@ -1,17 +1,17 @@
 module.exports = {
-    coverageDirectory: "coverage",
+    coverageDirectory: 'coverage',
     moduleFileExtensions: [
-        "js",
-        "json",
-        "ts",
+        'js',
+        'json',
+        'ts',
     ],
-    preset: "ts-jest",
+    preset: 'ts-jest',
     rootDir: __dirname,
     roots: [
-        "<rootDir>/src",
-        "<rootDir>/mock-data",
+        '<rootDir>/src',
+        '<rootDir>/mock-data',
     ],
     transform: {
-        "^.+\\.(t|j)s$": "ts-jest",
+        '^.+\\.(t|j)s$': 'ts-jest',
     },
 };

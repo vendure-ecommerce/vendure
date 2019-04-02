@@ -180,7 +180,7 @@ export class OrderCalculator {
                 const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
                 return facetValueIds.reduce(
                     (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
-                    true,
+                    true as boolean,
                 );
             },
         };

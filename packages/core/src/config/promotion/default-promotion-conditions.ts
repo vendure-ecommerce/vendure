@@ -38,7 +38,7 @@ export const atLeastNOfProduct = new PromotionCondition({
     check(order: Order, args) {
         return order.lines.reduce((result, item) => {
             return result || item.quantity >= args.minimum;
-        }, false);
+        }, false as boolean);
     },
 });
 

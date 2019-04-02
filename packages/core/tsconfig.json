@@ -5,6 +5,7 @@
     "removeComments": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
-    "newLine": "LF"
+    "newLine": "LF",
+    "allowJs": true
   }
 }
