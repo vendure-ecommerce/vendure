@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declaration": true,
     "removeComments": true,
-    "strictPropertyInitialization": false,
+    "noLib": false,
+    "skipLibCheck": true,
     "sourceMap": true,
     "newLine": "LF"
   }

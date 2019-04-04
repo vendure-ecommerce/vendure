@@ -5,7 +5,7 @@
   "types": "lib/index.d.ts",
   "files": ["lib/**/*", "templates/**/*"],
   "scripts": {
-    "build": "rimraf dist && tsc -p ./tsconfig.build.json && node build.js"
+    "build": "rimraf dist && tsc -p ./tsconfig.build.json"
   },
   "dependencies": {
     "dateformat": "^3.0.3",

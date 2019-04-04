@@ -4,8 +4,7 @@ import path from 'path';
 import prompts from 'prompts';
 
 import { logColored } from './cli-utils';
-import { init } from './init';
-import { importProducts, populateFromCli } from './populate';
+import { importProducts } from './populate';
 // tslint:disable-next-line:no-var-requires
 const version = require('../../package.json').version;
 
@@ -20,30 +19,6 @@ logColored(`
                                        `);
 
 program.version(`Vendure CLI v${version}`, '-v --version').name('vendure');
-program
-    .command('init')
-    .description('Initialize a new Vendure server application')
-    .action(async (command: any) => {
-        const indexFile = await init();
-        const answer = await prompts({
-            type: 'toggle',
-            name: 'populate',
-            message: 'Populate the database with some data to get you started (recommended)?',
-            active: 'yes',
-            inactive: 'no',
-            initial: true as any,
-        });
-        if (answer.populate) {
-            await populateFromCli();
-        }
-        logColored(`\nAll done! Run "${indexFile}" to start the server.`);
-    });
-program
-    .command('populate')
-    .description('Populate a new Vendure server instance with some initial data')
-    .action(async () => {
-        await populateFromCli();
-    });
 program
     .command('import-products <csvFile>')
     .option('-l, --language', 'Specify ISO 639-1 language code, e.g. "de", "es". Defaults to "en"')

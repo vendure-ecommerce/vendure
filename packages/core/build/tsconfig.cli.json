@@ -1,8 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../dist/cli",
-    "declaration": false
+    "outDir": "../dist/cli"
   },
   "files": [
     "../cli/vendure-cli.ts",

@@ -1,13 +1,25 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
-    AdminUiPlugin,
     examplePaymentHandler,
-    DefaultAssetServerPlugin,
-    DefaultEmailPlugin,
     DefaultSearchPlugin,
     {{#if isTs}}VendureConfig,{{/if}}
 } {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
 {{#if isTs }}
-import * as path from 'path';
+import { EmailPlugin } from '@vendure/email-plugin';
+{{ else }}
+const { EmailPlugin } = require('@vendure/email-plugin');
+{{/if}}
+{{#if isTs }}
+import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+{{ else }}
+const { AssetServerPlugin } = require('@vendure/asset-server-plugin');
+{{/if}}
+{{#if isTs }}
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+{{ else }}
+const { AdminUiPlugin } = require('@vendure/admin-ui-plugin');
+{{/if}}
+{{#if isTs }}
+import path from 'path';
 {{ else }}
 const path = require('path');
 {{/if}}
@@ -27,9 +39,9 @@ const path = require('path');
         synchronize: false, // not working with SQLite/SQL.js, see https://github.com/typeorm/typeorm/issues/2576
         {{/if}}
         logging: false,
-        database: {{#if isSQLjs}}new Uint8Array([]){{else}}'{{ normalizedDbName }}'{{/if}},
+        database: {{#if isSQLjs}}new Uint8Array([]){{else}}'{{ dbName }}'{{/if}},
         {{#if isSQLjs}}
-        location: '{{ normalizedDbName }}',
+        location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,
         {{/if}}
         {{#if requiresConnection}}
@@ -43,18 +55,16 @@ const path = require('path');
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
-    importExportOptions: {
-        importAssetsDir: path.join(__dirname, 'vendure/import-assets'),
-    },
     plugins: [
-        new DefaultAssetServerPlugin({
+        new AssetServerPlugin({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'vendure/assets'),
             port: 3001,
         }),
-        new DefaultEmailPlugin({
-            templatePath: path.join(__dirname, 'vendure/email/templates'),
+        new EmailPlugin({
             devMode: true,
+            templatePath: path.join(__dirname, 'vendure/email/templates'),
+            outputPath: path.join(__dirname, 'vendure/email/test-emails'),
             templateVars: {
                 shopUrl: 'http://www.example.com',
             }

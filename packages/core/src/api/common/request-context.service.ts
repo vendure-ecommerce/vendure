@@ -88,6 +88,6 @@ export class RequestContextService {
     private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
         return arr1.reduce((intersects, role) => {
             return intersects || arr2.includes(role);
-        }, false);
+        }, false as boolean);
     }
 }

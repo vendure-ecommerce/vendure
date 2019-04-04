@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
@@ -5,29 +6,27 @@ import { PromptObject } from 'prompts';
 import prompts from 'prompts';
 
 // tslint:disable:no-console
-export async function init(): Promise<string> {
-    function defaultPort(_dbType: string) {
-        switch (_dbType) {
-            case 'mysql':
-                return 3306;
-            case 'postgres':
-                return 5432;
-            case 'mssql':
-                return 1433;
-            case 'oracle':
-                return 1521;
-            default:
-                return 3306;
-        }
-    }
 
+export type DbType = 'mysql' | 'postgres' | 'sqlite' | 'sqljs' | 'mssql' | 'oracle';
+export interface UserResponses {
+    usingTs: boolean;
+    dbType: DbType;
+    populateProducts: boolean;
+    indexSource: string;
+    configSource: string;
+}
+
+/**
+ * Prompts the user to determine how the new Vendure app should be configured.
+ */
+export async function gatherUserResponses(root: string): Promise<UserResponses> {
     function onSubmit(prompt: PromptObject, answer: any) {
         if (prompt.name === 'dbType') {
             dbType = answer;
         }
     }
 
-    let dbType: string;
+    let dbType: DbType;
 
     console.log(`Let's get started with a new Vendure server!\n`);
 
@@ -42,8 +41,9 @@ export async function init(): Promise<string> {
                     { title: 'Postgres', value: 'postgres' },
                     { title: 'SQLite', value: 'sqlite' },
                     { title: 'SQL.js', value: 'sqljs' },
-                    { title: 'MS SQL Server', value: 'mssql' },
-                    { title: 'Oracle', value: 'oracle' },
+                    // Don't show these until they have been tested.
+                    // { title: 'MS SQL Server', value: 'mssql' },
+                    // { title: 'Oracle', value: 'oracle' },
                 ],
                 initial: 0 as any,
             },
@@ -57,19 +57,13 @@ export async function init(): Promise<string> {
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
                 name: 'dbPort',
                 message: `What port is the database listening on?`,
-                initial: (() => defaultPort(dbType)) as any,
+                initial: (() => defaultDBPort(dbType)) as any,
             },
             {
-                type: 'text',
+                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
                 name: 'dbName',
-                message: () =>
-                    dbType === 'sqlite' || dbType === 'sqljs'
-                        ? `What is the path to the database file?`
-                        : `What's the name of the database?`,
-                initial: (() =>
-                    dbType === 'sqlite' || dbType === 'sqljs'
-                        ? path.join(process.cwd(), 'vendure.sqlite')
-                        : 'vendure') as any,
+                message: `What's the name of the database?`,
+                initial: 'vendure',
             },
             {
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
@@ -89,6 +83,14 @@ export async function init(): Promise<string> {
                 choices: [{ title: 'TypeScript', value: 'ts' }, { title: 'JavaScript', value: 'js' }],
                 initial: 0 as any,
             },
+            {
+                type: 'toggle',
+                name: 'populateProducts',
+                message: 'Populate with some sample product data?',
+                initial: true,
+                active: 'yes',
+                inactive: 'no',
+            },
         ],
         {
             onSubmit,
@@ -103,39 +105,21 @@ export async function init(): Promise<string> {
         process.exit(0);
     }
 
-    await createDirectoryStructure();
-    await copyEmailTemplates();
-    return createFilesForBootstrap(answers);
+    const { indexSource, configSource } = await generateSources(root, answers);
+    return {
+        indexSource,
+        configSource,
+        usingTs: answers.language === 'ts',
+        dbType: answers.dbType,
+        populateProducts: answers.populateProducts,
+    };
 }
 
 /**
- * Generate the default directory structure for a new Vendure project
+ * Create the server index and config source code based on the options specified by the CLI prompts.
  */
-async function createDirectoryStructure() {
-    const cwd = process.cwd();
-    await fs.ensureDir(path.join(cwd, 'vendure', 'email', 'test-emails'));
-    await fs.ensureDir(path.join(cwd, 'vendure', 'import-assets'));
-    await fs.ensureDir(path.join(cwd, 'vendure', 'assets'));
-}
-
-/**
- * Copy the email templates into the app
- */
-async function copyEmailTemplates() {
-    const templateDir = path.join(__dirname, 'assets', 'email-templates');
-    try {
-        await fs.copy(templateDir, path.join(process.cwd(), 'vendure', 'email', 'templates'));
-    } catch (err) {
-        console.error(`Failed to copy email templates.`);
-    }
-}
-
-/**
- * Create the server index and config files based on the options specified by the CLI prompts.
- */
-async function createFilesForBootstrap(answers: any): Promise<string> {
-    const cwd = process.cwd();
-    const filePath = (fileName: string): string => path.join(cwd, `${fileName}.${answers.language}`);
+async function generateSources(root: string, answers: any): Promise<{ indexSource: string; configSource: string; }> {
+    const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     const templateContext = {
         ...answers,
@@ -143,27 +127,28 @@ async function createFilesForBootstrap(answers: any): Promise<string> {
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
-        normalizedDbName:
-            answers.dbType === 'sqlite' || answers.dbType === 'sqljs'
-                ? normalizeFilePath(answers.dbName)
-                : answers.dbName,
         sessionSecret: Math.random()
             .toString(36)
             .substr(3),
     };
-    const configTemplate = await fs.readFile(path.join(__dirname, 'assets', 'vendure-config.hbs'), 'utf-8');
+    const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
     const configSource = Handlebars.compile(configTemplate)(templateContext);
-    await fs.writeFile(filePath('vendure-config'), configSource);
-    const indexTemplate = await fs.readFile(path.join(__dirname, 'assets', 'index.hbs'), 'utf-8');
+    const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
     const indexSource = Handlebars.compile(indexTemplate)(templateContext);
-    await fs.writeFile(filePath('index'), indexSource);
-
-    return filePath('index');
+    return { indexSource, configSource };
 }
 
-/**
- * Escape backslashed for Windows file paths.
- */
-function normalizeFilePath(filePath: string): string {
-    return String.raw`${filePath}`.replace(/\\/g, '\\\\');
+function defaultDBPort(dbType: DbType): number {
+    switch (dbType) {
+        case 'mysql':
+            return 3306;
+        case 'postgres':
+            return 5432;
+        case 'mssql':
+            return 1433;
+        case 'oracle':
+            return 1521;
+        default:
+            return 3306;
+    }
 }
