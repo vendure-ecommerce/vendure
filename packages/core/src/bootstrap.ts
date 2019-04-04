@@ -1,8 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { EntitySubscriberInterface } from 'typeorm';
-
 import { Type } from '@vendure/common/lib/shared-types';
+import { EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';
@@ -29,6 +28,12 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
+    if (!config.silent) {
+        // tslint:disable:no-console
+        console.log(`\n\nVendure server now running on port ${config.port}`);
+        console.log(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
+        console.log(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
+    }
     return app;
 }
 
