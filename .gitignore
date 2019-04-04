@@ -7,6 +7,27 @@
 ../.idea/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+docker-compose.yml
+.env
+lerna-debug.log
+dist
+e2e/__data__/*
+docs/resources/_gen/*
+docs/static/main.js*
+docs/static/main.css*
+docs/static/intro.js*
+docs/static/intro.css*
+docs/public
+docs/content/docs/typescript-api/*
+!docs/content/docs/typescript-api/_index.md
+docs/content/docs/graphql-api/*
+docs/content/docs/plugins/*
+!docs/content/docs/plugins/*.md
+!docs/content/docs/graphql-api/_index.md
+!docs/content/docs/graphql-api/shop/_index.md
+!docs/content/docs/graphql-api/admin/_index.md
+.vscode/
+yarn-error.log
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -120,7 +141,7 @@ artifacts/
 *.tlh
 *.tmp
 *.tmp_proj
-server/yarn-error.log
+packages/core/yarn-error.log
 *.vspscc
 *.vssscc
 .builds
@@ -222,10 +243,6 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
@@ -381,29 +398,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-=======
-# Local
-docker-compose.yml
-.env
-dist
-server/e2e/__data__/*
-server/assets
-server/dist
-server/*.sqlite
-!server/e2e/__data__/.gitkeep
-server/test-emails
-server/src/email/preview/output
-docs/resources/_gen/*
-docs/static/main.js*
-docs/static/main.css*
-docs/static/intro.js*
-docs/static/intro.css*
-docs/public
-docs/content/docs/configuration/*
-!docs/content/docs/configuration/_index.md
-docs/content/docs/graphql-api/*
-!docs/content/docs/graphql-api/_index.md
-!docs/content/docs/graphql-api/shop/_index.md
-!docs/content/docs/graphql-api/admin/_index.md
-.vscode/

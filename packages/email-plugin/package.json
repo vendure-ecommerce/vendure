@@ -1,0 +1,32 @@
+{
+  "name": "@vendure/email-plugin",
+  "version": "0.1.0-alpha.1",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/**/*", "templates/**/*"],
+  "scripts": {
+    "build": "rimraf dist && tsc -p ./tsconfig.build.json"
+  },
+  "dependencies": {
+    "dateformat": "^3.0.3",
+    "fs-extra": "^7.0.1",
+    "handlebars": "^4.0.12",
+    "mjml": "^4.3.0",
+    "nodemailer": "^5.0.0",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.4.1"
+  },
+  "devDependencies": {
+    "@types/dateformat": "^3.0.0",
+    "@types/fs-extra": "^5.0.4",
+    "@types/handlebars": "^4.0.40",
+    "@types/mjml": "^4.0.2",
+    "@types/nodemailer": "^4.6.5",
+    "@vendure/common": ">=0.1.0-alpha.1",
+    "@vendure/core": ">=0.1.0-alpha.1"
+  },
+  "peerDependencies": {
+    "@vendure/core": ">=0.1.0-alpha.1"
+  }
+}

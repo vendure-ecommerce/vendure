@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist/cli"
+  },
+  "files": [
+    "../cli/vendure-cli.ts",
+    "../typings.d.ts"
+  ]
+}

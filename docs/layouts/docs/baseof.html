@@ -23,8 +23,9 @@
     <div class="book-page">
         {{ partial "docs/mobile-header" . }}
         {{ template "main" . }}
-        <div class="book-footer">
 
+        <div class="book-footer">
+            Generated on {{ dateFormat "Jan 2 2006 at 15:04" $.Page.Lastmod }}
         </div>
     </div>
 

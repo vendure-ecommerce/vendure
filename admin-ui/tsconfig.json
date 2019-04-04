@@ -24,7 +24,7 @@
       "esnext.asynciterable"
     ],
     "paths": {
-      "shared/*": ["../shared/*"]
+      "shared/*": ["../packages/common/lib/*"]
     }
   }
 }

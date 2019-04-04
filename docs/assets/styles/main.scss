@@ -179,8 +179,10 @@ ul.contents-list {
 
 .book-footer {
     height: 200px;
-    // background-color: $gray-100;
+    text-align: center;
+    color: $gray-600;
     margin-top: 60px;
+    font-size: 12px;
 }
 
 .book-posts {

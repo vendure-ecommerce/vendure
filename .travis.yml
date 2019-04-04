@@ -12,9 +12,10 @@ cache: yarn
 
 install:
   - yarn install
+  - yarn bootstrap
+  - cd admin-ui && yarn install && cd ..
 
 script:
-  - cd admin-ui && yarn && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false
-  - cd ../server && yarn && yarn test
-  - yarn test:e2e
-  - cd ../admin-ui && yarn build --prod
+  - yarn lerna run build
+  - yarn test:all
+  - cd admin-ui && yarn build --prod

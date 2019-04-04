@@ -1,0 +1,22 @@
+{
+  "name": "dev-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "populate": "node -r ts-node/register populate-dev-server.ts",
+    "start": "nodemon --config nodemon-debug.json"
+  },
+  "dependencies": {
+    "@vendure/common": ">=0.1.0-alpha.1",
+    "@vendure/core": ">=0.1.0-alpha.1",
+    "@vendure/asset-server-plugin": ">=0.1.0-alpha.1",
+    "@vendure/admin-ui-plugin": ">=0.1.0-alpha.1",
+    "@vendure/email-plugin": ">=0.1.0-alpha.1",
+    "typescript": "^3.3.4000"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}

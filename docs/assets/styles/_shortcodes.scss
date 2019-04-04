@@ -56,6 +56,12 @@
 .generation-info {
     font-size: $font-size-12;
     border-bottom: 1px dashed $gray-400;
+    .label {
+        color: $gray-600;
+    }
+    .file {
+        margin-left: 12px;
+    }
 }
 
 /**

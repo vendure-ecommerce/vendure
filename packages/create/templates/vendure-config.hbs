@@ -1,0 +1,80 @@
+{{#if isTs }}import{{ else }}const{{/if}} {
+    examplePaymentHandler,
+    DefaultSearchPlugin,{{#if isTs}}
+    VendureConfig,{{/if}}
+} {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
+{{#if isTs }}
+import { EmailPlugin } from '@vendure/email-plugin';
+{{ else }}
+const { EmailPlugin } = require('@vendure/email-plugin');
+{{/if}}
+{{#if isTs }}
+import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+{{ else }}
+const { AssetServerPlugin } = require('@vendure/asset-server-plugin');
+{{/if}}
+{{#if isTs }}
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+{{ else }}
+const { AdminUiPlugin } = require('@vendure/admin-ui-plugin');
+{{/if}}
+{{#if isTs }}
+import path from 'path';
+{{ else }}
+const path = require('path');
+{{/if}}
+
+{{#if isTs}}export {{/if}}const config{{#if isTs}}: VendureConfig{{/if}} = {
+    authOptions: {
+        sessionSecret: '{{ sessionSecret }}',
+    },
+    port: 3000,
+    adminApiPath: 'admin-api',
+    shopApiPath: 'shop-api',
+    dbConnectionOptions: {
+        type: '{{ dbType }}',
+        {{#if requiresConnection}}
+        synchronize: true, // turn this off for production
+        {{else}}
+        synchronize: false, // not working with SQLite/SQL.js, see https://github.com/typeorm/typeorm/issues/2576
+        {{/if}}
+        logging: false,
+        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, 'vendure.sqlite'){{else}}'{{ dbName }}'{{/if}},
+        {{#if isSQLjs}}
+        location: path.join(__dirname, 'vendure.sqlite'),
+        autoSave: true,
+        {{/if}}
+        {{#if requiresConnection}}
+        host: '{{ dbHost }}',
+        port: {{ dbPort }},
+        username: '{{ dbUserName }}',
+        password: '{{ dbPassword }}',
+        {{/if}}
+    },
+    paymentOptions: {
+        paymentMethodHandlers: [examplePaymentHandler],
+    },
+    customFields: {},
+    plugins: [
+        new AssetServerPlugin({
+            route: 'assets',
+            assetUploadDir: path.join(__dirname, 'vendure/assets'),
+            port: 3001,
+        }),
+        new EmailPlugin({
+            devMode: true,
+            templatePath: path.join(__dirname, 'vendure/email/templates'),
+            outputPath: path.join(__dirname, 'vendure/email/test-emails'),
+            templateVars: {
+                shopUrl: 'http://www.example.com',
+            }
+        }),
+        new DefaultSearchPlugin(),
+        new AdminUiPlugin({ port: 3002 }),
+    ],
+};
+{{#if isTs}}
+{{else}}
+
+module.exports = { config };
+{{/if}}

@@ -6,7 +6,7 @@ linters:
   admin-ui/**/*.html:
     - yarn format
     - git add
-  server/**/*.ts:
-    - yarn lint:server
+  packages/core/*.ts:
+    - yarn lint:core
     - yarn format
     - git add

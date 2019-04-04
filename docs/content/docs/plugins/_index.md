@@ -15,4 +15,4 @@ Plugins in Vendure allow one to:
 
 These abilities make plugins a very versatile and powerful means of implementing custom business requirements.
 
-This section details the built-in plugins which ship with Vendure as well as a guide to writing your own plugins.
+This section details the official Vendure plugins included in the main Vendure repo, as well as a guide on writing your own plugins for Vendure.

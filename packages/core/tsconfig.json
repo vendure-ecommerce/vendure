@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "removeComments": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "newLine": "LF"
+  }
+}
