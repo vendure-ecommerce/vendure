@@ -22,4 +22,4 @@ type(scope): Message in present tense
 * **test** (adding missing tests, refactoring tests; no production code change)
 * **chore** (updating build tasks etc; no production code change)
 
-`scope` indicates the module affected (server, admin-ui, docs etc.)
+`scope` indicates the package (core, asset-server-plugin, docs etc.)

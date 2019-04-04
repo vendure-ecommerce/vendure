@@ -59,8 +59,25 @@ export interface CustomFieldConfig {
 
 /**
  * @description
- * The certain entities can have additional fields added to them by defining an array of {@link CustomFieldConfig}
+ * Most entities can have additional fields added to them by defining an array of {@link CustomFieldConfig}
  * objects on against the corresponding key.
+ *
+ * @example
+ * ```TypeScript
+ * bootstrap({
+ *     // ...
+ *     customFields: {
+ *         Product: [
+ *             { name: 'infoUrl', type: 'string' },
+ *             { name: 'downloadable', type: 'boolean' },
+ *             { name: 'shortName', type: 'localeString' },
+ *         ],
+ *         User: [
+ *             { name: 'socialLoginToken', type: 'string' },
+ *         ],
+ *     },
+ * })
+ * ```
  *
  * @docsCategory custom-fields
  */

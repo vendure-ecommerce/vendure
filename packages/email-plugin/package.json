@@ -1,6 +1,7 @@
 {
   "name": "@vendure/email-plugin",
   "version": "0.1.0-alpha.1",
+  "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": ["lib/**/*", "templates/**/*"],
