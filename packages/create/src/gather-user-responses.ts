@@ -1,20 +1,11 @@
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
-import { PromptObject } from 'prompts';
-import prompts from 'prompts';
+import prompts, { PromptObject } from 'prompts';
+
+import { DbType, UserResponses } from './types';
 
 // tslint:disable:no-console
-
-export type DbType = 'mysql' | 'postgres' | 'sqlite' | 'sqljs' | 'mssql' | 'oracle';
-export interface UserResponses {
-    usingTs: boolean;
-    dbType: DbType;
-    populateProducts: boolean;
-    indexSource: string;
-    configSource: string;
-}
 
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
@@ -27,8 +18,6 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
     }
 
     let dbType: DbType;
-
-    console.log(`Let's get started with a new Vendure server!\n`);
 
     const answers = await prompts(
         [
