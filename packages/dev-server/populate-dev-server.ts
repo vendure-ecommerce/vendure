@@ -1,3 +1,5 @@
+// tslint:disable-next-line:no-reference
+/// <reference path="../core/typings.d.ts" />
 import { bootstrap, VendureConfig } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import path from 'path';
@@ -26,9 +28,9 @@ if (require.main === module) {
     };
     clearAllTables(populateConfig.dbConnectionOptions, true)
         .then(() => populate(() => bootstrap(populateConfig),
-            path.join(__dirname, '../core/dist/cli/assets/initial-data.json'),
-            path.join(__dirname, '../core/dist/cli/assets/products.csv'),
-            path.join(__dirname, '../core/mock-data/assets'),
+            path.join(__dirname, '../create/assets/initial-data.json'),
+            path.join(__dirname, '../create/assets/products.csv'),
+            path.join(__dirname, '../create/assets/images'),
         ))
         .then(async app => {
             console.log('populating customers...');
