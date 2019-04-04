@@ -18,6 +18,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json -c tslint.json",
     "generate-email-preview": "node -r ts-node/register src/email/preview/generate-email-preview.ts",
+    "watch": "tsc -p ./build/tsconfig.build.json --watch",
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "publish:alpha": "yarn build && npm publish --access public --tag alpha"
   },
@@ -58,11 +59,9 @@
     "ms": "^2.1.1",
     "nanoid": "^2.0.0",
     "progress": "^2.0.3",
-    "prompts": "^2.0.1",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.3.3",
-    "typeorm": "0.2.15",
-    "typescript": "^3.2.4"
+    "typeorm": "0.2.15"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -91,6 +90,7 @@
     "pg": "^7.8.0",
     "rimraf": "^2.6.3",
     "sql.js": "^0.5.0",
-    "sqlite3": "^4.0.6"
+    "sqlite3": "^4.0.6",
+    "typescript": "^3.2.4"
   }
 }

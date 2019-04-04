@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import program from 'commander';
 import path from 'path';
-import prompts from 'prompts';
 
 import { logColored } from './cli-utils';
 import { importProducts } from './populate';
