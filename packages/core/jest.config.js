@@ -14,4 +14,11 @@ module.exports = {
     transform: {
         '^.+\\.(t|j)s$': 'ts-jest',
     },
+    globals: {
+        'ts-jest': {
+            tsConfig: {
+                allowJs: true,
+            },
+        },
+    },
 };
