@@ -1,18 +1,19 @@
 /* tslint:disable:no-console */
+import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
-import path from 'path';
+import path, { extname } from 'path';
 
 import { deleteGeneratedDocs } from './docgen-utils';
 import { TypeMap } from './typescript-docgen-types';
 import { TypescriptDocsParser } from './typescript-docs-parser';
 import { TypescriptDocsRenderer } from './typescript-docs-renderer';
 
-interface DocsSectionCofig {
+interface DocsSectionConfig {
     sourceDirs: string[];
     outputPath: string;
 }
 
-generateTypescriptDocs([
+const sections: DocsSectionConfig[] = [
     {
         sourceDirs: ['packages/core/src/', 'packages/common/src/'],
         outputPath: 'typescript-api',
@@ -29,23 +30,29 @@ generateTypescriptDocs([
         sourceDirs: ['packages/admin-ui-plugin/src/'],
         outputPath: 'plugins',
     },
-]);
+];
 
-/*const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
+generateTypescriptDocs(sections);
+
+const watchMode = !!process.argv.find(arg => arg === '--watch' || arg === '-w');
 if (watchMode) {
     console.log(`Watching for changes to source files...`);
-    tsFiles.forEach(file => {
-        fs.watchFile(file, { interval: 1000 }, () => {
-            generateTypescriptDocs([file], OUTPUT_PATH, DOCS_URL);
+    sections.forEach(section => {
+        section.sourceDirs.forEach(dir => {
+            fs.watch(dir, { recursive: true }, (eventType, file) => {
+                if (extname(file) === '.ts') {
+                    generateTypescriptDocs([section]);
+                }
+            });
         });
     });
-}*/
+}
 
 /**
  * Uses the TypeScript compiler API to parse the given files and extract out the documentation
  * into markdown files
  */
-function generateTypescriptDocs(config: DocsSectionCofig[]) {
+function generateTypescriptDocs(config: DocsSectionConfig[]) {
     const timeStart = +new Date();
 
     // This map is used to cache types and their corresponding Hugo path. It is used to enable
