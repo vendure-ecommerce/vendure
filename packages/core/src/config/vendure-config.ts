@@ -317,11 +317,6 @@ export interface ImportExportOptions {
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
- * {{% alert %}}
- * Note on terminology: many of the configuration properties are named "Strategy" - this is because their use follows the
- * [Strategy Pattern](https://en.wikipedia.org/wiki/Strategy_pattern) of software design.
- * {{% /alert %}}
- *
  * @docsCategory
  * @docsWeight 0
  */
