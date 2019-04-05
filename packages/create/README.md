@@ -32,4 +32,22 @@ yarn create @vendure my-app
 
 *`yarn create` is available in Yarn 0.25+*
 
+
 It will create a directory called `my-app` inside the current folder.
+
+## Options
+
+### `--use-npm`
+
+By default, Vendure Create will attempt to use Yarn to install all dependencies if it is available. You can override this and force it to use npm with the `--use-npm` flag.
+
+### `--log-level`
+
+You can control how much output is generated during the installation and setup with this flag. Valid options are `silent`, `info` and `verbose`. The default is `silent`
+
+Example:
+
+```sh 
+npx @vendure/create my-app --log-level verbose
+```
+

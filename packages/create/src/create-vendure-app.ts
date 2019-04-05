@@ -34,7 +34,7 @@ program
         projectName = name;
     })
     .option(
-        '-log-level <logLevel>',
+        '--log-level <logLevel>',
         'Log level, either \'silent\', \'info\', or \'verbose\'',
         /^(silent|info|verbose)$/i,
         'silent',

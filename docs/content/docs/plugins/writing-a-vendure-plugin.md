@@ -98,6 +98,7 @@ Now that we've defined the new mutation, we'll need a resolver function to handl
 ```ts 
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, Allow, ProductService, RequestContext } from '@vendure/core';
+import { Permission } from '@vendure/common/lib/generated-types';
 
 @Resolver()
 export class RandomCatResolver {
@@ -212,7 +213,8 @@ import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import gql from 'graphql-tag';
 import http from 'http';
-import { Allow, Ctx, Permission, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
+import { Allow, Ctx, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
+import { Permission } from '@vendure/common/lib/generated-types';
 
 export class RandomCatPlugin implements VendurePlugin {
 

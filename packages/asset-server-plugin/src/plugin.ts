@@ -94,8 +94,18 @@ export interface AssetServerOptions {
  * The `AssetServerPlugin` serves assets (images and other files) from the local file system. It can also perform on-the-fly image transformations
  * and caches the results for subsequent calls.
  *
+ * ## Installation
+ *
+ * `yarn add @vendure/asset-server-plugin`
+ *
+ * or
+ *
+ * `npm install @vendure/asset-server-plugin`
+ *
  * @example
  * ```ts
+ * import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+ *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [

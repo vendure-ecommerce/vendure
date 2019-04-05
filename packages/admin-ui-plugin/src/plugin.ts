@@ -51,8 +51,18 @@ export interface AdminUiOptions {
  *
  * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by store administrators on a day-to-day basis for the management of the store.
  *
+ * ## Installation
+ *
+ * `yarn add @vendure/admin-ui-plugin`
+ *
+ * or
+ *
+ * `npm install @vendure/admin-ui-plugin`
+ *
  * @example
  * ```ts
+ * import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+ *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [

@@ -8,101 +8,51 @@ weight: 0
 ## Requirements
  
 * [Node.js](https://nodejs.org/en/) **v8.9.0** or above
-* An SQL database compatible with [TypeORM](http://typeorm.io/#/), i.e. MySQL, MariaDB, PostgreSQL, SQLite, Microsoft SQL Server, sql.js, Oracle.
+* If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, if you are just testing out Vendure, we recommend using SQLite, which has no external requirements.
  
-## Installation
+## Installation with @vendure/create
 
-The following instructions describe how to run a development instance of Vendure using ts-node and SQLite.
+The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependiencies.
 
-### Set up the database
-
-You'll need a database to store your shop data.
-
-{{% tab "SQLite" %}}
-The simplest way to try out Vendure is to use SQLite, since it does not require a separate database server to work. You only need to install the [sqlite3 driver](https://www.npmjs.com/package/sqlite3) to allow Vendure to read and write to an SQLite database file:
-```bash
-$ npm install sqlite3
-
-# or with Yarn
-$ yarn add sqlite3
-
+{{% tab "npx" %}}
+```sh
+npx @vendure/create my-app
 ```
+
+{{% alert primary %}}
+[npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher.
+{{% /alert %}}
 {{% /tab %}}
-{{% tab "MySQL/MariaDB" %}}
-You'll need a MySQL or MariaDB server available to your local machine. For development we can recommend the [bitnami-docker-phpmyadmin](https://github.com/bitnami/bitnami-docker-phpmyadmin) Docker image, which is MariaDB including phpMyAdmin.
-
-In addition, you must install the [mysql driver](https://www.npmjs.com/package/mysql) for Node.js:
-```bash
-$ npm install mysql
-
-# or with Yarn
-$ yarn add mysql
-
+{{% tab "npm init" %}}
+```sh
+npm init @vendure my-app
 ```
+{{% alert primary %}}
+`npm init <initializer>` is available in npm 6+
+{{% /alert %}}
 {{% /tab %}}
-{{% tab "PostgreSQL" %}}
-You'll need a PostgreSQL server available to your local machine.
-
-In addition, you must install the [pg driver](https://www.npmjs.com/package/pg) for Node.js:
-```bash
-$ npm install pg
-
-# or with Yarn
-$ yarn add pg
-
+{{% tab "yarn create" %}}
+```sh
+yarn create @vendure my-app
 ```
+{{% alert primary %}}
+`yarn create` is available in Yarn 0.25+
+{{% /alert %}}
 {{% /tab %}}
 
-### Install ts-node
+*For other installation options see the [@vendure/create documentation](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/README.md).*
 
-**TypeScript only:** If you want to use TypeScript, [ts-node](https://www.npmjs.com/package/ts-node) allows you to run TypeScript directly without a compilation step, which is convenient for development.
 
-```bash
-$ npm install --save-dev ts-node
+"my-app" in the above command would be replaced by whatever you'd like to name your new project.
+Vendure Create will guide you through the setup. When done, you can run:
 
-# or with Yarn
-$ yarn add --dev ts-node 
+```sh
+cd my-app
+
+yarn start
+# or
+npm run start
 ```
-
-### Install Vendure
-
-```bash
-$ npm install @vendure/core@alpha
-
-# or with Yarn
-$ yarn add @vendure/core@alpha
-```
-
-### Initialize with the Vendure CLI
-
-Vendure includes a CLI program which can generate the initial configuration and entry file for your server:
-
-```bash
-$ npx vendure init
-
-# or with Yarn
-$ yarn vendure init
-```
-
-The init command will ask a series of questions which allow the CLI to generate a configuration and index file.
-
-### Run
-
-Once the init script has completed, the server can be started.
-
-{{% tab "TypeScript" %}}
-```bash
-$ npx ts-node index
-
-# or with Yarn
-$ yarn ts-node index
-```
-{{% /tab %}}
-{{% tab "JavaScript" %}}
-```bash
-$ node index
-```
-{{% /tab %}}
 
 Assuming the default config settings, you can now access:
 
