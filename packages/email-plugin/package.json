@@ -1,12 +1,15 @@
 {
   "name": "@vendure/email-plugin",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": ["lib/**/*", "templates/**/*"],
   "scripts": {
     "build": "rimraf lib && tsc -p ./tsconfig.build.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "dateformat": "^3.0.3",
@@ -27,6 +30,6 @@
     "@vendure/core": ">=0.1.0-alpha.1"
   },
   "peerDependencies": {
-    "@vendure/core": ">=0.1.0-alpha.1"
+    "@vendure/core": ">=0.1.0-alpha.18"
   }
 }

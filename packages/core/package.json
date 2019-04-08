@@ -1,6 +1,6 @@
 {
   "name": "@vendure/core",
-  "version": "0.1.0-alpha.17",
+  "version": "0.1.0-alpha.18",
   "description": "A modern, headless ecommerce framework",
   "repository": {
     "type": "git",
@@ -21,6 +21,9 @@
     "watch": "tsc -p ./build/tsconfig.build.json --watch",
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "publish:alpha": "yarn build && npm publish --access public --tag alpha"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

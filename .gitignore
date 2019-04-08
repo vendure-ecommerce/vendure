@@ -19,6 +19,7 @@ docs/static/intro.js*
 docs/static/intro.css*
 docs/public
 docs/content/docs/typescript-api/*
+docs/data/build.json
 !docs/content/docs/typescript-api/_index.md
 docs/content/docs/graphql-api/*
 docs/content/docs/plugins/*
