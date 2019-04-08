@@ -17,15 +17,15 @@ export class Sequencer {
         Object.values(this.playTimer).forEach(k => clearTimeout(k));
         await this.sleep('initial', 0);
         this.scene0();
-        await this.sleep('start-typing', 2000);
+        await this.sleep('start-typing', 1000);
         this.scene1();
-        await this.sleep('zoom-out', 2500);
+        await this.sleep('zoom-out', 1500);
         this.scene2();
         await this.sleep('data-flow', 1200);
         this.scene3();
         await this.sleep('websites', 1000);
         this.scene4();
-        await this.sleep('logo', 3000);
+        await this.sleep('logo', 2000);
         this.scene5();
         await this.sleep('final', 1000);
         this.scene6();

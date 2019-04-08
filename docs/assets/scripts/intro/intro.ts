@@ -14,8 +14,7 @@ const INTRO_VIEWED_KEY = 'v-intro-viewed';
 if (container && textArea && scene && controls && title) {
     container.classList.add('visible');
     const replayButton = controls.querySelector('#replay');
-    const terminalCommands = `$ install @vendure/core\n` +
-        `$ vendure init\n` +
+    const terminalCommands = `$ @vendure/create\n` +
         `$ start\n`;
     const terminal = new TerminalTyper(textArea as HTMLDivElement, terminalCommands);
     const onTransition = (className: string) => {
