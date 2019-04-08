@@ -4,7 +4,7 @@
 declare function require(path: string): any;
 export const environment = {
     production: false,
-    version: require('../../../package.json').version,
+    version: require('../../../packages/core/package.json').version,
 };
 
 /*
