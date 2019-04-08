@@ -187,7 +187,8 @@ export class TypescriptDocsRenderer {
     }
 
     private renderGenerationInfoShortcode(info: DeclarationInfo): string {
-        return `{{< generation-info sourceFile="${info.sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}">}}\n\n`;
+        const sourceFile = info.sourceFile.replace(/^\.\.\//, '');
+        return `{{< generation-info sourceFile="${sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}">}}\n\n`;
     }
 
     /**
