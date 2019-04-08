@@ -5,7 +5,8 @@
   ],
   "jsRules": {
     "no-unused-expression": true,
-    "quotemark": [true, "single"]
+    "quotemark": [true, "single"],
+    "object-literal-sort-keys": false
   },
   "rules": {
     "interface-over-type-literal": false,

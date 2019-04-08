@@ -5,7 +5,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
-    "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && hugo",
+    "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",
     "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
     "codegen": "ts-node scripts/codegen/generate-graphql-types.ts",
     "generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",

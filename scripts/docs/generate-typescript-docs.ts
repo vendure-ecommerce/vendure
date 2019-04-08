@@ -41,7 +41,8 @@ if (watchMode) {
         section.sourceDirs.forEach(dir => {
             fs.watch(dir, { recursive: true }, (eventType, file) => {
                 if (extname(file) === '.ts') {
-                    generateTypescriptDocs([section]);
+                    console.log(`Changes detected in ${dir}`);
+                    generateTypescriptDocs([section], true);
                 }
             });
         });
@@ -52,15 +53,17 @@ if (watchMode) {
  * Uses the TypeScript compiler API to parse the given files and extract out the documentation
  * into markdown files
  */
-function generateTypescriptDocs(config: DocsSectionConfig[]) {
+function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolean = false) {
     const timeStart = +new Date();
 
     // This map is used to cache types and their corresponding Hugo path. It is used to enable
     // hyperlinking from a member's "type" to the definition of that type.
     const globalTypeMap: TypeMap = new Map();
 
-    for (const { outputPath, sourceDirs } of config) {
-        deleteGeneratedDocs(absOutputPath(outputPath));
+    if (!isWatchMode) {
+        for (const {outputPath, sourceDirs} of config) {
+            deleteGeneratedDocs(absOutputPath(outputPath));
+        }
     }
 
     for (const { outputPath, sourceDirs } of config) {

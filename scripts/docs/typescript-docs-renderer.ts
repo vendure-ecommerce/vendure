@@ -35,7 +35,7 @@ export class TypescriptDocsRenderer {
             const categoryDir = path.join(outputPath, info.category);
             const indexFile = path.join(categoryDir, '_index.md');
             if (!fs.existsSync(categoryDir)) {
-                fs.mkdirs(categoryDir);
+                fs.mkdirsSync(categoryDir);
             }
             if (!fs.existsSync(indexFile)) {
                 const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;
