@@ -7,9 +7,12 @@ import path from 'path';
 
 import { CREATE_ADMINISTRATOR, CREATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
+import { pick } from '../../common/lib/pick';
 import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
 import { EventBus } from '../src/event-bus/event-bus';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
+import { IdentifierChangeEvent } from '../src/event-bus/events/identifier-change-event';
+import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -28,7 +31,7 @@ describe('Shop auth & accounts', () => {
         const token = await server.init(
             {
                 productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
+                customerCount: 2,
             },
             {
                 plugins: [new TestEmailPlugin()],
@@ -243,6 +246,121 @@ describe('Shop auth & accounts', () => {
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
             expect(loginResult.user.identifier).toBe(customer.emailAddress);
         });
+    });
+
+    describe('updating emailAddress', () => {
+        let emailUpdateToken: string;
+        let customer: GetCustomer.Customer;
+        const NEW_EMAIL_ADDRESS = 'new@address.com';
+        const PASSWORD = 'newPassword';
+
+        beforeAll(async () => {
+            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_1' });
+            customer = result.customer!;
+        });
+
+        beforeEach(() => {
+            sendEmailFn = jest.fn();
+        });
+
+        it('throws if not logged in', async () => {
+            try {
+                await shopClient.asAnonymousUser();
+                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                    password: PASSWORD,
+                    newEmailAddress: NEW_EMAIL_ADDRESS,
+                });
+                fail('should have thrown');
+            } catch (err) {
+                expect(getErrorCode(err)).toBe('FORBIDDEN');
+            }
+        });
+
+        it('throws if password is incorrect', async () => {
+            try {
+                await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
+                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                    password: 'bad password',
+                    newEmailAddress: NEW_EMAIL_ADDRESS,
+                });
+                fail('should have thrown');
+            } catch (err) {
+                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
+            }
+        });
+
+        it('throws if email address already in use', assertThrowsWithMessage(
+            async () => {
+                await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
+                const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_2' });
+                const otherCustomer = result.customer!;
+
+                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                    password: PASSWORD,
+                    newEmailAddress: otherCustomer.emailAddress,
+                });
+            },
+            'This email address is not available',
+            ),
+        );
+
+        it('triggers event with token', async () => {
+            await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
+            const emailUpdateTokenPromise = getEmailUpdateTokenPromise();
+
+            await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                password: PASSWORD,
+                newEmailAddress: NEW_EMAIL_ADDRESS,
+            });
+
+            const { identifierChangeToken, pendingIdentifier } = await emailUpdateTokenPromise;
+            emailUpdateToken = identifierChangeToken!;
+
+            expect(pendingIdentifier).toBe(NEW_EMAIL_ADDRESS);
+            expect(emailUpdateToken).toBeTruthy();
+        });
+
+        it('cannot login with new email address before verification', async () => {
+            try {
+                await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
+                fail('should have thrown');
+            } catch (err) {
+                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
+            }
+        });
+
+        it('throws with bad token', assertThrowsWithMessage(
+            async () => {
+                await shopClient.query(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
+            },
+            'Identifier change token not recognized',
+            ),
+        );
+
+        it('verify the new email address', async () => {
+            const result = await shopClient.query(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
+            expect(result.updateCustomerEmailAddress).toBe(true);
+
+            expect(sendEmailFn).toHaveBeenCalled();
+            expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
+        });
+
+        it('can login with new email address after verification', async () => {
+            await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
+            const { activeCustomer } = await shopClient.query(GET_ACTIVE_CUSTOMER);
+            expect(activeCustomer.id).toBe(customer.id);
+            expect(activeCustomer.emailAddress).toBe(NEW_EMAIL_ADDRESS);
+        });
+
+        it('cannot login with old email address after verification', async () => {
+            try {
+                await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
+                fail('should have thrown');
+            } catch (err) {
+                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
+            }
+        });
+
     });
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
@@ -474,6 +592,58 @@ describe('Registration without email verification', () => {
     });
 });
 
+describe('Updating email address without email verification', () => {
+    const shopClient = new TestShopClient();
+    const adminClient = new TestAdminClient();
+    const server = new TestServer();
+    let customer: GetCustomer.Customer;
+    const NEW_EMAIL_ADDRESS = 'new@address.com';
+
+    beforeAll(async () => {
+        const token = await server.init(
+            {
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+                customerCount: 1,
+            },
+            {
+                plugins: [new TestEmailPlugin()],
+                authOptions: {
+                    requireVerification: false,
+                },
+            },
+        );
+        await shopClient.init();
+        await adminClient.init();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    beforeAll(async () => {
+        const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_1' });
+        customer = result.customer!;
+    });
+
+    beforeEach(() => {
+        sendEmailFn = jest.fn();
+    });
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    it('updates email address', async () => {
+        await shopClient.asUserWithCredentials(customer.emailAddress, 'test');
+        const { requestUpdateCustomerEmailAddress } = await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+            password: 'test',
+            newEmailAddress: NEW_EMAIL_ADDRESS,
+        });
+
+        expect(requestUpdateCustomerEmailAddress).toBe(true);
+        expect(sendEmailFn).toHaveBeenCalledTimes(1);
+        expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
+
+        const { activeCustomer } = await shopClient.query(GET_ACTIVE_CUSTOMER);
+        expect(activeCustomer.emailAddress).toBe(NEW_EMAIL_ADDRESS);
+    });
+});
 
 /**
  * This mock plugin simulates an EmailPlugin which would send emails
@@ -486,6 +656,12 @@ class TestEmailPlugin implements VendurePlugin {
             sendEmailFn(event);
         });
         eventBus.subscribe(PasswordResetEvent, event => {
+            sendEmailFn(event);
+        });
+        eventBus.subscribe(IdentifierChangeRequestEvent, event => {
+            sendEmailFn(event);
+        });
+        eventBus.subscribe(IdentifierChangeEvent, event => {
             sendEmailFn(event);
         });
     }
@@ -503,6 +679,14 @@ function getPasswordResetTokenPromise(): Promise<string> {
     return new Promise<any>(resolve => {
         sendEmailFn.mockImplementation((event: PasswordResetEvent) => {
             resolve(event.user.passwordResetToken);
+        });
+    });
+}
+
+function getEmailUpdateTokenPromise(): Promise<{ identifierChangeToken: string | null; pendingIdentifier: string | null; }> {
+    return new Promise(resolve => {
+        sendEmailFn.mockImplementation((event: IdentifierChangeRequestEvent) => {
+            resolve(pick(event.user, ['identifierChangeToken', 'pendingIdentifier']));
         });
     });
 }
@@ -543,6 +727,27 @@ const RESET_PASSWORD = gql`
                 id
                 identifier
             }
+        }
+    }
+`;
+
+const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
+    mutation RequestUpdateEmailAddress($password: String! $newEmailAddress: String!) {
+        requestUpdateCustomerEmailAddress(password: $password, newEmailAddress: $newEmailAddress)
+    }
+`;
+
+const UPDATE_EMAIL_ADDRESS = gql`
+    mutation UpdateEmailAddress($token: String!) {
+        updateCustomerEmailAddress(token: $token)
+    }
+`;
+
+const GET_ACTIVE_CUSTOMER = gql`
+    query {
+        activeCustomer {
+            id
+            emailAddress
         }
     }
 `;

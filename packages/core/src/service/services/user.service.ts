@@ -4,6 +4,9 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import {
+    IdentifierChangeTokenError,
+    IdentifierChangeTokenExpiredError,
+    InternalServerError,
     PasswordResetTokenExpiredError,
     UnauthorizedError,
     VerificationTokenExpiredError,
@@ -114,7 +117,33 @@ export class UserService {
         }
     }
 
-    async updatePassword(user: User, currentPassword: string, newPassword: string): Promise<boolean> {
+    async changeIdentifierByToken(token: string): Promise<{ user: User; oldIdentifier: string; }> {
+        const user = await this.connection.getRepository(User).findOne({
+            where: { identifierChangeToken: token },
+        });
+        if (!user) {
+            throw new IdentifierChangeTokenError();
+        }
+        if (!this.verificationTokenGenerator.verifyVerificationToken(token)) {
+            throw new IdentifierChangeTokenExpiredError();
+        }
+        const pendingIdentifier = user.pendingIdentifier;
+        if (!pendingIdentifier) {
+            throw new InternalServerError('error.pending-identifier-missing');
+        }
+        const oldIdentifier = user.identifier;
+        user.identifier = pendingIdentifier;
+        user.identifierChangeToken = null;
+        user.pendingIdentifier = null;
+        await this.connection.getRepository(User).save(user);
+        return { user, oldIdentifier };
+    }
+
+    async updatePassword(userId: ID, currentPassword: string, newPassword: string): Promise<boolean> {
+        const user = await this.connection.getRepository(User).findOne(userId, { select: ['id', 'passwordHash'] });
+        if (!user) {
+            throw new InternalServerError(`error.no-active-user-id`);
+        }
         const matches = await this.passwordCipher.check(currentPassword, user.passwordHash);
         if (!matches) {
             throw new UnauthorizedError();
@@ -122,5 +151,10 @@ export class UserService {
         user.passwordHash = await this.passwordCipher.hash(newPassword);
         await this.connection.getRepository(User).save(user);
         return true;
+    }
+
+    async setIdentifierChangeToken(user: User): Promise<User> {
+        user.identifierChangeToken = this.verificationTokenGenerator.generateVerificationToken();
+        return this.connection.manager.save(user);
     }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 import ms from 'ms';
 import { Connection } from 'typeorm';
@@ -41,10 +42,7 @@ export class AuthService {
         password: string,
     ): Promise<AuthenticatedSession> {
         const user = await this.getUserFromIdentifier(identifier);
-        const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
-        if (!passwordMatches) {
-            throw new UnauthorizedError();
-        }
+        await this.verifyUserPassword(user.id, password);
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
@@ -60,6 +58,21 @@ export class AuthService {
         const session = await this.createNewAuthenticatedSession(ctx, user);
         const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
         return newSession;
+    }
+
+    /**
+     * Verify the provided password against the one we have for the given user.
+     */
+    async verifyUserPassword(userId: ID, password: string): Promise<boolean> {
+        const user = await this.connection.getRepository(User).findOne(userId, { select: ['passwordHash'] });
+        if (!user) {
+            throw new UnauthorizedError();
+        }
+        const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
+        if (!passwordMatches) {
+            throw new UnauthorizedError();
+        }
+        return true;
     }
 
     /**

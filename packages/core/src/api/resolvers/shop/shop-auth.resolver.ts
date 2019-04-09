@@ -12,7 +12,11 @@ import {
 } from '@vendure/common/lib/generated-shop-types';
 import { Request, Response } from 'express';
 
-import { PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
+import {
+    RequestUpdateCustomerEmailAddressMutationArgs,
+    UpdateCustomerEmailAddressMutationArgs,
+} from '../../../../../common/src/generated-shop-types';
+import { ForbiddenError, PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -138,5 +142,27 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: UpdateCustomerPasswordMutationArgs,
     ): Promise<boolean> {
         return super.updatePassword(ctx, args.currentPassword, args.newPassword);
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async requestUpdateCustomerEmailAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: RequestUpdateCustomerEmailAddressMutationArgs,
+    ): Promise<boolean> {
+        if (!ctx.activeUserId) {
+            throw new ForbiddenError();
+        }
+        await this.authService.verifyUserPassword(ctx.activeUserId, args.password);
+        return this.customerService.requestUpdateEmailAddress(ctx, ctx.activeUserId, args.newEmailAddress);
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async updateCustomerEmailAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: UpdateCustomerEmailAddressMutationArgs,
+    ): Promise<boolean> {
+        return this.customerService.updateEmailAddress(ctx, args.token);
     }
 }

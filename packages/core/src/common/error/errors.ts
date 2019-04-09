@@ -75,6 +75,18 @@ export class PasswordResetTokenExpiredError extends I18nError {
     }
 }
 
+export class IdentifierChangeTokenError extends I18nError {
+    constructor() {
+        super('error.identifier-change-token-not-recognized', {}, 'EXPIRED_IDENTIFIER_CHANGE_TOKEN');
+    }
+}
+
+export class IdentifierChangeTokenExpiredError extends I18nError {
+    constructor() {
+        super('error.identifier-change-token-has-expired', {}, 'EXPIRED_IDENTIFIER_CHANGE_TOKEN');
+    }
+}
+
 export class NotVerifiedError extends I18nError {
     constructor() {
         super('error.email-address-not-verified', {}, 'NOT_VERIFIED');

@@ -89,11 +89,7 @@ export class BaseAuthResolver {
         if (!activeUserId) {
             throw new InternalServerError(`error.no-active-user-id`);
         }
-        const user = await this.userService.getUserById(activeUserId);
-        if (!user) {
-            throw new InternalServerError(`error.no-active-user-id`);
-        }
-        return this.userService.updatePassword(user, currentPassword, newPassword);
+        return this.userService.updatePassword(activeUserId, currentPassword, newPassword);
     }
 
     /**

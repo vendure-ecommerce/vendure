@@ -19,8 +19,11 @@ import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/ut
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
+import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -163,6 +166,50 @@ export class CustomerService {
         if (user) {
             return this.findOneByUserId(user.id);
         }
+    }
+
+    async requestUpdateEmailAddress(ctx: RequestContext, userId: ID, newEmailAddress: string): Promise<boolean> {
+        const userWithConflictingIdentifier = await this.userService.getUserByEmailAddress(newEmailAddress);
+        if (userWithConflictingIdentifier) {
+            throw new UserInputError('error.email-address-not-available');
+        }
+        const user = await this.userService.getUserById(userId);
+        if (!user) {
+            return false;
+        }
+        if (this.configService.authOptions.requireVerification) {
+            user.pendingIdentifier = newEmailAddress;
+            await this.userService.setIdentifierChangeToken(user);
+            this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
+            return true;
+        } else {
+            const customer = await this.findOneByUserId(user.id);
+            if (!customer) {
+                return false;
+            }
+            const oldIdentifier = user.identifier;
+            user.identifier = newEmailAddress;
+            customer.emailAddress = newEmailAddress;
+            await this.connection.getRepository(User).save(user);
+            await this.connection.getRepository(Customer).save(customer);
+            this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
+            return true;
+        }
+    }
+
+    async updateEmailAddress(ctx: RequestContext, token: string): Promise<boolean> {
+        const { user, oldIdentifier } = await this.userService.changeIdentifierByToken(token);
+        if (!user) {
+            return false;
+        }
+        const customer = await this.findOneByUserId(user.id);
+        if (!customer) {
+            return false;
+        }
+        this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
+        customer.emailAddress = user.identifier;
+        await this.connection.getRepository(Customer).save(customer);
+        return true;
     }
 
     async update(input: UpdateCustomerInput): Promise<Customer> {

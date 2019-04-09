@@ -21,7 +21,7 @@ export class User extends VendureEntity implements HasCustomFields {
     @Column({ unique: true })
     identifier: string;
 
-    @Column() passwordHash: string;
+    @Column({ select: false }) passwordHash: string;
 
     @Column({ default: false })
     verified: boolean;
@@ -31,6 +31,23 @@ export class User extends VendureEntity implements HasCustomFields {
 
     @Column({ type: 'varchar', nullable: true })
     passwordResetToken: string | null;
+
+    /**
+     * @description
+     * A token issued when a User requests to change their identifier (typically
+     * an email address)
+     */
+    @Column({ type: 'varchar', nullable: true })
+    identifierChangeToken: string | null;
+
+    /**
+     * @description
+     * When a request has been made to change the User's identifier, the new identifier
+     * will be stored here until it has been verfified, after which it will
+     * replace the current value of the `identifier` field.
+     */
+    @Column({ type: 'varchar', nullable: true })
+    pendingIdentifier: string | null;
 
     @ManyToMany(type => Role)
     @JoinTable()

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-01T11:03:11+02:00
+// Generated in 2019-04-09T14:28:32+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -316,8 +316,6 @@ export interface UpdateCustomerInput {
     lastName?: Maybe<string>;
 
     phoneNumber?: Maybe<string>;
-
-    emailAddress?: Maybe<string>;
 
     customFields?: Maybe<Json>;
 }
@@ -1628,6 +1626,10 @@ export interface Mutation {
     verifyCustomerAccount: LoginResult;
     /** Update the password of the active Customer */
     updateCustomerPassword?: Maybe<boolean>;
+    /** Request to update the emailAddress of the active Customer */
+    requestUpdateCustomerEmailAddress?: Maybe<boolean>;
+    /** Confirm the update of the emailAddress with the provided token */
+    updateCustomerEmailAddress?: Maybe<boolean>;
     /** Requests a password reset email to be sent */
     requestPasswordReset?: Maybe<boolean>;
     /** Resets a Customer's password based on the provided token */
@@ -1885,6 +1887,14 @@ export interface UpdateCustomerPasswordMutationArgs {
     currentPassword: string;
 
     newPassword: string;
+}
+export interface RequestUpdateCustomerEmailAddressMutationArgs {
+    password: string;
+
+    newEmailAddress: string;
+}
+export interface UpdateCustomerEmailAddressMutationArgs {
+    token: string;
 }
 export interface RequestPasswordResetMutationArgs {
     emailAddress: string;
