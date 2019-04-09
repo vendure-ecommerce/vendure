@@ -20,6 +20,7 @@ if (require.main === module) {
         ...devConfig as any,
         authOptions: {
             tokenMethod: 'bearer',
+            requireVerification: false,
         },
         importExportOptions: {
             importAssetsDir: path.join(__dirname, '../core/mock-data/assets'),
