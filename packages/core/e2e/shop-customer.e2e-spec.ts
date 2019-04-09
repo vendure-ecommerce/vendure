@@ -126,10 +126,12 @@ describe('Shop customers', () => {
             const input: UpdateAddressInput = {
                 id: addressId,
                 streetLine1: '5 Test Street',
+                countryCode: 'AT',
             };
             const result = await shopClient.query(UPDATE_ADDRESS, { input });
 
             expect(result.updateCustomerAddress.streetLine1).toEqual('5 Test Street');
+            expect(result.updateCustomerAddress.country.code).toEqual('AT');
         });
 
         it(

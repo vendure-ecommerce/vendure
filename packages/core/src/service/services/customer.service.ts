@@ -220,7 +220,11 @@ export class CustomerService {
         const address = await getEntityOrThrow(this.connection, Address, input.id, {
             relations: ['country'],
         });
-        address.country = translateDeep(address.country, ctx.languageCode);
+        if (input.countryCode && input.countryCode !== address.country.code) {
+            address.country = await this.countryService.findOneByCode(ctx, input.countryCode);
+        } else {
+            address.country = translateDeep(address.country, ctx.languageCode);
+        }
         const updatedAddress = patchEntity(address, input);
         await this.connection.getRepository(Address).save(updatedAddress);
         await this.enforceSingleDefaultAddress(input.id, input);

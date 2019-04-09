@@ -112,6 +112,19 @@ describe('Customer resolver', () => {
             firstCustomerAddressIds = result.customer!.addresses!.map(a => a.id);
         });
 
+        it('updateCustomerAddress updates the country', async () => {
+            const result = await adminClient.query(UPDATE_ADDRESS, {
+                input: {
+                    id: firstCustomerAddressIds[0],
+                    countryCode: 'AT',
+                },
+            });
+            expect(result.updateCustomerAddress.country).toEqual({
+                    code: 'AT',
+                    name: 'Austria',
+            });
+        });
+
         it('updateCustomerAddress allows only a single default address', async () => {
             // set the first customer's second address to be default
             const result1 = await adminClient.query(UPDATE_ADDRESS, {
@@ -341,6 +354,10 @@ const UPDATE_ADDRESS = gql`
             id
             defaultShippingAddress
             defaultBillingAddress
+            country {
+                code
+                name
+            }
         }
     }
 `;
