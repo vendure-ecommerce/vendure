@@ -1,13 +1,13 @@
 /* tslint:disable:no-non-null-assertion */
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { CREATE_ADMINISTRATOR, CREATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
 import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import { pick } from '../../common/lib/pick';
 import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
 import { EventBus } from '../src/event-bus/event-bus';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';

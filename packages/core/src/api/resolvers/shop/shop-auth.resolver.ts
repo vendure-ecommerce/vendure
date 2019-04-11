@@ -6,16 +6,14 @@ import {
     RefreshCustomerVerificationMutationArgs,
     RegisterCustomerAccountMutationArgs,
     RequestPasswordResetMutationArgs,
+    RequestUpdateCustomerEmailAddressMutationArgs,
     ResetPasswordMutationArgs,
+    UpdateCustomerEmailAddressMutationArgs,
     UpdateCustomerPasswordMutationArgs,
     VerifyCustomerAccountMutationArgs,
 } from '@vendure/common/lib/generated-shop-types';
 import { Request, Response } from 'express';
 
-import {
-    RequestUpdateCustomerEmailAddressMutationArgs,
-    UpdateCustomerEmailAddressMutationArgs,
-} from '../../../../../common/src/generated-shop-types';
 import { ForbiddenError, PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';
