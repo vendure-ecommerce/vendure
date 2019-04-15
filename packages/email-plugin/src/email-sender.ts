@@ -37,7 +37,7 @@ export class EmailSender {
                 if (options.raw) {
                     await this.sendFileRaw(email, filePath);
                 } else {
-                    await this.sendFileHtml(email, filePath);
+                    await this.sendFileJson(email, filePath);
                 }
                 break;
             case 'sendmail':
@@ -72,8 +72,14 @@ export class EmailSender {
         });
     }
 
-    private async sendFileHtml(email: EmailDetails, pathWithoutExt: string) {
-        const content = `<html lang="en">
+    private async sendFileJson(email: EmailDetails, pathWithoutExt: string) {
+        const output = {
+            date: new Date().toLocaleString(),
+            recipient: email.recipient,
+            subject: email.subject,
+            body: email.body,
+        };
+        /*const content = `<html lang="en">
             <head>
                 <title>${email.subject}</title>
                 <style>
@@ -108,9 +114,9 @@ export class EmailSender {
             <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
             </body>
             </html>
-        `;
+        `;*/
 
-        await fs.writeFile(pathWithoutExt + '.html', content);
+        await fs.writeFile(pathWithoutExt + '.json', JSON.stringify(output, null, 2));
     }
 
     private async sendFileRaw(email: EmailDetails, pathWithoutExt: string) {

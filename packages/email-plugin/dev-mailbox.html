@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendure Development Inbox</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        .top-bar {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background-color: #2a2929;
+            color: #efefef;
+        }
+        .heading {
+            margin: 0;
+        }
+        button#refresh {
+            margin-left: 12px;
+            border: 1px solid #15a9df;
+            border-radius: 3px;
+            padding: 3px 6px;
+            display: flex;
+            align-items: center;
+        }
+        button#refresh .label {
+            margin-left: 6px;
+            font-size: 16px;
+        }
+        .content {
+            display: flex;
+            flex: 1;
+            height: calc(100% - 60px);
+        }
+        .list {
+            width: 40vw;
+            min-width: 300px;
+            padding: 6px;
+            overflow: auto;
+        }
+        .row {
+            border-bottom: 1px dashed #ddd;
+            padding: 12px 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .row:hover {
+            background-color: #efefef;
+        }
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+        }
+        .detail {
+            flex: 1;
+            border: 1px solid #999;
+            display: flex;
+            flex-direction: column;
+        }
+        .detail iframe {
+            height: 100%;
+            border: 1px solid #eee;
+            overflow: auto;
+        }
+        .metadata {
+            margin: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h1 class="heading">Vendure Dev Mailbox</h1>
+    <div>
+        <button id="refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 36 36" preserveAspectRatio="xMidYMid meet" focusable="false" aria-hidden="true" role="img" width="16" height="16" fill="currentColor"><path class="clr-i-outline clr-i-outline-path-1" d="M32.84,15.72a1,1,0,1,0-2,.29A13.15,13.15,0,0,1,31,17.94,13,13,0,0,1,8.7,27h5.36a1,1,0,0,0,0-2h-9v9a1,1,0,1,0,2,0V28.2A15,15,0,0,0,32.84,15.72Z"/><path class="clr-i-outline clr-i-outline-path-2" d="M30.06,1A1.05,1.05,0,0,0,29,2V7.83A14.94,14.94,0,0,0,3,17.94a15.16,15.16,0,0,0,.2,2.48,1,1,0,0,0,1,.84h.16a1,1,0,0,0,.82-1.15A13.23,13.23,0,0,1,5,17.94a13,13,0,0,1,13-13A12.87,12.87,0,0,1,27.44,9H22.06a1,1,0,0,0,0,2H31V2A1,1,0,0,0,30.06,1Z"/></svg>
+            <span class="label">Refresh</span>
+        </button>
+    </div>
+</div>
+<div class="content">
+    <div class="list">
+    </div>
+    <div class="detail">
+
+    </div>
+</div>
+<script>
+    const refreshButton = document.querySelector('button#refresh');
+    refreshButton.addEventListener('click', refreshInbox);
+
+    const list = document.querySelector('.list');
+    refreshInbox();
+
+    function refreshInbox() {
+        fetch('./list')
+            .then(res => res.json())
+            .then(res => renderList(res));
+    }
+
+    function renderList(items) {
+        const list = document.querySelector('.list');
+        list.innerHTML = '';
+        const rows = items.forEach(item => {
+            const row = document.createElement('div');
+            row.classList.add('row');
+            row.innerHTML = `
+                <div class="meta">
+                    <div class="date">${item.date}</div>
+                    <div class="recipient">${item.recipient}</div>
+                </div>
+                <div class="subject">${item.subject}</div>`;
+
+            row.addEventListener('click', (e) => {
+                fetch('./item/' + item.fileName)
+                    .then(res => res.json())
+                    .then(res => renderEmail(res));
+            });
+            list.appendChild(row);
+        });
+    }
+
+    function renderEmail(email) {
+        const content = `
+            <div class="metadata">
+                <table>
+                    <tr>
+                        <td>Recipient:</td>
+                        <td>${email.recipient}</td>
+                    </tr>
+                    <tr>
+                        <td>Subject:</td>
+                        <td>${email.subject}</td>
+                    </tr>
+                    <tr>
+                        <td>Date:</td>
+                        <td>${new Date().toLocaleString()}</td>
+                    </tr>
+                </table>
+            </div>
+            <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
+        `;
+
+        document.querySelector('.detail').innerHTML = content;
+    }
+</script>
+</body>
+</html>

@@ -49,8 +49,19 @@ export interface EmailPluginOptions {
  * @docsCategory EmailPlugin
  */
 export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'> {
-    outputPath: string;
     devMode: true;
+    /**
+     * @description
+     * The path to which html email files will be saved rather than being sent.
+     */
+    outputPath: string;
+    /**
+     * @description
+     * If set, a "mailbox" server will be started which will serve the contents of the
+     * `outputPath` similar to a web-based email client, available at the route `/mailbox`,
+     * e.g. http://localhost:3000/mailbox.
+     */
+    mailboxPort?: number;
 }
 
 export interface SMTPCredentials {

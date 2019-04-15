@@ -4,7 +4,11 @@
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/**/*", "templates/**/*"],
+  "files": [
+    "lib/**/*",
+    "templates/**/*",
+    "dev-mailbox.html"
+  ],
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json"
@@ -14,6 +18,7 @@
   },
   "dependencies": {
     "dateformat": "^3.0.3",
+    "express": "^4.16.4",
     "fs-extra": "^7.0.1",
     "handlebars": "^4.0.12",
     "mjml": "^4.3.0",
@@ -23,6 +28,7 @@
   },
   "devDependencies": {
     "@types/dateformat": "^3.0.0",
+    "@types/express": "^4.16.1",
     "@types/fs-extra": "^5.0.4",
     "@types/handlebars": "^4.0.40",
     "@types/mjml": "^4.0.2",
