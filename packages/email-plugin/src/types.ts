@@ -1,55 +1,11 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { Omit } from '@vendure/common/lib/omit';
 import { Type } from '@vendure/common/lib/shared-types';
-import { ConfigService, VendureEvent } from '@vendure/core';
+import { RequestContext, VendureEvent } from '@vendure/core';
 
-import { EmailContext, GeneratedEmailContext } from './email-context';
+import { EmailEventHandler } from './event-listener';
 
-/**
- * Defines how transactional emails (account verification, order confirmation etc) are generated and sent.
- *
- * {{% alert %}}
- * It is usually not recommended to configure these yourself.
- * You should use the `DefaultEmailPlugin`.
- * {{% /alert %}}
- */
-export interface EmailOptions<EmailType extends string> {
-    /**
-     * @description
-     * Path to the email template files.
-     *
-     * @default __dirname
-     */
-    emailTemplatePath: string;
-    /**
-     * @description
-     * Configuration for the creation and templating of each email type
-     *
-     * @default {}
-     */
-    emailTypes: EmailTypes<EmailType>;
-    /**
-     * @description
-     * The EmailGenerator uses the EmailContext and template to generate the email body
-     *
-     * @default NoopEmailGenerator
-     */
-    generator: EmailGenerator;
-    /**
-     * @description
-     * Configuration for the transport (email sending) method
-     *
-     * @default NoopTransportOptions
-     */
-    transport: EmailTransportOptions;
-    /**
-     * @description
-     * An object containing any extra variables for use in email templates. For example,
-     * the storefront URL could be defined here for use in password reset emails.
-     *
-     * @default {}
-     */
-    templateVars?: { [name: string]: any };
-}
+export type EventWithContext = VendureEvent & { ctx: RequestContext; };
 
 /**
  * @description
@@ -71,9 +27,10 @@ export interface EmailPluginOptions {
     transport: EmailTransportOptions;
     /**
      * @description
-     * Variables for use in email templates
+     * An array of {@link EmailEventHandler}s which define which Vendure events will trigger
+     * emails, and how those emails are generated.
      */
-    templateVars: { [name: string]: any };
+    handlers: EmailEventHandler[];
 }
 
 /**
@@ -82,11 +39,9 @@ export interface EmailPluginOptions {
  *
  * @docsCategory EmailPlugin
  */
-export interface EmailPluginDevModeOptions {
-    templatePath: string;
+export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'> {
     outputPath: string;
     devMode: true;
-    templateVars?: { [name: string]: any };
 }
 
 export interface SMTPCredentials {
@@ -190,6 +145,15 @@ export interface NoopTransportOptions {
 }
 
 /**
+ * The final, generated email details to be sent.
+ */
+export interface EmailDetails {
+    recipient: string;
+    subject: string;
+    body: string;
+}
+
+/**
  * @description
  * Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
  *
@@ -201,7 +165,7 @@ export interface TestingTransportOptions {
      * @description
      * Callback to be invoked when an email would be sent.
      */
-    onSend: (context: GeneratedEmailContext) => void;
+    onSend: (details: EmailDetails) => void;
 }
 
 /**
@@ -219,128 +183,6 @@ export type EmailTransportOptions =
 
 /**
  * @description
- * This object defines the template location and context data used for interpolation
- * of an email for a particular language of a particular channel.
- *
- * @docsCategory EmailPlugin
- */
-export type TemplateConfig<C = any, R = any> = {
-    /**
-     * @description
-     * A function which uses the {@link EmailContext} to provide a context object for the
-     * template engine. That is, the templates will have access to the object
-     * returned by this function.
-     */
-    templateContext: (emailContext: C) => R;
-    /**
-     * @description
-     * The subject line for the email.
-     */
-    subject: string;
-    /**
-     * @description
-     * The path to the template file for the body of the email.
-     */
-    templatePath: string;
-};
-
-export type TemplateByLanguage<C = any> = { defaultLanguage: TemplateConfig<C> } & {
-    [languageCode: string]: TemplateConfig<C>;
-};
-
-export type TemplateByChannel<C = any> = { defaultChannel: TemplateByLanguage<C> } & {
-    [channelCode: string]: TemplateByLanguage<C>;
-};
-
-export type CreateContextResult = {
-    recipient: string;
-    languageCode: LanguageCode;
-    channelCode: string;
-};
-
-/**
- * @description
- * An object which configures an particular type of transactional email.
- *
- * @docsCategory EmailPlugin
- */
-export type EmailTypeConfig<T extends string, E extends VendureEvent = any> = {
-    /**
-     * @description
-     * Specifies the {@link VendureEvent} which triggers this type of email.
-     */
-    triggerEvent: Type<E>;
-    /**
-     * @description
-     * A function which creates a context object for the email, specifying the recipient
-     * email address, the languageCode of the email and the current Channel.
-     *
-     * A return value of `undefined` means that no email will be generated and sent.
-     */
-    createContext: (event: E) => CreateContextResult | undefined;
-    /**
-     * @description
-     * An object which describes how to resolve the template for the email depending on
-     * the current Channel and LanguageCode.
-     */
-    templates: TemplateByChannel<EmailContext<T, E>>;
-};
-
-/**
- * @description
- * An object describing each possible type of transactional email, plus which events
- * trigger those emails, as well as the location of the templates to handle each
- * email type. Search the repo for the `default-email-types.ts` file for an example of how
- * the email types are defined.
- *
- * When defining an email type, the helper function `configEmailType` may be used to
- * provide better type-safety.
- *
- * @example
- * ```ts
- * export const defaultEmailTypes: EmailTypes<DefaultEmailType> = {
- *  'order-confirmation': configEmailType({
- *    triggerEvent: OrderStateTransitionEvent,
- *    createContext: e => {
- *      const customer = e.order.customer;
- *      if (customer && e.toState === 'PaymentSettled') {
- *        return {
- *          recipient: customer.emailAddress,
- *          languageCode: e.ctx.languageCode,
- *          channelCode: e.ctx.channel.code,
- *        };
- *      }
- *    },
- *    templates: {
- *      defaultChannel: {
- *        defaultLanguage: {
- *          templateContext: emailContext => ({ order: emailContext.event.order }),
- *          subject: `Order confirmation for #{{ order.code }}`,
- *          templatePath: 'order-confirmation/order-confirmation.hbs',
- *        },
- *        de: {
- *          // config for German-language templates
- *        }
- *      },
- *      'other-channel-code': {
- *        // config for a different Channel
- *      }
- *    },
- *  }),
- * ```
- *
- * @docsCategory EmailPlugin
- */
-export type EmailTypes<T extends string> = { [emailType in T]: EmailTypeConfig<T> };
-
-export function configEmailType<T extends string, E extends VendureEvent = VendureEvent>(
-    config: EmailTypeConfig<T, E>,
-) {
-    return config;
-}
-
-/**
- * @description
  * The EmailGenerator uses the {@link EmailContext} and template to generate the email body
  *
  * @docsCategory EmailPlugin
@@ -350,7 +192,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
      * @description
      * Any neccesary setup can be performed here.
      */
-    onInit?(options: EmailOptions<any>): void | Promise<void>;
+    onInit?(options: EmailPluginOptions): void | Promise<void>;
 
     /**
      * @description
@@ -360,7 +202,6 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
     generate(
         subject: string,
         body: string,
-        templateContext: any,
-        emailContext: EmailContext<T, E>,
-    ): GeneratedEmailContext<T, E> | Promise<GeneratedEmailContext<T, E>>;
+        templateVars: { [key: string]: any; },
+    ): Omit<EmailDetails, 'recipient'>;
 }

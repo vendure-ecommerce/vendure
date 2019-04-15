@@ -1,5 +1,4 @@
-export * from './src/default-email-types';
-export * from './src/email-context';
+export * from './src/default-email-handlers';
 export * from './src/email-sender';
 export * from './src/handlebars-mjml-generator';
 export * from './src/noop-email-generator';

@@ -1,4 +1,3 @@
-import { EmailContext, GeneratedEmailContext } from './email-context';
 import { EmailGenerator } from './types';
 
 /**
@@ -7,10 +6,9 @@ import { EmailGenerator } from './types';
 export class NoopEmailGenerator implements EmailGenerator {
     generate(
         subject: string,
-        template: string,
-        templateContext: any,
-        context: EmailContext,
-    ): GeneratedEmailContext {
-        return new GeneratedEmailContext(context, subject, template);
+        body: string,
+        templateVars: any,
+    ) {
+        return { subject, body };
     }
 }

@@ -6,7 +6,7 @@ import {
     examplePaymentHandler,
     VendureConfig,
 } from '@vendure/core';
-import { EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 
 /**
@@ -58,6 +58,7 @@ export const devConfig: VendureConfig = {
         new DefaultSearchPlugin(),
         new EmailPlugin({
             devMode: true,
+            handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
         }),

@@ -1,25 +1,18 @@
-import { ConfigService, InternalServerError } from '@vendure/core';
 import dateFormat from 'dateformat';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 import path from 'path';
 
-import { EmailContext, GeneratedEmailContext } from './email-context';
-import { EmailGenerator, EmailOptions } from './types';
+import { EmailGenerator, EmailPluginDevModeOptions, EmailPluginOptions } from './types';
 
 /**
  * Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
  * compiled down to responsive email HTML.
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-    onInit(options: EmailOptions<any>) {
-        if (!options.emailTemplatePath) {
-            throw new InternalServerError(
-                `When using the HandlebarsMjmlGenerator, the emailTemplatePath config option must be set`,
-            );
-        }
-        const partialsPath = path.join(options.emailTemplatePath, 'partials');
+    onInit(options: EmailPluginOptions | EmailPluginDevModeOptions) {
+        const partialsPath = path.join(options.templatePath, 'partials');
         this.registerPartials(partialsPath);
         this.registerHelpers();
     }
@@ -28,14 +21,13 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         subject: string,
         template: string,
         templateContext: any,
-        emailContext: EmailContext,
-    ): GeneratedEmailContext {
+    ) {
         const compiledTemplate = Handlebars.compile(template);
         const compiledSubject = Handlebars.compile(subject);
         const subjectResult = compiledSubject(templateContext);
         const mjml = compiledTemplate(templateContext);
-        const bodyResult = mjml2html(mjml);
-        return new GeneratedEmailContext(emailContext, subjectResult, bodyResult.html);
+        const body = mjml2html(mjml).html;
+        return { subject, body };
     }
 
     private registerPartials(partialsPath: string) {

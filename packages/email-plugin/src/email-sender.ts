@@ -7,8 +7,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import path from 'path';
 import { Stream } from 'stream';
 
-import { GeneratedEmailContext } from './email-context';
-import { EmailTransportOptions } from './types';
+import { EmailDetails, EmailTransportOptions } from './types';
 
 export type StreamTransportInfo = {
     envelope: {
@@ -19,8 +18,11 @@ export type StreamTransportInfo = {
     message: Stream;
 };
 
+/**
+ * Uses the configured transport to send the generated email.
+ */
 export class EmailSender {
-    async send(email: GeneratedEmailContext, options: EmailTransportOptions) {
+    async send(email: EmailDetails, options: EmailTransportOptions) {
         let transporter: Mail;
         switch (options.type) {
             case 'none':
@@ -62,7 +64,7 @@ export class EmailSender {
         }
     }
 
-    private async sendMail(email: GeneratedEmailContext, transporter: Mail): Promise<any> {
+    private async sendMail(email: EmailDetails, transporter: Mail): Promise<any> {
         return transporter.sendMail({
             to: email.recipient,
             subject: email.subject,
@@ -70,7 +72,7 @@ export class EmailSender {
         });
     }
 
-    private async sendFileHtml(email: GeneratedEmailContext, pathWithoutExt: string) {
+    private async sendFileHtml(email: EmailDetails, pathWithoutExt: string) {
         const content = `<html lang="en">
             <head>
                 <title>${email.subject}</title>
@@ -111,7 +113,7 @@ export class EmailSender {
         await fs.writeFile(pathWithoutExt + '.html', content);
     }
 
-    private async sendFileRaw(email: GeneratedEmailContext, pathWithoutExt: string) {
+    private async sendFileRaw(email: EmailDetails, pathWithoutExt: string) {
         const transporter = createTransport({
             streamTransport: true,
             buffer: true,
