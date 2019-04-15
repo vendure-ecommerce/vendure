@@ -22,12 +22,13 @@ import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, E
  *
  * @example
  * ```ts
- * import { EmailPlugin } from '@vendure/email-plugin';
+ * import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     new EmailPlugin({
+ *       handlers: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'vendure/email/templates'),
  *       transport: {
  *         type: 'smtp',
@@ -83,6 +84,12 @@ import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, E
  *
  * * `formatMoney`: Formats an amount of money (which are always stored as integers in Vendure) as a decimal, e.g. `123` => `1.23`
  * * `formatDate`: Formats a Date value with the [dateformat](https://www.npmjs.com/package/dateformat) package.
+ *
+ * ## Extending the default email handlers
+ *
+ * The `defaultEmailHandlers` array defines the default handlers such as for handling new account registration, order confirmation, password reset
+ * etc. These defaults can be extended by adding custom templates for languages other than the default, or even completely new types of emails
+ * which respond to any of the available [VendureEvents](/docs/typescript-api/events/). See the {@link EmailEventHandler} documentation for details on how to do so.
  *
  * ## Dev mode
  *
@@ -159,8 +166,7 @@ export class EmailPlugin implements VendurePlugin {
         }
         const bodySource = await this.templateLoader.loadTemplate(
             type,
-            event.ctx.channel.code,
-            event.ctx.languageCode,
+            result.templateFile,
         );
         const generated = await this.generator.generate(
             result.subject,

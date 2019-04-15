@@ -22,12 +22,12 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         template: string,
         templateContext: any,
     ) {
-        const compiledTemplate = Handlebars.compile(template);
         const compiledSubject = Handlebars.compile(subject);
+        const compiledTemplate = Handlebars.compile(template);
         const subjectResult = compiledSubject(templateContext);
         const mjml = compiledTemplate(templateContext);
         const body = mjml2html(mjml).html;
-        return { subject, body };
+        return { subject: subjectResult, body };
     }
 
     private registerPartials(partialsPath: string) {

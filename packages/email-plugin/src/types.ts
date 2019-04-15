@@ -5,6 +5,14 @@ import { RequestContext, VendureEvent } from '@vendure/core';
 
 import { EmailEventHandler } from './event-listener';
 
+/**
+ * @description
+ * A VendureEvent which also includes a `ctx` property containing the current
+ * {@link RequestContext}, which is used to determine the channel and language
+ * to use when generating the email.
+ *
+ * @docsCategory EmailPlugin
+ */
 export type EventWithContext = VendureEvent & { ctx: RequestContext; };
 
 /**
@@ -12,6 +20,7 @@ export type EventWithContext = VendureEvent & { ctx: RequestContext; };
  * Configuration for the EmailPlugin.
  *
  * @docsCategory EmailPlugin
+ * @docsWeight 0
  */
 export interface EmailPluginOptions {
     /**
@@ -183,9 +192,7 @@ export type EmailTransportOptions =
 
 /**
  * @description
- * The EmailGenerator uses the {@link EmailContext} and template to generate the email body
- *
- * @docsCategory EmailPlugin
+ * An EmailGenerator generates the subject and body details of an email.
  */
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     /**

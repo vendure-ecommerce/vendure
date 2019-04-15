@@ -17,7 +17,6 @@
   "license": "MIT",
   "scripts": {
     "lint": "tslint --project tsconfig.json -c tslint.json",
-    "generate-email-preview": "node -r ts-node/register src/email/preview/generate-email-preview.ts",
     "tsc:watch": "tsc -p ./build/tsconfig.build.json --watch",
     "gulp:watch": "gulp -f ./build/gulpfile.ts watch",
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",

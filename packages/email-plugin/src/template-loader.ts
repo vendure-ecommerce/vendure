@@ -10,12 +10,11 @@ export class TemplateLoader {
 
     async loadTemplate(
         type: string,
-        channelCode: string,
-        languageCode: LanguageCode,
+        templateFileName: string,
     ): Promise<string> {
         // TODO: logic to select other files based on channel / language
-        const templatePath = path.join(this.templatePath, type, 'body.hbs');
-        const body = await fs.readFile(path.join(this.templatePath, type, 'body.hbs'), 'utf-8');
+        const templatePath = path.join(this.templatePath, type, templateFileName);
+        const body = await fs.readFile(templatePath, 'utf-8');
         return body;
     }
 }
