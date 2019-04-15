@@ -1,3 +1,4 @@
+import { Omit } from '@vendure/common/lib/omit';
 import { Type } from '@vendure/common/lib/shared-types';
 import { LanguageCode } from '@vendure/common/src/generated-types';
 
@@ -103,11 +104,16 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
+    private _mockEvent: Omit<Event, 'ctx'> | undefined;
 
     constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
 
     get type(): T {
         return this.listener.type;
+    }
+
+    get mockEvent(): Omit<Event, 'ctx'> | undefined {
+        return this._mockEvent;
     }
 
     /**
@@ -183,6 +189,16 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             subject: configuration ? configuration.subject : this.defaultSubject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
         };
+    }
+
+    /**
+     * @description
+     * Optionally define a mock Event which is used by the dev mode mailbox app for generating mock emails
+     * from this handler.
+     */
+    setMockEvent(event: Omit<Event, 'ctx'>): EmailEventHandler<T, Event> {
+        this._mockEvent = event;
+        return this;
     }
 
     private getBestConfiguration(channelCode: string, languageCode: LanguageCode): EmailTemplateConfig | undefined {

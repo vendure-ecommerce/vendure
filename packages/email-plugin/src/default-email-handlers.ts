@@ -2,13 +2,15 @@
 import { AccountRegistrationEvent, OrderStateTransitionEvent, PasswordResetEvent } from '@vendure/core';
 
 import { EmailEventListener } from './event-listener';
+import { mockAccountRegistrationEvent, mockOrderStateTransitionEvent, mockPasswordResetEvent } from './mock-events';
 
 export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
     .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
     .setRecipient(event => event.order.customer!.emailAddress)
     .setSubject(`Order confirmation for #{{ order.code }}`)
-    .setTemplateVars(event => ({ order: event.order }));
+    .setTemplateVars(event => ({ order: event.order }))
+    .setMockEvent(mockOrderStateTransitionEvent);
 
 export const emailVerificationHandler = new EmailEventListener('email-verification')
     .on(AccountRegistrationEvent)
@@ -17,7 +19,8 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
     .setTemplateVars(event => ({
         user: event.user,
         verifyUrl: 'verify',
-    }));
+    }))
+    .setMockEvent(mockAccountRegistrationEvent);
 
 export const passwordResetHandler = new EmailEventListener('password-reset')
     .on(PasswordResetEvent)
@@ -26,7 +29,8 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
     .setTemplateVars(event => ({
         user: event.user,
         passwordResetUrl: 'reset-password',
-    }));
+    }))
+    .setMockEvent(mockPasswordResetEvent);
 
 export const defaultEmailHandlers = [
     orderConfirmationHandler,

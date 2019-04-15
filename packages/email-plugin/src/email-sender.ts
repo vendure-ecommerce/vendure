@@ -79,43 +79,6 @@ export class EmailSender {
             subject: email.subject,
             body: email.body,
         };
-        /*const content = `<html lang="en">
-            <head>
-                <title>${email.subject}</title>
-                <style>
-                    body {
-                        display: flex;
-                        flex-direction: column;
-                        font-family: Helvetica, Arial, sans-serif;
-                    }
-                    iframe {
-                        flex: 1;
-                        border: 1px solid #aaa;
-                    }
-                </style>
-            </head>
-            <body>
-            <div class="metadata">
-                <table>
-                    <tr>
-                        <td>Recipient:</td>
-                        <td>${email.recipient}</td>
-                    </tr>
-                    <tr>
-                        <td>Subject:</td>
-                        <td>${email.subject}</td>
-                    </tr>
-                    <tr>
-                        <td>Date:</td>
-                        <td>${new Date().toLocaleString()}</td>
-                    </tr>
-                </table>
-            </div>
-            <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
-            </body>
-            </html>
-        `;*/
-
         await fs.writeFile(pathWithoutExt + '.json', JSON.stringify(output, null, 2));
     }
 

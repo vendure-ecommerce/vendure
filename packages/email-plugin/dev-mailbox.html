@@ -23,7 +23,6 @@
         }
         button#refresh {
             margin-left: 12px;
-            border: 1px solid #15a9df;
             border-radius: 3px;
             padding: 3px 6px;
             display: flex;
@@ -32,6 +31,20 @@
         button#refresh .label {
             margin-left: 6px;
             font-size: 16px;
+        }
+        .generate-controls {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        input, select, button {
+            padding: 6px;
+            border-radius: 3px;
+            border: 1px solid #15a9df;
+            margin-left: 3px;
+        }
+        #language-code {
+            width: 32px;
         }
         .content {
             display: flex;
@@ -83,6 +96,11 @@
             <span class="label">Refresh</span>
         </button>
     </div>
+    <div class="generate-controls">
+        <select id="type-selector"></select>
+        <input id="language-code" value="en" type="text">
+        <button id="generate-test">Generate test</button>
+    </div>
 </div>
 <div class="content">
     <div class="list">
@@ -94,6 +112,26 @@
 <script>
     const refreshButton = document.querySelector('button#refresh');
     refreshButton.addEventListener('click', refreshInbox);
+
+    const typeSelect = document.querySelector('#type-selector');
+    fetch('./types')
+        .then(res => res.json())
+        .then(res => {
+            res.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.text = type;
+                typeSelect.appendChild(option);
+            });
+        });
+
+    const languageCodeInput = document.querySelector('#language-code');
+    const generateTestButton = document.querySelector('#generate-test');
+    generateTestButton.addEventListener('click', e => {
+        fetch(`./generate/${typeSelect.value}/${languageCodeInput.value}`)
+            .then(() => new Promise(resolve => setTimeout(resolve, 500)))
+            .then(() => refreshInbox());
+    });
 
     const list = document.querySelector('.list');
     refreshInbox();

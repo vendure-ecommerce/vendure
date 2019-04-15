@@ -1,15 +1,23 @@
+import { Channel, RequestContext } from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import http from 'http';
 import path from 'path';
+
+import { LanguageCode } from '../../common/lib/generated-types';
+
+import { EmailEventHandler } from './event-listener';
+import { EmailPluginDevModeOptions, EventWithContext } from './types';
 
 /**
  * An email inbox application that serves the contents of the dev mode `outputPath` directory.
  */
 export class DevMailbox {
     server: http.Server;
+    private handleMockEventFn: (handler: EmailEventHandler<string, any>, event: EventWithContext) => void | undefined;
 
-    serve(port: number, outputPath: string) {
+    serve(options: EmailPluginDevModeOptions) {
+        const { outputPath, handlers, mailboxPort } = options;
         const server = express();
         server.get('/', (req, res) => {
             res.sendFile(path.join(__dirname, '../../dev-mailbox.html'));
@@ -19,12 +27,33 @@ export class DevMailbox {
             const contents = await this.getEmailList(outputPath);
             res.send(contents);
         });
+        server.get('/types', async (req, res) => {
+            res.send(handlers.map(h => h.type));
+        });
+        server.get('/generate/:type/:languageCode', async (req, res) => {
+            const { type, languageCode } = req.params;
+            if (this.handleMockEventFn) {
+                const handler = handlers.find(h => h.type === type);
+                if (!handler || !handler.mockEvent) {
+                    res.statusCode = 404;
+                    res.send({ success: false, error: `No mock event registered for type "${type}"`});
+                    return;
+                }
+                this.handleMockEventFn(handler, { ...handler.mockEvent, ctx: this.createRequestContext(languageCode) });
+                res.send({ success: true });
+            }
+            res.send({ success: false, error: `Mock email generation not set up.` });
+        });
         server.get('/item/:id', async (req, res) => {
             const fileName = req.params.id;
             const content = await this.getEmail(outputPath, fileName);
             res.send(content);
         });
-        this.server = server.listen(port);
+        this.server = server.listen(mailboxPort);
+    }
+
+    handleMockEvent(handler: (handler: EmailEventHandler<string, any>, event: EventWithContext) => void) {
+        this.handleMockEventFn = handler;
     }
 
     destroy() {
@@ -56,5 +85,15 @@ export class DevMailbox {
         const json = await fs.readFile(safeFilePath, 'utf-8');
         const content = JSON.parse(json);
         return content;
+    }
+
+    private createRequestContext(languageCode: LanguageCode): RequestContext {
+        return new RequestContext({
+            languageCode,
+            session: {} as any,
+            isAuthorized: false,
+            authorizedAsOwnerOnly: true,
+            channel: new Channel(),
+        });
     }
 }
