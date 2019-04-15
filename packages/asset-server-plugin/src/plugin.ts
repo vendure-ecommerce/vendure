@@ -1,7 +1,6 @@
-import { AssetStorageStrategy, InjectorFn, LocalAssetStorageStrategy, VendureConfig, VendurePlugin } from '@vendure/core';
+import { AssetStorageStrategy, createProxyHandler, InjectorFn, LocalAssetStorageStrategy, VendureConfig, VendurePlugin } from '@vendure/core';
 import express, { NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
-import proxy from 'http-proxy-middleware';
 import path from 'path';
 
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
@@ -212,7 +211,9 @@ export class AssetServerPlugin implements VendurePlugin {
     }
 
     onClose(): Promise<void> {
-        return new Promise(resolve => { this.server.close(() => resolve()); });
+        return new Promise(resolve => {
+            this.server.close(() => resolve());
+        });
     }
 
     private createAssetStorageStrategy() {
@@ -291,27 +292,4 @@ export class AssetServerPlugin implements VendurePlugin {
         const baseName = path.basename(fileName, ext);
         return `${baseName}${suffix}${ext}`;
     }
-}
-
-export interface ProxyOptions {
-    route: string;
-    port: number;
-    hostname?: string;
-}
-
-/**
- * Configures the proxy middleware which will be passed to the main Vendure server. This
- * will proxy all asset requests to the dedicated asset server.
- */
-function createProxyHandler(options: ProxyOptions, logging: boolean) {
-    const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
-    const proxyHostname = options.hostname || 'localhost';
-    return proxy({
-        // TODO: how do we detect https?
-        target: `http://${proxyHostname}:${options.port}`,
-        pathRewrite: {
-            [`^${route}`]: `/`,
-        },
-        logLevel: logging ? 'info' : 'silent',
-    });
 }

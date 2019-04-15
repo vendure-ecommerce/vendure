@@ -1,9 +1,8 @@
 import { AdminUiConfig } from '@vendure/common/lib/shared-types';
-import { InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
+import { createProxyHandler, InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';
-import proxy from 'http-proxy-middleware';
 import path from 'path';
 
 /**
@@ -49,7 +48,8 @@ export interface AdminUiOptions {
  * @description
  * This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
  *
- * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by store administrators on a day-to-day basis for the management of the store.
+ * The Admin UI allows you to administer all aspects of your store, from inventory management to order tracking. It is the tool used by
+ * store administrators on a day-to-day basis for the management of the store.
  *
  * ## Installation
  *
@@ -130,27 +130,4 @@ export class AdminUiPlugin implements VendurePlugin {
         }
         throw new Error(`AdminUiPlugin: admin-ui app not found`);
     }
-}
-
-export interface ProxyOptions {
-    route: string;
-    port: number;
-    hostname?: string;
-}
-
-/**
- * Configures the proxy middleware which will be passed to the main Vendure server. This
- * will proxy all asset requests to the dedicated asset server.
- */
-function createProxyHandler(options: ProxyOptions, logging: boolean) {
-    const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
-    const proxyHostname = options.hostname || 'localhost';
-    return proxy({
-        // TODO: how do we detect https?
-        target: `http://${proxyHostname}:${options.port}`,
-        pathRewrite: {
-            [`^${route}`]: `/`,
-        },
-        logLevel: logging ? 'info' : 'silent',
-    });
 }

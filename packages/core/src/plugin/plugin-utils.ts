@@ -10,8 +10,9 @@ export interface ProxyOptions {
 }
 
 /**
- * Configures the proxy middleware which will be passed to the main Vendure server. This
- * will proxy all asset requests to the dedicated asset server.
+ * Creates a proxy middleware which proxies the given route to the given port.
+ * Useful for plugins which start their own servers but should be accessible
+ * via the main Vendure url.
  */
 export function createProxyHandler(options: ProxyOptions, logging: boolean) {
     const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
