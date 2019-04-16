@@ -62,6 +62,10 @@ export const devConfig: VendureConfig = {
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
             mailboxPort: 5003,
+            globalTemplateVars: {
+                verifyEmailAddressUrl: 'http://localhost:8080/verify',
+                passwordResetUrl: 'http://localhost:8080/password-reset',
+            },
         }),
         new AdminUiPlugin({
             port: 5001,

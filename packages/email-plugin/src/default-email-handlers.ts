@@ -16,20 +16,14 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
     .on(AccountRegistrationEvent)
     .setRecipient(event => event.user.identifier)
     .setSubject(`Please verify your email address`)
-    .setTemplateVars(event => ({
-        user: event.user,
-        verifyUrl: 'verify',
-    }))
+    .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockAccountRegistrationEvent);
 
 export const passwordResetHandler = new EmailEventListener('password-reset')
     .on(PasswordResetEvent)
     .setRecipient(event => event.user.identifier)
     .setSubject(`Forgotten password reset`)
-    .setTemplateVars(event => ({
-        user: event.user,
-        passwordResetUrl: 'reset-password',
-    }))
+    .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockPasswordResetEvent);
 
 export const defaultEmailHandlers = [

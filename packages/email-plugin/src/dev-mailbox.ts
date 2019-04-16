@@ -39,10 +39,17 @@ export class DevMailbox {
                     res.send({ success: false, error: `No mock event registered for type "${type}"`});
                     return;
                 }
-                this.handleMockEventFn(handler, { ...handler.mockEvent, ctx: this.createRequestContext(languageCode) });
-                res.send({ success: true });
+                try {
+                    await this.handleMockEventFn(handler, { ...handler.mockEvent, ctx: this.createRequestContext(languageCode) });
+                    res.send({ success: true });
+                } catch (e) {
+                    res.statusCode = 500;
+                    res.send({success: false, error: e.message });
+                }
+                return;
+            } else {
+                res.send({success: false, error: `Mock email generation not set up.`});
             }
-            res.send({ success: false, error: `Mock email generation not set up.` });
         });
         server.get('/item/:id', async (req, res) => {
             const fileName = req.params.id;
@@ -74,7 +81,7 @@ export class DevMailbox {
             });
         }
         contents.sort((a, b) => {
-            return a.date > b.date ? -1 : 1;
+            return +new Date(b.date) - +new Date(a.date);
         });
         return contents;
     }

@@ -2,23 +2,17 @@
 
 <mj-section background-color="#fafafa">
     <mj-column>
-
-        <mj-text font-style="italic"
-                 font-size="20px"
-                 font-family="Helvetica Neue"
-                 color="#626262">Verify Your Email Address</mj-text>
-
         <mj-text color="#525252">
-            Thank you for creating an account with [company name]! Click the button below to complete the registration process:
+            Thank you for creating an account. Click the button below to verify this email address and
+            complete the registration process:
         </mj-text>
 
         <mj-button font-family="Helvetica"
                    background-color="#f45e43"
                    color="white"
-                   href="{{ verifyUrl }}?token={{ user.verificationToken }}">
+                   href="{{ verifyEmailAddressUrl }}?token={{ user.verificationToken }}">
             Verify Me!
         </mj-button>
-
     </mj-column>
 </mj-section>
 

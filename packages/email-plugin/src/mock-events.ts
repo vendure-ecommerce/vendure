@@ -27,24 +27,24 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             id: '3',
             firstName: 'Test',
             lastName: 'Customer',
-            emailAddress: 'test.customer@email.com',
+            emailAddress: 'test@test.com',
         }),
         lines: [
             new OrderLine({
                 id: '5',
                 featuredAsset: {
-                    preview: 'http://localhost:3000/assets/mikkel-bech-748940-unsplash__49__preview.jpg',
+                    preview: 'http://localhost:3000/assets/alexandru-acea-686569-unsplash__preview.jpg',
                 },
                 productVariant: new ProductVariant({
-                    id: '3',
-                    name: 'en Intelligent Cotton Salad Small',
-                    sku: '5x7ss',
+                    id: '2',
+                    name: 'Curvy Monitor 24 inch',
+                    sku: 'C24F390',
                 }),
                 items: [
                     new OrderItem({
                         id: '6',
-                        unitPrice: 745,
-                        unitPriceIncludesTax: false,
+                        unitPrice: 14374,
+                        unitPriceIncludesTax: true,
                         taxRate: 20,
                         pendingAdjustments: [],
                     }),
@@ -53,26 +53,26 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             new OrderLine({
                 id: '6',
                 featuredAsset: {
-                    preview: 'http://localhost:3000/assets/mikkel-bech-748940-unsplash__49__preview.jpg',
+                    preview: 'http://localhost:3000/assets/vincent-botta-736919-unsplash__preview.jpg',
                 },
                 productVariant: new ProductVariant({
                     id: '4',
-                    name: 'en Intelligent Cotton Salad Large',
-                    sku: '5x7ss',
+                    name: 'Hard Drive 1TB',
+                    sku: 'IHD455T1',
                 }),
                 items: [
                     new OrderItem({
                         id: '7',
-                        unitPrice: 745,
-                        unitPriceIncludesTax: false,
+                        unitPrice: 3799,
+                        unitPriceIncludesTax: true,
                         taxRate: 20,
                         pendingAdjustments: [],
                     }),
                 ],
             }),
         ],
-        subTotal: 1788,
-        subTotalBeforeTax: 1490,
+        subTotal: 18173,
+        subTotalBeforeTax: 15144,
         shipping: 1000,
         shippingMethod: {
             code: 'express-flat-rate',
@@ -80,7 +80,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             id: '2',
         },
         shippingAddress: {
-            fullName: 'Horacio Franecki',
+            fullName: 'Test Customer',
             company: '',
             streetLine1: '6000 Pagac Land',
             streetLine2: '',
