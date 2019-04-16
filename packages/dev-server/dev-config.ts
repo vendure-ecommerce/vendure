@@ -63,9 +63,9 @@ export const devConfig: VendureConfig = {
             outputPath: path.join(__dirname, 'test-emails'),
             mailboxPort: 5003,
             globalTemplateVars: {
-                verifyEmailAddressUrl: 'http://localhost:8080/verify',
-                passwordResetUrl: 'http://localhost:8080/password-reset',
-                changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
+                verifyEmailAddressUrl: 'http://localhost:4201/verify',
+                passwordResetUrl: 'http://localhost:4201/reset-password',
+                changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
         new AdminUiPlugin({
