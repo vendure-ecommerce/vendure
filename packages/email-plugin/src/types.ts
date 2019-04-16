@@ -40,6 +40,13 @@ export interface EmailPluginOptions {
      * emails, and how those emails are generated.
      */
     handlers: EmailEventHandler[];
+    /**
+     * @description
+     * An object containing variables which are made available to all templates. For example,
+     * the storefront URL could be defined here and then used in the "email address verification"
+     * email.
+     */
+    globalTemplateVars?: { [key: string]: any; };
 }
 
 /**

@@ -37,6 +37,11 @@ export interface EmailTemplateConfig {
     subject: string;
 }
 
+export type SetTemplateVarsFn<Event> = (
+    event: Event,
+    globals: { [key: string]: any },
+) => { [key: string]: any };
+
 /**
  * @description
  * An EmailEventListener is used to listen for events and set up a {@link EmailEventHandler} which
@@ -100,7 +105,7 @@ export class EmailEventListener<T extends string> {
  */
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
-    private setTemplateVarsFn: (event: Event) => { [key: string]: any; };
+    private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
@@ -140,7 +145,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * A function which returns an object hash of variables which will be made available to the Handlebars template
      * and subject line for interpolation.
      */
-    setTemplateVars(templateVarsFn: (event: Event) => { [key: string]: any; }): EmailEventHandler<T, Event> {
+    setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>): EmailEventHandler<T, Event> {
         this.setTemplateVarsFn = templateVarsFn;
         return this;
     }
@@ -169,23 +174,30 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * @description
      * Used internally by the EmailPlugin to handle incoming events.
      */
-    handle(event: Event): { recipient: string; templateVars: any; subject: string; templateFile: string; } | undefined {
+    handle(
+        event: Event,
+        globals: { [key: string]: any } = {},
+    ): { recipient: string; templateVars: any; subject: string; templateFile: string } | undefined {
         for (const filterFn of this.filterFns) {
             if (!filterFn(event)) {
                 return;
             }
         }
         if (!this.setRecipientFn) {
-            throw new Error(`No setRecipientFn has been defined. ` +
-            `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`);
+            throw new Error(
+                `No setRecipientFn has been defined. ` +
+                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${
+                        this.type
+                    }`,
+            );
         }
         const { ctx } = event;
         const configuration = this.getBestConfiguration(ctx.channel.code, ctx.languageCode);
         const recipient = this.setRecipientFn(event);
-        const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event) : {};
+        const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
         return {
             recipient,
-            templateVars,
+            templateVars: { ...globals, ...templateVars },
             subject: configuration ? configuration.subject : this.defaultSubject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
         };
@@ -201,17 +213,25 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         return this;
     }
 
-    private getBestConfiguration(channelCode: string, languageCode: LanguageCode): EmailTemplateConfig | undefined {
-        if ( this.configurations.length === 0) {
+    private getBestConfiguration(
+        channelCode: string,
+        languageCode: LanguageCode,
+    ): EmailTemplateConfig | undefined {
+        if (this.configurations.length === 0) {
             return;
         }
         const exactMatch = this.configurations.find(c => {
-            return (c.channelCode === channelCode || c.channelCode === 'default') && c.languageCode === languageCode;
+            return (
+                (c.channelCode === channelCode || c.channelCode === 'default') &&
+                c.languageCode === languageCode
+            );
         });
         if (exactMatch) {
             return exactMatch;
         }
-        const channelMatch = this.configurations.find(c => c.channelCode === channelCode && c.languageCode === 'default');
+        const channelMatch = this.configurations.find(
+            c => c.channelCode === channelCode && c.languageCode === 'default',
+        );
         if (channelMatch) {
             return channelMatch;
         }

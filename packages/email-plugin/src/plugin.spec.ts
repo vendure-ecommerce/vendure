@@ -7,22 +7,24 @@ import path from 'path';
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailEventHandler, EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
+import { EmailPluginOptions } from './types';
 
 describe('EmailPlugin', () => {
     let plugin: EmailPlugin;
     let eventBus: EventBus;
     let onSend: jest.Mock;
 
-    async function initPluginWithHandlers(handlers: Array<EmailEventHandler<any, any>>, templatePath?: string) {
+    async function initPluginWithHandlers(handlers: Array<EmailEventHandler<string, any>>, options?: Partial<EmailPluginOptions>) {
         eventBus = new EventBus();
         onSend = jest.fn();
         plugin = new EmailPlugin({
-            templatePath: templatePath || path.join(__dirname, '../test-templates'),
+            templatePath: path.join(__dirname, '../test-templates'),
             transport: {
                 type: 'testing',
                 onSend,
             },
             handlers,
+            ...options,
         });
 
         const inject = (token: any): any => {
@@ -114,6 +116,47 @@ describe('EmailPlugin', () => {
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('this is the test var');
         });
+
+        it('interpolates globalTemplateVars', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ globalVar }}');
+
+            await initPluginWithHandlers([handler], { globalTemplateVars: { globalVar: 'baz' } });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello baz');
+        });
+
+        it('globalTemplateVars available in setTemplateVars method', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ testVar }}')
+                .setTemplateVars((event, globals) => ({ testVar: globals.globalVar + ' quux' }));
+
+            await initPluginWithHandlers([handler], { globalTemplateVars: { globalVar: 'baz' } });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello baz quux');
+        });
+
+        it('setTemplateVars overrides globals', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ name }}')
+                .setTemplateVars((event, globals) => ({ name: 'quux' }));
+
+            await initPluginWithHandlers([handler], { globalTemplateVars: { name: 'baz' } });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello quux');
+        });
     });
 
     describe('multiple configs', () => {
@@ -152,7 +195,7 @@ describe('EmailPlugin', () => {
     describe('orderConfirmationHandler', () => {
 
         beforeEach(async () => {
-            await initPluginWithHandlers([orderConfirmationHandler], path.join(__dirname, '../templates'));
+            await initPluginWithHandlers([orderConfirmationHandler], { templatePath: path.join(__dirname, '../templates') });
         });
 
         const ctx = {

@@ -191,7 +191,7 @@ export class EmailPlugin implements VendurePlugin {
 
     private async handleEvent(handler: EmailEventHandler, event: EventWithContext) {
         const { type } = handler;
-        const result = handler.handle(event);
+        const result = handler.handle(event, this.options.globalTemplateVars);
         if (!result) {
             return;
         }
