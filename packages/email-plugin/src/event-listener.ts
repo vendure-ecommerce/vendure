@@ -206,7 +206,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     /**
      * @description
      * Optionally define a mock Event which is used by the dev mode mailbox app for generating mock emails
-     * from this handler.
+     * from this handler, which is useful when developing the email templates.
      */
     setMockEvent(event: Omit<Event, 'ctx'>): EmailEventHandler<T, Event> {
         this._mockEvent = event;

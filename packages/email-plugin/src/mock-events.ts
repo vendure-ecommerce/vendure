@@ -1,14 +1,13 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     AccountRegistrationEvent,
-    Channel,
     Customer,
+    IdentifierChangeRequestEvent,
     Order,
     OrderItem,
     OrderLine,
-    OrderStateTransitionEvent, PasswordResetEvent,
+    OrderStateTransitionEvent,
+    PasswordResetEvent,
     ProductVariant,
-    RequestContext,
     User,
 } from '@vendure/core';
 
@@ -109,5 +108,14 @@ export const mockPasswordResetEvent = new PasswordResetEvent(
     new User({
         identifier: 'test@test.com',
         passwordResetToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
+    }),
+);
+
+export const mockEmailAddressChangeEvent = new IdentifierChangeRequestEvent(
+    {} as any,
+    new User({
+        identifier: 'old-address@test.com',
+        pendingIdentifier: 'new-address@test.com',
+        identifierChangeToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
     }),
 );

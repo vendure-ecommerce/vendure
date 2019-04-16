@@ -17,20 +17,20 @@
             align-items: center;
             background-color: #2a2929;
             color: #efefef;
+            height: 60px;
         }
         .heading {
             margin: 0;
+            font-size: 22px;
         }
         button#refresh {
             margin-left: 12px;
             border-radius: 3px;
-            padding: 3px 6px;
             display: flex;
             align-items: center;
         }
         button#refresh .label {
             margin-left: 6px;
-            font-size: 16px;
         }
         .generate-controls {
             flex: 1;
@@ -40,8 +40,18 @@
         input, select, button {
             padding: 6px;
             border-radius: 3px;
-            border: 1px solid #15a9df;
+            border: 1px solid #0b384b;
             margin-left: 3px;
+        }
+        button {
+            text-transform: uppercase;
+            font-size: 12px;
+            transition: background-color 0.2s;
+            padding: 0 12px;
+            height: 32px;
+        }
+        button:hover {
+            background-color: #efefef;
         }
         #language-code {
             width: 32px;

@@ -65,6 +65,7 @@ export const devConfig: VendureConfig = {
             globalTemplateVars: {
                 verifyEmailAddressUrl: 'http://localhost:8080/verify',
                 passwordResetUrl: 'http://localhost:8080/password-reset',
+                changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
         new AdminUiPlugin({

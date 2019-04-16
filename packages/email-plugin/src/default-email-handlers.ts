@@ -1,8 +1,8 @@
 /* tslint:disable:no-non-null-assertion */
-import { AccountRegistrationEvent, OrderStateTransitionEvent, PasswordResetEvent } from '@vendure/core';
+import { AccountRegistrationEvent, IdentifierChangeRequestEvent, OrderStateTransitionEvent, PasswordResetEvent } from '@vendure/core';
 
 import { EmailEventListener } from './event-listener';
-import { mockAccountRegistrationEvent, mockOrderStateTransitionEvent, mockPasswordResetEvent } from './mock-events';
+import { mockAccountRegistrationEvent, mockEmailAddressChangeEvent, mockOrderStateTransitionEvent, mockPasswordResetEvent } from './mock-events';
 
 export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
@@ -26,8 +26,16 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
     .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockPasswordResetEvent);
 
+export const emailAddressChangeHandler = new EmailEventListener('email-address-change')
+    .on(IdentifierChangeRequestEvent)
+    .setRecipient(event => event.user.pendingIdentifier!)
+    .setSubject(`Please verify your change of email address`)
+    .setTemplateVars(event => ({ user: event.user }))
+    .setMockEvent(mockEmailAddressChangeEvent);
+
 export const defaultEmailHandlers = [
     orderConfirmationHandler,
     emailVerificationHandler,
     passwordResetHandler,
+    emailAddressChangeHandler,
 ];
