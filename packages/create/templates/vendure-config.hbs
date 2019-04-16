@@ -4,9 +4,9 @@
     VendureConfig,{{/if}}
 } {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
 {{#if isTs }}
-import { EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 {{ else }}
-const { EmailPlugin } = require('@vendure/email-plugin');
+const { defaultEmailHandlers, EmailPlugin } = require('@vendure/email-plugin');
 {{/if}}
 {{#if isTs }}
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
@@ -63,11 +63,16 @@ const path = require('path');
         }),
         new EmailPlugin({
             devMode: true,
-            templatePath: path.join(__dirname, 'vendure/email/templates'),
             outputPath: path.join(__dirname, 'vendure/email/test-emails'),
-            templateVars: {
-                shopUrl: 'http://www.example.com',
-            }
+            mailboxPort: 3003,
+            handlers: defaultEmailHandlers,
+            templatePath: path.join(__dirname, 'vendure/email/templates'),
+            globalTemplateVars: {
+                // The following variables will change depending on your storefront implementation
+                verifyEmailAddressUrl: 'http://localhost:8080/verify',
+                passwordResetUrl: 'http://localhost:8080/password-reset',
+                changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
+            },
         }),
         new DefaultSearchPlugin(),
         new AdminUiPlugin({ port: 3002 }),
