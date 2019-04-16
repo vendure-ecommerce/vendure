@@ -64,7 +64,6 @@
         .list {
             width: 40vw;
             min-width: 300px;
-            padding: 6px;
             overflow: auto;
         }
         .row {
@@ -73,7 +72,10 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .row:hover {
+        .row.selected {
+            background-color: #d4e1e7;
+        }
+        .row:not(.selected):hover {
             background-color: #efefef;
         }
         .meta {
@@ -93,19 +95,17 @@
             overflow: auto;
         }
         .metadata {
-            margin: 6px;
+            padding: 6px;
+            color: #333;
+            background-color: white;
+            z-index: 1;
+            box-shadow: 0px 5px 8px -7px rgba(0, 0, 0, 0.49);
         }
     </style>
 </head>
 <body>
 <div class="top-bar">
     <h1 class="heading">Vendure Dev Mailbox</h1>
-    <div>
-        <button id="refresh">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 36 36" preserveAspectRatio="xMidYMid meet" focusable="false" aria-hidden="true" role="img" width="16" height="16" fill="currentColor"><path class="clr-i-outline clr-i-outline-path-1" d="M32.84,15.72a1,1,0,1,0-2,.29A13.15,13.15,0,0,1,31,17.94,13,13,0,0,1,8.7,27h5.36a1,1,0,0,0,0-2h-9v9a1,1,0,1,0,2,0V28.2A15,15,0,0,0,32.84,15.72Z"/><path class="clr-i-outline clr-i-outline-path-2" d="M30.06,1A1.05,1.05,0,0,0,29,2V7.83A14.94,14.94,0,0,0,3,17.94a15.16,15.16,0,0,0,.2,2.48,1,1,0,0,0,1,.84h.16a1,1,0,0,0,.82-1.15A13.23,13.23,0,0,1,5,17.94a13,13,0,0,1,13-13A12.87,12.87,0,0,1,27.44,9H22.06a1,1,0,0,0,0,2H31V2A1,1,0,0,0,30.06,1Z"/></svg>
-            <span class="label">Refresh</span>
-        </button>
-    </div>
     <div class="generate-controls">
         <select id="type-selector"></select>
         <input id="language-code" value="en" type="text">
@@ -120,8 +120,9 @@
     </div>
 </div>
 <script>
-    const refreshButton = document.querySelector('button#refresh');
-    refreshButton.addEventListener('click', refreshInbox);
+    let selectedId = '';
+    refreshInbox();
+    setInterval(refreshInbox, 5000);
 
     const typeSelect = document.querySelector('#type-selector');
     fetch('./types')
@@ -144,7 +145,6 @@
     });
 
     const list = document.querySelector('.list');
-    refreshInbox();
 
     function refreshInbox() {
         fetch('./list')
@@ -158,6 +158,7 @@
         const rows = items.forEach(item => {
             const row = document.createElement('div');
             row.classList.add('row');
+            row.dataset.id = item.fileName;
             row.innerHTML = `
                 <div class="meta">
                     <div class="date">${item.date}</div>
@@ -166,11 +167,23 @@
                 <div class="subject">${item.subject}</div>`;
 
             row.addEventListener('click', (e) => {
+                selectedId = item.fileName;
                 fetch('./item/' + item.fileName)
                     .then(res => res.json())
-                    .then(res => renderEmail(res));
+                    .then(res => renderEmail(res))
+                    .then(() => highlightSelectedRow());
             });
             list.appendChild(row);
+        });
+        highlightSelectedRow();
+    }
+
+    function highlightSelectedRow() {
+        document.querySelectorAll('.list .row').forEach(row => {
+            row.classList.remove('selected');
+            if (row.dataset.id === selectedId) {
+                row.classList.add('selected');
+            }
         });
     }
 
