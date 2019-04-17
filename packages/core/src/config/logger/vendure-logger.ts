@@ -7,6 +7,10 @@ import { LoggerService } from '@nestjs/common';
  * @docsCategory Logger
  */
 export enum LogLevel {
+    /**
+     * @description
+     * Log Errors only.
+     */
     Error = 0,
     Warn = 1,
     Info = 2,
@@ -77,16 +81,16 @@ const noopLogger: VendureLogger = {
  *         this.logfile.write(`ERROR: [${context}] ${message}\n`);
  *     }
  *     warn(message: string, context?: string) {
- *          this.logfile.write(`WARN: [${context}] ${message}\n`);
+ *         this.logfile.write(`WARN: [${context}] ${message}\n`);
  *     }
  *     info(message: string, context?: string) {
- *          this.logfile.write(`INFO: [${context}] ${message}\n`);
+ *         this.logfile.write(`INFO: [${context}] ${message}\n`);
  *     }
  *     verbose(message: string, context?: string) {
- *          this.logfile.write(`VERBOSE: [${context}] ${message}\n`);
+ *         this.logfile.write(`VERBOSE: [${context}] ${message}\n`);
  *     }
  *     debug(message: string, context?: string) {
- *          this.logfile.write(`DEBUG: [${context}] ${message}\n`);
+ *         this.logfile.write(`DEBUG: [${context}] ${message}\n`);
  *     }
  * }
  *
@@ -112,47 +116,53 @@ export class Logger implements LoggerService {
         return _instance;
     }
 
+    /** @internal */
     static useLogger(logger: VendureLogger) {
         Logger._logger = logger;
     }
 
+    /** @internal */
     error(message: any, trace?: string, context?: string): any {
         this.instance.error(message, context, trace);
     }
 
+    /** @internal */
     warn(message: any, context?: string): any {
         this.instance.warn(message, context);
     }
 
+    /** @internal */
     log(message: any, context?: string): any {
         this.instance.info(message, context);
     }
 
+    /** @internal */
     verbose(message: any, context?: string): any {
         this.instance.verbose(message, context);
     }
 
+    /** @internal */
     debug(message: any, context?: string): any {
         this.instance.debug(message, context);
     }
 
-    static error(message: string, context?: string, trace?: string) {
+    static error(message: string, context?: string, trace?: string): void {
         Logger.logger.error(message, context, trace);
     }
 
-    static warn(message: string, context?: string) {
+    static warn(message: string, context?: string): void {
         Logger.logger.warn(message, context);
     }
 
-    static info(message: string, context?: string) {
+    static info(message: string, context?: string): void {
         Logger.logger.info(message, context);
     }
 
-    static verbose(message: string, context?: string) {
+    static verbose(message: string, context?: string): void {
         Logger.logger.verbose(message, context);
     }
 
-    static debug(message: string, context?: string) {
+    static debug(message: string, context?: string): void {
         Logger.logger.debug(message, context);
     }
 }

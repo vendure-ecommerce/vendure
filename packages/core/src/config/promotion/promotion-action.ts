@@ -91,6 +91,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
         this.executeFn = config.execute;
     }
 
+    /** @internal */
     execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[], utils: PromotionUtils) {
         return this.executeFn(orderItem, orderLine, argsArrayToHash(args), utils);
     }
@@ -122,6 +123,7 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
         this.executeFn = config.execute;
     }
 
+    /** @internal */
     execute(order: Order, args: ConfigArg[], utils: PromotionUtils) {
         return this.executeFn(order, argsArrayToHash(args), utils);
     }

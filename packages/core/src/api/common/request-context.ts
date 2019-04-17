@@ -9,8 +9,12 @@ import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
 /**
- * The RequestContext is intended to hold information relevant to the current request, which may be
+ * @description
+ * The RequestContext holds information relevant to the current request, which may be
  * required at various points of the stack.
+ *
+ * @docsCategory
+ * @docsWeight 1
  */
 export class RequestContext {
     private readonly _languageCode: LanguageCode;
@@ -20,6 +24,9 @@ export class RequestContext {
     private readonly _authorizedAsOwnerOnly: boolean;
     private readonly _translationFn: i18next.TranslationFunction;
 
+    /**
+     * @internal
+     */
     constructor(options: {
         channel: Channel;
         session?: Session;
@@ -85,6 +92,7 @@ export class RequestContext {
     }
 
     /**
+     * @description
      * Translate the given i18n key
      */
     translate(key: string, variables?: { [k: string]: any }): string {

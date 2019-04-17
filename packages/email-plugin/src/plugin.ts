@@ -143,6 +143,7 @@ export class EmailPlugin implements VendurePlugin {
         }
     }
 
+    /** @internal */
     configure(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>> {
         if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
             this.devMailbox = new DevMailbox();
@@ -157,6 +158,7 @@ export class EmailPlugin implements VendurePlugin {
         return config;
     }
 
+    /** @internal */
     async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
         this.eventBus = inject(EventBus);
         this.templateLoader = new TemplateLoader(this.options.templatePath);
@@ -169,13 +171,14 @@ export class EmailPlugin implements VendurePlugin {
         }
     }
 
+    /** @internal */
     async onClose() {
         if (this.devMailbox) {
             this.devMailbox.destroy();
         }
     }
 
-    async setupEventSubscribers() {
+    private async setupEventSubscribers() {
         for (const handler of this.options.handlers) {
             this.eventBus.subscribe(handler.event, event => {
                 return this.handleEvent(handler, event);

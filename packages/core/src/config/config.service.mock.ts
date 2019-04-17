@@ -34,6 +34,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     orderOptions = {};
     customFields = {};
     middleware = [];
+    logger = {} as any;
     plugins = [];
 }
 

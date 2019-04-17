@@ -23,6 +23,7 @@ const DEFAULT_CONTEXT = 'Vendure Server';
  * @docsCategory Logger
  */
 export class DefaultLogger implements VendureLogger {
+    /** @internal */
     level: LogLevel = LogLevel.Info;
     private readonly timestamp: boolean;
     private readonly localeStringOptions = {
@@ -45,6 +46,7 @@ export class DefaultLogger implements VendureLogger {
      * To be run directly before the `NestFactory.create()` call in the `bootstrap()` function.
      *
      * See https://github.com/nestjs/nest/issues/1838
+     * @internal
      */
     static hideNestBoostrapLogs(): void {
         const { logger } = Logger;
@@ -63,6 +65,7 @@ export class DefaultLogger implements VendureLogger {
      * `bootstrap()` function.
      *
      * See https://github.com/nestjs/nest/issues/1838
+     * @internal
      */
     static restoreOriginalLogLevel(): void {
         const { logger } = Logger;

@@ -192,6 +192,7 @@ export class AssetServerPlugin implements VendurePlugin {
         }
     }
 
+    /** @internal */
     configure(config: Required<VendureConfig>) {
         this.assetStorage = this.createAssetStorageStrategy();
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
@@ -206,10 +207,12 @@ export class AssetServerPlugin implements VendurePlugin {
         return config;
     }
 
+    /** @internal */
     onBootstrap(inject: InjectorFn): void | Promise<void> {
         this.createAssetServer();
     }
 
+    /** @internal */
     onClose(): Promise<void> {
         return new Promise(resolve => {
             this.server.close(() => resolve());

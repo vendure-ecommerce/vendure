@@ -18,6 +18,17 @@ export type PaymentMethodArgType = ConfigArgType.INT | ConfigArgType.STRING | Co
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
 
+/**
+ * @description
+ * The signature of the function defined by `onStateTransitionStart` in {@link PaymentMethodConfigOptions}.
+ *
+ * This function is called before the state of a Payment is transitioned. Its
+ * return value used to determine whether the transition can occur.
+ *
+ * TODO: This is currently not called by Vendure. Needs to be implemented.
+ *
+ * @docsCategory payment
+ */
 export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
     fromState: PaymentState,
     toState: PaymentState,
@@ -144,8 +155,11 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  */
 export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArgs>
     implements ConfigurableOperationDef {
+    /** @internal */
     readonly code: string;
+    /** @internal */
     readonly description: string;
+    /** @internal */
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
@@ -161,6 +175,8 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
     /**
      * @description
      * Called internally to create a new Payment
+     *
+     * @internal
      */
     async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
         const paymentConfig = await this.createPaymentFn(order, argsArrayToHash(args), metadata);
@@ -176,7 +192,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
      * was instantiated with a `onStateTransitionStart` function, that function will be invoked and its
      * return value used to determine whether the transition can occur.
      *
-     * @docsCategory payment
+     * @internal
      */
     onStateTransitionStart(
         fromState: PaymentState,

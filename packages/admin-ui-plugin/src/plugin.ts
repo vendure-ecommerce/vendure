@@ -77,6 +77,7 @@ export class AdminUiPlugin implements VendurePlugin {
     private server: Server;
     constructor(private options: AdminUiOptions) {}
 
+    /** @internal */
     async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
         const route = 'admin';
         config.middleware.push({
@@ -89,6 +90,7 @@ export class AdminUiPlugin implements VendurePlugin {
         return config;
     }
 
+    /** @internal */
     onBootstrap(inject: InjectorFn): void | Promise<void> {
         const adminUiPath = this.getAdminUiPath();
         const assetServer = express();
@@ -99,6 +101,7 @@ export class AdminUiPlugin implements VendurePlugin {
         this.server = assetServer.listen(this.options.port);
     }
 
+    /** @internal */
     onClose(): Promise<void> {
         return new Promise(resolve => this.server.close(() => resolve()));
     }

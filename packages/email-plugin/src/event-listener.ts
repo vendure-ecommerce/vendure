@@ -173,6 +173,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     /**
      * @description
      * Used internally by the EmailPlugin to handle incoming events.
+     *
+     * @internal
      */
     handle(
         event: Event,

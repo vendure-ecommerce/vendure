@@ -1,11 +1,12 @@
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { RequestHandler } from 'express';
 import proxy from 'http-proxy-middleware';
 
 import { APIExtensionDefinition, Logger, VendureConfig, VendurePlugin } from '../config';
 
 /**
  * @description
- * Options to configure the proxy middleware.
+ * Options to configure proxy middleware via {@link createProxyHandler}.
  *
  * @docsCategory Plugin
  */
@@ -41,9 +42,28 @@ export interface ProxyOptions {
  * Useful for plugins which start their own servers but should be accessible
  * via the main Vendure url.
  *
+ * @example
+ * ```ts
+ * // Example usage in the `configure` method of a VendurePlugin.
+ * // Imagine that we have started a Node server on port 5678
+ * // running some service which we want to access via the `/my-plugin/`
+ * // route of the main Vendure server.
+ * configure(config: Required<VendureConfig>): Required<VendureConfig> {
+ *     config.middleware.push({
+ *         handler: createProxyHandler({
+ *             label: 'Admin UI',
+ *             route: 'my-plugin',
+ *             port: 5678,
+ *         }),
+ *         route: 'my-plugin',
+ *     });
+ *     return config;
+ * }
+ * ```
+ *
  * @docsCategory Plugin
  */
-export function createProxyHandler(options: ProxyOptions) {
+export function createProxyHandler(options: ProxyOptions): RequestHandler {
     const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
     const proxyHostname = options.hostname || 'localhost';
     const middleware = proxy({
