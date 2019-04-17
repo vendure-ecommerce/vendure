@@ -133,6 +133,8 @@ export class TypescriptDocsParser {
             const parameters = statement.parameters.map(p => ({
                 name: p.name.getText(),
                 type: p.type ? p.type.getText() : '',
+                optional: !!p.questionToken,
+                initializer: p.initializer && p.initializer.getText(),
             }));
             return {
                 ...info,
@@ -244,6 +246,8 @@ export class TypescriptDocsParser {
                     parameters = member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: p.type ? p.type.getText() : '',
+                        optional: !!p.questionToken,
+                        initializer: p.initializer && p.initializer.getText(),
                     }));
                     result.push({
                         ...memberInfo,

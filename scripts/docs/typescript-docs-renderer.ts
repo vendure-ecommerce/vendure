@@ -164,9 +164,7 @@ export class TypescriptDocsRenderer {
             .map(member => {
                 if (member.kind === 'method') {
                     const args = member.parameters
-                        .map(p => {
-                            return `${p.name}: ${p.type}`;
-                        })
+                        .map(p => this.renderParameter(p, p.type))
                         .join(', ');
                     if (member.fullText === 'constructor') {
                         return `  constructor(${args})`;
@@ -220,11 +218,7 @@ export class TypescriptDocsRenderer {
 
     private renderFunctionSignature(functionInfo: FunctionInfo, knownTypeMap: TypeMap): string {
         const { fullText, parameters, type } = functionInfo;
-        const args = parameters
-                  .map(p => {
-                      return `${p.name}: ${p.type}`;
-                  })
-                  .join(', ');
+        const args = parameters.map(p => this.renderParameter(p, p.type)).join(', ');
         let output = '';
         output += `\`\`\`TypeScript\n`;
         output += `function ${fullText}(${args}): ${type ? type.getText() : 'void'}\n`;
@@ -255,9 +249,7 @@ export class TypescriptDocsRenderer {
                     : '';
             } else {
                 const args = member.parameters
-                    .map(p => {
-                        return `${p.name}: ${this.renderType(p.type, knownTypeMap, docsUrl)}`;
-                    })
+                    .map(p => this.renderParameter(p, this.renderType(p.type, knownTypeMap, docsUrl)))
                     .join(', ');
                 if (member.fullText === 'constructor') {
                     type = `(${args}) => ${title}`;
@@ -270,6 +262,10 @@ export class TypescriptDocsRenderer {
             output += `${this.renderDescription(member.description, knownTypeMap, docsUrl)}\n\n`;
         }
         return output;
+    }
+
+    private renderParameter(p: MethodParameterInfo, typeString: string): string {
+        return `${p.name}${p.optional ? '?' : ''}: ${typeString}${p.initializer ? ` = ${p.initializer}` : ''}`;
     }
 
     private renderGenerationInfoShortcode(info: DeclarationInfo): string {

@@ -3,6 +3,8 @@ import ts from 'typescript';
 export interface MethodParameterInfo {
     name: string;
     type: string;
+    optional: boolean;
+    initializer?: string;
 }
 
 export interface MemberInfo {
