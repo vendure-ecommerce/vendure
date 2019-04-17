@@ -60,6 +60,12 @@ This is optional and when present, sets the "weight" of the markdown file in the
 
 This is used to specify the default value of a property, e.g. when documenting an optional configuration option.
 
+##### `@internal`
+
+This is used to exlude members from appearing in the docs. For example, a class may need a particular
+public method for internal use, but this method is not intended to be used by external consumers of that
+class.
+
 ##### Example
 
 ````ts
@@ -86,6 +92,14 @@ export class Greeter {
      */
     greet(name: string): string {
       return `Hi, ${name}, good to see you!`;
+    }
+    
+    /**
+     * Required as a work-around for issue #1234
+     * @internal
+     */
+    someMethodUsedOnlyByVendureCore() {
+        // ...
     }
 }
 ````

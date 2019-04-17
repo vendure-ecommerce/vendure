@@ -209,6 +209,7 @@ export class TypescriptDocsParser {
                 let defaultValue = '';
                 let parameters: MethodParameterInfo[] = [];
                 let fullText = '';
+                let isInternal = false;
                 if (ts.isConstructorDeclaration(member)) {
                     fullText = 'constructor';
                 } else if (ts.isMethodDeclaration(member)) {
@@ -220,7 +221,11 @@ export class TypescriptDocsParser {
                     description: tag => (description += tag.comment || ''),
                     example: tag => (description += this.formatExampleCode(tag.comment)),
                     default: tag => (defaultValue = tag.comment || ''),
+                    internal: tag => isInternal = true,
                 });
+                if (isInternal) {
+                    continue;
+                }
                 if (!ts.isEnumMember(member) && member.type) {
                     type = member.type.getText();
                 }
