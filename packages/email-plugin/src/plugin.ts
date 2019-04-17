@@ -1,4 +1,4 @@
-import { createProxyHandler, EventBus, InternalServerError, Type, VendureConfig, VendurePlugin } from '@vendure/core';
+import { createProxyHandler, EventBus, InternalServerError, Logger, Type, VendureConfig, VendurePlugin } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { DevMailbox } from './dev-mailbox';
@@ -150,7 +150,7 @@ export class EmailPlugin implements VendurePlugin {
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
             const route = 'mailbox';
             config.middleware.push({
-                handler: createProxyHandler({ port: this.options.mailboxPort, route }, !config.silent),
+                handler: createProxyHandler({ port: this.options.mailboxPort, route, label: 'Dev Mailbox' }),
                 route,
             });
         }
@@ -190,6 +190,7 @@ export class EmailPlugin implements VendurePlugin {
     }
 
     private async handleEvent(handler: EmailEventHandler, event: EventWithContext) {
+        Logger.debug(`Handling event "${handler.type}"`, 'EmailPlugin');
         const { type } = handler;
         const result = handler.handle(event, this.options.globalTemplateVars);
         if (!result) {

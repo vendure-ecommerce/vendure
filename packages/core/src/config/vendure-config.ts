@@ -13,6 +13,7 @@ import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strate
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { VendureLogger } from './logger/vendure-logger';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
@@ -453,11 +454,11 @@ export interface VendureConfig {
     shippingOptions?: ShippingOptions;
     /**
      * @description
-     * When set to true, no application logging will be output to the console.
+     * Provide a logging service which implements the {@link VendureLogger} interface.
      *
-     * @default false
+     * @default DefaultLogger
      */
-    silent?: boolean;
+    logger: VendureLogger;
     /**
      * @description
      * Configures how taxes are calculated on products.

@@ -80,7 +80,7 @@ export class AdminUiPlugin implements VendurePlugin {
     async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
         const route = 'admin';
         config.middleware.push({
-            handler: createProxyHandler({ ...this.options, route }, !config.silent),
+            handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),
             route,
         });
         const { adminApiPath } = config;

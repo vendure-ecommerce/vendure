@@ -200,7 +200,7 @@ export class AssetServerPlugin implements VendurePlugin {
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.middleware.push({
-            handler: createProxyHandler(this.options, !config.silent),
+            handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
             route: this.options.route,
         });
         return config;

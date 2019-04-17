@@ -6,8 +6,11 @@ import { EntitySubscriberInterface } from 'typeorm';
 import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';
 import { getConfig, setConfig } from './config/config-helpers';
+import { DefaultLogger } from './config/logger/default-logger';
+import { Logger, LogLevel } from './config/logger/vendure-logger';
 import { VendureConfig } from './config/vendure-config';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
+import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -16,24 +19,27 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
+    Logger.info(`Bootstrapping Vendure Server...`);
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
-    const app = await NestFactory.create(appModule.AppModule, {
+    DefaultLogger.hideNestBoostrapLogs();
+    let app: INestApplication;
+    app = await NestFactory.create(appModule.AppModule, {
         cors: config.cors,
-        logger: config.silent ? false : undefined,
+        logger: new Logger(),
     });
-
+    DefaultLogger.restoreOriginalLogLevel();
+    app.useLogger(new Logger());
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
-    if (!config.silent) {
-        // tslint:disable:no-console
-        console.log(`\n\nVendure server now running on port ${config.port}`);
-        console.log(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
-        console.log(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
-    }
+
+    Logger.info(`Vendure server now running on port ${config.port}`);
+    Logger.info(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
+    Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
+    logProxyMiddlewares(config);
     return app;
 }
 
@@ -62,6 +68,7 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    Logger.useLogger(config.logger);
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     return config;

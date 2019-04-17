@@ -100,7 +100,6 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     }
 
     const config = index.config;
-    config.silent = true;
 
     // Force the sync mode on, so that all the tables are created
     // on this initial run.

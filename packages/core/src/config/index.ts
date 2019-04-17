@@ -8,6 +8,8 @@ export * from './config.service';
 export * from './entity-id-strategy/entity-id-strategy';
 export * from './entity-id-strategy/uuid-id-strategy';
 export * from './order-merge-strategy/order-merge-strategy';
+export * from './logger/vendure-logger';
+export * from './logger/default-logger';
 export * from './payment-method/example-payment-method-config';
 export * from './payment-method/payment-method-handler';
 export * from './promotion/default-promotion-actions';

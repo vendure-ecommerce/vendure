@@ -1,11 +1,7 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
-import {
-    DefaultSearchPlugin,
-    examplePaymentHandler,
-    VendureConfig,
-} from '@vendure/core';
+import { DefaultLogger, DefaultSearchPlugin, examplePaymentHandler, LogLevel, VendureConfig } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 
@@ -46,6 +42,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },

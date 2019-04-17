@@ -9,6 +9,7 @@ import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { getConfig } from './config-helpers';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { VendureLogger } from './logger/vendure-logger';
 import {
     AssetOptions,
     AuthOptions,
@@ -114,5 +115,9 @@ export class ConfigService implements VendureConfig {
 
     get plugins(): VendurePlugin[] {
         return this.activeConfig.plugins;
+    }
+
+    get logger(): VendureLogger {
+        return this.activeConfig.logger;
     }
 }
