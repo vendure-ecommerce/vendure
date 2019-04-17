@@ -71,16 +71,16 @@ export class DefaultLogger implements VendureLogger {
         }
     }
 
-    error(message: string, context: string | undefined = DEFAULT_CONTEXT, trace?: string | undefined): void {
+    error(message: string, context?: string, trace?: string | undefined): void {
         if (this.level >= LogLevel.Error) {
             this.logMessage(
                 chalk.red(`error`),
-                chalk.red(message + trace ? ` trace: \n${trace}` : ''),
+                chalk.red(message + (trace ? ` trace: \n${trace}` : '')),
                 context,
             );
         }
     }
-    warn(message: string, context: string | undefined = DEFAULT_CONTEXT): void {
+    warn(message: string, context?: string): void {
         if (this.level >= LogLevel.Warn) {
             this.logMessage(
                 chalk.yellow(`warn`),
@@ -89,7 +89,7 @@ export class DefaultLogger implements VendureLogger {
             );
         }
     }
-    info(message: string, context: string | undefined = DEFAULT_CONTEXT): void {
+    info(message: string, context?: string): void {
         if (this.level >= LogLevel.Info) {
             this.logMessage(
                 chalk.blue(`info`),
@@ -98,7 +98,7 @@ export class DefaultLogger implements VendureLogger {
             );
         }
     }
-    verbose(message: string, context: string | undefined = DEFAULT_CONTEXT): void {
+    verbose(message: string, context?: string): void {
         if (this.level >= LogLevel.Verbose) {
             this.logMessage(
                 chalk.magenta(`verbose`),
@@ -107,7 +107,7 @@ export class DefaultLogger implements VendureLogger {
             );
         }
     }
-    debug(message: string, context: string | undefined = DEFAULT_CONTEXT): void {
+    debug(message: string, context?: string): void {
         if (this.level >= LogLevel.Debug) {
             this.logMessage(
                 chalk.magenta(`debug`),

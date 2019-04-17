@@ -9,6 +9,7 @@ import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-previe
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
+import { TypeOrmLogger } from './logger/typeorm-logger';
 import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strategy';
 import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
@@ -53,6 +54,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     dbConnectionOptions: {
         type: 'mysql',
+        logger: new TypeOrmLogger(),
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
