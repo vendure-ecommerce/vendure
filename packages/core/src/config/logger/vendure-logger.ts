@@ -54,6 +54,49 @@ const noopLogger: VendureLogger = {
  * instance configured in the {@link VendureConfig}. By default, the {@link DefaultLogger} is used, which
  * logs to the console.
  *
+ * ## Implementing a custom logger
+ *
+ * A custom logger can be passed to the `logger` config option by creating a class which implements the
+ * {@link VendureLogger} interface. For example, here is how you might go about implementing a logger which
+ * logs to a file:
+ *
+ * @example
+ * ```ts
+ * import { VendureLogger } from '@vendure/core';
+ * import fs from 'fs';
+ *
+ * // A simple custom logger which writes all logs to a file.
+ * export class SimpleFileLogger implements VendureLogger {
+ *     private logfile: fs.WriteStream;
+ *
+ *     constructor(logfileLocation: string) {
+ *         this.logfile = fs.createWriteStream(logfileLocation, { flags: 'w' });
+ *     }
+ *
+ *     error(message: string, context?: string) {
+ *         this.logfile.write(`ERROR: [${context}] ${message}\n`);
+ *     }
+ *     warn(message: string, context?: string) {
+ *          this.logfile.write(`WARN: [${context}] ${message}\n`);
+ *     }
+ *     info(message: string, context?: string) {
+ *          this.logfile.write(`INFO: [${context}] ${message}\n`);
+ *     }
+ *     verbose(message: string, context?: string) {
+ *          this.logfile.write(`VERBOSE: [${context}] ${message}\n`);
+ *     }
+ *     debug(message: string, context?: string) {
+ *          this.logfile.write(`DEBUG: [${context}] ${message}\n`);
+ *     }
+ * }
+ *
+ * // in the VendureConfig
+ * export const config = {
+ *     // ...
+ *     logger: new SimpleFileLogger('server.log'),
+ * }
+ * ```
+ *
  * @docsCategory Logger
  */
 export class Logger implements LoggerService {
