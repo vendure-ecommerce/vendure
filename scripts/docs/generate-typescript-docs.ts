@@ -70,9 +70,11 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
         const sourceFilePaths = getSourceFilePaths(sourceDirs);
         const parsedDeclarations = new TypescriptDocsParser().parse(sourceFilePaths);
         for (const info of parsedDeclarations) {
-            globalTypeMap.set(info.title, info.category + '/' + info.fileName);
+            const { category, fileName } = info;
+            const pathToTypeDoc = `${outputPath}/${category ? category + '/' : ''}${fileName === '_index' ? '' : fileName}`;
+            globalTypeMap.set(info.title, pathToTypeDoc);
         }
-        const docsUrl = `/docs/${outputPath}`;
+        const docsUrl = `/docs`;
         const generatedCount = new TypescriptDocsRenderer().render(
             parsedDeclarations,
             docsUrl,
