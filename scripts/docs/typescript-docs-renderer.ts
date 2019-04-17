@@ -7,7 +7,16 @@ import ts from 'typescript';
 import { assertNever } from '../../packages/common/src/shared-utils';
 
 import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
-import { ClassInfo, DeclarationInfo, EnumInfo, InterfaceInfo, ParsedDeclaration, TypeAliasInfo, TypeMap } from './typescript-docgen-types';
+import {
+    ClassInfo,
+    DeclarationInfo,
+    EnumInfo,
+    FunctionInfo,
+    InterfaceInfo, MethodParameterInfo,
+    ParsedDeclaration,
+    TypeAliasInfo,
+    TypeMap,
+} from './typescript-docgen-types';
 
 export class TypescriptDocsRenderer {
 
@@ -30,6 +39,9 @@ export class TypescriptDocsRenderer {
                     break;
                 case 'enum':
                     markdown = this.renderEnum(info, typeMap, docsUrl);
+                    break;
+                case 'function':
+                    markdown = this.renderFunction(info, typeMap, docsUrl);
                     break;
                 default:
                     assertNever(info);
@@ -97,6 +109,22 @@ export class TypescriptDocsRenderer {
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += `## Signature\n\n`;
         output += this.renderEnumSignature(enumInfo);
+        return output;
+    }
+
+    private renderFunction(functionInfo: FunctionInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+        const { title, weight, description, fullText, parameters } = functionInfo;
+        let output = '';
+        output += generateFrontMatter(title, weight);
+        output += `\n\n# ${title}\n\n`;
+        output += this.renderGenerationInfoShortcode(functionInfo);
+        output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
+        output += `## Signature\n\n`;
+        output += this.renderFunctionSignature(functionInfo, knownTypeMap);
+        if (parameters.length) {
+            output += `## Parameters\n\n`;
+            output += this.renderFunctionParams(parameters, knownTypeMap, docsUrl);
+        }
         return output;
     }
 
@@ -186,6 +214,30 @@ export class TypescriptDocsRenderer {
             output += `\n}\n`;
         }
         output += `\`\`\`\n`;
+        return output;
+    }
+
+    private renderFunctionSignature(functionInfo: FunctionInfo, knownTypeMap: TypeMap): string {
+        const { fullText, parameters, type } = functionInfo;
+        const args = parameters
+                  .map(p => {
+                      return `${p.name}: ${p.type}`;
+                  })
+                  .join(', ');
+        let output = '';
+        output += `\`\`\`TypeScript\n`;
+        output += `function ${fullText}(${args}): ${type ? type.getText() : 'void'}\n`;
+        output += `\`\`\`\n`;
+        return output;
+    }
+
+    private renderFunctionParams(params: MethodParameterInfo[], knownTypeMap: TypeMap, docsUrl: string): string {
+        let output = '';
+        for (const param of params) {
+            const type = this.renderType(param.type, knownTypeMap, docsUrl);
+            output += `### ${param.name}\n\n`;
+            output += `{{< member-info kind="parameter" type="${type}" >}}\n\n`;
+        }
         return output;
     }
 

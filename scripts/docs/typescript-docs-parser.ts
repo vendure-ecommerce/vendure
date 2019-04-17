@@ -129,6 +129,17 @@ export class TypescriptDocsParser {
                 kind: 'enum' as 'enum',
                 members: this.parseMembers(statement.members) as PropertyInfo[],
             };
+        } else if (ts.isFunctionDeclaration(statement)) {
+            const parameters = statement.parameters.map(p => ({
+                name: p.name.getText(),
+                type: p.type ? p.type.getText() : '',
+            }));
+            return {
+                ...info,
+                kind: 'function',
+                parameters,
+                type: statement.type,
+            };
         }
     }
 
@@ -288,7 +299,8 @@ export class TypescriptDocsParser {
             ts.isInterfaceDeclaration(statement) ||
             ts.isTypeAliasDeclaration(statement) ||
             ts.isClassDeclaration(statement) ||
-            ts.isEnumDeclaration(statement)
+            ts.isEnumDeclaration(statement) ||
+            ts.isFunctionDeclaration(statement)
         );
     }
 
