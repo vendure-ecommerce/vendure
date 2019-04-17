@@ -458,7 +458,7 @@ export interface VendureConfig {
      *
      * @default DefaultLogger
      */
-    logger: VendureLogger;
+    logger?: VendureLogger;
     /**
      * @description
      * Configures how taxes are calculated on products.

@@ -9,7 +9,7 @@ import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { getConfig } from './config-helpers';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
-import { VendureLogger } from './logger/vendure-logger';
+import { Logger, VendureLogger } from './logger/vendure-logger';
 import {
     AssetOptions,
     AuthOptions,
@@ -31,8 +31,8 @@ export class ConfigService implements VendureConfig {
         this.activeConfig = getConfig();
         if (this.activeConfig.authOptions.disableAuth) {
             // tslint:disable-next-line
-            console.warn(
-                'WARNING: auth has been disabled. This should never be the case for a production system!',
+            Logger.warn(
+                'Auth has been disabled. This should never be the case for a production system!',
             );
         }
     }

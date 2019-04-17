@@ -7,7 +7,7 @@ import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';
 import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
-import { Logger, LogLevel } from './config/logger/vendure-logger';
+import { Logger } from './config/logger/vendure-logger';
 import { VendureConfig } from './config/vendure-config';
 import { registerCustomEntityFields } from './entity/custom-entity-fields';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
@@ -35,11 +35,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     app.useLogger(new Logger());
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
-
-    Logger.info(`Vendure server now running on port ${config.port}`);
-    Logger.info(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
-    Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
-    logProxyMiddlewares(config);
+    logWelcomeMessage(config);
     return app;
 }
 
@@ -102,6 +98,8 @@ export async function runPluginOnBootstrapMethods(
     for (const plugin of config.plugins) {
         if (plugin.onBootstrap) {
             await plugin.onBootstrap(inject);
+            const pluginName = plugin.constructor && plugin.constructor.name || '(anonymous plugin)';
+            Logger.verbose(`Bootstrapped plugin ${pluginName}`);
         }
     }
 }
@@ -138,4 +136,19 @@ function getEntitiesFromPlugins(userConfig: Partial<VendureConfig>): Array<Type<
     return userConfig.plugins
         .map(p => (p.defineEntities ? p.defineEntities() : []))
         .reduce((all, entities) => [...all, ...entities], []);
+}
+
+function logWelcomeMessage(config: VendureConfig) {
+    let version: string;
+    try {
+        version = require('../package.json').version;
+    } catch (e) {
+        version = ' unknown';
+    }
+    Logger.info(`=================================================`);
+    Logger.info(`Vendure server (v${version}) now running on port ${config.port}`);
+    Logger.info(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
+    Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
+    logProxyMiddlewares(config);
+    Logger.info(`=================================================`);
 }
