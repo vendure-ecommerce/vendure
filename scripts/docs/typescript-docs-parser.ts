@@ -202,7 +202,8 @@ export class TypescriptDocsParser {
                     ts.isPropertyDeclaration(member) ||
                     ts.isMethodDeclaration(member) ||
                     ts.isConstructorDeclaration(member) ||
-                    ts.isEnumMember(member)
+                    ts.isEnumMember(member) ||
+                    ts.isGetAccessorDeclaration(member)
                 )
             ) {
                 const name = member.name ? member.name.getText() : 'constructor';
@@ -216,6 +217,8 @@ export class TypescriptDocsParser {
                     fullText = 'constructor';
                 } else if (ts.isMethodDeclaration(member)) {
                     fullText = member.name.getText();
+                } else if (ts.isGetAccessorDeclaration(member)) {
+                    fullText = `${member.name.getText()}: ${member.type ? member.type.getText() : 'void'}`;
                 } else {
                     fullText = member.getText();
                 }
