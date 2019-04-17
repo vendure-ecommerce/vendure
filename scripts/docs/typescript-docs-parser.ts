@@ -73,7 +73,7 @@ export class TypescriptDocsParser {
         statement: ts.Statement,
         sourceFile: string,
         sourceLine: number,
-    ): InterfaceInfo | TypeAliasInfo | ClassInfo | undefined {
+    ): ParsedDeclaration | undefined {
         if (!this.isValidDeclaration(statement)) {
             return;
         }
@@ -123,6 +123,12 @@ export class TypescriptDocsParser {
                 extends: this.getHeritageClauseText(statement, ts.SyntaxKind.ExtendsKeyword),
                 implements: this.getHeritageClauseText(statement, ts.SyntaxKind.ImplementsKeyword),
             };
+        } else if (ts.isEnumDeclaration(statement)) {
+            return {
+                ...info,
+                kind: 'enum' as 'enum',
+                members: this.parseMembers(statement.members) as PropertyInfo[],
+            };
         }
     }
 
@@ -150,7 +156,7 @@ export class TypescriptDocsParser {
     private getDeclarationFullText(declaration: ValidDeclaration): string {
         const name = declaration.name ? declaration.name.getText() : 'anonymous';
         let typeParams = '';
-        if (declaration.typeParameters) {
+        if (!ts.isEnumDeclaration(declaration) && declaration.typeParameters) {
             typeParams = '<' + declaration.typeParameters.map(tp => tp.getText()).join(', ') + '>';
         }
         return name + typeParams;
@@ -169,7 +175,7 @@ export class TypescriptDocsParser {
      * Parses an array of inteface members into a simple object which can be rendered into markdown.
      */
     private parseMembers(
-        members: ts.NodeArray<ts.TypeElement | ts.ClassElement>,
+        members: ts.NodeArray<ts.TypeElement | ts.ClassElement | ts.EnumMember>,
     ): Array<PropertyInfo | MethodInfo> {
         const result: Array<PropertyInfo | MethodInfo> = [];
 
@@ -182,7 +188,9 @@ export class TypescriptDocsParser {
                     ts.isMethodSignature(member) ||
                     ts.isPropertyDeclaration(member) ||
                     ts.isMethodDeclaration(member) ||
-                    ts.isConstructorDeclaration(member))
+                    ts.isConstructorDeclaration(member) ||
+                    ts.isEnumMember(member)
+                )
             ) {
                 const name = member.name ? member.name.getText() : 'constructor';
                 let description = '';
@@ -202,7 +210,7 @@ export class TypescriptDocsParser {
                     example: tag => (description += this.formatExampleCode(tag.comment)),
                     default: tag => (defaultValue = tag.comment || ''),
                 });
-                if (member.type) {
+                if (!ts.isEnumMember(member) && member.type) {
                     type = member.type.getText();
                 }
                 const memberInfo: MemberInfo = {
@@ -279,7 +287,8 @@ export class TypescriptDocsParser {
         return (
             ts.isInterfaceDeclaration(statement) ||
             ts.isTypeAliasDeclaration(statement) ||
-            ts.isClassDeclaration(statement)
+            ts.isClassDeclaration(statement) ||
+            ts.isEnumDeclaration(statement)
         );
     }
 

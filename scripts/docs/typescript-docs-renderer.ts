@@ -7,7 +7,7 @@ import ts from 'typescript';
 import { assertNever } from '../../packages/common/src/shared-utils';
 
 import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
-import { ClassInfo, DeclarationInfo, InterfaceInfo, ParsedDeclaration, TypeAliasInfo, TypeMap } from './typescript-docgen-types';
+import { ClassInfo, DeclarationInfo, EnumInfo, InterfaceInfo, ParsedDeclaration, TypeAliasInfo, TypeMap } from './typescript-docgen-types';
 
 export class TypescriptDocsRenderer {
 
@@ -27,6 +27,9 @@ export class TypescriptDocsRenderer {
                     break;
                 case 'class':
                     markdown = this.renderInterfaceOrClass(info, typeMap, docsUrl);
+                    break;
+                case 'enum':
+                    markdown = this.renderEnum(info, typeMap, docsUrl);
                     break;
                 default:
                     assertNever(info);
@@ -82,6 +85,18 @@ export class TypescriptDocsRenderer {
             output += `## Members\n\n`;
             output += `${this.renderMembers(typeAliasInfo, knownTypeMap, docsUrl)}\n`;
         }
+        return output;
+    }
+
+    private renderEnum(enumInfo: EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+        const { title, weight, description, fullText } = enumInfo;
+        let output = '';
+        output += generateFrontMatter(title, weight);
+        output += `\n\n# ${title}\n\n`;
+        output += this.renderGenerationInfoShortcode(enumInfo);
+        output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
+        output += `## Signature\n\n`;
+        output += this.renderEnumSignature(enumInfo);
         return output;
     }
 
@@ -156,7 +171,25 @@ export class TypescriptDocsRenderer {
         return output;
     }
 
-    private renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+    private renderEnumSignature(enumInfo: EnumInfo): string {
+        const { fullText, members } = enumInfo;
+        let output = '';
+        output += `\`\`\`TypeScript\n`;
+        output += `enum ${fullText} `;
+        if (members) {
+            output += `{\n`;
+            output += members.map(member => {
+                let line = member.description ? `  // ${member.description}\n` : '';
+                line += `  ${member.fullText}`;
+                return line;
+            }).join(`\n`);
+            output += `\n}\n`;
+        }
+        output += `\`\`\`\n`;
+        return output;
+    }
+
+    private renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo | EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { members, title } = info;
         let output = '';
         for (const member of members || []) {

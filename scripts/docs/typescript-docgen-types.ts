@@ -53,6 +53,11 @@ export interface TypeAliasInfo extends DeclarationInfo {
     type: ts.TypeNode;
 }
 
-export type ParsedDeclaration = TypeAliasInfo | ClassInfo | InterfaceInfo;
-export type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration;
+export interface EnumInfo extends DeclarationInfo {
+    kind: 'enum';
+    members: PropertyInfo[];
+}
+
+export type ParsedDeclaration = TypeAliasInfo | ClassInfo | InterfaceInfo | EnumInfo;
+export type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration | ts.EnumDeclaration;
 export type TypeMap = Map<string, string>;
