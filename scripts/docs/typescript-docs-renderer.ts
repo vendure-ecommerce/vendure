@@ -159,6 +159,7 @@ export class TypescriptDocsRenderer {
             output += classInfo.implements + ' ';
         }
         output += `{\n`;
+        const renderModifiers = (modifiers: string[]) => modifiers.length ? modifiers.join(' ') + ' ' : '';
         output += members
             .map(member => {
                 if (member.kind === 'method') {
@@ -170,10 +171,10 @@ export class TypescriptDocsRenderer {
                     if (member.fullText === 'constructor') {
                         return `  constructor(${args})`;
                     } else {
-                        return `  ${member.fullText}(${args}) => ${member.type};`;
+                        return `  ${renderModifiers(member.modifiers)}${member.fullText}(${args}) => ${member.type};`;
                     }
                 } else {
-                    return `  ${member.fullText}`;
+                    return `  ${renderModifiers(member.modifiers)}${member.fullText}`;
                 }
             })
             .join(`\n`);
@@ -265,7 +266,7 @@ export class TypescriptDocsRenderer {
                 }
             }
             output += `### ${member.name}\n\n`;
-            output += `{{< member-info kind="${member.kind}" type="${type}" ${defaultParam}>}}\n\n`;
+            output += `{{< member-info kind="${[...member.modifiers, member.kind].join(' ')}" type="${type}" ${defaultParam}>}}\n\n`;
             output += `${this.renderDescription(member.description, knownTypeMap, docsUrl)}\n\n`;
         }
         return output;

@@ -10,6 +10,7 @@ export interface MemberInfo {
     description: string;
     type: string;
     fullText: string;
+    modifiers: string[];
 }
 
 export interface PropertyInfo extends MemberInfo {

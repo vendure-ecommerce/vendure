@@ -229,6 +229,7 @@ export class TypescriptDocsParser {
                     name,
                     description,
                     type,
+                    modifiers,
                 };
                 if (
                     ts.isMethodSignature(member) ||
