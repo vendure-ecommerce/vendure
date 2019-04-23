@@ -237,17 +237,30 @@ describe('Collection resolver', () => {
             ]);
         });
 
-        it('alters the position in the current parent', async () => {
+        it('alters the position in the current parent 1', async () => {
             await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
-                    collectionId: pearCollection.id,
+                    collectionId: computersCollection.id,
                     parentId: electronicsCollection.id,
-                    index: 1,
+                    index: 0,
                 },
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
             expect(afterResult.map((i: any) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+        });
+
+        it('alters the position in the current parent 2', async () => {
+            await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+                input: {
+                    collectionId: pearCollection.id,
+                    parentId: electronicsCollection.id,
+                    index: 0,
+                },
+            });
+
+            const afterResult = await getChildrenOf(electronicsCollection.id);
+            expect(afterResult.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {

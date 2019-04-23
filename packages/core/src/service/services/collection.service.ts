@@ -275,15 +275,21 @@ export class CollectionService implements OnModuleInit {
             const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.collectionId));
             if (currentIndex !== normalizedIndex) {
                 siblings.splice(normalizedIndex, 0, siblings.splice(currentIndex, 1)[0]);
-                siblings.forEach((cat, index) => {
-                    cat.position = index;
+                siblings.forEach((collection, index) => {
+                    collection.position = index;
+                    if (target.id === collection.id) {
+                        target.position = index;
+                    }
                 });
             }
         } else {
             target.parent = new Collection({ id: input.parentId });
             siblings.splice(normalizedIndex, 0, target);
-            siblings.forEach((cat, index) => {
-                cat.position = index;
+            siblings.forEach((collection, index) => {
+                collection.position = index;
+                if (target.id === collection.id) {
+                    target.position = index;
+                }
             });
         }
 
