@@ -94,6 +94,7 @@ export class ProductDataService {
         const input: UpdateProduct.Variables = {
             input: pick(product, [
                 'id',
+                'enabled',
                 'translations',
                 'customFields',
                 'assetIds',

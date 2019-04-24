@@ -40,6 +40,7 @@
     <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <ng-template let-result="item">
         <td class="left align-middle">
             <div class="image-placeholder">
@@ -48,7 +49,7 @@
                         groupByProduct
                             ? result.productPreview
                             : result.productVariantPreview || result.productPreview as image;
-                        else: imagePlaceholder
+                        else imagePlaceholder
                     "
                     [src]="image + '?preset=tiny'"
                 />
@@ -59,6 +60,9 @@
         </td>
         <td class="left align-middle">
             {{ groupByProduct ? result.productName : result.productVariantName }}
+        </td>
+        <td>
+            <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
         </td>
         <td class="right align-middle">
             <vdr-table-row-action

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-24T15:08:57+02:00
+// Generated in 2019-04-24T17:04:25+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {

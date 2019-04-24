@@ -82,6 +82,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
         this.detailForm = this.formBuilder.group({
             product: this.formBuilder.group({
+                enabled: true,
                 name: ['', Validators.required],
                 slug: '',
                 description: '',
@@ -329,6 +330,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
         this.detailForm.patchValue({
             product: {
+                enabled: product.enabled,
                 name: currentTranslation ? currentTranslation.name : '',
                 slug: currentTranslation ? currentTranslation.slug : '',
                 description: currentTranslation ? currentTranslation.description : '',

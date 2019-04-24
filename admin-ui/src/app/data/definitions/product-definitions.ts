@@ -64,6 +64,7 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
 export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
     fragment ProductWithVariants on Product {
         id
+        enabled
         languageCode
         name
         slug
@@ -234,6 +235,7 @@ export const GET_PRODUCT_LIST = gql`
         products(languageCode: $languageCode, options: $options) {
             items {
                 id
+                enabled
                 languageCode
                 name
                 slug
@@ -290,6 +292,7 @@ export const SEARCH_PRODUCTS = gql`
         search(input: $input) {
             totalItems
             items {
+                enabled
                 productId
                 productName
                 productPreview
