@@ -48,7 +48,7 @@ describe('Default search plugin', () => {
     });
 
     async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 groupByProduct: true,
             },
@@ -57,7 +57,7 @@ describe('Default search plugin', () => {
     }
 
     async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 groupByProduct: false,
             },
@@ -66,7 +66,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 term: 'camera',
                 groupByProduct: true,
@@ -80,7 +80,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetIds(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 facetIds: ['T_1', 'T_2'],
                 groupByProduct: true,
@@ -97,7 +97,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 collectionId: 'T_2',
                 groupByProduct: true,
@@ -204,7 +204,7 @@ describe('Default search plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
                     take: 1,
@@ -224,7 +224,7 @@ describe('Default search plugin', () => {
                     { id: 'T_3', enabled: false },
                 ],
             });
-            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
                     take: 3,
@@ -384,8 +384,98 @@ describe('Default search plugin', () => {
                 },
             ]);
         });
+
+        it('returns disabled field when not grouped', async () => {
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
+                },
+            });
+            expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
+                { productVariantId: 'T_1', enabled: true },
+                { productVariantId: 'T_2', enabled: true },
+                { productVariantId: 'T_3', enabled: false },
+            ]);
+        });
+
+        it('when grouped, disabled is false if at least one variant is enabled', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    { id: 'T_1', enabled: false },
+                    { id: 'T_2', enabled: false },
+                ],
+            });
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: true,
+                    take: 3,
+                },
+            });
+            expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                { productId: 'T_1', enabled: true },
+                { productId: 'T_2', enabled: true },
+                { productId: 'T_3', enabled: true },
+            ]);
+        });
+
+        it('when grouped, disabled is true if all variants are disabled', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    { id: 'T_4', enabled: false },
+                ],
+            });
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: true,
+                    take: 3,
+                },
+            });
+            expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                { productId: 'T_1', enabled: false },
+                { productId: 'T_2', enabled: true },
+                { productId: 'T_3', enabled: true },
+            ]);
+        });
+
+        it('when grouped, disabled is true product is disabled', async () => {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                input: {
+                    id: 'T_3',
+                    enabled: false,
+                },
+            });
+            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: true,
+                    take: 3,
+                },
+            });
+            expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                { productId: 'T_1', enabled: false },
+                { productId: 'T_2', enabled: true },
+                { productId: 'T_3', enabled: false },
+            ]);
+        });
     });
 });
+
+export const SEARCH_PRODUCTS_SHOP = gql`
+    query SearchProducts($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            items {
+                productId
+                productName
+                productPreview
+                productVariantId
+                productVariantName
+                productVariantPreview
+                sku
+            }
+        }
+    }
+`;
 
 export const SEARCH_GET_FACET_VALUES = gql`
     query SearchProducts($input: SearchInput!) {

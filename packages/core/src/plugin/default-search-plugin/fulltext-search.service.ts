@@ -124,6 +124,9 @@ export class FulltextSearchService implements SearchService {
                         .findByIds(product.variants.map(v => v.id), {
                             relations: this.variantRelations,
                         });
+                    if (product.enabled === false) {
+                        updatedVariants.forEach(v => v.enabled = false);
+                    }
                 }
             }
         } else {

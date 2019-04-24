@@ -63,7 +63,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             }
         }
         if (enabledOnly) {
-            qb.andWhere('"si"."enabled" = :enabled', { enabled: true });
+            qb.andWhere('"si_enabled" = :enabled', { enabled: true });
         }
 
         return qb
@@ -82,7 +82,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             input,
         );
         if (enabledOnly) {
-            innerQb.andWhere('"si"."enabled" = :enabled', { enabled: true });
+            innerQb.andWhere('"si_enabled" = :enabled', { enabled: true });
         }
         const totalItemsQb = this.connection
             .createQueryBuilder()
@@ -151,6 +151,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
     private createPostgresSelect(groupByProduct: boolean): string {
         return [
             'sku',
+            'enabled',
             'slug',
             'price',
             'priceWithTax',
@@ -172,6 +173,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 if (groupByProduct && col !== 'productId') {
                     if (col === 'facetIds' || col === 'facetValueIds' || col === 'collectionIds') {
                         return `string_agg(${qualifiedName}, ',') as "${alias}"`;
+                    } else if (col === 'enabled') {
+                        return `bool_or(${qualifiedName}) as "${alias}"`;
                     } else {
                         return `MIN(${qualifiedName}) as "${alias}"`;
                     }
