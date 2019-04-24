@@ -39,6 +39,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     onChange: (val: any) => void;
     onTouch: () => void;
     disabled = false;
+    private initialized = false;
 
     @ViewChild('trixEditor') private trixEditor: ElementRef;
 
@@ -49,13 +50,17 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     }
 
     onTrixChangeHandler = () => {
-        this.onChange(this.trix.innerHTML);
-        this.changeDetector.markForCheck();
+        if (this.initialized) {
+            this.onChange(this.trix.innerHTML);
+            this.changeDetector.markForCheck();
+        }
     };
 
     onTrixFocusHandler = () => {
-        this.onTouch();
-        this.changeDetector.markForCheck();
+        if (this.initialized) {
+            this.onTouch();
+            this.changeDetector.markForCheck();
+        }
     };
 
     ngAfterViewInit() {
@@ -82,7 +87,12 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
 
     writeValue(value: any) {
         if (this.trix.innerHTML !== value) {
-            this.trix.editor.loadHTML(value);
+            if (!this.initialized) {
+                setTimeout(() => {
+                    this.trix.editor.loadHTML(value);
+                    this.initialized = true;
+                });
+            }
         }
     }
 }
