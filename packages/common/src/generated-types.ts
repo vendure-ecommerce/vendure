@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-24T17:04:27+02:00
+// Generated in 2019-04-24T20:30:13+02:00
 export type Maybe<T> = T | null;
 
 
@@ -676,6 +676,42 @@ export interface CreateAssetInput {
   file: Upload;
 }
 
+export interface CreateChannelInput {
+  
+  code: string;
+  
+  token: string;
+  
+  defaultLanguageCode: LanguageCode;
+  
+  pricesIncludeTax: boolean;
+  
+  currencyCode: CurrencyCode;
+  
+  defaultTaxZoneId?: Maybe<string>;
+  
+  defaultShippingZoneId?: Maybe<string>;
+}
+
+export interface UpdateChannelInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  token?: Maybe<string>;
+  
+  defaultLanguageCode?: Maybe<LanguageCode>;
+  
+  pricesIncludeTax?: Maybe<boolean>;
+  
+  currencyCode?: Maybe<CurrencyCode>;
+  
+  defaultTaxZoneId?: Maybe<string>;
+  
+  defaultShippingZoneId?: Maybe<string>;
+}
+
 export interface CreateCollectionInput {
   
   featuredAssetId?: Maybe<string>;
@@ -773,42 +809,6 @@ export interface UpdateCountryInput {
   translations?: Maybe<CountryTranslationInput[]>;
   
   enabled?: Maybe<boolean>;
-}
-
-export interface CreateChannelInput {
-  
-  code: string;
-  
-  token: string;
-  
-  defaultLanguageCode: LanguageCode;
-  
-  pricesIncludeTax: boolean;
-  
-  currencyCode: CurrencyCode;
-  
-  defaultTaxZoneId?: Maybe<string>;
-  
-  defaultShippingZoneId?: Maybe<string>;
-}
-
-export interface UpdateChannelInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  token?: Maybe<string>;
-  
-  defaultLanguageCode?: Maybe<LanguageCode>;
-  
-  pricesIncludeTax?: Maybe<boolean>;
-  
-  currencyCode?: Maybe<CurrencyCode>;
-  
-  defaultTaxZoneId?: Maybe<string>;
-  
-  defaultShippingZoneId?: Maybe<string>;
 }
 
 export interface CreateCustomerGroupInput {
@@ -1004,6 +1004,48 @@ export interface UpdatePaymentMethodInput {
   configArgs?: Maybe<ConfigArgInput[]>;
 }
 
+export interface CreateProductOptionGroupInput {
+  
+  code: string;
+  
+  translations: ProductOptionGroupTranslationInput[];
+  
+  options: CreateProductOptionInput[];
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface ProductOptionGroupTranslationInput {
+  
+  id?: Maybe<string>;
+  
+  languageCode: LanguageCode;
+  
+  name?: Maybe<string>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface CreateProductOptionInput {
+  
+  code: string;
+  
+  translations: ProductOptionGroupTranslationInput[];
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface UpdateProductOptionGroupInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  translations?: Maybe<ProductOptionGroupTranslationInput[]>;
+  
+  customFields?: Maybe<Json>;
+}
+
 export interface CreateProductInput {
   
   featuredAssetId?: Maybe<string>;
@@ -1079,48 +1121,6 @@ export interface ProductVariantTranslationInput {
   languageCode: LanguageCode;
   
   name?: Maybe<string>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface CreateProductOptionGroupInput {
-  
-  code: string;
-  
-  translations: ProductOptionGroupTranslationInput[];
-  
-  options: CreateProductOptionInput[];
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface ProductOptionGroupTranslationInput {
-  
-  id?: Maybe<string>;
-  
-  languageCode: LanguageCode;
-  
-  name?: Maybe<string>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface CreateProductOptionInput {
-  
-  code: string;
-  
-  translations: ProductOptionGroupTranslationInput[];
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface UpdateProductOptionGroupInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  translations?: Maybe<ProductOptionGroupTranslationInput[]>;
   
   customFields?: Maybe<Json>;
 }
@@ -4037,6 +4037,8 @@ export namespace ProductVariant {
     
     id: string;
     
+    enabled: boolean;
+    
     languageCode: LanguageCode;
     
     name: string;
@@ -4540,6 +4542,12 @@ export interface Query {
   
   me?: Maybe<CurrentUser>;
   
+  channels: Channel[];
+  
+  channel?: Maybe<Channel>;
+  
+  activeChannel: Channel;
+  
   collections: CollectionList;
   
   collection?: Maybe<Collection>;
@@ -4549,12 +4557,6 @@ export interface Query {
   countries: CountryList;
   
   country?: Maybe<Country>;
-  
-  channels: Channel[];
-  
-  channel?: Maybe<Channel>;
-  
-  activeChannel: Channel;
   
   customerGroups: CustomerGroup[];
   
@@ -4578,15 +4580,15 @@ export interface Query {
   
   paymentMethod?: Maybe<PaymentMethod>;
   
+  productOptionGroups: ProductOptionGroup[];
+  
+  productOptionGroup?: Maybe<ProductOptionGroup>;
+  
   search: SearchResponse;
   
   products: ProductList;
   
   product?: Maybe<Product>;
-  
-  productOptionGroups: ProductOptionGroup[];
-  
-  productOptionGroup?: Maybe<ProductOptionGroup>;
   
   promotion?: Maybe<Promotion>;
   
@@ -5406,6 +5408,42 @@ export interface PaymentMethod extends Node {
 }
 
 
+export interface ProductOptionGroup extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  code: string;
+  
+  name: string;
+  
+  options: ProductOption[];
+  
+  translations: ProductOptionGroupTranslation[];
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface ProductOptionGroupTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+}
+
+
 export interface SearchResponse {
   
   items: SearchResult[];
@@ -5520,42 +5558,6 @@ export interface Product extends Node {
 }
 
 
-export interface ProductOptionGroup extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  code: string;
-  
-  name: string;
-  
-  options: ProductOption[];
-  
-  translations: ProductOptionGroupTranslation[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface ProductOptionGroupTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-}
-
-
 export interface ProductTranslation {
   
   id: string;
@@ -5667,6 +5669,10 @@ export interface Mutation {
   login: LoginResult;
   
   logout: boolean;
+  /** Create a new Channel */
+  createChannel: Channel;
+  /** Update an existing Channel */
+  updateChannel: Channel;
   /** Create a new Collection */
   createCollection: Collection;
   /** Update an existing Collection */
@@ -5679,10 +5685,6 @@ export interface Mutation {
   updateCountry: Country;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
-  /** Create a new Channel */
-  createChannel: Channel;
-  /** Update an existing Channel */
-  updateChannel: Channel;
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup;
   /** Update an existing CustomerGroup */
@@ -5721,6 +5723,10 @@ export interface Mutation {
   importProducts?: Maybe<ImportInfo>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
+  /** Create a new ProductOptionGroup */
+  createProductOptionGroup: ProductOptionGroup;
+  /** Update an existing ProductOptionGroup */
+  updateProductOptionGroup: ProductOptionGroup;
   
   reindex: SearchReindexResponse;
   /** Create a new Product */
@@ -5737,10 +5743,6 @@ export interface Mutation {
   generateVariantsForProduct: Product;
   /** Update existing ProductVariants */
   updateProductVariants: (Maybe<ProductVariant>)[];
-  /** Create a new ProductOptionGroup */
-  createProductOptionGroup: ProductOptionGroup;
-  /** Update an existing ProductOptionGroup */
-  updateProductOptionGroup: ProductOptionGroup;
   
   createPromotion: Promotion;
   
@@ -5851,6 +5853,10 @@ export interface AssetQueryArgs {
   
   id: string;
 }
+export interface ChannelQueryArgs {
+  
+  id: string;
+}
 export interface CollectionsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -5868,10 +5874,6 @@ export interface CountriesQueryArgs {
   options?: Maybe<CountryListOptions>;
 }
 export interface CountryQueryArgs {
-  
-  id: string;
-}
-export interface ChannelQueryArgs {
   
   id: string;
 }
@@ -5915,6 +5917,18 @@ export interface PaymentMethodQueryArgs {
   
   id: string;
 }
+export interface ProductOptionGroupsQueryArgs {
+  
+  languageCode?: Maybe<LanguageCode>;
+  
+  filterTerm?: Maybe<string>;
+}
+export interface ProductOptionGroupQueryArgs {
+  
+  id: string;
+  
+  languageCode?: Maybe<LanguageCode>;
+}
 export interface SearchQueryArgs {
   
   input: SearchInput;
@@ -5926,18 +5940,6 @@ export interface ProductsQueryArgs {
   options?: Maybe<ProductListOptions>;
 }
 export interface ProductQueryArgs {
-  
-  id: string;
-  
-  languageCode?: Maybe<LanguageCode>;
-}
-export interface ProductOptionGroupsQueryArgs {
-  
-  languageCode?: Maybe<LanguageCode>;
-  
-  filterTerm?: Maybe<string>;
-}
-export interface ProductOptionGroupQueryArgs {
   
   id: string;
   
@@ -6017,6 +6019,14 @@ export interface LoginMutationArgs {
   
   rememberMe?: Maybe<boolean>;
 }
+export interface CreateChannelMutationArgs {
+  
+  input: CreateChannelInput;
+}
+export interface UpdateChannelMutationArgs {
+  
+  input: UpdateChannelInput;
+}
 export interface CreateCollectionMutationArgs {
   
   input: CreateCollectionInput;
@@ -6040,14 +6050,6 @@ export interface UpdateCountryMutationArgs {
 export interface DeleteCountryMutationArgs {
   
   id: string;
-}
-export interface CreateChannelMutationArgs {
-  
-  input: CreateChannelInput;
-}
-export interface UpdateChannelMutationArgs {
-  
-  input: UpdateChannelInput;
 }
 export interface CreateCustomerGroupMutationArgs {
   
@@ -6137,6 +6139,14 @@ export interface UpdatePaymentMethodMutationArgs {
   
   input: UpdatePaymentMethodInput;
 }
+export interface CreateProductOptionGroupMutationArgs {
+  
+  input: CreateProductOptionGroupInput;
+}
+export interface UpdateProductOptionGroupMutationArgs {
+  
+  input: UpdateProductOptionGroupInput;
+}
 export interface CreateProductMutationArgs {
   
   input: CreateProductInput;
@@ -6174,14 +6184,6 @@ export interface GenerateVariantsForProductMutationArgs {
 export interface UpdateProductVariantsMutationArgs {
   
   input: UpdateProductVariantInput[];
-}
-export interface CreateProductOptionGroupMutationArgs {
-  
-  input: CreateProductOptionGroupInput;
-}
-export interface UpdateProductOptionGroupMutationArgs {
-  
-  input: UpdateProductOptionGroupInput;
 }
 export interface CreatePromotionMutationArgs {
   

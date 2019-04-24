@@ -31,6 +31,7 @@ import { VariantAssetChange } from '../product-variants-list/product-variants-li
 
 export type TabName = 'details' | 'variants';
 export interface VariantFormValue {
+    enabled: boolean;
     sku: string;
     name: string;
     price: number;
@@ -359,6 +360,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
             const facetValueIds = variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
+                enabled: variant.enabled,
                 sku: variant.sku,
                 name: variantTranslation ? variantTranslation.name : '',
                 price: variant.price,

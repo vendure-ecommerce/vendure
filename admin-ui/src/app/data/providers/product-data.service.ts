@@ -126,6 +126,7 @@ export class ProductDataService {
             input: variants.map(
                 pick([
                     'id',
+                    'enabled',
                     'translations',
                     'sku',
                     'price',

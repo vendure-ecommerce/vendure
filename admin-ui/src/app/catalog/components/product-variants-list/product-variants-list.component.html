@@ -45,6 +45,17 @@
                 </div>
             </div>
             <div class="flex-spacer"></div>
+            <div>
+                <clr-toggle-wrapper>
+                    <input
+                        type="checkbox"
+                        clrToggle
+                        name="enabled"
+                        [formControl]="formArray.get([i, 'enabled'])"
+                    />
+                    <label>{{ 'common.enabled' | translate }}</label>
+                </clr-toggle-wrapper>
+            </div>
         </div>
         <div class="card-block">
             <div class="row">
