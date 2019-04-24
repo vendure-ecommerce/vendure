@@ -93,14 +93,20 @@ export class ProductVariantService {
         collectionId: ID,
         options: ListQueryOptions<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
-        return this.listQueryBuilder
+        const qb = this.listQueryBuilder
             .build(ProductVariant, options, {
                 relations: ['taxCategory'],
                 channelId: ctx.channelId,
             })
             .leftJoin('productvariant.collections', 'collection')
-            .andWhere('collection.id = :collectionId', { collectionId })
-            .getManyAndCount()
+            .andWhere('collection.id = :collectionId', { collectionId });
+
+        if (options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
+            qb.leftJoin('productvariant.product', 'product')
+                .andWhere('product.enabled = :enabled', { enabled: true });
+        }
+
+        return qb.getManyAndCount()
             .then(async ([variants, totalItems]) => {
                 const items = variants.map(variant => {
                     const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);

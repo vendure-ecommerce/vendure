@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-09T14:28:32+02:00
+// Generated in 2019-04-24T10:46:05+02:00
 export type Maybe<T> = T | null;
 
 
@@ -220,6 +220,8 @@ export interface ProductVariantFilterParameter {
   priceIncludesTax?: Maybe<BooleanOperators>;
   
   priceWithTax?: Maybe<NumberOperators>;
+  
+  enabled?: Maybe<BooleanOperators>;
 }
 
 export interface BooleanOperators {
@@ -256,43 +258,6 @@ export interface CountryFilterParameter {
   name?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
-}
-
-export interface FacetListOptions {
-  
-  skip?: Maybe<number>;
-  
-  take?: Maybe<number>;
-  
-  sort?: Maybe<FacetSortParameter>;
-  
-  filter?: Maybe<FacetFilterParameter>;
-}
-
-export interface FacetSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  name?: Maybe<SortOrder>;
-  
-  code?: Maybe<SortOrder>;
-}
-
-export interface FacetFilterParameter {
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-  
-  languageCode?: Maybe<StringOperators>;
-  
-  name?: Maybe<StringOperators>;
-  
-  code?: Maybe<StringOperators>;
 }
 
 export interface CustomerListOptions {
@@ -401,6 +366,43 @@ export interface OrderFilterParameter {
   total?: Maybe<NumberOperators>;
 }
 
+export interface FacetListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<FacetSortParameter>;
+  
+  filter?: Maybe<FacetFilterParameter>;
+}
+
+export interface FacetSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+  
+  code?: Maybe<SortOrder>;
+}
+
+export interface FacetFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  code?: Maybe<StringOperators>;
+}
+
 export interface PaymentMethodListOptions {
   
   skip?: Maybe<number>;
@@ -432,6 +434,30 @@ export interface PaymentMethodFilterParameter {
   code?: Maybe<StringOperators>;
   
   enabled?: Maybe<BooleanOperators>;
+}
+
+export interface SearchInput {
+  
+  term?: Maybe<string>;
+  
+  facetIds?: Maybe<string[]>;
+  
+  collectionId?: Maybe<string>;
+  
+  groupByProduct?: Maybe<boolean>;
+  
+  take?: Maybe<number>;
+  
+  skip?: Maybe<number>;
+  
+  sort?: Maybe<SearchResultSortParameter>;
+}
+
+export interface SearchResultSortParameter {
+  
+  name?: Maybe<SortOrder>;
+  
+  price?: Maybe<SortOrder>;
 }
 
 export interface ProductListOptions {
@@ -473,30 +499,8 @@ export interface ProductFilterParameter {
   slug?: Maybe<StringOperators>;
   
   description?: Maybe<StringOperators>;
-}
-
-export interface SearchInput {
   
-  term?: Maybe<string>;
-  
-  facetIds?: Maybe<string[]>;
-  
-  collectionId?: Maybe<string>;
-  
-  groupByProduct?: Maybe<boolean>;
-  
-  take?: Maybe<number>;
-  
-  skip?: Maybe<number>;
-  
-  sort?: Maybe<SearchResultSortParameter>;
-}
-
-export interface SearchResultSortParameter {
-  
-  name?: Maybe<SortOrder>;
-  
-  price?: Maybe<SortOrder>;
+  enabled?: Maybe<BooleanOperators>;
 }
 
 export interface PromotionListOptions {
@@ -821,79 +825,6 @@ export interface UpdateCustomerGroupInput {
   name?: Maybe<string>;
 }
 
-export interface CreateFacetInput {
-  
-  code: string;
-  
-  translations: FacetTranslationInput[];
-  
-  values?: Maybe<CreateFacetValueWithFacetInput[]>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface FacetTranslationInput {
-  
-  id?: Maybe<string>;
-  
-  languageCode: LanguageCode;
-  
-  name?: Maybe<string>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface CreateFacetValueWithFacetInput {
-  
-  code: string;
-  
-  translations: FacetValueTranslationInput[];
-}
-
-export interface FacetValueTranslationInput {
-  
-  id?: Maybe<string>;
-  
-  languageCode: LanguageCode;
-  
-  name?: Maybe<string>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface UpdateFacetInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  translations?: Maybe<FacetTranslationInput[]>;
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface CreateFacetValueInput {
-  
-  facetId: string;
-  
-  code: string;
-  
-  translations: FacetValueTranslationInput[];
-  
-  customFields?: Maybe<Json>;
-}
-
-export interface UpdateFacetValueInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  translations?: Maybe<FacetValueTranslationInput[]>;
-  
-  customFields?: Maybe<Json>;
-}
-
 export interface CreateCustomerInput {
   
   title?: Maybe<string>;
@@ -978,6 +909,79 @@ export interface UpdateAddressInput {
   defaultShippingAddress?: Maybe<boolean>;
   
   defaultBillingAddress?: Maybe<boolean>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface CreateFacetInput {
+  
+  code: string;
+  
+  translations: FacetTranslationInput[];
+  
+  values?: Maybe<CreateFacetValueWithFacetInput[]>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface FacetTranslationInput {
+  
+  id?: Maybe<string>;
+  
+  languageCode: LanguageCode;
+  
+  name?: Maybe<string>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface CreateFacetValueWithFacetInput {
+  
+  code: string;
+  
+  translations: FacetValueTranslationInput[];
+}
+
+export interface FacetValueTranslationInput {
+  
+  id?: Maybe<string>;
+  
+  languageCode: LanguageCode;
+  
+  name?: Maybe<string>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface UpdateFacetInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  translations?: Maybe<FacetTranslationInput[]>;
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface CreateFacetValueInput {
+  
+  facetId: string;
+  
+  code: string;
+  
+  translations: FacetValueTranslationInput[];
+  
+  customFields?: Maybe<Json>;
+}
+
+export interface UpdateFacetValueInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  translations?: Maybe<FacetValueTranslationInput[]>;
   
   customFields?: Maybe<Json>;
 }
@@ -1074,6 +1078,8 @@ export interface UpdateProductInput {
   
   id: string;
   
+  enabled?: Maybe<boolean>;
+  
   featuredAssetId?: Maybe<string>;
   
   assetIds?: Maybe<string[]>;
@@ -1088,6 +1094,8 @@ export interface UpdateProductInput {
 export interface UpdateProductVariantInput {
   
   id: string;
+  
+  enabled?: Maybe<boolean>;
   
   translations?: Maybe<ProductVariantTranslationInput[]>;
   
@@ -2705,6 +2713,8 @@ export namespace GetProductList {
     
     id: string;
     
+    enabled: boolean;
+    
     languageCode: LanguageCode;
     
     name: string;
@@ -4125,6 +4135,8 @@ export namespace ProductWithVariants {
     
     id: string;
     
+    enabled: boolean;
+    
     languageCode: LanguageCode;
     
     name: string;
@@ -4546,13 +4558,13 @@ export interface Query {
   
   customerGroup?: Maybe<CustomerGroup>;
   
-  facets: FacetList;
-  
-  facet?: Maybe<Facet>;
-  
   customers: CustomerList;
   
   customer?: Maybe<Customer>;
+  
+  facets: FacetList;
+  
+  facet?: Maybe<Facet>;
   
   globalSettings: GlobalSettings;
   
@@ -4568,11 +4580,11 @@ export interface Query {
   
   productOptionGroup?: Maybe<ProductOptionGroup>;
   
+  search: SearchResponse;
+  
   products: ProductList;
   
   product?: Maybe<Product>;
-  
-  search: SearchResponse;
   
   promotion?: Maybe<Promotion>;
   
@@ -4916,6 +4928,8 @@ export interface ProductVariant extends Node {
   
   translations: ProductVariantTranslation[];
   
+  enabled: boolean;
+  
   customFields?: Maybe<Json>;
 }
 
@@ -5089,14 +5103,6 @@ export interface ProductVariantTranslation {
 export interface CountryList extends PaginatedList {
   
   items: Country[];
-  
-  totalItems: number;
-}
-
-
-export interface FacetList extends PaginatedList {
-  
-  items: Facet[];
   
   totalItems: number;
 }
@@ -5344,6 +5350,14 @@ export interface ShippingMethod extends Node {
 }
 
 
+export interface FacetList extends PaginatedList {
+  
+  items: Facet[];
+  
+  totalItems: number;
+}
+
+
 export interface GlobalSettings {
   
   id: string;
@@ -5426,66 +5440,6 @@ export interface ProductOptionGroupTranslation {
 }
 
 
-export interface ProductList extends PaginatedList {
-  
-  items: Product[];
-  
-  totalItems: number;
-}
-
-
-export interface Product extends Node {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-  
-  slug: string;
-  
-  description: string;
-  
-  featuredAsset?: Maybe<Asset>;
-  
-  assets: Asset[];
-  
-  variants: ProductVariant[];
-  
-  optionGroups: ProductOptionGroup[];
-  
-  facetValues: FacetValue[];
-  
-  translations: ProductTranslation[];
-  
-  collections: Collection[];
-  
-  customFields?: Maybe<Json>;
-}
-
-
-export interface ProductTranslation {
-  
-  id: string;
-  
-  createdAt: DateTime;
-  
-  updatedAt: DateTime;
-  
-  languageCode: LanguageCode;
-  
-  name: string;
-  
-  slug: string;
-  
-  description: string;
-}
-
-
 export interface SearchResponse {
   
   items: SearchResult[];
@@ -5529,6 +5483,8 @@ export interface SearchResult {
   collectionIds: string[];
   /** A relevence score for the result. Differs between database implementations */
   score: number;
+  
+  enabled: boolean;
 }
 
 /** The price range where the result has more than one price */
@@ -5551,6 +5507,68 @@ export interface FacetValueResult {
   facetValue: FacetValue;
   
   count: number;
+}
+
+
+export interface ProductList extends PaginatedList {
+  
+  items: Product[];
+  
+  totalItems: number;
+}
+
+
+export interface Product extends Node {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+  
+  slug: string;
+  
+  description: string;
+  
+  featuredAsset?: Maybe<Asset>;
+  
+  assets: Asset[];
+  
+  variants: ProductVariant[];
+  
+  optionGroups: ProductOptionGroup[];
+  
+  facetValues: FacetValue[];
+  
+  translations: ProductTranslation[];
+  
+  collections: Collection[];
+  
+  enabled: boolean;
+  
+  customFields?: Maybe<Json>;
+}
+
+
+export interface ProductTranslation {
+  
+  id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
+  
+  languageCode: LanguageCode;
+  
+  name: string;
+  
+  slug: string;
+  
+  description: string;
 }
 
 
@@ -5671,18 +5689,6 @@ export interface Mutation {
   addCustomersToGroup: CustomerGroup;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
-  /** Create a new Facet */
-  createFacet: Facet;
-  /** Update an existing Facet */
-  updateFacet: Facet;
-  /** Delete an existing Facet */
-  deleteFacet: DeletionResponse;
-  /** Create one or more FacetValues */
-  createFacetValues: FacetValue[];
-  /** Update one or more FacetValues */
-  updateFacetValues: FacetValue[];
-  /** Delete one or more FacetValues */
-  deleteFacetValues: DeletionResponse[];
   /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
   createCustomer: Customer;
   /** Update an existing Customer */
@@ -5695,6 +5701,18 @@ export interface Mutation {
   updateCustomerAddress: Address;
   /** Update an existing Address */
   deleteCustomerAddress: boolean;
+  /** Create a new Facet */
+  createFacet: Facet;
+  /** Update an existing Facet */
+  updateFacet: Facet;
+  /** Delete an existing Facet */
+  deleteFacet: DeletionResponse;
+  /** Create one or more FacetValues */
+  createFacetValues: FacetValue[];
+  /** Update one or more FacetValues */
+  updateFacetValues: FacetValue[];
+  /** Delete one or more FacetValues */
+  deleteFacetValues: DeletionResponse[];
   
   updateGlobalSettings: GlobalSettings;
   
@@ -5705,6 +5723,8 @@ export interface Mutation {
   createProductOptionGroup: ProductOptionGroup;
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup;
+  
+  reindex: SearchReindexResponse;
   /** Create a new Product */
   createProduct: Product;
   /** Update an existing Product */
@@ -5719,8 +5739,6 @@ export interface Mutation {
   generateVariantsForProduct: Product;
   /** Update existing ProductVariants */
   updateProductVariants: (Maybe<ProductVariant>)[];
-  
-  reindex: SearchReindexResponse;
   
   createPromotion: Promotion;
   
@@ -5859,6 +5877,14 @@ export interface CustomerGroupQueryArgs {
   
   id: string;
 }
+export interface CustomersQueryArgs {
+  
+  options?: Maybe<CustomerListOptions>;
+}
+export interface CustomerQueryArgs {
+  
+  id: string;
+}
 export interface FacetsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -5870,14 +5896,6 @@ export interface FacetQueryArgs {
   id: string;
   
   languageCode?: Maybe<LanguageCode>;
-}
-export interface CustomersQueryArgs {
-  
-  options?: Maybe<CustomerListOptions>;
-}
-export interface CustomerQueryArgs {
-  
-  id: string;
 }
 export interface OrderQueryArgs {
   
@@ -5907,6 +5925,10 @@ export interface ProductOptionGroupQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
 }
+export interface SearchQueryArgs {
+  
+  input: SearchInput;
+}
 export interface ProductsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -5918,10 +5940,6 @@ export interface ProductQueryArgs {
   id: string;
   
   languageCode?: Maybe<LanguageCode>;
-}
-export interface SearchQueryArgs {
-  
-  input: SearchInput;
 }
 export interface PromotionQueryArgs {
   
@@ -6049,34 +6067,6 @@ export interface RemoveCustomersFromGroupMutationArgs {
   
   customerIds: string[];
 }
-export interface CreateFacetMutationArgs {
-  
-  input: CreateFacetInput;
-}
-export interface UpdateFacetMutationArgs {
-  
-  input: UpdateFacetInput;
-}
-export interface DeleteFacetMutationArgs {
-  
-  id: string;
-  
-  force?: Maybe<boolean>;
-}
-export interface CreateFacetValuesMutationArgs {
-  
-  input: CreateFacetValueInput[];
-}
-export interface UpdateFacetValuesMutationArgs {
-  
-  input: UpdateFacetValueInput[];
-}
-export interface DeleteFacetValuesMutationArgs {
-  
-  ids: string[];
-  
-  force?: Maybe<boolean>;
-}
 export interface CreateCustomerMutationArgs {
   
   input: CreateCustomerInput;
@@ -6104,6 +6094,34 @@ export interface UpdateCustomerAddressMutationArgs {
 export interface DeleteCustomerAddressMutationArgs {
   
   id: string;
+}
+export interface CreateFacetMutationArgs {
+  
+  input: CreateFacetInput;
+}
+export interface UpdateFacetMutationArgs {
+  
+  input: UpdateFacetInput;
+}
+export interface DeleteFacetMutationArgs {
+  
+  id: string;
+  
+  force?: Maybe<boolean>;
+}
+export interface CreateFacetValuesMutationArgs {
+  
+  input: CreateFacetValueInput[];
+}
+export interface UpdateFacetValuesMutationArgs {
+  
+  input: UpdateFacetValueInput[];
+}
+export interface DeleteFacetValuesMutationArgs {
+  
+  ids: string[];
+  
+  force?: Maybe<boolean>;
 }
 export interface UpdateGlobalSettingsMutationArgs {
   

@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "watch": "tsc -p ./tsconfig.build.json -w",
     "build": "rimraf dist && tsc -p ./tsconfig.build.json"
   },
   "publishConfig": {

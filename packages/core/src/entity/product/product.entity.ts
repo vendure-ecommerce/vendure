@@ -36,6 +36,9 @@ export class Product extends VendureEntity
 
     description: LocaleString;
 
+    @Column({ default: true })
+    enabled: boolean;
+
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 

@@ -5,3 +5,7 @@ type Query {
 type Mutation {
     reindex: SearchReindexResponse!
 }
+
+type SearchResult {
+    enabled: Boolean!
+}

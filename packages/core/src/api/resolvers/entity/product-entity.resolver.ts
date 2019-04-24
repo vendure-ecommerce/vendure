@@ -7,6 +7,7 @@ import { Product } from '../../../entity/product/product.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { RequestContext } from '../../common/request-context';
+import { Api, ApiType } from '../../decorators/api.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Product')
@@ -20,8 +21,12 @@ export class ProductEntityResolver {
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
+        @Api() apiType: ApiType,
     ): Promise<Array<Translated<ProductVariant>>> {
-        return this.productVariantService.getVariantsByProductId(ctx, product.id);
+        // In the shop URL, the parent (Product type) does not have the "enabled"
+        // field, in which case we should filter out any non-enabled variants too.
+        const variants = await this.productVariantService.getVariantsByProductId(ctx, product.id);
+        return variants.filter(v => apiType === 'admin' ? true : v.enabled);
     }
 
     @ResolveProperty()

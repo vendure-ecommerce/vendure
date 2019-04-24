@@ -10,6 +10,7 @@ import { Omit } from '@vendure/common/lib/omit';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { InternalServerError } from '../../../common/error/errors';
+import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { Product } from '../../../entity/product/product.entity';
@@ -34,7 +35,20 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: ProductsQueryArgs,
     ): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService.findAll(ctx, args.options || undefined);
+
+        let options: ListQueryOptions<Product>;
+        if (args.options) {
+            options = {
+                ...args.options,
+                filter: {
+                    ...args.options.filter,
+                    enabled: { eq: true },
+                },
+            };
+        } else {
+            options = {};
+        }
+        return this.productService.findAll(ctx, options);
     }
 
     @Query()
@@ -42,7 +56,14 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: ProductQueryArgs,
     ): Promise<Translated<Product> | undefined> {
-        return this.productService.findOne(ctx, args.id);
+        const result = await this.productService.findOne(ctx, args.id);
+        if (!result) {
+            return;
+        }
+        if (result.enabled === false) {
+            return;
+        }
+        return result;
     }
 
     @Query()

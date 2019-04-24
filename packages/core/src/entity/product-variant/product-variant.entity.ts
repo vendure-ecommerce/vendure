@@ -33,7 +33,11 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     name: LocaleString;
 
-    @Column() sku: string;
+    @Column({ default: true })
+    enabled: boolean;
+
+    @Column()
+    sku: string;
 
     /**
      * A synthetic property which is populated with data from a ProductVariantPrice entity.
