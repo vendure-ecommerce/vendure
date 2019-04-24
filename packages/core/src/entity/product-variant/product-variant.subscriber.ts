@@ -26,17 +26,19 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
     }
 
     async afterUpdate(event: InsertEvent<ProductVariant>) {
-        const variantPrice = await event.connection.getRepository(ProductVariantPrice).findOne({
-            where: {
-                variant: event.entity.id,
-                channelId: event.queryRunner.data.channelId,
-            },
-        });
-        if (!variantPrice) {
-            throw new InternalServerError(`error.could-not-find-product-variant-price`);
-        }
+        if (event.entity.price !== undefined) {
+            const variantPrice = await event.connection.getRepository(ProductVariantPrice).findOne({
+                where: {
+                    variant: event.entity.id,
+                    channelId: event.queryRunner.data.channelId,
+                },
+            });
+            if (!variantPrice) {
+                throw new InternalServerError(`error.could-not-find-product-variant-price`);
+            }
 
-        variantPrice.price = event.entity.price || 0;
-        await event.manager.save(variantPrice);
+            variantPrice.price = event.entity.price || 0;
+            await event.manager.save(variantPrice);
+        }
     }
 }

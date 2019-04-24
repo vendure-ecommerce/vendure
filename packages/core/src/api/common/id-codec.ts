@@ -3,6 +3,8 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';
 
+const ID_KEYS = ['id', 'productId', 'productVariantId'];
+
 /**
  * This service is responsible for encoding/decoding entity IDs according to the configured EntityIdStrategy.
  * It should only need to be used in resolvers - the design is that once a request hits the business logic layer
@@ -21,7 +23,7 @@ export class IdCodec {
      * @return A decoded clone of the target
      */
     decode<T extends string | number | object | undefined>(target: T, transformKeys?: string[]): T {
-        const transformKeysWithId = [...(transformKeys || []), 'id'];
+        const transformKeysWithId = [...(transformKeys || []), ...ID_KEYS];
         return this.transformRecursive(
             target,
             input => this.entityIdStrategy.decodeId(input),
@@ -39,7 +41,7 @@ export class IdCodec {
      * @return An encoded clone of the target
      */
     encode<T extends string | number | boolean | object | undefined>(target: T, transformKeys?: string[]): T {
-        const transformKeysWithId = [...(transformKeys || []), 'id'];
+        const transformKeysWithId = [...(transformKeys || []), ...ID_KEYS];
         return this.transformRecursive(
             target,
             input => this.entityIdStrategy.encodeId(input),

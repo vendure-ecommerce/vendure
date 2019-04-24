@@ -8,15 +8,14 @@ import {
     UpdateProduct,
     UpdateTaxRate,
 } from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    CREATE_COLLECTION,
-    UPDATE_COLLECTION,
-} from '../../../admin-ui/src/app/data/definitions/collection-definitions';
-import { SEARCH_PRODUCTS, UPDATE_PRODUCT } from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { CREATE_COLLECTION, UPDATE_COLLECTION } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { SEARCH_PRODUCTS, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
+import { UpdateProductVariants } from '../../common/src/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
@@ -203,6 +202,36 @@ describe('Default search plugin', () => {
                 { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
+
+        it('encodes the productId and productVariantId', async () => {
+            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: false,
+                    take: 1,
+                },
+            });
+            expect(pick(result.search.items[0], ['productId', 'productVariantId'])).toEqual(
+                {
+                    productId: 'T_1',
+                    productVariantId: 'T_1',
+                },
+            );
+        });
+
+        it('omits results for disabled ProductVariants', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    { id: 'T_3', enabled: false },
+                ],
+            });
+            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
+                },
+            });
+            expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
+        });
     });
 
     describe('admin api', () => {
@@ -216,9 +245,9 @@ describe('Default search plugin', () => {
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
-        it('single prices', () => testSinglePrices(shopClient));
+        it('single prices', () => testSinglePrices(adminClient));
 
-        it('price ranges', () => testPriceRanges(shopClient));
+        it('price ranges', () => testPriceRanges(adminClient));
 
         it('updates index when a Product is changed', async () => {
             await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
@@ -292,7 +321,7 @@ describe('Default search plugin', () => {
             const { createCollection } = await adminClient.query<
                 CreateCollection.Mutation,
                 CreateCollection.Variables
-            >(CREATE_COLLECTION, {
+                >(CREATE_COLLECTION, {
                 input: {
                     translations: [
                         {

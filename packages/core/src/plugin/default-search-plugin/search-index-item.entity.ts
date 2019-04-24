@@ -23,6 +23,9 @@ export class SearchIndexItem {
     @Column({ type: idType() })
     productId: ID;
 
+    @Column()
+    enabled: boolean;
+
     @Index({ fulltext: true })
     @Column()
     productName: string;

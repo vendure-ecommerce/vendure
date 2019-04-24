@@ -4,6 +4,7 @@ exports[`Product resolver product mutation createProduct creates a new Product 1
 Object {
   "assets": Array [],
   "description": "A baked potato",
+  "enabled": true,
   "facetValues": Array [],
   "featuredAsset": null,
   "id": "T_21",
@@ -33,6 +34,7 @@ exports[`Product resolver product mutation updateProduct updates a Product 1`] =
 Object {
   "assets": Array [],
   "description": "A blob of mashed potato",
+  "enabled": true,
   "facetValues": Array [],
   "featuredAsset": null,
   "id": "T_21",
@@ -72,6 +74,7 @@ Object {
     },
   ],
   "description": "Discover a truly immersive viewing experience with this monitor curved more deeply than any other. Wrapping around your field of vision the 1,800 R screencreates a wider field of view, enhances depth perception, and minimises peripheral distractions to draw you deeper in to your content.",
+  "enabled": true,
   "facetValues": Array [
     Object {
       "code": "electronics",

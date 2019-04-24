@@ -55,9 +55,9 @@ export class FulltextSearchService implements SearchService {
     /**
      * Perform a fulltext search according to the provided input arguments.
      */
-    async search(ctx: RequestContext, input: SearchInput): Promise<Omit<SearchResponse, 'facetValues'>> {
-        const items = await this.searchStrategy.getSearchResults(ctx, input);
-        const totalItems = await this.searchStrategy.getTotalCount(ctx, input);
+    async search(ctx: RequestContext, input: SearchInput, enabledOnly: boolean = false): Promise<Omit<SearchResponse, 'facetValues'>> {
+        const items = await this.searchStrategy.getSearchResults(ctx, input, enabledOnly);
+        const totalItems = await this.searchStrategy.getTotalCount(ctx, input, enabledOnly);
         return {
             items,
             totalItems,
@@ -70,8 +70,9 @@ export class FulltextSearchService implements SearchService {
     async facetValues(
         ctx: RequestContext,
         input: SearchInput,
+        enabledOnly: boolean = false
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input);
+        const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input, enabledOnly);
         const facetValues = await this.facetValueService.findByIds(
             Array.from(facetValueIdsMap.keys()),
             ctx.languageCode,
@@ -182,6 +183,7 @@ export class FulltextSearchService implements SearchService {
                 v =>
                     new SearchIndexItem({
                         sku: v.sku,
+                        enabled: v.enabled,
                         slug: v.product.slug,
                         price: v.price,
                         priceWithTax: v.priceWithTax,

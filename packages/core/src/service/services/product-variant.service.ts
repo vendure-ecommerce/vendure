@@ -101,7 +101,7 @@ export class ProductVariantService {
             .leftJoin('productvariant.collections', 'collection')
             .andWhere('collection.id = :collectionId', { collectionId });
 
-        if (options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
+        if (options && options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
             qb.leftJoin('productvariant.product', 'product')
                 .andWhere('product.enabled = :enabled', { enabled: true });
         }

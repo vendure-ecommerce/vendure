@@ -18,7 +18,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput): Promise<Map<ID, number>> {
+    async getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
@@ -29,11 +29,14 @@ export class SqliteSearchStrategy implements SearchStrategy {
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('productVariantId');
         }
+        if (enabledOnly) {
+            facetValuesQb.andWhere('si.enabled = :enabled', { enabled: true });
+        }
         const facetValuesResult = await facetValuesQb.getRawMany();
         return createFacetIdCountMap(facetValuesResult);
     }
 
-    async getSearchResults(ctx: RequestContext, input: SearchInput): Promise<SearchResult[]> {
+    async getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
@@ -57,6 +60,9 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 qb.addOrderBy('price', sort.price);
             }
         }
+        if (enabledOnly) {
+            qb.andWhere('si.enabled = :enabled', { enabled: true });
+        }
 
         return await qb
             .take(take)
@@ -65,11 +71,15 @@ export class SqliteSearchStrategy implements SearchStrategy {
             .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
-    async getTotalCount(ctx: RequestContext, input: SearchInput): Promise<number> {
+    async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
             this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
             input,
         );
+
+        if (enabledOnly) {
+            innerQb.andWhere('si.enabled = :enabled', { enabled: true });
+        }
 
         const totalItemsQb = this.connection
             .createQueryBuilder()

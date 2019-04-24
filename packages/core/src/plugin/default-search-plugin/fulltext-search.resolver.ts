@@ -24,7 +24,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
         @Ctx() ctx: RequestContext,
         @Args() args: SearchQueryArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
-        return this.fulltextSearchService.search(ctx, args.input);
+        return this.fulltextSearchService.search(ctx, args.input, true);
     }
 
     @ResolveProperty()
@@ -32,7 +32,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
         @Ctx() ctx: RequestContext,
         @Context() context: any,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input);
+        return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input, true);
     }
 }
 
@@ -47,7 +47,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: SearchQueryArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
-        return this.fulltextSearchService.search(ctx, args.input);
+        return this.fulltextSearchService.search(ctx, args.input, false);
     }
 
     @ResolveProperty()
@@ -55,7 +55,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
         @Ctx() ctx: RequestContext,
         @Context() context: any,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input);
+        return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input, false);
     }
 
     @Mutation()
