@@ -11,7 +11,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else: updateButton"
+            *ngIf="(isNew$ | async); else updateButton"
             (click)="create()"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
@@ -88,7 +88,7 @@
                             clrDropdownItem
                             (click)="addFilter(filter)"
                         >
-                            {{ filter.code }}
+                            {{ filter.description }}
                         </button>
                     </clr-dropdown-menu>
                 </clr-dropdown>

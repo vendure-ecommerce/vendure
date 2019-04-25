@@ -40,6 +40,16 @@
                     [formControlName]="arg.name"
                     *ngIf="arg.type === ConfigArgType.FACET_VALUE_IDS && facets"
                 ></vdr-facet-value-selector>
+                <select
+                    clrSelect
+                    [formControlName]="arg.name"
+                    *ngIf="arg.type === ConfigArgType.STRING_OPERATOR"
+                >
+                    <option value="contains">contains</option>
+                    <option value="doesNotContain">does not contain</option>
+                    <option value="startsWith">starts with</option>
+                    <option value="endsWith">ends with</option>
+                </select>
             </div>
         </form>
     </div>
