@@ -167,6 +167,7 @@ export class ProductVariantService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
+        await getEntityOrThrow(this.connection, ProductVariant, input.id);
         await this.translatableSaver.update({
             input,
             entityType: ProductVariant,
