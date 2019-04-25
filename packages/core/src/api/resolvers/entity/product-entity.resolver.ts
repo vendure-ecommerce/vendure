@@ -23,8 +23,6 @@ export class ProductEntityResolver {
         @Parent() product: Product,
         @Api() apiType: ApiType,
     ): Promise<Array<Translated<ProductVariant>>> {
-        // In the shop URL, the parent (Product type) does not have the "enabled"
-        // field, in which case we should filter out any non-enabled variants too.
         const variants = await this.productVariantService.getVariantsByProductId(ctx, product.id);
         return variants.filter(v => apiType === 'admin' ? true : v.enabled);
     }
