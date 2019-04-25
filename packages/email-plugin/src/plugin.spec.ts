@@ -244,7 +244,7 @@ describe('EmailPlugin', () => {
     });
 });
 
-const pause = () => new Promise(resolve => setTimeout(resolve, 10));
+const pause = () => new Promise(resolve => setTimeout(resolve, 50));
 
 class MockEvent extends VendureEvent {
     constructor(public ctx: any, public shouldSend: boolean) {
