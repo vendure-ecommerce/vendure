@@ -140,16 +140,21 @@ export class CollectionService implements OnModuleInit {
     async getCollectionsByProductId(
         ctx: RequestContext,
         productId: ID,
+        publicOnly: boolean,
     ): Promise<Array<Translated<Collection>>> {
-        const result = await this.connection
+        const qb = this.connection
             .getRepository(Collection)
             .createQueryBuilder('collection')
             .leftJoinAndSelect('collection.translations', 'translation')
             .leftJoin('collection.productVariants', 'variant')
             .where('variant.product = :productId', { productId })
             .groupBy('collection.id, translation.id')
-            .orderBy('collection.id', 'ASC')
-            .getMany();
+            .orderBy('collection.id', 'ASC');
+
+        if (publicOnly) {
+            qb.andWhere('collection.isPrivate = :isPrivate', { isPrivate: false });
+        }
+        const result = await qb.getMany();
 
         return result.map(collection => translateDeep(collection, ctx.languageCode));
     }

@@ -44,6 +44,9 @@ export class Collection extends VendureEntity implements Translatable, HasCustom
     @Column()
     position: number;
 
+    @Column({ default: false })
+    isPrivate: boolean;
+
     name: LocaleString;
 
     description: LocaleString;

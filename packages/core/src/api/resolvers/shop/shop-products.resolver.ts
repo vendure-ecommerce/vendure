@@ -35,19 +35,13 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: ProductsQueryArgs,
     ): Promise<PaginatedList<Translated<Product>>> {
-
-        let options: ListQueryOptions<Product>;
-        if (args.options) {
-            options = {
-                ...args.options,
-                filter: {
-                    ...args.options.filter,
-                    enabled: { eq: true },
-                },
-            };
-        } else {
-            options = {};
-        }
+        const options: ListQueryOptions<Product> = {
+            ...args.options,
+            filter: {
+                ...(args.options && args.options.filter),
+                enabled: { eq: true },
+            },
+        };
         return this.productService.findAll(ctx, options);
     }
 
@@ -71,7 +65,14 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionsQueryArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.collectionService.findAll(ctx, args.options || undefined);
+        const options: ListQueryOptions<Collection> = {
+            ...args.options,
+            filter: {
+                ...(args.options && args.options.filter),
+                isPrivate: { eq: false },
+            },
+        };
+        return this.collectionService.findAll(ctx, options || undefined);
     }
 
     @Query()
@@ -79,7 +80,11 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: CollectionQueryArgs,
     ): Promise<Translated<Collection> | undefined> {
-        return this.collectionService.findOne(ctx, args.id);
+        const collection = await this.collectionService.findOne(ctx, args.id);
+        if (collection && collection.isPrivate) {
+            return;
+        }
+        return collection;
     }
 
     @Query()

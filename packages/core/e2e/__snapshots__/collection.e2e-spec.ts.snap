@@ -47,6 +47,7 @@ Object {
     },
   ],
   "id": "T_3",
+  "isPrivate": false,
   "languageCode": "en",
   "name": "Electronics",
   "parent": Object {
@@ -102,6 +103,7 @@ Object {
     },
   ],
   "id": "T_5",
+  "isPrivate": false,
   "languageCode": "en",
   "name": "Pear",
   "parent": Object {

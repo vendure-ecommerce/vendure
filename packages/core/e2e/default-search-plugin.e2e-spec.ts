@@ -232,6 +232,18 @@ describe('Default search plugin', () => {
             });
             expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
         });
+
+        it('encodes collectionIds', async () => {
+            const result = await shopClient.query(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    term: 'cactus',
+                    take: 1,
+                },
+            });
+
+            expect(result.search.items[0].collectionIds).toEqual(['T_2']);
+        });
     });
 
     describe('admin api', () => {
@@ -472,6 +484,7 @@ export const SEARCH_PRODUCTS_SHOP = gql`
                 productVariantName
                 productVariantPreview
                 sku
+                collectionIds
             }
         }
     }

@@ -3,7 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';
 
-const ID_KEYS = ['id', 'productId', 'productVariantId'];
+const ID_KEYS = ['id', 'productId', 'productVariantId', 'collectionIds'];
 
 /**
  * This service is responsible for encoding/decoding entity IDs according to the configured EntityIdStrategy.

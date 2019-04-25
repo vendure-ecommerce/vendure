@@ -52,12 +52,8 @@ export class ListQueryBuilder {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
-        filter.forEach(({ clause, parameters }, index) => {
-            if (index === 0) {
-                qb.where(clause, parameters);
-            } else {
-                qb.andWhere(clause, parameters);
-            }
+        filter.forEach(({ clause, parameters }) => {
+            qb.andWhere(clause, parameters);
         });
 
         if (extendedOptions.channelId) {

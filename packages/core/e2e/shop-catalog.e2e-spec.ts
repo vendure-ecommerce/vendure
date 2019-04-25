@@ -2,9 +2,9 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { CREATE_COLLECTION } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { CREATE_COLLECTION, UPDATE_COLLECTION } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
 import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import { ConfigArgType, CreateCollection, LanguageCode } from '../../common/lib/generated-types';
+import { ConfigArgType, CreateCollection, LanguageCode, UpdateCollection } from '../../common/lib/generated-types';
 import { GetProductWithVariants, UpdateProductVariants } from '../../common/src/generated-types';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 
@@ -175,6 +175,48 @@ describe('Shop catalog', () => {
                 { id: 'T_27', name: 'Football' },
             ]);
         });
+
+        it('collection list', async () => {
+            const result = await shopClient.query(GET_COLLECTION_LIST);
+
+            expect(result.collections.items).toEqual([
+                { id: 'T_2', name: 'Plants' },
+                { id: 'T_3', name: 'My Collection' },
+            ]);
+        });
+
+        it('omits private collections', async () => {
+            await adminClient.query<UpdateCollection.Mutation, UpdateCollection.Variables>(UPDATE_COLLECTION, {
+                input: {
+                    id: collection.id,
+                    isPrivate: true,
+                },
+            });
+            const result = await shopClient.query(GET_COLLECTION_LIST);
+
+            expect(result.collections.items).toEqual([
+                { id: 'T_2', name: 'Plants' },
+            ]);
+        });
+
+        it('returns null for private collection', async () => {
+            const result = await shopClient.query(GET_COLLECTION_VARIANTS, { id: collection.id });
+
+            expect(result.collection).toBeNull();
+        });
+
+        it('product.collections list omits private collections', async () => {
+            const result = await shopClient.query(gql`{
+                product(id: "T_12") {
+                    collections {
+                        id
+                        name
+                    }
+                }
+            }`);
+
+            expect(result.product.collections).toEqual([]);
+        });
     });
 });
 
@@ -201,3 +243,12 @@ const GET_COLLECTION_VARIANTS = gql`
         }
     }
 `;
+
+const GET_COLLECTION_LIST = gql`{
+    collections {
+        items {
+            id
+            name
+        }
+    }
+}`;

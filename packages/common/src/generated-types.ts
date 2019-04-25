@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-25T09:11:10+02:00
+// Generated in 2019-04-25T13:30:57+02:00
 export type Maybe<T> = T | null;
 
 
@@ -169,6 +169,13 @@ export interface CollectionFilterParameter {
   position?: Maybe<NumberOperators>;
   
   description?: Maybe<StringOperators>;
+  
+  isPrivate?: Maybe<BooleanOperators>;
+}
+
+export interface BooleanOperators {
+  
+  eq?: Maybe<boolean>;
 }
 
 export interface ProductVariantListOptions {
@@ -222,11 +229,6 @@ export interface ProductVariantFilterParameter {
   priceWithTax?: Maybe<NumberOperators>;
   
   enabled?: Maybe<BooleanOperators>;
-}
-
-export interface BooleanOperators {
-  
-  eq?: Maybe<boolean>;
 }
 
 export interface CountryListOptions {
@@ -714,6 +716,8 @@ export interface UpdateChannelInput {
 
 export interface CreateCollectionInput {
   
+  isPrivate?: Maybe<boolean>;
+  
   featuredAssetId?: Maybe<string>;
   
   assetIds?: Maybe<string[]>;
@@ -759,6 +763,8 @@ export interface CollectionTranslationInput {
 export interface UpdateCollectionInput {
   
   id: string;
+  
+  isPrivate?: Maybe<boolean>;
   
   featuredAssetId?: Maybe<string>;
   
@@ -1169,18 +1175,6 @@ export interface UpdateRoleInput {
   permissions?: Maybe<Permission[]>;
 }
 
-export interface CreateTaxCategoryInput {
-  
-  name: string;
-}
-
-export interface UpdateTaxCategoryInput {
-  
-  id: string;
-  
-  name?: Maybe<string>;
-}
-
 export interface CreateShippingMethodInput {
   
   code: string;
@@ -1203,6 +1197,18 @@ export interface UpdateShippingMethodInput {
   checker?: Maybe<ConfigurableOperationInput>;
   
   calculator?: Maybe<ConfigurableOperationInput>;
+}
+
+export interface CreateTaxCategoryInput {
+  
+  name: string;
+}
+
+export interface UpdateTaxCategoryInput {
+  
+  id: string;
+  
+  name?: Maybe<string>;
 }
 
 export interface CreateTaxRateInput {
@@ -2073,6 +2079,8 @@ export namespace GetCollectionList {
     name: string;
     
     description: string;
+    
+    isPrivate: Maybe<boolean>;
     
     featuredAsset: Maybe<FeaturedAsset>;
     
@@ -3618,6 +3626,8 @@ export namespace Collection {
     
     description: string;
     
+    isPrivate: Maybe<boolean>;
+    
     languageCode: Maybe<LanguageCode>;
     
     featuredAsset: Maybe<FeaturedAsset>;
@@ -4601,10 +4611,6 @@ export interface Query {
   
   role?: Maybe<Role>;
   
-  taxCategories: TaxCategory[];
-  
-  taxCategory?: Maybe<TaxCategory>;
-  
   shippingMethods: ShippingMethodList;
   
   shippingMethod?: Maybe<ShippingMethod>;
@@ -4612,6 +4618,10 @@ export interface Query {
   shippingEligibilityCheckers: ConfigurableOperation[];
   
   shippingCalculators: ConfigurableOperation[];
+  
+  taxCategories: TaxCategory[];
+  
+  taxCategory?: Maybe<TaxCategory>;
   
   taxRates: TaxRateList;
   
@@ -4838,6 +4848,8 @@ export interface Collection extends Node {
   translations: CollectionTranslation[];
   
   productVariants: ProductVariantList;
+  
+  isPrivate?: Maybe<boolean>;
   
   customFields?: Maybe<Json>;
 }
@@ -5754,14 +5766,14 @@ export interface Mutation {
   createRole: Role;
   /** Update an existing Role */
   updateRole: Role;
-  /** Create a new TaxCategory */
-  createTaxCategory: TaxCategory;
-  /** Update an existing TaxCategory */
-  updateTaxCategory: TaxCategory;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
+  /** Create a new TaxCategory */
+  createTaxCategory: TaxCategory;
+  /** Update an existing TaxCategory */
+  updateTaxCategory: TaxCategory;
   /** Create a new TaxRate */
   createTaxRate: TaxRate;
   /** Update an existing TaxRate */
@@ -5962,15 +5974,15 @@ export interface RoleQueryArgs {
   
   id: string;
 }
-export interface TaxCategoryQueryArgs {
-  
-  id: string;
-}
 export interface ShippingMethodsQueryArgs {
   
   options?: Maybe<ShippingMethodListOptions>;
 }
 export interface ShippingMethodQueryArgs {
+  
+  id: string;
+}
+export interface TaxCategoryQueryArgs {
   
   id: string;
 }
@@ -6206,14 +6218,6 @@ export interface UpdateRoleMutationArgs {
   
   input: UpdateRoleInput;
 }
-export interface CreateTaxCategoryMutationArgs {
-  
-  input: CreateTaxCategoryInput;
-}
-export interface UpdateTaxCategoryMutationArgs {
-  
-  input: UpdateTaxCategoryInput;
-}
 export interface CreateShippingMethodMutationArgs {
   
   input: CreateShippingMethodInput;
@@ -6221,6 +6225,14 @@ export interface CreateShippingMethodMutationArgs {
 export interface UpdateShippingMethodMutationArgs {
   
   input: UpdateShippingMethodInput;
+}
+export interface CreateTaxCategoryMutationArgs {
+  
+  input: CreateTaxCategoryInput;
+}
+export interface UpdateTaxCategoryMutationArgs {
+  
+  input: UpdateTaxCategoryInput;
 }
 export interface CreateTaxRateMutationArgs {
   

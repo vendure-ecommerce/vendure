@@ -33,7 +33,8 @@ export class ProductEntityResolver {
     async collections(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
+        @Api() apiType: ApiType,
     ): Promise<Array<Translated<Collection>>> {
-        return this.collectionService.getCollectionsByProductId(ctx, product.id);
+        return this.collectionService.getCollectionsByProductId(ctx, product.id, apiType === 'shop');
     }
 }
