@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-24T20:30:12+02:00
+// Generated in 2019-04-25T09:11:09+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -738,6 +738,7 @@ export enum ConfigArgType {
     DATETIME = 'DATETIME',
     BOOLEAN = 'BOOLEAN',
     FACET_VALUE_IDS = 'FACET_VALUE_IDS',
+    STRING_OPERATOR = 'STRING_OPERATOR',
 }
 /** Permissions for administrators and customers */
 export enum Permission {

@@ -37,6 +37,7 @@ enum ConfigArgType {
     DATETIME
     BOOLEAN
     FACET_VALUE_IDS
+    STRING_OPERATOR
 }
 
 type ConfigArg {

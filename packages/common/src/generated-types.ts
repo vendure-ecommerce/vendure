@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-24T20:30:13+02:00
+// Generated in 2019-04-25T09:11:10+02:00
 export type Maybe<T> = T | null;
 
 
@@ -1169,6 +1169,18 @@ export interface UpdateRoleInput {
   permissions?: Maybe<Permission[]>;
 }
 
+export interface CreateTaxCategoryInput {
+  
+  name: string;
+}
+
+export interface UpdateTaxCategoryInput {
+  
+  id: string;
+  
+  name?: Maybe<string>;
+}
+
 export interface CreateShippingMethodInput {
   
   code: string;
@@ -1191,18 +1203,6 @@ export interface UpdateShippingMethodInput {
   checker?: Maybe<ConfigurableOperationInput>;
   
   calculator?: Maybe<ConfigurableOperationInput>;
-}
-
-export interface CreateTaxCategoryInput {
-  
-  name: string;
-}
-
-export interface UpdateTaxCategoryInput {
-  
-  id: string;
-  
-  name?: Maybe<string>;
 }
 
 export interface CreateTaxRateInput {
@@ -1676,6 +1676,7 @@ export interface ProductOptionTranslationInput {
     DATETIME = "DATETIME",
     BOOLEAN = "BOOLEAN",
     FACET_VALUE_IDS = "FACET_VALUE_IDS",
+    STRING_OPERATOR = "STRING_OPERATOR",
   }
 
   export enum AdjustmentType {
@@ -4600,6 +4601,10 @@ export interface Query {
   
   role?: Maybe<Role>;
   
+  taxCategories: TaxCategory[];
+  
+  taxCategory?: Maybe<TaxCategory>;
+  
   shippingMethods: ShippingMethodList;
   
   shippingMethod?: Maybe<ShippingMethod>;
@@ -4607,10 +4612,6 @@ export interface Query {
   shippingEligibilityCheckers: ConfigurableOperation[];
   
   shippingCalculators: ConfigurableOperation[];
-  
-  taxCategories: TaxCategory[];
-  
-  taxCategory?: Maybe<TaxCategory>;
   
   taxRates: TaxRateList;
   
@@ -5753,14 +5754,14 @@ export interface Mutation {
   createRole: Role;
   /** Update an existing Role */
   updateRole: Role;
-  /** Create a new ShippingMethod */
-  createShippingMethod: ShippingMethod;
-  /** Update an existing ShippingMethod */
-  updateShippingMethod: ShippingMethod;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory;
+  /** Create a new ShippingMethod */
+  createShippingMethod: ShippingMethod;
+  /** Update an existing ShippingMethod */
+  updateShippingMethod: ShippingMethod;
   /** Create a new TaxRate */
   createTaxRate: TaxRate;
   /** Update an existing TaxRate */
@@ -5961,15 +5962,15 @@ export interface RoleQueryArgs {
   
   id: string;
 }
+export interface TaxCategoryQueryArgs {
+  
+  id: string;
+}
 export interface ShippingMethodsQueryArgs {
   
   options?: Maybe<ShippingMethodListOptions>;
 }
 export interface ShippingMethodQueryArgs {
-  
-  id: string;
-}
-export interface TaxCategoryQueryArgs {
   
   id: string;
 }
@@ -6205,14 +6206,6 @@ export interface UpdateRoleMutationArgs {
   
   input: UpdateRoleInput;
 }
-export interface CreateShippingMethodMutationArgs {
-  
-  input: CreateShippingMethodInput;
-}
-export interface UpdateShippingMethodMutationArgs {
-  
-  input: UpdateShippingMethodInput;
-}
 export interface CreateTaxCategoryMutationArgs {
   
   input: CreateTaxCategoryInput;
@@ -6220,6 +6213,14 @@ export interface CreateTaxCategoryMutationArgs {
 export interface UpdateTaxCategoryMutationArgs {
   
   input: UpdateTaxCategoryInput;
+}
+export interface CreateShippingMethodMutationArgs {
+  
+  input: CreateShippingMethodInput;
+}
+export interface UpdateShippingMethodMutationArgs {
+  
+  input: UpdateShippingMethodInput;
 }
 export interface CreateTaxRateMutationArgs {
   

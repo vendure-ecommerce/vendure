@@ -1,6 +1,5 @@
-import { Brackets } from 'typeorm';
-
 import { ConfigArgType } from '@vendure/common/lib/generated-types';
+import { Brackets } from 'typeorm';
 
 import { CollectionFilter } from './collection-filter';
 
@@ -28,5 +27,27 @@ export const facetValueCollectionFilter = new CollectionFilter({
             .groupBy('productVariant.id')
             .having(`COUNT(1) >= :count`, { count: args.facetValueIds.length });
         return qb;
+    },
+});
+
+export const variantNameCollectionFilter = new CollectionFilter({
+    args: {
+        operator: ConfigArgType.STRING_OPERATOR,
+        term: ConfigArgType.STRING,
+    },
+    code: 'variant-name-filter',
+    description: 'Filter by ProductVariant name',
+    apply: (qb, args) => {
+        qb.leftJoin('productVariant.translations', 'translation');
+        switch (args.operator) {
+            case 'contains':
+                return qb.andWhere('translation.name LIKE :term', { term: `%${args.term}%` });
+            case 'doesNotContain':
+                return qb.andWhere('translation.name NOT LIKE :term', { term: `%${args.term}%` });
+            case 'startsWith':
+                return qb.andWhere('translation.name LIKE :term', { term: `${args.term}%` });
+            case 'endsWith':
+                return qb.andWhere('translation.name LIKE :term', { term: `%${args.term}` });
+        }
     },
 });

@@ -21,7 +21,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { CollectionFilter } from '../../config/collection/collection-filter';
-import { facetValueCollectionFilter } from '../../config/collection/default-collection-filters';
+import { facetValueCollectionFilter, variantNameCollectionFilter } from '../../config/collection/default-collection-filters';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -39,7 +39,7 @@ import { FacetValueService } from './facet-value.service';
 
 export class CollectionService implements OnModuleInit {
     private rootCategories: { [channelCode: string]: Collection } = {};
-    private availableFilters: Array<CollectionFilter<any>> = [facetValueCollectionFilter];
+    private availableFilters: Array<CollectionFilter<any>> = [facetValueCollectionFilter, variantNameCollectionFilter];
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -373,8 +373,11 @@ export class CollectionService implements OnModuleInit {
             return [];
         }
         const facetFilters = filters.filter(f => f.code === facetValueCollectionFilter.code);
+        const variantNameFilters = filters.filter(f => f.code === variantNameCollectionFilter.code);
         let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
-        if (facetFilters) {
+
+        // Apply any facetValue-based filters
+        if (facetFilters.length) {
             const mergedArgs = facetFilters
                 .map(f => f.args[0].value)
                 .filter(notNullOrUndefined)
@@ -388,6 +391,14 @@ export class CollectionService implements OnModuleInit {
                 },
             ]);
         }
+
+        // Apply any variant name-based filters
+        if (variantNameFilters.length) {
+            for (const filter of variantNameFilters) {
+                qb = variantNameCollectionFilter.apply(qb, filter.args);
+            }
+        }
+
         return qb.getMany();
     }
 

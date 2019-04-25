@@ -27,7 +27,8 @@ import {
 } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
 import { FACET_VALUE_FRAGMENT } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
 import { GET_ASSET_LIST, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
+import { StringOperator } from '../src/common/configurable-operation';
+import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient } from './test-client';
@@ -419,6 +420,102 @@ describe('Collection resolver', () => {
             });
         });
 
+        describe('variantName filter', () => {
+
+            async function createVariantNameFilteredCollection(operator: StringOperator, term: string): Promise<Collection.Fragment> {
+                const { createCollection } = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                    CREATE_COLLECTION,
+                    {
+                        input: {
+                            translations: [{ languageCode: LanguageCode.en, name: `${operator} ${term}`, description: '' }],
+                            filters: [
+                                {
+                                    code: variantNameCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'operator',
+                                            value: operator,
+                                            type: ConfigArgType.STRING_OPERATOR,
+                                        },
+                                        {
+                                            name: 'term',
+                                            value: term,
+                                            type: ConfigArgType.STRING,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                );
+                return createCollection;
+            }
+
+            it('contains operator', async () => {
+                const collection = await createVariantNameFilteredCollection('contains', 'camera');
+
+                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: collection.id,
+                });
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                    'Instant Camera',
+                    'Camera Lens',
+                    'SLR Camera',
+                ]);
+            });
+
+            it('startsWith operator', async () => {
+                const collection = await createVariantNameFilteredCollection('startsWith', 'camera');
+
+                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: collection.id,
+                });
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                    'Camera Lens',
+                ]);
+            });
+
+            it('endsWith operator', async () => {
+                const collection = await createVariantNameFilteredCollection('endsWith', 'camera');
+
+                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: collection.id,
+                });
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                    'Instant Camera',
+                    'SLR Camera',
+                ]);
+            });
+
+            it('doesNotContain operator', async () => {
+                const collection = await createVariantNameFilteredCollection('doesNotContain', 'camera');
+
+                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: collection.id,
+                });
+                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                    'Curvy Monitor 24 inch',
+                    'Curvy Monitor 27 inch',
+                    'Gaming PC i7-8700 240GB SSD',
+                    'Gaming PC R7-2700 240GB SSD',
+                    'Gaming PC i7-8700 120GB SSD',
+                    'Gaming PC R7-2700 120GB SSD',
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                    'Clacky Keyboard',
+                    'USB Cable',
+                    'Tripod',
+                ]);
+            });
+        });
+
         describe('re-evaluation of contents on changes', () => {
             let products: ProductWithVariants.Fragment[];
 
@@ -524,6 +621,8 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
                 { id: 'T_7', name: 'Photo Pear' },
+                { id: 'T_8', name: 'contains camera' },
+                { id: 'T_10', name: 'endsWith camera' },
             ]);
         });
     });

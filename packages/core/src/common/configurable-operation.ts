@@ -7,6 +7,9 @@ export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: T;
 };
 
+export type StringOperator = 'startsWith' | 'endsWith' | 'contains' | 'doesNotContain';
+
+// prettier-ignore
 /**
  * Represents the ConfigArgs once they have been coerced into JavaScript values for use
  * in business logic.
@@ -15,12 +18,14 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
     [K in keyof T]: T[K] extends ConfigArgType.INT | ConfigArgType.MONEY | ConfigArgType.PERCENTAGE
         ? number
         : T[K] extends ConfigArgType.DATETIME
-        ? Date
-        : T[K] extends ConfigArgType.BOOLEAN
-        ? boolean
-        : T[K] extends ConfigArgType.FACET_VALUE_IDS
-        ? string[]
-        : string
+            ? Date
+            : T[K] extends ConfigArgType.BOOLEAN
+                ? boolean
+                : T[K] extends ConfigArgType.FACET_VALUE_IDS
+                    ? string[]
+                    : T[K] extends ConfigArgType.STRING_OPERATOR
+                        ? StringOperator
+                        : string
 };
 
 /**
@@ -67,6 +72,7 @@ export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
 function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
     switch (arg.type as ConfigArgType) {
         case ConfigArgType.STRING:
+        case ConfigArgType.STRING_OPERATOR:
             return arg.value as any;
         case ConfigArgType.INT:
         case ConfigArgType.MONEY:

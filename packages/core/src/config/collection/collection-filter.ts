@@ -9,7 +9,7 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS;
+export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS | ConfigArgType.STRING | ConfigArgType.STRING_OPERATOR;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
@@ -37,7 +37,7 @@ export class CollectionFilter<T extends CollectionFilterArgs = {}> implements Co
         this.applyFn = config.apply;
     }
 
-    apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) {
+    apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]): SelectQueryBuilder<ProductVariant> {
         return this.applyFn(qb, argsArrayToHash(args));
     }
 }
