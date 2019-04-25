@@ -76,6 +76,7 @@ export class CollectionDataService {
             {
                 input: pick(input, [
                     'id',
+                    'isPrivate',
                     'translations',
                     'assetIds',
                     'featuredAssetId',

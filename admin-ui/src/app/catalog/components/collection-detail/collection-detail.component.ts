@@ -61,6 +61,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             description: '',
+            visible: false,
             filters: this.formBuilder.array([]),
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
@@ -194,6 +195,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
             description: currentTranslation ? currentTranslation.description : '',
+            visible: !entity.isPrivate,
         });
 
         entity.filters.forEach(f => this.addFilter(f));
@@ -238,6 +240,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         return {
             ...updatedCategory,
             ...this.assetChanges,
+            isPrivate: !form.value.visible,
             filters: this.mapOperationsToInputs(this.filters, this.detailForm.value.filters),
         };
     }

@@ -17,6 +17,7 @@ export const COLLECTION_FRAGMENT = gql`
         id
         name
         description
+        isPrivate
         languageCode
         featuredAsset {
             ...Asset
@@ -53,6 +54,7 @@ export const GET_COLLECTION_LIST = gql`
                 id
                 name
                 description
+                isPrivate
                 featuredAsset {
                     ...Asset
                 }

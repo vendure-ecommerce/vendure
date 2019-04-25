@@ -14,6 +14,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 id: '',
                 languageCode: getDefaultLanguage(),
                 name: '',
+                isPrivate: false,
                 description: '',
                 featuredAsset: null,
                 assets: [],

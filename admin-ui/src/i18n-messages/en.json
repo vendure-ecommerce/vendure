@@ -64,9 +64,11 @@
     "price": "Price",
     "price-includes-tax-at": "Price includes tax at { rate }%",
     "price-with-tax-in-default-zone": "Price with { rate }% tax: { price }",
+    "private": "Private",
     "product-details": "Product details",
     "product-name": "Product name",
     "product-variants": "Product variants",
+    "public": "Public",
     "remove-asset": "Remove asset",
     "search-asset-name": "Search assets by name",
     "search-product-name-or-code": "Search by product name or code",
@@ -81,7 +83,8 @@
     "truncated-options-count": "{count} further {count, plural, one {option} other {options}}",
     "upload-assets": "Upload assets",
     "values": "Values",
-    "view-contents": "View contents"
+    "view-contents": "View contents",
+    "visibility": "Visibility"
   },
   "common": {
     "ID": "ID",
