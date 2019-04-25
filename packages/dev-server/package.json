@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "populate": "node -r ts-node/register populate-dev-server.ts",
-    "start": "nodemon --config nodemon-debug.json"
+    "start": "nodemon --config nodemon-debug.json index.ts"
   },
   "dependencies": {
     "@vendure/common": "~0.1.0",

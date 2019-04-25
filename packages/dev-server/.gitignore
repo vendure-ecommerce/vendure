@@ -1,3 +1,4 @@
 assets
 vendure
 test-emails
+vendure.sqlite

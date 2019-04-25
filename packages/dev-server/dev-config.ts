@@ -1,9 +1,11 @@
+/* tslint:disable:no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import { DefaultLogger, DefaultSearchPlugin, examplePaymentHandler, LogLevel, VendureConfig } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
+import { ConnectionOptions } from 'typeorm';
 
 /**
  * Config settings used during development
@@ -20,29 +22,13 @@ export const devConfig: VendureConfig = {
     dbConnectionOptions: {
         synchronize: false,
         logging: false,
-
-        type: 'mysql',
-        host: '192.168.99.100',
-        port: 3306,
-        username: 'root',
-        password: '',
-        database: 'vendure-dev',
-
-        // type: 'sqlite',
-        // database:  path.join(__dirname, 'vendure.sqlite'),
-
-        // type: 'postgres',
-        // host: '127.0.0.1',
-        // port: 5432,
-        // username: 'postgres',
-        // password: 'Be70',
-        // database: 'vendure',
+        ...getDbConfig(),
     },
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Debug }),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -70,3 +56,39 @@ export const devConfig: VendureConfig = {
         }),
     ],
 };
+
+function getDbConfig(): ConnectionOptions {
+    const match = process.argv
+        .filter(arg => arg.match(/--db=/))
+        .map(arg => arg.replace(/^--db=/, ''));
+    const dbType = match.length ? match[0] : 'mysql';
+    switch (dbType) {
+        case 'postgres':
+            console.log('Using postgres connection');
+            return {
+                type: 'postgres',
+                host: '127.0.0.1',
+                port: 5432,
+                username: 'postgres',
+                password: 'Be70',
+                database: 'vendure',
+            };
+        case 'sqlite':
+            console.log('Using sqlite connection');
+            return {
+                type: 'sqlite',
+                database:  path.join(__dirname, 'vendure.sqlite'),
+            };
+        case 'mysql':
+        default:
+            console.log('Using mysql connection');
+            return {
+                type: 'mysql',
+                host: '192.168.99.100',
+                port: 3306,
+                username: 'root',
+                password: '',
+                database: 'vendure-dev',
+            };
+    }
+}

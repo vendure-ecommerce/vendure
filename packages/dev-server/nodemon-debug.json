@@ -2,5 +2,7 @@
   "watch": ["index.ts", "dev-config.ts"],
   "ext": "ts",
   "ignore": ["src/**/*.spec.ts", "mock-data/**/*"],
-  "exec": "node --inspect=5858 -r ts-node/register index.ts"
+  "execMap": {
+    "ts": "node --inspect=5858 -r ts-node/register {{filename}}"
+  }
 }
