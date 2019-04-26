@@ -58,6 +58,7 @@ describe('Facet resolver', () => {
     it('createFacet', async () => {
         const result = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
             input: {
+                isPrivate: false,
                 code: 'speaker-type',
                 translations: [{ languageCode: LanguageCode.en, name: 'Speaker Type' }],
                 values: [

@@ -4,6 +4,7 @@ exports[`Facet resolver createFacet 1`] = `
 Object {
   "code": "speaker-type",
   "id": "T_2",
+  "isPrivate": false,
   "languageCode": "en",
   "name": "Speaker Type",
   "translations": Array [

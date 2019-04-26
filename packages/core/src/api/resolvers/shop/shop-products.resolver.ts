@@ -57,6 +57,7 @@ export class ShopProductsResolver {
         if (result.enabled === false) {
             return;
         }
+        result.facetValues = result.facetValues.filter(fv => !fv.facet.isPrivate) as any;
         return result;
     }
 

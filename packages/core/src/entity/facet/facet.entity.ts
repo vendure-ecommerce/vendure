@@ -27,6 +27,9 @@ export class Facet extends VendureEntity implements Translatable, HasCustomField
 
     name: LocaleString;
 
+    @Column({ default: false })
+    isPrivate: boolean;
+
     @Column({ unique: true })
     code: string;
 

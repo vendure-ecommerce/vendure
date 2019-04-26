@@ -5,6 +5,7 @@ import { FacetValue, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { RequestContext } from '../../common/request-context';
+import { Api, ApiType } from '../../decorators/api.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductVariant')
@@ -26,10 +27,17 @@ export class ProductVariantEntityResolver {
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
+        @Api() apiType: ApiType,
     ): Promise<Array<Translated<FacetValue>>> {
+        let facetValues: Array<Translated<FacetValue>>;
         if (productVariant.facetValues) {
-            return productVariant.facetValues as Array<Translated<FacetValue>>;
+            facetValues = productVariant.facetValues as Array<Translated<FacetValue>>;
+        } else {
+            facetValues = await this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
         }
-        return this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
+        if (apiType === 'shop') {
+            facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
+        }
+        return facetValues;
     }
 }

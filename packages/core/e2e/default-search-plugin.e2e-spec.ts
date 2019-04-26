@@ -13,9 +13,10 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { CREATE_COLLECTION, UPDATE_COLLECTION } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
+import { CREATE_FACET } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
 import { SEARCH_PRODUCTS, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import { UpdateProductVariants } from '../../common/src/generated-types';
+import { CreateFacet, UpdateProductVariants } from '../../common/src/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
@@ -188,6 +189,42 @@ describe('Default search plugin', () => {
         });
 
         it('returns correct facetValues when grouped by product', async () => {
+            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: true,
+                },
+            });
+            expect(result.search.facetValues).toEqual([
+                { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
+                { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
+                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
+                { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
+                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+            ]);
+        });
+
+        it('omits facetValues of private facets', async () => {
+            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+                input: {
+                    code: 'profit-margin',
+                    isPrivate: true,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'Profit Margin' },
+                    ],
+                    values: [
+                        { code: 'massive', translations: [{ languageCode: LanguageCode.en, name: 'massive' }] },
+                    ],
+                },
+            });
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                input: {
+                    id: 'T_2',
+                    // T_1 & T_2 are the existing facetValues (electronics & photo)
+                    facetValueIds: ['T_1', 'T_2', createFacet.values[0].id],
+                },
+            });
+
             const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
                 input: {
                     groupByProduct: true,
