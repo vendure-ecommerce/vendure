@@ -97,6 +97,7 @@ export class DevMailbox {
     private createRequestContext(languageCode: LanguageCode): RequestContext {
         return new RequestContext({
             languageCode,
+            apiType: 'admin',
             session: {} as any,
             isAuthorized: false,
             authorizedAsOwnerOnly: true,
