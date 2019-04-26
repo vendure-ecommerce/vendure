@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { Request } from 'express';
+import { GraphQLResolveInfo } from 'graphql';
 
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -9,6 +10,7 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { ChannelService } from '../../service/services/channel.service';
+import { getApiType } from './get-api-type';
 
 import { RequestContext } from './request-context';
 
@@ -26,11 +28,13 @@ export class RequestContextService {
      */
     async fromRequest(
         req: Request,
+        info: GraphQLResolveInfo,
         requiredPermissions?: Permission[],
         session?: Session,
     ): Promise<RequestContext> {
         const channelToken = this.getChannelToken(req);
         const channel = this.channelService.getChannelFromToken(channelToken);
+        const apiType = getApiType(info);
 
         const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);
         const languageCode = this.getLanguageCode(req);
@@ -39,6 +43,7 @@ export class RequestContextService {
         const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
         const translationFn = (req as any).t;
         return new RequestContext({
+            apiType,
             channel,
             languageCode,
             session,

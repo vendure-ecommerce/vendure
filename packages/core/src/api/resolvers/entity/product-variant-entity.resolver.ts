@@ -4,8 +4,9 @@ import { Translated } from '../../../common/types/locale-types';
 import { FacetValue, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
-import { Api, ApiType } from '../../decorators/api.decorator';
+import { Api } from '../../decorators/api.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductVariant')

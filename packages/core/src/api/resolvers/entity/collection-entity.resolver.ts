@@ -7,8 +7,9 @@ import { Translated } from '../../../common/types/locale-types';
 import { Collection, Product, ProductVariant } from '../../../entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
-import { Api, ApiType } from '../../decorators/api.decorator';
+import { Api } from '../../decorators/api.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Collection')

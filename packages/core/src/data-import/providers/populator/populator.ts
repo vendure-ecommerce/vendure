@@ -112,6 +112,7 @@ export class Populator {
     private async createRequestContext(data: InitialData) {
         const channel = await this.channelService.getDefaultChannel();
         const ctx = new RequestContext({
+            apiType: 'admin',
             isAuthorized: true,
             authorizedAsOwnerOnly: false,
             channel,

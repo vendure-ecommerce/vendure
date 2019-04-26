@@ -128,6 +128,7 @@ export class Importer {
         } else {
             const channel = await this.channelService.getDefaultChannel();
             return new RequestContext({
+                apiType: 'admin',
                 isAuthorized: true,
                 authorizedAsOwnerOnly: false,
                 channel,

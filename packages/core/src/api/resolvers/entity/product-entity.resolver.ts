@@ -6,8 +6,9 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
-import { Api, ApiType } from '../../decorators/api.decorator';
+import { Api } from '../../decorators/api.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Product')

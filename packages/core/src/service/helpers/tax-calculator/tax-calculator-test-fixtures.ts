@@ -76,6 +76,7 @@ export function createRequestContext(pricesIncludeTax: boolean): RequestContext 
         pricesIncludeTax,
     });
     const ctx = new RequestContext({
+        apiType: 'admin',
         channel,
         authorizedAsOwnerOnly: false,
         languageCode: LanguageCode.en,

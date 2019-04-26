@@ -8,13 +8,14 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
+import { ApiType } from './get-api-type';
+
 /**
  * @description
  * The RequestContext holds information relevant to the current request, which may be
  * required at various points of the stack.
  *
- * @docsCategory
- * @docsWeight 1
+ * @docsCategory request
  */
 export class RequestContext {
     private readonly _languageCode: LanguageCode;
@@ -23,11 +24,13 @@ export class RequestContext {
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
     private readonly _translationFn: i18next.TranslationFunction;
+    private readonly _apiType: ApiType;
 
     /**
      * @internal
      */
     constructor(options: {
+        apiType: ApiType;
         channel: Channel;
         session?: Session;
         languageCode?: LanguageCode;
@@ -35,7 +38,8 @@ export class RequestContext {
         authorizedAsOwnerOnly: boolean;
         translationFn?: i18next.TranslationFunction;
     }) {
-        const { channel, session, languageCode, translationFn } = options;
+        const { apiType, channel, session, languageCode, translationFn } = options;
+        this._apiType = apiType;
         this._channel = channel;
         this._session = session;
         this._languageCode =
@@ -43,6 +47,10 @@ export class RequestContext {
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
+    }
+
+    get apiType(): ApiType {
+        return this._apiType;
     }
 
     get channel(): Channel {
@@ -77,6 +85,7 @@ export class RequestContext {
     }
 
     /**
+     * @description
      * True if the current session is authorized to access the current resolver method.
      */
     get isAuthorized(): boolean {
@@ -84,6 +93,7 @@ export class RequestContext {
     }
 
     /**
+     * @description
      * True if the current anonymous session is only authorized to operate on entities that
      * are owned by the current session.
      */

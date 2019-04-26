@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
+import { GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
@@ -29,7 +30,9 @@ export class AuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const ctx = GqlExecutionContext.create(context).getContext();
+        const graphQlContext = GqlExecutionContext.create(context);
+        const ctx = graphQlContext.getContext();
+        const info = graphQlContext.getInfo<GraphQLResolveInfo>();
         const req: Request = ctx.req;
         const res: Response = ctx.res;
         const authDisabled = this.configService.authOptions.disableAuth;
@@ -37,7 +40,7 @@ export class AuthGuard implements CanActivate {
         const isPublic = !!permissions && permissions.includes(Permission.Public);
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         const session = await this.getSession(req, res, hasOwnerPermission);
-        const requestContext = await this.requestContextService.fromRequest(req, permissions, session);
+        const requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
         (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
 
         if (authDisabled || !permissions || isPublic) {
