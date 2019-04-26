@@ -1,5 +1,5 @@
-import { Args, Context, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, SearchQueryArgs, SearchResponse } from '@vendure/common/lib/generated-types';
+import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Permission, SearchInput, SearchQueryArgs, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
 import { Decode } from '../../api';
@@ -7,7 +7,6 @@ import { RequestContext } from '../../api/common/request-context';
 import { Allow } from '../../api/decorators/allow.decorator';
 import { Ctx } from '../../api/decorators/request-context.decorator';
 import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/admin/search.resolver';
-import { Translated } from '../../common/types/locale-types';
 import { FacetValue } from '../../entity';
 
 import { DefaultSearchReindexResponse } from './default-search-plugin';
@@ -24,15 +23,18 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
         @Ctx() ctx: RequestContext,
         @Args() args: SearchQueryArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
-        return this.fulltextSearchService.search(ctx, args.input, true);
+        const result = await this.fulltextSearchService.search(ctx, args.input, true);
+        // ensure the facetValues property resolver has access to the input args
+        (result as any).input = args.input;
+        return result;
     }
 
     @ResolveProperty()
     async facetValues(
         @Ctx() ctx: RequestContext,
-        @Context() context: any,
+        @Parent() parent: { input: SearchInput },
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const facetValues = await this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input, true);
+        const facetValues = await this.fulltextSearchService.facetValues(ctx, parent.input, true);
         return facetValues.filter(i => !i.facetValue.facet.isPrivate);
     }
 }
@@ -48,15 +50,18 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: SearchQueryArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
-        return this.fulltextSearchService.search(ctx, args.input, false);
+        const result = await this.fulltextSearchService.search(ctx, args.input, false);
+        // ensure the facetValues property resolver has access to the input args
+        (result as any).input = args.input;
+        return result;
     }
 
     @ResolveProperty()
     async facetValues(
         @Ctx() ctx: RequestContext,
-        @Context() context: any,
+        @Parent() parent: { input: SearchInput },
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        return this.fulltextSearchService.facetValues(ctx, context.req.body.variables.input, false);
+        return this.fulltextSearchService.facetValues(ctx, parent.input, false);
     }
 
     @Mutation()
