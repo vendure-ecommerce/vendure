@@ -30,12 +30,12 @@ export class BaseAuthResolver {
         return await this.createAuthenticatedSession(ctx, args, req, res);
     }
 
-    async logout(req: Request, res: Response): Promise<boolean> {
+    async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
         const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;
         }
-        await this.authService.deleteSessionByToken(token);
+        await this.authService.deleteSessionByToken(ctx, token);
         setAuthToken({
             req,
             res,

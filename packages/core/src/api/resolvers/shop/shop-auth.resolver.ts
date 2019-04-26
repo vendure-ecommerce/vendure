@@ -48,8 +48,10 @@ export class ShopAuthResolver extends BaseAuthResolver {
 
     @Mutation()
     @Allow(Permission.Public)
-    logout(@Context('req') req: Request, @Context('res') res: Response): Promise<boolean> {
-        return super.logout(req, res);
+    logout(@Ctx() ctx: RequestContext,
+           @Context('req') req: Request,
+           @Context('res') res: Response): Promise<boolean> {
+        return super.logout(ctx, req, res);
     }
 
     @Query()

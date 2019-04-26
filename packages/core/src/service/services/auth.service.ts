@@ -13,6 +13,10 @@ import { AnonymousSession } from '../../entity/session/anonymous-session.entity'
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
+import { LoginEvent } from '../../event-bus/events/login-event';
+import { LogoutEvent } from '../../event-bus/events/logout-event';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
 import { OrderService } from './order.service';
@@ -29,6 +33,7 @@ export class AuthService {
         private passwordCipher: PasswordCiper,
         private configService: ConfigService,
         private orderService: OrderService,
+        private eventBus: EventBus,
     ) {
         this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration as string);
     }
@@ -41,22 +46,19 @@ export class AuthService {
         identifier: string,
         password: string,
     ): Promise<AuthenticatedSession> {
+        this.eventBus.publish(new AttemptedLoginEvent(ctx, identifier));
         const user = await this.getUserFromIdentifier(identifier);
         await this.verifyUserPassword(user.id, password);
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
-        // TODO: this line is commented out so that the same user may be logged
-        // in more than once concurrently. At this time, it is needed in order
-        // for the online demo to work properly, but it may be desirable to keep it
-        // this way by design. See https://github.com/vendure-ecommerce/vendure/issues/53
-        // await this.deleteSessionsByUser(user);
 
         if (ctx.session && ctx.session.activeOrder) {
             await this.deleteSessionsByActiveOrder(ctx.session && ctx.session.activeOrder);
         }
         const session = await this.createNewAuthenticatedSession(ctx, user);
         const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
+        this.eventBus.publish(new LoginEvent(ctx, user));
         return newSession;
     }
 
@@ -135,12 +137,13 @@ export class AuthService {
     /**
      * Deletes all sessions for the user associated with the given session token.
      */
-    async deleteSessionByToken(token: string): Promise<void> {
+    async deleteSessionByToken(ctx: RequestContext, token: string): Promise<void> {
         const session = await this.connection.getRepository(AuthenticatedSession).findOne({
             where: { token },
             relations: ['user'],
         });
         if (session) {
+            this.eventBus.publish(new LogoutEvent(ctx));
             return this.deleteSessionsByUser(session.user);
         }
     }
