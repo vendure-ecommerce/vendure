@@ -291,6 +291,7 @@ export class Importer {
                     facetEntity = existing;
                 } else {
                     facetEntity = await this.facetService.create({
+                        isPrivate: false,
                         code: normalizeString(facetName, '-'),
                         translations: [{ languageCode, name: facetName }],
                     });
