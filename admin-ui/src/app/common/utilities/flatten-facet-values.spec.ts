@@ -1,3 +1,4 @@
+import { isPrivate } from '@babel/types';
 import { FacetWithValues, LanguageCode } from 'shared/generated-types';
 
 import { flattenFacetValues } from './flatten-facet-values';
@@ -48,6 +49,7 @@ describe('flattenFacetValues()', () => {
         const input: FacetWithValues.Fragment[] = [
             {
                 id: '1',
+                isPrivate: false,
                 languageCode: LanguageCode.en,
                 code: 'brand',
                 name: 'Brand',
@@ -56,6 +58,7 @@ describe('flattenFacetValues()', () => {
             },
             {
                 id: '2',
+                isPrivate: false,
                 languageCode: LanguageCode.en,
                 code: 'type',
                 name: 'Type',

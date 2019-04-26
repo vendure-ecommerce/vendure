@@ -22,6 +22,7 @@ export const FACET_WITH_VALUES_FRAGMENT = gql`
     fragment FacetWithValues on Facet {
         id
         languageCode
+        isPrivate
         code
         name
         translations {

@@ -53,14 +53,14 @@ export class FacetDataService {
 
     createFacet(facet: CreateFacetInput) {
         const input: CreateFacet.Variables = {
-            input: pick(facet, ['code', 'translations', 'values', 'customFields']),
+            input: pick(facet, ['code', 'isPrivate', 'translations', 'values', 'customFields']),
         };
         return this.baseDataService.mutate<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, input);
     }
 
     updateFacet(facet: UpdateFacetInput) {
         const input: UpdateFacet.Variables = {
-            input: pick(facet, ['id', 'code', 'translations', 'customFields']),
+            input: pick(facet, ['id', 'code', 'isPrivate', 'translations', 'customFields']),
         };
         return this.baseDataService.mutate<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, input);
     }

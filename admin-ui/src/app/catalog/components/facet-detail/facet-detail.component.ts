@@ -4,10 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, switchMap, take } from 'rxjs/operators';
 import {
+    CreateFacetInput,
     CreateFacetValueInput,
     DeletionResult,
     FacetWithValues,
     LanguageCode,
+    UpdateFacetInput,
     UpdateFacetValueInput,
 } from 'shared/generated-types';
 import { normalizeString } from 'shared/normalize-string';
@@ -53,6 +55,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             facet: this.formBuilder.group({
                 code: ['', Validators.required],
                 name: '',
+                visible: true,
                 customFields: this.formBuilder.group(
                     this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
                 ),
@@ -117,7 +120,11 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             .pipe(
                 take(1),
                 mergeMap(([facet, languageCode]) => {
-                    const newFacet = this.getUpdatedFacet(facet, facetForm as FormGroup, languageCode);
+                    const newFacet = this.getUpdatedFacet(
+                        facet,
+                        facetForm as FormGroup,
+                        languageCode,
+                    ) as CreateFacetInput;
                     return this.dataService.facet.createFacet(newFacet);
                 }),
             )
@@ -145,7 +152,11 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     const updateOperations: Array<Observable<any>> = [];
 
                     if (facetGroup && facetGroup.dirty) {
-                        const newFacet = this.getUpdatedFacet(facet, facetGroup as FormGroup, languageCode);
+                        const newFacet = this.getUpdatedFacet(
+                            facet,
+                            facetGroup as FormGroup,
+                            languageCode,
+                        ) as UpdateFacetInput;
                         if (newFacet) {
                             updateOperations.push(this.dataService.facet.updateFacet(newFacet));
                         }
@@ -244,6 +255,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         this.detailForm.patchValue({
             facet: {
                 code: facet.code,
+                visible: !facet.isPrivate,
                 name: currentTranslation ? currentTranslation.name : '',
             },
         });
@@ -315,8 +327,8 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         facet: FacetWithValues.Fragment,
         facetFormGroup: FormGroup,
         languageCode: LanguageCode,
-    ): any {
-        return createUpdatedTranslatable({
+    ): CreateFacetInput | UpdateFacetInput {
+        const input = createUpdatedTranslatable({
             translatable: facet,
             updatedFields: facetFormGroup.value,
             customFieldConfig: this.customFields,
@@ -326,6 +338,8 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 name: facet.name || '',
             },
         });
+        input.isPrivate = !facetFormGroup.value.visible;
+        return input;
     }
 
     /**

@@ -11,7 +11,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else: updateButton"
+            *ngIf="(isNew$ | async); else updateButton"
             (click)="create()"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
@@ -31,7 +31,18 @@
 
 <form class="form" [formGroup]="detailForm" *ngIf="(entity$ | async) as facet">
     <section class="form-block" formGroupName="facet">
-        <label>{{ 'catalog.facet' | translate }}</label>
+        <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
+            <clr-toggle-wrapper>
+                <input type="checkbox" clrToggle formControlName="visible" id="visibility" />
+                <label class="visible-toggle">
+                    {{
+                        detailForm.value.facet.visible
+                            ? ('catalog.public' | translate)
+                            : ('catalog.private' | translate)
+                    }}
+                </label>
+            </clr-toggle-wrapper>
+        </vdr-form-field>
         <vdr-form-field [label]="'common.name' | translate" for="name">
             <input
                 id="name"

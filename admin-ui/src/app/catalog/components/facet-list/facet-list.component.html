@@ -18,6 +18,7 @@
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column [expand]="true">{{ 'catalog.values' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.visibility' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-facet="item">
@@ -25,11 +26,17 @@
         <td class="left align-middle">{{ facet.name }}</td>
         <td class="left align-middle">
             <vdr-facet-value-chip
-                *ngFor="let value of facet.values"
+                *ngFor="let value of (facet.values | slice: 0:3)"
                 [facetValue]="value"
                 [removable]="false"
                 [displayFacetName]="false"
             ></vdr-facet-value-chip>
+            <vdr-chip *ngIf="facet.values.length > 3">+ {{ facet.values.length - 3 }}</vdr-chip>
+        </td>
+        <td>
+            <vdr-chip>
+                {{ facet.isPrivate ? ('catalog.private' | translate) : ('catalog.public' | translate) }}
+            </vdr-chip>
         </td>
         <td class="right align-middle">
             <vdr-table-row-action
