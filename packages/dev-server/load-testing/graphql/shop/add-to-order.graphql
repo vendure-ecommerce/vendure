@@ -1,0 +1,6 @@
+mutation ($id: ID! $qty: Int!) {
+  addItemToOrder(productVariantId: $id quantity: $qty) {
+    id
+    code
+  }
+}

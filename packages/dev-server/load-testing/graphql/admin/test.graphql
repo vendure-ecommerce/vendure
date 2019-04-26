@@ -1,0 +1,10 @@
+query {
+    activeChannel {
+        code
+    }
+    administrators {
+        items {
+            createdAt
+        }
+    }
+}
