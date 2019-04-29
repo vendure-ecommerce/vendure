@@ -13,19 +13,24 @@ export const facetValueCollectionFilter = new CollectionFilter({
     code: 'facet-value-filter',
     description: 'Filter by FacetValues',
     apply: (qb, args) => {
-        qb.leftJoin('productVariant.product', 'product')
-            .leftJoin('product.facetValues', 'productFacetValues')
-            .leftJoin('productVariant.facetValues', 'variantFacetValues')
-            .andWhere(
-                new Brackets(qb1 => {
-                    const ids = args.facetValueIds;
-                    return qb1
-                        .where(`productFacetValues.id IN (:...ids)`, { ids })
-                        .orWhere(`variantFacetValues.id IN (:...ids)`, { ids });
-                }),
-            )
-            .groupBy('productVariant.id')
-            .having(`COUNT(1) >= :count`, { count: args.facetValueIds.length });
+        if (args.facetValueIds.length) {
+            qb.leftJoin('productVariant.product', 'product')
+                .leftJoin('product.facetValues', 'productFacetValues')
+                .leftJoin('productVariant.facetValues', 'variantFacetValues')
+                .andWhere(
+                    new Brackets(qb1 => {
+                        const ids = args.facetValueIds;
+                        return qb1
+                            .where(`productFacetValues.id IN (:...ids)`, {ids})
+                            .orWhere(`variantFacetValues.id IN (:...ids)`, {ids});
+                    }),
+                )
+                .groupBy('productVariant.id')
+                .having(`COUNT(1) >= :count`, {count: args.facetValueIds.length});
+        } else {
+            // If no facetValueIds are specified, no ProductVariants will be matched.
+            qb.andWhere('1 = 0');
+        }
         return qb;
     },
 });

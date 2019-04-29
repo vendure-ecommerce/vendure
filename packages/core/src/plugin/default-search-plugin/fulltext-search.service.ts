@@ -16,6 +16,7 @@ import { FacetValueService } from '../../service/services/facet-value.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 
+import { AsyncQueue } from './async-queue';
 import { DefaultSearchReindexResponse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
@@ -29,6 +30,7 @@ import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
  */
 @Injectable()
 export class FulltextSearchService implements SearchService {
+    private taskQueue = new AsyncQueue('search-service', 1);
     private searchStrategy: SearchStrategy;
     private readonly minTermLength = 2;
     private readonly variantRelations = [
@@ -70,7 +72,7 @@ export class FulltextSearchService implements SearchService {
     async facetValues(
         ctx: RequestContext,
         input: SearchInput,
-        enabledOnly: boolean = false
+        enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input, enabledOnly);
         const facetValues = await this.facetValueService.findByIds(
@@ -96,8 +98,12 @@ export class FulltextSearchService implements SearchService {
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
         const variants = await qb.where('variants__product.deletedAt IS NULL').getMany();
-        await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
-        await this.saveSearchIndexItems(ctx, variants);
+
+        await this.taskQueue.push(async () => {
+            await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
+            await this.saveSearchIndexItems(ctx, variants);
+        });
+
         return {
             success: true,
             indexedItemCount: variants.length,
@@ -137,20 +143,25 @@ export class FulltextSearchService implements SearchService {
                 updatedVariants = [variant];
             }
         }
-        if (updatedVariants.length) {
-            await this.saveSearchIndexItems(ctx, updatedVariants);
-        }
-        if (removedVariantIds.length) {
-            await this.removeSearchIndexItems(ctx.languageCode, removedVariantIds);
-        }
+        await this.taskQueue.push(async () => {
+            if (updatedVariants.length) {
+                await this.saveSearchIndexItems(ctx, updatedVariants);
+            }
+            if (removedVariantIds.length) {
+                await this.removeSearchIndexItems(ctx.languageCode, removedVariantIds);
+            }
+        });
+
     }
 
     async updateVariantsById(ctx: RequestContext, ids: ID[]) {
         if (ids.length) {
-            const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
-                relations: this.variantRelations,
+            this.taskQueue.push(async () => {
+                const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
+                    relations: this.variantRelations,
+                });
+                await this.saveSearchIndexItems(ctx, updatedVariants);
             });
-            await this.saveSearchIndexItems(ctx, updatedVariants);
         }
     }
 
@@ -203,7 +214,7 @@ export class FulltextSearchService implements SearchService {
                         collectionIds: v.collections.map(c => c.id.toString()),
                     }),
             );
-        await this.connection.getRepository(SearchIndexItem).save(items);
+        return this.connection.getRepository(SearchIndexItem).save(items);
     }
 
     /**
