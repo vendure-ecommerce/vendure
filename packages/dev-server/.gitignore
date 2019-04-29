@@ -2,3 +2,5 @@ assets
 vendure
 test-emails
 vendure.sqlite
+vendure-import-error.log
+load-testing/data-sources/products*.csv

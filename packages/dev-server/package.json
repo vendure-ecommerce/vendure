@@ -7,17 +7,20 @@
   "scripts": {
     "populate": "node -r ts-node/register populate-dev-server.ts",
     "start": "nodemon --config nodemon-debug.json index.ts",
-    "load-test": "k6 run load-testing/scripts/search-and-checkout.js"
+    "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
+    "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000"
   },
   "dependencies": {
+    "@vendure/admin-ui-plugin": "~0.1.0",
+    "@vendure/asset-server-plugin": "~0.1.0",
     "@vendure/common": "~0.1.0",
     "@vendure/core": ">=0.1.0-alpha.18",
-    "@vendure/asset-server-plugin": "~0.1.0",
-    "@vendure/admin-ui-plugin": "~0.1.0",
     "@vendure/email-plugin": "~0.1.0",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
+    "@types/csv-stringify": "^1.4.3",
+    "csv-stringify": "^5.3.0",
     "nodemon": "^1.18.9"
   }
 }

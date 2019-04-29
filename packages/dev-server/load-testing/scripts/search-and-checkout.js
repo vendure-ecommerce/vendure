@@ -6,6 +6,15 @@ const searchQuery = new ShopApiRequest('shop/search.graphql');
 const productQuery = new ShopApiRequest('shop/product.graphql');
 const addItemToOrderMutation = new ShopApiRequest('shop/add-to-order.graphql');
 
+export let options = {
+  stages: [
+      { duration: '30s', target: 10 },
+      { duration: '1m', target: 75 },
+      { duration: '1m', target: 150 },
+      { duration: '1m', target: 0 },
+  ],
+};
+
 /**
  * Searches for products, adds to order, checks out.
  */

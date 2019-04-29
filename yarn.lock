@@ -1200,6 +1200,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/csv-stringify@^1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@types/csv-stringify/-/csv-stringify-1.4.3.tgz#538326331445809293fe8755694173dd01590f32"
+  integrity sha512-vfbvOBhuTjDYQjdG8dCxLjOsyQMjCE0oN0bIUkJtiolqkCe1WTCjh36w4hEhtkdLHUgsB4aN4r6SFD8iLJgiGQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/dateformat@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/dateformat/-/dateformat-3.0.0.tgz#d3cbfa8ac3789990592f3d9585331cdb2c5f979f"
@@ -3303,6 +3310,13 @@ csv-parse@^4.3.0:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.3.4.tgz#fc896c170ebbdf6fb286de85c41bbaea4973d25f"
   integrity sha512-M1R4WL+vt81+GnkKzi0s1qQM6WXvHQKDecNkpozzAEG8LHvIW9bq5eBnOKFQn50fTuAos7JodBh/07MK+J6G2Q==
+
+csv-stringify@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-5.3.0.tgz#ff2dfafa6fcccd455ff5039be9c202475aa3bbe0"
+  integrity sha512-VMYPbE8zWz475smwqb9VbX9cj0y4J0PBl59UdcqzLkzXHZZ8dh4Rmbb0ZywsWEtUml4A96Hn7Q5MW9ppVghYzg==
+  dependencies:
+    lodash.get "~4.4.2"
 
 currently-unhandled@^0.4.1:
   version "0.4.1"
@@ -6861,7 +6875,7 @@ lodash.foreach@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash.foreach/-/lodash.foreach-4.5.0.tgz#1a6a35eace401280c7f06dddec35165ab27e3e53"
   integrity sha1-Gmo16s5AEoDH8G3d7DUWWrJ+PlM=
 
-lodash.get@^4.4.2:
+lodash.get@^4.4.2, lodash.get@~4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
