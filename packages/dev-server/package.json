@@ -8,7 +8,8 @@
     "populate": "node -r ts-node/register populate-dev-server.ts",
     "start": "nodemon --config nodemon-debug.json index.ts",
     "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
-    "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000"
+    "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000",
+    "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
   },
   "dependencies": {
     "@vendure/admin-ui-plugin": "~0.1.0",

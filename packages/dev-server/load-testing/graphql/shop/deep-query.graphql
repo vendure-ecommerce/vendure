@@ -1,0 +1,124 @@
+{
+    product(id: "1") {
+        assets {
+            fileSize
+            id
+            mimeType
+            name
+            preview
+            type
+        }
+        featuredAsset {
+            fileSize
+            id
+            mimeType
+            name
+            preview
+            type
+        }
+        collections {
+            assets {
+                id
+                preview
+            }
+            breadcrumbs {
+                id
+                name
+            }
+            children {
+                assets {
+                    id
+                    preview
+                }
+                breadcrumbs {
+                    id
+                    name
+                }
+
+            }
+            description
+            filters {
+                args {
+                    name
+                    type
+                    value
+                }
+                code
+                description
+            }
+            featuredAsset {
+                id
+                preview
+            }
+        }
+        description
+        facetValues {
+            code
+            facet {
+                code
+                id
+                name
+            }
+            name
+            id
+        }
+        optionGroups {
+            id
+            code
+            options {
+                id
+                code
+            }
+        }
+        variants {
+            assets {
+                id
+                preview
+            }
+            currencyCode
+            customFields
+            facetValues {
+                code
+                id
+                facet {
+                    code
+                    id
+                    name
+                }
+                name
+            }
+            featuredAsset {
+                id
+                preview
+            }
+            name
+            options {
+                id
+                code
+            }
+            price
+            priceIncludesTax
+            priceWithTax
+            sku
+            taxCategory {
+                id
+                name
+            }
+            taxRateApplied {
+                category {
+                    id
+                    name
+                }
+                customerGroup {
+                    id
+                    name
+                }
+                value
+                zone {
+                    id
+                    name
+                }
+            }
+        }
+    }
+}

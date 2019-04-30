@@ -25,7 +25,7 @@ if (require.main === module) {
         .then(isPopulated => {
             if (!isPopulated) {
                 const count = getProductCount();
-                const config = getLoadTestConfig();
+                const config = getLoadTestConfig('bearer');
                 const csvFile = getProductCsvFilePath();
                 return clearAllTables(config.dbConnectionOptions, true)
                     .then(() => {
@@ -148,25 +148,19 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
 
     writeFn(headers);
 
-    const LOREM = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-        'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ' +
-        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ' +
-        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-            .replace(/\r\n/g, '');
-
     const categories = getCategoryNames();
 
     for (let i = 1; i <= productCount; i++) {
         const outputRow: BaseProductRecord = {
             name: `Product ${i}`,
             slug: `product-${i}`,
-            description: LOREM,
+            description: generateProductDescription(),
             assets: 'product-image.jpg',
             facets: `category:${categories[i % categories.length]}`,
             optionGroups: '',
             optionValues: '',
             sku: `PRODID${i}`,
-            price: '12345',
+            price: (Math.random() * 1000).toFixed(2),
             taxCategory: 'standard',
             variantAssets: '',
             variantFacets: '',
@@ -178,4 +172,85 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
 function getCategoryNames() {
     const allNames = initialData.collections.reduce((all, c) => [...all, ...c.facetNames], [] as string[]);
     return Array.from(new Set(allNames));
+}
+
+const parts = [
+    `Now equipped with seventh-generation Intel Core processors`,
+    `Laptop is snappier than ever`,
+    `From daily tasks like launching apps and opening files to more advanced computing`,
+    `You can power through your day thanks to faster SSDs and Turbo Boost processing up to 3.6GHz`,
+    `Discover a truly immersive viewing experience with this monitor curved more deeply than any other`,
+    `Wrapping around your field of vision the 1,800 R screencreates a wider field of view`,
+    `This pc is optimised for gaming, and is also VR ready`,
+    `The Intel Core-i7 CPU and High Performance GPU give the computer the raw power it needs to function at a high level`,
+    `Boost your PC storage with this internal hard drive, designed just for desktop and all-in-one PCs`,
+    `Let all your colleagues know that you are typing on this exclusive, colorful klicky-klacky keyboard`,
+    `Solid conductors eliminate strand-interaction distortion and reduce jitter`,
+    `As the surface is made of high-purity silver`,
+    `the performance is very close to that of a solid silver cable`,
+    `but priced much closer to solid copper cable`,
+    `With its nostalgic design and simple point-and-shoot functionality`,
+    `the Instant Camera is the perfect pick to get started with instant photography`,
+    `This lens is a Di type lens using an optical system with improved multi-coating designed to function with digital SLR cameras as well as film cameras`,
+    `Capture vivid, professional-style photographs with help from this lightweight tripod`,
+    `The adjustable-height tripod makes it easy to achieve reliable stability`,
+    `Just the right angle when going after that award-winning shot`,
+    `Featuring a full carbon chassis - complete with cyclocross-specific carbon fork`,
+    `It's got the low weight, exceptional efficiency and brilliant handling`,
+    `You'll need to stay at the front of the pack`,
+    `When you're working out you need a quality rope that doesn't tangle at every couple of jumps`,
+    `Training gloves designed for optimum training`,
+    `Our gloves promote proper punching technique because they are conformed to the natural shape of your fist`,
+    `Dense, innovative two-layer foam provides better shock absorbency`,
+    `Full padding on the front, back and wrist to promote proper punching technique`,
+    `With tons of space inside (for max. 4 persons), full head height throughout`,
+    `This tent offers you everything you need`,
+    `Based on the 1970s iconic shape, but made to a larger 69cm size`,
+    `These skateboards are great for beginners to learn the foot spacing required`,
+    `Perfect for all-day cruising`,
+    `This football features high-contrast graphics for high-visibility during play`,
+    `Its machine-stitched tpu casing offers consistent performance`,
+    `With its ultra-light, uber-responsive magic foam`,
+    `The Running Shoe is ready to push you to victories both large and small`,
+    `A spiky yet elegant house cactus`,
+    `Perfect for the home or office`,
+    `Origin and habitat: Probably native only to the Andes of Peru`,
+    `Gloriously elegant`,
+    `It can go along with any interior as it is a neutral color and the most popular Phalaenopsis overall`,
+    `2 to 3 foot stems host large white flowers that can last for over 2 months`,
+    `Excellent semi-evergreen bonsai`,
+    `Indoors or out but needs some winter protection`,
+    `All trees sent will leave the nursery in excellent condition and will be of equal quality or better than the photograph shown`,
+    `Placing it at home or office can bring you fortune and prosperity`,
+    `Guards your house and ward off ill fortune`,
+    `Hand trowel for garden cultivating hammer finish epoxy-coated head`,
+    `For improved resistance to rust, scratches, humidity and alkalines in the soil`,
+    `A charming vintage white wooden chair`,
+    `Featuring an extremely spherical pink balloon`,
+    `The balloon may be detached and used for other purposes`,
+    `This premium, tan-brown bonded leather seat is part of the 'chill' sofa range`,
+    `The lever activated recline feature makes it easy to adjust to any position`,
+    `This smart, bustle back design with rounded tight padded arms has been designed with your comfort in mind`,
+    `This well-padded chair has foam pocket sprung seat cushions and fibre-filled back cushions`,
+    `Modern tapered white polycotton pendant shade with a metallic silver chrome interior`,
+    `For maximum light reflection`,
+    `Reversible gimble so it can be used as a ceiling shade or as a lamp shade`,
+];
+function generateProductDescription(): string {
+    const take = Math.ceil(Math.random() * 4);
+    return shuffle(parts).slice(0, take)
+        .join('. ');
+}
+
+/**
+ * Returns new copy of array in random order.
+ * https://stackoverflow.com/a/6274381/772859
+ */
+function shuffle<T>(arr: T[]): T[] {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }

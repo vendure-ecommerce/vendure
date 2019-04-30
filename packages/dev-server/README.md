@@ -26,6 +26,20 @@ yarn populate --db=sqlite
 
 ## Load testing
 
-This package also contains scripts for load testing the Vendure server. The load testing infrastructure and scripts are located in the [./load-testing](./load-testing) directory.
+This package also contains scripts for load testing the Vendure server. The load testing infrastructure and scripts are located in the [`./load-testing`](./load-testing) directory.
 
 Load testing is done with [k6](https://docs.k6.io/), and to run them you will need k6 installed and (in Windows) available in your PATH environment variable so that it can be run with the command `k6`.
+
+The load tests assume the existence of the following tables in the MySQL database:
+
+* `vendure-load-testing-1000`
+* `vendure-load-testing-10000`
+* `vendure-load-testing-100000`
+
+The npm scripts `load-test:1k`, `load-test:10k` and `load-test:100k` will populate their respective databases with test data and then run the k6 scripts against them.
+
+### Results
+
+The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory.
+
+

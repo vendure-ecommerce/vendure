@@ -15,13 +15,13 @@ export function getMysqlConnectionOptions(count: number) {
     };
 }
 
-export function getLoadTestConfig(): VendureConfig {
+export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): VendureConfig {
     const count = getProductCount();
     return {
         ...devConfig as any,
         dbConnectionOptions: getMysqlConnectionOptions(count),
         authOptions: {
-            tokenMethod: 'bearer',
+            tokenMethod,
             requireVerification: false,
         },
         importExportOptions: {

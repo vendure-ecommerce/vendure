@@ -1,0 +1,74 @@
+mutation SetShippingAddress($address: CreateAddressInput! $customer: CreateCustomerInput!) {
+    setOrderShippingAddress(input: $address) {
+        ...Cart
+        shippingAddress {
+            ...OrderAddress
+        }
+    }
+    setCustomerForOrder(input: $customer) {
+        id
+        customer {
+            id
+            emailAddress
+            firstName
+            lastName
+        }
+    }
+}
+
+fragment Cart on Order {
+    id
+    code
+    state
+    active
+    lines {
+        id
+        featuredAsset {
+            id
+            preview
+            name
+        }
+        unitPrice
+        unitPriceWithTax
+        quantity
+        totalPrice
+        productVariant {
+            id
+            name
+        }
+        adjustments {
+            amount
+            description
+            adjustmentSource
+            type
+        }
+    }
+    subTotal
+    subTotalBeforeTax
+    totalBeforeTax
+    shipping
+    shippingMethod {
+        id
+        code
+        description
+    }
+    total
+    adjustments {
+        amount
+        description
+        adjustmentSource
+        type
+    }
+}
+
+fragment OrderAddress on OrderAddress {
+    fullName
+    company
+    streetLine1
+    streetLine2
+    city
+    province
+    postalCode
+    country
+    phoneNumber
+}

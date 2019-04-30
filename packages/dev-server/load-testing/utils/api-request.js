@@ -7,10 +7,15 @@ export class ShopApiRequest {
         this.document = open('../graphql/' + fileName);
     }
 
+    /**
+     * Post the GraphQL request
+     */
     post(variables = {}) {
         const res = http.post('http://localhost:3000/shop-api/', {
             query: this.document,
             variables: JSON.stringify(variables),
+        }, {
+            timeout: 120 * 1000,
         });
         check(res, {
             'Did not error': r => r.json().errors == null && r.status === 200,
