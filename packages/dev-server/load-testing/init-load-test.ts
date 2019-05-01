@@ -12,7 +12,12 @@ import { initialData } from '../../core/mock-data/data-sources/initial-data';
 import { populateCustomers } from '../../core/mock-data/populate-customers';
 import { devConfig } from '../dev-config';
 
-import { getLoadTestConfig, getMysqlConnectionOptions, getProductCount, getProductCsvFilePath } from './load-test-config';
+import {
+    getLoadTestConfig,
+    getMysqlConnectionOptions,
+    getProductCount,
+    getProductCsvFilePath,
+} from './load-test-config';
 
 // tslint:disable:no-console
 
@@ -33,11 +38,13 @@ if (require.main === module) {
                             return generateProductsCsv(count);
                         }
                     })
-                    .then(() => populate(() => bootstrap(config),
-                        path.join(__dirname, '../../create/assets/initial-data.json'),
-                        csvFile,
-                        path.join(__dirname, './data-sources'),
-                    ))
+                    .then(() =>
+                        populate(
+                            () => bootstrap(config),
+                            path.join(__dirname, '../../create/assets/initial-data.json'),
+                            csvFile,
+                        ),
+                    )
                     .then(async app => {
                         console.log('populating customers...');
                         await populateCustomers(10, config as any, true);
@@ -90,7 +97,6 @@ function isDatabasePopulated(): Promise<boolean> {
             });
         });
     });
-
 }
 
 /**
@@ -110,7 +116,7 @@ function generateProductsCsv(productCount: number = 100): Promise<void> {
     stringifier.on('readable', () => {
         let row;
         // tslint:disable-next-line:no-conditional-assignment
-        while (row = stringifier.read()) {
+        while ((row = stringifier.read())) {
             data.push(row);
         }
     });
@@ -238,7 +244,8 @@ const parts = [
 ];
 function generateProductDescription(): string {
     const take = Math.ceil(Math.random() * 4);
-    return shuffle(parts).slice(0, take)
+    return shuffle(parts)
+        .slice(0, take)
         .join('. ');
 }
 

@@ -15,21 +15,14 @@ try {
 }
 
 // tslint:disable:no-console
-export async function populate(
-    bootstrapFn: () => Promise<INestApplication | undefined>,
-    initialDataPath: string,
-): Promise<INestApplication>;
-export async function populate(
-    bootstrapFn: () => Promise<INestApplication | undefined>,
-    initialDataPath: string,
-    productsCsvPath: string,
-    imageSourcePath: string,
-): Promise<INestApplication>;
+/**
+ * Populates the Vendure server with some initial data and (optionally) product data from
+ * a supplied CSV file.
+ */
 export async function populate(
     bootstrapFn: () => Promise<INestApplication | undefined>,
     initialDataPath: string,
     productsCsvPath?: string,
-    imageSourcePath?: string,
 ): Promise<INestApplication> {
     const app = await bootstrapFn();
     if (!app) {
@@ -37,7 +30,7 @@ export async function populate(
     }
     const initialData = require(initialDataPath);
     await populateInitialData(app, initialData);
-    if (productsCsvPath && imageSourcePath) {
+    if (productsCsvPath) {
         await importProductsFromFile(app, productsCsvPath, initialData.defaultLanguage);
         await populateCollections(app, initialData);
     }
