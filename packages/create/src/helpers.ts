@@ -258,3 +258,82 @@ function dbDriverPackage(dbType: DbType): string {
             return '';
     }
 }
+
+/**
+ * Checks that the specified DB connection options are working (i.e. a connection can be
+ * established) and that the named database exists.
+ */
+export function checkDbConnection(options: any, root: string): Promise<true> {
+    switch (options.type) {
+        case 'mysql':
+            return checkMysqlDbExists(options, root);
+        case 'postgres':
+            return checkPostgresDbExists(options, root);
+        default:
+            return Promise.resolve(true);
+    }
+}
+
+async function checkMysqlDbExists(options: any, root: string): Promise<true> {
+    const mysql = await import(path.join(root, 'node_modules/mysql'));
+    const connectionOptions = {
+        host: options.host,
+        user: options.username,
+        password: options.password,
+        port: options.port,
+        database: options.database,
+    };
+    const connection = mysql.createConnection(connectionOptions);
+
+    return new Promise<boolean>((resolve, reject) => {
+        connection.connect((err: any) => {
+            if (err) {
+                if (err.code === 'ER_BAD_DB_ERROR') {
+                    throwDatabaseDoesNotExist(options.database);
+                }
+                throwConnectionError(err);
+            }
+            resolve(true);
+        });
+    }).then(() => {
+        return new Promise((resolve, reject) => {
+            connection.end((err: any) => {
+                resolve(true);
+            });
+        });
+    });
+}
+
+async function checkPostgresDbExists(options: any, root: string): Promise<true> {
+    const { Client } = await import(path.join(root, 'node_modules/pg'));
+    const connectionOptions = {
+        host: options.host,
+        user: options.username,
+        password: options.password,
+        port: options.port,
+        database: options.database,
+    };
+    const client = new Client(connectionOptions);
+
+    try {
+        await client.connect();
+    } catch (e) {
+        if (e.code === '3D000') {
+            throwDatabaseDoesNotExist(options.database);
+        }
+        throwConnectionError(e);
+        await client.end();
+        throw e;
+    }
+    await client.end();
+    return true;
+}
+
+function throwConnectionError(err: any) {
+    throw new Error(`Could not connect to the database. ` +
+        `Please check the connection settings in your Vendure config.\n[${err.message || err.toString()}]`);
+}
+
+function throwDatabaseDoesNotExist(name: string) {
+    throw new Error(`Database "${name}" does not exist. Please create the database and then try again.`);
+}

@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 
 import { gatherUserResponses } from './gather-user-responses';
 import {
+    checkDbConnection,
     checkNodeVersion,
     checkThatNpmCanReadCwd,
     getDependencies,
@@ -81,19 +82,19 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
             title: 'Installing dependencies',
             task: (() => {
                 return new Observable(subscriber => {
+                    subscriber.next('Creating package.json');
                     fs.writeFileSync(
                         path.join(root, 'package.json'),
                         JSON.stringify(packageJsonContents, null, 2) + os.EOL,
                     );
-                    subscriber.next('Created package.json');
                     const { dependencies, devDependencies } = getDependencies(usingTs, dbType);
 
+                    subscriber.next(`Installing ${dependencies.join(', ')}`);
                     installPackages(root, useYarn, dependencies, false, logLevel)
-                        .then(() => subscriber.next(`Installed ${dependencies.join(', ')}`))
                         .then(() => {
                             if (devDependencies.length) {
-                                return installPackages(root, useYarn, devDependencies, true, logLevel)
-                                    .then(() => subscriber.next(`Installed ${devDependencies.join(', ')}`));
+                                subscriber.next(`Installing ${devDependencies.join(', ')}`);
+                                return installPackages(root, useYarn, devDependencies, true, logLevel);
                             }
                         })
                         .then(() => subscriber.complete());
@@ -117,7 +118,10 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                         .then(() => {
                             subscriber.next(`Created index`);
                             if (usingTs) {
-                                return fs.copyFile(assetPath('tsconfig.template.json'), path.join(root, 'tsconfig.json'));
+                                return fs.copyFile(
+                                    assetPath('tsconfig.template.json'),
+                                    path.join(root, 'tsconfig.json'),
+                                );
                             }
                         })
                         .then(() => createDirectoryStructure(root))
@@ -153,8 +157,9 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
 
                     const initialDataPath = path.join(assetsDir, 'initial-data.json');
                     const port = await detectPort(3000);
-                    const bootstrapFn = () =>
-                        bootstrap({
+                    const bootstrapFn = async () => {
+                        await checkDbConnection(config.dbConnectionOptions, root);
+                        return bootstrap({
                             ...config,
                             port,
                             silent: logLevel === 'silent',
@@ -166,13 +171,13 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                                 importAssetsDir: path.join(assetsDir, 'images'),
                             },
                         });
+                    };
                     let app: any;
                     if (populateProducts) {
                         app = await populate(
                             bootstrapFn,
                             initialDataPath,
                             path.join(assetsDir, 'products.csv'),
-                            path.join(assetsDir, 'images'),
                         );
                     } else {
                         app = await populate(bootstrapFn, initialDataPath);
@@ -190,6 +195,7 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
         await tasks.run();
     } catch (e) {
         console.error(chalk.red(e));
+        process.exit(1);
     }
     const startCommand = useYarn ? 'yarn start' : 'npm run start';
     console.log();
