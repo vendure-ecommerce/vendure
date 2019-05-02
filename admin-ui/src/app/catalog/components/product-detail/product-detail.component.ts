@@ -39,6 +39,8 @@ export interface VariantFormValue {
     priceIncludesTax: boolean;
     priceWithTax: number;
     taxCategoryId: string;
+    stockOnHand: number;
+    trackInventory: boolean;
     facetValueIds: string[];
 }
 
@@ -372,6 +374,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 priceIncludesTax: variant.priceIncludesTax,
                 priceWithTax: variant.priceWithTax,
                 taxCategoryId: variant.taxCategory.id,
+                stockOnHand: variant.stockOnHand,
+                trackInventory: variant.trackInventory,
                 facetValueIds,
             };
 

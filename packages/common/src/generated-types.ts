@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-02T12:27:29+02:00
+// Generated in 2019-05-02T20:00:06+02:00
 export type Maybe<T> = T | null;
 
 
@@ -555,41 +555,6 @@ export interface PromotionFilterParameter {
   enabled?: Maybe<BooleanOperators>;
 }
 
-export interface RoleListOptions {
-  
-  skip?: Maybe<number>;
-  
-  take?: Maybe<number>;
-  
-  sort?: Maybe<RoleSortParameter>;
-  
-  filter?: Maybe<RoleFilterParameter>;
-}
-
-export interface RoleSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  code?: Maybe<SortOrder>;
-  
-  description?: Maybe<SortOrder>;
-}
-
-export interface RoleFilterParameter {
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-  
-  code?: Maybe<StringOperators>;
-  
-  description?: Maybe<StringOperators>;
-}
-
 export interface ShippingMethodListOptions {
   
   skip?: Maybe<number>;
@@ -615,6 +580,41 @@ export interface ShippingMethodSortParameter {
 }
 
 export interface ShippingMethodFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  description?: Maybe<StringOperators>;
+}
+
+export interface RoleListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<RoleSortParameter>;
+  
+  filter?: Maybe<RoleFilterParameter>;
+}
+
+export interface RoleSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  code?: Maybe<SortOrder>;
+  
+  description?: Maybe<SortOrder>;
+}
+
+export interface RoleFilterParameter {
   
   createdAt?: Maybe<DateOperators>;
   
@@ -834,20 +834,6 @@ export interface UpdateCountryInput {
   enabled?: Maybe<boolean>;
 }
 
-export interface CreateCustomerGroupInput {
-  
-  name: string;
-  
-  customerIds?: Maybe<string[]>;
-}
-
-export interface UpdateCustomerGroupInput {
-  
-  id: string;
-  
-  name?: Maybe<string>;
-}
-
 export interface CreateCustomerInput {
   
   title?: Maybe<string>;
@@ -1011,6 +997,20 @@ export interface UpdateFacetValueInput {
   translations?: Maybe<FacetValueTranslationInput[]>;
   
   customFields?: Maybe<Json>;
+}
+
+export interface CreateCustomerGroupInput {
+  
+  name: string;
+  
+  customerIds?: Maybe<string[]>;
+}
+
+export interface UpdateCustomerGroupInput {
+  
+  id: string;
+  
+  name?: Maybe<string>;
 }
 
 export interface UpdateGlobalSettingsInput {
@@ -1182,26 +1182,6 @@ export interface UpdatePromotionInput {
   actions?: Maybe<ConfigurableOperationInput[]>;
 }
 
-export interface CreateRoleInput {
-  
-  code: string;
-  
-  description: string;
-  
-  permissions: Permission[];
-}
-
-export interface UpdateRoleInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  description?: Maybe<string>;
-  
-  permissions?: Maybe<Permission[]>;
-}
-
 export interface CreateShippingMethodInput {
   
   code: string;
@@ -1224,6 +1204,26 @@ export interface UpdateShippingMethodInput {
   checker?: Maybe<ConfigurableOperationInput>;
   
   calculator?: Maybe<ConfigurableOperationInput>;
+}
+
+export interface CreateRoleInput {
+  
+  code: string;
+  
+  description: string;
+  
+  permissions: Permission[];
+}
+
+export interface UpdateRoleInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  description?: Maybe<string>;
+  
+  permissions?: Maybe<Permission[]>;
 }
 
 export interface CreateTaxCategoryInput {
@@ -4102,6 +4102,10 @@ export namespace ProductVariant {
     
     priceWithTax: number;
     
+    stockOnHand: number;
+    
+    trackInventory: boolean;
+    
     taxRateApplied: TaxRateApplied;
     
     taxCategory: TaxCategory;
@@ -4627,10 +4631,6 @@ export interface Query {
   
   country?: Maybe<Country>;
   
-  customerGroups: CustomerGroup[];
-  
-  customerGroup?: Maybe<CustomerGroup>;
-  
   customers: CustomerList;
   
   customer?: Maybe<Customer>;
@@ -4638,6 +4638,10 @@ export interface Query {
   facets: FacetList;
   
   facet?: Maybe<Facet>;
+  
+  customerGroups: CustomerGroup[];
+  
+  customerGroup?: Maybe<CustomerGroup>;
   
   globalSettings: GlobalSettings;
   
@@ -4665,10 +4669,6 @@ export interface Query {
   
   adjustmentOperations: AdjustmentOperations;
   
-  roles: RoleList;
-  
-  role?: Maybe<Role>;
-  
   shippingMethods: ShippingMethodList;
   
   shippingMethod?: Maybe<ShippingMethod>;
@@ -4676,6 +4676,10 @@ export interface Query {
   shippingEligibilityCheckers: ConfigurableOperation[];
   
   shippingCalculators: ConfigurableOperation[];
+  
+  roles: RoleList;
+  
+  role?: Maybe<Role>;
   
   taxCategories: TaxCategory[];
   
@@ -5769,17 +5773,17 @@ export interface AdjustmentOperations {
 }
 
 
-export interface RoleList extends PaginatedList {
+export interface ShippingMethodList extends PaginatedList {
   
-  items: Role[];
+  items: ShippingMethod[];
   
   totalItems: number;
 }
 
 
-export interface ShippingMethodList extends PaginatedList {
+export interface RoleList extends PaginatedList {
   
-  items: ShippingMethod[];
+  items: Role[];
   
   totalItems: number;
 }
@@ -5844,14 +5848,6 @@ export interface Mutation {
   updateCountry: Country;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
-  /** Create a new CustomerGroup */
-  createCustomerGroup: CustomerGroup;
-  /** Update an existing CustomerGroup */
-  updateCustomerGroup: CustomerGroup;
-  /** Add Customers to a CustomerGroup */
-  addCustomersToGroup: CustomerGroup;
-  /** Remove Customers from a CustomerGroup */
-  removeCustomersFromGroup: CustomerGroup;
   /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
   createCustomer: Customer;
   /** Update an existing Customer */
@@ -5876,6 +5872,14 @@ export interface Mutation {
   updateFacetValues: FacetValue[];
   /** Delete one or more FacetValues */
   deleteFacetValues: DeletionResponse[];
+  /** Create a new CustomerGroup */
+  createCustomerGroup: CustomerGroup;
+  /** Update an existing CustomerGroup */
+  updateCustomerGroup: CustomerGroup;
+  /** Add Customers to a CustomerGroup */
+  addCustomersToGroup: CustomerGroup;
+  /** Remove Customers from a CustomerGroup */
+  removeCustomersFromGroup: CustomerGroup;
   
   updateGlobalSettings: GlobalSettings;
   
@@ -5908,14 +5912,14 @@ export interface Mutation {
   updatePromotion: Promotion;
   
   deletePromotion: DeletionResponse;
-  /** Create a new Role */
-  createRole: Role;
-  /** Update an existing Role */
-  updateRole: Role;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
+  /** Create a new Role */
+  createRole: Role;
+  /** Update an existing Role */
+  updateRole: Role;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Update an existing TaxCategory */
@@ -6036,10 +6040,6 @@ export interface CountryQueryArgs {
   
   id: string;
 }
-export interface CustomerGroupQueryArgs {
-  
-  id: string;
-}
 export interface CustomersQueryArgs {
   
   options?: Maybe<CustomerListOptions>;
@@ -6059,6 +6059,10 @@ export interface FacetQueryArgs {
   id: string;
   
   languageCode?: Maybe<LanguageCode>;
+}
+export interface CustomerGroupQueryArgs {
+  
+  id: string;
 }
 export interface OrderQueryArgs {
   
@@ -6112,19 +6116,19 @@ export interface PromotionsQueryArgs {
   
   options?: Maybe<PromotionListOptions>;
 }
-export interface RolesQueryArgs {
-  
-  options?: Maybe<RoleListOptions>;
-}
-export interface RoleQueryArgs {
-  
-  id: string;
-}
 export interface ShippingMethodsQueryArgs {
   
   options?: Maybe<ShippingMethodListOptions>;
 }
 export interface ShippingMethodQueryArgs {
+  
+  id: string;
+}
+export interface RolesQueryArgs {
+  
+  options?: Maybe<RoleListOptions>;
+}
+export interface RoleQueryArgs {
   
   id: string;
 }
@@ -6214,26 +6218,6 @@ export interface DeleteCountryMutationArgs {
   
   id: string;
 }
-export interface CreateCustomerGroupMutationArgs {
-  
-  input: CreateCustomerGroupInput;
-}
-export interface UpdateCustomerGroupMutationArgs {
-  
-  input: UpdateCustomerGroupInput;
-}
-export interface AddCustomersToGroupMutationArgs {
-  
-  customerGroupId: string;
-  
-  customerIds: string[];
-}
-export interface RemoveCustomersFromGroupMutationArgs {
-  
-  customerGroupId: string;
-  
-  customerIds: string[];
-}
 export interface CreateCustomerMutationArgs {
   
   input: CreateCustomerInput;
@@ -6289,6 +6273,26 @@ export interface DeleteFacetValuesMutationArgs {
   ids: string[];
   
   force?: Maybe<boolean>;
+}
+export interface CreateCustomerGroupMutationArgs {
+  
+  input: CreateCustomerGroupInput;
+}
+export interface UpdateCustomerGroupMutationArgs {
+  
+  input: UpdateCustomerGroupInput;
+}
+export interface AddCustomersToGroupMutationArgs {
+  
+  customerGroupId: string;
+  
+  customerIds: string[];
+}
+export interface RemoveCustomersFromGroupMutationArgs {
+  
+  customerGroupId: string;
+  
+  customerIds: string[];
 }
 export interface UpdateGlobalSettingsMutationArgs {
   
@@ -6360,14 +6364,6 @@ export interface DeletePromotionMutationArgs {
   
   id: string;
 }
-export interface CreateRoleMutationArgs {
-  
-  input: CreateRoleInput;
-}
-export interface UpdateRoleMutationArgs {
-  
-  input: UpdateRoleInput;
-}
 export interface CreateShippingMethodMutationArgs {
   
   input: CreateShippingMethodInput;
@@ -6375,6 +6371,14 @@ export interface CreateShippingMethodMutationArgs {
 export interface UpdateShippingMethodMutationArgs {
   
   input: UpdateShippingMethodInput;
+}
+export interface CreateRoleMutationArgs {
+  
+  input: CreateRoleInput;
+}
+export interface UpdateRoleMutationArgs {
+  
+  input: UpdateRoleInput;
 }
 export interface CreateTaxCategoryMutationArgs {
   

@@ -22,6 +22,8 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         currencyCode
         priceIncludesTax
         priceWithTax
+        stockOnHand
+        trackInventory
         taxRateApplied {
             id
             name

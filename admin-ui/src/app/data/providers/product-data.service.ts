@@ -134,6 +134,8 @@ export class ProductDataService {
                     'facetValueIds',
                     'featuredAssetId',
                     'assetIds',
+                    'trackInventory',
+                    'stockOnHand',
                 ]),
             ),
         };
