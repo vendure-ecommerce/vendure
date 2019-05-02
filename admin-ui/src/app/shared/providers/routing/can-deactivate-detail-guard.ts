@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
@@ -7,9 +7,15 @@ import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { ModalService } from '../modal/modal.service';
 
+/**
+ * When added to the [state object](https://angular.io/api/router/NavigationExtras#state), this will
+ * skip the CanDeactivateDetailGuard.
+ */
+export const IGNORE_CAN_DEACTIVATE_GUARD = 'IGNORE_CAN_DEACTIVATE_GUARD';
+
 @Injectable()
 export class CanDeactivateDetailGuard implements CanDeactivate<BaseDetailComponent<any>> {
-    constructor(private modalService: ModalService) {}
+    constructor(private modalService: ModalService, private router: Router) {}
 
     canDeactivate(
         component: BaseDetailComponent<any>,
@@ -17,6 +23,12 @@ export class CanDeactivateDetailGuard implements CanDeactivate<BaseDetailCompone
         currentState: RouterStateSnapshot,
         nextState?: RouterStateSnapshot,
     ): boolean | Observable<boolean> {
+        const nav = this.router.getCurrentNavigation();
+        if (nav) {
+            if (nav.extras.state && nav.extras.state[IGNORE_CAN_DEACTIVATE_GUARD] != null) {
+                return true;
+            }
+        }
         if (component.detailForm && component.detailForm.dirty) {
             return this.modalService
                 .dialog({

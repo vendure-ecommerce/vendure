@@ -1,7 +1,7 @@
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, share, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
 
@@ -26,8 +26,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
 
     init() {
         this.entity$ = this.route.data.pipe(
-            switchMap(data => data.entity),
-            tap<any>(entity => (this.id = entity.id)),
+            switchMap<Data, Entity>(data => data.entity),
+            distinctUntilChanged((a, b) => a.id === b.id),
+            tap(entity => (this.id = entity.id)),
+            shareReplay(1),
         );
         this.isNew$ = this.entity$.pipe(
             map(entity => entity.id === ''),
@@ -36,14 +38,16 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
         this.languageCode$ = this.route.paramMap.pipe(
             map(paramMap => paramMap.get('lang')),
             map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
+            distinctUntilChanged(),
+            shareReplay(1),
         );
 
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
 
         combineLatest(this.entity$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([facet, languageCode]) => {
-                this.setFormValues(facet, languageCode);
+            .subscribe(([entity, languageCode]) => {
+                this.setFormValues(entity, languageCode);
                 this.detailForm.markAsPristine();
             });
     }

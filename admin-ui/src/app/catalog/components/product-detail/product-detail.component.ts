@@ -17,6 +17,7 @@ import { normalizeString } from 'shared/normalize-string';
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 import { unique } from 'shared/unique';
+import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
@@ -138,6 +139,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     navigateToTab(tabName: TabName) {
         this.router.navigate(['./', { tab: tabName }], {
             relativeTo: this.route,
+            state: {
+                [IGNORE_CAN_DEACTIVATE_GUARD]: true,
+            },
         });
     }
 
@@ -315,6 +319,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Product',
                     });
+                    this.changeDetector.markForCheck();
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {
