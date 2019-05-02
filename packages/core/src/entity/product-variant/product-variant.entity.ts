@@ -10,6 +10,7 @@ import { CustomProductVariantFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { StockMovement } from '../stock-movement/stock-movement.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { TaxRate } from '../tax-rate/tax-rate.entity';
 
@@ -90,6 +91,15 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @Column({ nullable: true })
     productId: number;
+
+    @Column({ default: 0 })
+    stockOnHand: number;
+
+    @Column()
+    trackInventory: boolean;
+
+    @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
+    stockMovements: StockMovement[];
 
     @ManyToMany(type => ProductOption)
     @JoinTable()

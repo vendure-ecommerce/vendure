@@ -33,6 +33,11 @@ import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
+import { Cancellation } from './stock-movement/cancellation.entity';
+import { Return } from './stock-movement/return.entity';
+import { Sale } from './stock-movement/sale.entity';
+import { StockAdjustment } from './stock-movement/stock-adjustment.entity';
+import { StockMovement } from './stock-movement/stock-movement.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
@@ -47,7 +52,10 @@ export const coreEntitiesMap = {
     AnonymousSession,
     Asset,
     AuthenticatedSession,
+    Cancellation,
     Channel,
+    Collection,
+    CollectionTranslation,
     Country,
     CountryTranslation,
     Customer,
@@ -58,13 +66,11 @@ export const coreEntitiesMap = {
     FacetValueTranslation,
     GlobalSettings,
     Order,
-    OrderLine,
     OrderItem,
+    OrderLine,
     Payment,
     PaymentMethod,
     Product,
-    Collection,
-    CollectionTranslation,
     ProductOption,
     ProductOptionGroup,
     ProductOptionGroupTranslation,
@@ -74,9 +80,13 @@ export const coreEntitiesMap = {
     ProductVariantPrice,
     ProductVariantTranslation,
     Promotion,
+    Return,
     Role,
+    Sale,
     Session,
     ShippingMethod,
+    StockAdjustment,
+    StockMovement,
     TaxCategory,
     TaxRate,
     User,

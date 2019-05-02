@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-04-25T20:45:59+02:00
+// Generated in 2019-05-02T11:33:31+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -766,6 +766,13 @@ export enum Permission {
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
     DeleteSettings = 'DeleteSettings',
+}
+
+export enum StockMovementType {
+    ADJUSTMENT = 'ADJUSTMENT',
+    SALE = 'SALE',
+    CANCELLATION = 'CANCELLATION',
+    RETURN = 'RETURN',
 }
 
 export enum DeletionResult {
@@ -1675,6 +1682,22 @@ export interface AssetList extends PaginatedList {
     totalItems: number;
 }
 
+export interface Cancellation extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    productVariant: ProductVariant;
+
+    type: StockMovementType;
+
+    quantity: number;
+
+    orderLine: OrderLine;
+}
+
 export interface CountryList extends PaginatedList {
     items: Country[];
 
@@ -1707,6 +1730,8 @@ export interface GlobalSettings {
     updatedAt: DateTime;
 
     availableLanguages: LanguageCode[];
+
+    trackInventory: boolean;
 
     serverConfig: ServerConfig;
 
@@ -1761,10 +1786,42 @@ export interface PromotionList extends PaginatedList {
     totalItems: number;
 }
 
+export interface Return extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    productVariant: ProductVariant;
+
+    type: StockMovementType;
+
+    quantity: number;
+
+    orderItem: OrderItem;
+}
+
 export interface RoleList extends PaginatedList {
     items: Role[];
 
     totalItems: number;
+}
+
+export interface Sale extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    productVariant: ProductVariant;
+
+    type: StockMovementType;
+
+    quantity: number;
+
+    orderLine: OrderLine;
 }
 
 export interface SearchReindexResponse {
@@ -1777,6 +1834,26 @@ export interface SearchReindexResponse {
 
 export interface ShippingMethodList extends PaginatedList {
     items: ShippingMethod[];
+
+    totalItems: number;
+}
+
+export interface StockAdjustment extends Node {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    productVariant: ProductVariant;
+
+    type: StockMovementType;
+
+    quantity: number;
+}
+
+export interface StockMovementList {
+    items: StockMovement[];
 
     totalItems: number;
 }
@@ -1912,3 +1989,5 @@ export interface ResetPasswordMutationArgs {
 
 /** The price of a search result product, either as a range or as a single price */
 export type SearchResultPrice = PriceRange | SinglePrice;
+
+export type StockMovement = StockAdjustment | Sale | Cancellation | Return;

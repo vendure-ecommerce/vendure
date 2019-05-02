@@ -1,5 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
+import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { GraphQLUpload } from 'apollo-server-core';
 import { extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
@@ -80,6 +81,20 @@ async function createGraphQLOptions(
             SearchResultPrice: {
                 __resolveType(value: any) {
                     return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
+                },
+            },
+            StockMovement: {
+                __resolveType(value: any) {
+                    switch (value.type) {
+                        case StockMovementType.ADJUSTMENT:
+                            return 'StockAdjustment';
+                        case StockMovementType.SALE:
+                            return 'Sale';
+                        case StockMovementType.CANCELLATION:
+                            return 'Cancellation';
+                        case StockMovementType.RETURN:
+                            return 'Return';
+                    }
                 },
             },
         },

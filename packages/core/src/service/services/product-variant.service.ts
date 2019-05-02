@@ -28,6 +28,7 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { FacetValueService } from './facet-value.service';
+import { GlobalSettingsService } from './global-settings.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
 import { ZoneService } from './zone.service';
@@ -46,6 +47,7 @@ export class ProductVariantService {
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
+        private globalSettingsService: GlobalSettingsService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -154,6 +156,9 @@ export class ProductVariantService {
                 }
                 if (input.facetValueIds) {
                     variant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
+                if (input.trackInventory == null) {
+                    variant.trackInventory = (await this.globalSettingsService.getSettings()).trackInventory;
                 }
                 variant.product = product;
                 variant.taxCategory = { id: input.taxCategoryId } as any;

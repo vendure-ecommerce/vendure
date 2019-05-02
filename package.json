@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.17",
   "private": true,
   "scripts": {
-    "core:watch": "concurrently -n tsc,gulp \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\"",
+    "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
     "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",

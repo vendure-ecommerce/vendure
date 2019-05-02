@@ -3,6 +3,7 @@ type GlobalSettings {
     createdAt: DateTime!
     updatedAt: DateTime!
     availableLanguages: [LanguageCode!]!
+    trackInventory: Boolean!
     serverConfig: ServerConfig!
 }
 
