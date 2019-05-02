@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-02T11:33:31+02:00
+// Generated in 2019-05-02T12:27:28+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -805,6 +805,20 @@ export interface PaginatedList {
     items: Node[];
 
     totalItems: number;
+}
+
+export interface StockMovement {
+    id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
+
+    productVariant: ProductVariant;
+
+    type: StockMovementType;
+
+    quantity: number;
 }
 
 // ====================================================
@@ -1682,7 +1696,7 @@ export interface AssetList extends PaginatedList {
     totalItems: number;
 }
 
-export interface Cancellation extends Node {
+export interface Cancellation extends Node, StockMovement {
     id: string;
 
     createdAt: DateTime;
@@ -1786,7 +1800,7 @@ export interface PromotionList extends PaginatedList {
     totalItems: number;
 }
 
-export interface Return extends Node {
+export interface Return extends Node, StockMovement {
     id: string;
 
     createdAt: DateTime;
@@ -1808,7 +1822,7 @@ export interface RoleList extends PaginatedList {
     totalItems: number;
 }
 
-export interface Sale extends Node {
+export interface Sale extends Node, StockMovement {
     id: string;
 
     createdAt: DateTime;
@@ -1838,7 +1852,7 @@ export interface ShippingMethodList extends PaginatedList {
     totalItems: number;
 }
 
-export interface StockAdjustment extends Node {
+export interface StockAdjustment extends Node, StockMovement {
     id: string;
 
     createdAt: DateTime;
@@ -1853,7 +1867,7 @@ export interface StockAdjustment extends Node {
 }
 
 export interface StockMovementList {
-    items: StockMovement[];
+    items: StockMovementItem[];
 
     totalItems: number;
 }
@@ -1990,4 +2004,4 @@ export interface ResetPasswordMutationArgs {
 /** The price of a search result product, either as a range or as a single price */
 export type SearchResultPrice = PriceRange | SinglePrice;
 
-export type StockMovement = StockAdjustment | Sale | Cancellation | Return;
+export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;

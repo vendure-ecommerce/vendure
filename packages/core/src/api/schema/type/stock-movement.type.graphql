@@ -5,16 +5,7 @@ enum StockMovementType {
     RETURN
 }
 
-# interface StockMovement {
-#     id: ID!
-#     createdAt: DateTime!
-#     updatedAt: DateTime!
-#     productVariant: ProductVariant!
-#     type: StockMovementType!
-#     quantity: Int!
-# }
-
-type StockAdjustment implements Node {
+interface StockMovement {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -23,17 +14,16 @@ type StockAdjustment implements Node {
     quantity: Int!
 }
 
-type Sale implements Node {
+type StockAdjustment implements Node & StockMovement {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
     productVariant: ProductVariant!
     type: StockMovementType!
     quantity: Int!
-    orderLine: OrderLine!
 }
 
-type Cancellation implements Node {
+type Sale implements Node & StockMovement {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -43,7 +33,17 @@ type Cancellation implements Node {
     orderLine: OrderLine!
 }
 
-type Return implements Node {
+type Cancellation implements Node & StockMovement {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    type: StockMovementType!
+    quantity: Int!
+    orderLine: OrderLine!
+}
+
+type Return implements Node & StockMovement {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -53,9 +53,9 @@ type Return implements Node {
     orderItem: OrderItem!
 }
 
-union StockMovement = StockAdjustment | Sale | Cancellation | Return
+union StockMovementItem = StockAdjustment | Sale | Cancellation | Return
 
 type StockMovementList {
-    items: [StockMovement!]!
+    items: [StockMovementItem!]!
     totalItems: Int!
 }

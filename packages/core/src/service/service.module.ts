@@ -36,6 +36,7 @@ import { PromotionService } from './services/promotion.service';
 import { RoleService } from './services/role.service';
 import { SearchService } from './services/search.service';
 import { ShippingMethodService } from './services/shipping-method.service';
+import { StockMovementService } from './services/stock-movement.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
@@ -63,6 +64,7 @@ const exportedProviders = [
     RoleService,
     ShippingMethodService,
     SearchService,
+    StockMovementService,
     TaxCategoryService,
     TaxRateService,
     UserService,

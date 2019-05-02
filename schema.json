@@ -21827,7 +21827,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "UNION",
-                    "name": "StockMovement",
+                    "name": "StockMovementItem",
                     "ofType": null
                   }
                 }
@@ -21860,7 +21860,7 @@
       },
       {
         "kind": "UNION",
-        "name": "StockMovement",
+        "name": "StockMovementItem",
         "description": null,
         "fields": null,
         "inputFields": null,
@@ -21997,10 +21997,143 @@
             "kind": "INTERFACE",
             "name": "Node",
             "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "StockMovement",
+            "ofType": null
           }
         ],
         "enumValues": null,
         "possibleTypes": null
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "StockMovement",
+        "description": null,
+        "fields": [
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "createdAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "DateTime",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "productVariant",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ProductVariant",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "StockMovementType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "quantity",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "StockAdjustment",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Sale",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Cancellation",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Return",
+            "ofType": null
+          }
+        ]
       },
       {
         "kind": "OBJECT",
@@ -22125,6 +22258,11 @@
           {
             "kind": "INTERFACE",
             "name": "Node",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "StockMovement",
             "ofType": null
           }
         ],
@@ -22255,6 +22393,11 @@
             "kind": "INTERFACE",
             "name": "Node",
             "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "StockMovement",
+            "ofType": null
           }
         ],
         "enumValues": null,
@@ -22383,6 +22526,11 @@
           {
             "kind": "INTERFACE",
             "name": "Node",
+            "ofType": null
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "StockMovement",
             "ofType": null
           }
         ],

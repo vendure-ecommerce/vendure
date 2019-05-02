@@ -34,7 +34,7 @@ import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
 import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
-import { ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
+import { ProductVariantAdminEntityResolver, ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
 import { ShopEnvironmentResolver } from './resolvers/shop/shop-environment.resolver';
@@ -84,6 +84,10 @@ export const entityResolvers = [
     ProductVariantEntityResolver,
 ];
 
+export const adminEntityResolvers = [
+    ProductVariantAdminEntityResolver,
+];
+
 /**
  * The internal module containing some shared providers used by more than
  * one API module.
@@ -100,7 +104,7 @@ export class ApiSharedModule {}
  */
 @Module({
     imports: [ApiSharedModule, PluginModule, ServiceModule, DataImportModule],
-    providers: [...adminResolvers, ...entityResolvers, ...PluginModule.adminApiResolvers()],
+    providers: [...adminResolvers, ...entityResolvers, ...adminEntityResolvers, ...PluginModule.adminApiResolvers()],
     exports: adminResolvers,
 })
 export class AdminApiModule {}

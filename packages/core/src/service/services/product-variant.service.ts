@@ -7,7 +7,7 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -29,6 +29,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { FacetValueService } from './facet-value.service';
 import { GlobalSettingsService } from './global-settings.service';
+import { StockMovementService } from './stock-movement.service';
 import { TaxCategoryService } from './tax-category.service';
 import { TaxRateService } from './tax-rate.service';
 import { ZoneService } from './zone.service';
@@ -48,6 +49,7 @@ export class ProductVariantService {
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
         private globalSettingsService: GlobalSettingsService,
+        private stockMovementService: StockMovementService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -172,7 +174,10 @@ export class ProductVariantService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
-        await getEntityOrThrow(this.connection, ProductVariant, input.id);
+        const existingVariant = await getEntityOrThrow(this.connection, ProductVariant, input.id);
+        if (input.stockOnHand && input.stockOnHand < 0) {
+            throw new UserInputError('error.stockonhand-cannot-be-negative');
+        }
         await this.translatableSaver.update({
             input,
             entityType: ProductVariant,
@@ -186,6 +191,9 @@ export class ProductVariantService {
                 }
                 if (input.facetValueIds) {
                     updatedVariant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                }
+                if (input.stockOnHand != null) {
+                    await this.stockMovementService.adjustProductVariantStock(existingVariant, input.stockOnHand);
                 }
                 await this.assetUpdater.updateEntityAssets(updatedVariant, input);
             },

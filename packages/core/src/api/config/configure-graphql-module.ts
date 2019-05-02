@@ -68,6 +68,21 @@ async function createGraphQLOptions(
         },
     };
 
+    const stockMovementResolveType = {
+        __resolveType(value: any) {
+            switch (value.type) {
+                case StockMovementType.ADJUSTMENT:
+                    return 'StockAdjustment';
+                case StockMovementType.SALE:
+                    return 'Sale';
+                case StockMovementType.CANCELLATION:
+                    return 'Cancellation';
+                case StockMovementType.RETURN:
+                    return 'Return';
+            }
+        },
+    };
+
     return {
         path: '/' + options.apiPath,
         typeDefs: await createTypeDefs(options.apiType),
@@ -83,20 +98,8 @@ async function createGraphQLOptions(
                     return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
                 },
             },
-            StockMovement: {
-                __resolveType(value: any) {
-                    switch (value.type) {
-                        case StockMovementType.ADJUSTMENT:
-                            return 'StockAdjustment';
-                        case StockMovementType.SALE:
-                            return 'Sale';
-                        case StockMovementType.CANCELLATION:
-                            return 'Cancellation';
-                        case StockMovementType.RETURN:
-                            return 'Return';
-                    }
-                },
-            },
+            StockMovementItem: stockMovementResolveType,
+            StockMovement: stockMovementResolveType,
         },
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,

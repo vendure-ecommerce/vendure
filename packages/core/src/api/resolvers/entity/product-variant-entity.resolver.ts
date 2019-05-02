@@ -1,9 +1,13 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/src/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { FacetValue, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { StockMovementService } from '../../../service/services/stock-movement.service';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
@@ -40,5 +44,19 @@ export class ProductVariantEntityResolver {
             facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
         }
         return facetValues;
+    }
+}
+
+@Resolver('ProductVariant')
+export class ProductVariantAdminEntityResolver {
+    constructor(private stockMovementService: StockMovementService) {}
+
+    @ResolveProperty()
+    async stockMovements(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+        @Args() args: { options: StockMovementListOptions },
+    ): Promise<PaginatedList<StockMovement>> {
+        return this.stockMovementService.getStockMovementsByProductVariantId(ctx, productVariant.id, args.options);
     }
 }
