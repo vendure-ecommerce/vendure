@@ -39,7 +39,6 @@
     "create-new-option-group": "Create new option group",
     "create-new-product": "Create new product",
     "drop-files-to-upload": "Drop files to upload",
-    "facet": "Facet",
     "facet-values": "Facet values",
     "filter-by-group-name": "Filter by group name",
     "filter-by-name": "Filter by name",
@@ -445,6 +444,7 @@
     "shipping-eligibility-checker": "Shipping eligibility checker",
     "tax-category": "Tax category",
     "tax-rate": "Tax rate",
+    "track-inventory-default": "Track inventory by default",
     "update": "Update",
     "zone": "Zone"
   }

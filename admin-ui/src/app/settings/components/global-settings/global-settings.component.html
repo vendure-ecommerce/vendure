@@ -34,6 +34,10 @@
                 </ng-template>
             </ng-select>
         </vdr-form-field>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle name="enabled" formControlName="trackInventory" />
+            <label>{{ 'settings.track-inventory-default' | translate }}</label>
+        </clr-toggle-wrapper>
     </section>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>

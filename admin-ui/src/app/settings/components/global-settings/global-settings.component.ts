@@ -35,6 +35,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         this.customFields = this.getCustomFieldConfig('GlobalSettings');
         this.detailForm = this.formBuilder.group({
             availableLanguages: [''],
+            trackInventory: false,
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
@@ -76,6 +77,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
     protected setFormValues(entity: GlobalSettings, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             availableLanguages: entity.availableLanguages,
+            trackInventory: entity.trackInventory,
         });
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;

@@ -360,6 +360,7 @@ export const UPDATE_PAYMENT_METHOD = gql`
 export const GLOBAL_SETTINGS_FRAGMENT = gql`
     fragment GlobalSettings on GlobalSettings {
         availableLanguages
+        trackInventory
     }
 `;
 
