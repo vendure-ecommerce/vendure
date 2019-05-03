@@ -45,15 +45,15 @@ export class StockMovementService {
             });
     }
 
-    async adjustProductVariantStock(variant: ProductVariant, newStockLevel: number): Promise<StockAdjustment | undefined> {
-        if (variant.stockOnHand === newStockLevel) {
+    async adjustProductVariantStock(productVariantId: ID, oldStockLevel: number, newStockLevel: number): Promise<StockAdjustment | undefined> {
+        if (oldStockLevel === newStockLevel) {
             return;
         }
-        const delta = newStockLevel - variant.stockOnHand;
+        const delta = newStockLevel - oldStockLevel;
 
         const adjustment = new StockAdjustment({
             quantity: delta,
-            productVariant: variant,
+            productVariant: { id: productVariantId },
         });
         return this.connection.getRepository(StockAdjustment).save(adjustment);
     }

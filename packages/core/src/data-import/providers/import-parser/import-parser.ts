@@ -15,6 +15,8 @@ export type BaseProductRecord = {
     sku?: string;
     price?: string;
     taxCategory?: string;
+    stockOnHand?: string;
+    trackInventory?: string;
     variantAssets?: string;
     variantFacets?: string;
 };
@@ -26,6 +28,8 @@ export interface ParsedProductVariant {
     sku: string;
     price: number;
     taxCategory: string;
+    stockOnHand: number;
+    trackInventory: boolean;
     assetPaths: string[];
     facets: Array<{
         facet: string;
@@ -246,6 +250,8 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
         sku: parseString(r.sku),
         price: parseNumber(r.price),
         taxCategory: parseString(r.taxCategory),
+        stockOnHand: parseNumber(r.stockOnHand),
+        trackInventory: parseBoolean(r.trackInventory),
         assetPaths: parseStringArray(r.variantAssets),
         facets: parseStringArray(r.variantFacets).map(pair => {
             const [facet, value] = pair.split(':');
@@ -275,6 +281,20 @@ function parseString(input?: string): string {
 
 function parseNumber(input?: string): number {
     return +(input || '').trim();
+}
+
+function parseBoolean(input?: string): boolean {
+    if (input == null) {
+        return false;
+    }
+    switch (input.toLowerCase()) {
+        case 'true':
+        case '1':
+        case 'yes':
+            return true;
+        default:
+            return false;
+    }
 }
 
 function parseStringArray(input?: string, separator = '|'): string[] {

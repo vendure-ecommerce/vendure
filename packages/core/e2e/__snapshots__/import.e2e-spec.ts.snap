@@ -63,10 +63,15 @@ Array [
         ],
         "price": 4530,
         "sku": "PPS12",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [],
@@ -101,10 +106,15 @@ Array [
         ],
         "price": 3250,
         "sku": "PPS14",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [],
@@ -139,10 +149,21 @@ Array [
         ],
         "price": 5950,
         "sku": "PPSF",
+        "stockMovements": Object {
+          "items": Array [
+            Object {
+              "id": "T_1",
+              "quantity": -10,
+              "type": "ADJUSTMENT",
+            },
+          ],
+        },
+        "stockOnHand": -10,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
     ],
   },
@@ -184,10 +205,21 @@ Array [
         "options": Array [],
         "price": 91070,
         "sku": "M02",
+        "stockMovements": Object {
+          "items": Array [
+            Object {
+              "id": "T_2",
+              "quantity": 100,
+              "type": "ADJUSTMENT",
+            },
+          ],
+        },
+        "stockOnHand": 100,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
     ],
   },
@@ -239,10 +271,15 @@ Array [
         ],
         "price": 416,
         "sku": "225400",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [
@@ -276,10 +313,15 @@ Array [
         ],
         "price": 624,
         "sku": "225600",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_1",
           "name": "Standard Tax",
         },
+        "trackInventory": false,
       },
     ],
   },
@@ -339,10 +381,15 @@ Array [
         ],
         "price": 1199,
         "sku": "10112",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_2",
           "name": "Reduced Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [],
@@ -362,10 +409,15 @@ Array [
         ],
         "price": 1199,
         "sku": "10113",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_2",
           "name": "Reduced Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [],
@@ -385,10 +437,15 @@ Array [
         ],
         "price": 1199,
         "sku": "10114",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_2",
           "name": "Reduced Tax",
         },
+        "trackInventory": false,
       },
       Object {
         "assets": Array [],
@@ -408,10 +465,15 @@ Array [
         ],
         "price": 1199,
         "sku": "10115",
+        "stockMovements": Object {
+          "items": Array [],
+        },
+        "stockOnHand": 0,
         "taxCategory": Object {
           "id": "T_2",
           "name": "Reduced Tax",
         },
+        "trackInventory": false,
       },
     ],
   },

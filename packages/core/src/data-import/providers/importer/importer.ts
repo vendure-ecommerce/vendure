@@ -214,6 +214,8 @@ export class Importer {
                     assetIds: variantAssets.map(a => a.id) as string[],
                     sku: variant.sku,
                     taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
+                    stockOnHand: variant.stockOnHand,
+                    trackInventory: variant.trackInventory,
                     optionIds: variant.optionValues.map(v => optionsMap[v]),
                     translations: [
                         {

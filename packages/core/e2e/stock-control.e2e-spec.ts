@@ -21,7 +21,7 @@ describe('Stock control', () => {
     beforeAll(async () => {
         const token = await server.init(
             {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-stock-control.csv'),
                 customerCount: 2,
             },
             {

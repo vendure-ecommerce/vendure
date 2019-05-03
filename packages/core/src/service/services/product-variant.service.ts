@@ -144,7 +144,7 @@ export class ProductVariantService {
         product: Product,
         input: CreateProductVariantInput,
     ): Promise<ProductVariant> {
-        return await this.translatableSaver.create({
+        const createdVariant = await this.translatableSaver.create({
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
@@ -171,6 +171,10 @@ export class ProductVariantService {
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        if (input.stockOnHand != null && input.stockOnHand !== 0) {
+            await this.stockMovementService.adjustProductVariantStock(createdVariant.id, 0, input.stockOnHand);
+        }
+        return createdVariant;
     }
 
     async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
@@ -193,7 +197,7 @@ export class ProductVariantService {
                     updatedVariant.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
                 if (input.stockOnHand != null) {
-                    await this.stockMovementService.adjustProductVariantStock(existingVariant, input.stockOnHand);
+                    await this.stockMovementService.adjustProductVariantStock(existingVariant.id, existingVariant.stockOnHand, input.stockOnHand);
                 }
                 await this.assetUpdater.updateEntityAssets(updatedVariant, input);
             },
