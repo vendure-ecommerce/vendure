@@ -1,7 +1,10 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { ProductVariant, StockMovementType, UpdateProductVariantInput } from '../../common/src/generated-types';
+import { PaymentInput } from '../../common/src/generated-shop-types';
+import { CreateAddressInput, ProductVariant, StockMovementType, UpdateProductVariantInput } from '../../common/src/generated-types';
+import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
+import { OrderState } from '../src/service/helpers/order-state-machine/order-state';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
@@ -20,6 +23,11 @@ describe('Stock control', () => {
             {
                 productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
                 customerCount: 2,
+            },
+            {
+                paymentOptions: {
+                    paymentMethodHandlers: [testPaymentMethod],
+                },
             },
         );
         await shopClient.init();
@@ -105,6 +113,82 @@ describe('Stock control', () => {
         );
     });
 
+    describe('sales', () => {
+
+        beforeAll(async () => {
+            const { product } = await adminClient.query(GET_STOCK_MOVEMENT, { id: 'T_2' });
+            const [variant1, variant2]: ProductVariant[] = product.variants;
+
+            await adminClient.query(UPDATE_STOCK_ON_HAND, {
+                input: [
+                    {
+                        id: variant1.id,
+                        stockOnHand: 5,
+                        trackInventory: false,
+                    },
+                    {
+                        id: variant2.id,
+                        stockOnHand: 5,
+                        trackInventory: true,
+                    },
+                ] as UpdateProductVariantInput[],
+            });
+
+            // Add items to order and check out
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            await shopClient.query(ADD_ITEM_TO_ORDER, { productVariantId: variant1.id, quantity: 2 });
+            await shopClient.query(ADD_ITEM_TO_ORDER, { productVariantId: variant2.id, quantity: 3 });
+            await shopClient.query(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '1 Test Street',
+                    countryCode: 'GB',
+                } as CreateAddressInput,
+            });
+            await shopClient.query(TRANSITION_TO_STATE, { state: 'ArrangingPayment' as OrderState });
+            await shopClient.query(ADD_PAYMENT, {
+                input: {
+                    method: testPaymentMethod.code,
+                    metadata: {},
+                } as PaymentInput,
+            });
+        });
+
+        it('creates a Sale when order completed', async () => {
+            const result = await adminClient.query(GET_STOCK_MOVEMENT, { id: 'T_2' });
+            const [variant1, variant2]: ProductVariant[] = result.product.variants;
+
+            expect(variant1.stockMovements.totalItems).toBe(2);
+            expect(variant1.stockMovements.items[1].type).toBe(StockMovementType.SALE);
+            expect(variant1.stockMovements.items[1].quantity).toBe(-2);
+
+            expect(variant2.stockMovements.totalItems).toBe(2);
+            expect(variant2.stockMovements.items[1].type).toBe(StockMovementType.SALE);
+            expect(variant2.stockMovements.items[1].quantity).toBe(-3);
+        });
+
+        it('stockOnHand is updated according to trackInventory setting', async () => {
+            const result = await adminClient.query(GET_STOCK_MOVEMENT, { id: 'T_2' });
+            const [variant1, variant2]: ProductVariant[] = result.product.variants;
+
+            expect(variant1.stockOnHand).toBe(5); // untracked inventory
+            expect(variant2.stockOnHand).toBe(2); // tracked inventory
+        });
+    });
+
+});
+
+const testPaymentMethod = new PaymentMethodHandler({
+    code: 'test-payment-method',
+    description: 'Test Payment Method',
+    args: {},
+    createPayment: (order, args, metadata) => {
+        return {
+            amount: order.total,
+            state: 'Settled',
+            transactionId: '12345',
+            metadata,
+        };
+    },
 });
 
 const VARIANT_WITH_STOCK_FRAGMENT = gql`
@@ -143,4 +227,58 @@ const UPDATE_STOCK_ON_HAND = gql`
         }
     }
     ${VARIANT_WITH_STOCK_FRAGMENT}
+`;
+
+const TEST_ORDER_FRAGMENT = gql`
+    fragment TestOrderFragment on Order {
+        id
+        code
+        state
+        active
+        lines {
+            id
+            quantity
+            productVariant {
+                id
+            }
+        }
+    }
+`;
+
+const ADD_ITEM_TO_ORDER = gql`
+    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+const SET_SHIPPING_ADDRESS = gql`
+    mutation SetShippingAddress($input: CreateAddressInput!) {
+        setOrderShippingAddress(input: $input) {
+            shippingAddress {
+                streetLine1
+            }
+        }
+    }
+`;
+
+const TRANSITION_TO_STATE = gql`
+    mutation TransitionToState($state: String!) {
+        transitionOrderToState(state: $state) {
+            id
+            state
+        }
+    }
+`;
+
+const ADD_PAYMENT = gql`
+    mutation AddPaymentToOrder($input: PaymentInput!) {
+        addPaymentToOrder(input: $input) {
+            payments {
+                id
+            }
+        }
+    }
 `;

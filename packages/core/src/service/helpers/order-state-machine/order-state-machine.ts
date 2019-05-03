@@ -7,6 +7,7 @@ import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
+import { StockMovementService } from '../../services/stock-movement.service';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
 
@@ -15,7 +16,9 @@ export class OrderStateMachine {
     private readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'AddingItems';
 
-    constructor(private configService: ConfigService, private eventBus: EventBus) {
+    constructor(private configService: ConfigService,
+                private stockMovementService: StockMovementService,
+                private eventBus: EventBus) {
         this.config = this.initConfig();
     }
 
@@ -51,10 +54,11 @@ export class OrderStateMachine {
     /**
      * Specific business logic to be executed after Order state transition completes.
      */
-    private onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
+    private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
+            await this.stockMovementService.createSalesForOrder(data.order);
         }
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
     }

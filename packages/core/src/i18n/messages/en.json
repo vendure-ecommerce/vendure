@@ -1,6 +1,7 @@
 {
   "error": {
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
+    "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-to-shipping-when-order-is-empty": "Cannot transition Order to the \"ArrangingShipping\" state when it is empty",
