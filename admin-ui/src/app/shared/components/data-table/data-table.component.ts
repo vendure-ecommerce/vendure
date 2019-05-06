@@ -1,4 +1,5 @@
 import {
+    AfterContentInit,
     ChangeDetectionStrategy,
     Component,
     ContentChild,
@@ -20,7 +21,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTableComponent<T> {
+export class DataTableComponent<T> implements AfterContentInit {
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -33,5 +34,10 @@ export class DataTableComponent<T> {
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
-    @ContentChild(TemplateRef) rowTemplate: TemplateRef<any>;
+    @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+    rowTemplate: TemplateRef<any>;
+
+    ngAfterContentInit(): void {
+        this.rowTemplate = this.templateRefs.last;
+    }
 }
