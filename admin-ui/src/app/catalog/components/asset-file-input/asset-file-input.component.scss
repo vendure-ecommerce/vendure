@@ -6,8 +6,8 @@
 
 .drop-zone {
     position: fixed;
-    background-color: transparentize($color-brand, 0.7);
-    border: 3px dashed $color-grey-4;
+    background-color: transparentize($color-primary-500, 0.7);
+    border: 3px dashed $color-grey-400;
     opacity: 0;
     visibility: hidden;
     z-index: 1000;
@@ -34,7 +34,7 @@
 
     &.dragging-over {
         border-color: white;
-        background-color: transparentize($color-brand, 0.3);
+        background-color: transparentize($color-primary-500, 0.3);
         transition: background-color 0.2s, border 0.2s;
         .drop-label {
             opacity: 1;

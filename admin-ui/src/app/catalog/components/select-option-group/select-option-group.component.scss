@@ -18,14 +18,14 @@ vdr-select-toggle {
 .group {
     display: flex;
     padding: 6px 12px;
-    border-bottom: 1px solid $color-grey-2;
+    border-bottom: 1px solid $color-grey-200;
 
     .name-code {
         flex: 1;
     }
 
     .code {
-        color: $color-grey-4;
+        color: $color-grey-400;
     }
 
     .options {

@@ -10,8 +10,8 @@
 .toggle {
     @include no-select();
     cursor: pointer;
-    background-color: $color-grey-1;
-    border: 2px solid $color-grey-4;
+    background-color: $color-grey-100;
+    border: 2px solid $color-grey-400;
     padding: 0 6px;
     border-radius: 50%;
     width: 32px;
@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $color-grey-3;
+    color: $color-grey-300;
     transition: background-color 0.2s, border 0.2s;
 
     &.small {
@@ -28,18 +28,18 @@
     }
 
     &:not(.disabled):hover {
-        border-color: $color-success;
-        background-color: transparentize($color-success, 0.9);
+        border-color: $color-success-500;
+        background-color: transparentize($color-success-500, 0.9);
     }
 
     &.selected {
-        background-color: $color-success;
-        border-color: darken($color-success, 5%);
+        background-color: $color-success-500;
+        border-color: darken($color-success-500, 5%);
         color: white;
 
         &:not(.disabled):hover {
-            background-color: transparentize($color-success, 0.2);
-            border-color: $color-success;
+            background-color: transparentize($color-success-500, 0.2);
+            border-color: $color-success-500;
         }
     }
 

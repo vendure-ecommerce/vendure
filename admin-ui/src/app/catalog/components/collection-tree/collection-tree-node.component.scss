@@ -13,10 +13,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid $color-grey-2;
+        border-bottom: 1px solid $color-grey-200;
 
         &.active {
-            background-color: $color-grey-2;
+            background-color: $color-grey-200;
         }
 
         &.depth-1 { padding-left: 12px + 24px; }
@@ -38,7 +38,7 @@
 
 .drag-placeholder {
     min-height: 120px;
-    background-color: $color-grey-3;
+    background-color: $color-grey-300;
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 

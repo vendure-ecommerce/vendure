@@ -10,12 +10,12 @@
 
 .placeholder {
     text-align: center;
-    color: $color-grey-3;
+    color: $color-grey-300;
 }
 
 .featured-asset {
     text-align: center;
-    background: $color-grey-2;
+    background: $color-grey-200;
     padding: 6px;
 
     &.compact {
@@ -40,16 +40,16 @@
     .asset-thumb {
         margin: 3px;
         padding: 0;
-        border: 2px solid $color-grey-2;
+        border: 2px solid $color-grey-200;
         cursor: pointer;
 
         &.featured {
-            border-color: $color-brand;
+            border-color: $color-primary-500;
         }
     }
 
     .remove-asset {
-        color: $color-warning;
+        color: $color-warning-500;
     }
 
     &.compact {

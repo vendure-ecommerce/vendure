@@ -1,7 +1,7 @@
 @import "variables";
 
 .placeholder {
-    color: $color-grey-3;
+    color: $color-grey-300;
     text-align: center;
     .version {
         font-size: 3em;
@@ -9,6 +9,6 @@
         line-height: 1em;
     }
     ::ng-deep .clr-i-outline {
-        fill: $color-grey-2;
+        fill: $color-grey-200;
     }
 }

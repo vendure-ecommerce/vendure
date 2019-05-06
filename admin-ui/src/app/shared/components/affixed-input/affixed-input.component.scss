@@ -6,11 +6,11 @@
 .affix {
     display: flex;
     align-items: center;
-    background-color: $color-grey-2;
+    background-color: $color-grey-200;
     top: 1px;
     padding: 3px;
     line-height: .58333rem;
-    border-bottom: 1px solid $color-grey-4;
+    border-bottom: 1px solid $color-grey-400;
     transition: border 0.2s;
 }
 

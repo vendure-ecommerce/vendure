@@ -9,7 +9,7 @@
 trix-editor {
     background-color: white;
     min-height: 128px;
-    border: 2px solid $color-grey-3;
+    border: 2px solid $color-grey-300;
     transition: border-color 0.2s;
 
     &:focus {
@@ -18,7 +18,7 @@ trix-editor {
 }
 
 ::ng-deep trix-toolbar {
-    background-color: $color-grey-2;
+    background-color: $color-grey-200;
     padding: 12px 12px 0;
     position: sticky;
     top: -24px;

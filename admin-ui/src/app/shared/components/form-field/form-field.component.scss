@@ -30,7 +30,7 @@
         ::ng-deep input {
             flex: 1;
             &[readonly] {
-                background-color: $color-grey-2;
+                background-color: $color-grey-200;
             }
         }
         button.edit-button {
