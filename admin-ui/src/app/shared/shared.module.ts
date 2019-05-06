@@ -37,6 +37,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { TitleInputComponent } from './components/title-input/title-input.component';
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
@@ -86,6 +87,7 @@ const DECLARATIONS = [
     LanguageSelectorComponent,
     RichTextEditorComponent,
     SimpleDialogComponent,
+    TitleInputComponent,
 ];
 
 @NgModule({

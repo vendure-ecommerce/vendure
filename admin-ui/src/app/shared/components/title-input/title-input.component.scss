@@ -1,0 +1,38 @@
+@import "variables";
+
+:host {
+    display: block;
+    position: relative;
+
+    ::ng-deep input {
+        font-size: 18px;
+        color: $color-grey-700;
+        max-width: 100%;
+        &:not(:focus) {
+            border-color: transparent !important;
+        }
+    }
+
+    ::ng-deep .clr-control-container {
+        max-width: 100%;
+    }
+
+    .edit-icon {
+        position: absolute;
+        right: 8px;
+        top: 6px;
+        color: $color-grey-300;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    &:hover {
+        ::ng-deep input:not(:focus) {
+            background-color: $color-grey-200 !important;
+        }
+        .edit-icon {
+            opacity: 1;
+        }
+    }
+
+}

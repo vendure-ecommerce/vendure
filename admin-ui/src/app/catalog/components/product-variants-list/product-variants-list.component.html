@@ -3,7 +3,7 @@
         <ng-container [formGroup]="formArray.at(i)">
             <div class="card-block header-row">
                 <div class="details">
-                    <div class="sku">
+                    <vdr-title-input class="sku">
                         <clr-input-container>
                             <input
                                 clrInput
@@ -12,8 +12,8 @@
                                 [placeholder]="'catalog.sku' | translate"
                             />
                         </clr-input-container>
-                    </div>
-                    <div class="name">
+                    </vdr-title-input>
+                    <vdr-title-input class="name">
                         <clr-input-container>
                             <input
                                 clrInput
@@ -22,7 +22,7 @@
                                 [placeholder]="'common.name' | translate"
                             />
                         </clr-input-container>
-                    </div>
+                    </vdr-title-input>
                 </div>
                 <div class="flex-spacer"></div>
                 <div>
@@ -75,29 +75,25 @@
                             ></vdr-variant-price-detail>
                         </div>
                         <div class="variant-form-input-row">
-                            <div class="stock">
-                                <clr-input-container>
-                                    <label>{{ 'catalog.stock-on-hand' | translate }}</label>
-                                    <input
-                                        clrInput
-                                        type="number"
-                                        min="0"
-                                        step="1"
-                                        formControlName="stockOnHand"
-                                    />
-                                </clr-input-container>
-                            </div>
-                            <div class="stock">
-                                <clr-checkbox-wrapper>
-                                    <input
-                                        type="checkbox"
-                                        clrCheckbox
-                                        name="trackInventory"
-                                        formControlName="trackInventory"
-                                    />
-                                    <label>{{ 'catalog.track-inventory' | translate }}</label>
-                                </clr-checkbox-wrapper>
-                            </div>
+                            <clr-input-container>
+                                <label>{{ 'catalog.stock-on-hand' | translate }}</label>
+                                <input
+                                    clrInput
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    formControlName="stockOnHand"
+                                />
+                            </clr-input-container>
+                            <clr-checkbox-wrapper class="track-inventory-toggle">
+                                <input
+                                    type="checkbox"
+                                    clrCheckbox
+                                    name="trackInventory"
+                                    formControlName="trackInventory"
+                                />
+                                <label>{{ 'catalog.track-inventory' | translate }}</label>
+                            </clr-checkbox-wrapper>
                         </div>
                     </div>
                 </div>

@@ -36,23 +36,28 @@
             margin-right: 12px;
         }
 
-        .name, .sku {
-            font-weight: bold;
+        .sku {
+            width: 160px;
+            margin-right: 20px;
         }
 
         ::ng-deep .name input {
-           min-width: 300px;
+            min-width: 300px;
         }
     }
 
     .variant-form-input-row {
         display: flex;
         flex-wrap: wrap;
-        margin: 0 6px 24px 24px;
+        margin: 0 6px 32px 24px;
 
         > * {
-            margin-right: 12px;
+            margin-right: 24px;
         }
+    }
+
+    .track-inventory-toggle {
+        margin-top: 22px;
     }
 
     .flex-spacer {
@@ -77,6 +82,7 @@
 
     .options-facets {
         display: flex;
+        color: $color-grey-400;
     }
 }
 
