@@ -1,6 +1,10 @@
 :host {
     display: block;
     margin-bottom: 12px;
+
+    >.card {
+        margin-top: 6px;
+    }
 }
 
 .operation-inputs {
@@ -9,6 +13,12 @@
 
     .arg-row:not(:last-child) {
         margin-bottom: 24px;
+    }
+
+    .arg-row {
+        label {
+            margin-right: 6px;
+        }
     }
 
     .hidden {

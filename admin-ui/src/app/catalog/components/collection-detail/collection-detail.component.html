@@ -32,37 +32,35 @@
 <form class="form" [formGroup]="detailForm" *ngIf="(entity$ | async) as category">
     <div class="clr-row">
         <div class="clr-col">
-            <section class="form-block">
-                <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <clr-toggle-wrapper>
-                        <input type="checkbox" clrToggle formControlName="visible" id="visibility" />
-                        <label class="visible-toggle">
-                            {{
-                                detailForm.value.visible
-                                    ? ('catalog.public' | translate)
-                                    : ('catalog.private' | translate)
-                            }}
-                        </label>
-                    </clr-toggle-wrapper>
-                </vdr-form-field>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input id="name" type="text" formControlName="name" />
-                </vdr-form-field>
-                <vdr-rich-text-editor
-                    formControlName="description"
-                    [label]="'common.description' | translate"
-                ></vdr-rich-text-editor>
+            <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
+                <clr-toggle-wrapper>
+                    <input type="checkbox" clrToggle formControlName="visible" id="visibility" />
+                    <label class="visible-toggle">
+                        {{
+                            detailForm.value.visible
+                                ? ('catalog.public' | translate)
+                                : ('catalog.private' | translate)
+                        }}
+                    </label>
+                </clr-toggle-wrapper>
+            </vdr-form-field>
+            <vdr-form-field [label]="'common.name' | translate" for="name">
+                <input id="name" type="text" formControlName="name" />
+            </vdr-form-field>
+            <vdr-rich-text-editor
+                formControlName="description"
+                [label]="'common.description' | translate"
+            ></vdr-rich-text-editor>
 
-                <section formGroupName="customFields" *ngIf="customFields.length">
-                    <label>{{ 'catalog.custom-fields' }}</label>
-                    <ng-container *ngFor="let customField of customFields">
-                        <vdr-custom-field-control
-                            *ngIf="customFieldIsSet(customField.name)"
-                            [customFieldsFormGroup]="detailForm.get(['customFields'])"
-                            [customField]="customField"
-                        ></vdr-custom-field-control>
-                    </ng-container>
-                </section>
+            <section formGroupName="customFields" *ngIf="customFields.length">
+                <label>{{ 'catalog.custom-fields' }}</label>
+                <ng-container *ngFor="let customField of customFields">
+                    <vdr-custom-field-control
+                        *ngIf="customFieldIsSet(customField.name)"
+                        [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                        [customField]="customField"
+                    ></vdr-custom-field-control>
+                </ng-container>
             </section>
         </div>
         <div class="clr-col-md-auto">

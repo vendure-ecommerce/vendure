@@ -1,49 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
-@import "variables";
+// Clarity Dependency SCSS
+@import "~@clr/ui/src/utils/dependencies.clarity"; // Includes light theme
+
+// Clarity Component SCSS
+@import "~@clr/ui/src/utils/components.clarity";
+
+@import "theme/theme";
+
 @import "~@ng-select/ng-select/themes/default.theme.css";
-
-a:link, a:visited {
-    color: darken($color-brand, 20%);
-}
-
-.btn-link.btn-warning {
-    color: $color-warning;
-
-    &:hover {
-        color: darken($color-warning, 20%);
-    }
-}
-
-.clr-form-control {
-    margin-top: 0;
-}
-
-.table {
-    border-color: $color-grey-2;
-}
-
-.full-label, .compact-label {
-    margin-left: 6px;
-}
-.full-label {
-    display: none;
-}
-.compact-label {
-    display: initial;
-}
-@media screen and (min-width: $breakpoint-small) {
-    .full-label {
-        display: initial;
-    }
-    .compact-label {
-        display: none;
-    }
-}
-
-table tr .dropdown-menu button.dropdown-item {
-    line-height: 24px;
-
-    &.delete-button {
-        color: #e12200;
-    }
-}

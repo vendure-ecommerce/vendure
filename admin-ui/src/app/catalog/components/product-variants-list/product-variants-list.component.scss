@@ -30,6 +30,7 @@
 
     .details {
         display: flex;
+        height: 36px;
         // margin-left: 12px;
         > div {
             margin-right: 12px;
@@ -40,7 +41,7 @@
         }
 
         ::ng-deep .name input {
-            width: 300px;
+           min-width: 300px;
         }
     }
 

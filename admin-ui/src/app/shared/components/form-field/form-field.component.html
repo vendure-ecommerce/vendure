@@ -15,14 +15,14 @@
         [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
         class="tooltip tooltip-validation tooltip-sm tooltip-top-left"
     >
-        <div class="input-row">
+        <div class="input-row" [class.has-toggle]="readOnlyToggle">
             <ng-content></ng-content>
             <button
                 *ngIf="readOnlyToggle"
                 type="button"
                 [disabled]="!isReadOnly"
                 [title]="'common.edit-field' | translate"
-                class="btn btn-icon btn-sm edit-button"
+                class="btn btn-icon edit-button"
                 (click)="setReadOnly(false)"
             >
                 <clr-icon shape="edit"></clr-icon>

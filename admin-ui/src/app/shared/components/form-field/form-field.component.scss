@@ -2,6 +2,9 @@
 
 :host {
     display: block;
+    .form-group > label:first-child {
+        top: 16px;
+    }
     .form-group > label:nth-of-type(2) {
         flex: 1;
         max-width: 20rem;
@@ -35,6 +38,18 @@
         }
         button.edit-button {
             margin: 0;
+            border-radius: 0 3px 3px 0;
+        }
+
+        &.has-toggle {
+            ::ng-deep input {
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-right: none;
+            }
+        }
+        ::ng-deep clr-toggle-wrapper {
+            margin-top: 8px;
         }
     }
 }

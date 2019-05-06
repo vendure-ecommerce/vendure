@@ -19,6 +19,7 @@ import { ServerConfigService } from '../../../data/server-config';
 export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMethod.Fragment>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
+    readonly ConfigArgType = ConfigArgType;
 
     constructor(
         router: Router,

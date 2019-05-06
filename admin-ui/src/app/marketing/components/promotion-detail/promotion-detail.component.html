@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else: updateButton"
+            *ngIf="(isNew$ | async); else updateButton"
             (click)="create()"
             [disabled]="!saveButtonEnabled()"
         >
@@ -19,15 +19,13 @@
 </vdr-action-bar>
 
 <form class="form" [formGroup]="detailForm">
-    <section class="form-block">
-        <vdr-form-field [label]="'common.name' | translate" for="name">
-            <input id="name" type="text" formControlName="name" />
-        </vdr-form-field>
-    </section>
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input id="name" type="text" formControlName="name" />
+    </vdr-form-field>
 
     <div class="clr-row">
         <div class="clr-col" formArrayName="conditions">
-            <label>{{ 'marketing.conditions' | translate }}</label>
+            <label class="clr-control-label">{{ 'marketing.conditions' | translate }}</label>
             <ng-container *ngFor="let condition of conditions; index as i">
                 <vdr-configurable-input
                     (remove)="removeCondition($event)"
@@ -59,7 +57,7 @@
             </div>
         </div>
         <div class="clr-col" formArrayName="actions">
-            <label>{{ 'marketing.actions' | translate }}</label>
+            <label class="clr-control-label">{{ 'marketing.actions' | translate }}</label>
             <vdr-configurable-input
                 *ngFor="let action of actions; index as i"
                 (remove)="removeAction($event)"

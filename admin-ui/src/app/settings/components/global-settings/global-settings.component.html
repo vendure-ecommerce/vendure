@@ -11,34 +11,30 @@
 </vdr-action-bar>
 
 <form class="form" [formGroup]="detailForm">
-    <section class="form-block">
-        <vdr-form-field [label]="'common.available-languages' | translate" for="availableLanguages">
-            <ng-select
-                [items]="languageCodes"
-                [addTag]="false"
-                [hideSelected]="true"
-                multiple="true"
-                appendTo="body"
-                formControlName="availableLanguages"
-            >
-                <ng-template ng-label-tmp let-item="item" let-clear="clear">
-                    <span class="ng-value-icon left" (click)="clear.call(null, item)" aria-hidden="true">
-                        ×
-                    </span>
-                    <span class="ng-value-label">
-                        {{ 'lang.' + item | translate }} ({{ item | uppercase }})
-                    </span>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                    {{ 'lang.' + item | translate }} ({{ item | uppercase }})
-                </ng-template>
-            </ng-select>
-        </vdr-form-field>
-        <clr-toggle-wrapper>
-            <input type="checkbox" clrToggle name="enabled" formControlName="trackInventory" />
-            <label>{{ 'settings.track-inventory-default' | translate }}</label>
-        </clr-toggle-wrapper>
-    </section>
+    <vdr-form-field [label]="'common.available-languages' | translate" for="availableLanguages">
+        <ng-select
+            [items]="languageCodes"
+            [addTag]="false"
+            [hideSelected]="true"
+            multiple="true"
+            appendTo="body"
+            formControlName="availableLanguages"
+        >
+            <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                <span class="ng-value-icon left" (click)="clear.call(null, item)" aria-hidden="true">
+                    ×
+                </span>
+                <span class="ng-value-label">{{ 'lang.' + item | translate }} ({{ item | uppercase }})</span>
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+                {{ 'lang.' + item | translate }} ({{ item | uppercase }})
+            </ng-template>
+        </ng-select>
+    </vdr-form-field>
+    <clr-toggle-wrapper>
+        <input type="checkbox" clrToggle name="enabled" formControlName="trackInventory" />
+        <label>{{ 'settings.track-inventory-default' | translate }}</label>
+    </clr-toggle-wrapper>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
         <ng-container *ngFor="let customField of customFields">

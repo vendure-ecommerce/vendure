@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else: updateButton"
+            *ngIf="(isNew$ | async); else updateButton"
             (click)="create()"
             [disabled]="!saveButtonEnabled()"
         >
@@ -19,9 +19,7 @@
 </vdr-action-bar>
 
 <form class="form" [formGroup]="detailForm">
-    <section class="form-block">
-        <vdr-form-field [label]="'common.name' | translate" for="name">
-            <input id="name" type="text" formControlName="name" />
-        </vdr-form-field>
-    </section>
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input id="name" type="text" formControlName="name" />
+    </vdr-form-field>
 </form>

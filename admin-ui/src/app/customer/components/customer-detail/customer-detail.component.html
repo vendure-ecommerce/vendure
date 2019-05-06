@@ -6,7 +6,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else: updateButton"
+            *ngIf="(isNew$ | async); else updateButton"
             (click)="create()"
             [disabled]="!(addressDefaultsUpdated || (detailForm.valid && detailForm.dirty))"
         >
@@ -25,49 +25,43 @@
 </vdr-action-bar>
 
 <form class="form" [formGroup]="detailForm.get('customer')">
-    <section class="form-block">
-        <vdr-form-field
-            [label]="'customer.title' | translate"
-            for="title"
-            [readOnlyToggle]="!(isNew$ | async)"
-        >
-            <input id="title" type="text" formControlName="title" />
-        </vdr-form-field>
-        <vdr-form-field
-            [label]="'customer.first-name' | translate"
-            for="firstName"
-            [readOnlyToggle]="!(isNew$ | async)"
-        >
-            <input id="firstName" type="text" formControlName="firstName" />
-        </vdr-form-field>
-        <vdr-form-field
-            [label]="'customer.last-name' | translate"
-            for="lastName"
-            [readOnlyToggle]="!(isNew$ | async)"
-        >
-            <input id="lastName" type="text" formControlName="lastName" />
-        </vdr-form-field>
-        <vdr-form-field
-            [label]="'customer.email-address' | translate"
-            for="emailAddress"
-            [readOnlyToggle]="!(isNew$ | async)"
-        >
-            <input id="emailAddress" type="text" formControlName="emailAddress" />
-        </vdr-form-field>
-        <vdr-form-field [label]="'customer.password' | translate" for="password" *ngIf="(isNew$ | async)">
-            <input id="password" type="password" formControlName="password" />
-        </vdr-form-field>
+    <vdr-form-field [label]="'customer.title' | translate" for="title" [readOnlyToggle]="!(isNew$ | async)">
+        <input id="title" type="text" formControlName="title" />
+    </vdr-form-field>
+    <vdr-form-field
+        [label]="'customer.first-name' | translate"
+        for="firstName"
+        [readOnlyToggle]="!(isNew$ | async)"
+    >
+        <input id="firstName" type="text" formControlName="firstName" />
+    </vdr-form-field>
+    <vdr-form-field
+        [label]="'customer.last-name' | translate"
+        for="lastName"
+        [readOnlyToggle]="!(isNew$ | async)"
+    >
+        <input id="lastName" type="text" formControlName="lastName" />
+    </vdr-form-field>
+    <vdr-form-field
+        [label]="'customer.email-address' | translate"
+        for="emailAddress"
+        [readOnlyToggle]="!(isNew$ | async)"
+    >
+        <input id="emailAddress" type="text" formControlName="emailAddress" />
+    </vdr-form-field>
+    <vdr-form-field [label]="'customer.password' | translate" for="password" *ngIf="(isNew$ | async)">
+        <input id="password" type="password" formControlName="password" />
+    </vdr-form-field>
 
-        <section formGroupName="customFields" *ngIf="customFields.length">
-            <label>{{ 'common.custom-fields' | translate }}</label>
-            <ng-container *ngFor="let customField of customFields">
-                <vdr-custom-field-control
-                    *ngIf="customFieldIsSet(customField.name)"
-                    [customFieldsFormGroup]="detailForm.get('customFields')"
-                    [customField]="customField"
-                ></vdr-custom-field-control>
-            </ng-container>
-        </section>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
     </section>
 </form>
 

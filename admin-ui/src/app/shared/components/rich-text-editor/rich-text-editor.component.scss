@@ -9,11 +9,12 @@
 trix-editor {
     background-color: white;
     min-height: 128px;
-    border: 2px solid $color-grey-300;
+    border: 1px solid $color-grey-300;
     transition: border-color 0.2s;
 
     &:focus {
-        border-color: $color-focused;
+        border-color: $color-primary-500 !important;
+        box-shadow: 0 0 1px 1px $color-primary-100;
     }
 }
 
