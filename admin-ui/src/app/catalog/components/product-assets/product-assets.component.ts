@@ -38,15 +38,6 @@ export class ProductAssetsComponent {
 
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
-    nonFeaturedAssets(): Asset[] {
-        const featuredAssetId = this.featuredAsset && this.featuredAsset.id;
-        return this.assets.filter(a => a.id !== featuredAssetId);
-    }
-
-    getAssetList(): Asset[] {
-        return this.compact ? this.nonFeaturedAssets() : this.assets;
-    }
-
     selectAssets() {
         this.modalService
             .fromComponent(AssetPickerDialogComponent, {

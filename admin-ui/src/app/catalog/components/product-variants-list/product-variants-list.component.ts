@@ -36,6 +36,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() facets: FacetWithValues.Fragment[];
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
+    @Output() selectFacetValueClick = new EventEmitter<string[]>();
     selectedVariantIds: string[] = [];
     private facetValues: FacetValue.Fragment[];
     private formSubscription: Subscription;

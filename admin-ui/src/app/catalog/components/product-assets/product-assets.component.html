@@ -1,4 +1,4 @@
-<div class="card" *ngIf="!compact; else: compactView">
+<div class="card" *ngIf="!compact; else compactView">
     <div class="card-img">
         <div class="featured-asset">
             <img *ngIf="featuredAsset" [src]="featuredAsset!.preview + '?preset=small'" />
@@ -19,21 +19,9 @@
 
 <ng-template #compactView>
     <div class="featured-asset compact">
-        <clr-dropdown *ngIf="featuredAsset">
-            <img clrDropdownTrigger [src]="featuredAsset!.preview + '?preset=tiny'" />
-            <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-                <button
-                    type="button"
-                    class="remove-asset"
-                    clrDropdownItem
-                    (click)="removeAsset(featuredAsset)"
-                >
-                    {{ 'catalog.remove-asset' | translate }}
-                </button>
-            </clr-dropdown-menu>
-        </clr-dropdown>
+        <img *ngIf="featuredAsset" [src]="featuredAsset!.preview + '?preset=thumb'" />
 
-        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="48"></clr-icon></div>
+        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="150"></clr-icon></div>
     </div>
     <ng-container *ngTemplateOutlet="assetList"></ng-container>
     <button
@@ -42,12 +30,13 @@
         (click)="selectAssets()"
     >
         <clr-icon shape="attachment"></clr-icon>
+        {{ 'catalog.add-asset' | translate }}
     </button>
 </ng-template>
 
 <ng-template #assetList>
     <div class="all-assets" [class.compact]="compact">
-        <ng-container *ngFor="let asset of getAssetList()">
+        <ng-container *ngFor="let asset of assets">
             <clr-dropdown>
                 <div
                     class="asset-thumb"
@@ -56,7 +45,7 @@
                     [title]=""
                     tabindex="0"
                 >
-                    <img [src]="asset.preview + (compact ? '?w=20' : '?preset=tiny')" />
+                    <img [src]="asset.preview + '?preset=tiny'" />
                 </div>
                 <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
                     <button

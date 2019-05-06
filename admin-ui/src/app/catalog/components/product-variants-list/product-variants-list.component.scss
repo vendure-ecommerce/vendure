@@ -24,9 +24,13 @@
         flex-wrap: wrap;
     }
 
+    .variant-body {
+        display: flex;
+    }
+
     .details {
         display: flex;
-        margin-left: 12px;
+        // margin-left: 12px;
         > div {
             margin-right: 12px;
         }
@@ -37,6 +41,16 @@
 
         ::ng-deep .name input {
             width: 300px;
+        }
+    }
+
+    .variant-form-input-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 6px 24px 24px;
+
+        > * {
+            margin-right: 12px;
         }
     }
 
@@ -53,19 +67,15 @@
         align-items: center;
     }
 
-    .row {
-        display: flex;
-    }
-
-    .assets {
-        margin-right: 12px;
-    }
-
     .pricing {
         display: flex;
         > div {
             margin-right: 12px;
         }
+    }
+
+    .options-facets {
+        display: flex;
     }
 }
 

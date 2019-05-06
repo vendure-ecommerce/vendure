@@ -1,22 +1,7 @@
-<div class="with-selected">
-    <vdr-select-toggle
-        size="small"
-        [selected]="areAllSelected()"
-        (selectedChange)="toggleSelectAll()"
-    ></vdr-select-toggle>
-    <ng-content></ng-content>
-</div>
 <div class="variants-list">
     <div class="variant-container card" *ngFor="let variant of variants; let i = index">
         <ng-container [formGroup]="formArray.at(i)">
             <div class="card-block header-row">
-                <div class="toggle">
-                    <vdr-select-toggle
-                        size="small"
-                        [selected]="isVariantSelected(variant.id)"
-                        (selectedChange)="toggleSelectVariant(variant.id)"
-                    ></vdr-select-toggle>
-                </div>
                 <div class="details">
                     <div class="sku">
                         <clr-input-container>
@@ -39,12 +24,6 @@
                         </clr-input-container>
                     </div>
                 </div>
-                <div *ngIf="variant.options.length">
-                    <div class="options">
-                        {{ 'catalog.options' | translate }}:
-                        <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
-                    </div>
-                </div>
                 <div class="flex-spacer"></div>
                 <div>
                     <clr-toggle-wrapper>
@@ -54,7 +33,7 @@
                 </div>
             </div>
             <div class="card-block">
-                <div class="row">
+                <div class="variant-body">
                     <div class="assets">
                         <vdr-product-assets
                             [compact]="true"
@@ -63,8 +42,8 @@
                             (change)="onAssetChange(variant.id, $event)"
                         ></vdr-product-assets>
                     </div>
-                    <div class="col">
-                        <div class="pricing">
+                    <div class="variant-form-inputs">
+                        <div class="variant-form-input-row">
                             <div class="tax-category">
                                 <clr-select-container>
                                     <label>{{ 'catalog.tax-category' | translate }}</label>
@@ -94,6 +73,8 @@
                                 [priceIncludesTax]="variant.priceIncludesTax"
                                 [taxCategoryId]="formArray.get([i, 'taxCategoryId'])!.value"
                             ></vdr-variant-price-detail>
+                        </div>
+                        <div class="variant-form-input-row">
                             <div class="stock">
                                 <clr-input-container>
                                     <label>{{ 'catalog.stock-on-hand' | translate }}</label>
@@ -122,17 +103,33 @@
                 </div>
             </div>
             <div class="card-block">
-                <div class="facets">
-                    <vdr-facet-value-chip
-                        *ngFor="let facetValue of existingFacetValues(i)"
-                        [facetValue]="facetValue"
-                        (remove)="removeFacetValue(i, facetValue.id)"
-                    ></vdr-facet-value-chip>
-                    <vdr-facet-value-chip
-                        *ngFor="let facetValue of pendingFacetValues(i)"
-                        [facetValue]="facetValue"
-                        (remove)="removeFacetValue(i, facetValue.id)"
-                    ></vdr-facet-value-chip>
+                <div class="options-facets">
+                    <div *ngIf="variant.options.length">
+                        <div class="options">
+                            {{ 'catalog.options' | translate }}:
+                            <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
+                        </div>
+                    </div>
+                    <div class="flex-spacer"></div>
+                    <div class="facets">
+                        <vdr-facet-value-chip
+                            *ngFor="let facetValue of existingFacetValues(i)"
+                            [facetValue]="facetValue"
+                            (remove)="removeFacetValue(i, facetValue.id)"
+                        ></vdr-facet-value-chip>
+                        <vdr-facet-value-chip
+                            *ngFor="let facetValue of pendingFacetValues(i)"
+                            [facetValue]="facetValue"
+                            (remove)="removeFacetValue(i, facetValue.id)"
+                        ></vdr-facet-value-chip>
+                        <button
+                            class="btn btn-sm btn-secondary"
+                            (click)="selectFacetValueClick.emit([variant.id])"
+                        >
+                            <clr-icon shape="plus"></clr-icon>
+                            {{ 'catalog.add-facets' | translate }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </ng-container>
