@@ -1,4 +1,4 @@
-<ng-container *ngIf="!items || (items && items.length); else: emptyPlaceholder">
+<ng-container *ngIf="!items || (items && items.length); else emptyPlaceholder">
     <table class="table">
         <thead>
             <tr>
@@ -23,7 +23,8 @@
                                   itemsPerPage: itemsPerPage,
                                   currentPage: currentPage,
                                   totalItems: totalItems
-                              })
+                              });
+                    index as i
                 "
             >
                 <td *ngIf="isRowSelectedFn">
@@ -33,7 +34,9 @@
                         (selectedChange)="rowSelectChange.emit(item)"
                     ></vdr-select-toggle>
                 </td>
-                <ng-container *ngTemplateOutlet="rowTemplate; context: { item: item }"></ng-container>
+                <ng-container
+                    *ngTemplateOutlet="rowTemplate; context: { item: item, index: i }"
+                ></ng-container>
             </tr>
         </tbody>
     </table>

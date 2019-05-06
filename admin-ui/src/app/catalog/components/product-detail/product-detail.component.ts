@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, forkJoin, merge, Observable } from 'rxjs';
-import { distinctUntilChanged, map, mergeMap, skip, take, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, mergeMap, shareReplay, skip, take, withLatestFrom } from 'rxjs/operators';
 import {
     CreateProductInput,
     FacetWithValues,
@@ -69,6 +69,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     facetValues$: Observable<ProductWithVariants.FacetValues[]>;
     facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
     selectedVariantIds: string[] = [];
+    variantDisplayMode: 'card' | 'table' = 'card';
 
     constructor(
         route: ActivatedRoute,
@@ -105,7 +106,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.variants$ = this.product$.pipe(map(product => product.variants));
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories);
+            .mapSingle(data => data.taxCategories)
+            .pipe(shareReplay(1));
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
         // FacetValues are provided initially by the nested array of the

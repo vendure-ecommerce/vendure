@@ -8,19 +8,11 @@
     }
 }
 
-.option-groups-list {
-
-}
-
 .group-name {
     padding-right: 6px;
 }
 
-.variants-list {
-
-    .variant {
-        input {
-            width: 100%;
-        }
-    }
+.view-mode {
+    display: flex;
+    justify-content: flex-end;
 }

@@ -24,6 +24,7 @@ import { ProductAssetsComponent } from './components/product-assets/product-asse
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
+import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
 import { SelectOptionGroupDialogComponent } from './components/select-option-group-dialog/select-option-group-dialog.component';
 import { SelectOptionGroupComponent } from './components/select-option-group/select-option-group.component';
@@ -59,6 +60,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         CollectionTreeComponent,
         CollectionTreeNodeComponent,
         CollectionContentsComponent,
+        ProductVariantsTableComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,

@@ -1,0 +1,15 @@
+@import "variables";
+
+.placeholder {
+    color: $color-grey-3;
+}
+
+input {
+    width: 100%;
+}
+
+.stock, .price {
+    input {
+        max-width: 96px;
+    }
+}

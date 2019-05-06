@@ -1,3 +1,4 @@
+import { FetchPolicy } from 'apollo-client';
 import {
     AddMembersToZone,
     CreateChannel,
@@ -184,13 +185,17 @@ export class SettingsDataService {
         );
     }
 
-    getTaxRates(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetTaxRateList.Query, GetTaxRateList.Variables>(GET_TAX_RATE_LIST, {
-            options: {
-                take,
-                skip,
+    getTaxRates(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
+        return this.baseDataService.query<GetTaxRateList.Query, GetTaxRateList.Variables>(
+            GET_TAX_RATE_LIST,
+            {
+                options: {
+                    take,
+                    skip,
+                },
             },
-        });
+            fetchPolicy,
+        );
     }
 
     getTaxRate(id: string) {
@@ -221,9 +226,11 @@ export class SettingsDataService {
         });
     }
 
-    getActiveChannel() {
+    getActiveChannel(fetchPolicy?: FetchPolicy) {
         return this.baseDataService.query<GetActiveChannel.Query, GetActiveChannel.Variables>(
             GET_ACTIVE_CHANNEL,
+            {},
+            fetchPolicy,
         );
     }
 

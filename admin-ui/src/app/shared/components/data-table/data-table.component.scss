@@ -1,5 +1,11 @@
 @import "variables";
 
+:host {
+    display: block;
+    max-width: 100%;
+    overflow: auto;
+}
+
 thead th {
     position: sticky;
     top: 24px;

@@ -106,29 +106,48 @@
             </button>
             <clr-tab-content *clrIfActive="(activeTab$ | async) === 'variants'">
                 <section class="form-block" *ngIf="!(isNew$ | async)">
+                    <div class="view-mode">
+                        <div class="btn-group btn-sm">
+                            <button
+                                class="btn btn-secondary-outline"
+                                (click)="variantDisplayMode = 'card'"
+                                [class.btn-primary]="variantDisplayMode === 'card'"
+                            >
+                                <clr-icon shape="list"></clr-icon>
+                                {{ 'catalog.display-variant-cards' | translate }}
+                            </button>
+                            <button
+                                class="btn"
+                                (click)="variantDisplayMode = 'table'"
+                                [class.btn-primary]="variantDisplayMode === 'table'"
+                            >
+                                <clr-icon shape="table"></clr-icon>
+                                {{ 'catalog.display-variant-table' | translate }}
+                            </button>
+                        </div>
+                    </div>
                     <vdr-generate-product-variants
                         *ngIf="(variants$ | async)?.length === 0; else variants"
                         [product]="product"
                     ></vdr-generate-product-variants>
 
                     <ng-template #variants>
+                        <vdr-product-variants-table
+                            *ngIf="variantDisplayMode === 'table'"
+                            [variants]="variants$ | async"
+                            [optionGroups]="product.optionGroups"
+                            [productVariantsFormArray]="detailForm.get('variants')"
+                        ></vdr-product-variants-table>
                         <vdr-product-variants-list
+                            *ngIf="variantDisplayMode === 'card'"
                             [variants]="variants$ | async"
                             [facets]="facets$ | async"
                             [productVariantsFormArray]="detailForm.get('variants')"
                             [taxCategories]="taxCategories$ | async"
                             (assetChange)="variantAssetChange($event)"
                             (selectionChange)="selectedVariantIds = $event"
-                        >
-                            <button
-                                class="btn btn-sm btn-secondary"
-                                [disabled]="selectedVariantIds.length === 0"
-                                (click)="selectVariantFacetValue(selectedVariantIds)"
-                            >
-                                <clr-icon shape="plus"></clr-icon>
-                                {{ 'catalog.add-facets' | translate }}
-                            </button>
-                        </vdr-product-variants-list>
+                            (selectFacetValueClick)="selectVariantFacetValue($event)"
+                        ></vdr-product-variants-list>
                     </ng-template>
                 </section>
             </clr-tab-content>

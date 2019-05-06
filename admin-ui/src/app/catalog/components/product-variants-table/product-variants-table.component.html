@@ -1,0 +1,64 @@
+<vdr-data-table [items]="variants">
+    <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.sku' | translate }}</vdr-dt-column>
+    <ng-container *ngFor="let optionGroup of optionGroups">
+        <vdr-dt-column>{{ optionGroup.name }}</vdr-dt-column>
+    </ng-container>
+    <vdr-dt-column>{{ 'catalog.price' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.stock-on-hand' | translate }}</vdr-dt-column>
+    <ng-template let-variant="item" let-i="index">
+        <ng-container [formGroup]="formArray.at(i)">
+            <td class="left align-middle">
+                <div class="card-img">
+                    <div class="featured-asset">
+                        <img
+                            *ngIf="variant.featuredAsset"
+                            [src]="variant.featuredAsset!.preview + '?preset=tiny'"
+                        />
+                        <div class="placeholder" *ngIf="!variant.featuredAsset">
+                            <clr-icon shape="image" size="48"></clr-icon>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="left align-middle">
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="text"
+                        formControlName="name"
+                        [placeholder]="'common.name' | translate"
+                    />
+                </clr-input-container>
+            </td>
+            <td class="left align-middle">
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="text"
+                        formControlName="sku"
+                        [placeholder]="'catalog.sku' | translate"
+                    />
+                </clr-input-container>
+            </td>
+            <ng-container *ngFor="let option of variant.options">
+                <td class="left align-middle">{{ option.name }}</td>
+            </ng-container>
+            <td class="left align-middle price">
+                <clr-input-container>
+                    <vdr-currency-input
+                        clrInput
+                        [currencyCode]="variant.currencyCode"
+                        formControlName="price"
+                    ></vdr-currency-input>
+                </clr-input-container>
+            </td>
+            <td class="left align-middle stock">
+                <clr-input-container>
+                    <input clrInput type="number" min="0" step="1" formControlName="stockOnHand" />
+                </clr-input-container>
+            </td>
+        </ng-container>
+    </ng-template>
+</vdr-data-table>
