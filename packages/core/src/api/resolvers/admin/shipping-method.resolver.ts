@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperation,
-    CreateShippingMethodMutationArgs,
+    MutationCreateShippingMethodArgs,
     Permission,
-    ShippingMethodQueryArgs,
-    ShippingMethodsQueryArgs,
-    UpdateShippingMethodMutationArgs,
+    QueryShippingMethodArgs,
+    QueryShippingMethodsArgs,
+    MutationUpdateShippingMethodArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -19,38 +19,38 @@ export class ShippingMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingMethods(@Args() args: ShippingMethodsQueryArgs): Promise<PaginatedList<ShippingMethod>> {
+    shippingMethods(@Args() args: QueryShippingMethodsArgs): Promise<PaginatedList<ShippingMethod>> {
         return this.shippingMethodService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingMethod(@Args() args: ShippingMethodQueryArgs): Promise<ShippingMethod | undefined> {
+    shippingMethod(@Args() args: QueryShippingMethodArgs): Promise<ShippingMethod | undefined> {
         return this.shippingMethodService.findOne(args.id);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingEligibilityCheckers(@Args() args: ShippingMethodQueryArgs): ConfigurableOperation[] {
+    shippingEligibilityCheckers(@Args() args: QueryShippingMethodArgs): ConfigurableOperation[] {
         return this.shippingMethodService.getShippingEligibilityCheckers();
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingCalculators(@Args() args: ShippingMethodQueryArgs): ConfigurableOperation[] {
+    shippingCalculators(@Args() args: QueryShippingMethodArgs): ConfigurableOperation[] {
         return this.shippingMethodService.getShippingCalculators();
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    createShippingMethod(@Args() args: CreateShippingMethodMutationArgs): Promise<ShippingMethod> {
+    createShippingMethod(@Args() args: MutationCreateShippingMethodArgs): Promise<ShippingMethod> {
         const { input } = args;
         return this.shippingMethodService.create(input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    updateShippingMethod(@Args() args: UpdateShippingMethodMutationArgs): Promise<ShippingMethod> {
+    updateShippingMethod(@Args() args: MutationUpdateShippingMethodArgs): Promise<ShippingMethod> {
         const { input } = args;
         return this.shippingMethodService.update(input);
     }

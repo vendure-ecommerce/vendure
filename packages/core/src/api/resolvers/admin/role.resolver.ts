@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateRoleMutationArgs,
+    MutationCreateRoleArgs,
     Permission,
-    RoleQueryArgs,
-    RolesQueryArgs,
-    UpdateRoleMutationArgs,
+    QueryRoleArgs,
+    QueryRolesArgs,
+    MutationUpdateRoleArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -18,26 +18,26 @@ export class RoleResolver {
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    roles(@Args() args: RolesQueryArgs): Promise<PaginatedList<Role>> {
+    roles(@Args() args: QueryRolesArgs): Promise<PaginatedList<Role>> {
         return this.roleService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    role(@Args() args: RoleQueryArgs): Promise<Role | undefined> {
+    role(@Args() args: QueryRoleArgs): Promise<Role | undefined> {
         return this.roleService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
-    createRole(@Args() args: CreateRoleMutationArgs): Promise<Role> {
+    createRole(@Args() args: MutationCreateRoleArgs): Promise<Role> {
         const { input } = args;
         return this.roleService.create(input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
-    updateRole(@Args() args: UpdateRoleMutationArgs): Promise<Role> {
+    updateRole(@Args() args: MutationUpdateRoleArgs): Promise<Role> {
         const { input } = args;
         return this.roleService.update(input);
     }

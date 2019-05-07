@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreatePromotionMutationArgs,
-    DeletePromotionMutationArgs,
+    MutationCreatePromotionArgs,
+    MutationDeletePromotionArgs,
     DeletionResponse,
     Permission,
-    PromotionQueryArgs,
-    PromotionsQueryArgs,
-    UpdatePromotionMutationArgs,
+    QueryPromotionArgs,
+    QueryPromotionsArgs,
+    MutationUpdatePromotionArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -25,7 +25,7 @@ export class PromotionResolver {
     @Allow(Permission.ReadSettings)
     promotions(
         @Ctx() ctx: RequestContext,
-        @Args() args: PromotionsQueryArgs,
+        @Args() args: QueryPromotionsArgs,
     ): Promise<PaginatedList<Promotion>> {
         return this.promotionService.findAll(args.options || undefined).then(res => {
             res.items.forEach(this.encodeConditionsAndActions);
@@ -35,7 +35,7 @@ export class PromotionResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    promotion(@Ctx() ctx: RequestContext, @Args() args: PromotionQueryArgs): Promise<Promotion | undefined> {
+    promotion(@Ctx() ctx: RequestContext, @Args() args: QueryPromotionArgs): Promise<Promotion | undefined> {
         return this.promotionService.findOne(args.id).then(this.encodeConditionsAndActions);
     }
 
@@ -50,7 +50,7 @@ export class PromotionResolver {
     @Allow(Permission.CreateSettings)
     createPromotion(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreatePromotionMutationArgs,
+        @Args() args: MutationCreatePromotionArgs,
     ): Promise<Promotion> {
         this.idCodecService.decodeConfigurableOperation(args.input.actions);
         this.idCodecService.decodeConfigurableOperation(args.input.conditions);
@@ -61,7 +61,7 @@ export class PromotionResolver {
     @Allow(Permission.UpdateSettings)
     updatePromotion(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdatePromotionMutationArgs,
+        @Args() args: MutationUpdatePromotionArgs,
     ): Promise<Promotion> {
         this.idCodecService.decodeConfigurableOperation(args.input.actions || []);
         this.idCodecService.decodeConfigurableOperation(args.input.conditions || []);
@@ -70,7 +70,7 @@ export class PromotionResolver {
 
     @Mutation()
     @Allow(Permission.DeleteSettings)
-    deletePromotion(@Args() args: DeletePromotionMutationArgs): Promise<DeletionResponse> {
+    deletePromotion(@Args() args: MutationDeletePromotionArgs): Promise<DeletionResponse> {
         return this.promotionService.softDeletePromotion(args.id);
     }
 

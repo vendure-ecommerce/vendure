@@ -1,15 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateFacetMutationArgs,
-    CreateFacetValuesMutationArgs,
-    DeleteFacetMutationArgs,
-    DeleteFacetValuesMutationArgs,
+    MutationCreateFacetArgs,
+    MutationCreateFacetValuesArgs,
+    MutationDeleteFacetArgs,
+    MutationDeleteFacetValuesArgs,
     DeletionResponse,
-    FacetQueryArgs,
-    FacetsQueryArgs,
+    QueryFacetArgs,
+    QueryFacetsArgs,
     Permission,
-    UpdateFacetMutationArgs,
-    UpdateFacetValuesMutationArgs,
+    MutationUpdateFacetArgs,
+    MutationUpdateFacetValuesArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -33,7 +33,7 @@ export class FacetResolver {
     @Allow(Permission.ReadCatalog)
     facets(
         @Ctx() ctx: RequestContext,
-        @Args() args: FacetsQueryArgs,
+        @Args() args: QueryFacetsArgs,
     ): Promise<PaginatedList<Translated<Facet>>> {
         return this.facetService.findAll(ctx.languageCode, args.options || undefined);
     }
@@ -42,14 +42,14 @@ export class FacetResolver {
     @Allow(Permission.ReadCatalog)
     async facet(
         @Ctx() ctx: RequestContext,
-        @Args() args: FacetQueryArgs,
+        @Args() args: QueryFacetArgs,
     ): Promise<Translated<Facet> | undefined> {
         return this.facetService.findOne(args.id, ctx.languageCode);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createFacet(@Args() args: CreateFacetMutationArgs): Promise<Translated<Facet>> {
+    async createFacet(@Args() args: MutationCreateFacetArgs): Promise<Translated<Facet>> {
         const { input } = args;
         const facet = await this.facetService.create(args.input);
 
@@ -64,7 +64,7 @@ export class FacetResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async updateFacet(@Args() args: UpdateFacetMutationArgs): Promise<Translated<Facet>> {
+    async updateFacet(@Args() args: MutationUpdateFacetArgs): Promise<Translated<Facet>> {
         const { input } = args;
         return this.facetService.update(args.input);
     }
@@ -73,7 +73,7 @@ export class FacetResolver {
     @Allow(Permission.DeleteCatalog)
     async deleteFacet(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteFacetMutationArgs,
+        @Args() args: MutationDeleteFacetArgs,
     ): Promise<DeletionResponse> {
         return this.facetService.delete(ctx, args.id, args.force || false);
     }
@@ -82,7 +82,7 @@ export class FacetResolver {
     @Allow(Permission.CreateCatalog)
     @Decode('facetId')
     async createFacetValues(
-        @Args() args: CreateFacetValuesMutationArgs,
+        @Args() args: MutationCreateFacetValuesArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         const facetId = input[0].facetId;
@@ -96,7 +96,7 @@ export class FacetResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateFacetValues(
-        @Args() args: UpdateFacetValuesMutationArgs,
+        @Args() args: MutationUpdateFacetValuesArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         return Promise.all(input.map(facetValue => this.facetValueService.update(facetValue)));
@@ -107,7 +107,7 @@ export class FacetResolver {
     @Decode('ids')
     async deleteFacetValues(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteFacetValuesMutationArgs,
+        @Args() args: MutationDeleteFacetValuesArgs,
     ): Promise<DeletionResponse[]> {
         return Promise.all(args.ids.map(id => this.facetValueService.delete(ctx, id, args.force || false)));
     }

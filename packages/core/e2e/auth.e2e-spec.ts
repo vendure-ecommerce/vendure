@@ -1,10 +1,10 @@
 import {
     CreateAdministrator,
-    CreateProductMutationArgs,
     CreateRole,
-    LoginMutationArgs,
+    MutationCreateProductArgs,
+    MutationLoginArgs,
+    MutationUpdateProductArgs,
     Permission,
-    UpdateProductMutationArgs,
 } from '@vendure/common/lib/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
@@ -49,7 +49,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('can attempt login', async () => {
-                await assertRequestAllowed<LoginMutationArgs>(ATTEMPT_LOGIN, {
+                await assertRequestAllowed<MutationLoginArgs>(ATTEMPT_LOGIN, {
                     username: SUPER_ADMIN_USER_IDENTIFIER,
                     password: SUPER_ADMIN_USER_PASSWORD,
                     rememberMe: false,
@@ -71,7 +71,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('cannot uppdate', async () => {
-                await assertRequestForbidden<UpdateProductMutationArgs>(UPDATE_PRODUCT, {
+                await assertRequestForbidden<MutationUpdateProductArgs>(UPDATE_PRODUCT, {
                     input: {
                         id: '1',
                         translations: [],
@@ -80,7 +80,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('cannot create', async () => {
-                await assertRequestForbidden<CreateProductMutationArgs>(CREATE_PRODUCT, {
+                await assertRequestForbidden<MutationCreateProductArgs>(CREATE_PRODUCT, {
                     input: {
                         translations: [],
                     },

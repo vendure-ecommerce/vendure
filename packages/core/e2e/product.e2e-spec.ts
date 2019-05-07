@@ -119,7 +119,7 @@ describe('Product resolver', () => {
 
     describe('product query', () => {
         it('returns expected properties', async () => {
-            const result = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
+            const { product } = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
                 GET_PRODUCT_WITH_VARIANTS,
                 {
                     languageCode: LanguageCode.en,
@@ -127,12 +127,16 @@ describe('Product resolver', () => {
                 },
             );
 
-            if (!result.product) {
+            if (!product) {
                 fail('Product not found');
                 return;
             }
-            expect(omit(result.product, ['variants'])).toMatchSnapshot();
-            expect(result.product.variants.length).toBe(2);
+            // override the non-deterministic date fields
+            [product.featuredAsset, ...product.assets].forEach(asset => {
+                asset!.createdAt = '<date>';
+            });
+            expect(omit(product, ['variants'])).toMatchSnapshot();
+            expect(product.variants.length).toBe(2);
         });
 
         it('ProductVariant price properties are correct', async () => {

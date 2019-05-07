@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { DeleteCustomerAddressMutationArgs } from '@vendure/common/lib/generated-shop-types';
+import { MutationDeleteCustomerAddressArgs } from '@vendure/common/lib/generated-shop-types';
 import {
-    CreateCustomerAddressMutationArgs,
+    MutationCreateCustomerAddressArgs,
     Permission,
-    UpdateCustomerAddressMutationArgs,
-    UpdateCustomerMutationArgs,
+    MutationUpdateCustomerAddressArgs,
+    MutationUpdateCustomerArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
@@ -47,7 +47,7 @@ export class ShopCustomerResolver {
     @Allow(Permission.Owner)
     async updateCustomer(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCustomerMutationArgs,
+        @Args() args: MutationUpdateCustomerArgs,
     ): Promise<Customer> {
         const customer = await this.getCustomerForOwner(ctx);
         return this.customerService.update({
@@ -60,7 +60,7 @@ export class ShopCustomerResolver {
     @Allow(Permission.Owner)
     async createCustomerAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateCustomerAddressMutationArgs,
+        @Args() args: MutationCreateCustomerAddressArgs,
     ): Promise<Address> {
         const customer = await this.getCustomerForOwner(ctx);
         return this.customerService.createAddress(ctx, customer.id as string, args.input);
@@ -70,7 +70,7 @@ export class ShopCustomerResolver {
     @Allow(Permission.Owner)
     async updateCustomerAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCustomerAddressMutationArgs,
+        @Args() args: MutationUpdateCustomerAddressArgs,
     ): Promise<Address> {
         const customer = await this.getCustomerForOwner(ctx);
         const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
@@ -84,7 +84,7 @@ export class ShopCustomerResolver {
     @Allow(Permission.Owner)
     async deleteCustomerAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteCustomerAddressMutationArgs,
+        @Args() args: MutationDeleteCustomerAddressArgs,
     ): Promise<boolean> {
         const customer = await this.getCustomerForOwner(ctx);
         const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);

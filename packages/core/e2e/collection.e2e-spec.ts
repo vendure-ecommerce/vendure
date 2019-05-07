@@ -97,6 +97,10 @@ describe('Collection resolver', () => {
             );
 
             electronicsCollection = result.createCollection;
+            // override the non-deterministic date fields
+            [electronicsCollection.featuredAsset, ...electronicsCollection.assets].forEach(asset => {
+                asset!.createdAt = '<date>';
+            });
             expect(electronicsCollection).toMatchSnapshot();
             expect(electronicsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
         });
@@ -193,7 +197,7 @@ describe('Collection resolver', () => {
     });
 
     it('updateCollection', async () => {
-        const result = await client.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
+        const { updateCollection } = await client.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
             UPDATE_COLLECTION,
             {
                 input: {
@@ -205,7 +209,11 @@ describe('Collection resolver', () => {
             },
         );
 
-        expect(result.updateCollection).toMatchSnapshot();
+        // override the non-deterministic date fields
+        [updateCollection.featuredAsset, ...updateCollection.assets].forEach(asset => {
+            asset!.createdAt = '<date>';
+        });
+        expect(updateCollection).toMatchSnapshot();
     });
 
     describe('moveCollection', () => {

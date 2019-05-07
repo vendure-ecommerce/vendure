@@ -1,19 +1,19 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AddItemToOrderMutationArgs,
-    AddPaymentToOrderMutationArgs,
-    AdjustItemQuantityMutationArgs,
-    OrderByCodeQueryArgs,
-    OrderQueryArgs,
+    MutationAddItemToOrderArgs,
+    MutationAddPaymentToOrderArgs,
+    MutationAdjustItemQuantityArgs,
     Permission,
-    RemoveItemFromOrderMutationArgs,
-    SetCustomerForOrderMutationArgs,
-    SetOrderShippingAddressMutationArgs,
-    SetOrderShippingMethodMutationArgs,
+    QueryOrderArgs,
+    QueryOrderByCodeArgs,
+    MutationRemoveItemFromOrderArgs,
+    MutationSetCustomerForOrderArgs,
+    MutationSetOrderShippingAddressArgs,
+    MutationSetOrderShippingMethodArgs,
     ShippingMethodQuote,
-    TransitionOrderToStateMutationArgs,
+    MutationTransitionOrderToStateArgs,
 } from '@vendure/common/lib/generated-shop-types';
-import { CountriesQueryArgs } from '@vendure/common/lib/generated-types';
+import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
 import ms from 'ms';
 
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
@@ -43,7 +43,7 @@ export class ShopOrderResolver {
     @Query()
     availableCountries(
         @Ctx() ctx: RequestContext,
-        @Args() args: CountriesQueryArgs,
+        @Args() args: QueryCountriesArgs,
     ): Promise<Array<Translated<Country>>> {
         return this.countryService
             .findAll(ctx, {
@@ -60,7 +60,7 @@ export class ShopOrderResolver {
 
     @Query()
     @Allow(Permission.Owner)
-    async order(@Ctx() ctx: RequestContext, @Args() args: OrderQueryArgs): Promise<Order | undefined> {
+    async order(@Ctx() ctx: RequestContext, @Args() args: QueryOrderArgs): Promise<Order | undefined> {
         const order = await this.orderService.findOne(ctx, args.id);
         if (order && ctx.authorizedAsOwnerOnly) {
             const orderUserId = order.customer && order.customer.user && order.customer.user.id;
@@ -89,7 +89,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async orderByCode(
         @Ctx() ctx: RequestContext,
-        @Args() args: OrderByCodeQueryArgs,
+        @Args() args: QueryOrderByCodeArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const order = await this.orderService.findOneByCode(ctx, args.code);
@@ -124,7 +124,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async setOrderShippingAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: SetOrderShippingAddressMutationArgs,
+        @Args() args: MutationSetOrderShippingAddressArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
@@ -153,7 +153,7 @@ export class ShopOrderResolver {
     @Decode('shippingMethodId')
     async setOrderShippingMethod(
         @Ctx() ctx: RequestContext,
-        @Args() args: SetOrderShippingMethodMutationArgs,
+        @Args() args: MutationSetOrderShippingMethodArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
@@ -177,7 +177,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async transitionOrderToState(
         @Ctx() ctx: RequestContext,
-        @Args() args: TransitionOrderToStateMutationArgs,
+        @Args() args: MutationTransitionOrderToStateArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx, true);
@@ -190,7 +190,7 @@ export class ShopOrderResolver {
     @Decode('productVariantId')
     async addItemToOrder(
         @Ctx() ctx: RequestContext,
-        @Args() args: AddItemToOrderMutationArgs,
+        @Args() args: MutationAddItemToOrderArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity);
@@ -201,7 +201,7 @@ export class ShopOrderResolver {
     @Decode('orderItemId')
     async adjustItemQuantity(
         @Ctx() ctx: RequestContext,
-        @Args() args: AdjustItemQuantityMutationArgs,
+        @Args() args: MutationAdjustItemQuantityArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.adjustItemQuantity(ctx, order.id, args.orderItemId, args.quantity);
@@ -212,7 +212,7 @@ export class ShopOrderResolver {
     @Decode('orderItemId')
     async removeItemFromOrder(
         @Ctx() ctx: RequestContext,
-        @Args() args: RemoveItemFromOrderMutationArgs,
+        @Args() args: MutationRemoveItemFromOrderArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderItemId);
@@ -220,7 +220,7 @@ export class ShopOrderResolver {
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    async addPaymentToOrder(@Ctx() ctx: RequestContext, @Args() args: AddPaymentToOrderMutationArgs) {
+    async addPaymentToOrder(@Ctx() ctx: RequestContext, @Args() args: MutationAddPaymentToOrderArgs) {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
@@ -256,7 +256,7 @@ export class ShopOrderResolver {
 
     @Mutation()
     @Allow(Permission.Owner)
-    async setCustomerForOrder(@Ctx() ctx: RequestContext, @Args() args: SetCustomerForOrderMutationArgs) {
+    async setCustomerForOrder(@Ctx() ctx: RequestContext, @Args() args: MutationSetCustomerForOrderArgs) {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {

@@ -1,13 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AddMembersToZoneMutationArgs,
-    CreateZoneMutationArgs,
-    DeleteZoneMutationArgs,
+    MutationAddMembersToZoneArgs,
+    MutationCreateZoneArgs,
+    MutationDeleteZoneArgs,
     DeletionResponse,
     Permission,
-    RemoveMembersFromZoneMutationArgs,
-    UpdateZoneMutationArgs,
-    ZoneQueryArgs,
+    MutationRemoveMembersFromZoneArgs,
+    MutationUpdateZoneArgs,
+    QueryZoneArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { Zone } from '../../../entity/zone/zone.entity';
@@ -29,20 +29,20 @@ export class ZoneResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    async zone(@Ctx() ctx: RequestContext, @Args() args: ZoneQueryArgs): Promise<Zone | undefined> {
+    async zone(@Ctx() ctx: RequestContext, @Args() args: QueryZoneArgs): Promise<Zone | undefined> {
         return this.zoneService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
     @Decode('memberIds')
-    async createZone(@Ctx() ctx: RequestContext, @Args() args: CreateZoneMutationArgs): Promise<Zone> {
+    async createZone(@Ctx() ctx: RequestContext, @Args() args: MutationCreateZoneArgs): Promise<Zone> {
         return this.zoneService.create(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateZone(@Ctx() ctx: RequestContext, @Args() args: UpdateZoneMutationArgs): Promise<Zone> {
+    async updateZone(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateZoneArgs): Promise<Zone> {
         return this.zoneService.update(ctx, args.input);
     }
 
@@ -50,7 +50,7 @@ export class ZoneResolver {
     @Allow(Permission.DeleteSettings)
     async deleteZone(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteZoneMutationArgs,
+        @Args() args: MutationDeleteZoneArgs,
     ): Promise<DeletionResponse> {
         return this.zoneService.delete(ctx, args.id);
     }
@@ -60,7 +60,7 @@ export class ZoneResolver {
     @Decode('zoneId', 'memberIds')
     async addMembersToZone(
         @Ctx() ctx: RequestContext,
-        @Args() args: AddMembersToZoneMutationArgs,
+        @Args() args: MutationAddMembersToZoneArgs,
     ): Promise<Zone> {
         return this.zoneService.addMembersToZone(ctx, args);
     }
@@ -70,7 +70,7 @@ export class ZoneResolver {
     @Decode('zoneId', 'memberIds')
     async removeMembersFromZone(
         @Ctx() ctx: RequestContext,
-        @Args() args: RemoveMembersFromZoneMutationArgs,
+        @Args() args: MutationRemoveMembersFromZoneArgs,
     ): Promise<Zone> {
         return this.zoneService.removeMembersFromZone(ctx, args);
     }

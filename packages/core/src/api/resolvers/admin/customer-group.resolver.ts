@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AddCustomersToGroupMutationArgs,
-    CreateCustomerGroupMutationArgs,
-    CustomerGroupQueryArgs,
+    MutationAddCustomersToGroupArgs,
+    MutationCreateCustomerGroupArgs,
+    QueryCustomerGroupArgs,
     Permission,
-    RemoveCustomersFromGroupMutationArgs,
-    UpdateCustomerGroupMutationArgs,
+    MutationRemoveCustomersFromGroupArgs,
+    MutationUpdateCustomerGroupArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { CustomerGroup } from '../../../entity/customer-group/customer-group.entity';
@@ -29,7 +29,7 @@ export class CustomerGroupResolver {
     @Allow(Permission.ReadCustomer)
     async customerGroup(
         @Ctx() ctx: RequestContext,
-        @Args() args: CustomerGroupQueryArgs,
+        @Args() args: QueryCustomerGroupArgs,
     ): Promise<CustomerGroup | undefined> {
         return this.customerGroupService.findOne(args.id);
     }
@@ -37,20 +37,20 @@ export class CustomerGroupResolver {
     @Mutation()
     @Allow(Permission.CreateCustomer)
     @Decode('customerIds')
-    async createCustomerGroup(@Args() args: CreateCustomerGroupMutationArgs): Promise<CustomerGroup> {
+    async createCustomerGroup(@Args() args: MutationCreateCustomerGroupArgs): Promise<CustomerGroup> {
         return this.customerGroupService.create(args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async updateCustomerGroup(@Args() args: UpdateCustomerGroupMutationArgs): Promise<CustomerGroup> {
+    async updateCustomerGroup(@Args() args: MutationUpdateCustomerGroupArgs): Promise<CustomerGroup> {
         return this.customerGroupService.update(args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     @Decode('customerGroupId', 'customerIds')
-    async addCustomersToGroup(@Args() args: AddCustomersToGroupMutationArgs): Promise<CustomerGroup> {
+    async addCustomersToGroup(@Args() args: MutationAddCustomersToGroupArgs): Promise<CustomerGroup> {
         return this.customerGroupService.addCustomersToGroup(args);
     }
 
@@ -58,7 +58,7 @@ export class CustomerGroupResolver {
     @Allow(Permission.UpdateCustomer)
     @Decode('customerGroupId', 'customerIds')
     async removeCustomersFromGroup(
-        @Args() args: RemoveCustomersFromGroupMutationArgs,
+        @Args() args: MutationRemoveCustomersFromGroupArgs,
     ): Promise<CustomerGroup> {
         return this.customerGroupService.removeCustomersFromGroup(args);
     }

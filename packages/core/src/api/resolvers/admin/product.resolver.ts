@@ -1,16 +1,16 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AddOptionGroupToProductMutationArgs,
-    CreateProductMutationArgs,
-    DeleteProductMutationArgs,
+    MutationAddOptionGroupToProductArgs,
+    MutationCreateProductArgs,
+    MutationDeleteProductArgs,
     DeletionResponse,
-    GenerateVariantsForProductMutationArgs,
+    MutationGenerateVariantsForProductArgs,
     Permission,
-    ProductQueryArgs,
-    ProductsQueryArgs,
-    RemoveOptionGroupFromProductMutationArgs,
-    UpdateProductMutationArgs,
-    UpdateProductVariantsMutationArgs,
+    QueryProductArgs,
+    QueryProductsArgs,
+    MutationRemoveOptionGroupFromProductArgs,
+    MutationUpdateProductArgs,
+    MutationUpdateProductVariantsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -38,7 +38,7 @@ export class ProductResolver {
     @Allow(Permission.ReadCatalog)
     async products(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductsQueryArgs,
+        @Args() args: QueryProductsArgs,
     ): Promise<PaginatedList<Translated<Product>>> {
         return this.productService.findAll(ctx, args.options || undefined);
     }
@@ -47,7 +47,7 @@ export class ProductResolver {
     @Allow(Permission.ReadCatalog)
     async product(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductQueryArgs,
+        @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
         return this.productService.findOne(ctx, args.id);
     }
@@ -57,7 +57,7 @@ export class ProductResolver {
     @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async createProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateProductMutationArgs,
+        @Args() args: MutationCreateProductArgs,
     ): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.create(ctx, input);
@@ -68,7 +68,7 @@ export class ProductResolver {
     @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async updateProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateProductMutationArgs,
+        @Args() args: MutationUpdateProductArgs,
     ): Promise<Translated<Product>> {
         const { input } = args;
         return this.productService.update(ctx, input);
@@ -78,7 +78,7 @@ export class ProductResolver {
     @Allow(Permission.DeleteCatalog)
     async deleteProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteProductMutationArgs,
+        @Args() args: MutationDeleteProductArgs,
     ): Promise<DeletionResponse> {
         return this.productService.softDelete(ctx, args.id);
     }
@@ -88,7 +88,7 @@ export class ProductResolver {
     @Decode('productId', 'optionGroupId')
     async addOptionGroupToProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: AddOptionGroupToProductMutationArgs,
+        @Args() args: MutationAddOptionGroupToProductArgs,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.addOptionGroupToProduct(ctx, productId, optionGroupId);
@@ -99,7 +99,7 @@ export class ProductResolver {
     @Decode('productId', 'optionGroupId')
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: RemoveOptionGroupFromProductMutationArgs,
+        @Args() args: MutationRemoveOptionGroupFromProductArgs,
     ): Promise<Translated<Product>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
@@ -110,7 +110,7 @@ export class ProductResolver {
     @Decode('productId', 'defaultTaxCategoryId')
     async generateVariantsForProduct(
         @Ctx() ctx: RequestContext,
-        @Args() args: GenerateVariantsForProductMutationArgs,
+        @Args() args: MutationGenerateVariantsForProductArgs,
     ): Promise<Translated<Product>> {
         const { productId, defaultTaxCategoryId, defaultPrice, defaultSku } = args;
         await this.productVariantService.generateVariantsForProduct(
@@ -128,7 +128,7 @@ export class ProductResolver {
     @Decode('taxCategoryId', 'facetValueIds', 'featuredAssetId', 'assetIds')
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateProductVariantsMutationArgs,
+        @Args() args: MutationUpdateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
         return Promise.all(input.map(variant => this.productVariantService.update(ctx, variant)));

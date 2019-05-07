@@ -1,5 +1,5 @@
 import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { OrdersCustomerArgs } from '@vendure/common/lib/generated-types';
+import { QueryOrdersArgs } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Address } from '../../../entity/address/address.entity';
@@ -22,7 +22,7 @@ export class CustomerEntityResolver {
     async orders(
         @Ctx() ctx: RequestContext,
         @Parent() customer: Customer,
-        @Args() args: OrdersCustomerArgs,
+        @Args() args: QueryOrdersArgs,
     ): Promise<PaginatedList<Order>> {
         return this.orderService.findByCustomerId(ctx, customer.id, args.options || undefined);
     }

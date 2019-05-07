@@ -1,11 +1,11 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
-    CollectionQueryArgs,
-    CollectionsQueryArgs,
-    ProductQueryArgs,
+    QueryCollectionArgs,
+    QueryCollectionsArgs,
+    QueryProductArgs,
     SearchResponse,
 } from '@vendure/common/lib/generated-shop-types';
-import { ProductsQueryArgs } from '@vendure/common/lib/generated-shop-types';
+import { QueryProductsArgs } from '@vendure/common/lib/generated-shop-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -33,7 +33,7 @@ export class ShopProductsResolver {
     @Query()
     async products(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductsQueryArgs,
+        @Args() args: QueryProductsArgs,
     ): Promise<PaginatedList<Translated<Product>>> {
         const options: ListQueryOptions<Product> = {
             ...args.options,
@@ -48,7 +48,7 @@ export class ShopProductsResolver {
     @Query()
     async product(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductQueryArgs,
+        @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
         const result = await this.productService.findOne(ctx, args.id);
         if (!result) {
@@ -64,7 +64,7 @@ export class ShopProductsResolver {
     @Query()
     async collections(
         @Ctx() ctx: RequestContext,
-        @Args() args: CollectionsQueryArgs,
+        @Args() args: QueryCollectionsArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const options: ListQueryOptions<Collection> = {
             ...args.options,
@@ -79,7 +79,7 @@ export class ShopProductsResolver {
     @Query()
     async collection(
         @Ctx() ctx: RequestContext,
-        @Args() args: CollectionQueryArgs,
+        @Args() args: QueryCollectionArgs,
     ): Promise<Translated<Collection> | undefined> {
         const collection = await this.collectionService.findOne(ctx, args.id);
         if (collection && collection.isPrivate) {

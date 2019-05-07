@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, SearchInput, SearchQueryArgs, SearchResponse } from '@vendure/common/lib/generated-types';
+import { Permission, SearchInput, QuerySearchArgs, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
 import { Decode } from '../../api';
@@ -21,7 +21,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
     @Decode('facetIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
-        @Args() args: SearchQueryArgs,
+        @Args() args: QuerySearchArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const result = await this.fulltextSearchService.search(ctx, args.input, true);
         // ensure the facetValues property resolver has access to the input args
@@ -48,7 +48,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     @Decode('facetIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
-        @Args() args: SearchQueryArgs,
+        @Args() args: QuerySearchArgs,
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const result = await this.fulltextSearchService.search(ctx, args.input, false);
         // ensure the facetValues property resolver has access to the input args

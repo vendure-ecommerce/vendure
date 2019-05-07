@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, UpdateGlobalSettingsMutationArgs } from '@vendure/common/lib/generated-types';
+import { Permission, MutationUpdateGlobalSettingsArgs } from '@vendure/common/lib/generated-types';
 
 import { VendureConfig } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
@@ -28,7 +28,7 @@ export class GlobalSettingsResolver {
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateGlobalSettings(@Args() args: UpdateGlobalSettingsMutationArgs) {
+    async updateGlobalSettings(@Args() args: MutationUpdateGlobalSettingsArgs) {
         return this.globalSettingsService.updateSettings(args.input);
     }
 }

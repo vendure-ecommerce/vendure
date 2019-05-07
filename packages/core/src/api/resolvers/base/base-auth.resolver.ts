@@ -1,4 +1,4 @@
-import { LoginMutationArgs, LoginResult } from '@vendure/common/lib/generated-types';
+import { MutationLoginArgs, LoginResult } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { InternalServerError } from '../../../common/error/errors';
@@ -22,7 +22,7 @@ export class BaseAuthResolver {
      * the user data and returns the token either in a cookie or in the response body.
      */
     async login(
-        args: LoginMutationArgs,
+        args: MutationLoginArgs,
         ctx: RequestContext,
         req: Request,
         res: Response,
@@ -60,7 +60,7 @@ export class BaseAuthResolver {
      */
     protected async createAuthenticatedSession(
         ctx: RequestContext,
-        args: LoginMutationArgs,
+        args: MutationLoginArgs,
         req: Request,
         res: Response,
     ) {

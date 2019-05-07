@@ -9,6 +9,7 @@ import {
     Customer,
     GetAvailableCountries,
     GetCustomer,
+    GetCustomerQuery,
     UpdateCustomerInput,
 } from 'shared/generated-types';
 import { CustomFieldConfig } from 'shared/shared-types';
@@ -20,13 +21,15 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 
+type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
+
 @Component({
     selector: 'vdr-customer-detail',
     templateUrl: './customer-detail.component.html',
     styleUrls: ['./customer-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Customer>
+export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrders>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
@@ -38,7 +41,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<GetCustomer.Cus
     addressDefaultsUpdated = false;
     ordersPerPage = 10;
     currentOrdersPage = 1;
-    private orderListUpdates$ = new Subject<GetCustomer.Customer>();
+    private orderListUpdates$ = new Subject<CustomerWithOrders>();
 
     constructor(
         route: ActivatedRoute,

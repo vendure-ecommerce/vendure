@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateTaxRateMutationArgs,
+    MutationCreateTaxRateArgs,
     Permission,
-    TaxRateQueryArgs,
-    TaxRatesQueryArgs,
-    UpdateTaxRateMutationArgs,
+    QueryTaxRateArgs,
+    QueryTaxRatesArgs,
+    MutationUpdateTaxRateArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -21,13 +21,13 @@ export class TaxRateResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    taxRates(@Ctx() ctx: RequestContext, @Args() args: TaxRatesQueryArgs): Promise<PaginatedList<TaxRate>> {
+    taxRates(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRatesArgs): Promise<PaginatedList<TaxRate>> {
         return this.taxRateService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    async taxRate(@Ctx() ctx: RequestContext, @Args() args: TaxRateQueryArgs): Promise<TaxRate | undefined> {
+    async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
         return this.taxRateService.findOne(args.id);
     }
 
@@ -36,7 +36,7 @@ export class TaxRateResolver {
     @Decode('categoryId', 'zoneId', 'customerGroupId')
     async createTaxRate(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateTaxRateMutationArgs,
+        @Args() args: MutationCreateTaxRateArgs,
     ): Promise<TaxRate> {
         return this.taxRateService.create(ctx, args.input);
     }
@@ -46,7 +46,7 @@ export class TaxRateResolver {
     @Decode('categoryId', 'zoneId', 'customerGroupId')
     async updateTaxRate(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateTaxRateMutationArgs,
+        @Args() args: MutationUpdateTaxRateArgs,
     ): Promise<TaxRate> {
         return this.taxRateService.update(ctx, args.input);
     }

@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CountriesQueryArgs,
-    CountryQueryArgs,
-    CreateCountryMutationArgs,
-    DeleteCountryMutationArgs,
+    QueryCountriesArgs,
+    QueryCountryArgs,
+    MutationCreateCountryArgs,
+    MutationDeleteCountryArgs,
     DeletionResponse,
     Permission,
-    UpdateCountryMutationArgs,
+    MutationUpdateCountryArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -25,7 +25,7 @@ export class CountryResolver {
     @Allow(Permission.ReadSettings)
     countries(
         @Ctx() ctx: RequestContext,
-        @Args() args: CountriesQueryArgs,
+        @Args() args: QueryCountriesArgs,
     ): Promise<PaginatedList<Translated<Country>>> {
         return this.countryService.findAll(ctx, args.options || undefined);
     }
@@ -34,7 +34,7 @@ export class CountryResolver {
     @Allow(Permission.ReadSettings)
     async country(
         @Ctx() ctx: RequestContext,
-        @Args() args: CountryQueryArgs,
+        @Args() args: QueryCountryArgs,
     ): Promise<Translated<Country> | undefined> {
         return this.countryService.findOne(ctx, args.id);
     }
@@ -43,7 +43,7 @@ export class CountryResolver {
     @Allow(Permission.CreateSettings)
     async createCountry(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateCountryMutationArgs,
+        @Args() args: MutationCreateCountryArgs,
     ): Promise<Translated<Country>> {
         return this.countryService.create(ctx, args.input);
     }
@@ -52,7 +52,7 @@ export class CountryResolver {
     @Allow(Permission.UpdateSettings)
     async updateCountry(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCountryMutationArgs,
+        @Args() args: MutationUpdateCountryArgs,
     ): Promise<Translated<Country>> {
         return this.countryService.update(ctx, args.input);
     }
@@ -61,7 +61,7 @@ export class CountryResolver {
     @Allow(Permission.DeleteSettings)
     async deleteCountry(
         @Ctx() ctx: RequestContext,
-        @Args() args: DeleteCountryMutationArgs,
+        @Args() args: MutationDeleteCountryArgs,
     ): Promise<DeletionResponse> {
         return this.countryService.delete(ctx, args.id);
     }

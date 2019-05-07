@@ -1,16 +1,16 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    LoginMutationArgs,
+    MutationLoginArgs,
     LoginResult,
     Permission,
-    RefreshCustomerVerificationMutationArgs,
-    RegisterCustomerAccountMutationArgs,
-    RequestPasswordResetMutationArgs,
-    RequestUpdateCustomerEmailAddressMutationArgs,
-    ResetPasswordMutationArgs,
-    UpdateCustomerEmailAddressMutationArgs,
-    UpdateCustomerPasswordMutationArgs,
-    VerifyCustomerAccountMutationArgs,
+    MutationRefreshCustomerVerificationArgs,
+    MutationRegisterCustomerAccountArgs,
+    MutationRequestPasswordResetArgs,
+    MutationRequestUpdateCustomerEmailAddressArgs,
+    MutationResetPasswordArgs,
+    MutationUpdateCustomerEmailAddressArgs,
+    MutationUpdateCustomerPasswordArgs,
+    MutationVerifyCustomerAccountArgs,
 } from '@vendure/common/lib/generated-shop-types';
 import { Request, Response } from 'express';
 
@@ -38,7 +38,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Mutation()
     @Allow(Permission.Public)
     login(
-        @Args() args: LoginMutationArgs,
+        @Args() args: MutationLoginArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
@@ -64,7 +64,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Public)
     async registerCustomerAccount(
         @Ctx() ctx: RequestContext,
-        @Args() args: RegisterCustomerAccountMutationArgs,
+        @Args() args: MutationRegisterCustomerAccountArgs,
     ) {
         return this.customerService.registerCustomerAccount(ctx, args.input).then(() => true);
     }
@@ -73,7 +73,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Public)
     async verifyCustomerAccount(
         @Ctx() ctx: RequestContext,
-        @Args() args: VerifyCustomerAccountMutationArgs,
+        @Args() args: MutationVerifyCustomerAccountArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
     ) {
@@ -98,14 +98,14 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Public)
     async refreshCustomerVerification(
         @Ctx() ctx: RequestContext,
-        @Args() args: RefreshCustomerVerificationMutationArgs,
+        @Args() args: MutationRefreshCustomerVerificationArgs,
     ) {
         return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
     }
 
     @Mutation()
     @Allow(Permission.Public)
-    async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: RequestPasswordResetMutationArgs) {
+    async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: MutationRequestPasswordResetArgs) {
         return this.customerService.requestPasswordReset(ctx, args.emailAddress).then(() => true);
     }
 
@@ -113,7 +113,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Public)
     async resetPassword(
         @Ctx() ctx: RequestContext,
-        @Args() args: ResetPasswordMutationArgs,
+        @Args() args: MutationResetPasswordArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
     ) {
@@ -139,7 +139,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Owner)
     async updateCustomerPassword(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCustomerPasswordMutationArgs,
+        @Args() args: MutationUpdateCustomerPasswordArgs,
     ): Promise<boolean> {
         return super.updatePassword(ctx, args.currentPassword, args.newPassword);
     }
@@ -148,7 +148,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Owner)
     async requestUpdateCustomerEmailAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: RequestUpdateCustomerEmailAddressMutationArgs,
+        @Args() args: MutationRequestUpdateCustomerEmailAddressArgs,
     ): Promise<boolean> {
         if (!ctx.activeUserId) {
             throw new ForbiddenError();
@@ -161,7 +161,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Allow(Permission.Owner)
     async updateCustomerEmailAddress(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCustomerEmailAddressMutationArgs,
+        @Args() args: MutationUpdateCustomerEmailAddressArgs,
     ): Promise<boolean> {
         return this.customerService.updateEmailAddress(ctx, args.token);
     }

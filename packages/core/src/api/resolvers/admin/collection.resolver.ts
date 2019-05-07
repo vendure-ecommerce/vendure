@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CollectionQueryArgs,
-    CollectionsQueryArgs,
+    QueryCollectionArgs,
+    QueryCollectionsArgs,
     ConfigurableOperation,
-    CreateCollectionMutationArgs,
-    MoveCollectionMutationArgs,
+    MutationCreateCollectionArgs,
+    MutationMoveCollectionArgs,
     Permission,
-    UpdateCollectionMutationArgs,
+    MutationUpdateCollectionArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -32,7 +32,7 @@ export class CollectionResolver {
     @Allow(Permission.ReadCatalog)
     async collectionFilters(
         @Ctx() ctx: RequestContext,
-        @Args() args: CollectionsQueryArgs,
+        @Args() args: QueryCollectionsArgs,
     ): Promise<ConfigurableOperation[]> {
         return this.collectionService.getAvailableFilters();
     }
@@ -41,7 +41,7 @@ export class CollectionResolver {
     @Allow(Permission.ReadCatalog)
     async collections(
         @Ctx() ctx: RequestContext,
-        @Args() args: CollectionsQueryArgs,
+        @Args() args: QueryCollectionsArgs,
     ): Promise<PaginatedList<Translated<Collection>>> {
         return this.collectionService.findAll(ctx, args.options || undefined).then(res => {
             res.items.forEach(this.encodeFilters);
@@ -53,7 +53,7 @@ export class CollectionResolver {
     @Allow(Permission.ReadCatalog)
     async collection(
         @Ctx() ctx: RequestContext,
-        @Args() args: CollectionQueryArgs,
+        @Args() args: QueryCollectionArgs,
     ): Promise<Translated<Collection> | undefined> {
         return this.collectionService.findOne(ctx, args.id).then(this.encodeFilters);
     }
@@ -63,7 +63,7 @@ export class CollectionResolver {
     @Decode('assetIds', 'featuredAssetId', 'parentId')
     async createCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: CreateCollectionMutationArgs,
+        @Args() args: MutationCreateCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
         this.idCodecService.decodeConfigurableOperation(input.filters);
@@ -75,7 +75,7 @@ export class CollectionResolver {
     @Decode('assetIds', 'featuredAssetId')
     async updateCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: UpdateCollectionMutationArgs,
+        @Args() args: MutationUpdateCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
         this.idCodecService.decodeConfigurableOperation(input.filters || []);
@@ -87,7 +87,7 @@ export class CollectionResolver {
     @Decode('collectionId', 'parentId')
     async moveCollection(
         @Ctx() ctx: RequestContext,
-        @Args() args: MoveCollectionMutationArgs,
+        @Args() args: MutationMoveCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
         return this.collectionService.move(ctx, input).then(this.encodeFilters);

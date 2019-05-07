@@ -1,11 +1,11 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    AddMembersToZoneMutationArgs,
+    MutationAddMembersToZoneArgs,
     CreateZoneInput,
     DeletionResponse,
     DeletionResult,
-    RemoveMembersFromZoneMutationArgs,
+    MutationRemoveMembersFromZoneArgs,
     UpdateZoneInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -98,7 +98,7 @@ export class ZoneService implements OnModuleInit {
         }
     }
 
-    async addMembersToZone(ctx: RequestContext, input: AddMembersToZoneMutationArgs): Promise<Zone> {
+    async addMembersToZone(ctx: RequestContext, input: MutationAddMembersToZoneArgs): Promise<Zone> {
         const countries = await this.getCountriesFromIds(input.memberIds);
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         const members = unique(zone.members.concat(countries), 'id');
@@ -110,7 +110,7 @@ export class ZoneService implements OnModuleInit {
 
     async removeMembersFromZone(
         ctx: RequestContext,
-        input: RemoveMembersFromZoneMutationArgs,
+        input: MutationRemoveMembersFromZoneArgs,
     ): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));

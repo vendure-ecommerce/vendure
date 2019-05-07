@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    AssetQueryArgs,
-    AssetsQueryArgs,
-    CreateAssetsMutationArgs,
+    QueryAssetArgs,
+    QueryAssetsArgs,
+    MutationCreateAssetsArgs,
     Permission,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
@@ -17,19 +17,19 @@ export class AssetResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async asset(@Args() args: AssetQueryArgs): Promise<Asset | undefined> {
+    async asset(@Args() args: QueryAssetArgs): Promise<Asset | undefined> {
         return this.assetService.findOne(args.id);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async assets(@Args() args: AssetsQueryArgs): Promise<PaginatedList<Asset>> {
+    async assets(@Args() args: QueryAssetsArgs): Promise<PaginatedList<Asset>> {
         return this.assetService.findAll(args.options || undefined);
     }
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createAssets(@Args() args: CreateAssetsMutationArgs): Promise<Asset[]> {
+    async createAssets(@Args() args: MutationCreateAssetsArgs): Promise<Asset[]> {
         // TODO: Is there some way to parellelize this while still preserving
         // the order of files in the upload? Non-deterministic IDs mess up the e2e test snapshots.
         const assets: Asset[] = [];

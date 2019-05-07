@@ -1,9 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    ChannelQueryArgs,
-    CreateChannelMutationArgs,
+    QueryChannelArgs,
+    MutationCreateChannelArgs,
     Permission,
-    UpdateChannelMutationArgs,
+    MutationUpdateChannelArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { Channel } from '../../../entity/channel/channel.entity';
@@ -25,7 +25,7 @@ export class ChannelResolver {
 
     @Query()
     @Allow(Permission.SuperAdmin)
-    async channel(@Ctx() ctx: RequestContext, @Args() args: ChannelQueryArgs): Promise<Channel | undefined> {
+    async channel(@Ctx() ctx: RequestContext, @Args() args: QueryChannelArgs): Promise<Channel | undefined> {
         return this.channelService.findOne(args.id);
     }
 
@@ -38,14 +38,14 @@ export class ChannelResolver {
     @Mutation()
     @Allow(Permission.SuperAdmin)
     @Decode('defaultTaxZoneId', 'defaultShippingZoneId')
-    async createChannel(@Args() args: CreateChannelMutationArgs): Promise<Channel> {
+    async createChannel(@Args() args: MutationCreateChannelArgs): Promise<Channel> {
         return this.channelService.create(args.input);
     }
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
     @Decode('defaultTaxZoneId', 'defaultShippingZoneId')
-    async updateChannel(@Args() args: UpdateChannelMutationArgs): Promise<Channel> {
+    async updateChannel(@Args() args: MutationUpdateChannelArgs): Promise<Channel> {
         return this.channelService.update(args.input);
     }
 }

@@ -1,9 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateTaxCategoryMutationArgs,
+    MutationCreateTaxCategoryArgs,
     Permission,
-    TaxCategoryQueryArgs,
-    UpdateTaxCategoryMutationArgs,
+    QueryTaxCategoryArgs,
+    MutationUpdateTaxCategoryArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
@@ -26,20 +26,20 @@ export class TaxCategoryResolver {
     @Allow(Permission.ReadSettings)
     async taxCategory(
         @Ctx() ctx: RequestContext,
-        @Args() args: TaxCategoryQueryArgs,
+        @Args() args: QueryTaxCategoryArgs,
     ): Promise<TaxCategory | undefined> {
         return this.taxCategoryService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    async createTaxCategory(@Args() args: CreateTaxCategoryMutationArgs): Promise<TaxCategory> {
+    async createTaxCategory(@Args() args: MutationCreateTaxCategoryArgs): Promise<TaxCategory> {
         return this.taxCategoryService.create(args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateTaxCategory(@Args() args: UpdateTaxCategoryMutationArgs): Promise<TaxCategory> {
+    async updateTaxCategory(@Args() args: MutationUpdateTaxCategoryArgs): Promise<TaxCategory> {
         return this.taxCategoryService.update(args.input);
     }
 }

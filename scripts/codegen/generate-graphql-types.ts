@@ -1,7 +1,6 @@
+import { generate } from '@graphql-codegen/cli';
 import fs from 'fs';
 import { buildClientSchema, graphqlSync, introspectionQuery } from 'graphql';
-import { generate } from 'graphql-code-generator';
-import { TypeScriptNamingConventionMap } from 'graphql-codegen-typescript-common';
 import { mergeSchemas } from 'graphql-tools';
 import path from 'path';
 
@@ -36,7 +35,7 @@ Promise.all([
         const namingConventionConfig = {
             namingConvention: {
                 enumValues: 'keep',
-            } as TypeScriptNamingConventionMap,
+            },
         };
         return generate({
             overwrite: true,
@@ -47,18 +46,24 @@ Promise.all([
                     plugins: [
                         { add: '// tslint:disable' },
                         'time',
-                        'typescript-common',
-                        'typescript-client',
-                        'typescript-server'],
-                    config: namingConventionConfig,
+                        'typescript',
+                        'typescript-operations',
+                        'typescript-compatibility',
+                    ],
+                    config: {
+                        ...namingConventionConfig,
+                        strict: true,
+                    },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     plugins: [
                         { add: '// tslint:disable' },
                         'time',
-                        'typescript-common',
-                        'typescript-server'],
+                        'typescript',
+                        'typescript-operations',
+                        'typescript-compatibility',
+                    ],
                     config: namingConventionConfig,
                 },
             },

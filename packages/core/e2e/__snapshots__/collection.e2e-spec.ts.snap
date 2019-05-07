@@ -4,6 +4,7 @@ exports[`Collection resolver createCollection creates a root collection 1`] = `
 Object {
   "assets": Array [
     Object {
+      "createdAt": "<date>",
       "fileSize": 4,
       "id": "T_1",
       "mimeType": "image/jpeg",
@@ -13,6 +14,7 @@ Object {
       "type": "IMAGE",
     },
     Object {
+      "createdAt": "<date>",
       "fileSize": 4,
       "id": "T_2",
       "mimeType": "image/jpeg",
@@ -25,6 +27,7 @@ Object {
   "children": null,
   "description": "",
   "featuredAsset": Object {
+    "createdAt": "<date>",
     "fileSize": 4,
     "id": "T_1",
     "mimeType": "image/jpeg",
@@ -69,6 +72,7 @@ exports[`Collection resolver updateCollection 1`] = `
 Object {
   "assets": Array [
     Object {
+      "createdAt": "<date>",
       "fileSize": 4,
       "id": "T_1",
       "mimeType": "image/jpeg",
@@ -81,6 +85,7 @@ Object {
   "children": null,
   "description": "Apple stuff ",
   "featuredAsset": Object {
+    "createdAt": "<date>",
     "fileSize": 4,
     "id": "T_1",
     "mimeType": "image/jpeg",

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    AddCustomersToGroupMutationArgs,
+    MutationAddCustomersToGroupArgs,
     CreateCustomerGroupInput,
-    RemoveCustomersFromGroupMutationArgs,
+    MutationRemoveCustomersFromGroupArgs,
     UpdateCustomerGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -44,7 +44,7 @@ export class CustomerGroupService {
         return assertFound(this.findOne(customerGroup.id));
     }
 
-    async addCustomersToGroup(input: AddCustomersToGroupMutationArgs): Promise<CustomerGroup> {
+    async addCustomersToGroup(input: MutationAddCustomersToGroupArgs): Promise<CustomerGroup> {
         const countries = await this.getCustomersFromIds(input.customerIds);
         const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         const customers = unique(customerGroup.customers.concat(countries), 'id');
@@ -53,7 +53,7 @@ export class CustomerGroupService {
         return customerGroup;
     }
 
-    async removeCustomersFromGroup(input: RemoveCustomersFromGroupMutationArgs): Promise<CustomerGroup> {
+    async removeCustomersFromGroup(input: MutationRemoveCustomersFromGroupArgs): Promise<CustomerGroup> {
         const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         customerGroup.customers = customerGroup.customers.filter(
             customer => !input.customerIds.includes(customer.id as string),

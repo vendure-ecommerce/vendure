@@ -1,9 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    PaymentMethodQueryArgs,
-    PaymentMethodsQueryArgs,
+    QueryPaymentMethodArgs,
+    QueryPaymentMethodsArgs,
     Permission,
-    UpdatePaymentMethodMutationArgs,
+    MutationUpdatePaymentMethodArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -17,19 +17,19 @@ export class PaymentMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    paymentMethods(@Args() args: PaymentMethodsQueryArgs): Promise<PaginatedList<PaymentMethod>> {
+    paymentMethods(@Args() args: QueryPaymentMethodsArgs): Promise<PaginatedList<PaymentMethod>> {
         return this.paymentMethodService.findAll(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    paymentMethod(@Args() args: PaymentMethodQueryArgs): Promise<PaymentMethod | undefined> {
+    paymentMethod(@Args() args: QueryPaymentMethodArgs): Promise<PaymentMethod | undefined> {
         return this.paymentMethodService.findOne(args.id);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    updatePaymentMethod(@Args() args: UpdatePaymentMethodMutationArgs): Promise<PaymentMethod> {
+    updatePaymentMethod(@Args() args: MutationUpdatePaymentMethodArgs): Promise<PaymentMethod> {
         return this.paymentMethodService.update(args.input);
     }
 }

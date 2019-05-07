@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    CreateProductOptionGroupMutationArgs,
+    MutationCreateProductOptionGroupArgs,
     Permission,
-    ProductOptionGroupQueryArgs,
-    ProductOptionGroupsQueryArgs,
-    UpdateProductOptionGroupMutationArgs,
+    QueryProductOptionGroupArgs,
+    QueryProductOptionGroupsArgs,
+    MutationUpdateProductOptionGroupArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
@@ -26,7 +26,7 @@ export class ProductOptionResolver {
     @Allow(Permission.ReadCatalog)
     productOptionGroups(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductOptionGroupsQueryArgs,
+        @Args() args: QueryProductOptionGroupsArgs,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(ctx.languageCode, args.filterTerm || undefined);
     }
@@ -35,7 +35,7 @@ export class ProductOptionResolver {
     @Allow(Permission.ReadCatalog)
     productOptionGroup(
         @Ctx() ctx: RequestContext,
-        @Args() args: ProductOptionGroupQueryArgs,
+        @Args() args: QueryProductOptionGroupArgs,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(args.id, ctx.languageCode);
     }
@@ -43,7 +43,7 @@ export class ProductOptionResolver {
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOptionGroup(
-        @Args() args: CreateProductOptionGroupMutationArgs,
+        @Args() args: MutationCreateProductOptionGroupArgs,
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(args.input);
@@ -60,7 +60,7 @@ export class ProductOptionResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductOptionGroup(
-        @Args() args: UpdateProductOptionGroupMutationArgs,
+        @Args() args: MutationUpdateProductOptionGroupArgs,
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(args.input);
