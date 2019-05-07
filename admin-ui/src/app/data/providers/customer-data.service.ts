@@ -10,8 +10,7 @@ import {
     UpdateCustomer,
     UpdateCustomerAddress,
     UpdateCustomerInput,
-} from 'shared/generated-types';
-
+} from '../../common/generated-types';
 import {
     CREATE_CUSTOMER,
     CREATE_CUSTOMER_ADDRESS,

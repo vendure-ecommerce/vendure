@@ -6,7 +6,6 @@ import {
     Kind,
     SelectionNode,
 } from 'graphql';
-
 import { CustomFields } from 'shared/shared-types';
 
 /**

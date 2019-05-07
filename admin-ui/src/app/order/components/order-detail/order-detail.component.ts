@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Order, OrderWithLines } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
+import { Order, OrderWithLines } from '../../../common/generated-types';
 import { ServerConfigService } from '../../../data/server-config';
 
 @Component({

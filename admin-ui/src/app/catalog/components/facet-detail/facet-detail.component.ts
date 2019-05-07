@@ -3,6 +3,11 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { normalizeString } from 'shared/normalize-string';
+import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateFacetInput,
     CreateFacetValueInput,
@@ -11,12 +16,7 @@ import {
     LanguageCode,
     UpdateFacetInput,
     UpdateFacetValueInput,
-} from 'shared/generated-types';
-import { normalizeString } from 'shared/normalize-string';
-import { CustomFieldConfig } from 'shared/shared-types';
-import { notNullOrUndefined } from 'shared/shared-utils';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';

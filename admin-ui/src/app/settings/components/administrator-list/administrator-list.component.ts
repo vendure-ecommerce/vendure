@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetAdministrators } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { GetAdministrators } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

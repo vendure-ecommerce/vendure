@@ -1,6 +1,7 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
-import { Collection } from 'shared/generated-types';
+
+import { Collection } from '../../../common/generated-types';
 
 import { RootNode, TreeNode } from './array-to-tree';
 import { CollectionTreeComponent } from './collection-tree.component';

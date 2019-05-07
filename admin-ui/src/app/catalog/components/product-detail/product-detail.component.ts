@@ -4,6 +4,13 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { distinctUntilChanged, map, mergeMap, shareReplay, skip, take, withLatestFrom } from 'rxjs/operators';
+import { normalizeString } from 'shared/normalize-string';
+import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
+import { unique } from 'shared/unique';
+import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateProductInput,
     FacetWithValues,
@@ -12,14 +19,7 @@ import {
     TaxCategory,
     UpdateProductInput,
     UpdateProductVariantInput,
-} from 'shared/generated-types';
-import { normalizeString } from 'shared/normalize-string';
-import { CustomFieldConfig } from 'shared/shared-types';
-import { notNullOrUndefined } from 'shared/shared-utils';
-import { unique } from 'shared/unique';
-import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';

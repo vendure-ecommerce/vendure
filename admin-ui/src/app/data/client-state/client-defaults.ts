@@ -1,5 +1,4 @@
-import { GetNetworkStatus, GetUiState, GetUserStatus } from 'shared/generated-types';
-
+import { GetNetworkStatus, GetUiState, GetUserStatus } from '../../common/generated-types';
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 
 export const clientDefaults = {

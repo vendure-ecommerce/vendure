@@ -21,8 +21,8 @@ import {
     takeUntil,
     tap,
 } from 'rxjs/operators';
-import { GetCollectionContents } from 'shared/generated-types';
 
+import { GetCollectionContents } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

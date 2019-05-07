@@ -13,3 +13,4 @@ export const SUPER_ADMIN_USER_PASSWORD = 'superadmin';
 export const CUSTOMER_ROLE_CODE = '__customer_role__';
 export const CUSTOMER_ROLE_DESCRIPTION = 'Customer';
 export const ROOT_COLLECTION_NAME = '__root_collection__';
+

@@ -5,9 +5,9 @@ import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
 import { SortOrder } from 'shared/generated-shop-types';
-import { GetAssetList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { GetAssetList } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

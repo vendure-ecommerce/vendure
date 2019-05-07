@@ -8,7 +8,8 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { Collection } from 'shared/generated-types';
+
+import { Collection } from '../../../common/generated-types';
 
 import { arrayToTree, HasParent, RootNode } from './array-to-tree';
 

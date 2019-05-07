@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { GetZones } from 'shared/generated-types';
 
+import { GetZones } from '../../../common/generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({

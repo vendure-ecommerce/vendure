@@ -2,9 +2,9 @@ import { Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { ClrWizard } from '@clr/angular';
 import { forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take, takeUntil } from 'rxjs/operators';
-import { ProductOptionGroup, ProductWithVariants } from 'shared/generated-types';
 import { generateAllCombinations } from 'shared/shared-utils';
 
+import { ProductOptionGroup, ProductWithVariants } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

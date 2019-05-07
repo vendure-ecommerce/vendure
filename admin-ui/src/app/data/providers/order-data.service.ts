@@ -1,5 +1,4 @@
-import { GetOrder, GetOrderList } from 'shared/generated-types';
-
+import { GetOrder, GetOrderList } from '../../common/generated-types';
 import { GET_ORDER, GET_ORDERS_LIST } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';

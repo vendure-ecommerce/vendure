@@ -1,5 +1,7 @@
 import { from } from 'rxjs';
 import { bufferCount, concatMap } from 'rxjs/operators';
+import { pick } from 'shared/pick';
+
 import {
     CollectionFilterParameter,
     CreateCollection,
@@ -12,9 +14,7 @@ import {
     MoveCollectionInput,
     UpdateCollection,
     UpdateCollectionInput,
-} from 'shared/generated-types';
-import { pick } from 'shared/pick';
-
+} from '../../common/generated-types';
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     CREATE_COLLECTION,

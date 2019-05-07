@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Administrator, Role } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
+import { Administrator, Role } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()

@@ -11,8 +11,7 @@ import {
     UpdateAdministratorInput,
     UpdateRole,
     UpdateRoleInput,
-} from 'shared/generated-types';
-
+} from '../../common/generated-types';
 import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,

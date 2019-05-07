@@ -7,8 +7,7 @@ import {
     RequestStarted,
     SetAsLoggedIn,
     SetUiLanguage,
-} from 'shared/generated-types';
-
+} from '../../common/generated-types';
 import {
     GET_NEWTORK_STATUS,
     GET_UI_STATE,

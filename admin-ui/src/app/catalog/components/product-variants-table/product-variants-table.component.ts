@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormArray } from '@angular/forms';
-import { ProductWithVariants } from 'shared/generated-types';
+
+import { ProductWithVariants } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-product-variants-table',

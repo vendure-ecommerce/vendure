@@ -11,9 +11,9 @@ import {
 import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
-import { GetProductOptionGroups, ProductOptionGroup } from 'shared/generated-types';
 import { DeepPartial } from 'shared/shared-types';
 
+import { GetProductOptionGroups, ProductOptionGroup } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';
 

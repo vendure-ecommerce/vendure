@@ -12,9 +12,14 @@ import {
 } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { FacetValue, FacetWithValues, ProductWithVariants, TaxCategory } from 'shared/generated-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
+import {
+    FacetValue,
+    FacetWithValues,
+    ProductWithVariants,
+    TaxCategory,
+} from '../../../common/generated-types';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { AssetChange } from '../product-assets/product-assets.component';
 import { VariantFormValue } from '../product-detail/product-detail.component';

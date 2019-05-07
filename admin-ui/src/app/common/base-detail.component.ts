@@ -2,11 +2,11 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, map, share, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { LanguageCode } from 'shared/generated-types';
 import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
 
 import { ServerConfigService } from '../data/server-config';
 
+import { LanguageCode } from './generated-types';
 import { getDefaultLanguage } from './utilities/get-default-language';
 
 export abstract class BaseDetailComponent<Entity extends { id: string }> {

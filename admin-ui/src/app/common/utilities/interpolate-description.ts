@@ -1,4 +1,4 @@
-import { ConfigArgType, ConfigurableOperation } from 'shared/generated-types';
+import { ConfigArgType, ConfigurableOperation } from '../generated-types';
 
 /**
  * Interpolates the description of an ConfigurableOperation with the given values.

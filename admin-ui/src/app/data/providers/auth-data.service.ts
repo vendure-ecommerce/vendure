@@ -1,5 +1,4 @@
-import { AttemptLogin, GetCurrentUser, LogOut } from 'shared/generated-types';
-
+import { AttemptLogin, GetCurrentUser, LogOut } from '../../common/generated-types';
 import { ATTEMPT_LOGIN, GET_CURRENT_USER, LOG_OUT } from '../definitions/auth-definitions';
 
 import { BaseDataService } from './base-data.service';

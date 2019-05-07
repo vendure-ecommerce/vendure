@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetOrderList, SortOrder } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { GetOrderList, SortOrder } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

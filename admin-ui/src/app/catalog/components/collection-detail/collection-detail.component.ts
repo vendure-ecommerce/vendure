@@ -10,6 +10,9 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { CustomFieldConfig } from 'shared/shared-types';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     Collection,
     ConfigurableOperation,
@@ -18,10 +21,7 @@ import {
     FacetWithValues,
     LanguageCode,
     UpdateCollectionInput,
-} from 'shared/generated-types';
-import { CustomFieldConfig } from 'shared/shared-types';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';

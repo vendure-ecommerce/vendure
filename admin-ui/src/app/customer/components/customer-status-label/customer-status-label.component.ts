@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Customer } from 'shared/generated-types';
+
+import { Customer } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-customer-status-label',

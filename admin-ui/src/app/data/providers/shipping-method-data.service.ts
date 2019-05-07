@@ -6,8 +6,7 @@ import {
     GetShippingMethodOperations,
     UpdateShippingMethod,
     UpdateShippingMethodInput,
-} from 'shared/generated-types';
-
+} from '../../common/generated-types';
 import {
     CREATE_SHIPPING_METHOD,
     GET_SHIPPING_METHOD,

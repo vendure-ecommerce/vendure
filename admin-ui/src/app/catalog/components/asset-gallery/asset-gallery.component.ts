@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Asset } from 'shared/generated-types';
+
+import { Asset } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-asset-gallery',

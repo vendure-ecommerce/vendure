@@ -3,6 +3,10 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
+import { CustomFieldConfig } from 'shared/shared-types';
+import { notNullOrUndefined } from 'shared/shared-utils';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateAddressInput,
     CreateCustomerInput,
@@ -11,11 +15,7 @@ import {
     GetCustomer,
     GetCustomerQuery,
     UpdateCustomerInput,
-} from 'shared/generated-types';
-import { CustomFieldConfig } from 'shared/shared-types';
-import { notNullOrUndefined } from 'shared/shared-utils';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

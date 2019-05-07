@@ -6,8 +6,7 @@ import {
     GetPromotionList,
     UpdatePromotion,
     UpdatePromotionInput,
-} from 'shared/generated-types';
-
+} from '../../common/generated-types';
 import {
     CREATE_PROMOTION,
     GET_ADJUSTMENT_OPERATIONS,

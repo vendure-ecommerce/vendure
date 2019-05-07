@@ -1,5 +1,6 @@
-import { LanguageCode } from 'shared/generated-types';
 import { AdminUiConfig } from 'shared/shared-types';
+
+import { LanguageCode } from './common/generated-types';
 
 export const DEFAULT_LANGUAGE: LanguageCode = LanguageCode.en;
 export const DEFAULT_CURRENCY = '£';

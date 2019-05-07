@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FacetValue } from 'shared/generated-types';
+
+import { FacetValue } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-facet-value-chip',

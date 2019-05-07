@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TaxCategory } from 'shared/generated-types';
 
+import { TaxCategory } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

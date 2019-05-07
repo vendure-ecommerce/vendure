@@ -7,9 +7,9 @@ import {
     Input,
     Output,
 } from '@angular/core';
-import { Asset } from 'shared/generated-types';
 import { unique } from 'shared/unique';
 
+import { Asset } from '../../../common/generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
 

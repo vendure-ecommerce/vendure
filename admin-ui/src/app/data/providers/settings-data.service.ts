@@ -1,4 +1,6 @@
 import { FetchPolicy } from 'apollo-client';
+import { pick } from 'shared/pick';
+
 import {
     AddMembersToZone,
     CreateChannel,
@@ -42,9 +44,7 @@ import {
     UpdateTaxRateInput,
     UpdateZone,
     UpdateZoneInput,
-} from 'shared/generated-types';
-import { pick } from 'shared/pick';
-
+} from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
     CREATE_CHANNEL,

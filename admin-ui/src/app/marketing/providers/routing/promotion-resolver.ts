@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Promotion } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
+import { Promotion } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**

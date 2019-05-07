@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { FacetValue, FacetWithValues } from 'shared/generated-types';
 
+import { FacetValue, FacetWithValues } from '../../../common/generated-types';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { DataService } from '../../../data/providers/data.service';
 

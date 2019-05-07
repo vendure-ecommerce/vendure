@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
-import { SetAsLoggedIn } from 'shared/generated-types';
 
+import { SetAsLoggedIn } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';

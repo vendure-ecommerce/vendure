@@ -1,5 +1,3 @@
-import { LanguageCode } from 'shared/generated-types';
-
 import {
     CustomFieldConfig,
     CustomFieldsObject,
@@ -7,6 +5,8 @@ import {
     MayHaveCustomFields,
 } from 'shared/shared-types';
 import { assertNever } from 'shared/shared-utils';
+
+import { LanguageCode } from '../generated-types';
 
 export interface TranslatableUpdateOptions<T extends { translations: any[] } & MayHaveCustomFields> {
     translatable: T;

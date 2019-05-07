@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     Channel,
     CreateChannelInput,
@@ -10,10 +13,7 @@ import {
     GetZones,
     LanguageCode,
     UpdateChannelInput,
-} from 'shared/generated-types';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

@@ -3,15 +3,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+
+import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     ConfigurableOperation,
     CreateTaxCategoryInput,
     LanguageCode,
     TaxCategory,
     UpdateTaxCategoryInput,
-} from 'shared/generated-types';
-
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+} from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

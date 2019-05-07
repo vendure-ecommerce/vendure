@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Collection, ProductWithVariants } from 'shared/generated-types';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
+import { Collection, ProductWithVariants } from '../../../common/generated-types';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 

@@ -1,10 +1,10 @@
 import { Route } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { FacetWithValues, OrderWithLines, ProductWithVariants } from 'shared/generated-types';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
+import { FacetWithValues, OrderWithLines, ProductWithVariants } from '../common/generated-types';
 import { BreadcrumbValue } from '../core/components/breadcrumb/breadcrumb.component';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';

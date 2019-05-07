@@ -27,10 +27,6 @@ Promise.all([
         const shopSchemaJson = JSON.parse(fs.readFileSync(SHOP_SCHEMA_OUTPUT_FILE, 'utf-8'));
         const adminSchema = buildClientSchema(adminSchemaJson.data);
         const shopSchema = buildClientSchema(shopSchemaJson.data);
-        const combinedSchemas = mergeSchemas({ schemas: [adminSchema, shopSchema]});
-
-        const combinedJson = graphqlSync(combinedSchemas, introspectionQuery).data;
-        fs.writeFileSync(path.join(__dirname, '../../schema.json'), JSON.stringify(combinedJson, null, 2));
 
         const namingConventionConfig = {
             namingConvention: {
@@ -40,7 +36,7 @@ Promise.all([
         return generate({
             overwrite: true,
             generates: {
-                [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
+                [path.join(__dirname, '../../admin-ui/src/app/common/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
                     plugins: [
@@ -55,14 +51,24 @@ Promise.all([
                         strict: true,
                     },
                 },
+                [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                    plugins: [
+                        { add: '// tslint:disable' },
+                        'time',
+                        'typescript',
+                    ],
+                    config: {
+                        ...namingConventionConfig,
+                        strict: true,
+                    },
+                },
                 [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     plugins: [
                         { add: '// tslint:disable' },
                         'time',
                         'typescript',
-                        'typescript-operations',
-                        'typescript-compatibility',
                     ],
                     config: namingConventionConfig,
                 },

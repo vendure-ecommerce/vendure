@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { LanguageCode } from 'shared/generated-types';
 
+import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { I18nService } from '../../providers/i18n/i18n.service';
 

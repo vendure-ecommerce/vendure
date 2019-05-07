@@ -1,4 +1,4 @@
-import { ConfigArgType, ConfigurableOperation } from 'shared/generated-types';
+import { ConfigArgType, ConfigurableOperation } from '../generated-types';
 
 import { interpolateDescription } from './interpolate-description';
 

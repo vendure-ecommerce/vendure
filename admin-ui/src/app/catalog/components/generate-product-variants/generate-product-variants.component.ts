@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { ProductWithVariants } from 'shared/generated-types';
 
+import { ProductWithVariants } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ProductVariantsWizardComponent } from '../product-variants-wizard/product-variants-wizard.component';
 

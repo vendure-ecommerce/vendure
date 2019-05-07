@@ -1,6 +1,6 @@
-import { LanguageCode, ProductWithVariants } from 'shared/generated-types';
-
 import { CustomFieldConfig, DeepPartial } from 'shared/shared-types';
+
+import { LanguageCode, ProductWithVariants } from '../generated-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 

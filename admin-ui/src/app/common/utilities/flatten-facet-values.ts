@@ -1,4 +1,4 @@
-import { FacetValue, FacetWithValues } from 'shared/generated-types';
+import { FacetValue, FacetWithValues } from '../generated-types';
 
 export function flattenFacetValues(facetsWithValues: FacetWithValues.Fragment[]): FacetValue.Fragment[] {
     return facetsWithValues.reduce(

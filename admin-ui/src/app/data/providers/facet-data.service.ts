@@ -1,3 +1,5 @@
+import { pick } from 'shared/pick';
+
 import {
     CreateFacet,
     CreateFacetInput,
@@ -11,9 +13,7 @@ import {
     UpdateFacetInput,
     UpdateFacetValueInput,
     UpdateFacetValues,
-} from 'shared/generated-types';
-import { pick } from 'shared/pick';
-
+} from '../../common/generated-types';
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     CREATE_FACET,

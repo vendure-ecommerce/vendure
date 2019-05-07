@@ -21,8 +21,8 @@ import {
     Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { ConfigArgType, ConfigurableOperation, FacetWithValues } from 'shared/generated-types';
 
+import { ConfigArgType, ConfigurableOperation, FacetWithValues } from '../../../common/generated-types';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**

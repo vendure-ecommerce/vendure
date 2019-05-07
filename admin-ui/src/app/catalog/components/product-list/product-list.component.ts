@@ -3,9 +3,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
-import { DeletionResult, GetProductList, SearchProducts } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { DeletionResult, GetProductList, SearchProducts } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

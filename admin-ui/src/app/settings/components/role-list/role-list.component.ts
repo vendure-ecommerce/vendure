@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GetRoles, Role } from 'shared/generated-types';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from 'shared/shared-constants';
 
 import { BaseListComponent } from '../../../common/base-list.component';
+import { GetRoles, Role } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({

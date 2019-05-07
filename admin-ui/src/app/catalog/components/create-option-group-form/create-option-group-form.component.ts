@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { normalizeString } from 'shared/normalize-string';
+
 import {
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
     CreateProductOptionInput,
-} from 'shared/generated-types';
-import { normalizeString } from 'shared/normalize-string';
-
+} from '../../../common/generated-types';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { DataService } from '../../../data/providers/data.service';
 

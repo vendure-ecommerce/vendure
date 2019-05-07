@@ -3,9 +3,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { Country, CreateCountryInput, LanguageCode, UpdateCountryInput } from 'shared/generated-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
+import {
+    Country,
+    CreateCountryInput,
+    LanguageCode,
+    UpdateCountryInput,
+} from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';

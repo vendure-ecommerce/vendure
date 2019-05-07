@@ -1,6 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import gql from 'graphql-tag';
-import { GetGlobalSettings, GetServerConfig, ServerConfig } from 'shared/generated-types';
+
+import { GetGlobalSettings, GetServerConfig, ServerConfig } from '../common/generated-types';
 
 import { GET_GLOBAL_SETTINGS, GET_SERVER_CONFIG } from './definitions/settings-definitions';
 import { BaseDataService } from './providers/base-data.service';

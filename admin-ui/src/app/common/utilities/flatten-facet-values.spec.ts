@@ -1,5 +1,6 @@
 import { isPrivate } from '@babel/types';
-import { FacetWithValues, LanguageCode } from 'shared/generated-types';
+
+import { FacetWithValues, LanguageCode } from '../generated-types';
 
 import { flattenFacetValues } from './flatten-facet-values';
 
