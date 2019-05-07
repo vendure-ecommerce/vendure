@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-02T20:00:05+02:00
+// Generated in 2019-05-07T09:20:23+02:00
 export type Maybe<T> = T | null;
 
 export interface OrderListOptions {
@@ -1111,6 +1111,10 @@ export interface ProductVariant extends Node {
 
 export interface Asset extends Node {
     id: string;
+
+    createdAt: DateTime;
+
+    updatedAt: DateTime;
 
     name: string;
 

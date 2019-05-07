@@ -1,5 +1,7 @@
 type Asset implements Node {
     id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     name: String!
     type: AssetType!
     fileSize: Int!

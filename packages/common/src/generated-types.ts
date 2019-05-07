@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-02T20:00:06+02:00
+// Generated in 2019-05-07T09:20:24+02:00
 export type Maybe<T> = T | null;
 
 
@@ -82,6 +82,10 @@ export interface AssetSortParameter {
   
   id?: Maybe<SortOrder>;
   
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
   name?: Maybe<SortOrder>;
   
   fileSize?: Maybe<SortOrder>;
@@ -94,6 +98,10 @@ export interface AssetSortParameter {
 }
 
 export interface AssetFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
   
   name?: Maybe<StringOperators>;
   
@@ -305,37 +313,6 @@ export interface OrderFilterParameter {
   total?: Maybe<NumberOperators>;
 }
 
-export interface CountryListOptions {
-  
-  skip?: Maybe<number>;
-  
-  take?: Maybe<number>;
-  
-  sort?: Maybe<CountrySortParameter>;
-  
-  filter?: Maybe<CountryFilterParameter>;
-}
-
-export interface CountrySortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  code?: Maybe<SortOrder>;
-  
-  name?: Maybe<SortOrder>;
-}
-
-export interface CountryFilterParameter {
-  
-  languageCode?: Maybe<StringOperators>;
-  
-  code?: Maybe<StringOperators>;
-  
-  name?: Maybe<StringOperators>;
-  
-  enabled?: Maybe<BooleanOperators>;
-}
-
 export interface CustomerListOptions {
   
   skip?: Maybe<number>;
@@ -381,6 +358,37 @@ export interface CustomerFilterParameter {
   phoneNumber?: Maybe<StringOperators>;
   
   emailAddress?: Maybe<StringOperators>;
+}
+
+export interface CountryListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<CountrySortParameter>;
+  
+  filter?: Maybe<CountryFilterParameter>;
+}
+
+export interface CountrySortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  code?: Maybe<SortOrder>;
+  
+  name?: Maybe<SortOrder>;
+}
+
+export interface CountryFilterParameter {
+  
+  languageCode?: Maybe<StringOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  name?: Maybe<StringOperators>;
+  
+  enabled?: Maybe<BooleanOperators>;
 }
 
 export interface FacetListOptions {
@@ -477,6 +485,41 @@ export interface SearchResultSortParameter {
   name?: Maybe<SortOrder>;
   
   price?: Maybe<SortOrder>;
+}
+
+export interface RoleListOptions {
+  
+  skip?: Maybe<number>;
+  
+  take?: Maybe<number>;
+  
+  sort?: Maybe<RoleSortParameter>;
+  
+  filter?: Maybe<RoleFilterParameter>;
+}
+
+export interface RoleSortParameter {
+  
+  id?: Maybe<SortOrder>;
+  
+  createdAt?: Maybe<SortOrder>;
+  
+  updatedAt?: Maybe<SortOrder>;
+  
+  code?: Maybe<SortOrder>;
+  
+  description?: Maybe<SortOrder>;
+}
+
+export interface RoleFilterParameter {
+  
+  createdAt?: Maybe<DateOperators>;
+  
+  updatedAt?: Maybe<DateOperators>;
+  
+  code?: Maybe<StringOperators>;
+  
+  description?: Maybe<StringOperators>;
 }
 
 export interface ProductListOptions {
@@ -590,41 +633,6 @@ export interface ShippingMethodFilterParameter {
   description?: Maybe<StringOperators>;
 }
 
-export interface RoleListOptions {
-  
-  skip?: Maybe<number>;
-  
-  take?: Maybe<number>;
-  
-  sort?: Maybe<RoleSortParameter>;
-  
-  filter?: Maybe<RoleFilterParameter>;
-}
-
-export interface RoleSortParameter {
-  
-  id?: Maybe<SortOrder>;
-  
-  createdAt?: Maybe<SortOrder>;
-  
-  updatedAt?: Maybe<SortOrder>;
-  
-  code?: Maybe<SortOrder>;
-  
-  description?: Maybe<SortOrder>;
-}
-
-export interface RoleFilterParameter {
-  
-  createdAt?: Maybe<DateOperators>;
-  
-  updatedAt?: Maybe<DateOperators>;
-  
-  code?: Maybe<StringOperators>;
-  
-  description?: Maybe<StringOperators>;
-}
-
 export interface TaxRateListOptions {
   
   skip?: Maybe<number>;
@@ -693,42 +701,6 @@ export interface UpdateAdministratorInput {
 export interface CreateAssetInput {
   
   file: Upload;
-}
-
-export interface CreateChannelInput {
-  
-  code: string;
-  
-  token: string;
-  
-  defaultLanguageCode: LanguageCode;
-  
-  pricesIncludeTax: boolean;
-  
-  currencyCode: CurrencyCode;
-  
-  defaultTaxZoneId?: Maybe<string>;
-  
-  defaultShippingZoneId?: Maybe<string>;
-}
-
-export interface UpdateChannelInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  token?: Maybe<string>;
-  
-  defaultLanguageCode?: Maybe<LanguageCode>;
-  
-  pricesIncludeTax?: Maybe<boolean>;
-  
-  currencyCode?: Maybe<CurrencyCode>;
-  
-  defaultTaxZoneId?: Maybe<string>;
-  
-  defaultShippingZoneId?: Maybe<string>;
 }
 
 export interface CreateCollectionInput {
@@ -805,33 +777,40 @@ export interface MoveCollectionInput {
   index: number;
 }
 
-export interface CreateCountryInput {
+export interface CreateChannelInput {
   
   code: string;
   
-  translations: CountryTranslationInput[];
+  token: string;
   
-  enabled: boolean;
+  defaultLanguageCode: LanguageCode;
+  
+  pricesIncludeTax: boolean;
+  
+  currencyCode: CurrencyCode;
+  
+  defaultTaxZoneId?: Maybe<string>;
+  
+  defaultShippingZoneId?: Maybe<string>;
 }
 
-export interface CountryTranslationInput {
-  
-  id?: Maybe<string>;
-  
-  languageCode: LanguageCode;
-  
-  name?: Maybe<string>;
-}
-
-export interface UpdateCountryInput {
+export interface UpdateChannelInput {
   
   id: string;
   
   code?: Maybe<string>;
   
-  translations?: Maybe<CountryTranslationInput[]>;
+  token?: Maybe<string>;
   
-  enabled?: Maybe<boolean>;
+  defaultLanguageCode?: Maybe<LanguageCode>;
+  
+  pricesIncludeTax?: Maybe<boolean>;
+  
+  currencyCode?: Maybe<CurrencyCode>;
+  
+  defaultTaxZoneId?: Maybe<string>;
+  
+  defaultShippingZoneId?: Maybe<string>;
 }
 
 export interface CreateCustomerInput {
@@ -922,6 +901,49 @@ export interface UpdateAddressInput {
   customFields?: Maybe<Json>;
 }
 
+export interface CreateCountryInput {
+  
+  code: string;
+  
+  translations: CountryTranslationInput[];
+  
+  enabled: boolean;
+}
+
+export interface CountryTranslationInput {
+  
+  id?: Maybe<string>;
+  
+  languageCode: LanguageCode;
+  
+  name?: Maybe<string>;
+}
+
+export interface UpdateCountryInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  translations?: Maybe<CountryTranslationInput[]>;
+  
+  enabled?: Maybe<boolean>;
+}
+
+export interface CreateCustomerGroupInput {
+  
+  name: string;
+  
+  customerIds?: Maybe<string[]>;
+}
+
+export interface UpdateCustomerGroupInput {
+  
+  id: string;
+  
+  name?: Maybe<string>;
+}
+
 export interface CreateFacetInput {
   
   code: string;
@@ -999,20 +1021,6 @@ export interface UpdateFacetValueInput {
   customFields?: Maybe<Json>;
 }
 
-export interface CreateCustomerGroupInput {
-  
-  name: string;
-  
-  customerIds?: Maybe<string[]>;
-}
-
-export interface UpdateCustomerGroupInput {
-  
-  id: string;
-  
-  name?: Maybe<string>;
-}
-
 export interface UpdateGlobalSettingsInput {
   
   availableLanguages?: Maybe<LanguageCode[]>;
@@ -1073,6 +1081,26 @@ export interface UpdateProductOptionGroupInput {
   translations?: Maybe<ProductOptionGroupTranslationInput[]>;
   
   customFields?: Maybe<Json>;
+}
+
+export interface CreateRoleInput {
+  
+  code: string;
+  
+  description: string;
+  
+  permissions: Permission[];
+}
+
+export interface UpdateRoleInput {
+  
+  id: string;
+  
+  code?: Maybe<string>;
+  
+  description?: Maybe<string>;
+  
+  permissions?: Maybe<Permission[]>;
 }
 
 export interface CreateProductInput {
@@ -1182,6 +1210,18 @@ export interface UpdatePromotionInput {
   actions?: Maybe<ConfigurableOperationInput[]>;
 }
 
+export interface CreateTaxCategoryInput {
+  
+  name: string;
+}
+
+export interface UpdateTaxCategoryInput {
+  
+  id: string;
+  
+  name?: Maybe<string>;
+}
+
 export interface CreateShippingMethodInput {
   
   code: string;
@@ -1204,38 +1244,6 @@ export interface UpdateShippingMethodInput {
   checker?: Maybe<ConfigurableOperationInput>;
   
   calculator?: Maybe<ConfigurableOperationInput>;
-}
-
-export interface CreateRoleInput {
-  
-  code: string;
-  
-  description: string;
-  
-  permissions: Permission[];
-}
-
-export interface UpdateRoleInput {
-  
-  id: string;
-  
-  code?: Maybe<string>;
-  
-  description?: Maybe<string>;
-  
-  permissions?: Maybe<Permission[]>;
-}
-
-export interface CreateTaxCategoryInput {
-  
-  name: string;
-}
-
-export interface UpdateTaxCategoryInput {
-  
-  id: string;
-  
-  name?: Maybe<string>;
 }
 
 export interface CreateTaxRateInput {
@@ -4068,6 +4076,8 @@ export namespace Asset {
     
     id: string;
     
+    createdAt: DateTime;
+    
     name: string;
     
     fileSize: number;
@@ -4615,33 +4625,33 @@ export interface Query {
   
   me?: Maybe<CurrentUser>;
   
-  channels: Channel[];
-  
-  channel?: Maybe<Channel>;
-  
-  activeChannel: Channel;
-  
   collections: CollectionList;
   
   collection?: Maybe<Collection>;
   
   collectionFilters: ConfigurableOperation[];
   
-  countries: CountryList;
+  channels: Channel[];
   
-  country?: Maybe<Country>;
+  channel?: Maybe<Channel>;
+  
+  activeChannel: Channel;
   
   customers: CustomerList;
   
   customer?: Maybe<Customer>;
   
-  facets: FacetList;
+  countries: CountryList;
   
-  facet?: Maybe<Facet>;
+  country?: Maybe<Country>;
   
   customerGroups: CustomerGroup[];
   
   customerGroup?: Maybe<CustomerGroup>;
+  
+  facets: FacetList;
+  
+  facet?: Maybe<Facet>;
   
   globalSettings: GlobalSettings;
   
@@ -4659,6 +4669,10 @@ export interface Query {
   
   search: SearchResponse;
   
+  roles: RoleList;
+  
+  role?: Maybe<Role>;
+  
   products: ProductList;
   
   product?: Maybe<Product>;
@@ -4669,6 +4683,10 @@ export interface Query {
   
   adjustmentOperations: AdjustmentOperations;
   
+  taxCategories: TaxCategory[];
+  
+  taxCategory?: Maybe<TaxCategory>;
+  
   shippingMethods: ShippingMethodList;
   
   shippingMethod?: Maybe<ShippingMethod>;
@@ -4676,14 +4694,6 @@ export interface Query {
   shippingEligibilityCheckers: ConfigurableOperation[];
   
   shippingCalculators: ConfigurableOperation[];
-  
-  roles: RoleList;
-  
-  role?: Maybe<Role>;
-  
-  taxCategories: TaxCategory[];
-  
-  taxCategory?: Maybe<TaxCategory>;
   
   taxRates: TaxRateList;
   
@@ -4846,6 +4856,10 @@ export interface AssetList extends PaginatedList {
 export interface Asset extends Node {
   
   id: string;
+  
+  createdAt: DateTime;
+  
+  updatedAt: DateTime;
   
   name: string;
   
@@ -5499,17 +5513,17 @@ export interface Return extends Node,StockMovement {
 }
 
 
-export interface CountryList extends PaginatedList {
+export interface CustomerList extends PaginatedList {
   
-  items: Country[];
+  items: Customer[];
   
   totalItems: number;
 }
 
 
-export interface CustomerList extends PaginatedList {
+export interface CountryList extends PaginatedList {
   
-  items: Customer[];
+  items: Country[];
   
   totalItems: number;
 }
@@ -5677,6 +5691,14 @@ export interface FacetValueResult {
 }
 
 
+export interface RoleList extends PaginatedList {
+  
+  items: Role[];
+  
+  totalItems: number;
+}
+
+
 export interface ProductList extends PaginatedList {
   
   items: Product[];
@@ -5781,14 +5803,6 @@ export interface ShippingMethodList extends PaginatedList {
 }
 
 
-export interface RoleList extends PaginatedList {
-  
-  items: Role[];
-  
-  totalItems: number;
-}
-
-
 export interface TaxRateList extends PaginatedList {
   
   items: TaxRate[];
@@ -5832,22 +5846,16 @@ export interface Mutation {
   login: LoginResult;
   
   logout: boolean;
-  /** Create a new Channel */
-  createChannel: Channel;
-  /** Update an existing Channel */
-  updateChannel: Channel;
   /** Create a new Collection */
   createCollection: Collection;
   /** Update an existing Collection */
   updateCollection: Collection;
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;
-  /** Create a new Country */
-  createCountry: Country;
-  /** Update an existing Country */
-  updateCountry: Country;
-  /** Delete a Country */
-  deleteCountry: DeletionResponse;
+  /** Create a new Channel */
+  createChannel: Channel;
+  /** Update an existing Channel */
+  updateChannel: Channel;
   /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
   createCustomer: Customer;
   /** Update an existing Customer */
@@ -5860,6 +5868,20 @@ export interface Mutation {
   updateCustomerAddress: Address;
   /** Update an existing Address */
   deleteCustomerAddress: boolean;
+  /** Create a new Country */
+  createCountry: Country;
+  /** Update an existing Country */
+  updateCountry: Country;
+  /** Delete a Country */
+  deleteCountry: DeletionResponse;
+  /** Create a new CustomerGroup */
+  createCustomerGroup: CustomerGroup;
+  /** Update an existing CustomerGroup */
+  updateCustomerGroup: CustomerGroup;
+  /** Add Customers to a CustomerGroup */
+  addCustomersToGroup: CustomerGroup;
+  /** Remove Customers from a CustomerGroup */
+  removeCustomersFromGroup: CustomerGroup;
   /** Create a new Facet */
   createFacet: Facet;
   /** Update an existing Facet */
@@ -5872,14 +5894,6 @@ export interface Mutation {
   updateFacetValues: FacetValue[];
   /** Delete one or more FacetValues */
   deleteFacetValues: DeletionResponse[];
-  /** Create a new CustomerGroup */
-  createCustomerGroup: CustomerGroup;
-  /** Update an existing CustomerGroup */
-  updateCustomerGroup: CustomerGroup;
-  /** Add Customers to a CustomerGroup */
-  addCustomersToGroup: CustomerGroup;
-  /** Remove Customers from a CustomerGroup */
-  removeCustomersFromGroup: CustomerGroup;
   
   updateGlobalSettings: GlobalSettings;
   
@@ -5892,6 +5906,10 @@ export interface Mutation {
   updateProductOptionGroup: ProductOptionGroup;
   
   reindex: SearchReindexResponse;
+  /** Create a new Role */
+  createRole: Role;
+  /** Update an existing Role */
+  updateRole: Role;
   /** Create a new Product */
   createProduct: Product;
   /** Update an existing Product */
@@ -5912,18 +5930,14 @@ export interface Mutation {
   updatePromotion: Promotion;
   
   deletePromotion: DeletionResponse;
-  /** Create a new ShippingMethod */
-  createShippingMethod: ShippingMethod;
-  /** Update an existing ShippingMethod */
-  updateShippingMethod: ShippingMethod;
-  /** Create a new Role */
-  createRole: Role;
-  /** Update an existing Role */
-  updateRole: Role;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory;
+  /** Create a new ShippingMethod */
+  createShippingMethod: ShippingMethod;
+  /** Update an existing ShippingMethod */
+  updateShippingMethod: ShippingMethod;
   /** Create a new TaxRate */
   createTaxRate: TaxRate;
   /** Update an existing TaxRate */
@@ -6016,10 +6030,6 @@ export interface AssetQueryArgs {
   
   id: string;
 }
-export interface ChannelQueryArgs {
-  
-  id: string;
-}
 export interface CollectionsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -6032,11 +6042,7 @@ export interface CollectionQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
 }
-export interface CountriesQueryArgs {
-  
-  options?: Maybe<CountryListOptions>;
-}
-export interface CountryQueryArgs {
+export interface ChannelQueryArgs {
   
   id: string;
 }
@@ -6045,6 +6051,18 @@ export interface CustomersQueryArgs {
   options?: Maybe<CustomerListOptions>;
 }
 export interface CustomerQueryArgs {
+  
+  id: string;
+}
+export interface CountriesQueryArgs {
+  
+  options?: Maybe<CountryListOptions>;
+}
+export interface CountryQueryArgs {
+  
+  id: string;
+}
+export interface CustomerGroupQueryArgs {
   
   id: string;
 }
@@ -6059,10 +6077,6 @@ export interface FacetQueryArgs {
   id: string;
   
   languageCode?: Maybe<LanguageCode>;
-}
-export interface CustomerGroupQueryArgs {
-  
-  id: string;
 }
 export interface OrderQueryArgs {
   
@@ -6096,6 +6110,14 @@ export interface SearchQueryArgs {
   
   input: SearchInput;
 }
+export interface RolesQueryArgs {
+  
+  options?: Maybe<RoleListOptions>;
+}
+export interface RoleQueryArgs {
+  
+  id: string;
+}
 export interface ProductsQueryArgs {
   
   languageCode?: Maybe<LanguageCode>;
@@ -6116,23 +6138,15 @@ export interface PromotionsQueryArgs {
   
   options?: Maybe<PromotionListOptions>;
 }
+export interface TaxCategoryQueryArgs {
+  
+  id: string;
+}
 export interface ShippingMethodsQueryArgs {
   
   options?: Maybe<ShippingMethodListOptions>;
 }
 export interface ShippingMethodQueryArgs {
-  
-  id: string;
-}
-export interface RolesQueryArgs {
-  
-  options?: Maybe<RoleListOptions>;
-}
-export interface RoleQueryArgs {
-  
-  id: string;
-}
-export interface TaxCategoryQueryArgs {
   
   id: string;
 }
@@ -6186,14 +6200,6 @@ export interface LoginMutationArgs {
   
   rememberMe?: Maybe<boolean>;
 }
-export interface CreateChannelMutationArgs {
-  
-  input: CreateChannelInput;
-}
-export interface UpdateChannelMutationArgs {
-  
-  input: UpdateChannelInput;
-}
 export interface CreateCollectionMutationArgs {
   
   input: CreateCollectionInput;
@@ -6206,17 +6212,13 @@ export interface MoveCollectionMutationArgs {
   
   input: MoveCollectionInput;
 }
-export interface CreateCountryMutationArgs {
+export interface CreateChannelMutationArgs {
   
-  input: CreateCountryInput;
+  input: CreateChannelInput;
 }
-export interface UpdateCountryMutationArgs {
+export interface UpdateChannelMutationArgs {
   
-  input: UpdateCountryInput;
-}
-export interface DeleteCountryMutationArgs {
-  
-  id: string;
+  input: UpdateChannelInput;
 }
 export interface CreateCustomerMutationArgs {
   
@@ -6246,6 +6248,38 @@ export interface DeleteCustomerAddressMutationArgs {
   
   id: string;
 }
+export interface CreateCountryMutationArgs {
+  
+  input: CreateCountryInput;
+}
+export interface UpdateCountryMutationArgs {
+  
+  input: UpdateCountryInput;
+}
+export interface DeleteCountryMutationArgs {
+  
+  id: string;
+}
+export interface CreateCustomerGroupMutationArgs {
+  
+  input: CreateCustomerGroupInput;
+}
+export interface UpdateCustomerGroupMutationArgs {
+  
+  input: UpdateCustomerGroupInput;
+}
+export interface AddCustomersToGroupMutationArgs {
+  
+  customerGroupId: string;
+  
+  customerIds: string[];
+}
+export interface RemoveCustomersFromGroupMutationArgs {
+  
+  customerGroupId: string;
+  
+  customerIds: string[];
+}
 export interface CreateFacetMutationArgs {
   
   input: CreateFacetInput;
@@ -6274,26 +6308,6 @@ export interface DeleteFacetValuesMutationArgs {
   
   force?: Maybe<boolean>;
 }
-export interface CreateCustomerGroupMutationArgs {
-  
-  input: CreateCustomerGroupInput;
-}
-export interface UpdateCustomerGroupMutationArgs {
-  
-  input: UpdateCustomerGroupInput;
-}
-export interface AddCustomersToGroupMutationArgs {
-  
-  customerGroupId: string;
-  
-  customerIds: string[];
-}
-export interface RemoveCustomersFromGroupMutationArgs {
-  
-  customerGroupId: string;
-  
-  customerIds: string[];
-}
 export interface UpdateGlobalSettingsMutationArgs {
   
   input: UpdateGlobalSettingsInput;
@@ -6313,6 +6327,14 @@ export interface CreateProductOptionGroupMutationArgs {
 export interface UpdateProductOptionGroupMutationArgs {
   
   input: UpdateProductOptionGroupInput;
+}
+export interface CreateRoleMutationArgs {
+  
+  input: CreateRoleInput;
+}
+export interface UpdateRoleMutationArgs {
+  
+  input: UpdateRoleInput;
 }
 export interface CreateProductMutationArgs {
   
@@ -6364,22 +6386,6 @@ export interface DeletePromotionMutationArgs {
   
   id: string;
 }
-export interface CreateShippingMethodMutationArgs {
-  
-  input: CreateShippingMethodInput;
-}
-export interface UpdateShippingMethodMutationArgs {
-  
-  input: UpdateShippingMethodInput;
-}
-export interface CreateRoleMutationArgs {
-  
-  input: CreateRoleInput;
-}
-export interface UpdateRoleMutationArgs {
-  
-  input: UpdateRoleInput;
-}
 export interface CreateTaxCategoryMutationArgs {
   
   input: CreateTaxCategoryInput;
@@ -6387,6 +6393,14 @@ export interface CreateTaxCategoryMutationArgs {
 export interface UpdateTaxCategoryMutationArgs {
   
   input: UpdateTaxCategoryInput;
+}
+export interface CreateShippingMethodMutationArgs {
+  
+  input: CreateShippingMethodInput;
+}
+export interface UpdateShippingMethodMutationArgs {
+  
+  input: UpdateShippingMethodInput;
 }
 export interface CreateTaxRateMutationArgs {
   
