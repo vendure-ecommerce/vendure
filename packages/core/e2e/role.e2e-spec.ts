@@ -1,11 +1,12 @@
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import gql from 'graphql-tag';
 import path from 'path';
 
-import { CREATE_ROLE, GET_ROLE, GET_ROLES, UPDATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { ROLE_FRAGMENT } from './graphql/fragments';
+import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from './graphql/generated-e2e-admin-types';
+import { CREATE_ROLE } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -122,3 +123,33 @@ describe('Role resolver', () => {
         }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
     );
 });
+
+export const GET_ROLES = gql`
+    query GetRoles($options: RoleListOptions) {
+        roles(options: $options) {
+            items {
+                ...Role
+            }
+            totalItems
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
+
+export const GET_ROLE = gql`
+    query GetRole($id: ID!) {
+        role(id: $id) {
+            ...Role
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
+
+export const UPDATE_ROLE = gql`
+    mutation UpdateRole($input: UpdateRoleInput!) {
+        updateRole(input: $input) {
+            ...Role
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;

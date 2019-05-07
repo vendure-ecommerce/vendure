@@ -1,13 +1,28 @@
 /* tslint:disable:no-non-null-assertion */
-import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { GET_CUSTOMER, GET_CUSTOMER_LIST } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from './graphql/generated-e2e-admin-types';
+import { GET_COUNTRY_LIST, GET_CUSTOMER, GET_CUSTOMER_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
+import {
+    ADD_ITEM_TO_ORDER,
+    ADD_PAYMENT,
+    ADJUST_ITEM_QUENTITY,
+    GET_ACTIVE_ORDER,
+    GET_ACTIVE_ORDER_ADDRESSES,
+    GET_AVAILABLE_COUNTRIES,
+    GET_ELIGIBLE_SHIPPING_METHODS,
+    GET_NEXT_STATES,
+    GET_ORDER_BY_CODE,
+    REMOVE_ITEM_FROM_ORDER,
+    SET_CUSTOMER,
+    SET_SHIPPING_ADDRESS,
+    SET_SHIPPING_METHOD,
+    TRANSITION_TO_STATE,
+} from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -203,11 +218,7 @@ describe('Shop orders', () => {
         );
 
         it('nextOrderStates returns next valid states', async () => {
-            const result = await shopClient.query(gql`
-                query {
-                    nextOrderStates
-                }
-            `);
+            const result = await shopClient.query(GET_NEXT_STATES);
 
             expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
         });
@@ -290,17 +301,7 @@ describe('Shop orders', () => {
         });
 
         it('customer default Addresses are not updated before payment', async () => {
-            const result = await shopClient.query(gql`
-                query {
-                    activeOrder {
-                        customer {
-                            addresses {
-                                id
-                            }
-                        }
-                    }
-                }
-            `);
+            const result = await shopClient.query(GET_ACTIVE_ORDER_ADDRESSES);
 
             expect(result.activeOrder.customer.addresses).toEqual([]);
         });
@@ -710,169 +711,3 @@ const testFailingPaymentMethod = new PaymentMethodHandler({
         };
     },
 });
-
-const TEST_ORDER_FRAGMENT = gql`
-    fragment TestOrderFragment on Order {
-        id
-        code
-        state
-        active
-        lines {
-            id
-            quantity
-            productVariant {
-                id
-            }
-        }
-        shipping
-        shippingMethod {
-            id
-            code
-            description
-        }
-        customer {
-            id
-        }
-    }
-`;
-
-const GET_ACTIVE_ORDER = gql`
-    query {
-        activeOrder {
-            ...TestOrderFragment
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const ADD_ITEM_TO_ORDER = gql`
-    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
-        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
-            ...TestOrderFragment
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const ADJUST_ITEM_QUENTITY = gql`
-    mutation AdjustItemQuantity($orderItemId: ID!, $quantity: Int!) {
-        adjustItemQuantity(orderItemId: $orderItemId, quantity: $quantity) {
-            ...TestOrderFragment
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const REMOVE_ITEM_FROM_ORDER = gql`
-    mutation RemoveItemFromOrder($orderItemId: ID!) {
-        removeItemFromOrder(orderItemId: $orderItemId) {
-            ...TestOrderFragment
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const GET_NEXT_STATES = gql`
-    query {
-        nextOrderStates
-    }
-`;
-
-const TRANSITION_TO_STATE = gql`
-    mutation TransitionToState($state: String!) {
-        transitionOrderToState(state: $state) {
-            id
-            state
-        }
-    }
-`;
-
-const GET_ELIGIBLE_SHIPPING_METHODS = gql`
-    query {
-        eligibleShippingMethods {
-            id
-            price
-            description
-        }
-    }
-`;
-
-const SET_SHIPPING_ADDRESS = gql`
-    mutation SetShippingAddress($input: CreateAddressInput!) {
-        setOrderShippingAddress(input: $input) {
-            shippingAddress {
-                fullName
-                company
-                streetLine1
-                streetLine2
-                city
-                province
-                postalCode
-                country
-                phoneNumber
-            }
-        }
-    }
-`;
-
-const SET_SHIPPING_METHOD = gql`
-    mutation SetShippingMethod($id: ID!) {
-        setOrderShippingMethod(shippingMethodId: $id) {
-            shipping
-            shippingMethod {
-                id
-                code
-                description
-            }
-        }
-    }
-`;
-
-const ADD_PAYMENT = gql`
-    mutation AddPaymentToOrder($input: PaymentInput!) {
-        addPaymentToOrder(input: $input) {
-            ...TestOrderFragment
-            payments {
-                id
-                transactionId
-                method
-                amount
-                state
-                metadata
-            }
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const SET_CUSTOMER = gql`
-    mutation SetCustomerForOrder($input: CreateCustomerInput!) {
-        setCustomerForOrder(input: $input) {
-            id
-            customer {
-                id
-                emailAddress
-                firstName
-                lastName
-            }
-        }
-    }
-`;
-
-const GET_ORDER_BY_CODE = gql`
-    query GetOrderByCode($code: String!) {
-        orderByCode(code: $code) {
-            ...TestOrderFragment
-        }
-    }
-    ${TEST_ORDER_FRAGMENT}
-`;
-
-const GET_AVAILABLE_COUNTRIES = gql`
-    query {
-        availableCountries {
-            id
-            code
-        }
-    }
-`;

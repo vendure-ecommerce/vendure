@@ -1,19 +1,15 @@
-import { CreateCustomerAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    CREATE_CUSTOMER_ADDRESS,
-    GET_CUSTOMER,
-    GET_CUSTOMER_LIST,
-    UPDATE_CUSTOMER,
-} from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { CreateAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer } from './graphql/generated-e2e-admin-types';
+import { GET_CUSTOMER, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 
 // tslint:disable:no-non-null-assertion
 
@@ -310,10 +306,10 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
-                        CREATE_CUSTOMER_ADDRESS,
+                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(
+                        CREATE_ADDRESS,
                         {
-                            customerId: thirdCustomer.id,
+                            id: thirdCustomer.id,
                             input: {
                                 streetLine1: 'test',
                                 countryCode: 'GB',
@@ -362,14 +358,6 @@ const UPDATE_ADDRESS = gql`
     }
 `;
 
-const ADD_ITEM_TO_ORDER = gql`
-    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
-        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
-            id
-        }
-    }
-`;
-
 const GET_CUSTOMER_ORDERS = gql`
     query GetCustomerOrders($id: ID!) {
         customer(id: $id) {
@@ -381,6 +369,15 @@ const GET_CUSTOMER_ORDERS = gql`
             }
         }
     }
+`;
+
+export const UPDATE_CUSTOMER = gql`
+    mutation UpdateCustomer($input: UpdateCustomerInput!) {
+        updateCustomer(input: $input) {
+            ...Customer
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
 `;
 
 const DELETE_CUSTOMER = gql`

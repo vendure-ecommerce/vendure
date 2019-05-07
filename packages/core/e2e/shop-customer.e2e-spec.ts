@@ -1,13 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
-import { CreateAddressInput, UpdateAddressInput, UpdateCustomerInput } from '@vendure/common/lib/generated-shop-types';
-import { AttemptLogin, GetCustomer } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { ATTEMPT_LOGIN } from '../../../admin-ui/src/app/data/definitions/auth-definitions';
-import { CUSTOMER_FRAGMENT, GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { AttemptLogin, GetCustomer } from './graphql/generated-e2e-admin-types';
+import { CreateAddressInput, UpdateAddressInput, UpdateCustomerInput } from './graphql/generated-e2e-shop-types';
+import { ATTEMPT_LOGIN, GET_CUSTOMER } from './graphql/shared-definitions';
+import { CREATE_ADDRESS, DELETE_ADDRESS, UPDATE_ADDRESS, UPDATE_CUSTOMER, UPDATE_PASSWORD } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -28,7 +27,7 @@ describe('Shop customers', () => {
 
         // Fetch the first Customer and store it as the `customer` variable.
         const { customers } = await adminClient.query(gql`
-            query {
+            query GetCustomerIds {
                 customers {
                     items {
                         id
@@ -176,47 +175,3 @@ describe('Shop customers', () => {
         });
     });
 });
-
-const CREATE_ADDRESS = gql`
-    mutation CreateAddress($input: CreateAddressInput!) {
-        createCustomerAddress(input: $input) {
-            id
-            streetLine1
-            country {
-                code
-            }
-        }
-    }
-`;
-
-const UPDATE_ADDRESS = gql`
-    mutation UpdateAddress($input: UpdateAddressInput!) {
-        updateCustomerAddress(input: $input) {
-            streetLine1
-            country {
-                code
-            }
-        }
-    }
-`;
-
-const DELETE_ADDRESS = gql`
-    mutation DeleteAddress($id: ID!) {
-        deleteCustomerAddress(id: $id)
-    }
-`;
-
-const UPDATE_CUSTOMER = gql`
-    mutation UpdateCustomer($input: UpdateCustomerInput!) {
-        updateCustomer(input: $input) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-const UPDATE_PASSWORD = gql`
-    mutation UpdatePassword($old: String!, $new: String!) {
-        updateCustomerPassword(currentPassword: $old, newPassword: $new)
-    }
-`;

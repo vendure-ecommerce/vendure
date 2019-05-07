@@ -1,3 +1,8 @@
+import gql from 'graphql-tag';
+import path from 'path';
+
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/fragments';
 import {
     CreateFacet,
     CreateFacetValues,
@@ -12,26 +17,15 @@ import {
     UpdateFacetValues,
     UpdateProduct,
     UpdateProductVariants,
-} from '@vendure/common/lib/generated-types';
-import gql from 'graphql-tag';
-import path from 'path';
-
+} from './graphql/generated-e2e-admin-types';
 import {
     CREATE_FACET,
-    CREATE_FACET_VALUES,
     GET_FACET_LIST,
-    GET_FACET_WITH_VALUES,
-    UPDATE_FACET,
-    UPDATE_FACET_VALUES,
-} from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-import {
-    GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_FACET,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../../admin-ui/src/app/data/definitions/product-definitions';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+} from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -306,6 +300,15 @@ describe('Facet resolver', () => {
     });
 });
 
+export const GET_FACET_WITH_VALUES = gql`
+    query GetFacetWithValues($id: ID!, $languageCode: LanguageCode) {
+        facet(id: $id, languageCode: $languageCode) {
+            ...FacetWithValues
+        }
+    }
+    ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
 const DELETE_FACET_VALUES = gql`
     mutation DeleteFacetValue($ids: [ID!]!, $force: Boolean) {
         deleteFacetValues(ids: $ids, force: $force) {
@@ -338,4 +341,22 @@ const GET_PRODUCTS_LIST_WITH_VARIANTS = gql`
             totalItems
         }
     }
+`;
+
+export const CREATE_FACET_VALUES = gql`
+    mutation CreateFacetValues($input: [CreateFacetValueInput!]!) {
+        createFacetValues(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
+export const UPDATE_FACET_VALUES = gql`
+    mutation UpdateFacetValues($input: [UpdateFacetValueInput!]!) {
+        updateFacetValues(input: $input) {
+            ...FacetValue
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
 `;

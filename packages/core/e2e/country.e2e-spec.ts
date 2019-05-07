@@ -1,22 +1,10 @@
-import {
-    CreateCountry,
-    DeletionResult,
-    GetCountry,
-    GetCountryList,
-    LanguageCode,
-    UpdateCountry,
-} from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    CREATE_COUNTRY,
-    GET_COUNTRY,
-    GET_COUNTRY_LIST,
-    UPDATE_COUNTRY,
-} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { COUNTRY_FRAGMENT } from './graphql/fragments';
+import { DeletionResult, GetCountryList, LanguageCode, GetCountry, UpdateCountry, CreateCountry } from './graphql/generated-e2e-admin-types';
+import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -108,11 +96,29 @@ describe('Facet resolver', () => {
     });
 });
 
-const DELETE_COUNTRY = gql`
+export const DELETE_COUNTRY = gql`
     mutation DeleteCountry($id: ID!) {
         deleteCountry(id: $id) {
             result
             message
         }
     }
+`;
+
+export const GET_COUNTRY = gql`
+    query GetCountry($id: ID!) {
+        country(id: $id) {
+            ...Country
+        }
+    }
+    ${COUNTRY_FRAGMENT}
+`;
+
+export const CREATE_COUNTRY = gql`
+    mutation CreateCountry($input: CreateCountryInput!) {
+        createCountry(input: $input) {
+            ...Country
+        }
+    }
+    ${COUNTRY_FRAGMENT}
 `;

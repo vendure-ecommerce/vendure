@@ -1,10 +1,9 @@
-import { CreateFacet, LanguageCode } from '@vendure/common/lib/generated-types';
+/* tslint:disable:no-non-null-assertion */
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { CREATE_FACET } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { EntityIdTest } from './graphql/generated-e2e-admin-types';
 import { TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -25,8 +24,8 @@ describe('EntityIdStrategy', () => {
     });
 
     it('Does not doubly-encode ids from resolved properties', async () => {
-        const result = await shopClient.query(gql`
-            query {
+        const result = await shopClient.query<EntityIdTest.Query>(gql`
+            query EntityIdTest {
                 product(id: "T_1", languageCode: en) {
                     id
                     variants {
@@ -40,8 +39,8 @@ describe('EntityIdStrategy', () => {
             }
         `);
 
-        expect(result.product.id).toBe('T_1');
-        expect(result.product.variants[0].id).toBe('T_1');
-        expect(result.product.variants[0].options[0].id).toBe('T_1');
+        expect(result.product!.id).toBe('T_1');
+        expect(result.product!.variants[0].id).toBe('T_1');
+        expect(result.product!.variants[0].options[0].id).toBe('T_1');
     });
 });

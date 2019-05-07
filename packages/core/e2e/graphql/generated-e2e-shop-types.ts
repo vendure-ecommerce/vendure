@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-07T17:59:45+02:00
+// Generated in 2019-05-07T17:59:46+02:00
 
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
@@ -1891,3 +1891,508 @@ export type Zone = Node & {
     name: Scalars['String'];
     members: Array<Country>;
 };
+export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
+    Order,
+    'id' | 'code' | 'state' | 'active' | 'shipping'
+> & {
+        lines: Array<
+            { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
+                    productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
+                }
+        >;
+        shippingMethod: Maybe<
+            { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
+        >;
+        customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+    };
+
+export type AddItemToOrderMutationVariables = {
+    productVariantId: Scalars['ID'];
+    quantity: Scalars['Int'];
+};
+
+export type AddItemToOrderMutation = { __typename?: 'Mutation' } & {
+    addItemToOrder: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'active'> & {
+                lines: Array<
+                    { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
+                            productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
+                        }
+                >;
+            }
+    >;
+};
+
+export type SearchProductsShopQueryVariables = {
+    input: SearchInput;
+};
+
+export type SearchProductsShopQuery = { __typename?: 'Query' } & {
+    search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
+            items: Array<
+                { __typename?: 'SearchResult' } & Pick<
+                    SearchResult,
+                    | 'productId'
+                    | 'productName'
+                    | 'productPreview'
+                    | 'productVariantId'
+                    | 'productVariantName'
+                    | 'productVariantPreview'
+                    | 'sku'
+                    | 'collectionIds'
+                >
+            >;
+        };
+};
+
+export type RegisterMutationVariables = {
+    input: RegisterCustomerInput;
+};
+
+export type RegisterMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'registerCustomerAccount'>;
+
+export type VerifyMutationVariables = {
+    password: Scalars['String'];
+    token: Scalars['String'];
+};
+
+export type VerifyMutation = { __typename?: 'Mutation' } & {
+    verifyCustomerAccount: { __typename?: 'LoginResult' } & {
+        user: { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'>;
+    };
+};
+
+export type RefreshTokenMutationVariables = {
+    emailAddress: Scalars['String'];
+};
+
+export type RefreshTokenMutation = { __typename?: 'Mutation' } & Pick<
+    Mutation,
+    'refreshCustomerVerification'
+>;
+
+export type RequestPasswordResetMutationVariables = {
+    identifier: Scalars['String'];
+};
+
+export type RequestPasswordResetMutation = { __typename?: 'Mutation' } & Pick<
+    Mutation,
+    'requestPasswordReset'
+>;
+
+export type ResetPasswordMutationVariables = {
+    token: Scalars['String'];
+    password: Scalars['String'];
+};
+
+export type ResetPasswordMutation = { __typename?: 'Mutation' } & {
+    resetPassword: { __typename?: 'LoginResult' } & {
+        user: { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'>;
+    };
+};
+
+export type RequestUpdateEmailAddressMutationVariables = {
+    password: Scalars['String'];
+    newEmailAddress: Scalars['String'];
+};
+
+export type RequestUpdateEmailAddressMutation = { __typename?: 'Mutation' } & Pick<
+    Mutation,
+    'requestUpdateCustomerEmailAddress'
+>;
+
+export type UpdateEmailAddressMutationVariables = {
+    token: Scalars['String'];
+};
+
+export type UpdateEmailAddressMutation = { __typename?: 'Mutation' } & Pick<
+    Mutation,
+    'updateCustomerEmailAddress'
+>;
+
+export type GetActiveCustomerQueryVariables = {};
+
+export type GetActiveCustomerQuery = { __typename?: 'Query' } & {
+    activeCustomer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'emailAddress'>>;
+};
+
+export type CreateAddressShopMutationVariables = {
+    input: CreateAddressInput;
+};
+
+export type CreateAddressShopMutation = { __typename?: 'Mutation' } & {
+    createCustomerAddress: { __typename?: 'Address' } & Pick<Address, 'id' | 'streetLine1'> & {
+            country: { __typename?: 'Country' } & Pick<Country, 'code'>;
+        };
+};
+
+export type UpdateAddressShopMutationVariables = {
+    input: UpdateAddressInput;
+};
+
+export type UpdateAddressShopMutation = { __typename?: 'Mutation' } & {
+    updateCustomerAddress: { __typename?: 'Address' } & Pick<Address, 'streetLine1'> & {
+            country: { __typename?: 'Country' } & Pick<Country, 'code'>;
+        };
+};
+
+export type DeleteAddressShopMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteAddressShopMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'deleteCustomerAddress'>;
+
+export type UpdateCustomerMutationVariables = {
+    input: UpdateCustomerInput;
+};
+
+export type UpdateCustomerMutation = { __typename?: 'Mutation' } & {
+    updateCustomer: { __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>;
+};
+
+export type UpdatePasswordMutationVariables = {
+    old: Scalars['String'];
+    new: Scalars['String'];
+};
+
+export type UpdatePasswordMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'updateCustomerPassword'>;
+
+export type GetActiveOrderQueryVariables = {};
+
+export type GetActiveOrderQuery = { __typename?: 'Query' } & {
+    activeOrder: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type AdjustItemQuantityMutationVariables = {
+    orderItemId: Scalars['ID'];
+    quantity: Scalars['Int'];
+};
+
+export type AdjustItemQuantityMutation = { __typename?: 'Mutation' } & {
+    adjustItemQuantity: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type RemoveItemFromOrderMutationVariables = {
+    orderItemId: Scalars['ID'];
+};
+
+export type RemoveItemFromOrderMutation = { __typename?: 'Mutation' } & {
+    removeItemFromOrder: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type GetShippingMethodsQueryVariables = {};
+
+export type GetShippingMethodsQuery = { __typename?: 'Query' } & {
+    eligibleShippingMethods: Array<
+        { __typename?: 'ShippingMethodQuote' } & Pick<ShippingMethodQuote, 'id' | 'price' | 'description'>
+    >;
+};
+
+export type SetShippingMethodMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type SetShippingMethodMutation = { __typename?: 'Mutation' } & {
+    setOrderShippingMethod: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'shipping'> & {
+                shippingMethod: Maybe<
+                    { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
+                >;
+            }
+    >;
+};
+
+export type SetCustomerForOrderMutationVariables = {
+    input: CreateCustomerInput;
+};
+
+export type SetCustomerForOrderMutation = { __typename?: 'Mutation' } & {
+    setCustomerForOrder: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+                customer: Maybe<
+                    { __typename?: 'Customer' } & Pick<
+                        Customer,
+                        'id' | 'emailAddress' | 'firstName' | 'lastName'
+                    >
+                >;
+            }
+    >;
+};
+
+export type GetOrderByCodeQueryVariables = {
+    code: Scalars['String'];
+};
+
+export type GetOrderByCodeQuery = { __typename?: 'Query' } & {
+    orderByCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type GetAvailableCountriesQueryVariables = {};
+
+export type GetAvailableCountriesQuery = { __typename?: 'Query' } & {
+    availableCountries: Array<{ __typename?: 'Country' } & Pick<Country, 'id' | 'code'>>;
+};
+
+export type TransitionToStateMutationVariables = {
+    state: Scalars['String'];
+};
+
+export type TransitionToStateMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state'>>;
+};
+
+export type SetShippingAddressMutationVariables = {
+    input: CreateAddressInput;
+};
+
+export type SetShippingAddressMutation = { __typename?: 'Mutation' } & {
+    setOrderShippingAddress: Maybe<
+        { __typename?: 'Order' } & {
+            shippingAddress: Maybe<
+                { __typename?: 'OrderAddress' } & Pick<
+                    OrderAddress,
+                    | 'fullName'
+                    | 'company'
+                    | 'streetLine1'
+                    | 'streetLine2'
+                    | 'city'
+                    | 'province'
+                    | 'postalCode'
+                    | 'country'
+                    | 'phoneNumber'
+                >
+            >;
+        }
+    >;
+};
+
+export type AddPaymentToOrderMutationVariables = {
+    input: PaymentInput;
+};
+
+export type AddPaymentToOrderMutation = { __typename?: 'Mutation' } & {
+    addPaymentToOrder: Maybe<
+        { __typename?: 'Order' } & {
+            payments: Maybe<
+                Array<
+                    { __typename?: 'Payment' } & Pick<
+                        Payment,
+                        'id' | 'transactionId' | 'method' | 'amount' | 'state' | 'metadata'
+                    >
+                >
+            >;
+        } & TestOrderFragmentFragment
+    >;
+};
+
+export type GetNextOrderStatesQueryVariables = {};
+
+export type GetNextOrderStatesQuery = { __typename?: 'Query' } & Pick<Query, 'nextOrderStates'>;
+
+export type GetCustomerAddressesQueryVariables = {};
+
+export type GetCustomerAddressesQuery = { __typename?: 'Query' } & {
+    activeOrder: Maybe<
+        { __typename?: 'Order' } & {
+            customer: Maybe<
+                { __typename?: 'Customer' } & {
+                    addresses: Maybe<Array<{ __typename?: 'Address' } & Pick<Address, 'id'>>>;
+                }
+            >;
+        }
+    >;
+};
+export namespace TestOrderFragment {
+    export type Fragment = TestOrderFragmentFragment;
+    export type Lines = NonNullable<TestOrderFragmentFragment['lines'][0]>;
+    export type ProductVariant = (NonNullable<TestOrderFragmentFragment['lines'][0]>)['productVariant'];
+    export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
+    export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
+}
+
+export namespace AddItemToOrder {
+    export type Variables = AddItemToOrderMutationVariables;
+    export type Mutation = AddItemToOrderMutation;
+    export type AddItemToOrder = NonNullable<AddItemToOrderMutation['addItemToOrder']>;
+    export type Lines = NonNullable<(NonNullable<AddItemToOrderMutation['addItemToOrder']>)['lines'][0]>;
+    export type ProductVariant = (NonNullable<
+        (NonNullable<AddItemToOrderMutation['addItemToOrder']>)['lines'][0]
+    >)['productVariant'];
+}
+
+export namespace SearchProductsShop {
+    export type Variables = SearchProductsShopQueryVariables;
+    export type Query = SearchProductsShopQuery;
+    export type Search = SearchProductsShopQuery['search'];
+    export type Items = NonNullable<SearchProductsShopQuery['search']['items'][0]>;
+}
+
+export namespace Register {
+    export type Variables = RegisterMutationVariables;
+    export type Mutation = RegisterMutation;
+}
+
+export namespace Verify {
+    export type Variables = VerifyMutationVariables;
+    export type Mutation = VerifyMutation;
+    export type VerifyCustomerAccount = VerifyMutation['verifyCustomerAccount'];
+    export type User = VerifyMutation['verifyCustomerAccount']['user'];
+}
+
+export namespace RefreshToken {
+    export type Variables = RefreshTokenMutationVariables;
+    export type Mutation = RefreshTokenMutation;
+}
+
+export namespace RequestPasswordReset {
+    export type Variables = RequestPasswordResetMutationVariables;
+    export type Mutation = RequestPasswordResetMutation;
+}
+
+export namespace ResetPassword {
+    export type Variables = ResetPasswordMutationVariables;
+    export type Mutation = ResetPasswordMutation;
+    export type ResetPassword = ResetPasswordMutation['resetPassword'];
+    export type User = ResetPasswordMutation['resetPassword']['user'];
+}
+
+export namespace RequestUpdateEmailAddress {
+    export type Variables = RequestUpdateEmailAddressMutationVariables;
+    export type Mutation = RequestUpdateEmailAddressMutation;
+}
+
+export namespace UpdateEmailAddress {
+    export type Variables = UpdateEmailAddressMutationVariables;
+    export type Mutation = UpdateEmailAddressMutation;
+}
+
+export namespace GetActiveCustomer {
+    export type Variables = GetActiveCustomerQueryVariables;
+    export type Query = GetActiveCustomerQuery;
+    export type ActiveCustomer = NonNullable<GetActiveCustomerQuery['activeCustomer']>;
+}
+
+export namespace CreateAddressShop {
+    export type Variables = CreateAddressShopMutationVariables;
+    export type Mutation = CreateAddressShopMutation;
+    export type CreateCustomerAddress = CreateAddressShopMutation['createCustomerAddress'];
+    export type Country = CreateAddressShopMutation['createCustomerAddress']['country'];
+}
+
+export namespace UpdateAddressShop {
+    export type Variables = UpdateAddressShopMutationVariables;
+    export type Mutation = UpdateAddressShopMutation;
+    export type UpdateCustomerAddress = UpdateAddressShopMutation['updateCustomerAddress'];
+    export type Country = UpdateAddressShopMutation['updateCustomerAddress']['country'];
+}
+
+export namespace DeleteAddressShop {
+    export type Variables = DeleteAddressShopMutationVariables;
+    export type Mutation = DeleteAddressShopMutation;
+}
+
+export namespace UpdateCustomer {
+    export type Variables = UpdateCustomerMutationVariables;
+    export type Mutation = UpdateCustomerMutation;
+    export type UpdateCustomer = UpdateCustomerMutation['updateCustomer'];
+}
+
+export namespace UpdatePassword {
+    export type Variables = UpdatePasswordMutationVariables;
+    export type Mutation = UpdatePasswordMutation;
+}
+
+export namespace GetActiveOrder {
+    export type Variables = GetActiveOrderQueryVariables;
+    export type Query = GetActiveOrderQuery;
+    export type ActiveOrder = TestOrderFragmentFragment;
+}
+
+export namespace AdjustItemQuantity {
+    export type Variables = AdjustItemQuantityMutationVariables;
+    export type Mutation = AdjustItemQuantityMutation;
+    export type AdjustItemQuantity = TestOrderFragmentFragment;
+}
+
+export namespace RemoveItemFromOrder {
+    export type Variables = RemoveItemFromOrderMutationVariables;
+    export type Mutation = RemoveItemFromOrderMutation;
+    export type RemoveItemFromOrder = TestOrderFragmentFragment;
+}
+
+export namespace GetShippingMethods {
+    export type Variables = GetShippingMethodsQueryVariables;
+    export type Query = GetShippingMethodsQuery;
+    export type EligibleShippingMethods = NonNullable<GetShippingMethodsQuery['eligibleShippingMethods'][0]>;
+}
+
+export namespace SetShippingMethod {
+    export type Variables = SetShippingMethodMutationVariables;
+    export type Mutation = SetShippingMethodMutation;
+    export type SetOrderShippingMethod = NonNullable<SetShippingMethodMutation['setOrderShippingMethod']>;
+    export type ShippingMethod = NonNullable<
+        (NonNullable<SetShippingMethodMutation['setOrderShippingMethod']>)['shippingMethod']
+    >;
+}
+
+export namespace SetCustomerForOrder {
+    export type Variables = SetCustomerForOrderMutationVariables;
+    export type Mutation = SetCustomerForOrderMutation;
+    export type SetCustomerForOrder = NonNullable<SetCustomerForOrderMutation['setCustomerForOrder']>;
+    export type Customer = NonNullable<
+        (NonNullable<SetCustomerForOrderMutation['setCustomerForOrder']>)['customer']
+    >;
+}
+
+export namespace GetOrderByCode {
+    export type Variables = GetOrderByCodeQueryVariables;
+    export type Query = GetOrderByCodeQuery;
+    export type OrderByCode = TestOrderFragmentFragment;
+}
+
+export namespace GetAvailableCountries {
+    export type Variables = GetAvailableCountriesQueryVariables;
+    export type Query = GetAvailableCountriesQuery;
+    export type AvailableCountries = NonNullable<GetAvailableCountriesQuery['availableCountries'][0]>;
+}
+
+export namespace TransitionToState {
+    export type Variables = TransitionToStateMutationVariables;
+    export type Mutation = TransitionToStateMutation;
+    export type TransitionOrderToState = NonNullable<TransitionToStateMutation['transitionOrderToState']>;
+}
+
+export namespace SetShippingAddress {
+    export type Variables = SetShippingAddressMutationVariables;
+    export type Mutation = SetShippingAddressMutation;
+    export type SetOrderShippingAddress = NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>;
+    export type ShippingAddress = NonNullable<
+        (NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>)['shippingAddress']
+    >;
+}
+
+export namespace AddPaymentToOrder {
+    export type Variables = AddPaymentToOrderMutationVariables;
+    export type Mutation = AddPaymentToOrderMutation;
+    export type AddPaymentToOrder = TestOrderFragmentFragment;
+    export type Payments = NonNullable<
+        (NonNullable<(NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>)['payments']>)[0]
+    >;
+}
+
+export namespace GetNextOrderStates {
+    export type Variables = GetNextOrderStatesQueryVariables;
+    export type Query = GetNextOrderStatesQuery;
+}
+
+export namespace GetCustomerAddresses {
+    export type Variables = GetCustomerAddressesQueryVariables;
+    export type Query = GetCustomerAddressesQuery;
+    export type ActiveOrder = NonNullable<GetCustomerAddressesQuery['activeOrder']>;
+    export type Customer = NonNullable<(NonNullable<GetCustomerAddressesQuery['activeOrder']>)['customer']>;
+    export type Addresses = NonNullable<
+        (NonNullable<
+            (NonNullable<(NonNullable<GetCustomerAddressesQuery['activeOrder']>)['customer']>)['addresses']
+        >)[0]
+    >;
+}

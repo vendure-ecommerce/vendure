@@ -1,3 +1,12 @@
+import { pick } from '@vendure/common/lib/pick';
+import gql from 'graphql-tag';
+import path from 'path';
+
+import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
+import { PromotionCondition } from '../src/config/promotion/promotion-condition';
+
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { CONFIGURABLE_FRAGMENT, PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
     ConfigArgType,
     CreatePromotion,
@@ -7,22 +16,7 @@ import {
     GetPromotionList,
     Promotion,
     UpdatePromotion,
-} from '@vendure/common/lib/generated-types';
-import { pick } from '@vendure/common/lib/pick';
-import gql from 'graphql-tag';
-import path from 'path';
-
-import {
-    CREATE_PROMOTION,
-    GET_ADJUSTMENT_OPERATIONS,
-    GET_PROMOTION,
-    GET_PROMOTION_LIST,
-    UPDATE_PROMOTION,
-} from '../../../admin-ui/src/app/data/definitions/promotion-definitions';
-import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
-import { PromotionCondition } from '../src/config/promotion/promotion-condition';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+} from './graphql/generated-e2e-admin-types';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -216,4 +210,57 @@ const DELETE_PROMOTION = gql`
             result
         }
     }
+`;
+
+export const GET_PROMOTION_LIST = gql`
+    query GetPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                ...Promotion
+            }
+            totalItems
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
+
+export const GET_PROMOTION = gql`
+    query GetPromotion($id: ID!) {
+        promotion(id: $id) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
+
+export const CREATE_PROMOTION = gql`
+    mutation CreatePromotion($input: CreatePromotionInput!) {
+        createPromotion(input: $input) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
+
+export const UPDATE_PROMOTION = gql`
+    mutation UpdatePromotion($input: UpdatePromotionInput!) {
+        updatePromotion(input: $input) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
+
+export const GET_ADJUSTMENT_OPERATIONS = gql`
+    query GetAdjustmentOperations {
+        adjustmentOperations {
+            actions {
+                ...ConfigurableOperation
+            }
+            conditions {
+                ...ConfigurableOperation
+            }
+        }
+    }
+    ${CONFIGURABLE_FRAGMENT}
 `;

@@ -1,27 +1,33 @@
-import {
-    ConfigArgType,
-    CreateCollection,
-    LanguageCode,
-    SearchInput,
-    SearchProducts,
-    UpdateCollection,
-    UpdateProduct,
-    UpdateTaxRate,
-} from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { CREATE_COLLECTION, UPDATE_COLLECTION } from '../../../admin-ui/src/app/data/definitions/collection-definitions';
-import { CREATE_FACET } from '../../../admin-ui/src/app/data/definitions/facet-definitions';
-import { SEARCH_PRODUCTS, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-import { UPDATE_TAX_RATE } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import { CreateFacet, UpdateProductVariants } from '../../common/src/generated-types';
 import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
 import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
 import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import {
+    ConfigArgType,
+    CreateCollection,
+    CreateFacet,
+    LanguageCode,
+    SearchInput,
+    UpdateCollection,
+    UpdateProduct,
+    UpdateProductVariants,
+    UpdateTaxRate,
+} from './graphql/generated-e2e-admin-types';
+import { SearchProductsShop } from './graphql/generated-e2e-shop-types';
+import {
+    CREATE_COLLECTION,
+    CREATE_FACET,
+    UPDATE_COLLECTION,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+    UPDATE_TAX_RATE,
+} from './graphql/shared-definitions';
+import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -49,7 +55,7 @@ describe('Default search plugin', () => {
     });
 
     async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 groupByProduct: true,
             },
@@ -58,7 +64,7 @@ describe('Default search plugin', () => {
     }
 
     async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 groupByProduct: false,
             },
@@ -67,7 +73,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 term: 'camera',
                 groupByProduct: true,
@@ -81,7 +87,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetIds(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 facetIds: ['T_1', 'T_2'],
                 groupByProduct: true,
@@ -98,7 +104,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
                 collectionId: 'T_2',
                 groupByProduct: true,
@@ -241,7 +247,7 @@ describe('Default search plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
                     take: 1,
@@ -261,7 +267,7 @@ describe('Default search plugin', () => {
                     { id: 'T_3', enabled: false },
                 ],
             });
-            const result = await shopClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS_SHOP, {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
                     take: 3,
@@ -306,7 +312,7 @@ describe('Default search plugin', () => {
                 },
             });
 
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
                     input: {
@@ -346,7 +352,7 @@ describe('Default search plugin', () => {
                 },
             );
 
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
                     input: {
@@ -394,7 +400,7 @@ describe('Default search plugin', () => {
                 },
             });
 
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
                     input: {
@@ -435,7 +441,7 @@ describe('Default search plugin', () => {
         });
 
         it('returns disabled field when not grouped', async () => {
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: false,
                     take: 3,
@@ -455,7 +461,7 @@ describe('Default search plugin', () => {
                     { id: 'T_2', enabled: false },
                 ],
             });
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
                     take: 3,
@@ -474,7 +480,7 @@ describe('Default search plugin', () => {
                     { id: 'T_4', enabled: false },
                 ],
             });
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
                     take: 3,
@@ -494,7 +500,7 @@ describe('Default search plugin', () => {
                     enabled: false,
                 },
             });
-            const result = await adminClient.query<SearchProducts.Query, SearchProducts.Variables>(SEARCH_PRODUCTS, {
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
                     take: 3,
@@ -509,11 +515,12 @@ describe('Default search plugin', () => {
     });
 });
 
-export const SEARCH_PRODUCTS_SHOP = gql`
-    query SearchProducts($input: SearchInput!) {
+export const SEARCH_PRODUCTS = gql`
+    query SearchProductsAdmin($input: SearchInput!) {
         search(input: $input) {
             totalItems
             items {
+                enabled
                 productId
                 productName
                 productPreview
@@ -521,14 +528,13 @@ export const SEARCH_PRODUCTS_SHOP = gql`
                 productVariantName
                 productVariantPreview
                 sku
-                collectionIds
             }
         }
     }
 `;
 
 export const SEARCH_GET_FACET_VALUES = gql`
-    query SearchProducts($input: SearchInput!) {
+    query SearchFacetValues($input: SearchInput!) {
         search(input: $input) {
             totalItems
             facetValues {

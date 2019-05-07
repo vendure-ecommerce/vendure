@@ -1,20 +1,10 @@
-import {
-    Administrator,
-    CreateAdministrator,
-    GetAdministrator,
-    GetAdministrators,
-    UpdateAdministrator,
-} from '@vendure/common/lib/generated-types';
+import gql from 'graphql-tag';
 import path from 'path';
 
-import {
-    CREATE_ADMINISTRATOR,
-    GET_ADMINISTRATOR,
-    GET_ADMINISTRATORS,
-    UPDATE_ADMINISTRATOR,
-} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
+import { Administrator, CreateAdministrator, GetAdministrator, GetAdministrators, UpdateAdministrator } from './graphql/generated-e2e-admin-types';
+import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -125,3 +115,33 @@ describe('Administrator resolver', () => {
         ),
     );
 });
+
+export const GET_ADMINISTRATORS = gql`
+    query GetAdministrators($options: AdministratorListOptions) {
+        administrators(options: $options) {
+            items {
+                ...Administrator
+            }
+            totalItems
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const GET_ADMINISTRATOR = gql`
+    query GetAdministrator($id: ID!) {
+        administrator(id: $id) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const UPDATE_ADMINISTRATOR = gql`
+    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
+        updateAdministrator(input: $input) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;

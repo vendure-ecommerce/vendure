@@ -1,3 +1,9 @@
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+import { DocumentNode } from 'graphql';
+import gql from 'graphql-tag';
+import path from 'path';
+
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
     CreateAdministrator,
     CreateRole,
@@ -5,24 +11,8 @@ import {
     MutationLoginArgs,
     MutationUpdateProductArgs,
     Permission,
-} from '@vendure/common/lib/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
-import { DocumentNode } from 'graphql';
-import gql from 'graphql-tag';
-import path from 'path';
-
-import {
-    CREATE_ADMINISTRATOR,
-    CREATE_ROLE,
-} from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-import { ATTEMPT_LOGIN } from '../../../admin-ui/src/app/data/definitions/auth-definitions';
-import {
-    CREATE_PRODUCT,
-    GET_PRODUCT_LIST,
-    UPDATE_PRODUCT,
-} from '../../../admin-ui/src/app/data/definitions/product-definitions';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+} from './graphql/generated-e2e-admin-types';
+import { ATTEMPT_LOGIN, CREATE_ADMINISTRATOR, CREATE_PRODUCT, CREATE_ROLE, GET_PRODUCT_LIST, UPDATE_PRODUCT } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -115,7 +105,7 @@ describe('Authorization & permissions', () => {
 
             it('can read', async () => {
                 await assertRequestAllowed(gql`
-                    query {
+                    query GetCustomerCount {
                         customers {
                             totalItems
                         }

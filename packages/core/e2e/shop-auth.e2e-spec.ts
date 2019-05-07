@@ -1,13 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
-import { CreateAdministrator, CreateRole, GetCustomer, Permission } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { CREATE_ADMINISTRATOR, CREATE_ROLE } from '../../../admin-ui/src/app/data/definitions/administrator-definitions';
-import { GET_CUSTOMER } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
 import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
 import { EventBus } from '../src/event-bus/event-bus';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
@@ -16,6 +13,18 @@ import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier
 import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { CreateAdministrator, CreateRole, GetCustomer, Permission } from './graphql/generated-e2e-admin-types';
+import { CREATE_ADMINISTRATOR, CREATE_ROLE, GET_CUSTOMER } from './graphql/shared-definitions';
+import {
+    GET_ACTIVE_CUSTOMER,
+    REFRESH_TOKEN,
+    REGISTER_ACCOUNT,
+    REQUEST_PASSWORD_RESET,
+    REQUEST_UPDATE_EMAIL_ADDRESS,
+    RESET_PASSWORD,
+    UPDATE_EMAIL_ADDRESS,
+    VERIFY_EMAIL,
+} from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -581,7 +590,7 @@ describe('Registration without email verification', () => {
 
         const result = await shopClient.query(
             gql`
-                query {
+                query GetMe{
                     me {
                         identifier
                     }
@@ -690,64 +699,3 @@ function getEmailUpdateTokenPromise(): Promise<{ identifierChangeToken: string |
         });
     });
 }
-
-const REGISTER_ACCOUNT = gql`
-    mutation Register($input: RegisterCustomerInput!) {
-        registerCustomerAccount(input: $input)
-    }
-`;
-
-const VERIFY_EMAIL = gql`
-    mutation Verify($password: String!, $token: String!) {
-        verifyCustomerAccount(password: $password, token: $token) {
-            user {
-                id
-                identifier
-            }
-        }
-    }
-`;
-
-const REFRESH_TOKEN = gql`
-    mutation RefreshToken($emailAddress: String!) {
-        refreshCustomerVerification(emailAddress: $emailAddress)
-    }
-`;
-
-const REQUEST_PASSWORD_RESET = gql`
-    mutation RequestPasswordReset($identifier: String!) {
-        requestPasswordReset(emailAddress: $identifier)
-    }
-`;
-
-const RESET_PASSWORD = gql`
-    mutation ResetPassword($token: String!, $password: String!) {
-        resetPassword(token: $token, password: $password) {
-            user {
-                id
-                identifier
-            }
-        }
-    }
-`;
-
-const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
-    mutation RequestUpdateEmailAddress($password: String! $newEmailAddress: String!) {
-        requestUpdateCustomerEmailAddress(password: $password, newEmailAddress: $newEmailAddress)
-    }
-`;
-
-const UPDATE_EMAIL_ADDRESS = gql`
-    mutation UpdateEmailAddress($token: String!) {
-        updateCustomerEmailAddress(token: $token)
-    }
-`;
-
-const GET_ACTIVE_CUSTOMER = gql`
-    query {
-        activeCustomer {
-            id
-            emailAddress
-        }
-    }
-`;

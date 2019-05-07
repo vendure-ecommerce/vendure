@@ -1,4 +1,3 @@
-import { CreateAssets, ImportInfo } from '@vendure/common/lib/generated-types';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
@@ -7,6 +6,7 @@ import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
 
 import { CREATE_ASSETS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
+import { ImportInfo } from '../e2e/graphql/generated-e2e-admin-types';
 import { getConfig } from '../src/config/config-helpers';
 
 import { createUploadPostData } from './create-upload-post-data';
@@ -58,7 +58,7 @@ export class SimpleGraphQLClient {
         return result.status;
     }
 
-    uploadAssets(filePaths: string[]): Promise<CreateAssets.Mutation> {
+    uploadAssets(filePaths: string[]): Promise<any> {
         return this.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths,

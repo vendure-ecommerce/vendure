@@ -1,3 +1,8 @@
+import gql from 'graphql-tag';
+import path from 'path';
+
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { ZONE_FRAGMENT } from './graphql/fragments';
 import {
     AddMembersToZone,
     CreateZone,
@@ -6,20 +11,8 @@ import {
     GetZone,
     RemoveMembersFromZone,
     UpdateZone,
-} from '@vendure/common/lib/generated-types';
-import gql from 'graphql-tag';
-import path from 'path';
-
-import {
-    ADD_MEMBERS_TO_ZONE,
-    CREATE_ZONE,
-    GET_COUNTRY_LIST,
-    GET_ZONE,
-    REMOVE_MEMBERS_FROM_ZONE,
-    UPDATE_ZONE,
-} from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+} from './graphql/generated-e2e-admin-types';
+import { GET_COUNTRY_LIST } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -160,4 +153,49 @@ const GET_ZONE_LIST = gql`
             name
         }
     }
+`;
+
+export const GET_ZONE = gql`
+    query GetZone($id: ID!) {
+        zone(id: $id) {
+            ...Zone
+        }
+    }
+    ${ZONE_FRAGMENT}
+`;
+
+export const CREATE_ZONE = gql`
+    mutation CreateZone($input: CreateZoneInput!) {
+        createZone(input: $input) {
+            ...Zone
+        }
+    }
+    ${ZONE_FRAGMENT}
+`;
+
+export const UPDATE_ZONE = gql`
+    mutation UpdateZone($input: UpdateZoneInput!) {
+        updateZone(input: $input) {
+            ...Zone
+        }
+    }
+    ${ZONE_FRAGMENT}
+`;
+
+export const ADD_MEMBERS_TO_ZONE = gql`
+    mutation AddMembersToZone($zoneId: ID!, $memberIds: [ID!]!) {
+        addMembersToZone(zoneId: $zoneId, memberIds: $memberIds) {
+            ...Zone
+        }
+    }
+    ${ZONE_FRAGMENT}
+`;
+
+export const REMOVE_MEMBERS_FROM_ZONE = gql`
+    mutation RemoveMembersFromZone($zoneId: ID!, $memberIds: [ID!]!) {
+        removeMembersFromZone(zoneId: $zoneId, memberIds: $memberIds) {
+            ...Zone
+        }
+    }
+    ${ZONE_FRAGMENT}
 `;

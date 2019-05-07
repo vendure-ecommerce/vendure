@@ -1,12 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
-import { GetCustomerList, GetOrder, GetOrderList } from '@vendure/common/lib/generated-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { GET_CUSTOMER_LIST } from '../../../admin-ui/src/app/data/definitions/customer-definitions';
-import { GET_ORDER, GET_ORDERS_LIST } from '../../../admin-ui/src/app/data/definitions/order-definitions';
-
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
+import { GetCustomerList, GetOrder, GetOrderList } from './graphql/generated-e2e-admin-types';
+import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 
@@ -61,10 +61,23 @@ describe('Orders resolver', () => {
     });
 });
 
-const ADD_ITEM_TO_ORDER = gql`
-    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
-        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
-            id
+export const GET_ORDERS_LIST = gql`
+    query GetOrderList($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                ...Order
+            }
+            totalItems
         }
     }
+    ${ORDER_FRAGMENT}
+`;
+
+export const GET_ORDER = gql`
+    query GetOrder($id: ID!) {
+        order(id: $id) {
+            ...OrderWithLines
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
 `;

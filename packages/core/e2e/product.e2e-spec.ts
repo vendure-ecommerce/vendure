@@ -1,35 +1,23 @@
-import {
-    AddOptionGroupToProduct,
-    CreateProduct,
-    DeletionResult,
-    GenerateProductVariants,
-    GetAssetList,
-    GetProductList,
-    GetProductWithVariants,
-    LanguageCode,
-    ProductWithVariants,
-    RemoveOptionGroupFromProduct,
-    SortOrder,
-    UpdateProduct,
-    UpdateProductVariants,
-} from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { PRODUCT_WITH_VARIANTS_FRAGMENT } from './graphql/fragments';
+import { DeletionResult, GetProductWithVariants, LanguageCode, SortOrder, GetProductList, ProductWithVariants, CreateProduct, GetAssetList,
+    UpdateProduct,
+    AddOptionGroupToProduct,
+    RemoveOptionGroupFromProduct,
+    GenerateProductVariants,
+    UpdateProductVariants} from './graphql/generated-e2e-admin-types';
 import {
-    ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
-    GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
-    REMOVE_OPTION_GROUP_FROM_PRODUCT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
-} from '../../../admin-ui/src/app/data/definitions/product-definitions';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+} from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -119,22 +107,18 @@ describe('Product resolver', () => {
 
     describe('product query', () => {
         it('returns expected properties', async () => {
-            const { product } = await client.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
-                GET_PRODUCT_WITH_VARIANTS,
-                {
-                    languageCode: LanguageCode.en,
-                    id: 'T_2',
-                },
-            );
+            const { product } = await client.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                languageCode: LanguageCode.en,
+                id: 'T_2',
+            });
 
             if (!product) {
                 fail('Product not found');
                 return;
             }
-            // override the non-deterministic date fields
-            [product.featuredAsset, ...product.assets].forEach(asset => {
-                asset!.createdAt = '<date>';
-            });
             expect(omit(product, ['variants'])).toMatchSnapshot();
             expect(product.variants.length).toBe(2);
         });
@@ -690,4 +674,55 @@ const DELETE_PRODUCT = gql`
             result
         }
     }
+`;
+
+export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
+    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            id
+            optionGroups {
+                id
+                code
+                options {
+                    id
+                    code
+                }
+            }
+        }
+    }
+`;
+
+export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            id
+            optionGroups {
+                id
+                code
+                options {
+                    id
+                    code
+                }
+            }
+        }
+    }
+`;
+
+export const GENERATE_PRODUCT_VARIANTS = gql`
+    mutation GenerateProductVariants(
+        $productId: ID!
+        $defaultTaxCategoryId: ID
+        $defaultPrice: Int
+        $defaultSku: String
+    ) {
+        generateVariantsForProduct(
+            productId: $productId
+            defaultTaxCategoryId: $defaultTaxCategoryId
+            defaultPrice: $defaultPrice
+            defaultSku: $defaultSku
+        ) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;

@@ -64,7 +64,6 @@ exports[`Product resolver product query returns expected properties 1`] = `
 Object {
   "assets": Array [
     Object {
-      "createdAt": "<date>",
       "fileSize": 4,
       "id": "T_2",
       "mimeType": "image/jpeg",
@@ -97,7 +96,6 @@ Object {
     },
   ],
   "featuredAsset": Object {
-    "createdAt": "<date>",
     "fileSize": 4,
     "id": "T_2",
     "mimeType": "image/jpeg",
