@@ -13,6 +13,7 @@ import {
     GetProductWithVariants,
     RemoveOptionGroupFromProduct,
     SearchProducts,
+    SortOrder,
     UpdateProduct,
     UpdateProductInput,
     UpdateProductVariantInput,
@@ -184,6 +185,9 @@ export class ProductDataService {
             options: {
                 skip,
                 take,
+                sort: {
+                    createdAt: SortOrder.DESC,
+                },
             },
         });
     }

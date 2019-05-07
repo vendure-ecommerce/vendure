@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
+import { SortOrder } from 'shared/generated-shop-types';
 import { GetAssetList } from 'shared/generated-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
@@ -39,6 +40,9 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                         name: {
                             contains: this.searchTerm.value,
                         },
+                    },
+                    sort: {
+                        createdAt: SortOrder.DESC,
                     },
                 },
             }),

@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { PaginationInstance } from 'ngx-pagination';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, map, takeUntil, tap } from 'rxjs/operators';
-import { Asset, GetAssetList } from 'shared/generated-types';
+import { Asset, GetAssetList, SortOrder } from 'shared/generated-types';
 
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
@@ -21,7 +21,7 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Asset[]> {
-    assets$: Observable<Asset[]>;
+    assets$: Observable<GetAssetList.Items[]>;
     paginationConfig: PaginationInstance = {
         currentPage: 1,
         itemsPerPage: 25,
@@ -105,6 +105,9 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
                     name: {
                         contains: searchTerm,
                     },
+                },
+                sort: {
+                    createdAt: SortOrder.DESC,
                 },
             },
         });
