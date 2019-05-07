@@ -31,7 +31,6 @@ if (require.main === module) {
         .then(() => populate(() => bootstrap(populateConfig),
             path.join(__dirname, '../create/assets/initial-data.json'),
             path.join(__dirname, '../create/assets/products.csv'),
-            path.join(__dirname, '../create/assets/images'),
         ))
         .then(async app => {
             console.log('populating customers...');
