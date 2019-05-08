@@ -3,7 +3,15 @@ import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COUNTRY_FRAGMENT } from './graphql/fragments';
-import { DeletionResult, GetCountryList, LanguageCode, GetCountry, UpdateCountry, CreateCountry } from './graphql/generated-e2e-admin-types';
+import {
+    CreateCountry,
+    DeleteCountry,
+    DeletionResult,
+    GetCountry,
+    GetCountryList,
+    LanguageCode,
+    UpdateCountry,
+} from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
@@ -71,7 +79,7 @@ describe('Facet resolver', () => {
 
     describe('deletion', () => {
         it('deletes Country not used in any address', async () => {
-            const result1 = await client.query(DELETE_COUNTRY, { id: AT.id });
+            const result1 = await client.query<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, { id: AT.id });
 
             expect(result1.deleteCountry).toEqual({
                 result: DeletionResult.DELETED,
@@ -83,7 +91,7 @@ describe('Facet resolver', () => {
         });
 
         it('does not delete Country that is used in one or more addresses', async () => {
-            const result1 = await client.query(DELETE_COUNTRY, { id: GB.id });
+            const result1 = await client.query<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, { id: GB.id });
 
             expect(result1.deleteCountry).toEqual({
                 result: DeletionResult.NOT_DELETED,

@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-07T17:59:48+02:00
+// Generated in 2019-05-07T21:25:31+02:00
 
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
@@ -2885,11 +2885,6 @@ export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
 };
 
-export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<
-    CurrentUser,
-    'id' | 'identifier' | 'channelTokens'
->;
-
 export type GetProductsWithVariantIdsQueryVariables = {};
 
 export type GetProductsWithVariantIdsQuery = { __typename?: 'Query' } & {
@@ -3175,12 +3170,12 @@ export type GetFacetWithValuesQuery = { __typename?: 'Query' } & {
     facet: Maybe<{ __typename?: 'Facet' } & FacetWithValuesFragment>;
 };
 
-export type DeleteFacetValueMutationVariables = {
+export type DeleteFacetValuesMutationVariables = {
     ids: Array<Scalars['ID']>;
     force?: Maybe<Scalars['Boolean']>;
 };
 
-export type DeleteFacetValueMutation = { __typename?: 'Mutation' } & {
+export type DeleteFacetValuesMutation = { __typename?: 'Mutation' } & {
     deleteFacetValues: Array<
         { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>
     >;
@@ -3475,6 +3470,11 @@ export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
         zone: { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>;
         customerGroup: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
     };
+
+export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<
+    CurrentUser,
+    'id' | 'identifier' | 'channelTokens'
+>;
 
 export type CreateAdministratorMutationVariables = {
     input: CreateAdministratorInput;
@@ -4096,10 +4096,6 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
-export namespace CurrentUser {
-    export type Fragment = CurrentUserFragment;
-}
-
 export namespace GetProductsWithVariantIds {
     export type Variables = GetProductsWithVariantIdsQueryVariables;
     export type Query = GetProductsWithVariantIdsQuery;
@@ -4295,10 +4291,10 @@ export namespace GetFacetWithValues {
     export type Facet = FacetWithValuesFragment;
 }
 
-export namespace DeleteFacetValue {
-    export type Variables = DeleteFacetValueMutationVariables;
-    export type Mutation = DeleteFacetValueMutation;
-    export type DeleteFacetValues = NonNullable<DeleteFacetValueMutation['deleteFacetValues'][0]>;
+export namespace DeleteFacetValues {
+    export type Variables = DeleteFacetValuesMutationVariables;
+    export type Mutation = DeleteFacetValuesMutation;
+    export type DeleteFacetValues = NonNullable<DeleteFacetValuesMutation['deleteFacetValues'][0]>;
 }
 
 export namespace DeleteFacet {
@@ -4454,6 +4450,10 @@ export namespace TaxRate {
     export type Category = TaxRateFragment['category'];
     export type Zone = TaxRateFragment['zone'];
     export type CustomerGroup = NonNullable<TaxRateFragment['customerGroup']>;
+}
+
+export namespace CurrentUser {
+    export type Fragment = CurrentUserFragment;
 }
 
 export namespace CreateAdministrator {

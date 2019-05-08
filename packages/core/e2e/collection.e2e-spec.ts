@@ -4,10 +4,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { StringOperator } from '../src/common/configurable-operation';
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '../src/config/collection/default-collection-filters';
+import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
@@ -16,25 +13,24 @@ import {
     ConfigArgType,
     CreateCollection,
     CreateCollectionInput,
-    FacetValue,
+    CreateCollectionSelectVariants,
+    FacetValueFragment,
     GetAssetList,
     GetCollection,
+    GetCollectionBreadcrumbs,
     GetCollectionProducts,
+    GetCollections,
+    GetCollectionsForProducts,
+    GetFacetValues,
+    GetProductsWithVariantIds,
     LanguageCode,
     MoveCollection,
-    ProductWithVariants,
     SortOrder,
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import {
-    CREATE_COLLECTION,
-    GET_ASSET_LIST,
-    UPDATE_COLLECTION,
-    UPDATE_PRODUCT,
-    UPDATE_PRODUCT_VARIANTS,
-} from './graphql/shared-definitions';
+import { CREATE_COLLECTION, GET_ASSET_LIST, UPDATE_COLLECTION, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -43,7 +39,7 @@ describe('Collection resolver', () => {
     const client = new TestAdminClient();
     const server = new TestServer();
     let assets: GetAssetList.Items[];
-    let facetValues: FacetValue.Fragment[];
+    let facetValues: FacetValueFragment[];
     let electronicsCollection: Collection.Fragment;
     let computersCollection: Collection.Fragment;
     let pearCollection: Collection.Fragment;
@@ -62,10 +58,10 @@ describe('Collection resolver', () => {
             },
         });
         assets = assetsResult.assets.items;
-        const facetValuesResult = await client.query(GET_FACET_VALUES);
+        const facetValuesResult = await client.query<GetFacetValues.Query>(GET_FACET_VALUES);
         facetValues = facetValuesResult.facets.items.reduce(
-            (values: any, facet: any) => [...values, ...facet.values],
-            [],
+            (values, facet) => [...values, ...facet.values],
+            [] as FacetValueFragment[],
         );
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -170,9 +166,12 @@ describe('Collection resolver', () => {
     });
 
     it('breadcrumbs', async () => {
-        const result = await client.query(GET_COLLECTION_BREADCRUMBS, {
-            id: pearCollection.id,
-        });
+        const result = await client.query<GetCollectionBreadcrumbs.Query, GetCollectionBreadcrumbs.Variables>(
+            GET_COLLECTION_BREADCRUMBS,
+            {
+                id: pearCollection.id,
+            },
+        );
         if (!result.collection) {
             fail(`did not return the collection`);
             return;
@@ -186,9 +185,12 @@ describe('Collection resolver', () => {
     });
 
     it('breadcrumbs for root collection', async () => {
-        const result = await client.query(GET_COLLECTION_BREADCRUMBS, {
-            id: 'T_1',
-        });
+        const result = await client.query<GetCollectionBreadcrumbs.Query, GetCollectionBreadcrumbs.Variables>(
+            GET_COLLECTION_BREADCRUMBS,
+            {
+                id: 'T_1',
+            },
+        );
         if (!result.collection) {
             fail(`did not return the collection`);
             return;
@@ -228,12 +230,15 @@ describe('Collection resolver', () => {
             expect(result.moveCollection.parent!.id).toBe(electronicsCollection.id);
 
             const positions = await getChildrenOf(electronicsCollection.id);
-            expect(positions.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(positions.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('re-evaluates Collection contents on move', async () => {
-            const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-            expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+            const result = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(
+                GET_COLLECTION_PRODUCT_VARIANTS,
+                { id: pearCollection.id },
+            );
+            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -252,7 +257,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map((i: any) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it('alters the position in the current parent 2', async () => {
@@ -265,7 +270,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
@@ -278,7 +283,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map((i: any) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
@@ -291,7 +296,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map((i: any) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it(
@@ -325,14 +330,17 @@ describe('Collection resolver', () => {
         );
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
-            const result = await client.query(GET_COLLECTIONS);
-            return result.collections.items.filter((i: any) => i.parent.id === parentId);
+            const result = await client.query<GetCollections.Query>(GET_COLLECTIONS);
+            return result.collections.items.filter(i => i.parent!.id === parentId);
         }
     });
 
     describe('filters', () => {
         it('Collection with no filters has no productVariants', async () => {
-            const result = await client.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+            const result = await client.query<
+                CreateCollectionSelectVariants.Mutation,
+                CreateCollectionSelectVariants.Variables
+            >(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
                     translations: [{ languageCode: LanguageCode.en, name: 'Empty', description: '' }],
                     filters: [],
@@ -343,10 +351,13 @@ describe('Collection resolver', () => {
 
         describe('facetValue filter', () => {
             it('electronics', async () => {
-                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await client.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
-                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -372,10 +383,13 @@ describe('Collection resolver', () => {
             });
 
             it('computers', async () => {
-                const result = await client.query(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await client.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
-                expect(result.collection.productVariants.items.map((i: any) => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -397,7 +411,10 @@ describe('Collection resolver', () => {
             });
 
             it('photo and pear', async () => {
-                const result = await client.query(CREATE_COLLECTION_SELECT_VARIANTS, {
+                const result = await client.query<
+                    CreateCollectionSelectVariants.Mutation,
+                    CreateCollectionSelectVariants.Variables
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
                             { languageCode: LanguageCode.en, name: 'Photo Pear', description: '' },
@@ -418,7 +435,7 @@ describe('Collection resolver', () => {
                         ],
                     } as CreateCollectionInput,
                 });
-                expect(result.createCollection.productVariants.items.map((i: any) => i.name)).toEqual([
+                expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
                     'Instant Camera',
                 ]);
             });
@@ -462,7 +479,10 @@ describe('Collection resolver', () => {
             it('contains operator', async () => {
                 const collection = await createVariantNameFilteredCollection('contains', 'camera');
 
-                const result = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(GET_COLLECTION_PRODUCT_VARIANTS, {
+                const result = await client.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -532,10 +552,10 @@ describe('Collection resolver', () => {
         });
 
         describe('re-evaluation of contents on changes', () => {
-            let products: ProductWithVariants.Fragment[];
+            let products: GetProductsWithVariantIds.Items[];
 
             beforeAll(async () => {
-                const result = await client.query(gql`
+                const result = await client.query<GetProductsWithVariantIds.Query>(gql`
                     query GetProductsWithVariantIds {
                         products {
                             items {
@@ -640,7 +660,10 @@ describe('Collection resolver', () => {
 
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
-            const result = await client.query(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+            const result = await client.query<
+                GetCollectionsForProducts.Query,
+                GetCollectionsForProducts.Variables
+            >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },

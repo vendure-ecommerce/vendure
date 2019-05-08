@@ -61,8 +61,13 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces
 for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
 
-Run `yarn codegen` to generate TypeScript interfaces based on these queries. The generated
-types are located at [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts) & [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts).
+Running `yarn codegen` will generate the following files:
+
+* [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts): Types, Inputs & resolver args relating to the Admin API
+* [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts): Types, Inputs & resolver args relating to the Shop API
+* [`admin-ui/src/app/common/generated-types.ts`](./admin-ui/src/app/common/generated-types.ts): Types & operations relating to the admin-ui queries & mutations.
+* [`packages/core/e2e/graphql/generated-e2e-admin-types.ts`](./packages/core/e2e/graphql/generated-e2e-admin-types.ts): Types used in e2e tests of the Admin API
+* [`packages/core/e2e/graphql/generated-e2e-shop-types.ts`](./packages/core/e2e/graphql/generated-e2e-shop-types.ts): Types used in e2e tests of the Shop API
 
 ### Testing
 

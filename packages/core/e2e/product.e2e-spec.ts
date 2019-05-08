@@ -4,12 +4,22 @@ import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { PRODUCT_WITH_VARIANTS_FRAGMENT } from './graphql/fragments';
-import { DeletionResult, GetProductWithVariants, LanguageCode, SortOrder, GetProductList, ProductWithVariants, CreateProduct, GetAssetList,
-    UpdateProduct,
+import {
     AddOptionGroupToProduct,
-    RemoveOptionGroupFromProduct,
+    CreateProduct,
+    DeleteProduct,
+    DeletionResult,
     GenerateProductVariants,
-    UpdateProductVariants} from './graphql/generated-e2e-admin-types';
+    GetAssetList,
+    GetProductList,
+    GetProductWithVariants,
+    LanguageCode,
+    ProductWithVariants,
+    RemoveOptionGroupFromProduct,
+    SortOrder,
+    UpdateProduct,
+    UpdateProductVariants,
+} from './graphql/generated-e2e-admin-types';
 import {
     CREATE_PRODUCT,
     GET_ASSET_LIST,
@@ -585,7 +595,7 @@ describe('Product resolver', () => {
 
         it('deletes a product', async () => {
             productToDelete = allProducts[0];
-            const result = await client.query(DELETE_PRODUCT, { id: productToDelete.id });
+            const result = await client.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, { id: productToDelete.id });
 
             expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
         });

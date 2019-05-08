@@ -5,10 +5,10 @@ import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import {
     AddMembersToZone,
-    CreateZone,
+    CreateZone, DeleteZone,
     DeletionResult,
     GetCountryList,
-    GetZone,
+    GetZone, GetZones,
     RemoveMembersFromZone,
     UpdateZone,
 } from './graphql/generated-e2e-admin-types';
@@ -42,8 +42,7 @@ describe('Facet resolver', () => {
     });
 
     it('zones', async () => {
-        const result = await client.query(GET_ZONE_LIST);
-
+        const result = await client.query<GetZones.Query>(GET_ZONE_LIST);
         expect(result.zones.length).toBe(5);
         zones = result.zones;
         oceania = zones[0];
@@ -110,19 +109,19 @@ describe('Facet resolver', () => {
 
     describe('deletion', () => {
         it('deletes Zone not used in any TaxRate', async () => {
-            const result1 = await client.query(DELETE_ZONE, { id: pangaea.id });
+            const result1 = await client.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, { id: pangaea.id });
 
             expect(result1.deleteZone).toEqual({
                 result: DeletionResult.DELETED,
                 message: '',
             });
 
-            const result2 = await client.query(GET_ZONE_LIST, {});
-            expect(result2.zones.find((c: any) => c.id === pangaea.id)).toBeUndefined();
+            const result2 = await client.query<GetZones.Query>(GET_ZONE_LIST);
+            expect(result2.zones.find(c => c.id === pangaea.id)).toBeUndefined();
         });
 
         it('does not delete Zone that is used in one or more TaxRates', async () => {
-            const result1 = await client.query(DELETE_ZONE, { id: oceania.id });
+            const result1 = await client.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, { id: oceania.id });
 
             expect(result1.deleteZone).toEqual({
                 result: DeletionResult.NOT_DELETED,
@@ -131,8 +130,8 @@ describe('Facet resolver', () => {
                     'TaxRates: Standard Tax Oceania, Reduced Tax Oceania, Zero Tax Oceania',
             });
 
-            const result2 = await client.query(GET_ZONE_LIST, {});
-            expect(result2.zones.find((c: any) => c.id === oceania.id)).not.toBeUndefined();
+            const result2 = await client.query<GetZones.Query>(GET_ZONE_LIST);
+            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
     });
 });

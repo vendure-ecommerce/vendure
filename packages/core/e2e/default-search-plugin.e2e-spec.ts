@@ -12,6 +12,8 @@ import {
     CreateCollection,
     CreateFacet,
     LanguageCode,
+    SearchFacetValues,
+    SearchGetPrices,
     SearchInput,
     UpdateCollection,
     UpdateProduct,
@@ -118,7 +120,7 @@ describe('Default search plugin', () => {
     }
 
     async function testSinglePrices(client: SimpleGraphQLClient) {
-        const result = await client.query(SEARCH_GET_PRICES, {
+        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
             input: {
                 groupByProduct: false,
                 take: 3,
@@ -141,7 +143,7 @@ describe('Default search plugin', () => {
     }
 
     async function testPriceRanges(client: SimpleGraphQLClient) {
-        const result = await client.query(SEARCH_GET_PRICES, {
+        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
             input: {
                 groupByProduct: true,
                 take: 3,
@@ -179,7 +181,7 @@ describe('Default search plugin', () => {
         it('price ranges', () => testPriceRanges(shopClient));
 
         it('returns correct facetValues when not grouped by product', async () => {
-            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
                 input: {
                     groupByProduct: false,
                 },
@@ -195,7 +197,7 @@ describe('Default search plugin', () => {
         });
 
         it('returns correct facetValues when grouped by product', async () => {
-            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
                 input: {
                     groupByProduct: true,
                 },
@@ -231,7 +233,7 @@ describe('Default search plugin', () => {
                 },
             });
 
-            const result = await shopClient.query(SEARCH_GET_FACET_VALUES, {
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
                 input: {
                     groupByProduct: true,
                 },
@@ -277,7 +279,7 @@ describe('Default search plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query(SEARCH_PRODUCTS_SHOP, {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
                     term: 'cactus',
@@ -426,7 +428,7 @@ describe('Default search plugin', () => {
                     value: 50,
                 },
             });
-            const result = await adminClient.query(SEARCH_GET_PRICES, {
+            const result = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
                 input: {
                     groupByProduct: true,
                     term: 'laptop',

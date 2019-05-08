@@ -3,13 +3,24 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CreateAddress, DeletionResult, GetCustomer, GetCustomerList, UpdateCustomer } from './graphql/generated-e2e-admin-types';
+import { CUSTOMER_FRAGMENT } from './graphql/fragments';
+import {
+    CreateAddress,
+    DeleteCustomer,
+    DeleteCustomerAddress,
+    DeletionResult,
+    GetCustomer,
+    GetCustomerList,
+    GetCustomerOrders,
+    UpdateAddress,
+    UpdateCustomer,
+} from './graphql/generated-e2e-admin-types';
+import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
 import { GET_CUSTOMER, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 
 // tslint:disable:no-non-null-assertion
 
@@ -53,7 +64,7 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws on invalid countryCode',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query(CREATE_ADDRESS, {
+                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(CREATE_ADDRESS, {
                         id: firstCustomer.id,
                         input: {
                             streetLine1: 'streetLine1',
@@ -65,22 +76,25 @@ describe('Customer resolver', () => {
         );
 
         it('createCustomerAddress creates a new address', async () => {
-            const result = await adminClient.query(CREATE_ADDRESS, {
-                id: firstCustomer.id,
-                input: {
-                    fullName: 'fullName',
-                    company: 'company',
-                    streetLine1: 'streetLine1',
-                    streetLine2: 'streetLine2',
-                    city: 'city',
-                    province: 'province',
-                    postalCode: 'postalCode',
-                    countryCode: 'GB',
-                    phoneNumber: 'phoneNumber',
-                    defaultShippingAddress: false,
-                    defaultBillingAddress: false,
+            const result = await adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(
+                CREATE_ADDRESS,
+                {
+                    id: firstCustomer.id,
+                    input: {
+                        fullName: 'fullName',
+                        company: 'company',
+                        streetLine1: 'streetLine1',
+                        streetLine2: 'streetLine2',
+                        city: 'city',
+                        province: 'province',
+                        postalCode: 'postalCode',
+                        countryCode: 'GB',
+                        phoneNumber: 'phoneNumber',
+                        defaultShippingAddress: false,
+                        defaultBillingAddress: false,
+                    },
                 },
-            });
+            );
             expect(omit(result.createCustomerAddress, ['id'])).toEqual({
                 fullName: 'fullName',
                 company: 'company',
@@ -109,27 +123,33 @@ describe('Customer resolver', () => {
         });
 
         it('updateCustomerAddress updates the country', async () => {
-            const result = await adminClient.query(UPDATE_ADDRESS, {
-                input: {
-                    id: firstCustomerAddressIds[0],
-                    countryCode: 'AT',
+            const result = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
+                UPDATE_ADDRESS,
+                {
+                    input: {
+                        id: firstCustomerAddressIds[0],
+                        countryCode: 'AT',
+                    },
                 },
-            });
+            );
             expect(result.updateCustomerAddress.country).toEqual({
-                    code: 'AT',
-                    name: 'Austria',
+                code: 'AT',
+                name: 'Austria',
             });
         });
 
         it('updateCustomerAddress allows only a single default address', async () => {
             // set the first customer's second address to be default
-            const result1 = await adminClient.query(UPDATE_ADDRESS, {
-                input: {
-                    id: firstCustomerAddressIds[1],
-                    defaultShippingAddress: true,
-                    defaultBillingAddress: true,
+            const result1 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
+                UPDATE_ADDRESS,
+                {
+                    input: {
+                        id: firstCustomerAddressIds[1],
+                        defaultShippingAddress: true,
+                        defaultBillingAddress: true,
+                    },
                 },
-            });
+            );
             expect(result1.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result1.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
@@ -141,13 +161,16 @@ describe('Customer resolver', () => {
             expect(result2.customer!.addresses![0].defaultBillingAddress).toBe(false);
 
             // set the first customer's first address to be default
-            const result3 = await adminClient.query(UPDATE_ADDRESS, {
-                input: {
-                    id: firstCustomerAddressIds[0],
-                    defaultShippingAddress: true,
-                    defaultBillingAddress: true,
+            const result3 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
+                UPDATE_ADDRESS,
+                {
+                    input: {
+                        id: firstCustomerAddressIds[0],
+                        defaultShippingAddress: true,
+                        defaultBillingAddress: true,
+                    },
                 },
-            });
+            );
             expect(result3.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result3.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
@@ -165,13 +188,16 @@ describe('Customer resolver', () => {
             const secondCustomerAddressId = result5.customer!.addresses![0].id;
 
             // set the second customer's address to be default
-            const result6 = await adminClient.query(UPDATE_ADDRESS, {
-                input: {
-                    id: secondCustomerAddressId,
-                    defaultShippingAddress: true,
-                    defaultBillingAddress: true,
+            const result6 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
+                UPDATE_ADDRESS,
+                {
+                    input: {
+                        id: secondCustomerAddressId,
+                        defaultShippingAddress: true,
+                        defaultBillingAddress: true,
+                    },
                 },
-            });
+            );
             expect(result6.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result6.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
@@ -186,15 +212,18 @@ describe('Customer resolver', () => {
         });
 
         it('createCustomerAddress with true defaults unsets existing defaults', async () => {
-            const result1 = await adminClient.query(CREATE_ADDRESS, {
-                id: firstCustomer.id,
-                input: {
-                    streetLine1: 'new default streetline',
-                    countryCode: 'GB',
-                    defaultShippingAddress: true,
-                    defaultBillingAddress: true,
+            const result1 = await adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(
+                CREATE_ADDRESS,
+                {
+                    id: firstCustomer.id,
+                    input: {
+                        streetLine1: 'new default streetline',
+                        countryCode: 'GB',
+                        defaultShippingAddress: true,
+                        defaultBillingAddress: true,
+                    },
                 },
-            });
+            );
             expect(omit(result1.createCustomerAddress, ['id'])).toEqual({
                 fullName: '',
                 company: '',
@@ -226,7 +255,10 @@ describe('Customer resolver', () => {
         });
 
         it('deleteCustomerAddress on default address resets defaults', async () => {
-            const result = await adminClient.query(
+            const result = await adminClient.query<
+                DeleteCustomerAddress.Mutation,
+                DeleteCustomerAddress.Variables
+            >(
                 gql`
                     mutation DeleteCustomerAddress($id: ID!) {
                         deleteCustomerAddress(id: $id)
@@ -253,21 +285,27 @@ describe('Customer resolver', () => {
             // log in as first customer
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
-            const result1 = await shopClient.query(ADD_ITEM_TO_ORDER, {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
-            const result2 = await adminClient.query(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
+            const { customer } = await adminClient.query<
+                GetCustomerOrders.Query,
+                GetCustomerOrders.Variables
+            >(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
 
-            expect(result2.customer.orders.totalItems).toBe(1);
-            expect(result2.customer.orders.items[0].id).toBe(result1.addItemToOrder.id);
+            expect(customer!.orders.totalItems).toBe(1);
+            expect(customer!.orders.items[0].id).toBe(addItemToOrder!.id);
         });
     });
 
     describe('deletion', () => {
         it('deletes a customer', async () => {
-            const result = await adminClient.query(DELETE_CUSTOMER, { id: thirdCustomer.id });
+            const result = await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(DELETE_CUSTOMER, { id: thirdCustomer.id });
 
             expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
@@ -306,16 +344,13 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(
-                        CREATE_ADDRESS,
-                        {
-                            id: thirdCustomer.id,
-                            input: {
-                                streetLine1: 'test',
-                                countryCode: 'GB',
-                            },
+                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(CREATE_ADDRESS, {
+                        id: thirdCustomer.id,
+                        input: {
+                            streetLine1: 'test',
+                            countryCode: 'GB',
                         },
-                    ),
+                    }),
                 `No Customer with the id '3' could be found`,
             ),
         );

@@ -11,8 +11,16 @@ import {
     CreateFacet,
     DisableProduct,
     FacetWithValues,
+    GetCollectionList,
+    GetCollectionVariants,
     GetFacetList,
+    GetProduct1,
+    GetProduct2Variants,
+    GetProductCollection,
+    GetProductFacetValues,
+    GetProductsTake3,
     GetProductWithVariants,
+    GetVariantFacetValues,
     LanguageCode,
     UpdateCollection,
     UpdateProduct,
@@ -77,7 +85,7 @@ describe('Shop catalog', () => {
         });
 
         it('products list omits disabled products', async () => {
-            const result = await shopClient.query(gql`
+            const result = await shopClient.query<GetProductsTake3.Query>(gql`
                 query GetProductsTake3 {
                     products(options: { take: 3 }) {
                         items {
@@ -87,11 +95,11 @@ describe('Shop catalog', () => {
                 }
             `);
 
-            expect(result.products.items.map((item: any) => item.id)).toEqual(['T_2', 'T_3', 'T_4']);
+            expect(result.products.items.map(item => item.id)).toEqual(['T_2', 'T_3', 'T_4']);
         });
 
         it('product returns null for disabled product', async () => {
-            const result = await shopClient.query(gql`
+            const result = await shopClient.query<GetProduct1.Query>(gql`
                 query GetProduct1 {
                     product(id: "T_1") {
                         id
@@ -103,7 +111,7 @@ describe('Shop catalog', () => {
         });
 
         it('omits disabled variants from product response', async () => {
-            const result = await shopClient.query(gql`
+            const result = await shopClient.query<GetProduct2Variants.Query>(gql`
                 query GetProduct2Variants {
                     product(id: "T_2") {
                         id
@@ -115,7 +123,7 @@ describe('Shop catalog', () => {
                 }
             `);
 
-            expect(result.product.variants).toEqual([{ id: 'T_6', name: 'Curvy Monitor 27 inch' }]);
+            expect(result.product!.variants).toEqual([{ id: 'T_6', name: 'Curvy Monitor 27 inch' }]);
         });
     });
 
@@ -162,19 +170,25 @@ describe('Shop catalog', () => {
         });
 
         it('omits private Product.facetValues', async () => {
-            const result = await shopClient.query(GET_PRODUCT_FACET_VALUES, {
+            const result = await shopClient.query<
+                GetProductFacetValues.Query,
+                GetProductFacetValues.Variables
+            >(GET_PRODUCT_FACET_VALUES, {
                 id: 'T_2',
             });
 
-            expect(result.product!.facetValues.map((fv: any) => fv.name)).toEqual([]);
+            expect(result.product!.facetValues.map(fv => fv.name)).toEqual([]);
         });
 
         it('omits private ProductVariant.facetValues', async () => {
-            const result = await shopClient.query(GET_PRODUCT_VARIANT_FACET_VALUES, {
+            const result = await shopClient.query<
+                GetVariantFacetValues.Query,
+                GetVariantFacetValues.Variables
+            >(GET_PRODUCT_VARIANT_FACET_VALUES, {
                 id: 'T_2',
             });
 
-            expect(result.product!.variants[0].facetValues.map((fv: any) => fv.name)).toEqual([]);
+            expect(result.product!.variants[0].facetValues.map(fv => fv.name)).toEqual([]);
         });
     });
 
@@ -208,8 +222,11 @@ describe('Shop catalog', () => {
         });
 
         it('returns collection with variants', async () => {
-            const result = await shopClient.query(GET_COLLECTION_VARIANTS, { id: collection.id });
-            expect(result.collection.productVariants.items).toEqual([
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { id: collection.id });
+            expect(result.collection!.productVariants.items).toEqual([
                 { id: 'T_22', name: 'Road Bike' },
                 { id: 'T_23', name: 'Skipping Rope' },
                 { id: 'T_24', name: 'Boxing Gloves' },
@@ -224,10 +241,15 @@ describe('Shop catalog', () => {
         });
 
         it('omits variants from disabled products', async () => {
-            await adminClient.query(DISABLE_PRODUCT, { id: 'T_17' });
+            await adminClient.query<DisableProduct.Mutation, DisableProduct.Variables>(DISABLE_PRODUCT, {
+                id: 'T_17',
+            });
 
-            const result = await shopClient.query(GET_COLLECTION_VARIANTS, { id: collection.id });
-            expect(result.collection.productVariants.items).toEqual([
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { id: collection.id });
+            expect(result.collection!.productVariants.items).toEqual([
                 { id: 'T_22', name: 'Road Bike' },
                 { id: 'T_23', name: 'Skipping Rope' },
                 { id: 'T_24', name: 'Boxing Gloves' },
@@ -245,8 +267,11 @@ describe('Shop catalog', () => {
                 },
             );
 
-            const result = await shopClient.query(GET_COLLECTION_VARIANTS, { id: collection.id });
-            expect(result.collection.productVariants.items).toEqual([
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { id: collection.id });
+            expect(result.collection!.productVariants.items).toEqual([
                 { id: 'T_23', name: 'Skipping Rope' },
                 { id: 'T_24', name: 'Boxing Gloves' },
                 { id: 'T_25', name: 'Tent' },
@@ -256,7 +281,7 @@ describe('Shop catalog', () => {
         });
 
         it('collection list', async () => {
-            const result = await shopClient.query(GET_COLLECTION_LIST);
+            const result = await shopClient.query<GetCollectionList.Query>(GET_COLLECTION_LIST);
 
             expect(result.collections.items).toEqual([
                 { id: 'T_2', name: 'Plants' },
@@ -274,19 +299,22 @@ describe('Shop catalog', () => {
                     },
                 },
             );
-            const result = await shopClient.query(GET_COLLECTION_LIST);
+            const result = await shopClient.query<GetCollectionList.Query>(GET_COLLECTION_LIST);
 
             expect(result.collections.items).toEqual([{ id: 'T_2', name: 'Plants' }]);
         });
 
         it('returns null for private collection', async () => {
-            const result = await shopClient.query(GET_COLLECTION_VARIANTS, { id: collection.id });
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { id: collection.id });
 
             expect(result.collection).toBeNull();
         });
 
         it('product.collections list omits private collections', async () => {
-            const result = await shopClient.query(gql`
+            const result = await shopClient.query<GetProductCollection.Query>(gql`
                 query GetProductCollection {
                     product(id: "T_12") {
                         collections {
@@ -297,7 +325,7 @@ describe('Shop catalog', () => {
                 }
             `);
 
-            expect(result.product.collections).toEqual([]);
+            expect(result.product!.collections).toEqual([]);
         });
     });
 });

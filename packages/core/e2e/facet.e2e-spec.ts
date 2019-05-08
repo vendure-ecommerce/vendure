@@ -6,11 +6,13 @@ import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/frag
 import {
     CreateFacet,
     CreateFacetValues,
+    DeleteFacet,
+    DeleteFacetValues,
     DeletionResult,
     FacetWithValues,
     GetFacetList,
     GetFacetWithValues,
-    GetProductList,
+    GetProductListWithVariants,
     GetProductWithVariants,
     LanguageCode,
     UpdateFacet,
@@ -141,11 +143,13 @@ describe('Facet resolver', () => {
     });
 
     describe('deletion', () => {
-        let products: Array<GetProductList.Items & { variants: Array<{ id: string; name: string }> }>;
+        let products: GetProductListWithVariants.Items[];
 
         beforeAll(async () => {
             // add the FacetValues to products and variants
-            const result1 = await client.query(GET_PRODUCTS_LIST_WITH_VARIANTS);
+            const result1 = await client.query<GetProductListWithVariants.Query>(
+                GET_PRODUCTS_LIST_WITH_VARIANTS,
+            );
             products = result1.products.items;
 
             await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
@@ -177,10 +181,13 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues deletes unused facetValue', async () => {
             const facetValueToDelete = speakerTypeFacet.values[2];
-            const result1 = await client.query(DELETE_FACET_VALUES, {
-                ids: [facetValueToDelete.id],
-                force: false,
-            });
+            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+                DELETE_FACET_VALUES,
+                {
+                    ids: [facetValueToDelete.id],
+                    force: false,
+                },
+            );
             const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
@@ -200,10 +207,13 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use returns NOT_DELETED', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await client.query(DELETE_FACET_VALUES, {
-                ids: [facetValueToDelete.id],
-                force: false,
-            });
+            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+                DELETE_FACET_VALUES,
+                {
+                    ids: [facetValueToDelete.id],
+                    force: false,
+                },
+            );
             const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
@@ -223,10 +233,13 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use can be force deleted', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await client.query(DELETE_FACET_VALUES, {
-                ids: [facetValueToDelete.id],
-                force: true,
-            });
+            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+                DELETE_FACET_VALUES,
+                {
+                    ids: [facetValueToDelete.id],
+                    force: true,
+                },
+            );
 
             expect(result1.deleteFacetValues).toEqual([
                 {
@@ -255,7 +268,7 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use returns NOT_DELETED', async () => {
-            const result1 = await client.query(DELETE_FACET, { id: speakerTypeFacet.id, force: false });
+            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: speakerTypeFacet.id, force: false });
             const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
@@ -272,7 +285,7 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use can be force deleted', async () => {
-            const result1 = await client.query(DELETE_FACET, { id: speakerTypeFacet.id, force: true });
+            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: speakerTypeFacet.id, force: true });
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.DELETED,
@@ -310,7 +323,7 @@ export const GET_FACET_WITH_VALUES = gql`
 `;
 
 const DELETE_FACET_VALUES = gql`
-    mutation DeleteFacetValue($ids: [ID!]!, $force: Boolean) {
+    mutation DeleteFacetValues($ids: [ID!]!, $force: Boolean) {
         deleteFacetValues(ids: $ids, force: $force) {
             result
             message

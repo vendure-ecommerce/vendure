@@ -1,5 +1,5 @@
 // tslint:disable
-// Generated in 2019-05-07T17:59:46+02:00
+// Generated in 2019-05-07T21:25:30+02:00
 
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */

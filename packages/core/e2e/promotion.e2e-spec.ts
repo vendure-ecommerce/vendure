@@ -10,6 +10,7 @@ import { CONFIGURABLE_FRAGMENT, PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
     ConfigArgType,
     CreatePromotion,
+    DeletePromotion,
     DeletionResult,
     GetAdjustmentOperations,
     GetPromotion,
@@ -148,7 +149,7 @@ describe('Promotion resolver', () => {
 
         it('deletes a promotion', async () => {
             promotionToDelete = allPromotions[0];
-            const result = await client.query(DELETE_PROMOTION, { id: promotionToDelete.id });
+            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(DELETE_PROMOTION, { id: promotionToDelete.id });
 
             expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
         });

@@ -14,6 +14,16 @@ import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { CreateAdministrator, CreateRole, GetCustomer, Permission } from './graphql/generated-e2e-admin-types';
+import {
+    GetActiveCustomer,
+    RefreshToken,
+    Register,
+    RequestPasswordReset,
+    RequestUpdateEmailAddress,
+    ResetPassword,
+    UpdateEmailAddress,
+    Verify,
+} from './graphql/generated-e2e-shop-types';
 import { CREATE_ADMINISTRATOR, CREATE_ROLE, GET_CUSTOMER } from './graphql/shared-definitions';
 import {
     GET_ACTIVE_CUSTOMER,
@@ -72,7 +82,10 @@ describe('Shop auth & accounts', () => {
                     emailAddress: 'sofia.green@test.com',
                     password: 'test',
                 };
-                const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+                const result = await shopClient.query<Register.Mutation, Register.Variables>(
+                    REGISTER_ACCOUNT,
+                    { input },
+                );
             }, 'Do not provide a password when `authOptions.requireVerification` is set to "true"'),
         );
 
@@ -83,7 +96,9 @@ describe('Shop auth & accounts', () => {
                 lastName: 'Tester',
                 emailAddress,
             };
-            const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
 
             verificationToken = await verificationTokenPromise;
 
@@ -103,7 +118,9 @@ describe('Shop auth & accounts', () => {
                 lastName: 'Tester',
                 emailAddress,
             };
-            const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
 
             const newVerificationToken = await sendEmail;
 
@@ -120,7 +137,10 @@ describe('Shop auth & accounts', () => {
                     resolve(event.user.verificationToken!);
                 });
             });
-            const result = await shopClient.query(REFRESH_TOKEN, { emailAddress });
+            const result = await shopClient.query<RefreshToken.Mutation, RefreshToken.Variables>(
+                REFRESH_TOKEN,
+                { emailAddress },
+            );
 
             const newVerificationToken = await sendEmail;
 
@@ -132,9 +152,12 @@ describe('Shop auth & accounts', () => {
         });
 
         it('refreshCustomerVerification does nothing with an unrecognized emailAddress', async () => {
-            const result = await shopClient.query(REFRESH_TOKEN, {
-                emailAddress: 'never-been-registered@test.com',
-            });
+            const result = await shopClient.query<RefreshToken.Mutation, RefreshToken.Variables>(
+                REFRESH_TOKEN,
+                {
+                    emailAddress: 'never-been-registered@test.com',
+                },
+            );
             await waitForSendEmailFn();
             expect(result.refreshCustomerVerification).toBe(true);
             expect(sendEmailFn).not.toHaveBeenCalled();
@@ -153,7 +176,7 @@ describe('Shop auth & accounts', () => {
             'verification fails with wrong token',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query(VERIFY_EMAIL, {
+                    shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
                         password,
                         token: 'bad-token',
                     }),
@@ -162,7 +185,7 @@ describe('Shop auth & accounts', () => {
         );
 
         it('verification succeeds with correct token', async () => {
-            const result = await shopClient.query(VERIFY_EMAIL, {
+            const result = await shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
                 password,
                 token: verificationToken,
             });
@@ -176,7 +199,9 @@ describe('Shop auth & accounts', () => {
                 lastName: 'Hacker',
                 emailAddress,
             };
-            const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
             await waitForSendEmailFn();
             expect(result.registerCustomerAccount).toBe(true);
             expect(sendEmailFn).not.toHaveBeenCalled();
@@ -186,7 +211,7 @@ describe('Shop auth & accounts', () => {
             'verification fails if attempted a second time',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query(VERIFY_EMAIL, {
+                    shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
                         password,
                         token: verificationToken,
                     }),
@@ -211,7 +236,10 @@ describe('Shop auth & accounts', () => {
         });
 
         it('requestPasswordReset silently fails with invalid identifier', async () => {
-            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+            const result = await shopClient.query<
+                RequestPasswordReset.Mutation,
+                RequestPasswordReset.Variables
+            >(REQUEST_PASSWORD_RESET, {
                 identifier: 'invalid-identifier',
             });
 
@@ -223,7 +251,10 @@ describe('Shop auth & accounts', () => {
 
         it('requestPasswordReset sends reset token', async () => {
             const passwordResetTokenPromise = getPasswordResetTokenPromise();
-            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+            const result = await shopClient.query<
+                RequestPasswordReset.Mutation,
+                RequestPasswordReset.Variables
+            >(REQUEST_PASSWORD_RESET, {
                 identifier: customer.emailAddress,
             });
 
@@ -238,7 +269,7 @@ describe('Shop auth & accounts', () => {
             'resetPassword fails with wrong token',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query(RESET_PASSWORD, {
+                    shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(RESET_PASSWORD, {
                         password: 'newPassword',
                         token: 'bad-token',
                     }),
@@ -247,10 +278,13 @@ describe('Shop auth & accounts', () => {
         );
 
         it('resetPassword works with valid token', async () => {
-            const result = await shopClient.query(RESET_PASSWORD, {
-                token: passwordResetToken,
-                password: 'newPassword',
-            });
+            const result = await shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(
+                RESET_PASSWORD,
+                {
+                    token: passwordResetToken,
+                    password: 'newPassword',
+                },
+            );
 
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
             expect(loginResult.user.identifier).toBe(customer.emailAddress);
@@ -264,7 +298,9 @@ describe('Shop auth & accounts', () => {
         const PASSWORD = 'newPassword';
 
         beforeAll(async () => {
-            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_1' });
+            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+                id: 'T_1',
+            });
             customer = result.customer!;
         });
 
@@ -275,7 +311,10 @@ describe('Shop auth & accounts', () => {
         it('throws if not logged in', async () => {
             try {
                 await shopClient.asAnonymousUser();
-                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                await shopClient.query<
+                    RequestUpdateEmailAddress.Mutation,
+                    RequestUpdateEmailAddress.Variables
+                >(REQUEST_UPDATE_EMAIL_ADDRESS, {
                     password: PASSWORD,
                     newEmailAddress: NEW_EMAIL_ADDRESS,
                 });
@@ -288,7 +327,10 @@ describe('Shop auth & accounts', () => {
         it('throws if password is incorrect', async () => {
             try {
                 await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
-                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                await shopClient.query<
+                    RequestUpdateEmailAddress.Mutation,
+                    RequestUpdateEmailAddress.Variables
+                >(REQUEST_UPDATE_EMAIL_ADDRESS, {
                     password: 'bad password',
                     newEmailAddress: NEW_EMAIL_ADDRESS,
                 });
@@ -298,29 +340,37 @@ describe('Shop auth & accounts', () => {
             }
         });
 
-        it('throws if email address already in use', assertThrowsWithMessage(
-            async () => {
+        it(
+            'throws if email address already in use',
+            assertThrowsWithMessage(async () => {
                 await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
-                const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_2' });
+                const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
+                    GET_CUSTOMER,
+                    { id: 'T_2' },
+                );
                 const otherCustomer = result.customer!;
 
-                await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+                await shopClient.query<
+                    RequestUpdateEmailAddress.Mutation,
+                    RequestUpdateEmailAddress.Variables
+                >(REQUEST_UPDATE_EMAIL_ADDRESS, {
                     password: PASSWORD,
                     newEmailAddress: otherCustomer.emailAddress,
                 });
-            },
-            'This email address is not available',
-            ),
+            }, 'This email address is not available'),
         );
 
         it('triggers event with token', async () => {
             await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
             const emailUpdateTokenPromise = getEmailUpdateTokenPromise();
 
-            await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
-                password: PASSWORD,
-                newEmailAddress: NEW_EMAIL_ADDRESS,
-            });
+            await shopClient.query<RequestUpdateEmailAddress.Mutation, RequestUpdateEmailAddress.Variables>(
+                REQUEST_UPDATE_EMAIL_ADDRESS,
+                {
+                    password: PASSWORD,
+                    newEmailAddress: NEW_EMAIL_ADDRESS,
+                },
+            );
 
             const { identifierChangeToken, pendingIdentifier } = await emailUpdateTokenPromise;
             emailUpdateToken = identifierChangeToken!;
@@ -338,16 +388,15 @@ describe('Shop auth & accounts', () => {
             }
         });
 
-        it('throws with bad token', assertThrowsWithMessage(
-            async () => {
-                await shopClient.query(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
-            },
-            'Identifier change token not recognized',
-            ),
+        it(
+            'throws with bad token',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
+            }, 'Identifier change token not recognized'),
         );
 
         it('verify the new email address', async () => {
-            const result = await shopClient.query(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
+            const result = await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
             expect(result.updateCustomerEmailAddress).toBe(true);
 
             expect(sendEmailFn).toHaveBeenCalled();
@@ -356,9 +405,9 @@ describe('Shop auth & accounts', () => {
 
         it('can login with new email address after verification', async () => {
             await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
-            const { activeCustomer } = await shopClient.query(GET_ACTIVE_CUSTOMER);
-            expect(activeCustomer.id).toBe(customer.id);
-            expect(activeCustomer.emailAddress).toBe(NEW_EMAIL_ADDRESS);
+            const { activeCustomer } = await shopClient.query<GetActiveCustomer.Query>(GET_ACTIVE_CUSTOMER);
+            expect(activeCustomer!.id).toBe(customer.id);
+            expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
         });
 
         it('cannot login with old email address after verification', async () => {
@@ -369,7 +418,6 @@ describe('Shop auth & accounts', () => {
                 expect(getErrorCode(err)).toBe('UNAUTHORIZED');
             }
         });
-
     });
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
@@ -421,7 +469,7 @@ describe('Shop auth & accounts', () => {
         const adminResult = await shopClient.query<
             CreateAdministrator.Mutation,
             CreateAdministrator.Variables
-            >(CREATE_ADMINISTRATOR, {
+        >(CREATE_ADMINISTRATOR, {
             input: {
                 emailAddress: identifier,
                 firstName: code,
@@ -485,7 +533,9 @@ describe('Expiring tokens', () => {
                 lastName: 'Wallace',
                 emailAddress: 'barry.wallace@test.com',
             };
-            const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
 
             const verificationToken = await verificationTokenPromise;
 
@@ -511,7 +561,10 @@ describe('Expiring tokens', () => {
             );
 
             const passwordResetTokenPromise = getPasswordResetTokenPromise();
-            const result = await shopClient.query(REQUEST_PASSWORD_RESET, {
+            const result = await shopClient.query<
+                RequestPasswordReset.Mutation,
+                RequestPasswordReset.Variables
+            >(REQUEST_PASSWORD_RESET, {
                 identifier: customer!.emailAddress,
             });
 
@@ -523,7 +576,7 @@ describe('Expiring tokens', () => {
 
             await new Promise(resolve => setTimeout(resolve, 3));
 
-            return shopClient.query(RESET_PASSWORD, {
+            return shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(RESET_PASSWORD, {
                 password: 'test',
                 token: passwordResetToken,
             });
@@ -568,7 +621,9 @@ describe('Registration without email verification', () => {
                 lastName: 'Beardsley',
                 emailAddress: userEmailAddress,
             };
-            const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
         }, 'A password must be provided when `authOptions.requireVerification` is set to "false"'),
     );
 
@@ -579,7 +634,9 @@ describe('Registration without email verification', () => {
             emailAddress: userEmailAddress,
             password: 'test',
         };
-        const result = await shopClient.query(REGISTER_ACCOUNT, { input });
+        const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+            input,
+        });
 
         expect(result.registerCustomerAccount).toBe(true);
         expect(sendEmailFn).not.toHaveBeenCalled();
@@ -590,7 +647,7 @@ describe('Registration without email verification', () => {
 
         const result = await shopClient.query(
             gql`
-                query GetMe{
+                query GetMe {
                     me {
                         identifier
                     }
@@ -626,7 +683,9 @@ describe('Updating email address without email verification', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeAll(async () => {
-        const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: 'T_1' });
+        const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            id: 'T_1',
+        });
         customer = result.customer!;
     });
 
@@ -640,7 +699,10 @@ describe('Updating email address without email verification', () => {
 
     it('updates email address', async () => {
         await shopClient.asUserWithCredentials(customer.emailAddress, 'test');
-        const { requestUpdateCustomerEmailAddress } = await shopClient.query(REQUEST_UPDATE_EMAIL_ADDRESS, {
+        const { requestUpdateCustomerEmailAddress } = await shopClient.query<
+            RequestUpdateEmailAddress.Mutation,
+            RequestUpdateEmailAddress.Variables
+        >(REQUEST_UPDATE_EMAIL_ADDRESS, {
             password: 'test',
             newEmailAddress: NEW_EMAIL_ADDRESS,
         });
@@ -649,8 +711,8 @@ describe('Updating email address without email verification', () => {
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
 
-        const { activeCustomer } = await shopClient.query(GET_ACTIVE_CUSTOMER);
-        expect(activeCustomer.emailAddress).toBe(NEW_EMAIL_ADDRESS);
+        const { activeCustomer } = await shopClient.query<GetActiveCustomer.Query>(GET_ACTIVE_CUSTOMER);
+        expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
     });
 });
 
@@ -692,7 +754,10 @@ function getPasswordResetTokenPromise(): Promise<string> {
     });
 }
 
-function getEmailUpdateTokenPromise(): Promise<{ identifierChangeToken: string | null; pendingIdentifier: string | null; }> {
+function getEmailUpdateTokenPromise(): Promise<{
+    identifierChangeToken: string | null;
+    pendingIdentifier: string | null;
+}> {
     return new Promise(resolve => {
         sendEmailFn.mockImplementation((event: IdentifierChangeRequestEvent) => {
             resolve(pick(event.user, ['identifierChangeToken', 'pendingIdentifier']));
