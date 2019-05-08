@@ -41,7 +41,6 @@ Promise.all([
         };
         const commonPlugins = [
             { add: '// tslint:disable' },
-            'time',
             'typescript',
         ];
         const clientPlugins = [

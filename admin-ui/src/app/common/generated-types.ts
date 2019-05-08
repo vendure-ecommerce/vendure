@@ -1,5 +1,4 @@
 // tslint:disable
-// Generated in 2019-05-07T21:25:30+02:00
 
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
@@ -1413,20 +1412,20 @@ export type Mutation = {
   updateAdministrator: Administrator,
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator,
-  login: LoginResult,
-  logout: Scalars['Boolean'],
   /** Create a new Asset */
   createAssets: Array<Asset>,
+  login: LoginResult,
+  logout: Scalars['Boolean'],
+  /** Create a new Channel */
+  createChannel: Channel,
+  /** Update an existing Channel */
+  updateChannel: Channel,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
   updateCollection: Collection,
   /** Move a Collection to a different parent or index */
   moveCollection: Collection,
-  /** Create a new Channel */
-  createChannel: Channel,
-  /** Update an existing Channel */
-  updateChannel: Channel,
   /** Create a new Country */
   createCountry: Country,
   /** Update an existing Country */
@@ -1541,6 +1540,11 @@ export type MutationAssignRoleToAdministratorArgs = {
 };
 
 
+export type MutationCreateAssetsArgs = {
+  input: Array<CreateAssetInput>
+};
+
+
 export type MutationLoginArgs = {
   username: Scalars['String'],
   password: Scalars['String'],
@@ -1548,8 +1552,13 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateAssetsArgs = {
-  input: Array<CreateAssetInput>
+export type MutationCreateChannelArgs = {
+  input: CreateChannelInput
+};
+
+
+export type MutationUpdateChannelArgs = {
+  input: UpdateChannelInput
 };
 
 
@@ -1565,16 +1574,6 @@ export type MutationUpdateCollectionArgs = {
 
 export type MutationMoveCollectionArgs = {
   input: MoveCollectionInput
-};
-
-
-export type MutationCreateChannelArgs = {
-  input: CreateChannelInput
-};
-
-
-export type MutationUpdateChannelArgs = {
-  input: UpdateChannelInput
 };
 
 
@@ -2293,15 +2292,15 @@ export type PromotionSortParameter = {
 export type Query = {
   administrators: AdministratorList,
   administrator?: Maybe<Administrator>,
-  me?: Maybe<CurrentUser>,
   assets: AssetList,
   asset?: Maybe<Asset>,
-  collections: CollectionList,
-  collection?: Maybe<Collection>,
-  collectionFilters: Array<ConfigurableOperation>,
+  me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
   activeChannel: Channel,
+  collections: CollectionList,
+  collection?: Maybe<Collection>,
+  collectionFilters: Array<ConfigurableOperation>,
   countries: CountryList,
   country?: Maybe<Country>,
   customerGroups: Array<CustomerGroup>,
@@ -2362,6 +2361,11 @@ export type QueryAssetArgs = {
 };
 
 
+export type QueryChannelArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryCollectionsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<CollectionListOptions>
@@ -2371,11 +2375,6 @@ export type QueryCollectionsArgs = {
 export type QueryCollectionArgs = {
   id: Scalars['ID'],
   languageCode?: Maybe<LanguageCode>
-};
-
-
-export type QueryChannelArgs = {
-  id: Scalars['ID']
 };
 
 
