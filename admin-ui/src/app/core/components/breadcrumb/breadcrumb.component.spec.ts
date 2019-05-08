@@ -244,7 +244,11 @@ describe('BeadcrumbsComponent', () => {
     ): () => void {
         return fakeAsync(() => {
             const fixture = TestBed.createComponent(TestChildComponent);
-            router.navigate(route);
+            // Run in ngZone to prevent warning: https://github.com/angular/angular/issues/25837#issuecomment-445796236
+            // tslint:disable-next-line:no-non-null-assertion
+            fixture.ngZone!.run(() => {
+                router.navigate(route);
+            });
             fixture.detectChanges();
             tick();
             fixture.detectChanges();
