@@ -5,7 +5,6 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
-import { withClientState } from 'apollo-link-state';
 import { createUploadLink } from 'apollo-upload-client';
 
 import { environment } from '../../environments/environment';
@@ -21,19 +20,6 @@ import { FetchAdapter } from './providers/fetch-adapter';
 import { DefaultInterceptor } from './providers/interceptor';
 import { initializeServerConfigService, ServerConfigService } from './server-config';
 
-const apolloCache = new InMemoryCache();
-
-if (!environment.production) {
-    // make the Apollo Cache inspectable in the console for debug purposes
-    (window as any)['apolloCache'] = apolloCache;
-}
-
-const stateLink = withClientState({
-    cache: apolloCache,
-    resolvers: clientResolvers,
-    defaults: clientDefaults,
-});
-
 export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
@@ -41,9 +27,17 @@ export function createApollo(
     const { apiHost, apiPort, adminApiPath } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
     const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : `:${apiPort}`;
+    const apolloCache = new InMemoryCache();
+    apolloCache.writeData({
+        data: clientDefaults,
+    });
+
+    if (!environment.production) {
+        // make the Apollo Cache inspectable in the console for debug purposes
+        (window as any)['apolloCache'] = apolloCache;
+    }
     return {
         link: ApolloLink.from([
-            stateLink,
             new OmitTypenameLink(),
             setContext(() => {
                 const channelToken = localStorageService.get('activeChannelToken');
@@ -61,6 +55,7 @@ export function createApollo(
             }),
         ]),
         cache: apolloCache,
+        resolvers: clientResolvers,
     };
 }
 
