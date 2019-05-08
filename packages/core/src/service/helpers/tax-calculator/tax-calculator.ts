@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
+import { ConfigService } from '../../../config/config.service';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
-
-import { ConfigService } from '../../../config/config.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 
 export interface TaxCalculationResult {

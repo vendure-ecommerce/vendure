@@ -7,8 +7,9 @@ export const defaultShippingCalculator = new ShippingCalculator({
     description: 'Default Flat-Rate Shipping Calculator',
     args: {
         rate: ConfigArgType.MONEY,
+        taxRate: ConfigArgType.PERCENTAGE,
     },
     calculate: (order, args) => {
-        return args.rate;
+        return { price: args.rate, priceWithTax: args.rate * ((100 + args.taxRate) / 100) };
     },
 });

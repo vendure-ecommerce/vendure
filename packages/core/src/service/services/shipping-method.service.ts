@@ -114,11 +114,11 @@ export class ShippingMethodService {
      */
     private parseOperationArgs(
         input: ConfigurableOperationInput,
-        adjustmentSource: ShippingEligibilityChecker | ShippingCalculator,
+        checkerOrCalculator: ShippingEligibilityChecker | ShippingCalculator,
     ): ConfigurableOperation {
         const output: ConfigurableOperation = {
             code: input.code,
-            description: adjustmentSource.description,
+            description: checkerOrCalculator.description,
             args: input.arguments,
         };
         return output;

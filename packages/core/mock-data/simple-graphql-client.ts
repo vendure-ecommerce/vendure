@@ -1,3 +1,4 @@
+/// <reference types="../typings" />
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';

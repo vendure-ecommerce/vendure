@@ -1,12 +1,12 @@
-import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
-import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
+import { ShippingCalculator, ShippingPrice } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
+import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { Order } from '../order/order.entity';
 
@@ -21,8 +21,7 @@ import { Order } from '../order/order.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ShippingMethod extends AdjustmentSource implements ChannelAware {
-    type = AdjustmentType.SHIPPING;
+export class ShippingMethod extends VendureEntity implements ChannelAware {
     private readonly allCheckers: { [code: string]: ShippingEligibilityChecker } = {};
     private readonly allCalculators: { [code: string]: ShippingCalculator } = {};
 
@@ -46,16 +45,10 @@ export class ShippingMethod extends AdjustmentSource implements ChannelAware {
     @JoinTable()
     channels: Channel[];
 
-    async apply(order: Order): Promise<Adjustment | undefined> {
+    async apply(order: Order): Promise<ShippingPrice | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const amount = await calculator.calculate(order, this.calculator.args);
-            return {
-                amount,
-                type: this.type,
-                description: this.description,
-                adjustmentSource: this.getSourceId(),
-            };
+            return calculator.calculate(order, this.calculator.args);
         }
     }
 

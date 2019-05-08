@@ -8,7 +8,7 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
-import { PromotionUtils } from '../../../config';
+import { PromotionUtils, ShippingPrice } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine, ProductVariant } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
@@ -134,12 +134,13 @@ export class OrderCalculator {
         const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         const currentShippingMethod = order.shippingMethod;
         if (results && results.length && currentShippingMethod) {
-            let selected: { method: ShippingMethod; price: number } | undefined;
+            let selected: { method: ShippingMethod; price: ShippingPrice } | undefined;
             selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
             if (!selected) {
                 selected = results[0];
             }
-            order.shipping = selected.price;
+            order.shipping = selected.price.price;
+            order.shippingWithTax = selected.price.priceWithTax;
         }
     }
 

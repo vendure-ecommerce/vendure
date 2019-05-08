@@ -70,6 +70,9 @@ export class Order extends VendureEntity {
     @Column({ default: 0 })
     shipping: number;
 
+    @Column({ default: 0 })
+    shippingWithTax: number;
+
     @Calculated()
     get totalBeforeTax(): number {
         return this.subTotalBeforeTax + this.promotionAdjustmentsTotal + (this.shipping || 0);
@@ -77,7 +80,7 @@ export class Order extends VendureEntity {
 
     @Calculated()
     get total(): number {
-        return this.subTotal + this.promotionAdjustmentsTotal + (this.shipping || 0);
+        return this.subTotal + this.promotionAdjustmentsTotal + (this.shippingWithTax || 0);
     }
 
     @Calculated()

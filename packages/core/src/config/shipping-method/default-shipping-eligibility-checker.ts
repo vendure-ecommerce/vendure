@@ -1,4 +1,5 @@
 import { ConfigArgType } from '../../../../common/lib/generated-types';
+
 import { ShippingEligibilityChecker } from './shipping-eligibility-checker';
 
 export const defaultShippingEligibilityChecker = new ShippingEligibilityChecker({

@@ -1277,6 +1277,7 @@ export type Order = Node & {
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;
     shipping: Scalars['Int'];
+    shippingWithTax: Scalars['Int'];
     shippingMethod?: Maybe<ShippingMethod>;
     totalBeforeTax: Scalars['Int'];
     total: Scalars['Int'];
@@ -1305,6 +1306,7 @@ export type OrderFilterParameter = {
     subTotal?: Maybe<NumberOperators>;
     currencyCode?: Maybe<StringOperators>;
     shipping?: Maybe<NumberOperators>;
+    shippingWithTax?: Maybe<NumberOperators>;
     totalBeforeTax?: Maybe<NumberOperators>;
     total?: Maybe<NumberOperators>;
 };
@@ -1356,6 +1358,7 @@ export type OrderSortParameter = {
     subTotalBeforeTax?: Maybe<SortOrder>;
     subTotal?: Maybe<SortOrder>;
     shipping?: Maybe<SortOrder>;
+    shippingWithTax?: Maybe<SortOrder>;
     totalBeforeTax?: Maybe<SortOrder>;
     total?: Maybe<SortOrder>;
 };
@@ -1773,6 +1776,7 @@ export type ShippingMethodList = PaginatedList & {
 export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
     description: Scalars['String'];
 };
 

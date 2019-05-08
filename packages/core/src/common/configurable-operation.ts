@@ -76,13 +76,12 @@ function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
             return arg.value as any;
         case ConfigArgType.INT:
         case ConfigArgType.MONEY:
+        case ConfigArgType.PERCENTAGE:
             return Number.parseInt(arg.value || '', 10) as any;
         case ConfigArgType.DATETIME:
             return Date.parse(arg.value || '') as any;
         case ConfigArgType.BOOLEAN:
             return !!arg.value as any;
-        case ConfigArgType.PERCENTAGE:
-            return arg.value as any;
         case ConfigArgType.FACET_VALUE_IDS:
             try {
                 return JSON.parse(arg.value as any);

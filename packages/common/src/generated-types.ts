@@ -1413,12 +1413,12 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator,
   /** Create a new Asset */
   createAssets: Array<Asset>,
-  login: LoginResult,
-  logout: Scalars['Boolean'],
   /** Create a new Channel */
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  login: LoginResult,
+  logout: Scalars['Boolean'],
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1471,7 +1471,6 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
-  reindex: SearchReindexResponse,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1486,6 +1485,7 @@ export type Mutation = {
   generateVariantsForProduct: Product,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
+  reindex: SearchReindexResponse,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1493,14 +1493,14 @@ export type Mutation = {
   createRole: Role,
   /** Update an existing Role */
   updateRole: Role,
-  /** Create a new ShippingMethod */
-  createShippingMethod: ShippingMethod,
-  /** Update an existing ShippingMethod */
-  updateShippingMethod: ShippingMethod,
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Create a new ShippingMethod */
+  createShippingMethod: ShippingMethod,
+  /** Update an existing ShippingMethod */
+  updateShippingMethod: ShippingMethod,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
@@ -1539,13 +1539,6 @@ export type MutationCreateAssetsArgs = {
 };
 
 
-export type MutationLoginArgs = {
-  username: Scalars['String'],
-  password: Scalars['String'],
-  rememberMe?: Maybe<Scalars['Boolean']>
-};
-
-
 export type MutationCreateChannelArgs = {
   input: CreateChannelInput
 };
@@ -1553,6 +1546,13 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationLoginArgs = {
+  username: Scalars['String'],
+  password: Scalars['String'],
+  rememberMe?: Maybe<Scalars['Boolean']>
 };
 
 
@@ -1762,16 +1762,6 @@ export type MutationUpdateRoleArgs = {
 };
 
 
-export type MutationCreateShippingMethodArgs = {
-  input: CreateShippingMethodInput
-};
-
-
-export type MutationUpdateShippingMethodArgs = {
-  input: UpdateShippingMethodInput
-};
-
-
 export type MutationCreateTaxCategoryArgs = {
   input: CreateTaxCategoryInput
 };
@@ -1779,6 +1769,16 @@ export type MutationCreateTaxCategoryArgs = {
 
 export type MutationUpdateTaxCategoryArgs = {
   input: UpdateTaxCategoryInput
+};
+
+
+export type MutationCreateShippingMethodArgs = {
+  input: CreateShippingMethodInput
+};
+
+
+export type MutationUpdateShippingMethodArgs = {
+  input: UpdateShippingMethodInput
 };
 
 
@@ -1853,6 +1853,7 @@ export type Order = Node & {
   subTotal: Scalars['Int'],
   currencyCode: CurrencyCode,
   shipping: Scalars['Int'],
+  shippingWithTax: Scalars['Int'],
   shippingMethod?: Maybe<ShippingMethod>,
   totalBeforeTax: Scalars['Int'],
   total: Scalars['Int'],
@@ -1881,6 +1882,7 @@ export type OrderFilterParameter = {
   subTotal?: Maybe<NumberOperators>,
   currencyCode?: Maybe<StringOperators>,
   shipping?: Maybe<NumberOperators>,
+  shippingWithTax?: Maybe<NumberOperators>,
   totalBeforeTax?: Maybe<NumberOperators>,
   total?: Maybe<NumberOperators>,
 };
@@ -1932,6 +1934,7 @@ export type OrderSortParameter = {
   subTotalBeforeTax?: Maybe<SortOrder>,
   subTotal?: Maybe<SortOrder>,
   shipping?: Maybe<SortOrder>,
+  shippingWithTax?: Maybe<SortOrder>,
   totalBeforeTax?: Maybe<SortOrder>,
   total?: Maybe<SortOrder>,
 };
@@ -2273,10 +2276,10 @@ export type Query = {
   administrator?: Maybe<Administrator>,
   assets: AssetList,
   asset?: Maybe<Asset>,
-  me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
   activeChannel: Channel,
+  me?: Maybe<CurrentUser>,
   collections: CollectionList,
   collection?: Maybe<Collection>,
   collectionFilters: Array<ConfigurableOperation>,
@@ -2295,20 +2298,20 @@ export type Query = {
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
   products: ProductList,
   product?: Maybe<Product>,
+  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
   roles: RoleList,
   role?: Maybe<Role>,
+  taxCategories: Array<TaxCategory>,
+  taxCategory?: Maybe<TaxCategory>,
   shippingMethods: ShippingMethodList,
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
-  taxCategories: Array<TaxCategory>,
-  taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
   taxRate?: Maybe<TaxRate>,
   zones: Array<Zone>,
@@ -2423,11 +2426,6 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
-export type QuerySearchArgs = {
-  input: SearchInput
-};
-
-
 export type QueryProductsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<ProductListOptions>
@@ -2437,6 +2435,11 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
   id: Scalars['ID'],
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput
 };
 
 
@@ -2460,17 +2463,17 @@ export type QueryRoleArgs = {
 };
 
 
+export type QueryTaxCategoryArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryShippingMethodsArgs = {
   options?: Maybe<ShippingMethodListOptions>
 };
 
 
 export type QueryShippingMethodArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryTaxCategoryArgs = {
   id: Scalars['ID']
 };
 
@@ -2634,6 +2637,7 @@ export type ShippingMethodListOptions = {
 export type ShippingMethodQuote = {
   id: Scalars['ID'],
   price: Scalars['Int'],
+  priceWithTax: Scalars['Int'],
   description: Scalars['String'],
 };
 

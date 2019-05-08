@@ -194,11 +194,14 @@ export class Populator {
             await this.shippingMethodService.create({
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
-                    arguments: [],
+                    arguments: [{ name: 'orderMinimum', value: '0', type: ConfigArgType.MONEY }],
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
-                    arguments: [{ name: 'rate', value: method.price.toString(), type: ConfigArgType.MONEY }],
+                    arguments: [
+                        { name: 'rate', value: method.price.toString(), type: ConfigArgType.MONEY },
+                        { name: 'taxRate', value: '0', type: ConfigArgType.PERCENTAGE },
+                    ],
                 },
                 description: method.name,
                 code: normalizeString(method.name, '-'),

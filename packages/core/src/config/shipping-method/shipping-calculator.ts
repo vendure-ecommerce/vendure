@@ -8,8 +8,14 @@ export type ShippingCalculatorArgType =
     | ConfigArgType.INT
     | ConfigArgType.MONEY
     | ConfigArgType.STRING
+    | ConfigArgType.PERCENTAGE
     | ConfigArgType.BOOLEAN;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
+
+export type ShippingPrice = {
+    price: number;
+    priceWithTax: number;
+};
 
 /**
  * @description
@@ -21,7 +27,7 @@ export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => number | Promise<number>;
+) => ShippingPrice | Promise<ShippingPrice>;
 
 /**
  * @description
@@ -65,7 +71,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implement
      *
      * @internal
      */
-    calculate(order: Order, args: ConfigArg[]): number | Promise<number> {
+    calculate(order: Order, args: ConfigArg[]): ShippingPrice | Promise<ShippingPrice> {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
