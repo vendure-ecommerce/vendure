@@ -22,7 +22,12 @@ import {
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { ConfigArgType, ConfigurableOperation, FacetWithValues } from '../../../common/generated-types';
+import {
+    ConfigArgType,
+    ConfigurableOperation,
+    FacetWithValues,
+    GetActiveChannel,
+} from '../../../common/generated-types';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**
@@ -49,6 +54,7 @@ import { interpolateDescription } from '../../../common/utilities/interpolate-de
 export class ConfigurableInputComponent implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
     @Input() operation: ConfigurableOperation;
     @Input() facets: FacetWithValues.Fragment[] = [];
+    @Input() activeChannel: GetActiveChannel.ActiveChannel;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;

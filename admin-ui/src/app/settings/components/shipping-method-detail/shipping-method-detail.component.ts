@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { normalizeString } from 'shared/normalize-string';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     ConfigurableOperation,
     ConfigurableOperationInput,
     CreateShippingMethodInput,
+    GetActiveChannel,
     ShippingMethod,
     UpdateShippingMethodInput,
 } from '../../../common/generated-types';
@@ -30,6 +31,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     calculators: ConfigurableOperation[] = [];
     selectedChecker?: ConfigurableOperation;
     selectedCalculator?: ConfigurableOperation;
+    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
     constructor(
         router: Router,
@@ -56,6 +58,10 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             this.calculators = data.shippingCalculators;
             this.changeDetector.markForCheck();
         });
+
+        this.activeChannel$ = this.dataService.settings
+            .getActiveChannel()
+            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy(): void {
@@ -146,7 +152,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             code: operation.code,
             arguments: Object.values(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
-                value: value.toString(),
+                value: value.hasOwnProperty('value') ? (value as any).value : value.toString(),
                 type: operation.args[j].type,
             })),
         };

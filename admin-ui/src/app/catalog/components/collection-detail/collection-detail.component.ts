@@ -19,6 +19,7 @@ import {
     ConfigurableOperationInput,
     CreateCollectionInput,
     FacetWithValues,
+    GetActiveChannel,
     LanguageCode,
     UpdateCollectionInput,
 } from '../../../common/generated-types';
@@ -44,6 +45,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
+    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
@@ -79,6 +81,9 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
+        this.activeChannel$ = this.dataService.settings
+            .getActiveChannel()
+            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy() {

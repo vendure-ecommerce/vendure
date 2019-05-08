@@ -32,6 +32,7 @@
                     [facets]="facets$ | async"
                     [operation]="condition"
                     [formControlName]="i"
+                    [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>
             </ng-container>
 
@@ -64,6 +65,7 @@
                 [facets]="facets$ | async"
                 [operation]="action"
                 [formControlName]="i"
+                [activeChannel]="activeChannel$ | async"
             ></vdr-configurable-input>
             <div>
                 <clr-dropdown>

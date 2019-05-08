@@ -41,6 +41,7 @@ import { TitleInputComponent } from './components/title-input/title-input.compon
 import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
+import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 
@@ -88,6 +89,7 @@ const DECLARATIONS = [
     RichTextEditorComponent,
     SimpleDialogComponent,
     TitleInputComponent,
+    SentenceCasePipe,
 ];
 
 @NgModule({

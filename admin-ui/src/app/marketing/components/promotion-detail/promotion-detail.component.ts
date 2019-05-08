@@ -10,6 +10,7 @@ import {
     ConfigurableOperationInput,
     CreatePromotionInput,
     FacetWithValues,
+    GetActiveChannel,
     LanguageCode,
     Promotion,
     UpdatePromotionInput,
@@ -32,6 +33,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
+    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
     private allConditions: ConfigurableOperation[];
     private allActions: ConfigurableOperation[];
@@ -65,6 +67,9 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             this.allActions = data.adjustmentOperations.actions;
             this.allConditions = data.adjustmentOperations.conditions;
         });
+        this.activeChannel$ = this.dataService.settings
+            .getActiveChannel()
+            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy() {
