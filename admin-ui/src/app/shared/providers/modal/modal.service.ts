@@ -115,8 +115,8 @@ export class ModalService {
                 modalInstance.childComponentType = component;
                 modalInstance.options = options;
 
-                return new Observable(subscriber => {
-                    modalInstance.closeModal = (result: any) => {
+                return new Observable<R>(subscriber => {
+                    modalInstance.closeModal = (result: R) => {
                         modalComponentRef.destroy();
                         subscriber.next(result);
                         subscriber.complete();

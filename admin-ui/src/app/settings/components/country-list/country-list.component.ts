@@ -100,7 +100,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
                             })
                             .pipe(map(data => data.createZone));
                     } else {
-                        return of();
+                        return of(undefined);
                     }
                 }),
             )
@@ -133,7 +133,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
                             .removeMembersFromZone(selection.id, this.selectedCountryIds)
                             .pipe(map(data => data.removeMembersFromZone));
                     } else {
-                        return of();
+                        return of(undefined);
                     }
                 }),
             )
