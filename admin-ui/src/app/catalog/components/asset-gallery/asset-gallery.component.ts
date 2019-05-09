@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Asset } from '../../../common/generated-types';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { AssetPreviewComponent } from '../asset-preview/asset-preview.component';
 
 @Component({
     selector: 'vdr-asset-gallery',
@@ -17,6 +19,8 @@ export class AssetGalleryComponent {
     @Output() selectionChange = new EventEmitter<Asset[]>();
 
     selection: Asset[] = [];
+
+    constructor(private modalService: ModalService) {}
 
     toggleSelection(event: MouseEvent, asset: Asset) {
         const index = this.selection.findIndex(a => a.id === asset.id);
@@ -44,5 +48,15 @@ export class AssetGalleryComponent {
 
     lastSelected(): Asset {
         return this.selection[this.selection.length - 1];
+    }
+
+    previewAsset(asset: Asset) {
+        this.modalService
+            .fromComponent(AssetPreviewComponent, {
+                size: 'xl',
+                closable: true,
+                locals: { asset },
+            })
+            .subscribe();
     }
 }

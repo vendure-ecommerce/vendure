@@ -12,6 +12,7 @@ import { unique } from 'shared/unique';
 import { Asset } from '../../../common/generated-types';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
+import { AssetPreviewComponent } from '../asset-preview/asset-preview.component';
 
 export interface AssetChange {
     assetIds: string[];
@@ -62,6 +63,16 @@ export class ProductAssetsComponent {
 
     isFeatured(asset: Asset): boolean {
         return !!this.featuredAsset && this.featuredAsset.id === asset.id;
+    }
+
+    previewAsset(asset: Asset) {
+        this.modalService
+            .fromComponent(AssetPreviewComponent, {
+                size: 'xl',
+                closable: true,
+                locals: { asset },
+            })
+            .subscribe();
     }
 
     removeAsset(asset: Asset) {

@@ -10,6 +10,7 @@ import { AssetFileInputComponent } from './components/asset-file-input/asset-fil
 import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
+import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
@@ -61,12 +62,14 @@ import { ProductResolver } from './providers/routing/product-resolver';
         CollectionTreeNodeComponent,
         CollectionContentsComponent,
         ProductVariantsTableComponent,
+        AssetPreviewComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,
         CreateOptionGroupDialogComponent,
         SelectOptionGroupDialogComponent,
         ApplyFacetDialogComponent,
+        AssetPreviewComponent,
     ],
     providers: [ProductResolver, FacetResolver, CollectionResolver],
 })

@@ -31,7 +31,12 @@
                 {{ 'catalog.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}
             </div>
             <div>
-                <a [href]="lastSelected().source" target="_blank">
+                <button (click)="previewAsset(lastSelected())" class="btn btn-link">
+                    {{ 'catalog.preview' | translate }}
+                </button>
+            </div>
+            <div>
+                <a [href]="lastSelected().source" target="_blank" class="btn btn-link">
                     {{ 'catalog.open-asset-source' | translate }}
                 </a>
             </div>

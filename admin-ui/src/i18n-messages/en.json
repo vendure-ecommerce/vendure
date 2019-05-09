@@ -49,6 +49,7 @@
     "generate-variants-default-only": "This product does not have options",
     "generate-variants-with-options": "This product has options",
     "group-by-product": "Group by product",
+    "height": "Height",
     "move-down": "Move down",
     "move-to": "Move to",
     "move-up": "Move up",
@@ -62,6 +63,8 @@
     "option-group-options-tooltip": "Enter each option on a new line in the default language ({ defaultLanguage })",
     "options": "Options",
     "original-asset-size": "Source size",
+    "preview": "Preview",
+    "preview-size": "Preview size",
     "price": "Price",
     "price-includes-tax-at": "Includes tax at { rate }%",
     "price-with-tax-in-default-zone": "Inc. { rate }% tax: { price }",
@@ -87,7 +90,8 @@
     "upload-assets": "Upload assets",
     "values": "Values",
     "view-contents": "View contents",
-    "visibility": "Visibility"
+    "visibility": "Visibility",
+    "width": "Width"
   },
   "common": {
     "ID": "ID",
@@ -439,7 +443,6 @@
     "read": "Read",
     "remove-countries-from-zone": "Remove countries from zone...",
     "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
-    "role": "Role",
     "roles": "Roles",
     "section": "Section",
     "select-zone": "Select zone",
