@@ -1,23 +1,17 @@
 <vdr-action-bar>
-    <vdr-ab-left>
-        <form class="clr-form search-form" [formGroup]="searchForm">
-            <input
-                type="text"
-                name="searchTerm"
-                formControlName="searchTerm"
-                [placeholder]="'catalog.search-product-name-or-code' | translate"
-                class="clr-input search-input"
-            />
-            <clr-checkbox-wrapper>
-                <input
-                    type="checkbox"
-                    clrCheckbox
-                    formControlName="groupByProduct"
-                    (ngModelChange)="groupByProduct = $event"
-                />
-                <label>{{ 'catalog.group-by-product' | translate }}</label>
-            </clr-checkbox-wrapper>
-        </form>
+    <vdr-ab-left [grow]="true">
+        <div class="search-form">
+            <vdr-product-search-input
+                #productSearchInputComponent
+                [facetValueResults]="facetValues$ | async"
+                (searchTermChange)="setSearchTerm($event)"
+                (facetValueChange)="setFacetValueIds($event)"
+            ></vdr-product-search-input>
+        </div>
+        <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
+            <label>{{ 'catalog.group-by-product' | translate }}</label>
+        </clr-checkbox-wrapper>
     </vdr-ab-left>
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">

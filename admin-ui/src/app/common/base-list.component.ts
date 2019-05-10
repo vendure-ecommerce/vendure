@@ -18,6 +18,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     totalItems$: Observable<number>;
     itemsPerPage$: Observable<number>;
     currentPage$: Observable<number>;
+    protected listQuery: QueryResult<ResultType, VariableType>;
     protected destroy$ = new Subject<void>();
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
@@ -48,16 +49,16 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
                 `No listQueryFn has been defined. Please call super.setQueryFn() in the constructor.`,
             );
         }
-        const listQuery = this.listQueryFn(10, 0);
+        this.listQuery = this.listQueryFn(10, 0);
 
         const fetchPage = ([currentPage, itemsPerPage, _]: [number, number, undefined]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
-            listQuery.ref.refetch(this.onPageChangeFn(skip, take));
+            this.listQuery.ref.refetch(this.onPageChangeFn(skip, take));
         };
 
-        this.items$ = listQuery.stream$.pipe(map(data => this.mappingFn(data).items));
-        this.totalItems$ = listQuery.stream$.pipe(map(data => this.mappingFn(data).totalItems));
+        this.items$ = this.listQuery.stream$.pipe(map(data => this.mappingFn(data).items));
+        this.totalItems$ = this.listQuery.stream$.pipe(map(data => this.mappingFn(data).totalItems));
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
             map(page => (!page ? 1 : +page)),
@@ -92,7 +93,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.refresh$.next(undefined);
     }
 
-    private setQueryParam(key: string, value: any) {
+    protected setQueryParam(key: string, value: any) {
         this.router.navigate(['./'], {
             queryParams: { [key]: value },
             relativeTo: this.route,

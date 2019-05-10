@@ -305,6 +305,17 @@ export const SEARCH_PRODUCTS = gql`
                 productVariantPreview
                 sku
             }
+            facetValues {
+                count
+                facetValue {
+                    id
+                    name
+                    facet {
+                        id
+                        name
+                    }
+                }
+            }
         }
     }
 `;

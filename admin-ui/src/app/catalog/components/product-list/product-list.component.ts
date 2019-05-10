@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { delay, filter, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
-import { DeletionResult, GetProductList, SearchProducts } from '../../../common/generated-types';
+import { SearchInput, SearchProducts } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
 @Component({
     selector: 'vdr-products-list',
@@ -19,8 +19,11 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
 export class ProductListComponent
     extends BaseListComponent<SearchProducts.Query, SearchProducts.Items, SearchProducts.Variables>
     implements OnInit {
-    searchForm: FormGroup | undefined;
+    searchTerm = '';
+    facetValueIds: string[] = [];
     groupByProduct = true;
+    facetValues$: Observable<SearchProducts.FacetValues[]>;
+    @ViewChild('productSearchInputComponent') private productSearchInput: ProductSearchInputComponent;
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
@@ -30,32 +33,60 @@ export class ProductListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) =>
-                this.dataService.product.searchProducts(this.getFormValue('searchTerm', ''), ...args),
+            (...args: any[]) => this.dataService.product.searchProducts(this.searchTerm, ...args),
             data => data.search,
+            // tslint:disable-next-line:no-shadowed-variable
             (skip, take) => ({
                 input: {
                     skip,
                     take,
-                    term: this.getFormValue('searchTerm', ''),
-                    groupByProduct: this.getFormValue('groupByProduct', true),
-                },
+                    term: this.searchTerm,
+                    facetIds: this.facetValueIds,
+                    groupByProduct: this.groupByProduct,
+                } as SearchInput,
             }),
         );
     }
 
     ngOnInit() {
         super.ngOnInit();
-        this.searchForm = new FormGroup({
-            searchTerm: new FormControl(''),
-            groupByProduct: new FormControl(true),
-        });
-        this.searchForm.valueChanges
+        this.facetValues$ = this.listQuery.mapStream(data => data.search.facetValues);
+        this.route.queryParamMap
             .pipe(
-                debounceTime(250),
+                map(qpm => qpm.get('q')),
                 takeUntil(this.destroy$),
             )
-            .subscribe(() => this.refresh());
+            .subscribe(term => {
+                this.productSearchInput.setSearchTerm(term);
+            });
+
+        const fvids$ = this.route.queryParamMap.pipe(map(qpm => qpm.getAll('fvids')));
+
+        fvids$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
+            this.productSearchInput.setFacetValues(ids);
+        });
+
+        this.facetValues$
+            .pipe(
+                take(1),
+                delay(100),
+                withLatestFrom(fvids$),
+            )
+            .subscribe(([__, ids]) => {
+                this.productSearchInput.setFacetValues(ids);
+            });
+    }
+
+    setSearchTerm(term: string) {
+        this.searchTerm = term;
+        this.setQueryParam('q', term || null);
+        this.refresh();
+    }
+
+    setFacetValueIds(ids: string[]) {
+        this.facetValueIds = ids;
+        this.setQueryParam('fvids', ids);
+        this.refresh();
     }
 
     deleteProduct(productId: string) {
@@ -83,17 +114,5 @@ export class ProductListComponent
                     });
                 },
             );
-    }
-
-    private getFormValue<T>(controlName: string, defaultValue: T): T {
-        if (!this.searchForm) {
-            return defaultValue;
-        }
-        const control = this.searchForm.get(controlName);
-        if (control) {
-            return control.value;
-        } else {
-            throw new Error(`Form does not contain a control named ${controlName}`);
-        }
     }
 }

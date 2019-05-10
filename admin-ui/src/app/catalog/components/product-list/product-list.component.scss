@@ -12,9 +12,8 @@
 .search-form {
     display: flex;
     align-items: center;
-    .search-input {
-        margin-right: 6px;
-    }
+    width: 100%;
+    margin-bottom: 6px;
 }
 .search-input {
     min-width: 300px;
