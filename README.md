@@ -38,21 +38,36 @@ The root directory has a `package.json` which contains build-related dependencie
 
 This runs the Lerna "bootstrap" command, which installs dependencies for all packages.
 
-### 2. Set up the server
+### 3. Build all packages
+
+`yarn build`
+
+Packages must be built (i.e. TypeScript compiled, admin ui app built, certain assets copied etc.) before being used.
+
+Note that this can take a few minutes.
+
+### 4. Set up the server
 
 The server requires an SQL database to be available. I am currently using [bitnami-docker-phpmyadmin](https://github.com/bitnami/bitnami-docker-phpmyadmin) Docker image,
 which is MariaDB including phpMyAdmin. However, the simplest option is to use SQLite.
 
 Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database which works with TypeORM.
 
-1. Configure the [dev config](./packages/dev-server/dev-config.ts)
-2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the config ("vendure-dev").
-3. Populate mock data with `yarn dev-server:populate`
-4. `yarn dev-server` to start the server
+1. Configure the [dev config](./packages/dev-server/dev-config.ts), making sure the connection settings in the `getDbConfig()` function are correct for the database type you will be using.
+2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the `getDbConfig()` settings. If you are using SQLite, you can skip this step.
+3. Populate mock data with `yarn dev-server:populate --db=<mysql|postgres|sqlite>`. If you do not specify the `db` argument, it will default to "mysql".
 
-### 3. Set up the admin ui
+### 5. Run the dev server
 
-1. `cd admin-ui && yarn`
+```
+yarn dev-server:start --db=<mysql|postgres|sqlite>
+```
+
+ If you do not specify the `db` argument, it will default to "mysql".
+
+### 6. Launch the admin ui
+
+1. `cd admin-ui`
 2. `yarn start`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
