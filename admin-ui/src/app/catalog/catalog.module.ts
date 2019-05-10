@@ -24,6 +24,7 @@ import { GenerateProductVariantsComponent } from './components/generate-product-
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
@@ -63,6 +64,7 @@ import { ProductResolver } from './providers/routing/product-resolver';
         CollectionContentsComponent,
         ProductVariantsTableComponent,
         AssetPreviewComponent,
+        ProductSearchInputComponent,
     ],
     entryComponents: [
         AssetPickerDialogComponent,

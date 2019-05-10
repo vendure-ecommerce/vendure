@@ -56,4 +56,8 @@ select {
 .ng-select.ng-select-focused>.ng-select-container {
     border-color: $color-primary-500 !important;
     box-shadow: 0 0 1px 1px $color-primary-100;
+    border-radius: 3px;
+}
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+    background-color: $color-grey-200;
 }

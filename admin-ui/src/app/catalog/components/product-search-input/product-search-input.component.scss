@@ -1,0 +1,49 @@
+@import "variables";
+
+:host {
+    margin-top: 6px;
+    display: block;
+    width: 100%;
+    margin-right: 24px;
+
+    ::ng-deep {
+
+        .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
+            background: none;
+            margin: 0;
+        }
+
+        .ng-dropdown-panel-items div.ng-option:last-child {
+            display: none;
+        }
+
+        .ng-dropdown-panel .ng-dropdown-header {
+            border: none;
+            padding: 0;
+        }
+
+        .ng-select.ng-select-multiple .ng-select-container .ng-value-container {
+            padding: 0;
+        }
+
+        .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-placeholder {
+            padding-left: 8px;
+        }
+    }
+}
+
+ng-select {
+    width: 100%;
+    min-width: 300px;
+    margin-right: 12px;
+}
+
+.search-header {
+    padding: 8px 10px;
+    border-bottom: 1px solid $color-grey-200;
+    cursor: pointer;
+
+    &.selected, &:hover {
+        background-color: $color-grey-200;
+    }
+}

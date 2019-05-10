@@ -354,10 +354,10 @@
   resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-1.1.3.tgz#b736ead16ced97938370090694cc4da64601b2f8"
   integrity sha512-0H3/6YeVltmS3a0cNG8TyOB7nRhpHjVtzTSC06hmk2/cp4x14XPHdHabV1gwWq1ZXfGb5cLDRBb2cjWb546sKQ==
 
-"@ng-select/ng-select@^2.15.1":
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-2.15.1.tgz#c28e18ed798e59d369658c89187a49ee915df706"
-  integrity sha512-MzRfCUbHMbnX6fLP7Pw1qoufGmu3sLPrfmu8/J/p1pYIQySV1DgXlC3/Yo20jq4rkY0WmOquEqTY/5fKUEs4/A==
+"@ng-select/ng-select@^2.19.0":
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-2.19.0.tgz#6e56eef5bed92fc8380dbb1cea2f4c2dce15f733"
+  integrity sha512-xyQjPNv9m9tWA5hpNLlDQQagIHv6EDFkoTjtu3OjIn/9HE9kMB32OQ5yDgXP2hDB6NoBoP/vhTAPzRumvmwA/A==
   dependencies:
     tslib "^1.9.0"
 
