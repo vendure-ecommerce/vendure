@@ -12,7 +12,7 @@ cache: yarn
 
 install:
   - yarn install
-  - yarn bootstrap && cd ..
+  - yarn bootstrap
 
 script:
   - yarn lerna run build
