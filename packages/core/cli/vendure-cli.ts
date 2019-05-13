@@ -3,7 +3,7 @@ import program from 'commander';
 import path from 'path';
 
 import { logColored } from './cli-utils';
-import { importProducts } from './populate';
+import { importProducts, populateInitialData } from './populate';
 // tslint:disable-next-line:no-var-requires
 const version = require('../../package.json').version;
 
@@ -25,6 +25,20 @@ program
     .action(async (csvPath, command) => {
         const filePath = path.join(process.cwd(), csvPath);
         await importProducts(filePath, command.language);
+    });
+program
+    .command('init <initDataFile>')
+    .description('Import initial data from the specified json file')
+    .action(async (initDataFile, command) => {
+        const filePath = path.join(process.cwd(), initDataFile);
+        logColored(`\nPopulating initial data from "${filePath}"...\n`);
+        const initialData = require(filePath);
+        const app = await populateInitialData(initialData);
+        logColored('\nDone!');
+        if (app) {
+            await app.close();
+        }
+        process.exit(0);
     });
 program.parse(process.argv);
 if (!process.argv.slice(2).length) {

@@ -29,7 +29,7 @@ export async function populate(
         throw new Error('Could not bootstrap the Vendure app');
     }
     const initialData = require(initialDataPath);
-    await populateInitialData(app, initialData);
+    await populateInitialData(initialData, app);
     if (productsCsvPath) {
         await importProductsFromFile(app, productsCsvPath, initialData.defaultLanguage);
         await populateCollections(app, initialData);
@@ -104,13 +104,19 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     return app;
 }
 
-async function populateInitialData(app: INestApplication, initialData: object) {
-    const populator = app.get(Populator);
-    try {
-        await populator.populateInitialData(initialData);
-    } catch (err) {
-        console.error(err.message);
+export async function populateInitialData(initialData: object, app?: INestApplication) {
+    if (!app) {
+        app = await getApplicationRef();
     }
+    if (app) {
+        const populator = app.get(Populator);
+        try {
+            await populator.populateInitialData(initialData);
+        } catch (err) {
+            console.error(err.message);
+        }
+    }
+    return app;
 }
 
 async function populateCollections(app: INestApplication, initialData: object) {
