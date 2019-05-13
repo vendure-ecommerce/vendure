@@ -89,6 +89,21 @@ export class ProductListComponent
         this.refresh();
     }
 
+    rebuildSearchIndex() {
+        this.dataService.product.reindex().subscribe(({ reindex }) => {
+            if (reindex.success) {
+                const time = new Intl.NumberFormat().format(reindex.timeTaken);
+                this.notificationService.success(_('catalog.reindex-successful'), {
+                    count: reindex.indexedItemCount,
+                    time,
+                });
+                this.refresh();
+            } else {
+                this.notificationService.error(_('catalog.reindex-error'));
+            }
+        });
+    }
+
     deleteProduct(productId: string) {
         this.modalService
             .dialog({

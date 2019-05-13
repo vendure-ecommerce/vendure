@@ -13,6 +13,7 @@ import {
     GetProductList,
     GetProductOptionGroups,
     GetProductWithVariants,
+    Reindex,
     RemoveOptionGroupFromProduct,
     SearchProducts,
     SortOrder,
@@ -33,6 +34,7 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
+    REINDEX,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
@@ -53,6 +55,10 @@ export class ProductDataService {
                 groupByProduct: true,
             },
         });
+    }
+
+    reindex() {
+        return this.baseDataService.mutate<Reindex.Mutation>(REINDEX);
     }
 
     getProducts(take: number = 10, skip: number = 0) {

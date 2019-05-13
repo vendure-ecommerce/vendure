@@ -7,6 +7,16 @@
                 (searchTermChange)="setSearchTerm($event)"
                 (facetValueChange)="setFacetValueIds($event)"
             ></vdr-product-search-input>
+            <clr-dropdown class="search-settings-menu">
+                <button type="button" clrDropdownTrigger>
+                    <clr-icon shape="cog"></clr-icon>
+                </button>
+                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                    <button type="button" clrDropdownItem (click)="rebuildSearchIndex()">
+                        {{ 'catalog.rebuild-search-index' | translate }}
+                    </button>
+                </clr-dropdown-menu>
+            </clr-dropdown>
         </div>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
@@ -17,7 +27,6 @@
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
             <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
-            <span class="compact-label">{{ 'common.create' | translate }}</span>
         </a>
     </vdr-ab-right>
 </vdr-action-bar>

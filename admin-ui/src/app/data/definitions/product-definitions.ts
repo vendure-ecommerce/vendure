@@ -319,3 +319,13 @@ export const SEARCH_PRODUCTS = gql`
         }
     }
 `;
+
+export const REINDEX = gql`
+    mutation Reindex {
+        reindex {
+            indexedItemCount
+            success
+            timeTaken
+        }
+    }
+`;
