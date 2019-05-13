@@ -93,9 +93,11 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.refresh$.next(undefined);
     }
 
-    protected setQueryParam(key: string, value: any) {
+    protected setQueryParam(hash: { [key: string]: any });
+    protected setQueryParam(key: string, value: any);
+    protected setQueryParam(keyOrHash: string | { [key: string]: any }, value?: any) {
         this.router.navigate(['./'], {
-            queryParams: { [key]: value },
+            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: value } : keyOrHash,
             relativeTo: this.route,
             queryParamsHandling: 'merge',
         });

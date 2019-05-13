@@ -79,13 +79,13 @@ export class ProductListComponent
 
     setSearchTerm(term: string) {
         this.searchTerm = term;
-        this.setQueryParam('q', term || null);
+        this.setQueryParam({ q: term || null, page: 1 });
         this.refresh();
     }
 
     setFacetValueIds(ids: string[]) {
         this.facetValueIds = ids;
-        this.setQueryParam('fvids', ids);
+        this.setQueryParam({ fvids: ids, page: 1 });
         this.refresh();
     }
 
