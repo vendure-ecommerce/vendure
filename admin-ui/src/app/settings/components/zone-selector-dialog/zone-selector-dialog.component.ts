@@ -8,10 +8,10 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     templateUrl: './zone-selector-dialog.component.html',
     styleUrls: ['./zone-selector-dialog.component.scss'],
 })
-export class ZoneSelectorDialogComponent implements Dialog<GetZones.Zones | { name: string }> {
+export class ZoneSelectorDialogComponent implements Dialog<GetZones.Zones | { name: string } | string> {
     allZones: GetZones.Zones[];
     canCreateNewZone = false;
-    resolveWith: (result?: GetZones.Zones | { name: string }) => void;
+    resolveWith: (result?: GetZones.Zones | { name: string } | string) => void;
     selected: any;
 
     onChange(e) {

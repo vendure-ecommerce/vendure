@@ -95,7 +95,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
                     } else if (selection) {
                         return this.dataService.settings
                             .createZone({
-                                name: selection.name,
+                                name: typeof selection === 'string' ? selection : selection.name,
                                 memberIds: this.selectedCountryIds,
                             })
                             .pipe(map(data => data.createZone));
@@ -181,7 +181,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
             );
     }
 
-    private isZone(input: Zone.Fragment | { name: string }): input is Zone.Fragment {
+    private isZone(input: Zone.Fragment | { name: string } | string): input is Zone.Fragment {
         return input.hasOwnProperty('id');
     }
 }
