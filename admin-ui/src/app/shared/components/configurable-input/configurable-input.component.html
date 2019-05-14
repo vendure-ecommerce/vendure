@@ -4,7 +4,7 @@
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args" class="arg-row">
                 <label>{{ arg.name | sentenceCase }}</label>
-                <div *ngIf="arg.type === 'boolean'" class="checkbox">
+                <div *ngIf="arg.type === ConfigArgType.BOOLEAN" class="checkbox">
                     <input type="checkbox" [formControlName]="arg.name" [id]="arg.name" />
                     <label [for]="arg.name"></label>
                 </div>
