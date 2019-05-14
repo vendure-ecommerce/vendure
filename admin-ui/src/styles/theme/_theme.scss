@@ -34,6 +34,12 @@ a:focus, button:focus {
 .compact-label {
     display: initial;
 }
+button.icon-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: $color-grey-500;
+}
 @media screen and (min-width: $breakpoint-small) {
     .full-label {
         display: initial;

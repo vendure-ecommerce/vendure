@@ -8,6 +8,7 @@
 >
     <div
         class="collection"
+        [class.private]="collection.isPrivate"
         *ngFor="let collection of collectionTree.children; index as i"
         cdkDrag
         [cdkDragData]="collection"
@@ -38,13 +39,18 @@
                 </div>
             -->
             <vdr-dropdown>
-                <span class="trigger" vdrDropdownTrigger>
+                <button class="icon-button" vdrDropdownTrigger>
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
-                </span>
+                </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <a class="dropdown-item" [routerLink]="['./', 'create', { parentId: collection.id }]">
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'catalog.create-new-collection' | translate }}
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <button
                         type="button"
-                        class="dropdown-item"
+                        vdrDropdownItem
                         [disabled]="i === 0"
                         (click)="moveUp(collection, i)"
                     >
@@ -53,7 +59,7 @@
                     </button>
                     <button
                         type="button"
-                        class="dropdown-item"
+                        vdrDropdownItem
                         [disabled]="i === collectionTree.children.length - 1"
                         (click)="moveDown(collection, i)"
                     >
@@ -63,7 +69,7 @@
                     <h4 class="dropdown-header">{{ 'catalog.move-to' | translate }}</h4>
                     <button
                         type="button"
-                        class="dropdown-item"
+                        vdrDropdownItem
                         *ngFor="let item of getMoveListItems(collection)"
                         (click)="move(collection, item.id)"
                     >

@@ -141,6 +141,10 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                         this.detailForm,
                         languageCode,
                     ) as CreateCollectionInput;
+                    const parentId = this.route.snapshot.paramMap.get('parentId');
+                    if (parentId) {
+                        input.parentId = parentId;
+                    }
                     return this.dataService.collection.createCollection(input);
                 }),
             )
