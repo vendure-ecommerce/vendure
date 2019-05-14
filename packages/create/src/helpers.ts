@@ -177,7 +177,7 @@ export function installPackages(root: string, useYarn: boolean, dependencies: st
         let args: string[];
         if (useYarn) {
             command = 'yarnpkg';
-            args = ['add', '--exact'];
+            args = ['add', '--exact', '--ignore-engines'];
             if (isDev) {
                 args.push('--dev');
             }
