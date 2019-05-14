@@ -1,0 +1,13 @@
+.clear-backdrop {
+    background-color: hotpink;
+}
+
+.dropdown.open > .dropdown-menu {
+    position: relative;
+    top: 0;
+}
+
+:host {
+    opacity: 1;
+    transition: opacity 0.3s;
+}

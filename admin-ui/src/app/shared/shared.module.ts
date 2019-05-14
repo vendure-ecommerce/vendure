@@ -1,3 +1,4 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +22,10 @@ import { CustomFieldControlComponent } from './components/custom-field-control/c
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
+import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
+import { DropdownMenuComponent } from './components/dropdown/dropdown-menu.component';
+import { DropdownTriggerDirective } from './components/dropdown/dropdown-trigger.directive';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { FacetValueChipComponent } from './components/facet-value-chip/facet-value-chip.component';
 import { FacetValueSelectorComponent } from './components/facet-value-selector/facet-value-selector.component';
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
@@ -54,6 +59,7 @@ const IMPORTS = [
     NgSelectModule,
     NgxPaginationModule,
     TranslateModule,
+    OverlayModule,
 ];
 
 const DECLARATIONS = [
@@ -90,6 +96,10 @@ const DECLARATIONS = [
     SimpleDialogComponent,
     TitleInputComponent,
     SentenceCasePipe,
+    DropdownComponent,
+    DropdownMenuComponent,
+    DropdownTriggerDirective,
+    DropdownItemDirective,
 ];
 
 @NgModule({
