@@ -85,24 +85,22 @@
             </ng-container>
 
             <div>
-                <clr-dropdown>
-                    <div clrDropdownTrigger>
-                        <button class="btn btn-outline">
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ 'marketing.add-condition' | translate }}
-                        </button>
-                    </div>
-                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'marketing.add-condition' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
                         <button
                             *ngFor="let filter of allFilters"
                             type="button"
-                            clrDropdownItem
+                            vdrDropdownItem
                             (click)="addFilter(filter)"
                         >
                             {{ filter.description }}
                         </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
         <div class="clr-col">

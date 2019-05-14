@@ -1,12 +1,12 @@
-<clr-dropdown>
-    <button class="btn btn-link trigger" clrDropdownTrigger>
+<vdr-dropdown>
+    <button class="btn btn-link trigger" vdrDropdownTrigger>
         <span class="user-name">{{ userName }}</span>
         <clr-icon shape="user" size="24"></clr-icon>
         <clr-icon shape="caret down"></clr-icon>
     </button>
-    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-        <button type="button" clrDropdownItem (click)="logOut.emit()">
+    <vdr-dropdown-menu vdrPosition="bottom-right">
+        <button type="button" vdrDropdownItem (click)="logOut.emit()">
             {{ 'common.log-out' | translate }}
         </button>
-    </clr-dropdown-menu>
-</clr-dropdown>
+    </vdr-dropdown-menu>
+</vdr-dropdown>

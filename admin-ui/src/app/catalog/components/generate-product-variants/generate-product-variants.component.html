@@ -1,17 +1,17 @@
-<clr-dropdown>
-    <button type="button" class="btn btn-primary" clrDropdownTrigger>
+<vdr-dropdown>
+    <button type="button" class="btn btn-primary" vdrDropdownTrigger>
         <clr-icon shape="add"></clr-icon>
         {{ 'catalog.generate-product-variants' | translate }}
         <clr-icon shape="caret down"></clr-icon>
     </button>
-    <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
-        <button type="button" clrDropdownItem (click)="generateProductVariants()">
+    <vdr-dropdown-menu vdrPosition="bottom-right">
+        <button type="button" vdrDropdownItem (click)="generateProductVariants()">
             {{ 'catalog.generate-variants-default-only' | translate }}
         </button>
-        <button type="button" clrDropdownItem (click)="startProductVariantsWizard()">
+        <button type="button" vdrDropdownItem (click)="startProductVariantsWizard()">
             {{ 'catalog.generate-variants-with-options' | translate }}
         </button>
-    </clr-dropdown-menu>
-</clr-dropdown>
+    </vdr-dropdown-menu>
+</vdr-dropdown>
 
 <vdr-product-variants-wizard #productVariantsWizard [product]="product"></vdr-product-variants-wizard>

@@ -7,16 +7,16 @@
                 (searchTermChange)="setSearchTerm($event)"
                 (facetValueChange)="setFacetValueIds($event)"
             ></vdr-product-search-input>
-            <clr-dropdown class="search-settings-menu">
-                <button type="button" clrDropdownTrigger>
+            <vdr-dropdown class="search-settings-menu">
+                <button type="button" vdrDropdownTrigger>
                     <clr-icon shape="cog"></clr-icon>
                 </button>
-                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-                    <button type="button" clrDropdownItem (click)="rebuildSearchIndex()">
+                <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <button type="button" vdrDropdownItem (click)="rebuildSearchIndex()">
                         {{ 'catalog.rebuild-search-index' | translate }}
                     </button>
-                </clr-dropdown-menu>
-            </clr-dropdown>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </div>
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
@@ -70,22 +70,22 @@
             ></vdr-table-row-action>
         </td>
         <td class="right align-middle" [class.disabled]="!result.enabled">
-            <clr-dropdown>
-                <button type="button" class="btn btn-link btn-sm" clrDropdownTrigger>
+            <vdr-dropdown>
+                <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
                     {{ 'common.actions' | translate }}
                     <clr-icon shape="caret down"></clr-icon>
                 </button>
-                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                <vdr-dropdown-menu vdrPosition="bottom-right">
                     <button
                         type="button"
                         class="delete-button"
                         (click)="deleteProduct(result.productId)"
-                        clrDropdownItem
+                        vdrDropdownItem
                     >
                         {{ 'common.delete' | translate }}
                     </button>
-                </clr-dropdown-menu>
-            </clr-dropdown>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </td>
     </ng-template>
 </vdr-data-table>

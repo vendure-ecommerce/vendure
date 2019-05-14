@@ -23,6 +23,12 @@
 }
 .search-settings-menu {
     margin: 0 12px;
+    > button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: $color-grey-500;
+    }
 }
 td.disabled {
     background-color: $color-grey-200;

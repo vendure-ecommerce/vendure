@@ -45,34 +45,34 @@
 <ng-template #assetList>
     <div class="all-assets" [class.compact]="compact">
         <ng-container *ngFor="let asset of assets">
-            <clr-dropdown>
+            <vdr-dropdown>
                 <div
                     class="asset-thumb"
-                    clrDropdownTrigger
+                    vdrDropdownTrigger
                     [class.featured]="isFeatured(asset)"
                     [title]=""
                     tabindex="0"
                 >
                     <img [src]="asset.preview + '?preset=tiny'" />
                 </div>
-                <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-                    <button type="button" clrDropdownItem (click)="previewAsset(asset)">
+                <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <button type="button" vdrDropdownItem (click)="previewAsset(asset)">
                         {{ 'catalog.preview' | translate }}
                     </button>
                     <button
                         type="button"
                         [disabled]="isFeatured(asset)"
-                        clrDropdownItem
+                        vdrDropdownItem
                         (click)="setAsFeatured(asset)"
                     >
                         {{ 'catalog.set-as-featured-asset' | translate }}
                     </button>
                     <div class="dropdown-divider"></div>
-                    <button type="button" class="remove-asset" clrDropdownItem (click)="removeAsset(asset)">
+                    <button type="button" class="remove-asset" vdrDropdownItem (click)="removeAsset(asset)">
                         {{ 'catalog.remove-asset' | translate }}
                     </button>
-                </clr-dropdown-menu>
-            </clr-dropdown>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </ng-container>
     </div>
 </ng-template>

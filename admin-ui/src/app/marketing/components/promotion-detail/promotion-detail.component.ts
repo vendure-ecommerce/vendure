@@ -35,8 +35,8 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     facets$: Observable<FacetWithValues.Fragment[]>;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
-    private allConditions: ConfigurableOperation[];
-    private allActions: ConfigurableOperation[];
+    private allConditions: ConfigurableOperation[] = [];
+    private allActions: ConfigurableOperation[] = [];
 
     constructor(
         router: Router,

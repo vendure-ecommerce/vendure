@@ -24,7 +24,7 @@ export class UiLanguageSwitcherComponent implements OnInit {
         );
     }
 
-    setLanguage(languageCode: LanguageCode) {
-        this.dataService.client.setUiLanguage(languageCode).subscribe();
+    setLanguage(languageCode: string) {
+        this.dataService.client.setUiLanguage(languageCode as LanguageCode).subscribe();
     }
 }

@@ -37,11 +37,11 @@
                     <clr-icon shape="drag-handle" size="24"></clr-icon>
                 </div>
             -->
-            <clr-dropdown>
-                <span class="trigger" clrDropdownTrigger>
+            <vdr-dropdown>
+                <span class="trigger" vdrDropdownTrigger>
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
                 </span>
-                <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+                <vdr-dropdown-menu vdrPosition="bottom-right">
                     <button
                         type="button"
                         class="dropdown-item"
@@ -70,8 +70,8 @@
                         <clr-icon shape="child-arrow"></clr-icon>
                         {{ item.path }}
                     </button>
-                </clr-dropdown-menu>
-            </clr-dropdown>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </div>
         <vdr-collection-tree-node
             [collectionTree]="collection"

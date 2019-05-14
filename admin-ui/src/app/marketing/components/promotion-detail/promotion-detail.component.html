@@ -37,24 +37,22 @@
             </ng-container>
 
             <div>
-                <clr-dropdown>
-                    <div clrDropdownTrigger>
-                        <button class="btn btn-outline">
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ 'marketing.add-condition' | translate }}
-                        </button>
-                    </div>
-                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'marketing.add-condition' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
                         <button
                             *ngFor="let condition of getAvailableConditions()"
                             type="button"
-                            clrDropdownItem
+                            vdrDropdownItem
                             (click)="addCondition(condition)"
                         >
                             {{ condition.code }}
                         </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
         <div class="clr-col" formArrayName="actions">
@@ -68,24 +66,22 @@
                 [activeChannel]="activeChannel$ | async"
             ></vdr-configurable-input>
             <div>
-                <clr-dropdown>
-                    <div clrDropdownTrigger>
-                        <button class="btn btn-outline">
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ 'marketing.add-action' | translate }}
-                        </button>
-                    </div>
-                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'marketing.add-action' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
                         <button
                             *ngFor="let action of getAvailableActions()"
                             type="button"
-                            clrDropdownItem
+                            vdrDropdownItem
                             (click)="addAction(action)"
                         >
                             {{ action.code }}
                         </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
     </div>

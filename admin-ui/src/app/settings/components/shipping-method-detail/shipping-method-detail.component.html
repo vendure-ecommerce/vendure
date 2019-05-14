@@ -41,24 +41,22 @@
                 formControlName="checker"
             ></vdr-configurable-input>
             <div *ngIf="!selectedChecker">
-                <clr-dropdown>
-                    <div clrDropdownTrigger>
-                        <button class="btn btn-outline">
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ 'common.select' | translate }}
-                        </button>
-                    </div>
-                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'common.select' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
                         <button
                             *ngFor="let checker of checkers"
                             type="button"
-                            clrDropdownItem
+                            vdrDropdownItem
                             (click)="selectedChecker = checker"
                         >
                             {{ checker.description }}
                         </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
         <div class="clr-col">
@@ -71,24 +69,22 @@
                 formControlName="calculator"
             ></vdr-configurable-input>
             <div *ngIf="!selectedCalculator">
-                <clr-dropdown>
-                    <div clrDropdownTrigger>
-                        <button class="btn btn-outline">
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ 'common.select' | translate }}
-                        </button>
-                    </div>
-                    <clr-dropdown-menu clrPosition="top-right" *clrIfOpen>
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'common.select' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
                         <button
                             *ngFor="let calculator of calculators"
                             type="button"
-                            clrDropdownItem
+                            vdrDropdownItem
                             (click)="selectedCalculator = calculator"
                         >
                             {{ calculator.description }}
                         </button>
-                    </clr-dropdown-menu>
-                </clr-dropdown>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
     </div>

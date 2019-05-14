@@ -80,14 +80,14 @@
         <button class="btn btn-sm btn-link" *ngIf="!editing" (click)="editing = true">
             {{ 'common.edit' | translate }}
         </button>
-        <clr-dropdown>
-            <button type="button" class="btn btn-sm btn-link" clrDropdownTrigger>
+        <vdr-dropdown>
+            <button type="button" class="btn btn-sm btn-link" vdrDropdownTrigger>
                 {{ 'common.more' | translate }}
                 <clr-icon shape="caret down"></clr-icon>
             </button>
-            <clr-dropdown-menu *clrIfOpen>
+            <vdr-dropdown-menu>
                 <button
-                    clrDropdownItem
+                    vdrDropdownItem
                     class="button"
                     [disabled]="isDefaultShipping || editing"
                     (click)="setAsDefaultShippingAddress()"
@@ -95,14 +95,14 @@
                     {{ 'customer.set-as-default-shipping-address' | translate }}
                 </button>
                 <button
-                    clrDropdownItem
+                    vdrDropdownItem
                     class="button"
                     [disabled]="isDefaultBilling || editing"
                     (click)="setAsDefaultBillingAddress()"
                 >
                     {{ 'customer.set-as-default-billing-address' | translate }}
                 </button>
-            </clr-dropdown-menu>
-        </clr-dropdown>
+            </vdr-dropdown-menu>
+        </vdr-dropdown>
     </div>
 </div>

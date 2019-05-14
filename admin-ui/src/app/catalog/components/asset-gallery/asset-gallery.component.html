@@ -48,7 +48,7 @@
             <div clrTooltipTrigger class="trigger">
                 {{ 'catalog.assets-selected-count' | translate: { count: selection.length } }}
             </div>
-            <clr-tooltip-content clrPosition="top-left" clrSize="lg" *clrIfOpen>
+            <clr-tooltip-content vdrPosition="top-left" clrSize="lg">
                 <ul>
                     <li *ngFor="let asset of selection">{{ asset.name }}</li>
                 </ul>
