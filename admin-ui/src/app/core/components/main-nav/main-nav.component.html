@@ -1,8 +1,8 @@
 <nav class="sidenav" [clr-nav-level]="2">
     <section class="sidenav-content">
         <section class="nav-group">
-            <input id="tabexample2" type="checkbox" />
-            <label for="tabexample2">{{ 'nav.catalog' | translate }}</label>
+            <input id="catalog" type="checkbox" />
+            <label for="catalog">{{ 'nav.catalog' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link" [routerLink]="['/catalog', 'products']" routerLinkActive="active">
@@ -36,8 +36,8 @@
             </ul>
         </section>
         <section class="nav-group">
-            <input id="tabexample2" type="checkbox" />
-            <label for="tabexample2">{{ 'nav.sales' | translate }}</label>
+            <input id="sales" type="checkbox" />
+            <label for="sales">{{ 'nav.sales' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link" [routerLink]="['/orders']" routerLinkActive="active">
@@ -60,8 +60,8 @@
             </ul>
         </section>
         <section class="nav-group">
-            <input id="tabexample2" type="checkbox" />
-            <label for="tabexample2">{{ 'nav.marketing' | translate }}</label>
+            <input id="marketing" type="checkbox" />
+            <label for="marketing">{{ 'nav.marketing' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link" [routerLink]="['/marketing', 'promotions']" routerLinkActive="active">
@@ -71,9 +71,9 @@
                 </li>
             </ul>
         </section>
-        <section class="nav-group">
-            <input id="tabexample2" type="checkbox" />
-            <label for="tabexample2">{{ 'nav.settings' | translate }}</label>
+        <section class="nav-group collapsible">
+            <input id="settings" type="checkbox" checked="true" />
+            <label for="settings">{{ 'nav.settings' | translate }}</label>
             <ul class="nav-list">
                 <li>
                     <a class="nav-link" [routerLink]="['/settings', 'channels']" routerLinkActive="active">
