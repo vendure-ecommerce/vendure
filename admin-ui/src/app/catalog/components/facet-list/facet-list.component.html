@@ -26,14 +26,26 @@
         <td class="left align-middle" [class.private]="facet.isPrivate">{{ facet.name }}</td>
         <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-facet-value-chip
-                *ngFor="let value of (facet.values | slice: 0:3)"
+                *ngFor="let value of (facet.values | slice: 0:displayLimit[facet.id] || 3)"
                 [facetValue]="value"
                 [removable]="false"
                 [displayFacetName]="false"
             ></vdr-facet-value-chip>
-            <vdr-chip *ngIf="facet.values.length > 3">+ {{ facet.values.length - 3 }}</vdr-chip>
+            <button
+                class="btn btn-sm btn-secondary btn-icon"
+                *ngIf="facet.values.length > initialLimit"
+                (click)="toggleDisplayLimit(facet)"
+            >
+                <ng-container *ngIf="(displayLimit[facet.id] || 0) < facet.values.length; else collapse">
+                    <clr-icon shape="plus"></clr-icon>
+                    {{ facet.values.length - initialLimit }}
+                </ng-container>
+                <ng-template #collapse>
+                    <clr-icon shape="minus"></clr-icon>
+                </ng-template>
+            </button>
         </td>
-        <td [class.private]="facet.isPrivate">
+        <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-chip>
                 {{ facet.isPrivate ? ('catalog.private' | translate) : ('catalog.public' | translate) }}
             </vdr-chip>

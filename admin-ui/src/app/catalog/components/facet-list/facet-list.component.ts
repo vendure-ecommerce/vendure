@@ -16,6 +16,8 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./facet-list.component.scss'],
 })
 export class FacetListComponent extends BaseListComponent<GetFacetList.Query, GetFacetList.Items> {
+    readonly initialLimit = 3;
+    displayLimit: { [id: string]: number } = {};
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
@@ -25,6 +27,14 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
     ) {
         super(router, route);
         super.setQueryFn((...args: any[]) => this.dataService.facet.getFacets(...args), data => data.facets);
+    }
+
+    toggleDisplayLimit(facet: GetFacetList.Items) {
+        if (this.displayLimit[facet.id] === facet.values.length) {
+            this.displayLimit[facet.id] = this.initialLimit;
+        } else {
+            this.displayLimit[facet.id] = facet.values.length;
+        }
     }
 
     deleteFacet(facetValueId: string) {
