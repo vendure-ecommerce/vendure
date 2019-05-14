@@ -18,6 +18,10 @@
 }
 
 .variant-container {
+    transition: background-color 0.2s;
+    &.disabled {
+        background-color: $color-grey-200;
+    }
     .header-row {
         display: flex;
         align-items: center;
@@ -30,15 +34,24 @@
 
     .details {
         display: flex;
+        flex: 1;
         height: 36px;
-        // margin-left: 12px;
-        > div {
-            margin-right: 12px;
+        margin-right: 12px;
+
+        .name {
+            flex: 1;
+            ::ng-deep .clr-control-container {
+                width: 100%;
+                input.clr-input {
+                    min-width: 100%;
+                }
+            }
         }
 
         .sku {
             width: 160px;
             margin-right: 20px;
+            flex: 0;
         }
 
         ::ng-deep .name input {
@@ -83,14 +96,5 @@
     .options-facets {
         display: flex;
         color: $color-grey-400;
-    }
-}
-
-@media screen and (max-width: $breakpoint-small){
-    .details {
-        flex-direction: column;
-        ::ng-deep .clr-control-container, ::ng-deep input {
-            width: 100%
-        }
     }
 }

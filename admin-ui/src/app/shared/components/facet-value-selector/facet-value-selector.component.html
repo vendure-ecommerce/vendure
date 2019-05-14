@@ -2,7 +2,6 @@
     [items]="facetValues"
     [addTag]="false"
     [hideSelected]="true"
-    groupBy="facetName"
     bindValue="id"
     multiple="true"
     appendTo="body"
@@ -10,4 +9,15 @@
     [disabled]="disabled"
     [ngModel]="value"
     (change)="onChange($event)"
-></ng-select>
+>
+    <ng-template ng-label-tmp let-item="item" let-clear="clear">
+        <vdr-facet-value-chip
+            [facetValue]="item.value"
+            [removable]="true"
+            (remove)="clear(item)"
+        ></vdr-facet-value-chip>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+        <vdr-facet-value-chip [facetValue]="item.value" [removable]="false"></vdr-facet-value-chip>
+    </ng-template>
+</ng-select>

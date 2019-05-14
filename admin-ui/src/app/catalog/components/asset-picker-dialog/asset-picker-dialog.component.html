@@ -37,6 +37,6 @@
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button type="submit" (click)="select()" class="btn btn-primary" [disabled]="selection.length === 0">
-        {{ 'catalog.add-asset-to-product' | translate: { count: selection.length } }}
+        {{ 'catalog.add-asset-with-count' | translate: { count: selection.length } }}
     </button>
 </ng-template>

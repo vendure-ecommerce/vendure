@@ -23,7 +23,7 @@
   },
   "catalog": {
     "add-asset": "Add asset",
-    "add-asset-to-product": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}} to product",
+    "add-asset-with-count": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}}",
     "add-facet-value": "Add facet value",
     "add-facets": "Add facets",
     "assets-selected-count": "{ count } assets selected",

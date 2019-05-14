@@ -1,0 +1,8 @@
+@import "variables";
+@import "mixins";
+
+:host {
+    ::ng-deep {
+        @include ng-select-facet-values;
+    }
+}

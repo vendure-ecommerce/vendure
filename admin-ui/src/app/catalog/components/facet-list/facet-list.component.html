@@ -22,9 +22,9 @@
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-facet="item">
-        <td class="left align-middle">{{ facet.code }}</td>
-        <td class="left align-middle">{{ facet.name }}</td>
-        <td class="left align-middle">
+        <td class="left align-middle" [class.private]="facet.isPrivate">{{ facet.code }}</td>
+        <td class="left align-middle" [class.private]="facet.isPrivate">{{ facet.name }}</td>
+        <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-facet-value-chip
                 *ngFor="let value of (facet.values | slice: 0:3)"
                 [facetValue]="value"
@@ -33,19 +33,19 @@
             ></vdr-facet-value-chip>
             <vdr-chip *ngIf="facet.values.length > 3">+ {{ facet.values.length - 3 }}</vdr-chip>
         </td>
-        <td>
+        <td [class.private]="facet.isPrivate">
             <vdr-chip>
                 {{ facet.isPrivate ? ('catalog.private' | translate) : ('catalog.public' | translate) }}
             </vdr-chip>
         </td>
-        <td class="right align-middle">
+        <td class="right align-middle" [class.private]="facet.isPrivate">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', facet.id]"
             ></vdr-table-row-action>
         </td>
-        <td class="right align-middle">
+        <td class="right align-middle" [class.private]="facet.isPrivate">
             <clr-dropdown>
                 <button type="button" class="btn btn-link btn-sm" clrDropdownTrigger>
                     {{ 'common.actions' | translate }}

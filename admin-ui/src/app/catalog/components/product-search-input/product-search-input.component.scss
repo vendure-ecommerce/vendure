@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 
 :host {
     margin-top: 6px;
@@ -6,28 +7,7 @@
     width: 100%;
 
     ::ng-deep {
-
-        .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
-            background: none;
-            margin: 0;
-        }
-
-        .ng-dropdown-panel-items div.ng-option:last-child {
-            display: none;
-        }
-
-        .ng-dropdown-panel .ng-dropdown-header {
-            border: none;
-            padding: 0;
-        }
-
-        .ng-select.ng-select-multiple .ng-select-container .ng-value-container {
-            padding: 0;
-        }
-
-        .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-placeholder {
-            padding-left: 8px;
-        }
+        @include ng-select-facet-values;
     }
 }
 

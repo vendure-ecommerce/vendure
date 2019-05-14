@@ -39,13 +39,8 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <ng-template let-result="item" #foo>
-        <td class="left align-middle">
+    <ng-template let-result="item">
+        <td class="left align-middle" [class.disabled]="!result.enabled">
             <div class="image-placeholder">
                 <img
                     *ngIf="
@@ -61,20 +56,20 @@
                 </ng-template>
             </div>
         </td>
-        <td class="left align-middle">
+        <td class="left align-middle" [class.disabled]="!result.enabled">
             {{ groupByProduct ? result.productName : result.productVariantName }}
         </td>
-        <td class="align-middle">
+        <td class="align-middle" [class.disabled]="!result.enabled">
             <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
         </td>
-        <td class="right align-middle">
+        <td class="right align-middle" [class.disabled]="!result.enabled">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', result.productId]"
             ></vdr-table-row-action>
         </td>
-        <td class="right align-middle">
+        <td class="right align-middle" [class.disabled]="!result.enabled">
             <clr-dropdown>
                 <button type="button" class="btn btn-link btn-sm" clrDropdownTrigger>
                     {{ 'common.actions' | translate }}

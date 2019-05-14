@@ -1,5 +1,9 @@
 <div class="variants-list">
-    <div class="variant-container card" *ngFor="let variant of variants; let i = index">
+    <div
+        class="variant-container card"
+        *ngFor="let variant of variants; let i = index"
+        [class.disabled]="!formArray.get([i, 'enabled']).value"
+    >
         <ng-container [formGroup]="formArray.at(i)">
             <div class="card-block header-row">
                 <div class="details">
@@ -24,7 +28,6 @@
                         </clr-input-container>
                     </vdr-title-input>
                 </div>
-                <div class="flex-spacer"></div>
                 <div>
                     <clr-toggle-wrapper>
                         <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />

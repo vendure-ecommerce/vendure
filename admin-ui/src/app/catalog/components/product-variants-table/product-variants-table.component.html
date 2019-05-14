@@ -7,9 +7,10 @@
     </ng-container>
     <vdr-dt-column>{{ 'catalog.price' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.stock-on-hand' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
     <ng-template let-variant="item" let-i="index">
         <ng-container [formGroup]="formArray.at(i)">
-            <td class="left align-middle">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <div class="card-img">
                     <div class="featured-asset">
                         <img
@@ -22,7 +23,7 @@
                     </div>
                 </div>
             </td>
-            <td class="left align-middle">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-input-container>
                     <input
                         clrInput
@@ -32,7 +33,7 @@
                     />
                 </clr-input-container>
             </td>
-            <td class="left align-middle">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-input-container>
                     <input
                         clrInput
@@ -43,9 +44,11 @@
                 </clr-input-container>
             </td>
             <ng-container *ngFor="let option of variant.options">
-                <td class="left align-middle">{{ option.name }}</td>
+                <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
+                    {{ option.name }}
+                </td>
             </ng-container>
-            <td class="left align-middle price">
+            <td class="left align-middle price" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-input-container>
                     <vdr-currency-input
                         clrInput
@@ -54,10 +57,15 @@
                     ></vdr-currency-input>
                 </clr-input-container>
             </td>
-            <td class="left align-middle stock">
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-input-container>
                     <input clrInput type="number" min="0" step="1" formControlName="stockOnHand" />
                 </clr-input-container>
+            </td>
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
+                <clr-toggle-wrapper>
+                    <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />
+                </clr-toggle-wrapper>
             </td>
         </ng-container>
     </ng-template>
