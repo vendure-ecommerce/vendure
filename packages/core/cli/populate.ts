@@ -29,7 +29,7 @@ export async function populate(
         throw new Error('Could not bootstrap the Vendure app');
     }
     const initialData = require(initialDataPath);
-    await populateInitialData(initialData, app);
+    await populateInitialData(app, initialData);
     if (productsCsvPath) {
         await importProductsFromFile(app, productsCsvPath, initialData.defaultLanguage);
         await populateCollections(app, initialData);
@@ -49,7 +49,7 @@ export async function importProducts(csvPath: string, languageCode: string) {
     }
 }
 
-async function getApplicationRef(): Promise<INestApplication | undefined> {
+export async function getApplicationRef(): Promise<INestApplication | undefined> {
     const tsConfigFile = path.join(process.cwd(), 'vendure-config.ts');
     const jsConfigFile = path.join(process.cwd(), 'vendure-config.js');
     let isTs = false;
@@ -104,22 +104,16 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     return app;
 }
 
-export async function populateInitialData(initialData: object, app?: INestApplication) {
-    if (!app) {
-        app = await getApplicationRef();
+export async function populateInitialData(app: INestApplication, initialData: object) {
+    const populator = app.get(Populator);
+    try {
+        await populator.populateInitialData(initialData);
+    } catch (err) {
+        console.error(err.message);
     }
-    if (app) {
-        const populator = app.get(Populator);
-        try {
-            await populator.populateInitialData(initialData);
-        } catch (err) {
-            console.error(err.message);
-        }
-    }
-    return app;
 }
 
-async function populateCollections(app: INestApplication, initialData: object) {
+export async function populateCollections(app: INestApplication, initialData: object) {
     const populator = app.get(Populator);
     try {
         await populator.populateCollections(initialData);

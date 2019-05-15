@@ -3,7 +3,7 @@ import program from 'commander';
 import path from 'path';
 
 import { logColored } from './cli-utils';
-import { importProducts, populateInitialData } from './populate';
+import { getApplicationRef, importProducts, populateCollections, populateInitialData } from './populate';
 // tslint:disable-next-line:no-var-requires
 const version = require('../../package.json').version;
 
@@ -33,9 +33,25 @@ program
         const filePath = path.join(process.cwd(), initDataFile);
         logColored(`\nPopulating initial data from "${filePath}"...\n`);
         const initialData = require(filePath);
-        const app = await populateInitialData(initialData);
-        logColored('\nDone!');
+        const app = await getApplicationRef();
         if (app) {
+            await populateInitialData(app, initialData);
+            logColored('\nDone!');
+            await app.close();
+        }
+        process.exit(0);
+    });
+program
+    .command('create-collections <initDataFile>')
+    .description('Create collections from the specified json file')
+    .action(async (initDataFile, command) => {
+        const filePath = path.join(process.cwd(), initDataFile);
+        logColored(`\nCreating collections from "${filePath}"...\n`);
+        const initialData = require(filePath);
+        const app = await getApplicationRef();
+        if (app) {
+            await populateCollections(app, initialData);
+            logColored('\nDone!');
             await app.close();
         }
         process.exit(0);
