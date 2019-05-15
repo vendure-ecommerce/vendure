@@ -26,7 +26,7 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
     }
 
     async afterUpdate(event: InsertEvent<ProductVariant>) {
-        if (event.entity.price !== undefined) {
+        if (event.entity.price !== undefined && event.queryRunner.data && event.queryRunner.data.channelId) {
             const variantPrice = await event.connection.getRepository(ProductVariantPrice).findOne({
                 where: {
                     variant: event.entity.id,

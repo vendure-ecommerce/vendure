@@ -186,15 +186,17 @@ describe('Stock control', () => {
                 TRANSITION_TO_STATE,
                 { state: 'ArrangingPayment' as OrderState },
             );
-            await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(ADD_PAYMENT, {
+        });
+
+        it('creates a Sale when order completed', async () => {
+            const { addPaymentToOrder } = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(ADD_PAYMENT, {
                 input: {
                     method: testPaymentMethod.code,
                     metadata: {},
                 } as PaymentInput,
             });
-        });
+            expect(addPaymentToOrder).not.toBeNull();
 
-        it('creates a Sale when order completed', async () => {
             const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
                 { id: 'T_2' },
