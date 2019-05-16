@@ -360,6 +360,7 @@ describe('Shop orders', () => {
         });
 
         it('customer default Addresses are not updated before payment', async () => {
+            // TODO: will need to be reworked for https://github.com/vendure-ecommerce/vendure/issues/98
             const result = await shopClient.query<GetCustomerAddresses.Query>(GET_ACTIVE_ORDER_ADDRESSES);
 
             expect(result.activeOrder!.customer!.addresses).toEqual([]);
@@ -400,6 +401,7 @@ describe('Shop orders', () => {
         });
 
         it('customer default Addresses are updated after payment', async () => {
+            // TODO: will need to be reworked for https://github.com/vendure-ecommerce/vendure/issues/98
             const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
                 id: createdCustomerId,
             });
@@ -768,6 +770,11 @@ describe('Shop orders', () => {
                 expect(payment.metadata).toEqual({
                     baz: 'quux',
                 });
+            });
+
+            it('does not create new address when Customer already has address', async () => {
+                const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: customers[0].id });
+                expect(customer!.addresses!.length).toBe(1);
             });
         });
 

@@ -3,15 +3,15 @@ import {
     MutationAddItemToOrderArgs,
     MutationAddPaymentToOrderArgs,
     MutationAdjustItemQuantityArgs,
-    Permission,
-    QueryOrderArgs,
-    QueryOrderByCodeArgs,
     MutationRemoveItemFromOrderArgs,
     MutationSetCustomerForOrderArgs,
     MutationSetOrderShippingAddressArgs,
     MutationSetOrderShippingMethodArgs,
-    ShippingMethodQuote,
     MutationTransitionOrderToStateArgs,
+    Permission,
+    QueryOrderArgs,
+    QueryOrderByCodeArgs,
+    ShippingMethodQuote,
 } from '@vendure/common/lib/generated-shop-types';
 import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
 import ms from 'ms';
@@ -226,19 +226,21 @@ export class ShopOrderResolver {
             if (sessionOrder) {
                 const order = await this.orderService.addPaymentToOrder(ctx, sessionOrder.id, args.input);
                 if (order.active === false) {
-                    const { customer } = order;
-                    // If the Customer has no addresses yet, use the shipping address data
-                    // to populate the initial default Address.
-                    if (customer && (!customer.addresses || customer.addresses.length === 0)) {
-                        const address = order.shippingAddress;
-                        await this.customerService.createAddress(ctx, customer.id as string, {
-                            ...address,
-                            streetLine1: address.streetLine1 || '',
-                            streetLine2: address.streetLine2 || '',
-                            countryCode: address.countryCode || '',
-                            defaultBillingAddress: true,
-                            defaultShippingAddress: true,
-                        });
+                    if (order.customer) {
+                        const addresses = await this.customerService.findAddressesByCustomerId(ctx, order.customer.id);
+                        // If the Customer has no addresses yet, use the shipping address data
+                        // to populate the initial default Address.
+                        if (addresses.length === 0) {
+                            const address = order.shippingAddress;
+                            await this.customerService.createAddress(ctx, order.customer.id as string, {
+                                ...address,
+                                streetLine1: address.streetLine1 || '',
+                                streetLine2: address.streetLine2 || '',
+                                countryCode: address.countryCode || '',
+                                defaultBillingAddress: true,
+                                defaultShippingAddress: true,
+                            });
+                        }
                     }
                 }
                 if (
@@ -276,6 +278,12 @@ export class ShopOrderResolver {
             throw new InternalServerError(`error.no-active-session`);
         }
         let order = ctx.session.activeOrder;
+        if (order && order.active === false) {
+            // edge case where an inactive order may not have been
+            // removed from the session, i.e. the regular process was interrupted
+            await this.authService.unsetActiveOrder(ctx.session);
+            order = null;
+        }
         if (!order) {
             if (ctx.activeUserId) {
                 order = (await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId)) || null;
