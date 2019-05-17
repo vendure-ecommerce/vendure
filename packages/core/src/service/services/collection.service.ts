@@ -124,6 +124,10 @@ export class CollectionService implements OnModuleInit {
         return parent && translateDeep(parent, ctx.languageCode);
     }
 
+    async getChildren(ctx: RequestContext, collectionId: ID): Promise<Collection[]> {
+        return this.getDescendants(ctx, collectionId, 1);
+    }
+
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
@@ -160,16 +164,19 @@ export class CollectionService implements OnModuleInit {
     }
 
     /**
-     * Returns the descendants of a Collection as a flat array.
+     * Returns the descendants of a Collection as a flat array. The depth of the traversal can be limited
+     * with the maxDepth argument. So to get only the immediate children, set maxDepth = 1.
      */
-    async getDescendants(ctx: RequestContext, rootId: ID): Promise<Array<Translated<Collection>>> {
-        const getChildren = async (id: ID, _descendants: Collection[] = []) => {
+    async getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER): Promise<Array<Translated<Collection>>> {
+        const getChildren = async (id: ID, _descendants: Collection[] = [], depth = 1) => {
             const children = await this.connection
                 .getRepository(Collection)
                 .find({ where: { parent: { id } } });
             for (const child of children) {
                 _descendants.push(child);
-                await getChildren(child.id, _descendants);
+                if (depth < maxDepth) {
+                    await getChildren(child.id, _descendants, depth++);
+                }
             }
             return _descendants;
         };

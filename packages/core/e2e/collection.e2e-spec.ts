@@ -165,6 +165,29 @@ describe('Collection resolver', () => {
         expect(result.collection.id).toBe(computersCollection.id);
     });
 
+    it('parent field', async () => {
+        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            id: computersCollection.id,
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.parent!.name).toBe('Electronics');
+    });
+
+    it('children field', async () => {
+        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            id: electronicsCollection.id,
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.children!.length).toBe(1);
+        expect(result.collection.children![0].name).toBe('Computers');
+    });
+
     it('breadcrumbs', async () => {
         const result = await client.query<GetCollectionBreadcrumbs.Query, GetCollectionBreadcrumbs.Variables>(
             GET_COLLECTION_BREADCRUMBS,

@@ -22,7 +22,7 @@ Object {
       "type": "IMAGE",
     },
   ],
-  "children": null,
+  "children": Array [],
   "description": "",
   "featuredAsset": Object {
     "fileSize": 4,
@@ -78,7 +78,7 @@ Object {
       "type": "IMAGE",
     },
   ],
-  "children": null,
+  "children": Array [],
   "description": "Apple stuff ",
   "featuredAsset": Object {
     "fileSize": 4,

@@ -54,4 +54,12 @@ export class CollectionEntityResolver {
         }
         return this.collectionService.getParent(ctx, collection.id) as any;
     }
+
+    @ResolveProperty()
+    async children(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection[]> {
+        if (collection.children) {
+            return collection.children;
+        }
+        return this.collectionService.getChildren(ctx, collection.id) as any;
+    }
 }
