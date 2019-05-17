@@ -221,10 +221,11 @@ export class AssetServerPlugin implements VendurePlugin {
 
     private createAssetStorageStrategy() {
         const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
+            const prefix = `${request.protocol}://${request.get('host')}/${this.options.route}/`;
             if (!identifier) {
                 return '';
             }
-            return `${request.protocol}://${request.get('host')}/${this.options.route}/${identifier}`;
+            return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
         };
         return new LocalAssetStorageStrategy(this.options.assetUploadDir, toAbsoluteUrlFn);
     }

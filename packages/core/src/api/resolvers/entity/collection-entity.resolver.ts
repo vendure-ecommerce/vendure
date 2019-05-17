@@ -4,7 +4,8 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
-import { Collection, Product, ProductVariant } from '../../../entity';
+import { Asset, Collection, Product, ProductVariant } from '../../../entity';
+import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ApiType } from '../../common/get-api-type';
@@ -17,6 +18,7 @@ export class CollectionEntityResolver {
     constructor(
         private productVariantService: ProductVariantService,
         private collectionService: CollectionService,
+        private assetService: AssetService,
     ) {}
 
     @ResolveProperty()
@@ -61,5 +63,13 @@ export class CollectionEntityResolver {
             return collection.children;
         }
         return this.collectionService.getChildren(ctx, collection.id) as any;
+    }
+
+    @ResolveProperty()
+    async featuredAsset(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Asset | undefined> {
+        if (collection.featuredAsset) {
+            return collection.featuredAsset;
+        }
+        return this.assetService.getFeaturedAsset(collection);
     }
 }

@@ -19,7 +19,8 @@ export class TestingAssetStorageStrategy implements AssetStorageStrategy {
     }
 
     toAbsoluteUrl(reqest: Request, identifier: string): string {
-        return `test-url/${identifier}`;
+        const prefix = `test-url/`;
+        return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
     }
 
     writeFileFromBuffer(fileName: string, data: Buffer): Promise<string> {
