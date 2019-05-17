@@ -48,6 +48,18 @@ describe('AssetInterceptor', () => {
     );
 
     it(
+        'handles an Asset entity directly',
+        testInterceptor(
+            mockAsset(),
+            (response, result, toAbsoluteUrl) => {
+                expect(result.source).toBe('visited');
+                expect(result.preview).toBe('visited');
+                expect(toAbsoluteUrl).toHaveBeenCalledTimes(2);
+            },
+        ),
+    );
+
+    it(
         'visits a top-level Asset',
         testInterceptor(
             {

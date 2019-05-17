@@ -34,15 +34,20 @@ export class AssetInterceptor implements NestInterceptor {
         const request = ctx.req;
         return next.handle().pipe(
             map(data => {
-                visitType(data, [Asset, 'productPreview', 'productVariantPreview'], asset => {
-                    if (asset instanceof Asset) {
-                        asset.preview = toAbsoluteUrl(request, asset.preview);
-                        asset.source = toAbsoluteUrl(request, asset.source);
-                    } else {
-                        asset = toAbsoluteUrl(request, asset);
-                    }
-                    return asset;
-                });
+                if (data instanceof Asset) {
+                    data.preview = toAbsoluteUrl(request, data.preview);
+                    data.source = toAbsoluteUrl(request, data.source);
+                } else {
+                    visitType(data, [Asset, 'productPreview', 'productVariantPreview'], asset => {
+                        if (asset instanceof Asset) {
+                            asset.preview = toAbsoluteUrl(request, asset.preview);
+                            asset.source = toAbsoluteUrl(request, asset.source);
+                        } else {
+                            asset = toAbsoluteUrl(request, asset);
+                        }
+                        return asset;
+                    });
+                }
                 return data;
             }),
         );
