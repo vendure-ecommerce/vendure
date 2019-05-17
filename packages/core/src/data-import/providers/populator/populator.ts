@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigArgType, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { ID } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -8,7 +9,7 @@ import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '..
 import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';
 import { Channel, Collection, TaxCategory } from '../../../entity';
 import { Zone } from '../../../entity/zone/zone.entity';
-import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
+import { AssetService, CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { SearchService } from '../../../service/services/search.service';
@@ -24,13 +25,20 @@ export interface CountryData {
     zone: string;
 }
 
+export interface CollectionData {
+    name: string;
+    facetNames: string[];
+    parentName?: string;
+    featuredAssetFilename?: string;
+}
+
 export interface InitialData {
     defaultLanguage: LanguageCode;
     defaultZone: string;
     countries: CountryData[];
     taxRates: Array<{ name: string; percentage: number }>;
     shippingMethods: Array<{ name: string; price: number }>;
-    collections: Array<{ name: string; facetNames: string[]; parentName?: string }>;
+    collections: CollectionData[];
 }
 
 /**
@@ -39,6 +47,7 @@ export interface InitialData {
 @Injectable()
 export class Populator {
     constructor(
+        private assetService: AssetService,
         private countryService: CountryService,
         private zoneService: ZoneService,
         private channelService: ChannelService,
@@ -79,6 +88,15 @@ export class Populator {
                 .map(fv => fv.id);
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
             const parentId = parent ? parent.id.toString() : undefined;
+
+            let featuredAssetId: string | null = null;
+            if (collectionDef.featuredAssetFilename) {
+                const asset = await this.assetService.findByFileName(collectionDef.featuredAssetFilename, false);
+                if (asset) {
+                    featuredAssetId = asset.id as string;
+                }
+            }
+
             const collection = await this.collectionService.create(ctx, {
                 translations: [
                     {
@@ -88,6 +106,8 @@ export class Populator {
                     },
                 ],
                 parentId,
+                assetIds: [featuredAssetId].filter(notNullOrUndefined),
+                featuredAssetId,
                 filters: [
                     {
                         code: facetValueCollectionFilter.code,

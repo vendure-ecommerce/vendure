@@ -6,13 +6,14 @@ import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
-import { Connection } from 'typeorm';
+import { Connection, Like } from 'typeorm';
 
 import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Asset } from '../../entity/asset/asset.entity';
+import { EntityWithAssets } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
 @Injectable()
@@ -31,6 +32,20 @@ export class AssetService {
         return this.connection.getRepository(Asset).findByIds(ids);
     }
 
+    /**
+     * Locates an Asset by the filename of the source file. If "exact" is set to false, filename will
+     * be looked up without the extension and with a "%" wildcard at the end. This is useful for finding
+     * files that may have been automatically renamed with a suffix by the AssetNamingStrategy.
+     */
+    findByFileName(fileName: string, exact: boolean = true): Promise<Asset | undefined> {
+        const source = exact ? fileName : Like(path.basename(fileName, path.extname(fileName)) + '%');
+        return this.connection.getRepository(Asset).findOne({
+            where: {
+                source,
+            },
+        });
+    }
+
     findAll(options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
         return this.listQueryBuilder
             .build(Asset, options)
@@ -39,6 +54,14 @@ export class AssetService {
                 items,
                 totalItems,
             }));
+    }
+
+    async getFeaturedAsset<T extends EntityWithAssets>(entity: T): Promise<Asset | undefined> {
+        const entityType = Object.getPrototypeOf(entity).constructor;
+        const entityWithFeaturedAsset = await this.connection.getRepository<EntityWithAssets>(entityType).findOne(entity.id, {
+            relations: ['featuredAsset'],
+        });
+        return entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset;
     }
 
     /**
