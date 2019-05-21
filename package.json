@@ -1,6 +1,6 @@
 {
   "name": "vendure",
-  "version": "0.1.0-alpha.17",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
@@ -16,6 +16,7 @@
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
     "precommit": "lint-staged",
     "postcommit": "git update-index --again",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
@@ -26,9 +27,12 @@
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build",
+    "generate-changelogs": "ts-node scripts/changelogs/changelogs.ts",
     "publish:packages": "yarn build && lerna publish --exact -m \"chore: Publish %s release\" --no-git-tag-version"
   },
   "devDependencies": {
+    "@commitlint/cli": "^7.6.1",
+    "@commitlint/config-conventional": "^7.6.0",
     "@graphql-codegen/add": "^1.1.3",
     "@graphql-codegen/cli": "^1.1.3",
     "@graphql-codegen/typescript": "^1.1.3",
@@ -38,12 +42,13 @@
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "^10.11.5",
     "concurrently": "^4.1.0",
+    "conventional-changelog-core": "^3.2.2",
     "graphql": "^14.1.1",
     "graphql-tools": "^4.0.0",
-    "husky": "^0.14.3",
+    "husky": "^2.3.0",
     "jest": "^24.5.0",
     "klaw-sync": "^6.0.0",
-    "lerna": "^3.13.1",
+    "lerna": "^3.14.1",
     "lint-staged": "^7.2.0",
     "prettier": "^1.15.2",
     "ts-jest": "^24.0.0",
@@ -53,5 +58,19 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "subject-case": [
+        2,
+        "always",
+        [
+          "sentence-case"
+        ]
+      ]
+    }
+  }
 }

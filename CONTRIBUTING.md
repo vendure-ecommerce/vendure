@@ -1,15 +1,9 @@
 # Contribution Guidelines
 
-## Note: code contributions discouraged in pre-alpha phase
-
-Due to the very early phase of this project, significant changes to code and architecture are still taking place.
-
-Therefore I do not recommend investing time in making code changes until things are more stable.
-
-Contributions in terms of suggestions or other relevant feedback are welcome.
-
 ### Commit message format
-Ref: [Karma commit message conventions](http://karma-runner.github.io/0.10/dev/git-commit-msg.html)
+
+This repo uses [Conventional Commits](https://www.conventionalcommits.org).
+
 ```
 type(scope): Message in present tense
 ```
@@ -22,4 +16,25 @@ type(scope): Message in present tense
 * **test** (adding missing tests, refactoring tests; no production code change)
 * **chore** (updating build tasks etc; no production code change)
 
-`scope` indicates the package (core, asset-server-plugin, docs etc.)
+`scope` indicates the package affected by the commit:
+
+* admin-ui
+* admin-ui-plugin
+* asset-server-plugin
+* common
+* core
+* create
+* email-plugin
+* etc.
+
+If a commit affects more than one package, seperate them with a comma:
+
+```
+fix(core,common): Fix the thing
+```
+
+If a commit applies to no particular package (e.g. a tooling change in the root package.json), the scope can be omitted.
+
+#### Linting
+
+Commit messages are linted on commit, so you'll know if your message is not quite right.
