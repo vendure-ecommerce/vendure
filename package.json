@@ -18,6 +18,7 @@
     "postcommit": "git update-index --again",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
+    "version": "yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
     "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../ && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:e2e",
@@ -27,8 +28,9 @@
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build",
-    "generate-changelogs": "ts-node scripts/changelogs/changelogs.ts",
-    "publish:packages": "yarn build && lerna publish --exact -m \"chore: Publish %s release\" --no-git-tag-version"
+    "generate-changelog": "ts-node scripts/changelogs/changelogs.ts",
+    "bump-version": "lerna version -m \"chore: Publish %s\" --no-push",
+    "publish": "yarn build && lerna publish --exact -m \"chore: Publish %s release\" --no-git-tag-version"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",

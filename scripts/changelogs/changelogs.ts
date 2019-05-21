@@ -28,21 +28,18 @@ const PACKAGES: PackageDef[] = [
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
 const commitTemplate = fs.readFileSync(path.join(__dirname, 'commit.hbs'), 'utf-8');
 
-PACKAGES.forEach(generateChangelogForPackage);
+generateChangelogForPackage();
 
 /**
  * Generates changelog entries for the given package based on the conventional commits data.
  */
-function generateChangelogForPackage(pkg: PackageDef) {
-    const changelogPath = path.join(pkg.path, 'CHANGELOG.md');
+function generateChangelogForPackage() {
+    const changelogPath = path.join(__dirname, '../../CHANGELOG.md');
     const inStream = fs.createReadStream(changelogPath, { flags: 'a+' });
-    const tempFile = path.join(__dirname, `__temp_${pkg.name}__`);
+    const tempFile = path.join(__dirname, `__temp_changelog__`);
     conventionalChangelogCore({
-            pkg: {
-                path: path.join(pkg.path, 'package.json'),
-            },
             transform: (commit: any, context: any) => {
-                const includeCommit = scopeMatchesName(commit.scope, pkg.name) && TYPES_TO_INCLUDE.includes(commit.type);
+                const includeCommit = TYPES_TO_INCLUDE.includes(commit.type);
                 if (includeCommit) {
                     return context(null, commit);
                 } else {
@@ -51,9 +48,11 @@ function generateChangelogForPackage(pkg: PackageDef) {
 
             },
             releaseCount: 1,
-            outputUnreleased: false,
+            outputUnreleased: true,
         },
-        null,
+        {
+            version: require('../../lerna.json').version,
+        },
         null,
         null,
         {
