@@ -115,11 +115,11 @@ To make a release:
 
 ##### 1. `yarn publish-release`
 
-This will first build all packages to ensure the distributed files are up to date.
+It will run `lerna publish` which will prompt for which version to update to. Although we are using [conventional commits](https://www.conventionalcommits.org), the version is not automatically being calculated from the commit messages. Therefore the next version should be manually selected. 
 
-Next it will run `lerna publish` which will prompt for which version to update to. Although we are using [conventional commits](https://www.conventionalcommits.org), the version is not automatically being calculated from the commit messages. Therefore the next version should be manually selected. 
+Next it will build all packages to ensure the distributed files are up to date.
 
-This command will also create changelog entries for this release.
+Finally the command will create changelog entries for this release.
 
 ##### 2. `git push origin master --follow-tags`
 

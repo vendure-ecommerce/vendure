@@ -18,7 +18,7 @@
     "postcommit": "git update-index --again",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
-    "version": "yarn generate-changelog && git add CHANGELOG.md",
+    "version": "yarn build && yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
     "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../ && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:e2e",
@@ -29,7 +29,7 @@
     "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
-    "publish-release": "yarn build && lerna publish -m \"chore: Publish %s\" --no-push"
+    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
