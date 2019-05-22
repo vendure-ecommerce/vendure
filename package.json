@@ -28,9 +28,8 @@
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build",
-    "generate-changelog": "ts-node scripts/changelogs/changelogs.ts",
-    "bump-version": "lerna version -m \"chore: Publish %s\" --no-push",
-    "publish": "yarn build && lerna publish --exact -m \"chore: Publish %s release\" --no-git-tag-version"
+    "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
+    "publish-release": "yarn build && lerna publish -m \"chore: Publish %s\" --no-push"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",

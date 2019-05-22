@@ -5,24 +5,24 @@ import { addStream } from './add-stream';
 // tslint:disable-next-line:no-var-requires
 const conventionalChangelogCore = require('conventional-changelog-core');
 
-type PackageDef = { name: string | string[]; path: string; };
-
 /**
  * The types of commit which will be included in the changelog.
  */
-const TYPES_TO_INCLUDE = ['feat', 'fix'];
+const VALID_TYPES = ['feat', 'fix'];
 
 /**
- * Define which packages to create changelog entries for. The `name` property should correspond to the
- * "scope" as used in the commit message.
+ * Define which packages to create changelog entries for.
  */
-const PACKAGES: PackageDef[] = [
-    { name: ['admin-ui-plugin', 'admin-ui'], path: path.join(__dirname, '../../packages/admin-ui-plugin') },
-    { name: ['asset-server', 'asset-server-plugin'], path: path.join(__dirname, '../../packages/asset-server-plugin') },
-    { name: 'common', path: path.join(__dirname, '../../packages/common') },
-    { name: 'core', path: path.join(__dirname, '../../packages/core') },
-    { name: 'create', path: path.join(__dirname, '../../packages/create') },
-    { name: ['email-plugin', 'email'], path: path.join(__dirname, '../../packages/email-plugin') },
+const VALID_SCOPES: string[] = [
+    'admin-ui-plugin',
+    'admin-ui',
+    'asset-server',
+    'asset-server-plugin',
+    'common',
+    'core',
+    'create',
+    'email-plugin',
+    'email',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
@@ -31,21 +31,21 @@ const commitTemplate = fs.readFileSync(path.join(__dirname, 'commit.hbs'), 'utf-
 generateChangelogForPackage();
 
 /**
- * Generates changelog entries for the given package based on the conventional commits data.
+ * Generates changelog entries based on the conventional commits data.
  */
 function generateChangelogForPackage() {
     const changelogPath = path.join(__dirname, '../../CHANGELOG.md');
     const inStream = fs.createReadStream(changelogPath, { flags: 'a+' });
     const tempFile = path.join(__dirname, `__temp_changelog__`);
-    conventionalChangelogCore({
+    conventionalChangelogCore(
+        {
             transform: (commit: any, context: any) => {
-                const includeCommit = TYPES_TO_INCLUDE.includes(commit.type);
+                const includeCommit = VALID_TYPES.includes(commit.type) && scopeIsValid(commit.scope);
                 if (includeCommit) {
                     return context(null, commit);
                 } else {
                     return context(null, null);
                 }
-
             },
             releaseCount: 1,
             outputUnreleased: true,
@@ -62,7 +62,8 @@ function generateChangelogForPackage() {
                 context.commitGroups.forEach(addHeaderToCommitGroup);
                 return context;
             },
-        })
+        },
+    )
         .pipe(addStream(inStream))
         .pipe(fs.createWriteStream(tempFile))
         .on('finish', () => {
@@ -74,8 +75,13 @@ function generateChangelogForPackage() {
         });
 }
 
-function scopeMatchesName(scope: string, name: string | string[]): boolean {
-    return Array.isArray(name) ? name.includes(scope) : scope === name;
+function scopeIsValid(scope: string): boolean {
+    for (const validScope of VALID_SCOPES) {
+        if (scope.includes(validScope)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
