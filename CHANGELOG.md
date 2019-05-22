@@ -1,3 +1,10 @@
+## <small>0.1.2-beta.1 (2019-05-22)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix publish flow to ensure correct version in UI ([dc52814](https://github.com/vendure-ecommerce/vendure/commit/dc52814))
+
 ## <small>0.1.2-beta.0 (2019-05-22)</small>
 
 
