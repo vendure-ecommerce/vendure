@@ -35,8 +35,5 @@
     "@types/nodemailer": "^4.6.5",
     "@vendure/common": ">=0.1.0-alpha.1",
     "@vendure/core": ">=0.1.0-alpha.1"
-  },
-  "peerDependencies": {
-    "@vendure/core": ">=0.1.0-alpha.18"
   }
 }

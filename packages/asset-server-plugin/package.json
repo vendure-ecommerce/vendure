@@ -24,8 +24,5 @@
     "fs-extra": "^7.0.1",
     "sharp": "^0.22.0",
     "typescript": "^3.3.4000"
-  },
-  "peerDependencies": {
-    "@vendure/core": ">=0.1.0-alpha.18"
   }
 }
