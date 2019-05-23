@@ -61,22 +61,25 @@ export class AuthGuard implements CanActivate {
         hasOwnerPermission: boolean,
     ): Promise<Session | undefined> {
         const authToken = extractAuthToken(req, this.configService.authOptions.tokenMethod);
+        let session: Session | undefined;
         if (authToken) {
-            const session = await this.authService.validateSession(authToken);
-            if (!session) {
-                // if there is a token but it cannot be validated to a Session,
-                // then the token is no longer valid and should be unset.
-                setAuthToken({
-                    req,
-                    res,
-                    authOptions: this.configService.authOptions,
-                    rememberMe: false,
-                    authToken: '',
-                });
+            session = await this.authService.validateSession(authToken);
+            if (session) {
+                return session;
             }
-            return session;
-        } else if (hasOwnerPermission) {
-            const session = await this.authService.createAnonymousSession();
+            // if there is a token but it cannot be validated to a Session,
+            // then the token is no longer valid and should be unset.
+            setAuthToken({
+                req,
+                res,
+                authOptions: this.configService.authOptions,
+                rememberMe: false,
+                authToken: '',
+            });
+        }
+
+        if (hasOwnerPermission && !session) {
+            session = await this.authService.createAnonymousSession();
             setAuthToken({
                 authToken: session.token,
                 rememberMe: true,
@@ -84,7 +87,7 @@ export class AuthGuard implements CanActivate {
                 req,
                 res,
             });
-            return session;
         }
+        return session;
     }
 }
