@@ -69,6 +69,15 @@ export interface AssetServerOptions {
     assetUploadDir: string;
     /**
      * @description
+     * The complete URL prefix of the asset files. For example, "https://demo.vendure.io/assets/"
+     *
+     * If not provided, the plugin will attempt to guess based off the incoming
+     * request and the configured route. However, in all but the simplest cases,
+     * this guess may not yield correct results.
+     */
+    assetUrlPrefix?: 'string';
+    /**
+     * @description
      * The max width in pixels of a generated preview image.
      *
      * @default 1600
@@ -221,10 +230,10 @@ export class AssetServerPlugin implements VendurePlugin {
 
     private createAssetStorageStrategy() {
         const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
-            const prefix = `${request.protocol}://${request.get('host')}/${this.options.route}/`;
             if (!identifier) {
                 return '';
             }
+            const prefix = this.options.assetUrlPrefix || `${request.protocol}://${request.get('host')}/${this.options.route}/`;
             return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
         };
         return new LocalAssetStorageStrategy(this.options.assetUploadDir, toAbsoluteUrlFn);
