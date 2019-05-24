@@ -1,6 +1,6 @@
 {
   "name": "@vendure/email-plugin",
-  "version": "0.1.2-beta.1",
+  "version": "0.1.2-beta.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -34,6 +34,6 @@
     "@types/mjml": "^4.0.2",
     "@types/nodemailer": "^4.6.5",
     "@vendure/common": "^0.1.2-beta.1",
-    "@vendure/core": "^0.1.2-beta.1"
+    "@vendure/core": "^0.1.2-beta.2"
   }
 }

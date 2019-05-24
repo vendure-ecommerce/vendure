@@ -1,3 +1,15 @@
+## <small>0.1.2-beta.2 (2019-05-24)</small>
+
+
+#### Fixes
+
+* **core** Fix CollectionBreadcrumb.name error ([5b6f93a](https://github.com/vendure-ecommerce/vendure/commit/5b6f93a)), closes [#97](https://github.com/vendure-ecommerce/vendure/issues/97)
+* **core** Fix intermittent "no active session" errors ([1313ca7](https://github.com/vendure-ecommerce/vendure/commit/1313ca7))
+
+#### Features
+
+* **asset-server-plugin** Allow url prefix to be set in options ([c0ea092](https://github.com/vendure-ecommerce/vendure/commit/c0ea092))
+
 ## <small>0.1.2-beta.1 (2019-05-22)</small>
 
 
