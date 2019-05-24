@@ -13,9 +13,13 @@ However, we'd like to lower the barrier to getting started in the regard, so the
 
 ## Vendure Storefront
 
+{{< figure src="./vendure-storefront-screenshot-01.jpg" >}}
+
 This is our own progressive web application (PWA) storefront. It is currently still in development, but when complete it will offer a ready-made, customizable storefront solution tailored specifically to work well with the Vendure server. 
 
-Keep up with development here: [github.com/vendure-ecommerce/storefront](https://github.com/vendure-ecommerce/storefront).
+A live demo can be found here: [demo.vendure.io/storefront/](https://demo.vendure.io/storefront/)
+
+Keep up with development here: [github.com/vendure-ecommerce/storefront](https://github.com/vendure-ecommerce/storefront)
 
 ## DEITY Falcon
 
