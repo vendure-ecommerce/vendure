@@ -10,7 +10,7 @@
     {{ $list := .Section.Sections }}
     {{ $list = $list | append .Section.Pages }}
     {{ range ($list.ByParam "Title").ByParam "Weight" }}
-        {{ if eq .Kind "section" }}
+        {{ if and (eq .Kind "section") (or (gt (len .Pages) 0) (gt (len .Sections) 0) ) }}
             <li class="section">
                 {{ $expanded := in $.CurrentPage .Permalink }}
                 <div class="section-link">

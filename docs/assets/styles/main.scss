@@ -126,6 +126,12 @@ ul.contents-list {
     min-height: 80vh;
     flex: 1;
     padding: $padding-16 * 1.6;
+
+    figure {
+        img {
+            max-width: 100%;
+        }
+    }
 }
 
 .book-header {

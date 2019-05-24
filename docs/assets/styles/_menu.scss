@@ -13,6 +13,12 @@
                 opacity: 0.5;
                 margin-left: -15px;
                 margin-right: 3px;
+                cursor: pointer;
+                transition: opacity 0.2s;
+
+                &:hover {
+                    opacity: 0.9;
+                }
 
                 &.expanded {
                     transform: rotateZ(180deg);

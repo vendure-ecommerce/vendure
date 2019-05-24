@@ -1,6 +1,7 @@
 // import '@webcomponents/custom-elements';
 
 import { initGraphQlPlaygroundWidgets } from './graphql-playground-widget';
+import { initNavMenu } from './nav-menu';
 import { SearchWidget } from './search-widget';
 import { initTabs } from './tabs';
 import { TocHighlighter } from './toc-highlighter';
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initTabs();
+    initNavMenu();
     initGraphQlPlaygroundWidgets();
 
 }, false);
