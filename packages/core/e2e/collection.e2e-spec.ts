@@ -69,6 +69,14 @@ describe('Collection resolver', () => {
         await server.destroy();
     });
 
+    /**
+     * Test case for https://github.com/vendure-ecommerce/vendure/issues/97
+     */
+    it('collection breadcrumbs works after bootstrap', async () => {
+        const result = await client.query<GetCollectionBreadcrumbs.Query>(GET_COLLECTION_BREADCRUMBS, { id: 'T_1' });
+        expect(result.collection!.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
+    });
+
     describe('createCollection', () => {
         it('creates a root collection', async () => {
             const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(

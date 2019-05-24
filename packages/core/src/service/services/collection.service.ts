@@ -464,7 +464,7 @@ export class CollectionService implements OnModuleInit {
 
         if (existingRoot) {
             this.rootCategories[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
-            return existingRoot;
+            return this.rootCategories[ctx.channel.code];
         }
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
