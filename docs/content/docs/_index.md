@@ -6,7 +6,7 @@ weight: 0
 # Vendure Documentation
 
 {{% alert "warning" %}}
-**Note**: Vendure is currently in alpha and as such, the information and APIs documented here are subject to change.
+**Note**: Vendure is currently in beta and as such, the information and APIs documented here are subject to change.
 {{% /alert %}}
 
 ## What is Vendure?

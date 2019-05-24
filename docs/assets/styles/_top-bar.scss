@@ -84,7 +84,7 @@
     }
 
 
-    .alpha-label {
+    .version-label {
         display: inline-block;
         background-color: #ffd400;
         padding: 3px 6px;
@@ -96,11 +96,8 @@
     }
 
     .right {
-        @media all and (max-width: $sm-breakpoint){
-            text-align: right;
-        }
         a {
-            margin-left: 12px;
+            margin-left: 18px;
         }
         a:link, a:visited {
             color: $gray-400;
@@ -108,6 +105,12 @@
         a:hover {
             color: $gray-100;
             text-decoration: none;
+        }
+        @media all and (max-width: $sm-breakpoint){
+            text-align: right;
+            a {
+                margin-left: 12px;
+            }
         }
     }
 
