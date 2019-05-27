@@ -1,6 +1,6 @@
 {
 result :[
-    {{- range .Site.RegularPages -}}
+    {{- range where .Site.Pages "Section" "docs" -}}
         {{ $titles := findRE "<h(2|3).*?>(.|\n)*?</h(2|3)>" .Content -}}
         {{ $plain := apply $titles "plainify" "." -}}
         {{ $cleaned := $plain | complement (slice "constructor" "Signature" "Members") -}}
