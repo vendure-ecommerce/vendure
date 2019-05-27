@@ -63,7 +63,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             }
         }
         if (enabledOnly) {
-            qb.andWhere('"si_enabled" = :enabled', { enabled: true });
+            qb.andWhere('"si"."enabled" = :enabled', { enabled: true });
         }
 
         return qb
@@ -82,7 +82,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             input,
         );
         if (enabledOnly) {
-            innerQb.andWhere('"si_enabled" = :enabled', { enabled: true });
+            innerQb.andWhere('"si"."enabled" = :enabled', { enabled: true });
         }
         const totalItemsQb = this.connection
             .createQueryBuilder()

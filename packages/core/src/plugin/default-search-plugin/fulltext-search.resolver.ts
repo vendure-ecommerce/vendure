@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, SearchInput, QuerySearchArgs, SearchResponse } from '@vendure/common/lib/generated-types';
+import { Permission, QuerySearchArgs, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
 import { Decode } from '../../api';
