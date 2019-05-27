@@ -75,7 +75,7 @@ export interface AssetServerOptions {
      * request and the configured route. However, in all but the simplest cases,
      * this guess may not yield correct results.
      */
-    assetUrlPrefix?: 'string';
+    assetUrlPrefix?: string;
     /**
      * @description
      * The max width in pixels of a generated preview image.
