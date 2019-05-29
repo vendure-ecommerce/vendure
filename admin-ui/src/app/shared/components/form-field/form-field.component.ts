@@ -23,6 +23,11 @@ export class FormFieldComponent implements OnInit {
     @Input() for: string;
     @Input() tooltip: string;
     /**
+     * A map of error message codes (required, pattern etc.) to messages to display
+     * when those errors are present.
+     */
+    @Input() errors: { [key: string]: string } = {};
+    /**
      * If set to true, the input will be initially set to "readOnly", and an "edit" button
      * will be displayed which allows the field to be edited.
      */
@@ -41,5 +46,19 @@ export class FormFieldComponent implements OnInit {
     setReadOnly(value: boolean) {
         this.formFieldControl.setReadOnly(value);
         this.isReadOnly = value;
+    }
+
+    getErrorMessage(): string | undefined {
+        if (!this.formFieldControl || !this.formFieldControl.formControlName) {
+            return;
+        }
+        const errors = this.formFieldControl.formControlName.errors;
+        if (errors) {
+            for (const errorKey of Object.keys(errors)) {
+                if (this.errors[errorKey]) {
+                    return this.errors[errorKey];
+                }
+            }
+        }
     }
 }

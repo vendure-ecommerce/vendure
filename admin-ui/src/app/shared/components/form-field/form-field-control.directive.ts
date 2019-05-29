@@ -1,15 +1,14 @@
 import { Directive, ElementRef, Optional } from '@angular/core';
-import { FormControl, NgControl } from '@angular/forms';
+import { NgControl } from '@angular/forms';
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 // tslint:disable:directive-selector
 @Directive({ selector: 'input, textarea, select' })
 export class FormFieldControlDirective {
-    formControl: FormControl;
     constructor(
         private elementRef: ElementRef<InputElement>,
-        @Optional() private formControlName: NgControl,
+        @Optional() public formControlName: NgControl,
     ) {}
 
     get valid(): boolean {

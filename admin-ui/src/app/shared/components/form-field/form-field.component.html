@@ -1,4 +1,8 @@
-<div class="form-group" [class.no-label]="!label">
+<div
+    class="form-group"
+    [class.no-label]="!label"
+    [class.clr-error]="formFieldControl.formControlName.invalid"
+>
     <label *ngIf="label" [for]="for" class="clr-control-label">
         {{ label }}
         <clr-tooltip *ngIf="tooltip">
@@ -28,6 +32,7 @@
                 <clr-icon shape="edit"></clr-icon>
             </button>
         </div>
+        <div class="clr-subtext" *ngIf="getErrorMessage()">{{ getErrorMessage() }}</div>
         <span class="tooltip-content">{{ label }} is required.</span>
     </label>
 </div>
