@@ -22,6 +22,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import {
     CREATE_PRODUCT,
+    DELETE_PRODUCT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
@@ -677,14 +678,6 @@ describe('Product resolver', () => {
         );
     });
 });
-
-const DELETE_PRODUCT = gql`
-    mutation DeleteProduct($id: ID!) {
-        deleteProduct(id: $id) {
-            result
-        }
-    }
-`;
 
 export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
     mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {

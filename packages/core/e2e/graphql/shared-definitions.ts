@@ -228,3 +228,11 @@ export const GET_FACET_LIST = gql`
     }
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
+
+export const DELETE_PRODUCT = gql`
+    mutation DeleteProduct($id: ID!) {
+        deleteProduct(id: $id) {
+            result
+        }
+    }
+`;

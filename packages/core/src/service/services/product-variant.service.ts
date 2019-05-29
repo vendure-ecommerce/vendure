@@ -103,11 +103,12 @@ export class ProductVariantService {
                 channelId: ctx.channelId,
             })
             .leftJoin('productvariant.collections', 'collection')
+            .leftJoin('productvariant.product', 'product')
+            .andWhere('product.deletedAt IS NULL', { deletedAt: null })
             .andWhere('collection.id = :collectionId', { collectionId });
 
         if (options && options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
-            qb.leftJoin('productvariant.product', 'product')
-                .andWhere('product.enabled = :enabled', { enabled: true });
+            qb.andWhere('product.enabled = :enabled', { enabled: true });
         }
 
         return qb.getManyAndCount()

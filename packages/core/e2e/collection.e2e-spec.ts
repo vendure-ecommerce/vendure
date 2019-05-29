@@ -4,7 +4,10 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { StringOperator } from '../src/common/configurable-operation';
-import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
+import {
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+} from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
@@ -14,6 +17,7 @@ import {
     CreateCollection,
     CreateCollectionInput,
     CreateCollectionSelectVariants,
+    DeleteProduct,
     FacetValueFragment,
     GetAssetList,
     GetCollection,
@@ -30,7 +34,14 @@ import {
     UpdateProduct,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_COLLECTION, GET_ASSET_LIST, UPDATE_COLLECTION, UPDATE_PRODUCT, UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
+import {
+    CREATE_COLLECTION,
+    DELETE_PRODUCT,
+    GET_ASSET_LIST,
+    UPDATE_COLLECTION,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
+} from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -73,7 +84,9 @@ describe('Collection resolver', () => {
      * Test case for https://github.com/vendure-ecommerce/vendure/issues/97
      */
     it('collection breadcrumbs works after bootstrap', async () => {
-        const result = await client.query<GetCollectionBreadcrumbs.Query>(GET_COLLECTION_BREADCRUMBS, { id: 'T_1' });
+        const result = await client.query<GetCollectionBreadcrumbs.Query>(GET_COLLECTION_BREADCRUMBS, {
+            id: 'T_1',
+        });
         expect(result.collection!.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
     });
 
@@ -703,6 +716,26 @@ describe('Collection resolver', () => {
                 { id: 'T_10', name: 'endsWith camera' },
             ]);
         });
+    });
+
+    it('collection does not list deleted products', async () => {
+        await client.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+            id: 'T_2', // curvy monitor
+        });
+        const { collection } = await client.query<
+            GetCollectionProducts.Query,
+            GetCollectionProducts.Variables
+        >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            id: pearCollection.id,
+        });
+        expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+            'Laptop 13 inch 8GB',
+            'Laptop 15 inch 8GB',
+            'Laptop 13 inch 16GB',
+            'Laptop 15 inch 16GB',
+            'Gaming PC i7-8700 240GB SSD',
+            'Instant Camera',
+        ]);
     });
 
     function getFacetValueId(code: string): string {
