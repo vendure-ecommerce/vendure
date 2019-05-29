@@ -58,8 +58,12 @@
                                     (input)="updateSlug($event.target.value)"
                                 />
                             </vdr-form-field>
-                            <vdr-form-field [label]="'catalog.slug' | translate" for="slug">
-                                <input id="slug" type="text" formControlName="slug" />
+                            <vdr-form-field
+                                [label]="'catalog.slug' | translate"
+                                for="slug"
+                                [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
+                            >
+                                <input id="slug" type="text" formControlName="slug" pattern="[a-z0-9_-]+" />
                             </vdr-form-field>
                             <vdr-rich-text-editor
                                 formControlName="description"

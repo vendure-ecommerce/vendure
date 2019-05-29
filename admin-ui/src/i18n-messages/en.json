@@ -86,6 +86,7 @@
     "set-as-featured-asset": "Set as featured asset",
     "sku": "SKU",
     "slug": "Slug",
+    "slug-pattern-error": "The slug may only contain letters, numbers, - and _",
     "stock-on-hand": "Stock",
     "tax-category": "Tax category",
     "taxes": "Taxes",
