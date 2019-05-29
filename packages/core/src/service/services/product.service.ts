@@ -6,6 +6,7 @@ import {
     DeletionResult,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
@@ -99,6 +100,7 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
+        this.normalizeSlugs(input);
         const product = await this.translatableSaver.create({
             input,
             entityType: Product,
@@ -117,6 +119,7 @@ export class ProductService {
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         await getEntityOrThrow(this.connection, Product, input.id);
+        this.normalizeSlugs(input);
         const product = await this.translatableSaver.update({
             input,
             entityType: Product,
@@ -182,5 +185,16 @@ export class ProductService {
             throw new EntityNotFoundError('Product', productId);
         }
         return product;
+    }
+
+    private normalizeSlugs<T extends CreateProductInput | UpdateProductInput>(input: T): T {
+        if (input.translations) {
+            input.translations.forEach(t => {
+                if (t.slug) {
+                    t.slug = normalizeString(t.slug, '-');
+                }
+            });
+        }
+        return input;
     }
 }

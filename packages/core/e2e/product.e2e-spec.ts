@@ -179,7 +179,7 @@ describe('Product resolver', () => {
                             {
                                 languageCode: LanguageCode.en,
                                 name: 'en Baked Potato',
-                                slug: 'en-baked-potato',
+                                slug: 'en Baked Potato',
                                 description: 'A baked potato',
                             },
                             {
@@ -248,6 +248,26 @@ describe('Product resolver', () => {
                 },
             );
             expect(result.updateProduct).toMatchSnapshot();
+        });
+
+        it('slug is normalized to be url-safe', async () => {
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Mashed Potato',
+                                slug: 'A (very) nice potato!!1',
+                                description: 'A blob of mashed potato',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.updateProduct.slug).toBe('a-very-nice-potato1');
         });
 
         it('updateProduct accepts partial input', async () => {
