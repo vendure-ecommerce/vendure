@@ -58,7 +58,7 @@ function registerCustomFieldsForEntity(
         for (const customField of customFields) {
             const { name, type } = customField;
             const registerColumn = () =>
-                Column({ type: getColumnType(dbEngine, type), name })(new ctor(), name);
+                Column({ type: getColumnType(dbEngine, type), name, nullable: true })(new ctor(), name);
 
             if (translation) {
                 if (type === 'localeString') {

@@ -66,6 +66,7 @@ function getDbConfig(): ConnectionOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
+                synchronize: true,
                 type: 'postgres',
                 host: '127.0.0.1',
                 port: 5432,
@@ -83,6 +84,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
+                synchronize: true,
                 type: 'mysql',
                 host: '192.168.99.100',
                 port: 3306,
