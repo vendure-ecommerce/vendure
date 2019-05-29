@@ -94,9 +94,15 @@ export class FacetService {
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
         const facet = await getEntityOrThrow(this.connection, Facet, id, { relations: ['values'] });
-        const { productCount, variantCount } = await this.facetValueService.checkFacetValueUsage(
-            facet.values.map(fv => fv.id),
-        );
+        let productCount = 0;
+        let variantCount = 0;
+        if (facet.values.length) {
+            const counts = await this.facetValueService.checkFacetValueUsage(
+                facet.values.map(fv => fv.id),
+            );
+            productCount = counts.productCount;
+            variantCount = counts.variantCount;
+        }
 
         const isInUse = !!(productCount || variantCount);
         const both = !!(productCount && variantCount) ? 'both' : 'single';

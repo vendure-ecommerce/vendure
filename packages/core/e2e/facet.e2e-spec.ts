@@ -310,6 +310,20 @@ describe('Facet resolver', () => {
             });
             expect(result3.product!.facetValues).toEqual([]);
         });
+
+        it('deleteFacet with no FacetValues works', async () => {
+            const { createFacet } = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+                input: {
+                    code: 'test',
+                    isPrivate: false,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'Test' },
+                    ],
+                },
+            });
+            const result = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: createFacet.id, force: false });
+            expect(result.deleteFacet.result).toBe(DeletionResult.DELETED);
+        });
     });
 });
 
