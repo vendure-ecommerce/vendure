@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { LanguageCode } from '@vendure/common/src/generated-types';
 import { EventBus, Order, OrderStateTransitionEvent, VendureEvent } from '@vendure/core';
 import path from 'path';
 

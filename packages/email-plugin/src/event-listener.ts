@@ -1,6 +1,6 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Type } from '@vendure/common/lib/shared-types';
-import { LanguageCode } from '@vendure/common/src/generated-types';
 
 import { EmailDetails, EventWithContext } from './types';
 

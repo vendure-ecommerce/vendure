@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/src/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import fs from 'fs-extra';
 import path from 'path';
 
