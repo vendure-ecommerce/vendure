@@ -1,6 +1,6 @@
 import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
 import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/src/shared-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { FacetValue, ProductOption } from '../../../entity';
