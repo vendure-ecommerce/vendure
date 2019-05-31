@@ -171,53 +171,62 @@ export class OrderService {
         orderId: ID,
         productVariantId: ID,
         quantity: number,
+        customFields?: { [key: string]: any; },
     ): Promise<Order> {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
         this.assertNotOverOrderItemsLimit(order, quantity);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        let orderLine = order.lines.find(line => idsAreEqual(line.productVariant.id, productVariantId));
+        let orderLine = order.lines.find(line => {
+            return idsAreEqual(line.productVariant.id, productVariantId) && JSON.stringify(line.customFields) === JSON.stringify(customFields);
+        });
 
         if (!orderLine) {
-            const newLine = this.createOrderLineFromVariant(productVariant);
+            const newLine = this.createOrderLineFromVariant(productVariant, customFields);
             orderLine = await this.connection.getRepository(OrderLine).save(newLine);
             order.lines.push(orderLine);
             await this.connection.getRepository(Order).save(order);
         }
-        return this.adjustItemQuantity(ctx, orderId, orderLine.id, orderLine.quantity + quantity);
+        return this.adjustOrderLine(ctx, orderId, orderLine.id, orderLine.quantity + quantity);
     }
 
-    async adjustItemQuantity(
+    async adjustOrderLine(
         ctx: RequestContext,
         orderId: ID,
         orderLineId: ID,
-        quantity: number,
+        quantity?: number | null,
+        customFields?: { [key: string]: any; },
     ): Promise<Order> {
-        this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
-        this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
-        const currentQuantity = orderLine.quantity;
-        this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
-        if (currentQuantity < quantity) {
-            if (!orderLine.items) {
-                orderLine.items = [];
+        this.assertAddingItemsState(order);
+        if (quantity != null) {
+            this.assertQuantityIsPositive(quantity);
+            const currentQuantity = orderLine.quantity;
+            this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
+            if (currentQuantity < quantity) {
+                if (!orderLine.items) {
+                    orderLine.items = [];
+                }
+                const productVariant = orderLine.productVariant;
+                for (let i = currentQuantity; i < quantity; i++) {
+                    const orderItem = await this.connection.getRepository(OrderItem).save(
+                        new OrderItem({
+                            unitPrice: productVariant.price,
+                            pendingAdjustments: [],
+                            unitPriceIncludesTax: productVariant.priceIncludesTax,
+                            taxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
+                        }),
+                    );
+                    orderLine.items.push(orderItem);
+                }
+            } else if (quantity < currentQuantity) {
+                orderLine.items = orderLine.items.slice(0, quantity);
             }
-            const productVariant = orderLine.productVariant;
-            for (let i = currentQuantity; i < quantity; i++) {
-                const orderItem = await this.connection.getRepository(OrderItem).save(
-                    new OrderItem({
-                        unitPrice: productVariant.price,
-                        pendingAdjustments: [],
-                        unitPriceIncludesTax: productVariant.priceIncludesTax,
-                        taxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
-                    }),
-                );
-                orderLine.items.push(orderItem);
-            }
-        } else if (quantity < currentQuantity) {
-            orderLine.items = orderLine.items.slice(0, quantity);
+        }
+        if (customFields != null) {
+            orderLine.customFields = customFields;
         }
         await this.connection.getRepository(OrderLine).save(orderLine);
         return this.applyPriceAdjustments(ctx, order);
@@ -363,11 +372,12 @@ export class OrderService {
         return orderItem;
     }
 
-    private createOrderLineFromVariant(productVariant: ProductVariant): OrderLine {
+    private createOrderLineFromVariant(productVariant: ProductVariant, customFields?: { [key: string]: any; }): OrderLine {
         return new OrderLine({
             productVariant,
             taxCategory: productVariant.taxCategory,
             featuredAsset: productVariant.product.featuredAsset,
+            customFields,
         });
     }
 

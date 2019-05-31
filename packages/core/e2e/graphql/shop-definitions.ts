@@ -164,9 +164,9 @@ export const GET_ACTIVE_ORDER = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
-export const ADJUST_ITEM_QUENTITY = gql`
-    mutation AdjustItemQuantity($orderItemId: ID!, $quantity: Int!) {
-        adjustItemQuantity(orderItemId: $orderItemId, quantity: $quantity) {
+export const ADJUST_ITEM_QUANTITY = gql`
+    mutation AdjustItemQuantity($orderLineId: ID!, $quantity: Int!) {
+        adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
             ...TestOrderFragment
         }
     }
@@ -174,8 +174,8 @@ export const ADJUST_ITEM_QUENTITY = gql`
 `;
 
 export const REMOVE_ITEM_FROM_ORDER = gql`
-    mutation RemoveItemFromOrder($orderItemId: ID!) {
-        removeItemFromOrder(orderItemId: $orderItemId) {
+    mutation RemoveItemFromOrder($orderLineId: ID!) {
+        removeOrderLine(orderLineId: $orderLineId) {
             ...TestOrderFragment
         }
     }

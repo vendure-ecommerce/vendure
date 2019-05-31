@@ -1,7 +1,6 @@
-import { buildSchema, extendSchema, GraphQLSchema, parse } from 'graphql';
-
 import { CustomFieldConfig, CustomFields, CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { buildSchema, extendSchema, GraphQLArgument, GraphQLInputObjectType, GraphQLSchema, parse } from 'graphql';
 
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in
@@ -138,6 +137,45 @@ export function addGraphQLCustomFields(
     }
 
     return extendSchema(schema, parse(customFieldTypeDefs));
+}
+
+/**
+ * If CustomFields are defined on the OrderLine entity, then an extra `customFields` argument
+ * must be added to the `addItemToOrder` and `adjustOrderLine` mutations.
+ */
+export function addOrderLineCustomFieldsInput(typeDefsOrSchema: string | GraphQLSchema, orderLineCustomFields: CustomFieldConfig[]): GraphQLSchema {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    if (!orderLineCustomFields || orderLineCustomFields.length === 0) {
+        return schema;
+    }
+    const schemaConfig = schema.toConfig();
+    const mutationType = schemaConfig.mutation;
+    if (!mutationType) {
+        return schema;
+    }
+    const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
+    const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
+    if (!addItemToOrderMutation || !adjustOrderLineMutation) {
+        return schema;
+    }
+    const input = new GraphQLInputObjectType({
+        name: 'OrderLineCustomFieldsInput',
+        fields: orderLineCustomFields.reduce((fields, field) => {
+            return { ...fields, [field.name]: { type: schema.getType(getGraphQlType(field.type)) } };
+        }, {}),
+    });
+
+    schemaConfig.types.push(input);
+    addItemToOrderMutation.args.push({
+        name: 'customFields',
+        type: input,
+    });
+    adjustOrderLineMutation.args.push({
+        name: 'customFields',
+        type: input,
+    });
+
+    return new GraphQLSchema(schemaConfig);
 }
 
 type GraphQLFieldType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';

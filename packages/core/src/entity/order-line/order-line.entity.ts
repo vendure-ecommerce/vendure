@@ -1,10 +1,11 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
+import { CustomOrderLineFields, CustomProductFields } from '../custom-entity-fields';
 import { OrderItem } from '../order-item/order-item.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -17,7 +18,7 @@ import { TaxCategory } from '../tax-category/tax-category.entity';
  * @docsCategory entities
  */
 @Entity()
-export class OrderLine extends VendureEntity {
+export class OrderLine extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<OrderLine>) {
         super(input);
     }
@@ -36,6 +37,9 @@ export class OrderLine extends VendureEntity {
 
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
+
+    @Column(type => CustomOrderLineFields)
+    customFields: CustomOrderLineFields;
 
     @Calculated()
     get unitPrice(): number {

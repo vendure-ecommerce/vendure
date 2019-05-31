@@ -205,3 +205,23 @@ type Product {
 }
 "
 `;
+
+exports[`addOrderLineCustomFieldsInput() Does not modify schema when the addItemToOrder mutation not present 1`] = `
+"type Mutation {
+  createCustomer(id: ID!): Boolean
+}
+"
+`;
+
+exports[`addOrderLineCustomFieldsInput() Modifies the schema when the addItemToOrder & adjustOrderLine mutation is present 1`] = `
+"type Mutation {
+  addItemToOrder(id: ID!, quantity: Int!, customFields: OrderLineCustomFieldsInput): Boolean
+  adjustOrderLine(id: ID!, quantity: Int, customFields: OrderLineCustomFieldsInput): Boolean
+}
+
+input OrderLineCustomFieldsInput {
+  giftWrap: Boolean
+  message: String
+}
+"
+`;

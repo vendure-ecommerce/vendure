@@ -10,16 +10,18 @@ type Query {
     nextOrderStates: [String!]!
     order(id: ID!): Order
     orderByCode(code: String!): Order
-    "Get a Product either by id or slug. If neither id nor slug is speicified, an error will result."
+    "Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
     product(id: ID, slug: String, languageCode: LanguageCode): Product
     products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
     search(input: SearchInput!): SearchResponse!
 }
 
 type Mutation {
+    "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): Order
-    removeItemFromOrder(orderItemId: ID!): Order
-    adjustItemQuantity(orderItemId: ID!, quantity: Int!): Order
+    removeOrderLine(orderLineId: ID!): Order
+    "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
+    adjustOrderLine(orderLineId: ID!, quantity: Int): Order
     transitionOrderToState(state: String!): Order
     setOrderShippingAddress(input: CreateAddressInput!): Order
     setOrderShippingMethod(shippingMethodId: ID!): Order

@@ -1105,8 +1105,8 @@ export type LoginResult = {
 
 export type Mutation = {
     addItemToOrder?: Maybe<Order>;
-    removeItemFromOrder?: Maybe<Order>;
-    adjustItemQuantity?: Maybe<Order>;
+    removeOrderLine?: Maybe<Order>;
+    adjustOrderLine?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
     setOrderShippingAddress?: Maybe<Order>;
     setOrderShippingMethod?: Maybe<Order>;
@@ -1153,15 +1153,17 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
-export type MutationRemoveItemFromOrderArgs = {
-    orderItemId: Scalars['ID'];
+export type MutationRemoveOrderLineArgs = {
+    orderLineId: Scalars['ID'];
 };
 
-export type MutationAdjustItemQuantityArgs = {
-    orderItemId: Scalars['ID'];
-    quantity: Scalars['Int'];
+export type MutationAdjustOrderLineArgs = {
+    orderLineId: Scalars['ID'];
+    quantity?: Maybe<Scalars['Int']>;
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type MutationTransitionOrderToStateArgs = {
@@ -1335,6 +1337,15 @@ export type OrderLine = Node & {
     totalPrice: Scalars['Int'];
     adjustments: Array<Adjustment>;
     order: Order;
+    customFields?: Maybe<OrderLineCustomFields>;
+};
+
+export type OrderLineCustomFields = {
+    message?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+    message?: Maybe<Scalars['String']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -1620,6 +1631,7 @@ export type Query = {
     nextOrderStates: Array<Scalars['String']>;
     order?: Maybe<Order>;
     orderByCode?: Maybe<Order>;
+    /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
     products: ProductList;
     search: SearchResponse;
@@ -2068,20 +2080,20 @@ export type GetActiveOrderQuery = { __typename?: 'Query' } & {
 };
 
 export type AdjustItemQuantityMutationVariables = {
-    orderItemId: Scalars['ID'];
+    orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
 };
 
 export type AdjustItemQuantityMutation = { __typename?: 'Mutation' } & {
-    adjustItemQuantity: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+    adjustOrderLine: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
 export type RemoveItemFromOrderMutationVariables = {
-    orderItemId: Scalars['ID'];
+    orderLineId: Scalars['ID'];
 };
 
 export type RemoveItemFromOrderMutation = { __typename?: 'Mutation' } & {
-    removeItemFromOrder: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+    removeOrderLine: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
 export type GetShippingMethodsQueryVariables = {};
@@ -2315,13 +2327,13 @@ export namespace GetActiveOrder {
 export namespace AdjustItemQuantity {
     export type Variables = AdjustItemQuantityMutationVariables;
     export type Mutation = AdjustItemQuantityMutation;
-    export type AdjustItemQuantity = TestOrderFragmentFragment;
+    export type AdjustOrderLine = TestOrderFragmentFragment;
 }
 
 export namespace RemoveItemFromOrder {
     export type Variables = RemoveItemFromOrderMutationVariables;
     export type Mutation = RemoveItemFromOrderMutation;
-    export type RemoveItemFromOrder = TestOrderFragmentFragment;
+    export type RemoveOrderLine = TestOrderFragmentFragment;
 }
 
 export namespace GetShippingMethods {

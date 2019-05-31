@@ -2,8 +2,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationAddItemToOrderArgs,
     MutationAddPaymentToOrderArgs,
-    MutationAdjustItemQuantityArgs,
-    MutationRemoveItemFromOrderArgs,
+    MutationAdjustOrderLineArgs,
+    MutationRemoveOrderLineArgs,
     MutationSetCustomerForOrderArgs,
     MutationSetOrderShippingAddressArgs,
     MutationSetOrderShippingMethodArgs,
@@ -193,29 +193,29 @@ export class ShopOrderResolver {
         @Args() args: MutationAddItemToOrderArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
-        return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity);
+        return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity, (args as any).customFields);
     }
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    @Decode('orderItemId')
-    async adjustItemQuantity(
+    @Decode('orderLineId')
+    async adjustOrderLine(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationAdjustItemQuantityArgs,
+        @Args() args: MutationAdjustOrderLineArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
-        return this.orderService.adjustItemQuantity(ctx, order.id, args.orderItemId, args.quantity);
+        return this.orderService.adjustOrderLine(ctx, order.id, args.orderLineId, args.quantity, (args as any).customFields);
     }
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    @Decode('orderItemId')
-    async removeItemFromOrder(
+    @Decode('orderLineId')
+    async removeOrderLine(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationRemoveItemFromOrderArgs,
+        @Args() args: MutationRemoveOrderLineArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
-        return this.orderService.removeItemFromOrder(ctx, order.id, args.orderItemId);
+        return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
     }
 
     @Mutation()

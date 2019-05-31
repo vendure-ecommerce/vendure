@@ -25,7 +25,7 @@ import { GET_COUNTRY_LIST, GET_CUSTOMER, GET_CUSTOMER_LIST, UPDATE_COUNTRY } fro
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
-    ADJUST_ITEM_QUENTITY,
+    ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
     GET_ACTIVE_ORDER_ADDRESSES,
     GET_AVAILABLE_COUNTRIES,
@@ -87,7 +87,7 @@ describe('Shop orders', () => {
     });
 
     describe('ordering as anonymous user', () => {
-        let firstOrderItemId: string;
+        let firstOrderLineId: string;
         let createdCustomerId: string;
         let orderCode: string;
 
@@ -117,7 +117,7 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines[0].quantity).toBe(1);
             expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
             expect(addItemToOrder!.lines[0].id).toBe('T_1');
-            firstOrderItemId = addItemToOrder!.lines[0].id;
+            firstOrderLineId = addItemToOrder!.lines[0].id;
             orderCode = addItemToOrder!.code;
         });
 
@@ -168,26 +168,26 @@ describe('Shop orders', () => {
             }, 'Cannot add items. An order may consist of a maximum of 99 items'),
         );
 
-        it('adjustItemQuantity adjusts the quantity', async () => {
-            const { adjustItemQuantity } = await shopClient.query<
+        it('adjustOrderLine adjusts the quantity', async () => {
+            const { adjustOrderLine } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
-            >(ADJUST_ITEM_QUENTITY, {
-                orderItemId: firstOrderItemId,
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: firstOrderLineId,
                 quantity: 50,
             });
 
-            expect(adjustItemQuantity!.lines.length).toBe(1);
-            expect(adjustItemQuantity!.lines[0].quantity).toBe(50);
+            expect(adjustOrderLine!.lines.length).toBe(1);
+            expect(adjustOrderLine!.lines[0].quantity).toBe(50);
         });
 
         it(
-            'adjustItemQuantity errors when going beyond orderItemsLimit',
+            'adjustOrderLine errors when going beyond orderItemsLimit',
             assertThrowsWithMessage(async () => {
                 await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                    ADJUST_ITEM_QUENTITY,
+                    ADJUST_ITEM_QUANTITY,
                     {
-                        orderItemId: firstOrderItemId,
+                        orderLineId: firstOrderLineId,
                         quantity: 100,
                     },
                 );
@@ -195,13 +195,13 @@ describe('Shop orders', () => {
         );
 
         it(
-            'adjustItemQuantity errors with a negative quantity',
+            'adjustOrderLine errors with a negative quantity',
             assertThrowsWithMessage(
                 () =>
                     shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                        ADJUST_ITEM_QUENTITY,
+                        ADJUST_ITEM_QUANTITY,
                         {
-                            orderItemId: firstOrderItemId,
+                            orderLineId: firstOrderLineId,
                             quantity: -3,
                         },
                     ),
@@ -210,13 +210,13 @@ describe('Shop orders', () => {
         );
 
         it(
-            'adjustItemQuantity errors with an invalid orderItemId',
+            'adjustOrderLine errors with an invalid orderLineId',
             assertThrowsWithMessage(
                 () =>
                     shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                        ADJUST_ITEM_QUENTITY,
+                        ADJUST_ITEM_QUANTITY,
                         {
-                            orderItemId: 'T_999',
+                            orderLineId: 'T_999',
                             quantity: 5,
                         },
                     ),
@@ -235,14 +235,14 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.length).toBe(2);
             expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
-            const { removeItemFromOrder } = await shopClient.query<
+            const { removeOrderLine } = await shopClient.query<
                 RemoveItemFromOrder.Mutation,
                 RemoveItemFromOrder.Variables
             >(REMOVE_ITEM_FROM_ORDER, {
-                orderItemId: firstOrderItemId,
+                orderLineId: firstOrderLineId,
             });
-            expect(removeItemFromOrder!.lines.length).toBe(1);
-            expect(removeItemFromOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine!.lines.length).toBe(1);
+            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it(
@@ -252,7 +252,7 @@ describe('Shop orders', () => {
                     shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
                         REMOVE_ITEM_FROM_ORDER,
                         {
-                            orderItemId: 'T_999',
+                            orderLineId: 'T_999',
                         },
                     ),
                 `This order does not contain an OrderLine with the id 999`,
@@ -416,7 +416,7 @@ describe('Shop orders', () => {
     });
 
     describe('ordering as authenticated user', () => {
-        let firstOrderItemId: string;
+        let firstOrderLineId: string;
         let activeOrder: AddItemToOrder.AddItemToOrder;
         let authenticatedUserEmailAddress: string;
         let customers: GetCustomerList.Items[];
@@ -455,7 +455,7 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines[0].quantity).toBe(1);
             expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
             activeOrder = addItemToOrder!;
-            firstOrderItemId = addItemToOrder!.lines[0].id;
+            firstOrderLineId = addItemToOrder!.lines[0].id;
         });
 
         it('activeOrder returns order after item has been added', async () => {
@@ -477,17 +477,17 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines[0].quantity).toBe(3);
         });
 
-        it('adjustItemQuantity adjusts the quantity', async () => {
-            const { adjustItemQuantity } = await shopClient.query<
+        it('adjustOrderLine adjusts the quantity', async () => {
+            const { adjustOrderLine } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
-            >(ADJUST_ITEM_QUENTITY, {
-                orderItemId: firstOrderItemId,
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: firstOrderLineId,
                 quantity: 50,
             });
 
-            expect(adjustItemQuantity!.lines.length).toBe(1);
-            expect(adjustItemQuantity!.lines[0].quantity).toBe(50);
+            expect(adjustOrderLine!.lines.length).toBe(1);
+            expect(adjustOrderLine!.lines[0].quantity).toBe(50);
         });
 
         it('removeItemFromOrder removes the correct item', async () => {
@@ -501,14 +501,14 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.length).toBe(2);
             expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
-            const { removeItemFromOrder } = await shopClient.query<
+            const { removeOrderLine } = await shopClient.query<
                 RemoveItemFromOrder.Mutation,
                 RemoveItemFromOrder.Variables
             >(REMOVE_ITEM_FROM_ORDER, {
-                orderItemId: firstOrderItemId,
+                orderLineId: firstOrderLineId,
             });
-            expect(removeItemFromOrder!.lines.length).toBe(1);
-            expect(removeItemFromOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine!.lines.length).toBe(1);
+            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it('nextOrderStates returns next valid states', async () => {
@@ -616,20 +616,20 @@ describe('Shop orders', () => {
                 expect(order.shippingMethod!.description).toBe(shippingMethods[1].description);
             });
 
-            it('shipping method is preserved after adjustItemQuantity', async () => {
+            it('shipping method is preserved after adjustOrderLine', async () => {
                 const activeOrderResult = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
                 activeOrder = activeOrderResult.activeOrder!;
-                const { adjustItemQuantity } = await shopClient.query<
+                const { adjustOrderLine } = await shopClient.query<
                     AdjustItemQuantity.Mutation,
                     AdjustItemQuantity.Variables
-                >(ADJUST_ITEM_QUENTITY, {
-                    orderItemId: activeOrder.lines[0].id,
+                >(ADJUST_ITEM_QUANTITY, {
+                    orderLineId: activeOrder.lines[0].id,
                     quantity: 10,
                 });
 
-                expect(adjustItemQuantity!.shipping).toBe(shippingMethods[1].price);
-                expect(adjustItemQuantity!.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(adjustItemQuantity!.shippingMethod!.description).toBe(
+                expect(adjustOrderLine!.shipping).toBe(shippingMethods[1].price);
+                expect(adjustOrderLine!.shippingMethod!.id).toBe(shippingMethods[1].id);
+                expect(adjustOrderLine!.shippingMethod!.description).toBe(
                     shippingMethods[1].description,
                 );
             });
@@ -684,9 +684,9 @@ describe('Shop orders', () => {
                 assertThrowsWithMessage(
                     () =>
                         shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                            ADJUST_ITEM_QUENTITY,
+                            ADJUST_ITEM_QUANTITY,
                             {
-                                orderItemId: activeOrder.lines[0].id,
+                                orderLineId: activeOrder.lines[0].id,
                                 quantity: 12,
                             },
                         ),
@@ -701,7 +701,7 @@ describe('Shop orders', () => {
                         shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
                             REMOVE_ITEM_FROM_ORDER,
                             {
-                                orderItemId: activeOrder.lines[0].id,
+                                orderLineId: activeOrder.lines[0].id,
                             },
                         ),
                     `Order contents may only be modified when in the "AddingItems" state`,

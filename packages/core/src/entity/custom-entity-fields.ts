@@ -1,46 +1,29 @@
 import { CustomFieldConfig, CustomFields, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Column, ColumnType, Connection, ConnectionOptions, Entity, getConnection } from 'typeorm';
+import { Column, ColumnType, Connection, ConnectionOptions, getConnection } from 'typeorm';
 
 import { VendureConfig } from '../config/vendure-config';
 
 import { VendureEntity } from './base/base.entity';
 
-@Entity()
 export class CustomAddressFields {}
-@Entity()
 export class CustomFacetFields {}
-@Entity()
 export class CustomFacetFieldsTranslation {}
-@Entity()
 export class CustomFacetValueFields {}
-@Entity()
 export class CustomFacetValueFieldsTranslation {}
-@Entity()
 export class CustomCustomerFields {}
-@Entity()
+export class CustomOrderLineFields {}
 export class CustomProductFields {}
-@Entity()
 export class CustomProductFieldsTranslation {}
-@Entity()
 export class CustomCollectionFields {}
-@Entity()
 export class CustomCollectionFieldsTranslation {}
-@Entity()
 export class CustomProductOptionFields {}
-@Entity()
 export class CustomProductOptionFieldsTranslation {}
-@Entity()
 export class CustomProductOptionGroupFields {}
-@Entity()
 export class CustomProductOptionGroupFieldsTranslation {}
-@Entity()
 export class CustomProductVariantFields {}
-@Entity()
 export class CustomProductVariantFieldsTranslation {}
-@Entity()
 export class CustomUserFields {}
-@Entity()
 export class CustomGlobalSettingsFields {}
 
 /**
@@ -49,6 +32,7 @@ export class CustomGlobalSettingsFields {}
 function registerCustomFieldsForEntity(
     config: VendureConfig,
     entityName: keyof CustomFields,
+    // tslint:disable-next-line:callable-types
     ctor: { new (): any },
     translation = false,
 ) {
@@ -156,6 +140,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);

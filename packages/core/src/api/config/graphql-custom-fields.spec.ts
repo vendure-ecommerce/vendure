@@ -1,8 +1,7 @@
+import { CustomFieldConfig, CustomFields } from '@vendure/common/lib/shared-types';
 import { printSchema } from 'graphql';
 
-import { CustomFields } from '@vendure/common/lib/shared-types';
-
-import { addGraphQLCustomFields } from './graphql-custom-fields';
+import { addGraphQLCustomFields, addOrderLineCustomFieldsInput } from './graphql-custom-fields';
 
 describe('addGraphQLCustomFields()', () => {
     it('uses JSON scalar if no custom fields defined', () => {
@@ -166,6 +165,38 @@ describe('addGraphQLCustomFields()', () => {
             ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+});
+
+describe('addOrderLineCustomFieldsInput()', () => {
+
+    it('Modifies the schema when the addItemToOrder & adjustOrderLine mutation is present', () => {
+        const input = `
+            type Mutation {
+                addItemToOrder(id: ID!, quantity: Int!): Boolean
+                adjustOrderLine(id: ID!, quantity: Int): Boolean
+            }
+        `;
+        const customFieldConfig: CustomFieldConfig[] = [
+            { name: 'giftWrap', type: 'boolean' },
+            { name: 'message', type: 'string' },
+        ];
+        const result = addOrderLineCustomFieldsInput(input, customFieldConfig);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+
+    it('Does not modify schema when the addItemToOrder mutation not present', () => {
+        const input = `
+            type Mutation {
+                createCustomer(id: ID!): Boolean
+            }
+        `;
+        const customFieldConfig: CustomFieldConfig[] = [
+            { name: 'giftWrap', type: 'boolean' },
+            { name: 'message', type: 'string' },
+        ];
+        const result = addOrderLineCustomFieldsInput(input, customFieldConfig);
         expect(printSchema(result)).toMatchSnapshot();
     });
 });
