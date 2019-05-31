@@ -18,7 +18,9 @@ import {
     ProductWithVariants,
     TaxCategory,
     UpdateProductInput,
+    UpdateProductMutation,
     UpdateProductVariantInput,
+    UpdateProductVariantsMutation,
 } from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
@@ -290,7 +292,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 take(1),
                 mergeMap(([product, languageCode]) => {
                     const productGroup = this.getProductFormGroup();
-                    const updateOperations: Array<Observable<any>> = [];
+                    const updateOperations: Array<
+                        Observable<UpdateProductMutation | UpdateProductVariantsMutation>
+                    > = [];
 
                     if (productGroup.dirty || this.assetsChanged()) {
                         const newProduct = this.getUpdatedProduct(
@@ -316,7 +320,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 }),
             )
             .subscribe(
-                () => {
+                result => {
+                    this.updateSlugAfterSave(result);
                     this.detailForm.markAsPristine();
                     this.assetChanges = {};
                     this.variantAssetChanges = {};
@@ -469,5 +474,21 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
     private getProductFormGroup(): FormGroup {
         return this.detailForm.get('product') as FormGroup;
+    }
+
+    /**
+     * The server may alter the slug value in order to normalize and ensure uniqueness upon saving.
+     */
+    private updateSlugAfterSave(results: Array<UpdateProductMutation | UpdateProductVariantsMutation>) {
+        const firstResult = results[0];
+        const slugControl = this.detailForm.get(['product', 'slug']);
+
+        function isUpdateMutation(input: any): input is UpdateProductMutation {
+            return input.hasOwnProperty('updateProduct');
+        }
+
+        if (slugControl && isUpdateMutation(firstResult)) {
+            slugControl.setValue(firstResult.updateProduct.slug, { emitEvent: false });
+        }
     }
 }
