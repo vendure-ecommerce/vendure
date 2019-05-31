@@ -99,6 +99,19 @@ export class ProductService {
         ]);
     }
 
+    async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
+        const translation = await this.connection.getRepository(ProductTranslation).findOne({
+            where: {
+                languageCode: ctx.languageCode,
+                slug,
+            },
+        });
+        if (!translation) {
+            return;
+        }
+        return this.findOne(ctx, translation.baseId);
+    }
+
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
         await this.validateSlugs(input);
         const product = await this.translatableSaver.create({

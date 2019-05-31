@@ -10,7 +10,8 @@ type Query {
     nextOrderStates: [String!]!
     order(id: ID!): Order
     orderByCode(code: String!): Order
-    product(id: ID!, languageCode: LanguageCode): Product
+    "Get a Product either by id or slug. If neither id nor slug is speicified, an error will result."
+    product(id: ID, slug: String, languageCode: LanguageCode): Product
     products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
     search(input: SearchInput!): SearchResponse!
 }

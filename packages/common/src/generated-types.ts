@@ -1415,16 +1415,16 @@ export type Mutation = {
   createAssets: Array<Asset>,
   login: LoginResult,
   logout: Scalars['Boolean'],
-  /** Create a new Channel */
-  createChannel: Channel,
-  /** Update an existing Channel */
-  updateChannel: Channel,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
   updateCollection: Collection,
   /** Move a Collection to a different parent or index */
   moveCollection: Collection,
+  /** Create a new Channel */
+  createChannel: Channel,
+  /** Update an existing Channel */
+  updateChannel: Channel,
   /** Create a new Country */
   createCountry: Country,
   /** Update an existing Country */
@@ -1497,14 +1497,14 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate,
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1546,16 +1546,6 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateChannelArgs = {
-  input: CreateChannelInput
-};
-
-
-export type MutationUpdateChannelArgs = {
-  input: UpdateChannelInput
-};
-
-
 export type MutationCreateCollectionArgs = {
   input: CreateCollectionInput
 };
@@ -1568,6 +1558,16 @@ export type MutationUpdateCollectionArgs = {
 
 export type MutationMoveCollectionArgs = {
   input: MoveCollectionInput
+};
+
+
+export type MutationCreateChannelArgs = {
+  input: CreateChannelInput
+};
+
+
+export type MutationUpdateChannelArgs = {
+  input: UpdateChannelInput
 };
 
 
@@ -1772,16 +1772,6 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
-};
-
-
 export type MutationCreateTaxCategoryArgs = {
   input: CreateTaxCategoryInput
 };
@@ -1789,6 +1779,16 @@ export type MutationCreateTaxCategoryArgs = {
 
 export type MutationUpdateTaxCategoryArgs = {
   input: UpdateTaxCategoryInput
+};
+
+
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput
 };
 
 
@@ -2277,12 +2277,12 @@ export type Query = {
   assets: AssetList,
   asset?: Maybe<Asset>,
   me?: Maybe<CurrentUser>,
-  channels: Array<Channel>,
-  channel?: Maybe<Channel>,
-  activeChannel: Channel,
   collections: CollectionList,
   collection?: Maybe<Collection>,
   collectionFilters: Array<ConfigurableOperation>,
+  channels: Array<Channel>,
+  channel?: Maybe<Channel>,
+  activeChannel: Channel,
   countries: CountryList,
   country?: Maybe<Country>,
   customerGroups: Array<CustomerGroup>,
@@ -2310,10 +2310,10 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
-  taxRates: TaxRateList,
-  taxRate?: Maybe<TaxRate>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
+  taxRates: TaxRateList,
+  taxRate?: Maybe<TaxRate>,
   zones: Array<Zone>,
   zone?: Maybe<Zone>,
   temp__?: Maybe<Scalars['Boolean']>,
@@ -2340,11 +2340,6 @@ export type QueryAssetArgs = {
 };
 
 
-export type QueryChannelArgs = {
-  id: Scalars['ID']
-};
-
-
 export type QueryCollectionsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<CollectionListOptions>
@@ -2354,6 +2349,11 @@ export type QueryCollectionsArgs = {
 export type QueryCollectionArgs = {
   id: Scalars['ID'],
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type QueryChannelArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2438,7 +2438,8 @@ export type QueryProductsArgs = {
 
 
 export type QueryProductArgs = {
-  id: Scalars['ID'],
+  id?: Maybe<Scalars['ID']>,
+  slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
 };
 
@@ -2473,17 +2474,17 @@ export type QueryShippingMethodArgs = {
 };
 
 
+export type QueryTaxCategoryArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryTaxCategoryArgs = {
   id: Scalars['ID']
 };
 

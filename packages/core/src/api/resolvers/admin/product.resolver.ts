@@ -1,19 +1,20 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationAddOptionGroupToProductArgs,
     MutationCreateProductArgs,
     MutationDeleteProductArgs,
-    DeletionResponse,
     MutationGenerateVariantsForProductArgs,
-    Permission,
-    QueryProductArgs,
-    QueryProductsArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
+    Permission,
+    QueryProductArgs,
+    QueryProductsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { assertFound } from '../../../common/utils';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -49,7 +50,13 @@ export class ProductResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
-        return this.productService.findOne(ctx, args.id);
+        if (args.id) {
+            return this.productService.findOne(ctx, args.id);
+        } else if (args.slug) {
+            return this.productService.findOneBySlug(ctx, args.slug);
+        } else {
+            throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
+        }
     }
 
     @Mutation()

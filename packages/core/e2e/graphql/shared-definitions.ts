@@ -42,8 +42,8 @@ export const CREATE_PRODUCT = gql`
 `;
 
 export const GET_PRODUCT_WITH_VARIANTS = gql`
-    query GetProductWithVariants($id: ID!, $languageCode: LanguageCode) {
-        product(languageCode: $languageCode, id: $id) {
+    query GetProductWithVariants($id: ID, $slug: String, $languageCode: LanguageCode) {
+        product(languageCode: $languageCode, slug: $slug, id: $id) {
             ...ProductWithVariants
         }
     }
@@ -233,6 +233,15 @@ export const DELETE_PRODUCT = gql`
     mutation DeleteProduct($id: ID!) {
         deleteProduct(id: $id) {
             result
+        }
+    }
+`;
+
+export const GET_PRODUCT_SIMPLE = gql`
+    query GetProductSimple($id: ID, $slug: String, $languageCode: LanguageCode) {
+        product(languageCode: $languageCode, slug: $slug, id: $id) {
+            id
+            slug
         }
     }
 `;

@@ -1,6 +1,7 @@
 type Query {
     products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
-    product(id: ID!, languageCode: LanguageCode): Product
+    "Get a Product either by id or slug. If neither id nor slug is speicified, an error will result."
+    product(id: ID, slug: String, languageCode: LanguageCode): Product
 }
 
 type Mutation {

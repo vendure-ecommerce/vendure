@@ -12,6 +12,7 @@ import {
     GenerateProductVariants,
     GetAssetList,
     GetProductList,
+    GetProductSimple,
     GetProductWithVariants,
     LanguageCode,
     ProductWithVariants,
@@ -25,6 +26,7 @@ import {
     DELETE_PRODUCT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
+    GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -117,11 +119,47 @@ describe('Product resolver', () => {
     });
 
     describe('product query', () => {
+        it('by id', async () => {
+            const { product } = await client.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { id: 'T_2' },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.id).toBe('T_2');
+        });
+
+        it('by slug', async () => {
+            const { product } = await client.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: 'curvy-monitor' },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe('curvy-monitor');
+        });
+
+        it(
+            'throws if neither id nor slug provided',
+            assertThrowsWithMessage(async () => {
+                await client.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                    GET_PRODUCT_SIMPLE,
+                    {},
+                );
+            }, 'Either the product id or slug must be provided'),
+        );
+
         it('returns expected properties', async () => {
             const { product } = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 languageCode: LanguageCode.en,
                 id: 'T_2',
             });
@@ -373,7 +411,7 @@ describe('Product resolver', () => {
             const productResult = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 id: newProduct.id,
                 languageCode: LanguageCode.en,
             });
@@ -435,7 +473,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_2',
                 productId: newProduct.id,
             });
@@ -477,7 +515,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
-                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: 'T_1',
             });
@@ -492,7 +530,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '1',
                         productId: '999',
                     }),
@@ -536,7 +574,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     GenerateProductVariants.Mutation,
                     GenerateProductVariants.Variables
-                    >(GENERATE_PRODUCT_VARIANTS, {
+                >(GENERATE_PRODUCT_VARIANTS, {
                     productId: newProduct.id,
                     defaultPrice: 123,
                     defaultSku: 'ABC',
@@ -552,7 +590,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -576,7 +614,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -599,7 +637,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -622,7 +660,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -673,7 +711,10 @@ describe('Product resolver', () => {
 
         it('deletes a product', async () => {
             productToDelete = allProducts[0];
-            const result = await client.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, { id: productToDelete.id });
+            const result = await client.query<DeleteProduct.Mutation, DeleteProduct.Variables>(
+                DELETE_PRODUCT,
+                { id: productToDelete.id },
+            );
 
             expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
         });
@@ -732,7 +773,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),

@@ -1645,7 +1645,8 @@ export type QueryOrderByCodeArgs = {
 };
 
 export type QueryProductArgs = {
-    id: Scalars['ID'];
+    id?: Maybe<Scalars['ID']>;
+    slug?: Maybe<Scalars['String']>;
     languageCode?: Maybe<LanguageCode>;
 };
 

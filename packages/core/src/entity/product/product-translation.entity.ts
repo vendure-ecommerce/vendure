@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { DeepPartial, HasCustomFields, ID } from '@vendure/common/lib/shared-types';
+import { Column, Entity, Index, ManyToOne, RelationId } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
@@ -25,6 +25,9 @@ export class ProductTranslation extends VendureEntity implements Translation<Pro
 
     @ManyToOne(type => Product, base => base.translations)
     base: Product;
+
+    @RelationId((item: ProductTranslation) => item.base)
+    baseId: ID;
 
     @Column(type => CustomProductFieldsTranslation)
     customFields: CustomProductFieldsTranslation;

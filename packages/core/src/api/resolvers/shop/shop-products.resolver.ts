@@ -9,7 +9,7 @@ import { QueryProductsArgs } from '@vendure/common/lib/generated-shop-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { InternalServerError } from '../../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
@@ -50,7 +50,14 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
-        const result = await this.productService.findOne(ctx, args.id);
+        let result: Translated<Product> | undefined;
+        if (args.id) {
+            result = await this.productService.findOne(ctx, args.id);
+        } else if (args.slug) {
+            result = await this.productService.findOneBySlug(ctx, args.slug);
+        } else {
+            throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
+        }
         if (!result) {
             return;
         }

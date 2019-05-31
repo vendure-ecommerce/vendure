@@ -18,6 +18,7 @@ import {
     GetProduct2Variants,
     GetProductCollection,
     GetProductFacetValues,
+    GetProductSimple,
     GetProductsTake3,
     GetProductWithVariants,
     GetVariantFacetValues,
@@ -30,6 +31,7 @@ import {
     CREATE_COLLECTION,
     CREATE_FACET,
     GET_FACET_LIST,
+    GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -37,6 +39,7 @@ import {
 } from './graphql/shared-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop catalog', () => {
     const shopClient = new TestShopClient();
@@ -97,6 +100,42 @@ describe('Shop catalog', () => {
 
             expect(result.products.items.map(item => item.id)).toEqual(['T_2', 'T_3', 'T_4']);
         });
+
+        it('by id', async () => {
+            const { product } = await shopClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { id: 'T_2' },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.id).toBe('T_2');
+        });
+
+        it('by slug', async () => {
+            const { product } = await shopClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: 'curvy-monitor' },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe('curvy-monitor');
+        });
+
+        it(
+            'throws if neither id nor slug provided',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                    GET_PRODUCT_SIMPLE,
+                    {},
+                );
+            }, 'Either the product id or slug must be provided'),
+        );
 
         it('product returns null for disabled product', async () => {
             const result = await shopClient.query<GetProduct1.Query>(gql`

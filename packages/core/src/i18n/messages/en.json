@@ -26,6 +26,7 @@
     "payment-may-only-be-added-in-arrangingpayment-state": "A Payment may only be added when Order is in \"ArrangingPayment\" state",
     "password-reset-token-has-expired": "Password reset token has expired.",
     "password-reset-token-not-recognized": "Password reset token not recognized",
+    "product-id-or-slug-must-be-provided": "Either the product id or slug must be provided",
     "stockonhand-cannot-be-negative": "stockOnHand cannot be a negative value",
     "verification-token-has-expired": "Verification token has expired. Use refreshCustomerVerification to send a new token.",
     "verification-token-not-recognized": "Verification token not recognized",
