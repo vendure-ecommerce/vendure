@@ -104,7 +104,11 @@ async function createGraphQLOptions(
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
         },
-        playground: true,
+        playground: {
+            settings: {
+                'request.credentials': 'include',
+            } as any,
+        },
         debug: true,
         context: (req: any) => req,
         extensions: [
