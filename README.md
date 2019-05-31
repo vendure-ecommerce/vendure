@@ -101,6 +101,8 @@ The e2e tests are located in [`/packages/core/e2e`](./packages/core/e2e). Each t
 sqlite files will be generated in the `__data__` directory. These files are used to speed up subsequent runs of the e2e tests. They can be freely deleted
 and will be re-created the next time the e2e tests are run.
 
+When **debugging e2e tests**, set an environment variable `E2E_DEBUG=true` which will increase the global Jest timeout and allow you to step through the e2e tests without the tests automatically failing due to timeout.
+
 #### Admin UI Unit Tests
 
 The Admin UI has unit tests which are run with `yarn test:admin-ui`.

@@ -20,8 +20,6 @@ import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-jest.setTimeout(2137 * 1000);
-
 describe('Stock control', () => {
     const adminClient = new TestAdminClient();
     const shopClient = new TestShopClient();

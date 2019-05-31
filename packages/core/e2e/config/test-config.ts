@@ -16,6 +16,16 @@ import { TestingEntityIdStrategy } from './testing-entity-id-strategy';
 export const TEST_SETUP_TIMEOUT_MS = 120000;
 
 /**
+ * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
+ * automatically fail for going over the 5 second default timeout.
+ */
+if (process.env.E2E_DEBUG) {
+    // tslint:disable-next-line:no-console
+    console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
+    jest.setTimeout(2137 * 1000);
+}
+
+/**
  * Config settings used for e2e tests
  */
 export const testConfig: VendureConfig = {
