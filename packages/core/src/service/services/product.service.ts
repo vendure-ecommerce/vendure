@@ -3,7 +3,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateProductInput,
     DeletionResponse,
-    DeletionResult,
+    DeletionResult, LanguageCode,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -100,7 +100,7 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
-        this.normalizeSlugs(input);
+        await this.validateSlugs(input);
         const product = await this.translatableSaver.create({
             input,
             entityType: Product,
@@ -119,7 +119,7 @@ export class ProductService {
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         await getEntityOrThrow(this.connection, Product, input.id);
-        this.normalizeSlugs(input);
+        await this.validateSlugs(input);
         const product = await this.translatableSaver.update({
             input,
             entityType: Product,
@@ -187,13 +187,36 @@ export class ProductService {
         return product;
     }
 
-    private normalizeSlugs<T extends CreateProductInput | UpdateProductInput>(input: T): T {
+    /**
+     * Normalizes the slug to be URL-safe, and ensures it is unique for the given languageCode.
+     */
+    private async validateSlugs<T extends CreateProductInput | UpdateProductInput>(input: T): Promise<T> {
         if (input.translations) {
-            input.translations.forEach(t => {
+            for (const t of input.translations) {
                 if (t.slug) {
                     t.slug = normalizeString(t.slug, '-');
+                    let match: ProductTranslation | undefined;
+                    let suffix = 1;
+                    const alreadySuffixed = /-\d+$/;
+                    do {
+                        const qb = this.connection.getRepository(ProductTranslation).createQueryBuilder('translation')
+                            .where(`translation.slug = :slug`, { slug: t.slug })
+                            .andWhere(`translation.languageCode = :languageCode`, { languageCode: t.languageCode });
+                        if ((input as UpdateProductInput).id) {
+                            qb.andWhere(`translation.base != :id`, { id: (input as UpdateProductInput).id });
+                        }
+                        match = await qb.getOne();
+                        if (match) {
+                            suffix++;
+                            if (alreadySuffixed.test(t.slug)) {
+                                t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
+                            } else {
+                                t.slug = `${t.slug}-${suffix}`;
+                            }
+                        }
+                    } while (match);
                 }
-            });
+            }
         }
         return input;
     }

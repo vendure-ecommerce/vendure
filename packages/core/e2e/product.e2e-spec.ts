@@ -121,7 +121,7 @@ describe('Product resolver', () => {
             const { product } = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+                >(GET_PRODUCT_WITH_VARIANTS, {
                 languageCode: LanguageCode.en,
                 id: 'T_2',
             });
@@ -260,14 +260,71 @@ describe('Product resolver', () => {
                             {
                                 languageCode: LanguageCode.en,
                                 name: 'en Mashed Potato',
-                                slug: 'A (very) nice potato!!1',
+                                slug: 'A (very) nice potato!!',
                                 description: 'A blob of mashed potato',
                             },
                         ],
                     },
                 },
             );
-            expect(result.updateProduct.slug).toBe('a-very-nice-potato1');
+            expect(result.updateProduct.slug).toBe('a-very-nice-potato');
+        });
+
+        it('create with duplicate slug is renamed to be unique', async () => {
+            const result = await client.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Another baked potato',
+                                slug: 'a-very-nice-potato',
+                                description: 'Another baked potato but a bit different',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.slug).toBe('a-very-nice-potato-2');
+        });
+
+        it('update with duplicate slug is renamed to be unique', async () => {
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Yet another baked potato',
+                                slug: 'a-very-nice-potato-2',
+                                description: 'Possibly the final baked potato',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.updateProduct.slug).toBe('a-very-nice-potato-3');
+        });
+
+        it('slug duplicate check does not include self', async () => {
+            const result = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                slug: 'a-very-nice-potato-3',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.updateProduct.slug).toBe('a-very-nice-potato-3');
         });
 
         it('updateProduct accepts partial input', async () => {
@@ -287,7 +344,7 @@ describe('Product resolver', () => {
             );
             expect(result.updateProduct.translations.length).toBe(2);
             expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
-            expect(result.updateProduct.translations[0].description).toBe('A blob of mashed potato');
+            expect(result.updateProduct.translations[0].description).toBe('Possibly the final baked potato');
             expect(result.updateProduct.translations[1].name).toBe('de Mashed Potato');
         });
 
@@ -316,7 +373,7 @@ describe('Product resolver', () => {
             const productResult = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+                >(GET_PRODUCT_WITH_VARIANTS, {
                 id: newProduct.id,
                 languageCode: LanguageCode.en,
             });
@@ -378,7 +435,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-            >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_2',
                 productId: newProduct.id,
             });
@@ -420,7 +477,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
-            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: 'T_1',
             });
@@ -435,7 +492,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '1',
                         productId: '999',
                     }),
@@ -479,7 +536,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     GenerateProductVariants.Mutation,
                     GenerateProductVariants.Variables
-                >(GENERATE_PRODUCT_VARIANTS, {
+                    >(GENERATE_PRODUCT_VARIANTS, {
                     productId: newProduct.id,
                     defaultPrice: 123,
                     defaultSku: 'ABC',
@@ -495,7 +552,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                    >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -519,7 +576,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                    >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -542,7 +599,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                    >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -565,7 +622,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                >(UPDATE_PRODUCT_VARIANTS, {
+                    >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -675,7 +732,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
