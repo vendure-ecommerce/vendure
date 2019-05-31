@@ -1851,11 +1851,7 @@ export type OrderLine = Node & {
     totalPrice: Scalars['Int'];
     adjustments: Array<Adjustment>;
     order: Order;
-    customFields?: Maybe<OrderLineCustomFields>;
-};
-
-export type OrderLineCustomFields = {
-    message?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
