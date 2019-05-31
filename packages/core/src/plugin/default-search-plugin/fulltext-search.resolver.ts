@@ -18,7 +18,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
 
     @Query()
     @Allow(Permission.Public)
-    @Decode('facetIds', 'collectionId')
+    @Decode('facetValueIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
@@ -45,7 +45,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @Decode('facetIds', 'collectionId')
+    @Decode('facetValueIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,

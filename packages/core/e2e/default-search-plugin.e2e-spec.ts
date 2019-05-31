@@ -91,7 +91,7 @@ describe('Default search plugin', () => {
     async function testMatchFacetIds(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
             input: {
-                facetIds: ['T_1', 'T_2'],
+                facetValueIds: ['T_1', 'T_2'],
                 groupByProduct: true,
             },
         });
@@ -318,7 +318,7 @@ describe('Default search plugin', () => {
                 SEARCH_PRODUCTS,
                 {
                     input: {
-                        facetIds: ['T_2'],
+                        facetValueIds: ['T_2'],
                         groupByProduct: true,
                     },
                 },

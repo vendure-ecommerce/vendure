@@ -93,7 +93,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds, collectionId } = input;
+        const { term, facetValueIds, collectionId } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -117,8 +117,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 )
                 .setParameters({ term, like_term: `%${term}%` });
         }
-        if (facetIds) {
-            for (const id of facetIds) {
+        if (facetValueIds) {
+            for (const id of facetValueIds) {
                 const placeholder = '_' + id;
                 qb.andWhere(`(',' || facetValueIds || ',') LIKE :${placeholder}`, {
                     [placeholder]: `%,${id},%`,

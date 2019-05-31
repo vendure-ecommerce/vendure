@@ -90,7 +90,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetIds, collectionId } = input;
+        const { term, facetValueIds, collectionId } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -113,8 +113,8 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 )
                 .setParameters({ term, like_term: `%${term}%` });
         }
-        if (facetIds) {
-            for (const id of facetIds) {
+        if (facetValueIds) {
+            for (const id of facetValueIds) {
                 const placeholder = '_' + id;
                 qb.andWhere(`FIND_IN_SET(:${placeholder}, facetValueIds)`, { [placeholder]: id });
             }

@@ -41,7 +41,7 @@ export class ProductListComponent
                     skip,
                     take,
                     term: this.searchTerm,
-                    facetIds: this.facetValueIds,
+                    facetValueIds: this.facetValueIds,
                     groupByProduct: this.groupByProduct,
                 } as SearchInput,
             }),

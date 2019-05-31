@@ -1104,8 +1104,14 @@ export type LoginResult = {
 };
 
 export type Mutation = {
+    /** Adds an item to the order. If custom fields are defined on the OrderLine
+     * entity, a third argument 'customFields' will be available.
+     */
     addItemToOrder?: Maybe<Order>;
     removeOrderLine?: Maybe<Order>;
+    /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
+     * third argument 'customFields' will be available.
+     */
     adjustOrderLine?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
     setOrderShippingAddress?: Maybe<Order>;
@@ -1631,7 +1637,7 @@ export type Query = {
     nextOrderStates: Array<Scalars['String']>;
     order?: Maybe<Order>;
     orderByCode?: Maybe<Order>;
-    /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
+    /** Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
     product?: Maybe<Product>;
     products: ProductList;
     search: SearchResponse;
@@ -1718,7 +1724,7 @@ export type Sale = Node &
 
 export type SearchInput = {
     term?: Maybe<Scalars['String']>;
-    facetIds?: Maybe<Array<Scalars['String']>>;
+    facetValueIds?: Maybe<Array<Scalars['String']>>;
     collectionId?: Maybe<Scalars['String']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
