@@ -174,12 +174,20 @@ export class FulltextSearchService implements SearchService {
 
     async updateVariantsById(ctx: RequestContext, ids: ID[]) {
         if (ids.length) {
-            this.taskQueue.push(async () => {
-                const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
+            const BATCH_SIZE = 100;
+            const batches = Math.ceil(ids.length / BATCH_SIZE);
+            for (let i = 0; i < batches; i++) {
+                const begin = i * BATCH_SIZE;
+                const end = begin + BATCH_SIZE;
+                Logger.verbose(`Updating ids from index ${begin} to ${end}`);
+                const batch = ids.slice(begin, end);
+                const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(batch, {
                     relations: this.variantRelations,
                 });
-                await this.saveSearchIndexItems(ctx, updatedVariants);
-            });
+                this.taskQueue.push(async () => {
+                    await this.saveSearchIndexItems(ctx, updatedVariants);
+                });
+            }
         }
     }
 

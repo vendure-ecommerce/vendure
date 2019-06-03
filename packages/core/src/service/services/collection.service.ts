@@ -1,12 +1,6 @@
 import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import {
-    CollectionBreadcrumb,
-    ConfigurableOperation,
-    CreateCollectionInput,
-    MoveCollectionInput,
-    UpdateCollectionInput,
-} from '@vendure/common/lib/generated-types';
+import { ConfigurableOperation, CreateCollectionInput, MoveCollectionInput, UpdateCollectionInput } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -58,9 +52,11 @@ export class CollectionService implements OnModuleInit {
             });
             for (const collection of collections) {
                 const affectedVariantIds = await this.applyCollectionFilters(collection);
-                this.eventBus.publish(
-                    new CollectionModificationEvent(event.ctx, collection, affectedVariantIds),
-                );
+                if (affectedVariantIds.length) {
+                    this.eventBus.publish(
+                        new CollectionModificationEvent(event.ctx, collection, affectedVariantIds),
+                    );
+                }
             }
         });
     }
@@ -349,8 +345,8 @@ export class CollectionService implements OnModuleInit {
             ...ancestorFilters,
             ...(collection.filters || []),
         ]);
-        await this.connection.getRepository(Collection).save(collection);
         const postIds = collection.productVariants.map(v => v.id);
+        await this.connection.getRepository(Collection).save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
 
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
