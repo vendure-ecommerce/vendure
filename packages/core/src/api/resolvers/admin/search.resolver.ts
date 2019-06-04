@@ -22,7 +22,7 @@ export class SearchResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindex(...args: any[]): Promise<{ success: boolean } & { [key: string]: any }> {
+    async reindex(...args: any[]): Promise<any> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 }

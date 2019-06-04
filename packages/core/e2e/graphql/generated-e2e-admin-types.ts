@@ -1019,6 +1019,29 @@ export type ImportInfo = {
     imported: Scalars['Int'];
 };
 
+export type JobInfo = {
+    id: Scalars['String'];
+    name: Scalars['String'];
+    state: JobState;
+    progress: Scalars['Float'];
+    result?: Maybe<Scalars['JSON']>;
+    started?: Maybe<Scalars['DateTime']>;
+    ended?: Maybe<Scalars['DateTime']>;
+    duration?: Maybe<Scalars['Int']>;
+};
+
+export type JobListInput = {
+    state?: Maybe<JobState>;
+    ids?: Maybe<Array<Scalars['String']>>;
+};
+
+export enum JobState {
+    PENDING = 'PENDING',
+    RUNNING = 'RUNNING',
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
+}
+
 /** ISO 639-1 language code */
 export enum LanguageCode {
     /** Afar */
@@ -1416,12 +1439,6 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
-    /** Create a new Collection */
-    createCollection: Collection;
-    /** Update an existing Collection */
-    updateCollection: Collection;
-    /** Move a Collection to a different parent or index */
-    moveCollection: Collection;
     /** Create a new Country */
     createCountry: Country;
     /** Update an existing Country */
@@ -1436,18 +1453,12 @@ export type Mutation = {
     addCustomersToGroup: CustomerGroup;
     /** Remove Customers from a CustomerGroup */
     removeCustomersFromGroup: CustomerGroup;
-    /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
-    createCustomer: Customer;
-    /** Update an existing Customer */
-    updateCustomer: Customer;
-    /** Delete a Customer */
-    deleteCustomer: DeletionResponse;
-    /** Create a new Address and associate it with the Customer specified by customerId */
-    createCustomerAddress: Address;
-    /** Update an existing Address */
-    updateCustomerAddress: Address;
-    /** Update an existing Address */
-    deleteCustomerAddress: Scalars['Boolean'];
+    /** Create a new Collection */
+    createCollection: Collection;
+    /** Update an existing Collection */
+    updateCollection: Collection;
+    /** Move a Collection to a different parent or index */
+    moveCollection: Collection;
     /** Create a new Facet */
     createFacet: Facet;
     /** Update an existing Facet */
@@ -1461,6 +1472,18 @@ export type Mutation = {
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
+    /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
+    createCustomer: Customer;
+    /** Update an existing Customer */
+    updateCustomer: Customer;
+    /** Delete a Customer */
+    deleteCustomer: DeletionResponse;
+    /** Create a new Address and associate it with the Customer specified by customerId */
+    createCustomerAddress: Address;
+    /** Update an existing Address */
+    updateCustomerAddress: Address;
+    /** Update an existing Address */
+    deleteCustomerAddress: Scalars['Boolean'];
     importProducts?: Maybe<ImportInfo>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -1468,7 +1491,7 @@ export type Mutation = {
     createProductOptionGroup: ProductOptionGroup;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
-    reindex: SearchReindexResponse;
+    reindex: JobInfo;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -1545,18 +1568,6 @@ export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
 };
 
-export type MutationCreateCollectionArgs = {
-    input: CreateCollectionInput;
-};
-
-export type MutationUpdateCollectionArgs = {
-    input: UpdateCollectionInput;
-};
-
-export type MutationMoveCollectionArgs = {
-    input: MoveCollectionInput;
-};
-
 export type MutationCreateCountryArgs = {
     input: CreateCountryInput;
 };
@@ -1587,30 +1598,16 @@ export type MutationRemoveCustomersFromGroupArgs = {
     customerIds: Array<Scalars['ID']>;
 };
 
-export type MutationCreateCustomerArgs = {
-    input: CreateCustomerInput;
-    password?: Maybe<Scalars['String']>;
+export type MutationCreateCollectionArgs = {
+    input: CreateCollectionInput;
 };
 
-export type MutationUpdateCustomerArgs = {
-    input: UpdateCustomerInput;
+export type MutationUpdateCollectionArgs = {
+    input: UpdateCollectionInput;
 };
 
-export type MutationDeleteCustomerArgs = {
-    id: Scalars['ID'];
-};
-
-export type MutationCreateCustomerAddressArgs = {
-    customerId: Scalars['ID'];
-    input: CreateAddressInput;
-};
-
-export type MutationUpdateCustomerAddressArgs = {
-    input: UpdateAddressInput;
-};
-
-export type MutationDeleteCustomerAddressArgs = {
-    id: Scalars['ID'];
+export type MutationMoveCollectionArgs = {
+    input: MoveCollectionInput;
 };
 
 export type MutationCreateFacetArgs = {
@@ -1641,6 +1638,32 @@ export type MutationDeleteFacetValuesArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
     input: UpdateGlobalSettingsInput;
+};
+
+export type MutationCreateCustomerArgs = {
+    input: CreateCustomerInput;
+    password?: Maybe<Scalars['String']>;
+};
+
+export type MutationUpdateCustomerArgs = {
+    input: UpdateCustomerInput;
+};
+
+export type MutationDeleteCustomerArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationCreateCustomerAddressArgs = {
+    customerId: Scalars['ID'];
+    input: CreateAddressInput;
+};
+
+export type MutationUpdateCustomerAddressArgs = {
+    input: UpdateAddressInput;
+};
+
+export type MutationDeleteCustomerAddressArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationImportProductsArgs = {
@@ -2220,20 +2243,22 @@ export type Query = {
     channels: Array<Channel>;
     channel?: Maybe<Channel>;
     activeChannel: Channel;
-    collections: CollectionList;
-    collection?: Maybe<Collection>;
-    collectionFilters: Array<ConfigurableOperation>;
     countries: CountryList;
     country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
-    customers: CustomerList;
-    customer?: Maybe<Customer>;
+    collections: CollectionList;
+    collection?: Maybe<Collection>;
+    collectionFilters: Array<ConfigurableOperation>;
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
+    customers: CustomerList;
+    customer?: Maybe<Customer>;
     order?: Maybe<Order>;
     orders: OrderList;
+    job?: Maybe<JobInfo>;
+    jobs: Array<JobInfo>;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
     productOptionGroups: Array<ProductOptionGroup>;
@@ -2280,16 +2305,6 @@ export type QueryChannelArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryCollectionsArgs = {
-    languageCode?: Maybe<LanguageCode>;
-    options?: Maybe<CollectionListOptions>;
-};
-
-export type QueryCollectionArgs = {
-    id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
-};
-
 export type QueryCountriesArgs = {
     options?: Maybe<CountryListOptions>;
 };
@@ -2302,12 +2317,14 @@ export type QueryCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryCustomersArgs = {
-    options?: Maybe<CustomerListOptions>;
+export type QueryCollectionsArgs = {
+    languageCode?: Maybe<LanguageCode>;
+    options?: Maybe<CollectionListOptions>;
 };
 
-export type QueryCustomerArgs = {
+export type QueryCollectionArgs = {
     id: Scalars['ID'];
+    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryFacetsArgs = {
@@ -2320,12 +2337,28 @@ export type QueryFacetArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
+export type QueryCustomersArgs = {
+    options?: Maybe<CustomerListOptions>;
+};
+
+export type QueryCustomerArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryOrderArgs = {
     id: Scalars['ID'];
 };
 
 export type QueryOrdersArgs = {
     options?: Maybe<OrderListOptions>;
+};
+
+export type QueryJobArgs = {
+    jobId: Scalars['String'];
+};
+
+export type QueryJobsArgs = {
+    input?: Maybe<JobListInput>;
 };
 
 export type QueryPaymentMethodsArgs = {

@@ -1,0 +1,27 @@
+type Query {
+    job(jobId: String!): JobInfo
+    jobs(input: JobListInput): [JobInfo!]!
+}
+
+enum JobState {
+    PENDING
+    RUNNING
+    COMPLETED
+    FAILED
+}
+
+input JobListInput {
+    state: JobState
+    ids: [String!]
+}
+
+type JobInfo {
+    id: String!
+    name: String!
+    state: JobState!
+    progress: Float!
+    result: JSON
+    started: DateTime
+    ended: DateTime
+    duration: Int
+}

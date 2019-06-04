@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { LanguageCode, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
+import { JobInfo, LanguageCode, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
@@ -14,11 +14,11 @@ import { FacetValue, Product, ProductVariant } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { FacetValueService } from '../../service/services/facet-value.service';
+import { JobService } from '../../service/services/job.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 
 import { AsyncQueue } from './async-queue';
-import { DefaultSearchReindexResponse } from './default-search-plugin';
 import { SearchIndexItem } from './search-index-item.entity';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
 import { PostgresSearchStrategy } from './search-strategy/postgres-search-strategy';
@@ -48,6 +48,7 @@ export class FulltextSearchService implements SearchService {
 
     constructor(
         @InjectConnection() private connection: Connection,
+        private jobService: JobService,
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
         private productVariantService: ProductVariantService,
@@ -91,42 +92,47 @@ export class FulltextSearchService implements SearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext): Promise<DefaultSearchReindexResponse> {
-        const timeStart = Date.now();
-        const BATCH_SIZE = 100;
-        Logger.verbose('Reindexing search index...');
-        const qb = await this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: this.variantRelations,
-        });
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
-        const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
-        Logger.verbose(`Getting ${count} variants`);
-        const batches = Math.ceil(count / BATCH_SIZE);
-
-        Logger.verbose('Deleting existing index items...');
-        await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
-        Logger.verbose('Deleted!');
-
-        for (let i = 0; i < batches; i++) {
-            Logger.verbose(`Processing batch ${i + 1} of ${batches}, heap used: `
-                + (process.memoryUsage().heapUsed / 1000 / 1000).toFixed(2) + 'MB');
-            const variants = await qb
-                .where('variants__product.deletedAt IS NULL')
-                .take(BATCH_SIZE)
-                .skip(i * BATCH_SIZE)
-                .getMany();
-            await this.taskQueue.push(async () => {
-                await this.saveSearchIndexItems(ctx, variants);
+    async reindex(ctx: RequestContext): Promise<JobInfo> {
+        const job = this.jobService.startJob('reindex', async reporter => {
+            const timeStart = Date.now();
+            const BATCH_SIZE = 100;
+            Logger.verbose('Reindexing search index...');
+            const qb = await this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
+            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+                relations: this.variantRelations,
             });
-        }
+            FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+            const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
+            Logger.verbose(`Getting ${count} variants`);
+            const batches = Math.ceil(count / BATCH_SIZE);
 
-        Logger.verbose(`Reindexing completed in ${Date.now() - timeStart}ms`);
-        return {
-            success: true,
-            indexedItemCount: count,
-            timeTaken: Date.now() - timeStart,
-        };
+            Logger.verbose('Deleting existing index items...');
+            await this.connection.getRepository(SearchIndexItem).delete({languageCode: ctx.languageCode});
+            Logger.verbose('Deleted!');
+
+            for (let i = 0; i < batches; i++) {
+                Logger.verbose(`Processing batch ${i + 1} of ${batches}, heap used: `
+                    + (process.memoryUsage().heapUsed / 1000 / 1000).toFixed(2) + 'MB');
+                const variants = await qb
+                    .where('variants__product.deletedAt IS NULL')
+                    .take(BATCH_SIZE)
+                    .skip(i * BATCH_SIZE)
+                    .getMany();
+                await this.taskQueue.push(async () => {
+                    await this.saveSearchIndexItems(ctx, variants);
+                });
+                reporter.setProgress(Math.round((i / batches) * 100));
+            }
+
+            Logger.verbose(`Reindexing completed in ${Date.now() - timeStart}ms`);
+
+            return {
+                success: true,
+                indexedItemCount: count,
+                timeTaken: Date.now() - timeStart,
+            };
+        });
+        return job;
     }
 
     /**

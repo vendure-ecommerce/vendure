@@ -26,6 +26,7 @@ import { CustomerService } from './services/customer.service';
 import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
 import { GlobalSettingsService } from './services/global-settings.service';
+import { JobService } from './services/job.service';
 import { OrderService } from './services/order.service';
 import { PaymentMethodService } from './services/payment-method.service';
 import { ProductOptionGroupService } from './services/product-option-group.service';
@@ -54,6 +55,7 @@ const exportedProviders = [
     FacetService,
     FacetValueService,
     GlobalSettingsService,
+    JobService,
     OrderService,
     PaymentMethodService,
     CollectionService,

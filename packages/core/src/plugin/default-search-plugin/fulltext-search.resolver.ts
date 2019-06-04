@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, QuerySearchArgs, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
+import { JobInfo, Permission, QuerySearchArgs, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
 import { Decode } from '../../api';
@@ -9,7 +9,6 @@ import { Ctx } from '../../api/decorators/request-context.decorator';
 import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/admin/search.resolver';
 import { FacetValue } from '../../entity';
 
-import { DefaultSearchReindexResponse } from './default-search-plugin';
 import { FulltextSearchService } from './fulltext-search.service';
 
 @Resolver('SearchResponse')
@@ -66,7 +65,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindex(@Ctx() ctx: RequestContext): Promise<DefaultSearchReindexResponse> {
+    async reindex(@Ctx() ctx: RequestContext): Promise<JobInfo> {
         return this.fulltextSearchService.reindex(ctx);
     }
 }
