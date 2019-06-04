@@ -391,3 +391,41 @@ export const GET_SERVER_CONFIG = gql`
         }
     }
 `;
+
+export const JOB_INFO_FRAGMENT = gql`
+    fragment JobInfo on JobInfo {
+        id
+        name
+        state
+        progress
+        duration
+        result
+    }
+`;
+
+export const GET_JOB_INFO = gql`
+    query GetJobInfo($id: String!) {
+        job(jobId: $id) {
+            ...JobInfo
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
+`;
+
+export const GET_ALL_JOBS = gql`
+    query GetAllJobs($input: JobListInput) {
+        jobs(input: $input) {
+            ...JobInfo
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
+`;
+
+export const REINDEX = gql`
+    mutation Reindex {
+        reindex {
+            ...JobInfo
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
+`;

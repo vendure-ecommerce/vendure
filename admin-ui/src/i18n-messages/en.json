@@ -76,6 +76,7 @@
     "rebuild-search-index": "Rebuild search index",
     "reindex-error": "An error occurred while rebuilding search index",
     "reindex-successful": "Indexed {count, plural, one {product variant} other {{count} product variants}} in {time}ms",
+    "reindexing": "Rebuilding search index",
     "remove-asset": "Remove asset",
     "search-asset-name": "Search assets by name",
     "search-for-term": "Search for term",
@@ -123,6 +124,7 @@
     "finish": "Finish",
     "guest": "Guest",
     "items-per-page-option": "{ count } per page",
+    "jobs-in-progress": "{ count } {count, plural, one {job} other {jobs}} in progress",
     "language": "Language",
     "log-out": "Log out",
     "login": "Log in",
@@ -184,6 +186,9 @@
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
+  },
+  "job": {
+    "reindex": "Rebuilding search index"
   },
   "lang": {
     "aa": "Afar",

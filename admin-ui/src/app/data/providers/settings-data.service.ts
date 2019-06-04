@@ -15,12 +15,14 @@ import {
     CreateZoneInput,
     DeleteCountry,
     GetActiveChannel,
+    GetAllJobs,
     GetAvailableCountries,
     GetChannel,
     GetChannels,
     GetCountry,
     GetCountryList,
     GetGlobalSettings,
+    GetJobInfo,
     GetPaymentMethod,
     GetPaymentMethodList,
     GetTaxCategories,
@@ -29,6 +31,7 @@ import {
     GetTaxRateList,
     GetZone,
     GetZones,
+    JobState,
     RemoveMembersFromZone,
     UpdateChannel,
     UpdateChannelInput,
@@ -54,12 +57,14 @@ import {
     CREATE_ZONE,
     DELETE_COUNTRY,
     GET_ACTIVE_CHANNEL,
+    GET_ALL_JOBS,
     GET_AVAILABLE_COUNTRIES,
     GET_CHANNEL,
     GET_CHANNELS,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
+    GET_JOB_INFO,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -287,5 +292,21 @@ export class SettingsDataService {
                 input,
             },
         );
+    }
+
+    getJob(id: string) {
+        return this.baseDataService.query<GetJobInfo.Query, GetJobInfo.Variables>(GET_JOB_INFO, { id });
+    }
+
+    pollJobs(ids: string[]) {
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_ALL_JOBS, {
+            input: { ids },
+        });
+    }
+
+    getRunningJobs() {
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_ALL_JOBS, {
+            input: { state: JobState.RUNNING },
+        });
     }
 }

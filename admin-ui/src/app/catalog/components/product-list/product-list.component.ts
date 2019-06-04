@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
-import { delay, filter, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
-import { SearchInput, SearchProducts } from '../../../common/generated-types';
+import { JobState, SearchInput, SearchProducts } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+import { JobQueueService } from '../../../core/providers/job-queue/job-queue.service';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
@@ -28,6 +29,7 @@ export class ProductListComponent
         private dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
+        private jobQueueService: JobQueueService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -91,16 +93,19 @@ export class ProductListComponent
 
     rebuildSearchIndex() {
         this.dataService.product.reindex().subscribe(({ reindex }) => {
-            if (reindex.success) {
-                const time = new Intl.NumberFormat().format(reindex.timeTaken);
-                this.notificationService.success(_('catalog.reindex-successful'), {
-                    count: reindex.indexedItemCount,
-                    time,
-                });
-                this.refresh();
-            } else {
-                this.notificationService.error(_('catalog.reindex-error'));
-            }
+            this.notificationService.info(_('catalog.reindexing'));
+            this.jobQueueService.addJob(reindex.id, job => {
+                if (job.state === JobState.COMPLETED) {
+                    const time = new Intl.NumberFormat().format(job.duration || 0);
+                    this.notificationService.success(_('catalog.reindex-successful'), {
+                        count: job.result.indexedItemCount,
+                        time,
+                    });
+                    this.refresh();
+                } else {
+                    this.notificationService.error(_('catalog.reindex-error'));
+                }
+            });
         });
     }
 

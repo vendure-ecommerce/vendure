@@ -34,12 +34,12 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_WITH_VARIANTS,
-    REINDEX,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from '../definitions/product-definitions';
+import { REINDEX } from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
 

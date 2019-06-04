@@ -1022,6 +1022,29 @@ export type ImportInfo = {
   imported: Scalars['Int'],
 };
 
+export type JobInfo = {
+  id: Scalars['String'],
+  name: Scalars['String'],
+  state: JobState,
+  progress: Scalars['Float'],
+  result?: Maybe<Scalars['JSON']>,
+  started?: Maybe<Scalars['DateTime']>,
+  ended?: Maybe<Scalars['DateTime']>,
+  duration?: Maybe<Scalars['Int']>,
+};
+
+export type JobListInput = {
+  state?: Maybe<JobState>,
+  ids?: Maybe<Array<Scalars['String']>>,
+};
+
+export enum JobState {
+  PENDING = 'PENDING',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED'
+}
+
 
 /** ISO 639-1 language code */
 export enum LanguageCode {
@@ -1472,7 +1495,7 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
-  reindex: SearchReindexResponse,
+  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -2316,6 +2339,8 @@ export type Query = {
   globalSettings: GlobalSettings,
   order?: Maybe<Order>,
   orders: OrderList,
+  job?: Maybe<JobInfo>,
+  jobs: Array<JobInfo>,
   paymentMethods: PaymentMethodList,
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
@@ -2427,6 +2452,16 @@ export type QueryOrderArgs = {
 
 export type QueryOrdersArgs = {
   options?: Maybe<OrderListOptions>
+};
+
+
+export type QueryJobArgs = {
+  jobId: Scalars['String']
+};
+
+
+export type QueryJobsArgs = {
+  input?: Maybe<JobListInput>
 };
 
 
@@ -3412,11 +3447,6 @@ export type SearchProductsQueryVariables = {
 
 export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) }) })> }) });
 
-export type ReindexMutationVariables = {};
-
-
-export type ReindexMutation = ({ __typename?: 'Mutation' } & { reindex: ({ __typename?: 'SearchReindexResponse' } & Pick<SearchReindexResponse, 'indexedItemCount' | 'success' | 'timeTaken'>) });
-
 export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
@@ -3672,6 +3702,27 @@ export type GetServerConfigQueryVariables = {};
 
 
 export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & Pick<ServerConfig, 'customFields'>) }) });
+
+export type JobInfoFragment = ({ __typename?: 'JobInfo' } & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>);
+
+export type GetJobInfoQueryVariables = {
+  id: Scalars['String']
+};
+
+
+export type GetJobInfoQuery = ({ __typename?: 'Query' } & { job: Maybe<({ __typename?: 'JobInfo' } & JobInfoFragment)> });
+
+export type GetAllJobsQueryVariables = {
+  input?: Maybe<JobListInput>
+};
+
+
+export type GetAllJobsQuery = ({ __typename?: 'Query' } & { jobs: Array<({ __typename?: 'JobInfo' } & JobInfoFragment)> });
+
+export type ReindexMutationVariables = {};
+
+
+export type ReindexMutation = ({ __typename?: 'Mutation' } & { reindex: ({ __typename?: 'JobInfo' } & JobInfoFragment) });
 
 export type ShippingMethodFragment = ({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'> & { checker: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment), calculator: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment) });
 
@@ -4179,12 +4230,6 @@ export namespace SearchProducts {
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
 }
 
-export namespace Reindex {
-  export type Variables = ReindexMutationVariables;
-  export type Mutation = ReindexMutation;
-  export type Reindex = ReindexMutation['reindex'];
-}
-
 export namespace ConfigurableOperation {
   export type Fragment = ConfigurableOperationFragment;
   export type Args = (NonNullable<ConfigurableOperationFragment['args'][0]>);
@@ -4455,6 +4500,28 @@ export namespace GetServerConfig {
   export type Query = GetServerConfigQuery;
   export type GlobalSettings = GetServerConfigQuery['globalSettings'];
   export type ServerConfig = GetServerConfigQuery['globalSettings']['serverConfig'];
+}
+
+export namespace JobInfo {
+  export type Fragment = JobInfoFragment;
+}
+
+export namespace GetJobInfo {
+  export type Variables = GetJobInfoQueryVariables;
+  export type Query = GetJobInfoQuery;
+  export type Job = JobInfoFragment;
+}
+
+export namespace GetAllJobs {
+  export type Variables = GetAllJobsQueryVariables;
+  export type Query = GetAllJobsQuery;
+  export type Jobs = JobInfoFragment;
+}
+
+export namespace Reindex {
+  export type Variables = ReindexMutationVariables;
+  export type Mutation = ReindexMutation;
+  export type Reindex = JobInfoFragment;
 }
 
 export namespace ShippingMethod {
