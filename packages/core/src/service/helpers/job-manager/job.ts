@@ -22,6 +22,9 @@ export class Job {
     }
 
     async start() {
+        if (this.state !== JobState.PENDING) {
+            return;
+        }
         const reporter: JobReporter = {
             setProgress: (percentage: number) => {
                 this.progress = Math.max(Math.min(percentage, 100), 0);

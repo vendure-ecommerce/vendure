@@ -1,4 +1,4 @@
-import { JobInfo, JobListInput } from '@vendure/common/lib/generated-types';
+import { JobInfo, JobListInput, JobState } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import ms = require('ms');
 
@@ -36,10 +36,9 @@ export class JobManager {
      * property of the job. If the function throws, the job will fail and the `result` property
      * will be the error thrown.
      */
-    startJob(name: string, work: (reporter: JobReporter) => any | Promise<any>): Job {
+    createJob(name: string, work: (reporter: JobReporter) => any | Promise<any>): Job {
         const job = new Job(name, work);
         this.jobs.set(job.id, job);
-        job.start();
         return job;
     }
 
@@ -81,6 +80,10 @@ export class JobManager {
                 }
             }
         });
+    }
+
+    findRunningJob(name: string): Job | undefined {
+        return Array.from(this.jobs.values()).find(job => job.name === name && job.state === JobState.RUNNING);
     }
 
     private toJobInfo(job: Job): JobInfo {

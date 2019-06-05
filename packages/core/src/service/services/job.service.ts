@@ -1,9 +1,9 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { JobInfo, JobListInput } from '@vendure/common/lib/generated-types';
-import ms = require('ms');
+import { JobInfo, JobListInput, JobState } from '@vendure/common/lib/generated-types';
 
 import { Job } from '../helpers/job-manager/job';
 import { JobManager, JobReporter } from '../helpers/job-manager/job-manager';
+import ms = require('ms');
 
 @Injectable()
 export class JobService implements OnModuleInit, OnModuleDestroy {
@@ -19,8 +19,19 @@ export class JobService implements OnModuleInit, OnModuleDestroy {
         global.clearInterval(this.cleanJobsTimer);
     }
 
-    startJob(name: string, work: (reporter: JobReporter) => any | Promise<any>): Job {
-        return this.manager.startJob(name, work);
+    createJob(options: {
+        name: string;
+        work: (reporter: JobReporter) => any | Promise<any>;
+        /** Limit this job to a single instance at a time */
+        singleInstance?: boolean;
+    }): Job {
+        if (options.singleInstance === true) {
+            const runningInstance = this.manager.findRunningJob(options.name);
+            if (runningInstance) {
+                return runningInstance;
+            }
+        }
+        return this.manager.createJob(options.name, options.work);
     }
 
     getAll(input?: JobListInput): JobInfo[] {
