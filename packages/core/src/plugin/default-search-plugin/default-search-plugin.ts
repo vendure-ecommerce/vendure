@@ -15,6 +15,7 @@ import { SearchService } from '../../service/services/search.service';
 
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
+import { SearchIndexService } from './search-index.service';
 import { SearchIndexItem } from './search-index-item.entity';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
@@ -23,9 +24,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
 }
 
 export class DefaultSearchPlugin implements VendurePlugin {
-    onBootstrap(inject: <T>(type: Type<T>) => T): void | Promise<void> {
+    async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
         const eventBus = inject(EventBus);
         const fulltextSearchService = inject(FulltextSearchService);
+        const searchIndexService = inject(SearchIndexService);
         eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
                 return fulltextSearchService.updateProductOrVariant(event.ctx, event.entity);
@@ -40,6 +42,7 @@ export class DefaultSearchPlugin implements VendurePlugin {
                 return fulltextSearchService.reindex(event.ctx);
             }
         });
+        await searchIndexService.connect();
     }
 
     extendAdminAPI(): APIExtensionDefinition {
@@ -71,6 +74,6 @@ export class DefaultSearchPlugin implements VendurePlugin {
     }
 
     defineProviders(): Provider[] {
-        return [FulltextSearchService, { provide: SearchService, useClass: FulltextSearchService }];
+        return [FulltextSearchService, SearchIndexService, { provide: SearchService, useClass: FulltextSearchService }];
     }
 }
