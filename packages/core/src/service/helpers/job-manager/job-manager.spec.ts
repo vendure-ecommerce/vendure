@@ -13,15 +13,15 @@ describe('JobManager', () => {
         expect(jm.getOne('invalid')).toBeNull();
     });
 
-    it('startJob() returns a job', () => {
+    it('createJob() returns a job', () => {
         const jm = new JobManager();
-        const job = jm.startJob('test', noop);
+        const job = jm.createJob('test', noop);
         expect(job.name).toBe('test');
     });
 
     it('getOne() returns job by id', () => {
         const jm = new JobManager();
-        const job1 = jm.startJob('test', noop);
+        const job1 = jm.createJob('test', noop);
         const job2 = jm.getOne(job1.id);
 
         expect(job1.id).toBe(job2!.id);
@@ -30,7 +30,8 @@ describe('JobManager', () => {
     it('job completes once work fn returns', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job = jm.startJob('test', () => subject.toPromise());
+        const job = jm.createJob('test', () => subject.toPromise());
+        job.start();
         await tick();
 
         expect(jm.getOne(job.id)!.state).toBe(JobState.RUNNING);
@@ -47,7 +48,8 @@ describe('JobManager', () => {
     it('job fails if work fn throws', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job = jm.startJob('test', () => subject.toPromise());
+        const job = jm.createJob('test', () => subject.toPromise());
+        job.start();
         await tick();
 
         expect(jm.getOne(job.id)!.state).toBe(JobState.RUNNING);
@@ -64,10 +66,11 @@ describe('JobManager', () => {
         const jm = new JobManager();
         const subject = new Subject();
         const progressSubject = new Subject<number>();
-        const job = jm.startJob('test', (reporter => {
+        const job = jm.createJob('test', (reporter => {
             progressSubject.subscribe(val => reporter.setProgress(val));
             return subject.toPromise();
         }));
+        job.start();
         await tick();
         expect(jm.getOne(job.id)!.progress).toBe(0);
 
@@ -92,18 +95,18 @@ describe('JobManager', () => {
 
     it('getAll() returns all jobs', () => {
         const jm = new JobManager();
-        const job1 = jm.startJob('job1', noop);
-        const job2 = jm.startJob('job2', noop);
-        const job3 = jm.startJob('job3', noop);
+        const job1 = jm.createJob('job1', noop);
+        const job2 = jm.createJob('job2', noop);
+        const job3 = jm.createJob('job3', noop);
 
         expect(jm.getAll().map(j => j.id)).toEqual([job1.id, job2.id, job3.id]);
     });
 
     it('getAll() filters by id', () => {
         const jm = new JobManager();
-        const job1 = jm.startJob('job1', noop);
-        const job2 = jm.startJob('job2', noop);
-        const job3 = jm.startJob('job3', noop);
+        const job1 = jm.createJob('job1', noop);
+        const job2 = jm.createJob('job2', noop);
+        const job3 = jm.createJob('job3', noop);
 
         expect(jm.getAll({ ids: [job1.id, job3.id]}).map(j => j.id)).toEqual([job1.id, job3.id]);
     });
@@ -111,9 +114,12 @@ describe('JobManager', () => {
     it('getAll() filters by state', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job1 = jm.startJob('job1', noop);
-        const job2 = jm.startJob('job2', noop);
-        const job3 = jm.startJob('job3', () => subject.toPromise());
+        const job1 = jm.createJob('job1', noop);
+        const job2 = jm.createJob('job2', noop);
+        const job3 = jm.createJob('job3', () => subject.toPromise());
+        job1.start();
+        job2.start();
+        job3.start();
 
         await tick();
 
@@ -126,8 +132,10 @@ describe('JobManager', () => {
         const subject1 = new Subject();
         const subject2 = new Subject();
 
-        const job1 = jm.startJob('job1', () => subject1.toPromise());
-        const job2 = jm.startJob('job2', () => subject2.toPromise());
+        const job1 = jm.createJob('job1', () => subject1.toPromise());
+        const job2 = jm.createJob('job2', () => subject2.toPromise());
+        job1.start();
+        job2.start();
 
         subject1.complete();
         await tick();
@@ -146,6 +154,16 @@ describe('JobManager', () => {
         expect(jm.getAll().map(pick(['name', 'state']))).toEqual([
             { name: 'job2', state: JobState.RUNNING },
         ]);
+    });
+
+    it('findRunningJob() works', async () => {
+        const jm = new JobManager();
+        const subject1 = new Subject();
+
+        const job1 = jm.createJob('job1', () => subject1.toPromise());
+        job1.start();
+
+        expect(jm.findRunningJob('job1')).toBe(job1);
     });
 });
 

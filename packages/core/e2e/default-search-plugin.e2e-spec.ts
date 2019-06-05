@@ -45,7 +45,7 @@ describe('Default search plugin', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new DefaultSearchPlugin()],
+                plugins: [new DefaultSearchPlugin({ runInForkedProcess: false })],
             },
         );
         await adminClient.init();
