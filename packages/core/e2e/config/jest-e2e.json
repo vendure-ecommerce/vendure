@@ -5,6 +5,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "testEnvironment": "node",
   "globals": {
     "ts-jest": {
       "tsConfig": "<rootDir>/config/tsconfig.e2e.json",
