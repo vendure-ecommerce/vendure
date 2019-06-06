@@ -39,9 +39,9 @@ export function parseSortParams<T extends VendureEntity>(
 
     for (const [key, order] of Object.entries(sortParams)) {
         if (columns.find(c => c.propertyName === key)) {
-            output[`${alias}.${key}`] = order;
+            output[`${alias}.${key}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
-            output[`${alias}_translations.${key}`] = order;
+            output[`${alias}_translations.${key}`] = order as any;
         } else {
             throw new UserInputError('error.invalid-sort-field', {
                 fieldName: key,

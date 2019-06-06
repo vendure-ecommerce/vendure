@@ -1,4 +1,5 @@
 import { Response } from 'express-serve-static-core';
+import { GraphQLError } from 'graphql';
 import { GraphQLExtension, GraphQLResponse } from 'graphql-extensions';
 
 import { I18nRequest, I18nService } from '../../i18n/i18n.service';
@@ -20,7 +21,7 @@ export class TranslateErrorExtension implements GraphQLExtension {
         const { graphqlResponse, context } = o;
         if (graphqlResponse.errors) {
             graphqlResponse.errors = graphqlResponse.errors.map(err => {
-                return this.i18nService.translateError(context.req, err) as any;
+                return this.i18nService.translateError(context.req, err as GraphQLError) as any;
             });
         }
         return o;

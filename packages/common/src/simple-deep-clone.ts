@@ -2,7 +2,7 @@
  * An extremely fast function for deep-cloning an object which only contains simple
  * values, i.e. primitives, arrays and nested simple objects.
  */
-export function simpleDeepClone<T>(input: T): T {
+export function simpleDeepClone<T extends string | number | any[] | object>(input: T): T {
     // if not array or object or is null return self
     if (typeof input !== 'object' || input === null) {
         return input;
@@ -21,7 +21,7 @@ export function simpleDeepClone<T>(input: T): T {
     // handle case: object
     output = {};
     for (i in input) {
-        if (input.hasOwnProperty(i)) {
+        if ((input).hasOwnProperty(i)) {
             output[i] = simpleDeepClone((input as any)[i]);
         }
     }

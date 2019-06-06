@@ -47,7 +47,7 @@ export function parseFilterParams<T extends VendureEntity>(
 
     for (const [key, operation] of Object.entries(filterParams)) {
         if (operation) {
-            for (const [operator, operand] of Object.entries(operation)) {
+            for (const [operator, operand] of Object.entries(operation as object)) {
                 let fieldName: string;
                 if (columns.find(c => c.propertyName === key)) {
                     fieldName = `${alias}.${key}`;
