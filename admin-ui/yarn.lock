@@ -4329,10 +4329,10 @@ messageformat-parser@^4.1.1:
   resolved "https://registry.npmjs.org/messageformat-parser/-/messageformat-parser-4.1.1.tgz#665c70393f7b9b55a666ab27f6503ce0b5beeb1f"
   integrity sha512-g5JfN4P58rrx0YVYo4S/tT23cYYm3NNeJLm2F2hhcFq1O1xieVGTssHa1QWMYeHCulTJ/1V7EMkOtItJa9LFUg==
 
-messageformat@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.npmjs.org/messageformat/-/messageformat-2.2.1.tgz#8afb70bbb2ef43f43c49a7af3e1256847b2a6be0"
-  integrity sha512-yMeuqLBgmn2IFqy51xKMeuQQYK/SLVX4mqT51VaaVp2bCOEaYs2/4qN5mSnVTvkMdDNvt7YwGw4wpGR0WjeT6A==
+messageformat@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/messageformat/-/messageformat-2.2.0.tgz#abcf03be6c2176d6be09aff7dd1f6a1f5daa5cf0"
+  integrity sha512-l7jdCq3e/fiF3ZLeXfKaqR263Bv5ShrZnQW6i1tBgPD3OXsXrjtCviosJ83lugECSOY8j0D0oFHxOSLe+p2uKw==
   dependencies:
     make-plural "^4.3.0"
     messageformat-formatters "^2.0.0"
