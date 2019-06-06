@@ -110,6 +110,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
+"@babel/runtime@^7.3.1":
+  version "7.4.5"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.4.5.tgz#582bb531f5f9dc67d2fcb682979894f75e253f12"
+  integrity sha512-TuI4qpWZP6lGOGIuGWtp9sPluqYICmbk8T/1vpSysqJxRPkudh/ofFWyqdcMsDf2s7KvDL4/YHgKyvcS3g9CJQ==
+  dependencies:
+    regenerator-runtime "^0.13.2"
+
 "@babel/template@^7.1.0", "@babel/template@^7.4.0", "@babel/template@^7.4.4":
   version "7.4.4"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.4.4.tgz#f4b88d1225689a08f5bc3a17483545be9e4ed237"
@@ -1229,7 +1236,7 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@nestjs/common@6.3.1":
+"@nestjs/common@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@nestjs/common/-/common-6.3.1.tgz#222f25251eb1b67c6e552e00b266048daa569bbc"
   integrity sha512-uuI/CCe6MFISMX+fSpkRvvQ6CBlXW89+5wfiveQ22AzAxgqGLAyWvNVHUE8F+zev7QDbxbY9vfPtm8CE5kiJVQ==
@@ -1238,7 +1245,7 @@
     cli-color "1.4.0"
     uuid "3.3.2"
 
-"@nestjs/core@6.3.1":
+"@nestjs/core@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@nestjs/core/-/core-6.3.1.tgz#e32e76a776d0de71f218f5da582ea3ee6524b27e"
   integrity sha512-GiH64nX5Z/HrHESo0huiSFH894/hzs0qRuSVNSq4MWIgHgTjdFlqu/VcXlPz21pJXhoimegpk1x1wsm2hu+WUw==
@@ -1250,7 +1257,7 @@
     optional "0.1.4"
     uuid "3.3.2"
 
-"@nestjs/graphql@6.3.1":
+"@nestjs/graphql@^6.2.4":
   version "6.2.4"
   resolved "https://registry.npmjs.org/@nestjs/graphql/-/graphql-6.2.4.tgz#5b1d92610d2003bc8e2f0df6300f34a0f46a1bd5"
   integrity sha512-4SprgwQbU4v2W2whRrcPnIf9iww1oJ72goX6QvbILWdJt73wplK23Wy8x2b/YYzcJXfAJ8XIA9UmA5CnTM9yEA==
@@ -1267,7 +1274,7 @@
   optionalDependencies:
     type-graphql "^0.17.3"
 
-"@nestjs/platform-express@6.3.1":
+"@nestjs/platform-express@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-6.3.1.tgz#8adb602a5bb9571b9d58646bd52141a26ea8ba3e"
   integrity sha512-vPOkcqhYS+qw5ZJNOp19YnT2uKXB6Phgu5P11AiylE+Cc0eoTSdouVDK4e3I8Lja91VuNN5WSYsODYlJzpMVpA==
@@ -1277,7 +1284,7 @@
     express "4.17.1"
     multer "1.4.1"
 
-"@nestjs/testing@6.3.1":
+"@nestjs/testing@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@nestjs/testing/-/testing-6.3.1.tgz#7f7cc67c9798a4632cb7d8b9cf19b23c52c9197b"
   integrity sha512-2eTZhFzrl61I3+bmvh2jZvk7elah+P+ndVfHCzJzKA8jKNGOqdTjvj2beqxhjOsE4o8BsqOQm2eUXUzItjoHRg==
@@ -5636,10 +5643,12 @@ i18next-node-fs-backend@^2.1.1:
     js-yaml "3.13.1"
     json5 "2.0.0"
 
-i18next@^13.1.0:
-  version "13.1.5"
-  resolved "https://registry.npmjs.org/i18next/-/i18next-13.1.5.tgz#b1fbc35e00047e6f580288f6774b21b5d42649e6"
-  integrity sha512-tFaX79dg5IcO02I/p8ImZubrxZrOCf06eiAUBlqCjcHXSfC8wqUgI+Yp4qH0iZZV5jBG5z0RWLAamO72NnZiyg==
+i18next@^17.0.2:
+  version "17.0.2"
+  resolved "https://registry.npmjs.org/i18next/-/i18next-17.0.2.tgz#a8657850b3e9fe200a789089881eaf00d93a43ce"
+  integrity sha512-hDjPzq0R6njFCHQJufxgZw0+czFaepapVB+Bm02AEUyy/50qmnbfvho1LW2tw6HrSwOinDF1yvn1MayefjSscg==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
@@ -9773,6 +9782,11 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
+
+regenerator-runtime@^0.13.2:
+  version "0.13.2"
+  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.2.tgz#32e59c9a6fb9b1a4aff09b4930ca2d4477343447"
+  integrity sha512-S/TQAZJO+D3m9xeN1WTI8dLKBBiRgXBlTJvbWjCThHWZj9EvHK70Ff50/tYj2J/fvBY6JtFVwRuazHN2E7M9BA==
 
 regex-cache@^0.4.2:
   version "0.4.4"
