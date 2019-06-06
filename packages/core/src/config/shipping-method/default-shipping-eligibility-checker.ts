@@ -1,4 +1,4 @@
-import { ConfigArgType } from '../../../../common/lib/generated-types';
+import { ConfigArgType } from '@vendure/common/lib/generated-types';
 
 import { ShippingEligibilityChecker } from './shipping-eligibility-checker';
 

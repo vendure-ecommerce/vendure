@@ -1,4 +1,5 @@
-import { JobState } from '../../../../../common/lib/generated-types';
+import { JobState } from '@vendure/common/lib/generated-types';
+
 import { generatePublicId } from '../../../common/generate-public-id';
 
 import { JobReporter } from './job-manager';

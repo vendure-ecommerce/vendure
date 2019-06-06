@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { JobInfo } from '@vendure/common/lib/generated-types';
-import { JobState, Maybe, Scalars } from '../../../../common/src/generated-types';
+import { JobInfo, JobState } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError } from '../../common/error/errors';
 import { Logger } from '../../config/logger/vendure-logger';
 
 /**

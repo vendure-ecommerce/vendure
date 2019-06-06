@@ -1,8 +1,8 @@
+import { ID, Type } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection, ConnectionOptions, createConnection, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
-import { ID, Type } from '../../../../../common/lib/shared-types';
-import { unique } from '../../../../../common/lib/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
