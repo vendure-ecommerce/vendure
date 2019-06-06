@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JobInfo } from '@vendure/common/lib/generated-types';
+import { JobState, Maybe, Scalars } from '../../../../common/src/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -22,6 +23,11 @@ export class SearchService {
         if (!process.env.CI) {
             Logger.warn(`The SearchService should be overridden by an appropriate search plugin.`);
         }
-        throw new InternalServerError('error.not-implemented');
+        return {
+            id: 'error',
+            name: '',
+            state: JobState.FAILED,
+            progress: 0,
+        };
     }
 }
