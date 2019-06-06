@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { DataProxy } from 'apollo-cache';
-import { FetchPolicy } from 'apollo-client';
+import { WatchQueryFetchPolicy } from 'apollo-client';
 import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
@@ -42,7 +42,7 @@ export class BaseDataService {
     query<T, V = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
-        fetchPolicy: FetchPolicy = 'cache-and-network',
+        fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
     ): QueryResult<T, V> {
         const withCustomFields = addCustomFields(query, this.customFields);
         const queryRef = this.apollo.watchQuery<T, V>({

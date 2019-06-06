@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Type } from '@angular/core/src/type';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { Type } from 'shared/shared-types';
 
 import { CurrencyNamePipe } from '../../pipes/currency-name.pipe';
 import { AffixedInputComponent } from '../affixed-input/affixed-input.component';
