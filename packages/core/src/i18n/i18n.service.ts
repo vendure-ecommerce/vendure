@@ -12,7 +12,7 @@ import { ConfigService } from '../config/config.service';
 import { I18nError } from './i18n-error';
 
 export interface I18nRequest extends Request {
-    t: i18next.TranslationFunction;
+    t: i18next.TFunction;
 }
 
 /**
@@ -52,7 +52,7 @@ export class I18nService implements OnModuleInit {
      */
     translateError(req: I18nRequest, error: GraphQLError) {
         const originalError = error.originalError;
-        const t: i18next.TranslationFunction = req.t;
+        const t: i18next.TFunction = req.t;
 
         if (t && originalError instanceof I18nError) {
             let translation = originalError.message;
