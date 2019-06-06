@@ -1,17 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { combineLatest, interval, Observable, Subject, Subscription } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    map,
-    scan,
-    shareReplay,
-    throttle,
-    throttleTime,
-} from 'rxjs/operators';
-import { assertNever } from 'shared/shared-utils';
+import { interval, Observable, of, Subject, Subscription } from 'rxjs';
+import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/operators';
 
-import { GetJobInfo, JobInfoFragment, JobState } from '../../../common/generated-types';
+import { JobInfoFragment, JobState } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
@@ -37,14 +28,24 @@ export class JobQueueService implements OnDestroy {
             shareReplay(1),
         );
 
-        this.subscription = combineLatest(this.activeJobs$, interval(5000))
-            .pipe(throttleTime(5000))
-            .subscribe(([jobs]) => {
-                this.dataService.settings.pollJobs(jobs.map(j => j.id)).single$.subscribe(data => {
-                    data.jobs.forEach(job => {
-                        this.updateJob$.next(job);
+        this.subscription = this.activeJobs$
+            .pipe(
+                switchMap(jobs => {
+                    if (jobs.length) {
+                        return interval(2500).pipe(mapTo(jobs));
+                    } else {
+                        return of([]);
+                    }
+                }),
+            )
+            .subscribe(jobs => {
+                if (jobs.length) {
+                    this.dataService.settings.pollJobs(jobs.map(j => j.id)).single$.subscribe(data => {
+                        data.jobs.forEach(job => {
+                            this.updateJob$.next(job);
+                        });
                     });
-                });
+                }
             });
     }
 
