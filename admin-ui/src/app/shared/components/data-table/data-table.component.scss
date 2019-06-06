@@ -33,3 +33,7 @@ thead th {
         font-size: 22px;
     }
 }
+
+::ng-deep .align-middle {
+    vertical-align: middle!important;
+}

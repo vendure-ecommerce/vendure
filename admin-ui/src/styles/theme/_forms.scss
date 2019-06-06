@@ -4,6 +4,33 @@
     margin-top: 0;
 }
 
+.form, form {
+    padding-top: .5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    padding-left: 9.5rem;
+    margin-bottom: .5rem;
+    font-size: .541667rem;
+    letter-spacing: normal;
+    line-height: 1rem;
+
+    label:first-child {
+        position: absolute;
+        width: 8.5rem;
+        left: 0;
+        top: .25rem;
+        margin: 0;
+    }
+}
+
+.form .form-block, form .form-block {
+    margin: .5rem 0 1.5rem;
+}
+
 input, select {
     border-radius: 3px !important;
     border: 1px solid $color-grey-300 !important;
@@ -51,7 +78,7 @@ select {
     }
 }
 .ng-select.ng-select-single>.ng-select-container{
-       padding-top: 9px;
+    padding-top: 9px;
 }
 .ng-select.ng-select-focused>.ng-select-container {
     border-color: $color-primary-500 !important;
