@@ -1,8 +1,9 @@
 /* tslint:disable:no-non-null-assertion */
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { EventBus, Order, OrderStateTransitionEvent, VendureEvent } from '@vendure/core';
 import path from 'path';
+
+import { LanguageCode } from '../../common/src/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '../../common/src/shared-constants';
+import { EventBus, Order, OrderStateTransitionEvent, VendureEvent } from '../../core';
 
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailEventHandler, EmailEventListener } from './event-listener';

@@ -17,6 +17,7 @@ module.exports = {
         'ts-jest': {
             tsConfig: {
                 allowJs: true,
+                skipLibCheck: true,
             },
         },
     },
