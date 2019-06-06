@@ -11,7 +11,8 @@ import { ProductVariantsWizardComponent } from '../product-variants-wizard/produ
 })
 export class GenerateProductVariantsComponent {
     @Input() product: ProductWithVariants.Fragment;
-    @ViewChild('productVariantsWizard') productVariantsWizard: ProductVariantsWizardComponent;
+    @ViewChild('productVariantsWizard', { static: true })
+    productVariantsWizard: ProductVariantsWizardComponent;
     constructor(private dataService: DataService) {}
 
     startProductVariantsWizard() {

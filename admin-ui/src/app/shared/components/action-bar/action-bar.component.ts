@@ -26,6 +26,6 @@ export class ActionBarRightComponent {
     styleUrls: ['./action-bar.component.scss'],
 })
 export class ActionBarComponent {
-    @ContentChild(ActionBarLeftComponent) left: ActionBarLeftComponent;
-    @ContentChild(ActionBarRightComponent) right: ActionBarRightComponent;
+    @ContentChild(ActionBarLeftComponent, { static: true }) left: ActionBarLeftComponent;
+    @ContentChild(ActionBarRightComponent, { static: true }) right: ActionBarRightComponent;
 }

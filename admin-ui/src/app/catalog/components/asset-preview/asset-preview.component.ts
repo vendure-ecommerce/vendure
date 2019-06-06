@@ -16,8 +16,8 @@ export class AssetPreviewComponent implements Dialog<void> {
     width = 0;
     height = 0;
     centered = true;
-    @ViewChild('imageElement') private imageElementRef: ElementRef<HTMLImageElement>;
-    @ViewChild('previewDiv') private previewDivRef: ElementRef<HTMLDivElement>;
+    @ViewChild('imageElement', { static: true }) private imageElementRef: ElementRef<HTMLImageElement>;
+    @ViewChild('previewDiv', { static: true }) private previewDivRef: ElementRef<HTMLDivElement>;
 
     getDimensions() {
         const img = this.imageElementRef.nativeElement;

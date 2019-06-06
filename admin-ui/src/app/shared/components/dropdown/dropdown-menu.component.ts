@@ -52,7 +52,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
 })
 export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
     @Input('vdrPosition') private position: DropdownPosition = 'bottom-left';
-    @ViewChild('menu') private menuTemplate: TemplateRef<any>;
+    @ViewChild('menu', { static: true }) private menuTemplate: TemplateRef<any>;
     private menuPortal: TemplatePortal<any>;
     private overlayRef: OverlayRef;
     private backdropClickSub: Subscription;

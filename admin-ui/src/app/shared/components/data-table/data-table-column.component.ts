@@ -11,5 +11,5 @@ export class DataTableColumnComponent {
      * When set to true, this column will expand to use avaiable width
      */
     @Input() expand = false;
-    @ViewChild(TemplateRef) template: TemplateRef<any>;
+    @ViewChild(TemplateRef, { static: true }) template: TemplateRef<any>;
 }

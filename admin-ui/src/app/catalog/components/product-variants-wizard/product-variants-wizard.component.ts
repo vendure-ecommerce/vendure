@@ -18,9 +18,10 @@ import { SelectOptionGroupComponent } from '../select-option-group/select-option
 })
 export class ProductVariantsWizardComponent implements OnChanges {
     @Input() product: ProductWithVariants.Fragment;
-    @ViewChild('wizard') wizard: ClrWizard;
-    @ViewChild('createOptionGroupForm') createOptionGroupForm: CreateOptionGroupFormComponent;
-    @ViewChild('selectOptionGroup') selectOptionGroup: SelectOptionGroupComponent;
+    @ViewChild('wizard', { static: true }) wizard: ClrWizard;
+    @ViewChild('createOptionGroupForm', { static: true })
+    createOptionGroupForm: CreateOptionGroupFormComponent;
+    @ViewChild('selectOptionGroup', { static: true }) selectOptionGroup: SelectOptionGroupComponent;
     selectedOptionGroups: Array<Partial<ProductOptionGroup.Fragment>> = [];
     productVariantPreviewList: string[] = [];
     defaultPrice = 0;

@@ -41,7 +41,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     disabled = false;
     private initialized = false;
 
-    @ViewChild('trixEditor') private trixEditor: ElementRef;
+    @ViewChild('trixEditor', { static: true }) private trixEditor: ElementRef;
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 

@@ -13,7 +13,8 @@ import { CreateOptionGroupFormComponent } from '../create-option-group-form/crea
 export class CreateOptionGroupDialogComponent implements Dialog<CreateProductOptionGroup.Mutation> {
     productId: string;
     productName: string;
-    @ViewChild('createOptionGroupForm') createOptionGroupForm: CreateOptionGroupFormComponent;
+    @ViewChild('createOptionGroupForm', { static: true })
+    createOptionGroupForm: CreateOptionGroupFormComponent;
     resolveWith: (result?: CreateProductOptionGroup.Mutation) => void;
 
     createOptionGroup() {

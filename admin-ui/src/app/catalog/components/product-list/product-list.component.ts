@@ -24,7 +24,8 @@ export class ProductListComponent
     facetValueIds: string[] = [];
     groupByProduct = true;
     facetValues$: Observable<SearchProducts.FacetValues[]>;
-    @ViewChild('productSearchInputComponent') private productSearchInput: ProductSearchInputComponent;
+    @ViewChild('productSearchInputComponent', { static: true })
+    private productSearchInput: ProductSearchInputComponent;
     constructor(
         private dataService: DataService,
         private modalService: ModalService,

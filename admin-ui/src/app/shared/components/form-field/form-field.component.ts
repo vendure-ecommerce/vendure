@@ -32,7 +32,7 @@ export class FormFieldComponent implements OnInit {
      * will be displayed which allows the field to be edited.
      */
     @Input() readOnlyToggle = false;
-    @ContentChild(FormFieldControlDirective) formFieldControl: FormFieldControlDirective;
+    @ContentChild(FormFieldControlDirective, { static: true }) formFieldControl: FormFieldControlDirective;
     isReadOnly = false;
 
     ngOnInit() {

@@ -17,7 +17,7 @@ export class ProductSearchInputComponent {
     @Input() facetValueResults: SearchProducts.FacetValues[];
     @Output() searchTermChange = new EventEmitter<string>();
     @Output() facetValueChange = new EventEmitter<string[]>();
-    @ViewChild('selectComponent') private selectComponent: NgSelectComponent;
+    @ViewChild('selectComponent', { static: true }) private selectComponent: NgSelectComponent;
     private lastTerm = '';
     private lastFacetValueIds: string[] = [];
 

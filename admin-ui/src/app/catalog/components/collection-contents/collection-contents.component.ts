@@ -33,7 +33,7 @@ import { DataService } from '../../../data/providers/data.service';
 })
 export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy {
     @Input() collectionId: string;
-    @ContentChild(TemplateRef) headerTemplate: TemplateRef<any>;
+    @ContentChild(TemplateRef, { static: true }) headerTemplate: TemplateRef<any>;
 
     contents$: Observable<GetCollectionContents.Items[]>;
     contentsTotalItems$: Observable<number>;

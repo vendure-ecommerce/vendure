@@ -8,7 +8,7 @@ import { NotificationType } from '../../providers/notification/notification.serv
     styleUrls: ['./notification.component.scss'],
 })
 export class NotificationComponent {
-    @ViewChild('wrapper') wrapper: ElementRef;
+    @ViewChild('wrapper', { static: true }) wrapper: ElementRef;
     offsetTop = 0;
     message = '';
     translationVars: { [key: string]: string | number } = {};

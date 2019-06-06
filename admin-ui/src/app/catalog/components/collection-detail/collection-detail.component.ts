@@ -46,7 +46,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     allFilters: ConfigurableOperation[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
-    @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
+    @ViewChild('collectionContents', { static: false }) contentsComponent: CollectionContentsComponent;
 
     constructor(
         router: Router,
