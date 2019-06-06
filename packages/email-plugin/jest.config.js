@@ -21,4 +21,5 @@ module.exports = {
             },
         },
     },
+    testEnvironment: 'node',
 };
