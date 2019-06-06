@@ -97,7 +97,7 @@ export const adminEntityResolvers = [
 @Module({
     imports: [ConfigModule],
     providers: [IdCodecService],
-    exports: [IdCodecService],
+    exports: [IdCodecService, ConfigModule],
 })
 export class ApiSharedModule {}
 

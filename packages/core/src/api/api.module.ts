@@ -5,8 +5,7 @@ import path from 'path';
 import { DataImportModule } from '../data-import/data-import.module';
 import { ServiceModule } from '../service/service.module';
 
-import { AdminApiModule, ApiSharedModule, entityResolvers, ShopApiModule } from './api-internal-modules';
-import { IdCodecService } from './common/id-codec.service';
+import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
 import { RequestContextService } from './common/request-context.service';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AssetInterceptor } from './middleware/asset-interceptor';
