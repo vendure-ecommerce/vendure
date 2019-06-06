@@ -1,8 +1,9 @@
 import { TerminalTyper } from './terminal-typer';
+import Timer = NodeJS.Timer;
 
 export class Sequencer {
 
-    private readonly playTimer: { [name: string]: number; };
+    private readonly playTimer: { [name: string]: Timer; };
     private readonly onTransition?: (className: string) => void;
 
     constructor(private sceneElement: HTMLDivElement,
