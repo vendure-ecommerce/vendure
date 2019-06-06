@@ -80,6 +80,14 @@ function getDbConfig(): ConnectionOptions {
                 type: 'sqlite',
                 database:  path.join(__dirname, 'vendure.sqlite'),
             };
+        case 'sqljs':
+            console.log('Using sql.js connection');
+            return {
+                type: 'sqljs',
+                autoSave: true,
+                database: new Uint8Array([]),
+                location: path.join(__dirname, 'vendure.sqlite'),
+            };
         case 'mysql':
         default:
             console.log('Using mysql connection');
