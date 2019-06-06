@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "fs-extra": "^8.0.1",
-    "sharp": "^0.22.0",
+    "sharp": "^0.22.1",
     "typescript": "^3.3.4000"
   }
 }
