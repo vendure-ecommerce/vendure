@@ -1,6 +1,6 @@
 {
   "name": "dev-server",
-  "version": "0.1.2-beta.3",
+  "version": "0.1.2-beta.4",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -12,11 +12,11 @@
     "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
   },
   "dependencies": {
-    "@vendure/admin-ui-plugin": "^0.1.2-beta.3",
-    "@vendure/asset-server-plugin": "^0.1.2-beta.3",
-    "@vendure/common": "^0.1.2-beta.3",
-    "@vendure/core": "^0.1.2-beta.3",
-    "@vendure/email-plugin": "^0.1.2-beta.3",
+    "@vendure/admin-ui-plugin": "^0.1.2-beta.4",
+    "@vendure/asset-server-plugin": "^0.1.2-beta.4",
+    "@vendure/common": "^0.1.2-beta.4",
+    "@vendure/core": "^0.1.2-beta.4",
+    "@vendure/email-plugin": "^0.1.2-beta.4",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
