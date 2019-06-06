@@ -34,6 +34,9 @@ import {
     SaveVariantsMessage,
     VariantsSavedMessage,
 } from './ipc';
+// This import is needed to ensure that the worker script gets compiled
+// and emitted during build.
+import './search-index-worker';
 
 export type IncomingMessage = ConnectedMessage | ReturnRawBatchMessage | VariantsSavedMessage | CompletedMessage;
 const loggerCtx = 'DefaultSearchPlugin';
@@ -58,7 +61,7 @@ export class SearchIndexService {
      * Creates the search index worker process and has it connect to the database.
      */
     async connect() {
-        if (this.options.runInForkedProcess) {
+        if (this.options.runInForkedProcess && this.configService.dbConnectionOptions.type !== 'sqljs') {
             try {
                 const workerProcess = this.getChildProcess(path.join(__dirname, 'search-index-worker.ts'));
                 Logger.verbose(`IndexBuilder running as forked process`, loggerCtx);
@@ -122,6 +125,7 @@ export class SearchIndexService {
 
                         const variants = await this.getBatch(this.workerProcess, i);
                         const hydratedVariants = this.hydrateVariants(ctx, variants);
+                        Logger.verbose(`variants count: ${variants.length}`);
 
                         ipcChannel.send(new SaveVariantsMessage({
                             variants: hydratedVariants,
@@ -275,7 +279,7 @@ export class SearchIndexService {
 
     private establishConnection(child: ChildProcess): Promise<boolean> {
         const connectionOptions = pick(this.configService.dbConnectionOptions as any,
-            ['type', 'name', 'database', 'host', 'port', 'username', 'password']);
+            ['type', 'name', 'database', 'host', 'port', 'username', 'password', 'location', 'autoSave']);
         return new Promise(resolve => {
             const ipcChannel = new IpcChannel(child);
             ipcChannel.subscribe(MessageType.CONNECTED, message => {

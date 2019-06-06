@@ -94,7 +94,7 @@ export class IndexBuilder {
     private async connect(dbConnectionOptions: ConnectionOptions): Promise<ConnectedMessage> {
         const {coreEntitiesMap} = await import('../../../entity/entities');
         const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
-        this.connection = await createConnection({...dbConnectionOptions, entities: [SearchIndexItem, ...coreEntities]});
+        this.connection = await createConnection({...dbConnectionOptions, entities: [SearchIndexItem, ...coreEntities], name: 'index-builder' });
         this.indexQueryBuilder = getSearchIndexQueryBuilder(this.connection);
         return new ConnectedMessage(this.connection.isConnected);
     }
