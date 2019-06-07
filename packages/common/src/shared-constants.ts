@@ -14,3 +14,8 @@ export const CUSTOMER_ROLE_CODE = '__customer_role__';
 export const CUSTOMER_ROLE_DESCRIPTION = 'Customer';
 export const ROOT_COLLECTION_NAME = '__root_collection__';
 
+// An environment variable which is set when the @vendure/create
+// script is run. Can be used to modify normal behaviour
+// to fit with the initial create task.
+export type CREATING_VENDURE_APP = 'CREATING_VENDURE_APP';
+export const CREATING_VENDURE_APP: CREATING_VENDURE_APP = 'CREATING_VENDURE_APP';

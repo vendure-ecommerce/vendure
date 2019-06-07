@@ -27,6 +27,11 @@ checkNodeVersion(REQUIRED_NODE_VERSION);
 
 let projectName: string | undefined;
 
+// Set the environment variable which can then be used to
+// conditionally modify behaviour of core or plugins.
+const createEnvVar: import('@vendure/common/src/shared-constants').CREATING_VENDURE_APP = 'CREATING_VENDURE_APP';
+process.env[createEnvVar] = 'true';
+
 program
     .version(packageJson.version)
     .arguments('<project-directory>')
@@ -50,6 +55,8 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
         return;
     }
 
+    console.log(`Welcome to @vendure/create v${packageJson.version}!`);
+    console.log();
     console.log(`Let's configure a new Vendure project. First a few questions:`);
     console.log();
 
