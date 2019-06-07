@@ -1,5 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
+import { CREATING_VENDURE_APP } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
 import gql from 'graphql-tag';
 
@@ -76,6 +77,12 @@ export class DefaultSearchPlugin implements VendurePlugin {
             runInForkedProcess: true,
         };
         this.options = { ...defaultOptions, ...options };
+
+        if (process.env[CREATING_VENDURE_APP]) {
+            // For the "create" step we will not run the indexer in a forked process as this
+            // can cause issues with sqlite locking.
+            this.options.runInForkedProcess = false;
+        }
     }
 
     /** @internal */
