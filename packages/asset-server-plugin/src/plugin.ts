@@ -104,15 +104,15 @@ export interface AssetServerOptions {
  *
  * ## Installation
  *
- * `yarn add @vendure/asset-server-plugin`
+ * `yarn add \@vendure/asset-server-plugin`
  *
  * or
  *
- * `npm install @vendure/asset-server-plugin`
+ * `npm install \@vendure/asset-server-plugin`
  *
  * @example
  * ```ts
- * import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+ * import { AssetServerPlugin } from '\@vendure/asset-server-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array

@@ -22,6 +22,8 @@ import {
  */
 export class TypescriptDocsParser {
 
+    private readonly atTokenPlaceholder = '__EscapedAtToken__';
+
     /**
      * Parses the TypeScript files given by the filePaths array and returns the
      * parsed data structures ready for rendering.
@@ -30,7 +32,7 @@ export class TypescriptDocsParser {
         const sourceFiles = filePaths.map(filePath => {
             return ts.createSourceFile(
                 filePath,
-                fs.readFileSync(filePath).toString(),
+                this.replaceEscapedAtTokens(fs.readFileSync(filePath).toString()),
                 ts.ScriptTarget.ES2015,
                 true,
             );
@@ -237,7 +239,7 @@ export class TypescriptDocsParser {
                 const memberInfo: MemberInfo = {
                     fullText,
                     name,
-                    description,
+                    description: this.restoreAtTokens(description),
                     type,
                     modifiers,
                 };
@@ -290,7 +292,7 @@ export class TypescriptDocsParser {
             description: tag => (description += tag.comment),
             example: tag => (description += this.formatExampleCode(tag.comment)),
         });
-        return description;
+        return this.restoreAtTokens(description);
     }
 
     /**
@@ -348,4 +350,22 @@ export class TypescriptDocsParser {
         return input.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase() as T;
     }
 
+    /**
+     * TypeScript from v3.5.1 interprets all '@' tokens in a tag comment as a new tag. This is a problem e.g.
+     * when a plugin includes in it's description some text like "install the @vendure/some-plugin package". Here,
+     * TypeScript will interpret "@vendure" as a JSDoc tag and remove it and all remaining text from the comment.
+     *
+     * The solution is to replace all escaped @ tokens ("\@") with a replacer string so that TypeScript treats them
+     * as regular comment text, and then once it has parsed the statement, we replace them with the "@" character.
+     */
+    private replaceEscapedAtTokens(content: string): string {
+        return content.replace(/\\@/g, this.atTokenPlaceholder);
+    }
+
+    /**
+     * Restores "@" tokens which were replaced by the replaceEscapedAtTokens() method.
+     */
+    private restoreAtTokens(content: string): string {
+        return content.replace(new RegExp(this.atTokenPlaceholder, 'g'), '@');
+    }
 }

@@ -53,15 +53,15 @@ export interface AdminUiOptions {
  *
  * ## Installation
  *
- * `yarn add @vendure/admin-ui-plugin`
+ * `yarn add \@vendure/admin-ui-plugin`
  *
  * or
  *
- * `npm install @vendure/admin-ui-plugin`
+ * `npm install \@vendure/admin-ui-plugin`
  *
  * @example
  * ```ts
- * import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+ * import { AdminUiPlugin } from '\@vendure/admin-ui-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
