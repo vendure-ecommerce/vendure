@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="!saveButtonEnabled()"
         >
@@ -31,19 +31,18 @@
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
-        <div class="toggle-switch">
-            <input type="checkbox" id="pricesIncludeTax" formControlName="pricesIncludeTax" />
-            <label for="pricesIncludeTax"></label>
-        </div>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle id="pricesIncludeTax" formControlName="pricesIncludeTax" />
+        </clr-toggle-wrapper>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.default-tax-zone' | translate" for="defaultTaxZoneId">
         <select clrSelect name="defaultTaxZoneId" formControlName="defaultTaxZoneId">
-            <option *ngFor="let zone of (zones$ | async)" [value]="zone.id">{{ zone.name }}</option>
+            <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.default-shipping-zone' | translate" for="defaultShippingZoneId">
         <select clrSelect name="defaultShippingZoneId" formControlName="defaultShippingZoneId">
-            <option *ngFor="let zone of (zones$ | async)" [value]="zone.id">{{ zone.name }}</option>
+            <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
 </form>

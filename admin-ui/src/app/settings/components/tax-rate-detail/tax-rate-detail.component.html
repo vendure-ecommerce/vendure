@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="!saveButtonEnabled()"
         >
@@ -23,10 +23,9 @@
         <input id="name" type="text" formControlName="name" />
     </vdr-form-field>
     <vdr-form-field [label]="'common.enabled' | translate" for="enabled">
-        <div class="toggle-switch">
-            <input type="checkbox" id="enabled" formControlName="enabled" />
-            <label for="enabled"></label>
-        </div>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle id="enabled" formControlName="enabled" />
+        </clr-toggle-wrapper>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.rate' | translate" for="value">
         <vdr-affixed-input suffix="%">
@@ -35,14 +34,14 @@
     </vdr-form-field>
     <vdr-form-field [label]="'settings.tax-category' | translate" for="taxCategoryId">
         <select clrSelect name="taxCategoryId" formControlName="taxCategoryId">
-            <option *ngFor="let taxCategory of (taxCategories$ | async)" [value]="taxCategory.id">
+            <option *ngFor="let taxCategory of taxCategories$ | async" [value]="taxCategory.id">
                 {{ taxCategory.name }}
             </option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.zone' | translate" for="zoneId">
         <select clrSelect name="zoneId" formControlName="zoneId">
-            <option *ngFor="let zone of (zones$ | async)" [value]="zone.id">{{ zone.name }}</option>
+            <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
 </form>

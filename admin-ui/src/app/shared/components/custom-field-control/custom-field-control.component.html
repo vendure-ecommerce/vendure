@@ -11,10 +11,14 @@
         [id]="customField.name"
         [formControl]="formGroup.get(customField.name)"
     />
-    <div *ngIf="customField.type === 'boolean'" class="toggle-switch">
-        <input type="checkbox" [id]="customField.name" [formControl]="formGroup.get(customField.name)" />
-        <label [for]="customField.name"></label>
-    </div>
+    <clr-toggle-wrapper *ngIf="customField.type === 'boolean'">
+        <input
+            type="checkbox"
+            clrToggle
+            [id]="customField.name"
+            [formControl]="formGroup.get(customField.name)"
+        />
+    </clr-toggle-wrapper>
     <input
         *ngIf="customField.type === 'datetime'"
         type="date"

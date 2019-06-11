@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             [disabled]="detailForm.pristine || detailForm.invalid"
         >
             {{ 'common.create' | translate }}
@@ -26,10 +26,9 @@
         <input id="code" type="text" formControlName="code" />
     </vdr-form-field>
     <vdr-form-field [label]="'common.enabled' | translate" for="description">
-        <div class="toggle-switch">
-            <input type="checkbox" id="enabled" formControlName="enabled" />
-            <label for="enabled"></label>
-        </div>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle id="enabled" formControlName="enabled" />
+        </clr-toggle-wrapper>
     </vdr-form-field>
 
     <div class="clr-row" formGroupName="configArgs" *ngIf="(entity$ | async).configArgs?.length">

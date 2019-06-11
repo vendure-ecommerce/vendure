@@ -18,10 +18,16 @@
                 [(ngModel)]="password"
                 [placeholder]="'common.password' | translate"
             />
-            <div class="checkbox">
-                <input type="checkbox" id="rememberme" name="rememberme" [(ngModel)]="rememberMe" />
-                <label for="rememberme">{{ 'common.remember-me' | translate }}</label>
-            </div>
+            <clr-checkbox-wrapper>
+                <input
+                    type="checkbox"
+                    clrCheckbox
+                    id="rememberme"
+                    name="rememberme"
+                    [(ngModel)]="rememberMe"
+                />
+                <label>{{ 'common.remember-me' | translate }}</label>
+            </clr-checkbox-wrapper>
             <button
                 type="submit"
                 class="btn btn-primary"
