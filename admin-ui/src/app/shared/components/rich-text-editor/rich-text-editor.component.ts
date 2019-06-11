@@ -86,7 +86,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     }
 
     writeValue(value: any) {
-        if (this.trix.innerHTML !== value) {
+        if (this.trix.innerHTML !== value || value === '') {
             if (!this.initialized) {
                 setTimeout(() => {
                     this.trix.editor.loadHTML(value);

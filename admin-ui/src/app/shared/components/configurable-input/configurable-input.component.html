@@ -5,8 +5,10 @@
             <div *ngFor="let arg of operation.args" class="arg-row">
                 <label>{{ arg.name | sentenceCase }}</label>
                 <div *ngIf="arg.type === ConfigArgType.BOOLEAN" class="checkbox">
-                    <input type="checkbox" [formControlName]="arg.name" [id]="arg.name" />
-                    <label [for]="arg.name"></label>
+                    <clr-checkbox-wrapper>
+                        <input type="checkbox" clrCheckbox [formControlName]="arg.name" [id]="arg.name" />
+                        <label>{{ arg.name }}</label>
+                    </clr-checkbox-wrapper>
                 </div>
                 <input
                     *ngIf="arg.type === ConfigArgType.INT"

@@ -108,7 +108,11 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         this.form = new FormGroup({});
         if (this.operation.args) {
             for (const arg of this.operation.args) {
-                this.form.addControl(arg.name, new FormControl(arg.value, Validators.required));
+                let value: any = arg.value;
+                if (arg.type === ConfigArgType.BOOLEAN) {
+                    value = arg.value === 'true';
+                }
+                this.form.addControl(arg.name, new FormControl(value, Validators.required));
             }
         }
 
