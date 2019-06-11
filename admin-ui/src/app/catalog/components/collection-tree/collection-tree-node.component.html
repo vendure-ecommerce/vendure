@@ -24,7 +24,11 @@
             </div>
             <div class="flex-spacer"></div>
             <vdr-chip *ngIf="collection.isPrivate">{{ 'catalog.private' | translate }}</vdr-chip>
-            <a class="btn btn-link btn-sm" [routerLink]="['./', { contents: collection.id }]">
+            <a
+                class="btn btn-link btn-sm"
+                [routerLink]="['./', { contents: collection.id }]"
+                queryParamsHandling="preserve"
+            >
                 <clr-icon shape="view-list"></clr-icon>
                 {{ 'catalog.view-contents' | translate }}
             </a>

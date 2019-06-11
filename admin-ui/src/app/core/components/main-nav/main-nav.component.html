@@ -17,7 +17,12 @@
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link" [routerLink]="['/catalog', 'collections']" routerLinkActive="active">
+                    <a
+                        class="nav-link"
+                        [routerLink]="['/catalog', 'collections']"
+                        [queryParams]="{ perPage: 25 }"
+                        [class.active]="isLinkActive('/catalog/collections')"
+                    >
                         <clr-icon shape="folder-open" size="20"></clr-icon>
                         {{ 'nav.collections' | translate }}
                     </a>
@@ -27,7 +32,7 @@
                         class="nav-link"
                         [routerLink]="['/catalog', 'assets']"
                         [queryParams]="{ perPage: 25 }"
-                        routerLinkActive="active"
+                        [class.active]="isLinkActive('/catalog/assets')"
                     >
                         <clr-icon shape="image-gallery" size="20"></clr-icon>
                         {{ 'nav.assets' | translate }}

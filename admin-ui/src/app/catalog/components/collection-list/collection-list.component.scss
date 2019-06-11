@@ -12,6 +12,8 @@
 
     vdr-collection-tree {
         flex: 1;
+        height: 100%;
+        overflow: auto;
     }
 
     .collection-contents {
@@ -37,4 +39,11 @@
             cursor: pointer;
         }
     }
+}
+
+.paging-controls {
+    padding-top: 6px;
+    border-top: 1px solid $color-grey-200;
+    display: flex;
+    justify-content: space-between;
 }

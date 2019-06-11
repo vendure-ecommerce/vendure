@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
@@ -21,6 +22,7 @@ export class CollectionListComponent
     implements OnInit {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
+    paginationConfig$: Observable<PaginationInstance>;
 
     constructor(
         private dataService: DataService,
@@ -30,13 +32,17 @@ export class CollectionListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.collection.getCollections(99999, 0),
+            (...args: any[]) => this.dataService.collection.getCollections(...args),
             data => data.collections,
         );
     }
 
     ngOnInit() {
         super.ngOnInit();
+
+        this.paginationConfig$ = combineLatest(this.itemsPerPage$, this.currentPage$, this.totalItems$).pipe(
+            map(([itemsPerPage, currentPage, totalItems]) => ({ itemsPerPage, currentPage, totalItems })),
+        );
 
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
@@ -69,6 +75,6 @@ export class CollectionListComponent
     closeContents() {
         const params = { ...this.route.snapshot.params };
         delete params.contents;
-        this.router.navigate(['./', params], { relativeTo: this.route });
+        this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
 }

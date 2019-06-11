@@ -8,7 +8,7 @@
 </vdr-action-bar>
 <div class="collection-wrapper">
     <vdr-collection-tree
-        [collections]="items$ | async"
+        [collections]="items$ | async | paginate: (paginationConfig$ | async) || {}"
         [activeCollectionId]="activeCollectionId$ | async"
         (rearrange)="onRearrange($event)"
     ></vdr-collection-tree>
@@ -27,4 +27,17 @@
             </ng-template>
         </vdr-collection-contents>
     </div>
+</div>
+<div class="paging-controls">
+    <vdr-items-per-page-controls
+        [itemsPerPage]="itemsPerPage$ | async"
+        (itemsPerPageChange)="setItemsPerPage($event)"
+    ></vdr-items-per-page-controls>
+    <vdr-pagination-controls
+        *ngIf="totalItems$ | async"
+        [currentPage]="currentPage$ | async"
+        [itemsPerPage]="itemsPerPage$ | async"
+        [totalItems]="totalItems$ | async"
+        (pageChange)="setPageNumber($event)"
+    ></vdr-pagination-controls>
 </div>
