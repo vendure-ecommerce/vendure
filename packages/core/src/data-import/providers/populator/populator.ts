@@ -117,6 +117,11 @@ export class Populator {
                                 type: ConfigArgType.FACET_VALUE_IDS,
                                 value: JSON.stringify(facetValueIds),
                             },
+                            {
+                                name: 'containsAny',
+                                value: `false`,
+                                type: ConfigArgType.BOOLEAN,
+                            },
                         ],
                     },
                 ],

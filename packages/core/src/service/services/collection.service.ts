@@ -386,17 +386,20 @@ export class CollectionService implements OnModuleInit {
 
         // Apply any facetValue-based filters
         if (facetFilters.length) {
+            const [idsArg, containsAnyArg] = facetFilters[0].args;
             const mergedArgs = facetFilters
                 .map(f => f.args[0].value)
                 .filter(notNullOrUndefined)
                 .map(value => JSON.parse(value))
                 .reduce((all, ids) => [...all, ...ids]);
+
             qb = facetValueCollectionFilter.apply(qb, [
                 {
-                    name: facetFilters[0].args[0].name,
-                    type: facetFilters[0].args[0].type,
+                    name: idsArg.name,
+                    type: idsArg.type,
                     value: JSON.stringify(Array.from(new Set(mergedArgs))),
                 },
+                containsAnyArg,
             ]);
         }
 

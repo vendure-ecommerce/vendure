@@ -9,7 +9,7 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS | ConfigArgType.STRING | ConfigArgType.STRING_OPERATOR;
+export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS | ConfigArgType.STRING | ConfigArgType.STRING_OPERATOR | ConfigArgType.BOOLEAN;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (

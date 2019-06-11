@@ -347,6 +347,11 @@ describe('Default search plugin', () => {
                                         value: `["T_4"]`,
                                         type: ConfigArgType.FACET_VALUE_IDS,
                                     },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                        type: ConfigArgType.BOOLEAN,
+                                    },
                                 ],
                             },
                         ],
@@ -395,6 +400,11 @@ describe('Default search plugin', () => {
                                     name: 'facetValueIds',
                                     value: `["T_3"]`,
                                     type: ConfigArgType.FACET_VALUE_IDS,
+                                },
+                                {
+                                    name: 'containsAny',
+                                    value: `false`,
+                                    type: ConfigArgType.BOOLEAN,
                                 },
                             ],
                         },

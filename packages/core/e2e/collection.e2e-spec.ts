@@ -4,10 +4,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { StringOperator } from '../src/common/configurable-operation';
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '../src/config/collection/default-collection-filters';
+import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
@@ -107,6 +104,11 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('electronics')}"]`,
                                         type: ConfigArgType.FACET_VALUE_IDS,
                                     },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                        type: ConfigArgType.BOOLEAN,
+                                    },
                                 ],
                             },
                         ],
@@ -138,6 +140,11 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('computers')}"]`,
                                         type: ConfigArgType.FACET_VALUE_IDS,
                                     },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                        type: ConfigArgType.BOOLEAN,
+                                    },
                                 ],
                             },
                         ],
@@ -163,6 +170,11 @@ describe('Collection resolver', () => {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('pear')}"]`,
                                         type: ConfigArgType.FACET_VALUE_IDS,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                        type: ConfigArgType.BOOLEAN,
                                     },
                                 ],
                             },
@@ -246,7 +258,7 @@ describe('Collection resolver', () => {
         const { updateCollection } = await client.query<
             UpdateCollection.Mutation,
             UpdateCollection.Variables
-        >(UPDATE_COLLECTION, {
+            >(UPDATE_COLLECTION, {
             input: {
                 id: pearCollection.id,
                 assetIds: [assets[1].id],
@@ -384,7 +396,7 @@ describe('Collection resolver', () => {
             const result = await client.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
-            >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
                     translations: [{ languageCode: LanguageCode.en, name: 'Empty', description: '' }],
                     filters: [],
@@ -398,7 +410,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -430,7 +442,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -454,14 +466,14 @@ describe('Collection resolver', () => {
                 ]);
             });
 
-            it('photo and pear', async () => {
+            it('photo AND pear', async () => {
                 const result = await client.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Photo Pear', description: '' },
+                            { languageCode: LanguageCode.en, name: 'Photo AND Pear', description: '' },
                         ],
                         filters: [
                             {
@@ -474,6 +486,11 @@ describe('Collection resolver', () => {
                                         )}"]`,
                                         type: ConfigArgType.FACET_VALUE_IDS,
                                     },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                        type: ConfigArgType.BOOLEAN,
+                                    },
                                 ],
                             },
                         ],
@@ -481,6 +498,48 @@ describe('Collection resolver', () => {
                 });
                 expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
                     'Instant Camera',
+                ]);
+            });
+
+            it('photo OR pear', async () => {
+                const result = await client.query<
+                    CreateCollectionSelectVariants.Mutation,
+                    CreateCollectionSelectVariants.Variables
+                    >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    input: {
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Photo OR Pear', description: '' },
+                        ],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('pear')}", "${getFacetValueId(
+                                            'photo',
+                                        )}"]`,
+                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `true`,
+                                        type: ConfigArgType.BOOLEAN,
+                                    },
+                                ],
+                            },
+                        ],
+                    } as CreateCollectionInput,
+                });
+                expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                    'Instant Camera',
+                    'Camera Lens',
+                    'Tripod',
+                    'SLR Camera',
                 ]);
             });
         });
@@ -493,7 +552,7 @@ describe('Collection resolver', () => {
                 const { createCollection } = await client.query<
                     CreateCollection.Mutation,
                     CreateCollection.Variables
-                >(CREATE_COLLECTION, {
+                    >(CREATE_COLLECTION, {
                     input: {
                         translations: [
                             { languageCode: LanguageCode.en, name: `${operator} ${term}`, description: '' },
@@ -526,7 +585,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -542,7 +601,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
@@ -554,7 +613,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -569,7 +628,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -630,7 +689,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -658,7 +717,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -687,7 +746,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -707,13 +766,14 @@ describe('Collection resolver', () => {
             const result = await client.query<
                 GetCollectionsForProducts.Query,
                 GetCollectionsForProducts.Variables
-            >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+                >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_7', name: 'Photo Pear' },
-                { id: 'T_8', name: 'contains camera' },
-                { id: 'T_10', name: 'endsWith camera' },
+                { id: 'T_7', name: 'Photo AND Pear' },
+                { id: 'T_8', name: 'Photo OR Pear' },
+                { id: 'T_9', name: 'contains camera' },
+                { id: 'T_11', name: 'endsWith camera' },
             ]);
         });
     });
@@ -725,7 +785,7 @@ describe('Collection resolver', () => {
         const { collection } = await client.query<
             GetCollectionProducts.Query,
             GetCollectionProducts.Variables
-        >(GET_COLLECTION_PRODUCT_VARIANTS, {
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
             id: pearCollection.id,
         });
         expect(collection!.productVariants.items.map(i => i.name)).toEqual([

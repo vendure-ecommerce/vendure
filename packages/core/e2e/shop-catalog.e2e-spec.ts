@@ -251,6 +251,11 @@ describe('Shop catalog', () => {
                                     value: `["${category.values[3].id}"]`,
                                     type: ConfigArgType.FACET_VALUE_IDS,
                                 },
+                                {
+                                    name: 'containsAny',
+                                    value: `false`,
+                                    type: ConfigArgType.BOOLEAN,
+                                },
                             ],
                         },
                     ],

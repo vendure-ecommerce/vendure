@@ -41,6 +41,11 @@ Object {
           "type": "FACET_VALUE_IDS",
           "value": "[\\"T_1\\"]",
         },
+        Object {
+          "name": "containsAny",
+          "type": "BOOLEAN",
+          "value": "false",
+        },
       ],
       "code": "facet-value-filter",
       "description": "Filter by FacetValues",
@@ -96,6 +101,11 @@ Object {
           "name": "facetValueIds",
           "type": "FACET_VALUE_IDS",
           "value": "[\\"T_3\\"]",
+        },
+        Object {
+          "name": "containsAny",
+          "type": "BOOLEAN",
+          "value": "false",
         },
       ],
       "code": "facet-value-filter",

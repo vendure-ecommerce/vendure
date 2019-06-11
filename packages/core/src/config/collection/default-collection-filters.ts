@@ -9,6 +9,7 @@ import { CollectionFilter } from './collection-filter';
 export const facetValueCollectionFilter = new CollectionFilter({
     args: {
         facetValueIds: ConfigArgType.FACET_VALUE_IDS,
+        containsAny: ConfigArgType.BOOLEAN,
     },
     code: 'facet-value-filter',
     description: 'Filter by FacetValues',
@@ -26,7 +27,7 @@ export const facetValueCollectionFilter = new CollectionFilter({
                     }),
                 )
                 .groupBy('productVariant.id')
-                .having(`COUNT(1) >= :count`, {count: args.facetValueIds.length});
+                .having(`COUNT(1) >= :count`, { count: args.containsAny ? 1 : args.facetValueIds.length });
         } else {
             // If no facetValueIds are specified, no ProductVariants will be matched.
             qb.andWhere('1 = 0');

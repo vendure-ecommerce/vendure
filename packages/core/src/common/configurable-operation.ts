@@ -62,7 +62,7 @@ export function configurableDefToOperation(def: ConfigurableOperationDef): Confi
 export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
     const output: ConfigArgValues<T> = {} as any;
     for (const arg of args) {
-        if (arg.value != null) {
+        if (arg && arg.value != null) {
             output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(arg);
         }
     }
@@ -81,7 +81,7 @@ function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
         case ConfigArgType.DATETIME:
             return Date.parse(arg.value || '') as any;
         case ConfigArgType.BOOLEAN:
-            return !!arg.value as any;
+            return !!(arg.value && (arg.value.toLowerCase() === 'true' || arg.value === '1')) as any;
         case ConfigArgType.FACET_VALUE_IDS:
             try {
                 return JSON.parse(arg.value as any);
