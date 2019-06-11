@@ -63,12 +63,20 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
 
     pageChange(page: number) {
         this.paginationConfig.currentPage = page;
-        this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
+        this.fetchPage(
+            this.paginationConfig.currentPage,
+            this.paginationConfig.itemsPerPage,
+            this.searchTerm.value,
+        );
     }
 
     itemsPerPageChange(itemsPerPage: number) {
         this.paginationConfig.itemsPerPage = itemsPerPage;
-        this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
+        this.fetchPage(
+            this.paginationConfig.currentPage,
+            this.paginationConfig.itemsPerPage,
+            this.searchTerm.value,
+        );
     }
 
     cancel() {
