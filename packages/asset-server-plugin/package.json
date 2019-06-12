@@ -20,11 +20,11 @@
     "@vendure/common": "^0.1.2-beta.4",
     "@vendure/core": "^0.1.2-beta.4",
     "express": "^4.16.4",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "typescript": "^3.3.4000"
   },
   "dependencies": {
     "fs-extra": "^8.0.1",
-    "sharp": "^0.22.1",
-    "typescript": "^3.3.4000"
+    "sharp": "^0.22.1"
   }
 }
