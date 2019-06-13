@@ -7,7 +7,6 @@
 ../.idea/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
-docker-compose.yml
 .env
 lerna-debug.log
 dist

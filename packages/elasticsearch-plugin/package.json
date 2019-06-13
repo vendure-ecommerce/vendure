@@ -1,0 +1,26 @@
+{
+  "name": "@vendure/elasticsearch-plugin",
+  "version": "0.1.2-beta.4",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "watch": "tsc -p ./tsconfig.build.json --watch",
+    "build": "rimraf lib && tsc -p ./tsconfig.build.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.1.0"
+  },
+  "devDependencies": {
+    "@vendure/common": "^0.1.2-beta.4",
+    "@vendure/core": "^0.1.2-beta.4",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.4.1"
+  }
+}
