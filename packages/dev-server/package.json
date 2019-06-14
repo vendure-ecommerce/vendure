@@ -16,6 +16,7 @@
     "@vendure/asset-server-plugin": "^0.1.2-beta.4",
     "@vendure/common": "^0.1.2-beta.4",
     "@vendure/core": "^0.1.2-beta.4",
+    "@vendure/elasticsearch-plugin": "^0.1.2-beta.4",
     "@vendure/email-plugin": "^0.1.2-beta.4",
     "typescript": "^3.3.4000"
   },
