@@ -1,0 +1,26 @@
+version: '2'
+services:
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - 'mariadb_data:/bitnami'
+    ports:
+      - '3306:3306'
+  phpmyadmin:
+    image: 'bitnami/phpmyadmin:latest'
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - mariadb
+    volumes:
+      - 'phpmyadmin_data:/bitnami'
+volumes:
+  mariadb_data:
+    driver: local
+  phpmyadmin_data:
+    driver: local
