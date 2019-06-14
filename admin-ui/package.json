@@ -38,7 +38,7 @@
     "graphql": "^14.3.1",
     "graphql-tag": "^2.10.1",
     "messageformat": "2.2.0",
-    "ngx-pagination": "^3.3.0",
+    "ngx-pagination": "^4.0.0",
     "ngx-translate-messageformat-compiler": "^4.4.0",
     "rxjs": "^6.5.2",
     "trix": "^1.1.1",

@@ -4592,10 +4592,10 @@ neo-async@^2.6.0:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.0.tgz#b9d15e4d71c6762908654b5183ed38b753340835"
   integrity sha512-MFh0d/Wa7vkKO3Y3LlacqAEeHK0mckVqzDieUKTT+KGxi+zIpeVsFxymkIiRpbpDziHc290Xr9A1O4Om7otoRA==
 
-ngx-pagination@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/ngx-pagination/-/ngx-pagination-3.3.0.tgz#2b2d00abd20c49a6ab289b2c73f3c2775ad81a2a"
-  integrity sha512-fHL9UWQbpLeM2HG0WTrGaFMXbsYbpfOXff2w3vD7wfHhjsP3+440YN2c0xw6sMszLc7RrImgrhgWCTboamNXsA==
+ngx-pagination@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/ngx-pagination/-/ngx-pagination-4.0.0.tgz#c1ca766e0277d20c5bb3871ba7007dbcbafc56d2"
+  integrity sha512-+JKUykZicQ2ZEyWZ0Y1d2ffocUWZqooeWrSbZ4IGlPreAazlmhG4Ms6FY0KjcnslpvbQuA/9ARY5sF14q04/AA==
 
 ngx-translate-messageformat-compiler@^4.4.0:
   version "4.4.0"
