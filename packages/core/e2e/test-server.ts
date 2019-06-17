@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Omit } from '@vendure/common/lib/omit';
 import fs from 'fs';
@@ -9,6 +9,7 @@ import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOpti
 import { populateForTesting, PopulateOptions } from '../mock-data/populate-for-testing';
 import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
+import { Logger } from '../src/config/logger/vendure-logger';
 import { VendureConfig } from '../src/config/vendure-config';
 
 import { testConfig } from './config/test-config';
@@ -20,6 +21,7 @@ import { setTestEnvironment } from './utils/test-environment';
  */
 export class TestServer {
     app: INestApplication;
+    worker?: INestMicroservice;
 
     /**
      * Bootstraps an instance of Vendure server and populates the database according to the options
@@ -48,7 +50,16 @@ export class TestServer {
         if (options.logging) {
             console.log(`Loading test data from "${dbFilePath}"`);
         }
-        this.app = await this.bootstrapForTesting(testingConfig);
+        const [app, worker] = await this.bootstrapForTesting(testingConfig);
+        if (app) {
+            this.app = app;
+        } else {
+            console.error(`Could not bootstrap app`);
+            process.exit(1);
+        }
+        if (worker) {
+            this.worker = worker;
+        }
     }
 
     /**
@@ -56,6 +67,9 @@ export class TestServer {
      */
     async destroy() {
         await this.app.close();
+        if (this.worker) {
+            await this.worker.close();
+        }
     }
 
     private getDbFilePath() {
@@ -76,7 +90,7 @@ export class TestServer {
     ): Promise<void> {
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
 
-        const app = await populateForTesting(testingConfig, this.bootstrapForTesting, {
+        const [app, worker] = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
             ...{
                 ...options,
@@ -84,6 +98,9 @@ export class TestServer {
             },
         });
         await app.close();
+        if (worker) {
+            await worker.close();
+        }
 
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
     }
@@ -91,12 +108,27 @@ export class TestServer {
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<[INestApplication, INestMicroservice | undefined]> {
         const config = await preBootstrapConfig(userConfig);
         const appModule = await import('../src/app.module');
-        const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
-        await runPluginOnBootstrapMethods(config, app);
-        await app.listen(config.port);
-        return app;
+        try {
+            const app = await NestFactory.create(appModule.AppModule, {cors: config.cors, logger: false});
+            let worker: INestMicroservice | undefined;
+            await runPluginOnBootstrapMethods(config, app);
+            await app.listen(config.port);
+            if (config.workerOptions.runInMainProcess) {
+                const workerModule = await import('../src/worker/worker.module');
+                worker = await NestFactory.createMicroservice(workerModule.WorkerModule, {
+                    transport: config.workerOptions.transport,
+                    logger: new Logger(),
+                    options: config.workerOptions.options,
+                });
+                await worker.listenAsync();
+            }
+            return [app, worker];
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
     }
 }

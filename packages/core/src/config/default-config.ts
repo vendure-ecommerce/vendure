@@ -83,7 +83,9 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     workerOptions: {
         runInMainProcess: true,
         transport: Transport.TCP,
-        options: {},
+        options: {
+            port: 3001,
+        },
     },
     customFields: {
         Address: [],

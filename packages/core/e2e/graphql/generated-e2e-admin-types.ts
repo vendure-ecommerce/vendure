@@ -1,5 +1,4 @@
 // tslint:disable
-
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -20,6 +19,7 @@ export type Scalars = {
 };
 
 export type Address = Node & {
+    __typename?: 'Address';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -38,6 +38,7 @@ export type Address = Node & {
 };
 
 export type Adjustment = {
+    __typename?: 'Adjustment';
     adjustmentSource: Scalars['String'];
     type: AdjustmentType;
     description: Scalars['String'];
@@ -45,6 +46,7 @@ export type Adjustment = {
 };
 
 export type AdjustmentOperations = {
+    __typename?: 'AdjustmentOperations';
     conditions: Array<ConfigurableOperation>;
     actions: Array<ConfigurableOperation>;
 };
@@ -60,6 +62,7 @@ export enum AdjustmentType {
 }
 
 export type Administrator = Node & {
+    __typename?: 'Administrator';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -78,6 +81,7 @@ export type AdministratorFilterParameter = {
 };
 
 export type AdministratorList = PaginatedList & {
+    __typename?: 'AdministratorList';
     items: Array<Administrator>;
     totalItems: Scalars['Int'];
 };
@@ -99,6 +103,7 @@ export type AdministratorSortParameter = {
 };
 
 export type Asset = Node & {
+    __typename?: 'Asset';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -122,6 +127,7 @@ export type AssetFilterParameter = {
 };
 
 export type AssetList = PaginatedList & {
+    __typename?: 'AssetList';
     items: Array<Asset>;
     totalItems: Scalars['Int'];
 };
@@ -156,6 +162,7 @@ export type BooleanOperators = {
 
 export type Cancellation = Node &
     StockMovement & {
+        __typename?: 'Cancellation';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -166,6 +173,7 @@ export type Cancellation = Node &
     };
 
 export type Channel = Node & {
+    __typename?: 'Channel';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -179,6 +187,7 @@ export type Channel = Node & {
 };
 
 export type Collection = Node & {
+    __typename?: 'Collection';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -203,6 +212,7 @@ export type CollectionProductVariantsArgs = {
 };
 
 export type CollectionBreadcrumb = {
+    __typename?: 'CollectionBreadcrumb';
     id: Scalars['ID'];
     name: Scalars['String'];
 };
@@ -218,6 +228,7 @@ export type CollectionFilterParameter = {
 };
 
 export type CollectionList = PaginatedList & {
+    __typename?: 'CollectionList';
     items: Array<Collection>;
     totalItems: Scalars['Int'];
 };
@@ -239,6 +250,7 @@ export type CollectionSortParameter = {
 };
 
 export type CollectionTranslation = {
+    __typename?: 'CollectionTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -256,6 +268,7 @@ export type CollectionTranslationInput = {
 };
 
 export type ConfigArg = {
+    __typename?: 'ConfigArg';
     name: Scalars['String'];
     type: ConfigArgType;
     value?: Maybe<Scalars['String']>;
@@ -286,6 +299,7 @@ export enum ConfigArgType {
 }
 
 export type ConfigurableOperation = {
+    __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
     description: Scalars['String'];
@@ -297,6 +311,7 @@ export type ConfigurableOperationInput = {
 };
 
 export type Country = Node & {
+    __typename?: 'Country';
     id: Scalars['ID'];
     languageCode: LanguageCode;
     code: Scalars['String'];
@@ -313,6 +328,7 @@ export type CountryFilterParameter = {
 };
 
 export type CountryList = PaginatedList & {
+    __typename?: 'CountryList';
     items: Array<Country>;
     totalItems: Scalars['Int'];
 };
@@ -331,6 +347,7 @@ export type CountrySortParameter = {
 };
 
 export type CountryTranslation = {
+    __typename?: 'CountryTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -823,12 +840,14 @@ export enum CurrencyCode {
 }
 
 export type CurrentUser = {
+    __typename?: 'CurrentUser';
     id: Scalars['ID'];
     identifier: Scalars['String'];
     channelTokens: Array<Scalars['String']>;
 };
 
 export type Customer = Node & {
+    __typename?: 'Customer';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -858,6 +877,7 @@ export type CustomerFilterParameter = {
 };
 
 export type CustomerGroup = Node & {
+    __typename?: 'CustomerGroup';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -865,6 +885,7 @@ export type CustomerGroup = Node & {
 };
 
 export type CustomerList = PaginatedList & {
+    __typename?: 'CustomerList';
     items: Array<Customer>;
     totalItems: Scalars['Int'];
 };
@@ -900,6 +921,7 @@ export type DateRange = {
 };
 
 export type DeletionResponse = {
+    __typename?: 'DeletionResponse';
     result: DeletionResult;
     message?: Maybe<Scalars['String']>;
 };
@@ -912,6 +934,7 @@ export enum DeletionResult {
 }
 
 export type Facet = Node & {
+    __typename?: 'Facet';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -934,6 +957,7 @@ export type FacetFilterParameter = {
 };
 
 export type FacetList = PaginatedList & {
+    __typename?: 'FacetList';
     items: Array<Facet>;
     totalItems: Scalars['Int'];
 };
@@ -954,6 +978,7 @@ export type FacetSortParameter = {
 };
 
 export type FacetTranslation = {
+    __typename?: 'FacetTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -969,6 +994,7 @@ export type FacetTranslationInput = {
 };
 
 export type FacetValue = Node & {
+    __typename?: 'FacetValue';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -984,11 +1010,13 @@ export type FacetValue = Node & {
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
+    __typename?: 'FacetValueResult';
     facetValue: FacetValue;
     count: Scalars['Int'];
 };
 
 export type FacetValueTranslation = {
+    __typename?: 'FacetValueTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1004,6 +1032,7 @@ export type FacetValueTranslationInput = {
 };
 
 export type GlobalSettings = {
+    __typename?: 'GlobalSettings';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1014,12 +1043,14 @@ export type GlobalSettings = {
 };
 
 export type ImportInfo = {
+    __typename?: 'ImportInfo';
     errors?: Maybe<Array<Scalars['String']>>;
     processed: Scalars['Int'];
     imported: Scalars['Int'];
 };
 
 export type JobInfo = {
+    __typename?: 'JobInfo';
     id: Scalars['String'];
     name: Scalars['String'];
     state: JobState;
@@ -1415,6 +1446,7 @@ export enum LanguageCode {
 }
 
 export type LoginResult = {
+    __typename?: 'LoginResult';
     user: CurrentUser;
 };
 
@@ -1425,6 +1457,7 @@ export type MoveCollectionInput = {
 };
 
 export type Mutation = {
+    __typename?: 'Mutation';
     /** Create a new Administrator */
     createAdministrator: Administrator;
     /** Update an existing Administrator */
@@ -1439,6 +1472,12 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
+    /** Create a new Collection */
+    createCollection: Collection;
+    /** Update an existing Collection */
+    updateCollection: Collection;
+    /** Move a Collection to a different parent or index */
+    moveCollection: Collection;
     /** Create a new Country */
     createCountry: Country;
     /** Update an existing Country */
@@ -1453,12 +1492,18 @@ export type Mutation = {
     addCustomersToGroup: CustomerGroup;
     /** Remove Customers from a CustomerGroup */
     removeCustomersFromGroup: CustomerGroup;
-    /** Create a new Collection */
-    createCollection: Collection;
-    /** Update an existing Collection */
-    updateCollection: Collection;
-    /** Move a Collection to a different parent or index */
-    moveCollection: Collection;
+    /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
+    createCustomer: Customer;
+    /** Update an existing Customer */
+    updateCustomer: Customer;
+    /** Delete a Customer */
+    deleteCustomer: DeletionResponse;
+    /** Create a new Address and associate it with the Customer specified by customerId */
+    createCustomerAddress: Address;
+    /** Update an existing Address */
+    updateCustomerAddress: Address;
+    /** Update an existing Address */
+    deleteCustomerAddress: Scalars['Boolean'];
     /** Create a new Facet */
     createFacet: Facet;
     /** Update an existing Facet */
@@ -1472,18 +1517,6 @@ export type Mutation = {
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
-    /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
-    createCustomer: Customer;
-    /** Update an existing Customer */
-    updateCustomer: Customer;
-    /** Delete a Customer */
-    deleteCustomer: DeletionResponse;
-    /** Create a new Address and associate it with the Customer specified by customerId */
-    createCustomerAddress: Address;
-    /** Update an existing Address */
-    updateCustomerAddress: Address;
-    /** Update an existing Address */
-    deleteCustomerAddress: Scalars['Boolean'];
     importProducts?: Maybe<ImportInfo>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -1568,6 +1601,18 @@ export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
 };
 
+export type MutationCreateCollectionArgs = {
+    input: CreateCollectionInput;
+};
+
+export type MutationUpdateCollectionArgs = {
+    input: UpdateCollectionInput;
+};
+
+export type MutationMoveCollectionArgs = {
+    input: MoveCollectionInput;
+};
+
 export type MutationCreateCountryArgs = {
     input: CreateCountryInput;
 };
@@ -1598,16 +1643,30 @@ export type MutationRemoveCustomersFromGroupArgs = {
     customerIds: Array<Scalars['ID']>;
 };
 
-export type MutationCreateCollectionArgs = {
-    input: CreateCollectionInput;
+export type MutationCreateCustomerArgs = {
+    input: CreateCustomerInput;
+    password?: Maybe<Scalars['String']>;
 };
 
-export type MutationUpdateCollectionArgs = {
-    input: UpdateCollectionInput;
+export type MutationUpdateCustomerArgs = {
+    input: UpdateCustomerInput;
 };
 
-export type MutationMoveCollectionArgs = {
-    input: MoveCollectionInput;
+export type MutationDeleteCustomerArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationCreateCustomerAddressArgs = {
+    customerId: Scalars['ID'];
+    input: CreateAddressInput;
+};
+
+export type MutationUpdateCustomerAddressArgs = {
+    input: UpdateAddressInput;
+};
+
+export type MutationDeleteCustomerAddressArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateFacetArgs = {
@@ -1638,32 +1697,6 @@ export type MutationDeleteFacetValuesArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
     input: UpdateGlobalSettingsInput;
-};
-
-export type MutationCreateCustomerArgs = {
-    input: CreateCustomerInput;
-    password?: Maybe<Scalars['String']>;
-};
-
-export type MutationUpdateCustomerArgs = {
-    input: UpdateCustomerInput;
-};
-
-export type MutationDeleteCustomerArgs = {
-    id: Scalars['ID'];
-};
-
-export type MutationCreateCustomerAddressArgs = {
-    customerId: Scalars['ID'];
-    input: CreateAddressInput;
-};
-
-export type MutationUpdateCustomerAddressArgs = {
-    input: UpdateAddressInput;
-};
-
-export type MutationDeleteCustomerAddressArgs = {
-    id: Scalars['ID'];
 };
 
 export type MutationImportProductsArgs = {
@@ -1782,6 +1815,7 @@ export type MutationRemoveMembersFromZoneArgs = {
 };
 
 export type Node = {
+    __typename?: 'Node';
     id: Scalars['ID'];
 };
 
@@ -1800,6 +1834,7 @@ export type NumberRange = {
 };
 
 export type Order = Node & {
+    __typename?: 'Order';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1823,6 +1858,7 @@ export type Order = Node & {
 };
 
 export type OrderAddress = {
+    __typename?: 'OrderAddress';
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
     streetLine1?: Maybe<Scalars['String']>;
@@ -1851,6 +1887,7 @@ export type OrderFilterParameter = {
 };
 
 export type OrderItem = Node & {
+    __typename?: 'OrderItem';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1862,6 +1899,7 @@ export type OrderItem = Node & {
 };
 
 export type OrderLine = Node & {
+    __typename?: 'OrderLine';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1878,6 +1916,7 @@ export type OrderLine = Node & {
 };
 
 export type OrderList = PaginatedList & {
+    __typename?: 'OrderList';
     items: Array<Order>;
     totalItems: Scalars['Int'];
 };
@@ -1904,11 +1943,13 @@ export type OrderSortParameter = {
 };
 
 export type PaginatedList = {
+    __typename?: 'PaginatedList';
     items: Array<Node>;
     totalItems: Scalars['Int'];
 };
 
 export type Payment = Node & {
+    __typename?: 'Payment';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1920,6 +1961,7 @@ export type Payment = Node & {
 };
 
 export type PaymentMethod = Node & {
+    __typename?: 'PaymentMethod';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1936,6 +1978,7 @@ export type PaymentMethodFilterParameter = {
 };
 
 export type PaymentMethodList = PaginatedList & {
+    __typename?: 'PaymentMethodList';
     items: Array<PaymentMethod>;
     totalItems: Scalars['Int'];
 };
@@ -1988,11 +2031,13 @@ export enum Permission {
 
 /** The price range where the result has more than one price */
 export type PriceRange = {
+    __typename?: 'PriceRange';
     min: Scalars['Int'];
     max: Scalars['Int'];
 };
 
 export type Product = Node & {
+    __typename?: 'Product';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2022,6 +2067,7 @@ export type ProductFilterParameter = {
 };
 
 export type ProductList = PaginatedList & {
+    __typename?: 'ProductList';
     items: Array<Product>;
     totalItems: Scalars['Int'];
 };
@@ -2034,6 +2080,7 @@ export type ProductListOptions = {
 };
 
 export type ProductOption = Node & {
+    __typename?: 'ProductOption';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2045,6 +2092,7 @@ export type ProductOption = Node & {
 };
 
 export type ProductOptionGroup = Node & {
+    __typename?: 'ProductOptionGroup';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2057,6 +2105,7 @@ export type ProductOptionGroup = Node & {
 };
 
 export type ProductOptionGroupTranslation = {
+    __typename?: 'ProductOptionGroupTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2072,6 +2121,7 @@ export type ProductOptionGroupTranslationInput = {
 };
 
 export type ProductOptionTranslation = {
+    __typename?: 'ProductOptionTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2096,6 +2146,7 @@ export type ProductSortParameter = {
 };
 
 export type ProductTranslation = {
+    __typename?: 'ProductTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2115,6 +2166,7 @@ export type ProductTranslationInput = {
 };
 
 export type ProductVariant = Node & {
+    __typename?: 'ProductVariant';
     id: Scalars['ID'];
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -2160,6 +2212,7 @@ export type ProductVariantFilterParameter = {
 };
 
 export type ProductVariantList = PaginatedList & {
+    __typename?: 'ProductVariantList';
     items: Array<ProductVariant>;
     totalItems: Scalars['Int'];
 };
@@ -2184,6 +2237,7 @@ export type ProductVariantSortParameter = {
 };
 
 export type ProductVariantTranslation = {
+    __typename?: 'ProductVariantTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2199,6 +2253,7 @@ export type ProductVariantTranslationInput = {
 };
 
 export type Promotion = Node & {
+    __typename?: 'Promotion';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2216,6 +2271,7 @@ export type PromotionFilterParameter = {
 };
 
 export type PromotionList = PaginatedList & {
+    __typename?: 'PromotionList';
     items: Array<Promotion>;
     totalItems: Scalars['Int'];
 };
@@ -2235,6 +2291,7 @@ export type PromotionSortParameter = {
 };
 
 export type Query = {
+    __typename?: 'Query';
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
     assets: AssetList;
@@ -2243,22 +2300,22 @@ export type Query = {
     channels: Array<Channel>;
     channel?: Maybe<Channel>;
     activeChannel: Channel;
+    collections: CollectionList;
+    collection?: Maybe<Collection>;
+    collectionFilters: Array<ConfigurableOperation>;
     countries: CountryList;
     country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
-    collections: CollectionList;
-    collection?: Maybe<Collection>;
-    collectionFilters: Array<ConfigurableOperation>;
+    customers: CustomerList;
+    customer?: Maybe<Customer>;
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
-    customers: CustomerList;
-    customer?: Maybe<Customer>;
-    order?: Maybe<Order>;
-    orders: OrderList;
     job?: Maybe<JobInfo>;
     jobs: Array<JobInfo>;
+    order?: Maybe<Order>;
+    orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
     productOptionGroups: Array<ProductOptionGroup>;
@@ -2282,7 +2339,6 @@ export type Query = {
     taxRate?: Maybe<TaxRate>;
     zones: Array<Zone>;
     zone?: Maybe<Zone>;
-    temp__?: Maybe<Scalars['Boolean']>;
 };
 
 export type QueryAdministratorsArgs = {
@@ -2305,6 +2361,16 @@ export type QueryChannelArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryCollectionsArgs = {
+    languageCode?: Maybe<LanguageCode>;
+    options?: Maybe<CollectionListOptions>;
+};
+
+export type QueryCollectionArgs = {
+    id: Scalars['ID'];
+    languageCode?: Maybe<LanguageCode>;
+};
+
 export type QueryCountriesArgs = {
     options?: Maybe<CountryListOptions>;
 };
@@ -2317,14 +2383,12 @@ export type QueryCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryCollectionsArgs = {
-    languageCode?: Maybe<LanguageCode>;
-    options?: Maybe<CollectionListOptions>;
+export type QueryCustomersArgs = {
+    options?: Maybe<CustomerListOptions>;
 };
 
-export type QueryCollectionArgs = {
+export type QueryCustomerArgs = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryFacetsArgs = {
@@ -2337,12 +2401,12 @@ export type QueryFacetArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
-export type QueryCustomersArgs = {
-    options?: Maybe<CustomerListOptions>;
+export type QueryJobArgs = {
+    jobId: Scalars['String'];
 };
 
-export type QueryCustomerArgs = {
-    id: Scalars['ID'];
+export type QueryJobsArgs = {
+    input?: Maybe<JobListInput>;
 };
 
 export type QueryOrderArgs = {
@@ -2351,14 +2415,6 @@ export type QueryOrderArgs = {
 
 export type QueryOrdersArgs = {
     options?: Maybe<OrderListOptions>;
-};
-
-export type QueryJobArgs = {
-    jobId: Scalars['String'];
-};
-
-export type QueryJobsArgs = {
-    input?: Maybe<JobListInput>;
 };
 
 export type QueryPaymentMethodsArgs = {
@@ -2436,6 +2492,7 @@ export type QueryZoneArgs = {
 
 export type Return = Node &
     StockMovement & {
+        __typename?: 'Return';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -2446,6 +2503,7 @@ export type Return = Node &
     };
 
 export type Role = Node & {
+    __typename?: 'Role';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2463,6 +2521,7 @@ export type RoleFilterParameter = {
 };
 
 export type RoleList = PaginatedList & {
+    __typename?: 'RoleList';
     items: Array<Role>;
     totalItems: Scalars['Int'];
 };
@@ -2484,6 +2543,7 @@ export type RoleSortParameter = {
 
 export type Sale = Node &
     StockMovement & {
+        __typename?: 'Sale';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -2504,18 +2564,21 @@ export type SearchInput = {
 };
 
 export type SearchReindexResponse = {
+    __typename?: 'SearchReindexResponse';
     success: Scalars['Boolean'];
     timeTaken: Scalars['Int'];
     indexedItemCount: Scalars['Int'];
 };
 
 export type SearchResponse = {
+    __typename?: 'SearchResponse';
     items: Array<SearchResult>;
     totalItems: Scalars['Int'];
     facetValues: Array<FacetValueResult>;
 };
 
 export type SearchResult = {
+    __typename?: 'SearchResult';
     sku: Scalars['String'];
     slug: Scalars['String'];
     productId: Scalars['ID'];
@@ -2546,10 +2609,12 @@ export type SearchResultSortParameter = {
 };
 
 export type ServerConfig = {
+    __typename?: 'ServerConfig';
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethod = Node & {
+    __typename?: 'ShippingMethod';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2567,6 +2632,7 @@ export type ShippingMethodFilterParameter = {
 };
 
 export type ShippingMethodList = PaginatedList & {
+    __typename?: 'ShippingMethodList';
     items: Array<ShippingMethod>;
     totalItems: Scalars['Int'];
 };
@@ -2579,6 +2645,7 @@ export type ShippingMethodListOptions = {
 };
 
 export type ShippingMethodQuote = {
+    __typename?: 'ShippingMethodQuote';
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
@@ -2595,6 +2662,7 @@ export type ShippingMethodSortParameter = {
 
 /** The price value where the result has a single price */
 export type SinglePrice = {
+    __typename?: 'SinglePrice';
     value: Scalars['Int'];
 };
 
@@ -2605,6 +2673,7 @@ export enum SortOrder {
 
 export type StockAdjustment = Node &
     StockMovement & {
+        __typename?: 'StockAdjustment';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -2614,6 +2683,7 @@ export type StockAdjustment = Node &
     };
 
 export type StockMovement = {
+    __typename?: 'StockMovement';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2625,6 +2695,7 @@ export type StockMovement = {
 export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
 
 export type StockMovementList = {
+    __typename?: 'StockMovementList';
     items: Array<StockMovementItem>;
     totalItems: Scalars['Int'];
 };
@@ -2648,6 +2719,7 @@ export type StringOperators = {
 };
 
 export type TaxCategory = Node & {
+    __typename?: 'TaxCategory';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2655,6 +2727,7 @@ export type TaxCategory = Node & {
 };
 
 export type TaxRate = Node & {
+    __typename?: 'TaxRate';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2675,6 +2748,7 @@ export type TaxRateFilterParameter = {
 };
 
 export type TaxRateList = PaginatedList & {
+    __typename?: 'TaxRateList';
     items: Array<TaxRate>;
     totalItems: Scalars['Int'];
 };
@@ -2867,6 +2941,7 @@ export type UpdateZoneInput = {
 };
 
 export type User = Node & {
+    __typename?: 'User';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2878,6 +2953,7 @@ export type User = Node & {
 };
 
 export type Zone = Node & {
+    __typename?: 'Zone';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3127,6 +3203,12 @@ export type DeleteCustomerMutationVariables = {
 
 export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
     deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type GetRunningJobsQueryVariables = {};
+
+export type GetRunningJobsQuery = { __typename?: 'Query' } & {
+    jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
 };
 
 export type SearchProductsAdminQueryVariables = {
@@ -4283,6 +4365,12 @@ export namespace DeleteCustomer {
     export type Variables = DeleteCustomerMutationVariables;
     export type Mutation = DeleteCustomerMutation;
     export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
+}
+
+export namespace GetRunningJobs {
+    export type Variables = GetRunningJobsQueryVariables;
+    export type Query = GetRunningJobsQuery;
+    export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
 }
 
 export namespace SearchProductsAdmin {

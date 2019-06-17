@@ -15,6 +15,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { AsyncQueue } from '../async-queue';
 import { loggerCtx, Message } from '../constants';
 import { SearchIndexItem } from '../search-index-item.entity';
@@ -45,9 +46,8 @@ export class IndexerController {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
-    ) {
-        console.log('IndexerController tolo bolo');
-    }
+        private taxRateService: TaxRateService,
+    ) {}
 
     @MessagePattern(Message.Reindex)
     reindex({ ctx: rawContext }: { ctx: any}): Observable<ReindexMessageResponse> {
@@ -59,6 +59,9 @@ export class IndexerController {
                 const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
                 Logger.verbose(`Reindexing ${count} variants`, loggerCtx);
                 const batches = Math.ceil(count / BATCH_SIZE);
+
+                // Ensure tax rates are up-to-date.
+                await this.taxRateService.updateActiveTaxRates();
 
                 await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
                 Logger.verbose('Deleted existing index items', loggerCtx);
@@ -165,6 +168,7 @@ export class IndexerController {
                 }
             }
             Logger.verbose(`Updating ${updatedVariants.length} variants`, loggerCtx);
+            updatedVariants = this.hydrateVariants(ctx, updatedVariants);
             if (updatedVariants.length) {
                 await this.saveVariants(ctx, updatedVariants);
             }
@@ -239,6 +243,6 @@ export class IndexerController {
             productVariantId: id,
             languageCode,
         })) as any[];
-        await this.connection.getRepository(SearchIndexItem).delete(compositeKeys);
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(compositeKeys));
     }
 }

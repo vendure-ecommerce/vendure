@@ -62,11 +62,11 @@ export class DefaultSearchPlugin implements VendurePlugin {
         const searchIndexService = inject(SearchIndexService);
         eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return searchIndexService.updateProductOrVariant(event.ctx, event.entity);
+                return searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
             }
         });
         eventBus.subscribe(CollectionModificationEvent, event => {
-            return searchIndexService.updateVariantsById(event.ctx, event.productVariantIds);
+            return searchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
         });
         eventBus.subscribe(TaxRateModificationEvent, event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;

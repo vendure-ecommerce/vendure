@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import fs from 'fs-extra';
 
@@ -23,9 +23,9 @@ export interface PopulateOptions {
  */
 export async function populateForTesting(
     config: VendureConfig,
-    bootstrapFn: VendureBootstrapFunction,
+    bootstrapFn: (config: VendureConfig) => Promise<[INestApplication, INestMicroservice | undefined]>,
     options: PopulateOptions,
-): Promise<INestApplication> {
+): Promise<[INestApplication, INestMicroservice | undefined]> {
     (config.dbConnectionOptions as any).logging = false;
     const logging = options.logging === undefined ? true : options.logging;
     const originalRequireVerification = config.authOptions.requireVerification;
@@ -33,7 +33,7 @@ export async function populateForTesting(
 
     setConfig(config);
     await clearAllTables(config.dbConnectionOptions, logging);
-    const app = await bootstrapFn(config);
+    const [app, worker] = await bootstrapFn(config);
 
     await populateInitialData(app, options.initialDataPath, logging);
     await populateProducts(app, options.productsCsvPath, logging);
@@ -41,7 +41,7 @@ export async function populateForTesting(
     await populateCustomers(options.customerCount, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
-    return app;
+    return [app, worker];
 }
 
 async function populateInitialData(app: INestApplication, initialDataPath: string, logging: boolean) {

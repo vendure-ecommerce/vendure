@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -21,7 +21,7 @@ import { ReindexMessageResponse } from './indexer.controller';
  * This service is responsible for messaging the {@link IndexerController} with search index updates.
  */
 @Injectable()
-export class SearchIndexService {
+export class SearchIndexService implements OnModuleDestroy {
 
     constructor(@InjectConnection() private connection: Connection,
                 @Inject(VENDURE_WORKER_CLIENT) private readonly client: ClientProxy,
@@ -75,19 +75,26 @@ export class SearchIndexService {
      * Updates the search index only for the affected entities.
      */
     updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
-        if (updatedEntity instanceof Product) {
-            return this.client.send(Message.UpdateProductOrVariant, { ctx, productId: updatedEntity.id })
-                .subscribe({ error: err => Logger.error(err) });
-        } else {
-            return this.client.send(Message.UpdateProductOrVariant, { ctx, variantId: updatedEntity.id })
-                .subscribe({ error: err => Logger.error(err) });
-        }
+        return this.jobService.createJob({
+            name: 'update-index',
+            work: async () => {
+                if (updatedEntity instanceof Product) {
+                    return this.client.send(Message.UpdateProductOrVariant, { ctx, productId: updatedEntity.id })
+                        .toPromise()
+                        .catch(err => Logger.error(err));
+                } else {
+                    return this.client.send(Message.UpdateProductOrVariant, { ctx, variantId: updatedEntity.id })
+                        .toPromise()
+                        .catch(err => Logger.error(err));
+                }
+            },
+        });
+
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
         return this.jobService.createJob({
             name: 'update-index',
-            singleInstance: true,
             work: async reporter => {
                 return new Promise((resolve, reject) => {
                     Logger.verbose(`sending reindex message`);
@@ -124,5 +131,9 @@ export class SearchIndexService {
                 });
             },
         });
+    }
+
+    onModuleDestroy(): any {
+        this.client.close();
     }
 }

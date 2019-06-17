@@ -11,8 +11,4 @@ import { ServiceModule } from '../service/service.module';
         PluginModule.forWorker(),
     ],
 })
-export class WorkerModule {
-    constructor() {
-        console.log('Worker module constructed!');
-    }
-}
+export class WorkerModule {}

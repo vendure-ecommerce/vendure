@@ -1,8 +1,8 @@
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../config/config.service';
 import { EventBusModule } from '../event-bus/event-bus.module';
 
 import { AssetUpdater } from './helpers/asset-updater/asset-updater';
@@ -73,6 +73,9 @@ const exportedProviders = [
     ZoneService,
 ];
 
+let defaultTypeOrmModule: DynamicModule;
+let workerTypeOrmModule: DynamicModule;
+
 /**
  * The ServiceModule is responsible for the service layer, i.e. accessing the database
  * and implementing the main business logic of the application.
@@ -128,32 +131,50 @@ export class ServiceModule implements OnModuleInit {
     }
 
     static forRoot(): DynamicModule {
+        if (!defaultTypeOrmModule) {
+            defaultTypeOrmModule = TypeOrmModule.forRootAsync({
+                imports: [ConfigModule],
+                useFactory: (configService: ConfigService) => {
+                    return configService.dbConnectionOptions;
+                },
+                inject: [ConfigService],
+            });
+        }
         return {
             module: ServiceModule,
             imports: [
-                TypeOrmModule.forRootAsync({
-                    useFactory: () => {
-                        console.log('typeorn forRootAsync');
-                        return getConfig().dbConnectionOptions;
-                    },
-                }),
+                defaultTypeOrmModule,
             ],
         };
     }
 
     static forWorker(): DynamicModule {
-        const { dbConnectionOptions, workerOptions } = getConfig();
-        const connectionOptions = { ...dbConnectionOptions, name: 'worker' };
+        if (!workerTypeOrmModule) {
+            workerTypeOrmModule = TypeOrmModule.forRootAsync({
+                imports: [ConfigModule],
+                useFactory: (configService: ConfigService) => {
+                    const { dbConnectionOptions, workerOptions } = configService;
+                    if (workerOptions.runInMainProcess) {
+                        // When running in the main process, we can re-use the existing
+                        // default connection.
+                        return {
+                            ...dbConnectionOptions,
+                            name: 'default',
+                            keepConnectionAlive: true,
+                        };
+                    } else {
+                        return {
+                            ...dbConnectionOptions,
+                            name: 'worker',
+                        };
+                    }
+                },
+                inject: [ConfigService],
+            });
+        }
         return {
             module: ServiceModule,
-            imports: [
-                TypeOrmModule.forRootAsync({
-                    useFactory: () => {
-                        console.log('typeorm forRootAsync Worker');
-                        return { ...connectionOptions, keepConnectionAlive: true };
-                    },
-                }),
-            ],
+            imports: [workerTypeOrmModule],
         };
     }
 }

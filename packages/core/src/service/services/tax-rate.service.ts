@@ -107,7 +107,7 @@ export class TaxRateService {
         return rate || this.defaultTaxRate;
     }
 
-    private async updateActiveTaxRates() {
+    async updateActiveTaxRates() {
         this.activeTaxRates = await this.connection.getRepository(TaxRate).find({
             relations: ['category', 'zone', 'customerGroup'],
             where: {

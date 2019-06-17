@@ -46,7 +46,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
     const config = await preBootstrapConfig(userConfig);
-    if ((config.logger as any).setDefaultContext) {
+    if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
         (config.logger as any).setDefaultContext('Vendure Worker');
     }
     Logger.useLogger(config.logger);
