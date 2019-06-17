@@ -19,7 +19,7 @@ import { IdInterceptor } from './middleware/id-interceptor';
  */
 @Module({
     imports: [
-        ServiceModule,
+        ServiceModule.forRoot(),
         DataImportModule,
         ApiSharedModule,
         AdminApiModule,

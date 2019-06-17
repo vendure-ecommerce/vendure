@@ -1,4 +1,5 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { CustomFields } from '@vendure/common/lib/shared-types';
 import { RequestHandler } from 'express';
@@ -315,6 +316,40 @@ export interface ImportExportOptions {
 
 /**
  * @description
+ * Options related to the Vendure Worker.
+ *
+ * @docsCategory worker
+ */
+export interface WorkerOptions {
+    /**
+     * @description
+     * If set to `true`, the Worker will run be bootstrapped as part of the main Vendure server (when invoking the
+     * `bootstrap()` function) and will run in the same process. This mode is intended only for development and
+     * testing purposes, not for production, since running the Worker in the main process negates the benefits
+     * of having long-running or expensive tasks run in the background.
+     *
+     * @default true
+     */
+    runInMainProcess?: boolean;
+    /**
+     * @description
+     * Sets the transport protocol used to communicate with the Worker. Options include TCP, Redis, gPRC and more. See the
+     * [NestJS microservices documentation](https://docs.nestjs.com/microservices/basics) for a full list.
+     *
+     * @default Transport.TCP
+     */
+    transport?: Transport;
+    /**
+     * @description
+     * Additional options related to the chosen transport method. See See the
+     * [NestJS microservices documentation](https://docs.nestjs.com/microservices/basics) for details on the options relating to each of the
+     * transport methods.
+     */
+    options?: ClientOptions['options'];
+}
+
+/**
+ * @description
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
@@ -464,4 +499,9 @@ export interface VendureConfig {
      * Configures how taxes are calculated on products.
      */
     taxOptions?: TaxOptions;
+    /**
+     * @description
+     * Configures the Vendure Worker, which is used for long-running background tasks.
+     */
+    workerOptions?: WorkerOptions;
 }

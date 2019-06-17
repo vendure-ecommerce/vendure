@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { getConfig } from '../config/config-helpers';
@@ -81,7 +81,10 @@ const exportedProviders = [
  * into a format suitable for the service layer logic.
  */
 @Module({
-    imports: [ConfigModule, EventBusModule, TypeOrmModule.forRoot(getConfig().dbConnectionOptions)],
+    imports: [
+        ConfigModule,
+        EventBusModule,
+    ],
     providers: [
         ...exportedProviders,
         PasswordCiper,
@@ -122,5 +125,35 @@ export class ServiceModule implements OnModuleInit {
         await this.taxRateService.initTaxRates();
         await this.shippingMethodService.initShippingMethods();
         await this.paymentMethodService.initPaymentMethods();
+    }
+
+    static forRoot(): DynamicModule {
+        return {
+            module: ServiceModule,
+            imports: [
+                TypeOrmModule.forRootAsync({
+                    useFactory: () => {
+                        console.log('typeorn forRootAsync');
+                        return getConfig().dbConnectionOptions;
+                    },
+                }),
+            ],
+        };
+    }
+
+    static forWorker(): DynamicModule {
+        const { dbConnectionOptions, workerOptions } = getConfig();
+        const connectionOptions = { ...dbConnectionOptions, name: 'worker' };
+        return {
+            module: ServiceModule,
+            imports: [
+                TypeOrmModule.forRootAsync({
+                    useFactory: () => {
+                        console.log('typeorm forRootAsync Worker');
+                        return { ...connectionOptions, keepConnectionAlive: true };
+                    },
+                }),
+            ],
+        };
     }
 }

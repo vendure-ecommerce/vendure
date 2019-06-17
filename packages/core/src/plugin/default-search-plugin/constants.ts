@@ -1,1 +1,6 @@
-export const SEARCH_PLUGIN_OPTIONS = Symbol('SEARCH_PLUGIN_OPTIONS');
+export const loggerCtx = 'DefaultSearchPlugin';
+export enum Message {
+    Reindex = 'Reindex',
+    UpdateVariantsById = 'UpdateVariantsById',
+    UpdateProductOrVariant = 'UpdateProductOrVariant',
+}

@@ -14,33 +14,15 @@ import { CollectionModificationEvent } from '../../event-bus/events/collection-m
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { SearchService } from '../../service/services/search.service';
 
-import { SEARCH_PLUGIN_OPTIONS } from './constants';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
+import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
 import { SearchIndexItem } from './search-index-item.entity';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     timeTaken: number;
     indexedItemCount: number;
-}
-
-/**
- * @description
- * Options for configuring the DefaultSearchPlugin.
- *
- * @docsCategory DefaultSearchPlugin
- */
-export interface DefaultSearchPluginOptions {
-    /**
-     * @description
-     * By default, the DefaultSearchPlugin will spawn a background process which is responsible
-     * for updating the search index. By setting this option to `false`, indexing will be
-     * performed on the main server process instead. Usually this is undesirable as performance will
-     * be degraded during indexing, but the option is useful for certain debugging and testing scenarios.
-     * @default true
-     */
-    runInForkedProcess: boolean;
 }
 
 /**
@@ -73,20 +55,6 @@ export interface DefaultSearchPluginOptions {
  * @docsCategory DefaultSearchPlugin
  */
 export class DefaultSearchPlugin implements VendurePlugin {
-    private readonly options: DefaultSearchPluginOptions;
-
-    constructor(options?: DefaultSearchPluginOptions) {
-        const defaultOptions: DefaultSearchPluginOptions = {
-            runInForkedProcess: true,
-        };
-        this.options = { ...defaultOptions, ...options };
-
-        if (process.env[CREATING_VENDURE_APP]) {
-            // For the "create" step we will not run the indexer in a forked process as this
-            // can cause issues with sqlite locking.
-            this.options.runInForkedProcess = false;
-        }
-    }
 
     /** @internal */
     async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
@@ -106,7 +74,6 @@ export class DefaultSearchPlugin implements VendurePlugin {
                 return searchIndexService.reindex(event.ctx).start();
             }
         });
-        await searchIndexService.connect();
     }
 
     /** @internal */
@@ -146,7 +113,12 @@ export class DefaultSearchPlugin implements VendurePlugin {
             FulltextSearchService,
             SearchIndexService,
             { provide: SearchService, useClass: FulltextSearchService },
-            { provide: SEARCH_PLUGIN_OPTIONS, useFactory: () => this.options },
+        ];
+    }
+
+    defineWorkers(): Array<Type<any>> {
+        return [
+            IndexerController,
         ];
     }
 }

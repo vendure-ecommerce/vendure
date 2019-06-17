@@ -4,6 +4,7 @@ import i18next from 'i18next';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
+import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
@@ -47,6 +48,34 @@ export class RequestContext {
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
+    }
+
+    /**
+     * @description
+     * Creates a new RequestContext object from a plain object which is the result of
+     * a JSON serialization - deserialization operation.
+     */
+    static fromObject(ctxObject: any): RequestContext {
+        let session: Session | undefined;
+        if (ctxObject._session) {
+            if (ctxObject._session.user) {
+                const user = new User(ctxObject._session.user);
+                session = new AuthenticatedSession({
+                    ...ctxObject._session,
+                    user,
+                });
+            } else {
+                session = new AnonymousSession(ctxObject._session);
+            }
+        }
+        return new RequestContext({
+            apiType: ctxObject._apiType,
+            channel: new Channel(ctxObject._channel),
+            session,
+            languageCode: ctxObject._languageCode,
+            isAuthorized: ctxObject._isAuthorized,
+            authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
+        });
     }
 
     get apiType(): ApiType {
