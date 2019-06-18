@@ -181,6 +181,9 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                                 ...config.dbConnectionOptions,
                                 synchronize: true,
                             },
+                            workerOptions: {
+                                runInMainProcess: true,
+                            },
                             importExportOptions: {
                                 importAssetsDir: path.join(assetsDir, 'images'),
                             },
