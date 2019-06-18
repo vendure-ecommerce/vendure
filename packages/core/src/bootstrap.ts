@@ -38,13 +38,29 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
     if (config.workerOptions.runInMainProcess) {
-        await bootstrapWorker(config);
+        await bootstrapWorkerInternal(config);
+        Logger.warn(`Worker is running in main process. This is not recommended for production.`);
+        Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
     }
     logWelcomeMessage(config);
     return app;
 }
 
+/**
+ * Bootstrap the Vendure worker.
+ */
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
+    if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
+        Logger.useLogger(userConfig.logger || new DefaultLogger());
+        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`
+        Logger.error(errorMessage, 'Vendure Worker');
+        throw new Error(errorMessage);
+    } else {
+        return bootstrapWorkerInternal(userConfig);
+    }
+}
+
+async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
     const config = await preBootstrapConfig(userConfig);
     if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
         (config.logger as any).setDefaultContext('Vendure Worker');
