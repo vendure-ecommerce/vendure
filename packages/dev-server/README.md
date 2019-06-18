@@ -4,12 +4,12 @@ This package is not published to npm. It is used in development of the Vendure s
 
 ### Running
 
-To run the server, run the `start` script. The database configuration can be specified by the `--db=<type>` flag:
+To run the server, run the `start` script. The database configuration can be specified by the `DB=<type>` environment variable:
 
 ```bash
-yarn start --db=mysql
-yarn start --db=postgres
-yarn start --db=sqlite
+DB=mysql yarn start
+DB=postgres yarn start
+DB=sqlite yarn start
 ```
 
 The default if no db is specified is mysql.
@@ -21,7 +21,7 @@ Test data can be populated by running the `populate` script. This uses the same 
 Specify the database as above to populate that database:
 
 ```bash
-yarn populate --db=sqlite
+DB=sqlite yarn populate
 ```
 
 ## Load testing

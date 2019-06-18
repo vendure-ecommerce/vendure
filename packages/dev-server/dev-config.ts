@@ -64,10 +64,7 @@ export const devConfig: VendureConfig = {
 };
 
 function getDbConfig(): ConnectionOptions {
-    const match = process.argv
-        .filter(arg => arg.match(/--db=/))
-        .map(arg => arg.replace(/^--db=/, ''));
-    const dbType = match.length ? match[0] : 'mysql';
+    const dbType = process.env.DB || 'mysql';
     switch (dbType) {
         case 'postgres':
             console.log('Using postgres connection');

@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "populate": "node -r ts-node/register populate-dev-server.ts",
-    "start": "nodemon --config nodemon-debug.json index.ts",
+    "run:server": "node -r ts-node/register index.ts",
+    "run:worker": "node -r ts-node/register index-worker.ts",
+    "start": "concurrently yarn:run*",
     "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
     "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000",
     "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
@@ -22,7 +24,7 @@
   },
   "devDependencies": {
     "@types/csv-stringify": "^1.4.3",
-    "csv-stringify": "^5.3.0",
-    "nodemon": "^1.18.9"
+    "concurrently": "^4.1.0",
+    "csv-stringify": "^5.3.0"
   }
 }
