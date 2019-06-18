@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "removeComments": false,
     "outDir": "../dist",
     "rootDirs": ["../src"]
   },
