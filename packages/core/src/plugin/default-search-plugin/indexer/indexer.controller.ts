@@ -50,7 +50,7 @@ export class IndexerController {
     ) {}
 
     @MessagePattern(Message.Reindex)
-    reindex({ ctx: rawContext }: { ctx: any}): Observable<ReindexMessageResponse> {
+    reindex({ ctx: rawContext }: { ctx: any }): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.fromObject(rawContext);
         return new Observable(observer => {
             (async () => {

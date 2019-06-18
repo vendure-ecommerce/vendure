@@ -1,17 +1,13 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../service/helpers/job-manager/job';
 import { JobService } from '../../../service/services/job.service';
-import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { VENDURE_WORKER_CLIENT } from '../../../worker/constants';
 import { Message } from '../constants';
 
@@ -23,11 +19,8 @@ import { ReindexMessageResponse } from './indexer.controller';
 @Injectable()
 export class SearchIndexService implements OnModuleDestroy {
 
-    constructor(@InjectConnection() private connection: Connection,
-                @Inject(VENDURE_WORKER_CLIENT) private readonly client: ClientProxy,
-                private productVariantService: ProductVariantService,
-                private jobService: JobService,
-                private configService: ConfigService) {}
+    constructor(@Inject(VENDURE_WORKER_CLIENT) private readonly client: ClientProxy,
+                private jobService: JobService) {}
 
     reindex(ctx: RequestContext): Job {
         return this.jobService.createJob({

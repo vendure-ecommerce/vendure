@@ -116,6 +116,7 @@ export class DefaultSearchPlugin implements VendurePlugin {
         ];
     }
 
+    /** @internal */
     defineWorkers(): Array<Type<any>> {
         return [
             IndexerController,
