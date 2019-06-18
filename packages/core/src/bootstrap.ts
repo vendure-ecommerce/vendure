@@ -1,6 +1,8 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Transport } from '@nestjs/microservices';
 import { Type } from '@vendure/common/lib/shared-types';
+import { worker } from 'cluster';
 import { EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
@@ -19,15 +21,15 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
-    Logger.info(`Bootstrapping Vendure Server...`);
+    Logger.useLogger(config.logger);
+    Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     DefaultLogger.hideNestBoostrapLogs();
-    let app: INestApplication;
-    app = await NestFactory.create(appModule.AppModule, {
+    const app = await NestFactory.create(appModule.AppModule, {
         cors: config.cors,
         logger: new Logger(),
     });
@@ -35,8 +37,48 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     app.useLogger(new Logger());
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
+    if (config.workerOptions.runInMainProcess) {
+        await bootstrapWorkerInternal(config);
+        Logger.warn(`Worker is running in main process. This is not recommended for production.`);
+        Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
+    }
     logWelcomeMessage(config);
     return app;
+}
+
+/**
+ * Bootstrap the Vendure worker.
+ */
+export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
+    if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
+        Logger.useLogger(userConfig.logger || new DefaultLogger());
+        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`
+        Logger.error(errorMessage, 'Vendure Worker');
+        throw new Error(errorMessage);
+    } else {
+        return bootstrapWorkerInternal(userConfig);
+    }
+}
+
+async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
+    const config = await preBootstrapConfig(userConfig);
+    if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
+        (config.logger as any).setDefaultContext('Vendure Worker');
+    }
+    Logger.useLogger(config.logger);
+    Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
+
+    const workerModule = await import('./worker/worker.module');
+    DefaultLogger.hideNestBoostrapLogs();
+    const workerApp = await NestFactory.createMicroservice(workerModule.WorkerModule, {
+        transport: config.workerOptions.transport,
+        logger: new Logger(),
+        options: config.workerOptions.options,
+    });
+    DefaultLogger.restoreOriginalLogLevel();
+    workerApp.useLogger(new Logger());
+    await workerApp.listenAsync();
+    return workerApp;
 }
 
 /**
@@ -64,7 +106,6 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
-    Logger.useLogger(config.logger);
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     return config;

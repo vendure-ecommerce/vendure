@@ -11,6 +11,8 @@ import {
     ConfigArgType,
     CreateCollection,
     CreateFacet,
+    GetRunningJobs,
+    JobState,
     LanguageCode,
     SearchFacetValues,
     SearchGetPrices,
@@ -45,7 +47,7 @@ describe('Default search plugin', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new DefaultSearchPlugin({ runInForkedProcess: false })],
+                plugins: [new DefaultSearchPlugin()],
             },
         );
         await adminClient.init();
@@ -269,6 +271,7 @@ describe('Default search plugin', () => {
                     { id: 'T_3', enabled: false },
                 ],
             });
+            await awaitRunningJobs();
             const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
                 input: {
                     groupByProduct: false,
@@ -313,7 +316,7 @@ describe('Default search plugin', () => {
                     facetValueIds: [],
                 },
             });
-
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
@@ -358,7 +361,7 @@ describe('Default search plugin', () => {
                     },
                 },
             );
-
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
@@ -411,7 +414,7 @@ describe('Default search plugin', () => {
                     ],
                 },
             });
-
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS,
                 {
@@ -438,6 +441,7 @@ describe('Default search plugin', () => {
                     value: 50,
                 },
             });
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
                 input: {
                     groupByProduct: true,
@@ -473,6 +477,7 @@ describe('Default search plugin', () => {
                     { id: 'T_2', enabled: false },
                 ],
             });
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
@@ -492,6 +497,7 @@ describe('Default search plugin', () => {
                     { id: 'T_4', enabled: false },
                 ],
             });
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
@@ -512,6 +518,7 @@ describe('Default search plugin', () => {
                     enabled: false,
                 },
             });
+            await awaitRunningJobs();
             const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
                 input: {
                     groupByProduct: true,
@@ -525,7 +532,29 @@ describe('Default search plugin', () => {
             ]);
         });
     });
+
+    /**
+     * Since the updates to the search index are performed in the background, we need
+     * to ensure that any running background jobs are completed before continuing certain
+     * tests.
+     */
+    async function awaitRunningJobs() {
+        let runningJobs = 0;
+        do {
+            const { jobs } = await adminClient.query<GetRunningJobs.Query>(GET_RUNNING_JOBS);
+            runningJobs = jobs.filter(job => job.state !== JobState.COMPLETED);
+        } while (runningJobs > 0);
+    }
 });
+
+export const GET_RUNNING_JOBS = gql`
+    query GetRunningJobs {
+        jobs {
+            name
+            state
+        }
+    }
+`;
 
 export const SEARCH_PRODUCTS = gql`
     query SearchProductsAdmin($input: SearchInput!) {

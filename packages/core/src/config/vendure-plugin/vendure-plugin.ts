@@ -95,6 +95,12 @@ export interface VendurePlugin {
 
     /**
      * @description
+     * The plugin may define providers which are run in the Worker context, i.e. Nest microservice controllers.
+     */
+    defineWorkers?(): Array<Type<any>>;
+
+    /**
+     * @description
      * The plugin may define custom database entities, which should be defined as classes annotated as per the
      * TypeORM documentation.
      */

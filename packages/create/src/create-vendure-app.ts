@@ -62,22 +62,25 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
 
     const root = path.resolve(name);
     const appName = path.basename(root);
-    const { dbType, usingTs, configSource, indexSource, populateProducts } = await gatherUserResponses(root);
+    const { dbType, usingTs, configSource, indexSource, indexWorkerSource, populateProducts } = await gatherUserResponses(root);
 
-    const packageJsonContents = {
-        name: appName,
-        version: '0.1.0',
-        private: true,
-        scripts: {
-            start: usingTs ? 'ts-node index.ts' : 'node index.js',
-        },
-    };
     const useYarn = useNpm ? false : shouldUseYarn();
     const originalDirectory = process.cwd();
     process.chdir(root);
     if (!useYarn && !checkThatNpmCanReadCwd()) {
         process.exit(1);
     }
+
+    const packageJsonContents = {
+        name: appName,
+        version: '0.1.0',
+        private: true,
+        scripts: {
+            'run:server': usingTs ? 'ts-node index.ts' : 'node index.js',
+            'run:worker': usingTs ? 'ts-node index-worker.ts' : 'node index-worker.js',
+            'start': useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
+        },
+    };
 
     console.log();
     console.log(`Setting up your new Vendure project in ${chalk.green(root)}`);
@@ -124,6 +127,10 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                         })
                         .then(() => {
                             subscriber.next(`Created index`);
+                            return fs.writeFile(rootPathScript('index-worker'), indexWorkerSource);
+                        })
+                        .then(() => {
+                            subscriber.next(`Created worker`);
                             if (usingTs) {
                                 return fs.copyFile(
                                     assetPath('tsconfig.template.json'),

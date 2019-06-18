@@ -1286,6 +1286,15 @@
   optionalDependencies:
     type-graphql "^0.17.3"
 
+"@nestjs/microservices@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.npmjs.org/@nestjs/microservices/-/microservices-6.3.1.tgz#b6d080afb61c1c8e50394eb73f5f40a5f606b09b"
+  integrity sha512-vujz9lczXBnkw8H7vY/7V6Je0zcCUvpbgwLNGa5Dm/+SzUKTdSk5qjGgt3TiczXZY2PSuOdsTY0qUFHYK7B5yA==
+  dependencies:
+    iterare "1.1.2"
+    json-socket "0.3.0"
+    optional "0.1.4"
+
 "@nestjs/platform-express@^6.3.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-6.3.1.tgz#8adb602a5bb9571b9d58646bd52141a26ea8ba3e"
@@ -6829,6 +6838,11 @@ json-schema@0.2.3:
   version "0.2.3"
   resolved "https://registry.npmjs.org/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
   integrity sha1-tIDIkuWaLwWVTOcnvT8qTogvnhM=
+
+json-socket@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/json-socket/-/json-socket-0.3.0.tgz#f4b953c685bb8e8bd0b72438f5208d9a0799ae07"
+  integrity sha512-jc8ZbUnYIWdxERFWQKVgwSLkGSe+kyzvmYxwNaRgx/c8NNyuHes4UHnPM3LUrAFXUx1BhNJ94n1h/KCRlbvV0g==
 
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"

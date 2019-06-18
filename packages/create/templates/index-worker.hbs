@@ -1,0 +1,7 @@
+{{#if isTs }}import { bootstrapWorker } from '@vendure/core';{{else}}const { bootstrapWorker } = require('@vendure/core');{{/if}}
+{{#if isTs }}import { config } from './vendure-config';{{else}}const { config } = require('./vendure-config');{{/if}}
+
+bootstrapWorker(config).catch(err => {
+    // tslint:disable-next-line:no-console
+    console.log(err);
+});

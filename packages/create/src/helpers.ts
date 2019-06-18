@@ -229,7 +229,10 @@ export function getDependencies(usingTs: boolean, dbType: DbType): { dependencie
         '@vendure/admin-ui-plugin',
         dbDriverPackage(dbType),
     ];
-    const devDependencies = usingTs ? ['ts-node'] : [];
+    const devDependencies = ['concurrently'];
+    if (usingTs) {
+        devDependencies.push('ts-node');
+    }
 
     return {dependencies, devDependencies};
 }

@@ -32,6 +32,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     emailOptions: {};
     importExportOptions: {};
     orderOptions = {};
+    workerOptions = {};
     customFields = {};
     middleware = [];
     logger = {} as any;

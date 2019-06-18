@@ -105,9 +105,9 @@ export class ApiSharedModule {}
  * The internal module containing the Admin GraphQL API resolvers
  */
 @Module({
-    imports: [ApiSharedModule, PluginModule, ServiceModule, DataImportModule],
+    imports: [ApiSharedModule, PluginModule.forRoot(), ServiceModule.forRoot(), DataImportModule],
     providers: [...adminResolvers, ...entityResolvers, ...adminEntityResolvers, ...PluginModule.adminApiResolvers()],
-    exports: adminResolvers,
+    exports: [...adminResolvers],
 })
 export class AdminApiModule {}
 
@@ -115,7 +115,7 @@ export class AdminApiModule {}
  * The internal module containing the Shop GraphQL API resolvers
  */
 @Module({
-    imports: [ApiSharedModule, PluginModule, ServiceModule],
+    imports: [ApiSharedModule, PluginModule.forRoot(), ServiceModule.forRoot()],
     providers: [...shopResolvers, ...entityResolvers, ...PluginModule.shopApiResolvers()],
     exports: shopResolvers,
 })

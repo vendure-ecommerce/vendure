@@ -1,5 +1,5 @@
+import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ADMIN_API_PATH, API_PORT } from '@vendure/common/lib/shared-constants';
 import { CustomFields } from '@vendure/common/lib/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
@@ -79,6 +79,13 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
     },
     importExportOptions: {
         importAssetsDir: __dirname,
+    },
+    workerOptions: {
+        runInMainProcess: true,
+        transport: Transport.TCP,
+        options: {
+            port: 3001,
+        },
     },
     customFields: {
         Address: [],

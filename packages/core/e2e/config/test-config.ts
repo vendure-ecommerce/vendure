@@ -1,7 +1,10 @@
+import { Transport } from '@nestjs/microservices';
 import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import path from 'path';
 
 import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
+import { DefaultLogger } from '../../src/config/logger/default-logger';
+import { LogLevel } from '../../src/config/logger/vendure-logger';
 import { VendureConfig } from '../../src/config/vendure-config';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
@@ -52,6 +55,7 @@ export const testConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
+    logger: new DefaultLogger({ level: LogLevel.Error }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, '..', 'fixtures/assets'),
     },
@@ -59,5 +63,12 @@ export const testConfig: VendureConfig = {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new TestingAssetStorageStrategy(),
         assetPreviewStrategy: new TestingAssetPreviewStrategy(),
+    },
+    workerOptions: {
+        runInMainProcess: true,
+        transport: Transport.TCP,
+        options: {
+            port: 3051,
+        },
     },
 };

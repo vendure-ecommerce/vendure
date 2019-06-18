@@ -94,9 +94,10 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
         process.exit(0);
     }
 
-    const { indexSource, configSource } = await generateSources(root, answers);
+    const { indexSource, indexWorkerSource, configSource } = await generateSources(root, answers);
     return {
         indexSource,
+        indexWorkerSource,
         configSource,
         usingTs: answers.language === 'ts',
         dbType: answers.dbType,
@@ -105,9 +106,9 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
 }
 
 /**
- * Create the server index and config source code based on the options specified by the CLI prompts.
+ * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(root: string, answers: any): Promise<{ indexSource: string; configSource: string; }> {
+async function generateSources(root: string, answers: any): Promise<{ indexSource: string; indexWorkerSource: string; configSource: string; }> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     const templateContext = {
@@ -124,7 +125,9 @@ async function generateSources(root: string, answers: any): Promise<{ indexSourc
     const configSource = Handlebars.compile(configTemplate)(templateContext);
     const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
     const indexSource = Handlebars.compile(indexTemplate)(templateContext);
-    return { indexSource, configSource };
+    const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');
+    const indexWorkerSource = Handlebars.compile(indexWorkerTemplate)(templateContext);
+    return { indexSource, indexWorkerSource, configSource };
 }
 
 function defaultDBPort(dbType: DbType): number {

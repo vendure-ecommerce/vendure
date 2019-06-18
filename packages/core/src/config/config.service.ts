@@ -20,6 +20,7 @@ import {
     ShippingOptions,
     TaxOptions,
     VendureConfig,
+    WorkerOptions,
 } from './vendure-config';
 import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
@@ -119,5 +120,9 @@ export class ConfigService implements VendureConfig {
 
     get logger(): VendureLogger {
         return this.activeConfig.logger;
+    }
+
+    get workerOptions(): WorkerOptions {
+        return this.activeConfig.workerOptions as Required<WorkerOptions>;
     }
 }

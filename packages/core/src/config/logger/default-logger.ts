@@ -26,6 +26,7 @@ export class DefaultLogger implements VendureLogger {
     /** @internal */
     level: LogLevel = LogLevel.Info;
     private readonly timestamp: boolean;
+    private defaultContext = DEFAULT_CONTEXT;
     private readonly localeStringOptions = {
         year: '2-digit',
         hour: 'numeric',
@@ -72,6 +73,10 @@ export class DefaultLogger implements VendureLogger {
         if (logger instanceof DefaultLogger && DefaultLogger.originalLogLevel !== undefined) {
             logger.level = DefaultLogger.originalLogLevel;
         }
+    }
+
+    setDefaultContext(defaultContext: string) {
+        this.defaultContext = defaultContext;
     }
 
     error(message: string, context?: string, trace?: string | undefined): void {
@@ -131,7 +136,7 @@ export class DefaultLogger implements VendureLogger {
     }
 
     private logContext(context?: string) {
-        return chalk.cyan(`[${context || DEFAULT_CONTEXT}]`);
+        return chalk.cyan(`[${context || this.defaultContext}]`);
     }
 
     private logTimestamp() {
