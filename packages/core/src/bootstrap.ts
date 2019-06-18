@@ -1,8 +1,7 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
+import { TcpClientOptions, Transport } from '@nestjs/microservices';
 import { Type } from '@vendure/common/lib/shared-types';
-import { worker } from 'cluster';
 import { EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
@@ -78,6 +77,7 @@ async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Prom
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     await workerApp.listenAsync();
+    workerWelcomeMessage(config);
     return workerApp;
 }
 
@@ -177,6 +177,19 @@ function getEntitiesFromPlugins(userConfig: Partial<VendureConfig>): Array<Type<
     return userConfig.plugins
         .map(p => (p.defineEntities ? p.defineEntities() : []))
         .reduce((all, entities) => [...all, ...entities], []);
+}
+
+function workerWelcomeMessage(config: VendureConfig) {
+    let transportString = '';
+    let connectionString = '';
+    const transport = (config.workerOptions && config.workerOptions.transport) || Transport.TCP;
+    transportString = ` with ${Transport[transport]} transport`;
+    const options = (config.workerOptions as TcpClientOptions).options;
+    if (options) {
+        const { host, port } = options;
+        connectionString = ` at ${host || 'localhost'}:${port}`;
+    }
+    Logger.info(`Vendure Worker started${transportString}${connectionString}`);
 }
 
 function logWelcomeMessage(config: VendureConfig) {

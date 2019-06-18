@@ -360,6 +360,10 @@ export interface WorkerOptions {
      * Additional options related to the chosen transport method. See See the
      * [NestJS microservices documentation](https://docs.nestjs.com/microservices/basics) for details on the options relating to each of the
      * transport methods.
+     *
+     * By default, the options for the TCP transport will run with the following settings:
+     * * host: 'localhost'
+     * * port: 3020
      */
     options?: ClientOptions['options'];
 }
