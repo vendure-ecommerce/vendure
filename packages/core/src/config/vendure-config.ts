@@ -318,6 +318,22 @@ export interface ImportExportOptions {
  * @description
  * Options related to the Vendure Worker.
  *
+ * @example
+ * ```TypeScript
+ * import { Transport } from '\@nestjs/microservices';
+ *
+ * const config: VendureConfig = {
+ *     // ...
+ *     workerOptions: {
+ *         transport: Transport.TCP,
+ *         options: {
+ *             host: 'localhost',
+ *             port: 3001,
+ *         },
+ *     },
+ * }
+ * ```
+ *
  * @docsCategory worker
  */
 export interface WorkerOptions {
@@ -328,7 +344,7 @@ export interface WorkerOptions {
      * testing purposes, not for production, since running the Worker in the main process negates the benefits
      * of having long-running or expensive tasks run in the background.
      *
-     * @default true
+     * @default false
      */
     runInMainProcess?: boolean;
     /**

@@ -81,7 +81,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         importAssetsDir: __dirname,
     },
     workerOptions: {
-        runInMainProcess: true,
+        runInMainProcess: false,
         transport: Transport.TCP,
         options: {
             port: 3001,
