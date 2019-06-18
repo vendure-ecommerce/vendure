@@ -146,9 +146,6 @@ export class EmailPlugin implements VendurePlugin {
     /** @internal */
     configure(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>> {
         if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
-            this.devMailbox = new DevMailbox();
-            this.devMailbox.serve(this.options);
-            this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
             const route = 'mailbox';
             config.middleware.push({
                 handler: createProxyHandler({ port: this.options.mailboxPort, route, label: 'Dev Mailbox' }),
@@ -164,6 +161,12 @@ export class EmailPlugin implements VendurePlugin {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
         this.emailSender = new EmailSender();
         this.generator = new HandlebarsMjmlGenerator();
+
+        if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
+            this.devMailbox = new DevMailbox();
+            this.devMailbox.serve(this.options);
+            this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
+        }
 
         await this.setupEventSubscribers();
         if (this.generator.onInit) {
