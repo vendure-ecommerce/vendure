@@ -542,7 +542,7 @@ describe('Default search plugin', () => {
         let runningJobs = 0;
         do {
             const { jobs } = await adminClient.query<GetRunningJobs.Query>(GET_RUNNING_JOBS);
-            runningJobs = jobs.filter(job => job.state !== JobState.COMPLETED);
+            runningJobs = jobs.filter(job => job.state !== JobState.COMPLETED).length;
         } while (runningJobs > 0);
     }
 });
