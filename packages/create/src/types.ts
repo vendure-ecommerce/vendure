@@ -5,6 +5,7 @@ export interface UserResponses {
     dbType: DbType;
     populateProducts: boolean;
     indexSource: string;
+    indexWorkerSource: string;
     configSource: string;
 }
 
