@@ -20,25 +20,86 @@ import { ELASTIC_SEARCH_CLIENT, ELASTIC_SEARCH_OPTIONS, loggerCtx } from './cons
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elasticsearch-resolver';
 import { ElasticsearchService } from './elasticsearch.service';
+import { ElasticsearchIndexerController } from './indexer.controller';
 
+/**
+ * @description
+ * Configuration options for the {@link ElasticsearchPlugin}.
+ *
+ * @docsCategory ElasticsearchPlugin
+ */
 export interface ElasticsearchOptions {
+    /**
+     * @description
+     * The host of the Elasticsearch server.
+     */
     host: string;
+    /**
+     * @description
+     * The port of the Elasticsearch server.
+     */
     port: number;
+    /**
+     * @description
+     * Prefix for the indices created by the plugin.
+     *
+     * @default
+     * 'vendure-'
+     */
     indexPrefix?: string;
+    /**
+     * @description
+     * Batch size for bulk operations (e.g. when rebuilding the indices)
+     *
+     * @default
+     * 2000
+     */
+    batchSize?: number;
 }
 
+/**
+ * @description
+ * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
+ * engine.
+ *
+ * ## Installation
+ *
+ * `yarn add \@vendure/elasticsearch-plugin`
+ *
+ * or
+ *
+ * `npm install \@vendure/elasticsearch-plugin`
+ *
+ * @example
+ * ```ts
+ * import { ElasticsearchPlugin } from '\@vendure/elasticsearch-plugin';
+ *
+ * const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     new ElasticsearchPlugin({
+ *       host: 'http://localhost',
+ *       port: 9200,
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
+ * @docsCategory ElasticsearchPlugin
+ */
 export class ElasticsearchPlugin implements VendurePlugin {
     private readonly options: Required<ElasticsearchOptions>;
     private readonly client: Client;
 
     constructor(options: ElasticsearchOptions) {
-        this.options = { indexPrefix: 'vendure-', ...options };
+        this.options = { indexPrefix: 'vendure-', batchSize: 2000, ...options };
         const { host, port } = options;
         this.client = new Client({
             node: `${host}:${port}`,
         });
     }
 
+    /** @internal */
     async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
         const elasticsearchService = inject(ElasticsearchService);
         const elasticsearchIndexService = inject(ElasticsearchIndexService);
@@ -57,11 +118,11 @@ export class ElasticsearchPlugin implements VendurePlugin {
         const eventBus = inject(EventBus);
         eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return elasticsearchIndexService.updateProductOrVariant(event.ctx, event.entity);
+                return elasticsearchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
             }
         });
         eventBus.subscribe(CollectionModificationEvent, event => {
-            return elasticsearchIndexService.updateVariantsById(event.ctx, event.productVariantIds);
+            return elasticsearchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
         });
         eventBus.subscribe(TaxRateModificationEvent, event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
@@ -97,6 +158,7 @@ export class ElasticsearchPlugin implements VendurePlugin {
         };
     }
 
+    /** @internal */
     defineProviders(): Provider[] {
         return [
             { provide: ElasticsearchIndexService, useClass: ElasticsearchIndexService },
@@ -106,6 +168,13 @@ export class ElasticsearchPlugin implements VendurePlugin {
             { provide: SearchService, useClass: ElasticsearchService },
             { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => this.options },
             { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => this.client },
+        ];
+    }
+
+    /** @internal */
+    defineWorkers(): Array<Type<any>> {
+        return [
+            ElasticsearchIndexerController,
         ];
     }
 }
