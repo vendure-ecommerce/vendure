@@ -37,9 +37,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
     if (config.workerOptions.runInMainProcess) {
-        await bootstrapWorkerInternal(config);
+        const worker = await bootstrapWorkerInternal(config);
         Logger.warn(`Worker is running in main process. This is not recommended for production.`);
         Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
+        closeWorkerOnAppClose(app, worker);
     }
     logWelcomeMessage(config);
     return app;
@@ -51,7 +52,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
     if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
         Logger.useLogger(userConfig.logger || new DefaultLogger());
-        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`
+        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`;
         Logger.error(errorMessage, 'Vendure Worker');
         throw new Error(errorMessage);
     } else {
@@ -177,6 +178,21 @@ function getEntitiesFromPlugins(userConfig: Partial<VendureConfig>): Array<Type<
     return userConfig.plugins
         .map(p => (p.defineEntities ? p.defineEntities() : []))
         .reduce((all, entities) => [...all, ...entities], []);
+}
+
+/**
+ * Monkey-patches the app's .close() method to also close the worker microservice
+ * instance too.
+ */
+function closeWorkerOnAppClose(app: INestApplication, worker: INestMicroservice) {
+    // A Nest app is a nested Proxy. By getting the prototype we are
+    // able to access and override the actual close() method.
+    const appPrototype = Object.getPrototypeOf(app);
+    const appClose = appPrototype.close.bind(app);
+    appPrototype.close = async () => {
+        await worker.close();
+        await appClose();
+    };
 }
 
 function workerWelcomeMessage(config: VendureConfig) {
