@@ -128,7 +128,7 @@ describe('JobManager', () => {
     });
 
     it('clean() removes completed jobs older than maxAge', async () => {
-        const jm = new JobManager('10ms');
+        const jm = new JobManager('50ms');
         const subject1 = new Subject();
         const subject2 = new Subject();
 
@@ -147,7 +147,7 @@ describe('JobManager', () => {
             { name: 'job2', state: JobState.RUNNING },
         ]);
 
-        await tick(20);
+        await tick(75);
 
         jm.clean();
 
