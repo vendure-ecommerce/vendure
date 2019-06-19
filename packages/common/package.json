@@ -1,6 +1,6 @@
 {
   "name": "@vendure/common",
-  "version": "0.1.2-beta.4",
+  "version": "0.1.2-beta.5",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -13,10 +13,9 @@
   "files": [
     "lib/**/*"
   ],
-  "dependencies": {},
   "devDependencies": {
-    "rimraf": "^2.6.3",
     "@types/jest": "^24.0.11",
+    "rimraf": "^2.6.3",
     "typescript": "^3.3.4000"
   }
 }
