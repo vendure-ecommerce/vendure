@@ -36,6 +36,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     app.useLogger(new Logger());
     await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
+    app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
         const worker = await bootstrapWorkerInternal(config);
         Logger.warn(`Worker is running in main process. This is not recommended for production.`);
@@ -77,6 +78,7 @@ async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Prom
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
+    workerApp.enableShutdownHooks();
     await workerApp.listenAsync();
     workerWelcomeMessage(config);
     return workerApp;

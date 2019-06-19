@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ClientProxyFactory, ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientProxyFactory } from '@nestjs/microservices';
 import { Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
@@ -55,11 +55,9 @@ export class PluginModule {
     }
 
     static forWorker(): DynamicModule {
-        const controllers = getWorkerControllers();
         return {
             module: PluginModule,
             imports: [ServiceModule.forWorker()],
-            controllers,
         };
     }
 }

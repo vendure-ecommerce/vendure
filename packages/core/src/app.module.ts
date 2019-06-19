@@ -1,11 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule, OnModuleDestroy } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
 import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
-import { GraphQLDateTime } from 'graphql-iso-date';
 
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { Logger } from './config/logger/vendure-logger';
 import { validateCustomFieldsConfig } from './entity/custom-entity-fields';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
@@ -13,8 +13,9 @@ import { I18nService } from './i18n/i18n.service';
 @Module({
     imports: [ConfigModule, I18nModule, ApiModule],
 })
-export class AppModule implements NestModule, OnModuleDestroy {
-    constructor(private configService: ConfigService, private i18nService: I18nService) {}
+export class AppModule implements NestModule, OnModuleDestroy, OnApplicationShutdown {
+    constructor(private configService: ConfigService,
+                private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath } = this.configService;
@@ -48,6 +49,12 @@ export class AppModule implements NestModule, OnModuleDestroy {
             if (plugin.onClose) {
                 await plugin.onClose();
             }
+        }
+    }
+
+    onApplicationShutdown(signal?: string) {
+        if (signal) {
+            Logger.info('Received shutdown signal:' + signal);
         }
     }
 
