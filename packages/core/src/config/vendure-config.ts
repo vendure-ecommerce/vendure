@@ -374,7 +374,7 @@ export interface WorkerOptions {
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
  * @docsCategory
- * @docsWeight 0
+ * @docsWeight 1
  */
 export interface VendureConfig {
     /**

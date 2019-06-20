@@ -30,6 +30,10 @@ const sections: DocsSectionConfig[] = [
         sourceDirs: ['packages/admin-ui-plugin/src/'],
         outputPath: 'plugins',
     },
+    {
+        sourceDirs: ['packages/elasticsearch-plugin/src/'],
+        outputPath: 'plugins',
+    },
 ];
 
 generateTypescriptDocs(sections);

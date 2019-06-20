@@ -1,0 +1,46 @@
+@startuml
+!include theme.puml
+title Vendure Architecture
+
+interface "." as bootstrap
+interface "." as bootstrapWorker
+
+
+package "@vendure/core" {
+    component VendureServer <<Vendure Server>> [
+        AppModule
+    ]
+    component VendureWorker <<Vendure Worker>> [
+        WorkerModule
+    ]
+    [ServiceModule] #efefef
+    [ApiModule] #efefef
+}
+
+cloud "GraphQL API" {
+    [Shop API] #ff88c1
+    [Admin API] #ff88c1
+}
+
+database "Database" {
+component dbTypes #f3fff3 [
+MySQL/MariaDB
+PostgreSQL
+SQLite
+]
+}
+
+'note bottom of Database : MySQL/MariaDB, PostgreSQL, SQLite
+note top of bootstrap : bootstrap()
+note top of bootstrapWorker : bootstrapWorker()
+bootstrap -down- [VendureServer]
+bootstrapWorker -down- [VendureWorker]
+[VendureServer] ---> [ServiceModule]
+[VendureServer] --> [ApiModule]
+[VendureWorker] --> [ServiceModule]
+[VendureWorker] <.left.> [VendureServer]
+[ApiModule] <...> [Shop API]
+[ApiModule] <...> [Admin API]
+[ServiceModule] <..> dbTypes
+
+@enduml

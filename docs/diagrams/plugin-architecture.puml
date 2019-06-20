@@ -1,0 +1,46 @@
+@startuml
+!include theme.puml
+title Vendure Plugin Architecture
+
+
+
+package "@vendure/core" {
+    component VendureServer <<Vendure Server>> [
+        AppModule
+    ]
+    component VendureWorker <<Vendure Worker>> [
+        WorkerModule
+    ]
+    [ServiceModule] #efefef
+    [ApiModule] #efefef
+}
+
+cloud "GraphQL API" {
+    [Shop API] #ff88c1
+    [Admin API] #ff88c1
+}
+
+component VendurePlugin #ccffcc
+
+cloud "Internet" {
+    [External Service]
+}
+
+database "Database" {
+}
+
+[VendureServer] ---> [ServiceModule]
+[VendureServer] --> [ApiModule]
+[VendureWorker] --> [ServiceModule]
+[VendureWorker] <.right.> [VendureServer]
+[ApiModule] <...> [Shop API]
+[ApiModule] <...> [Admin API]
+[ServiceModule] <..> Database
+
+VendurePlugin .left.> VendureWorker #88cc88 : 1
+VendurePlugin ..> VendureServer #88cc88 : 2
+VendurePlugin .left.> ApiModule #88cc88 : 3
+VendurePlugin <..> ServiceModule #88cc88 : 4
+VendurePlugin <..> [External Service] #88cc88 : 5
+
+@enduml

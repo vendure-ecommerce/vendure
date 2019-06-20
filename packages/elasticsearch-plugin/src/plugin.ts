@@ -60,7 +60,7 @@ export interface ElasticsearchOptions {
 /**
  * @description
  * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
- * engine.
+ * engine. This is a drop-in replacement for the {@link DefaultSearchPlugin}.
  *
  * ## Installation
  *

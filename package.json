@@ -5,7 +5,7 @@
   "scripts": {
     "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
     "bootstrap": "lerna bootstrap && cd admin-ui && yarn",
-    "docs:watch": "concurrently -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
+    "docs:watch": "concurrently --restart-tries 5 -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",
     "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
     "codegen": "ts-node scripts/codegen/generate-graphql-types.ts",

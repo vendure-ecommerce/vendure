@@ -16,7 +16,20 @@ import { logProxyMiddlewares } from './plugin/plugin-utils';
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
 /**
- * Bootstrap the Vendure server.
+ * @description
+ * Bootstraps the Vendure server. This is the entry point to the application.
+ *
+ * @example
+ * ```TypeScript
+ * import { bootstrap } from '\@vendure/core';
+ * import { config } from './vendure-config';
+ *
+ * bootstrap(config).catch(err => {
+ *     console.log(err);
+ * });
+ * ```
+ * @docsCategory
+ * @docsWeight 0
  */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
@@ -48,7 +61,21 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 }
 
 /**
- * Bootstrap the Vendure worker.
+ * @description
+ * Bootstraps the Vendure worker. Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}) or see the worker-specific options
+ * defined in {@link WorkerOptions}.
+ *
+ * @example
+ * ```TypeScript
+ * import { bootstrapWorker } from '\@vendure/core';
+ * import { config } from './vendure-config';
+ *
+ * bootstrapWorker(config).catch(err => {
+ *     console.log(err);
+ * });
+ * ```
+ * @docsCategory worker
+ * @docsWeight 0
  */
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
     if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {

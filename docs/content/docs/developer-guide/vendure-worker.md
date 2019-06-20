@@ -1,19 +1,28 @@
 ---
 title: "Vendure Worker"
-weight: 0
 showtoc: true
 ---
 
 # Vendure Worker
-
+ 
 The Vendure Worker is a process which is responsible for running computationally intensive or otherwise long-running tasks in the background. For example updating a search index or performing image transformations.
 
-The worker is started by calling the `bootstrapWorker()` function with the same configuration as is passed to the main server `bootstrap()`:
+The worker is started by calling the [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}) function with the same configuration as is passed to the main server `bootstrap()`:
 
 ```TypeScript
-import { bootstrapWorker } from '@vendure/core';
+import { Transport } from '@nest/microservices';
+import { bootstrapWorker, VendureConfig } from '@vendure/core';
 
-import { config } from './vendure-config';
+const config: VendureConfig = {
+    // ...
+    workerOptions: {
+        transport: Transport.TCP,
+        options: {
+            host: 'localhost',
+            port: 4242,
+        },
+    },
+};
 
 bootstrapWorker(config).catch(err => {
     console.log(err);

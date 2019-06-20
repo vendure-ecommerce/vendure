@@ -1,6 +1,5 @@
 ---
 title: "Authentication & Sessions"
-weight: 0
 showtoc: true
 ---
  
