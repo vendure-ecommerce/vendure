@@ -133,6 +133,11 @@ export class ElasticsearchPlugin implements VendurePlugin {
     }
 
     /** @internal */
+    onClose() {
+        return this.client.close();
+    }
+
+    /** @internal */
     extendAdminAPI(): APIExtensionDefinition {
         return {
             resolvers: [AdminElasticSearchResolver],
