@@ -58,7 +58,7 @@ export class AssetInterceptor implements NestInterceptor {
  * Traverses the object and when encountering a property with a value which
  * is an instance of class T, invokes the visitor function on that value.
  */
-function visitType<T>(obj: any, types: Array<Type<T> | string>, visit: (instance: T | string) => T | string) {
+function visitType<T>(obj: any, types: Array<Type<T> | string>, visit: (instance: T | string) => T | string, seen: Set<any> = new Set()) {
     const keys = Object.keys(obj || {});
     for (const key of keys) {
         const value = obj[key];
@@ -72,8 +72,12 @@ function visitType<T>(obj: any, types: Array<Type<T> | string>, visit: (instance
                 visit(value);
             }
         }
-        if (typeof value === 'object') {
-            visitType(value, types, visit);
+        if (typeof value === 'object' && !seen.has(value)) {
+            // add this object to the set of "seen" objects,
+            // which prevents us getting stuck in the case of a
+            // cyclic graph.
+            seen.add(value);
+            visitType(value, types, visit, seen);
         }
     }
 }

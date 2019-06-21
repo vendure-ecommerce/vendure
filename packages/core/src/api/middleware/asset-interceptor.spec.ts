@@ -173,4 +173,30 @@ describe('AssetInterceptor', () => {
             },
         ),
     );
+
+    describe('cyclic objects', () => {
+        const fido: any = {
+            name: 'fido',
+            avatar: mockAsset(),
+        };
+        const person = {
+            name: 'joe',
+            pet: fido,
+        };
+        fido.owner = person;
+
+        it(
+               'handles objects with cycles',
+               testInterceptor(
+                   {
+                       result: person,
+                   },
+                   (response, result, toAbsoluteUrl) => {
+                       expect(result.result.pet.avatar).toEqual({ source: 'visited', preview: 'visited' });
+                       expect(toAbsoluteUrl).toHaveBeenCalledTimes(2);
+                   },
+               ),
+           );
+    });
+
 });
