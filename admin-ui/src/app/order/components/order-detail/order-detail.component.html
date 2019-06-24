@@ -4,7 +4,7 @@
     <vdr-ab-right></vdr-ab-right>
 </vdr-action-bar>
 
-<div *ngIf="(entity$ | async) as order">
+<div *ngIf="entity$ | async as order">
     <div class="clr-row">
         <div class="clr-col-md-4">
             <table class="table table-vertical">
@@ -53,6 +53,29 @@
             <table class="table table-vertical">
                 <tbody>
                     <ng-container *ngFor="let payment of order.payments">
+                        <tr>
+                            <th>{{ 'order.payment-state' | translate }}</th>
+                            <td>
+                                {{ payment.state }}
+                                <ng-container *ngIf="payment.state === 'Authorized'">
+                                    <vdr-dropdown>
+                                        <button class="icon-button" vdrDropdownTrigger>
+                                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                        </button>
+                                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                                            <button
+                                                type="button"
+                                                vdrDropdownItem
+                                                [disabled]="i === 0"
+                                                (click)="settlePayment(payment)"
+                                            >
+                                                {{ 'order.settle-payment' | translate }}
+                                            </button>
+                                        </vdr-dropdown-menu>
+                                    </vdr-dropdown>
+                                </ng-container>
+                            </td>
+                        </tr>
                         <tr>
                             <th>{{ 'order.payment-method' | translate }}</th>
                             <td>{{ payment.method }}</td>

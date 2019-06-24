@@ -1,5 +1,5 @@
-import { GetOrder, GetOrderList } from '../../common/generated-types';
-import { GET_ORDER, GET_ORDERS_LIST } from '../definitions/order-definitions';
+import { GetOrder, GetOrderList, SettlePayment } from '../../common/generated-types';
+import { GET_ORDER, GET_ORDERS_LIST, SETTLE_PAYMENT } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
 
@@ -17,5 +17,11 @@ export class OrderDataService {
 
     getOrder(id: string) {
         return this.baseDataService.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id });
+    }
+
+    settlePayment(id: string) {
+        return this.baseDataService.mutate<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+            id,
+        });
     }
 }

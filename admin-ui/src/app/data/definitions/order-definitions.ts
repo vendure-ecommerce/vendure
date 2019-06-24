@@ -125,3 +125,16 @@ export const GET_ORDER = gql`
     }
     ${ORDER_WITH_LINES_FRAGMENT}
 `;
+
+export const SETTLE_PAYMENT = gql`
+    mutation SettlePayment($id: ID!) {
+        settlePayment(id: $id) {
+            id
+            transactionId
+            amount
+            method
+            state
+            metadata
+        }
+    }
+`;

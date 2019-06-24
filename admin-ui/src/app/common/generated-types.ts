@@ -3418,6 +3418,13 @@ export type GetOrderQueryVariables = {
 
 export type GetOrderQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & OrderWithLinesFragment)> });
 
+export type SettlePaymentMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type SettlePaymentMutation = ({ __typename?: 'Mutation' } & { settlePayment: Maybe<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>)> });
+
 export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name'>)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
@@ -4183,6 +4190,12 @@ export namespace GetOrder {
   export type Variables = GetOrderQueryVariables;
   export type Query = GetOrderQuery;
   export type Order = OrderWithLinesFragment;
+}
+
+export namespace SettlePayment {
+  export type Variables = SettlePaymentMutationVariables;
+  export type Mutation = SettlePaymentMutation;
+  export type SettlePayment = (NonNullable<SettlePaymentMutation['settlePayment']>);
 }
 
 export namespace Asset {

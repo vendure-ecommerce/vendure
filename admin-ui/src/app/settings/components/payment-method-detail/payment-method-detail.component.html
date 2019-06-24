@@ -46,10 +46,7 @@
                     [for]="arg.name"
                     *ngIf="arg.type === ConfigArgType.BOOLEAN"
                 >
-                    <div class="toggle-switch" *ngIf="arg.type === 'boolean'">
-                        <input type="checkbox" [id]="arg.name" [formControlName]="arg.name" />
-                        <label [for]="arg.name"></label>
-                    </div>
+                    <input type="checkbox" [id]="arg.name" [formControlName]="arg.name" clrCheckbox />
                 </vdr-form-field>
             </section>
         </div>
