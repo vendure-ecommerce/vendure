@@ -1,3 +1,4 @@
+import { RequestContext } from '../../../api/common/request-context';
 import { Transitions } from '../../../common/finite-state-machine';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
@@ -36,6 +37,7 @@ export const paymentStateTransitions: Transitions<PaymentState> = {
  * @docsCategory payment
  */
 export interface PaymentTransitionData {
+    ctx: RequestContext;
     payment: Payment;
     order: Order;
 }

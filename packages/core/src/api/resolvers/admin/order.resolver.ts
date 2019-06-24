@@ -1,5 +1,5 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
-import { QueryOrderArgs, QueryOrdersArgs, Permission } from '@vendure/common/lib/generated-types';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { MutationSettlePaymentArgs, Permission, QueryOrderArgs, QueryOrdersArgs } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Order } from '../../../entity/order/order.entity';
@@ -23,5 +23,11 @@ export class OrderResolver {
     @Allow(Permission.ReadOrder)
     async order(@Ctx() ctx: RequestContext, @Args() args: QueryOrderArgs): Promise<Order | undefined> {
         return this.orderService.findOne(ctx, args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async settlePayment(@Ctx() ctx: RequestContext, @Args() args: MutationSettlePaymentArgs) {
+        return this.orderService.settlePayment(ctx, args.id);
     }
 }

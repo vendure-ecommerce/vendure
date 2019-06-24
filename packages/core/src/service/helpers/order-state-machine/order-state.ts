@@ -28,7 +28,7 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentSettled'],
     },
     PaymentSettled: {
-        to: ['OrderComplete'],
+        to: ['OrderComplete', 'Cancelled'],
     },
     OrderComplete: {
         to: ['Cancelled'],

@@ -72,7 +72,6 @@ export class OrderStateMachine {
         } = this.configService.orderOptions.process;
 
         const allTransitions = this.mergeTransitionDefinitions(orderStateTransitions, transtitions);
-        const initialState = 'AddingItems';
 
         return {
             transitions: allTransitions,

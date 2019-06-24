@@ -26,13 +26,4 @@ export class PaymentMethod extends VendureEntity {
     @Column() enabled: boolean;
 
     @Column('simple-json') configArgs: ConfigArg[];
-
-    async createPayment(order: Order, metadata: PaymentMetadata) {
-        const handler = getConfig().paymentOptions.paymentMethodHandlers.find(h => h.code === this.code);
-        if (!handler) {
-            throw new UserInputError(`error.no-payment-handler-with-code`, { code: this.code });
-        }
-        const result = await handler.createPayment(order, this.configArgs, metadata || {});
-        return new Payment(result);
-    }
 }

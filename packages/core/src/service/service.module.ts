@@ -11,6 +11,7 @@ import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
+import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
@@ -96,6 +97,7 @@ let workerTypeOrmModule: DynamicModule;
         OrderCalculator,
         OrderStateMachine,
         OrderMerger,
+        PaymentStateMachine,
         ListQueryBuilder,
         ShippingCalculator,
         AssetUpdater,

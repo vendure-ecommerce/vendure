@@ -8,6 +8,7 @@ import { Connection } from 'typeorm';
 
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { getConfig } from '../../config/config-helpers';
 import { ConfigService } from '../../config/config.service';
 import {
     PaymentMethodArgs,
@@ -71,7 +72,12 @@ export class PaymentMethodService {
         if (!paymentMethod) {
             throw new UserInputError(`error.payment-method-not-found`, { method });
         }
-        const payment = await paymentMethod.createPayment(order, metadata);
+        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(h => h.code === paymentMethod.code);
+        if (!handler) {
+            throw new UserInputError(`error.no-payment-handler-with-code`, { code: paymentMethod.code });
+        }
+        const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
+        const payment = new Payment(result);
         return this.connection.getRepository(Payment).save(payment);
     }
 

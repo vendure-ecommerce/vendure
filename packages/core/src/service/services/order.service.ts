@@ -28,7 +28,9 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
+import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
@@ -47,6 +49,7 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
+        private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
@@ -291,12 +294,9 @@ export class OrderService {
             throw new IllegalOperationError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
         }
         const payment = await this.paymentMethodService.createPayment(order, input.method, input.metadata);
-        if (order.payments) {
-            order.payments.push(payment);
-        } else {
-            order.payments = [payment];
-        }
+        order.payments = [...(order.payments || []), payment];
         await this.connection.getRepository(Order).save(order);
+
         const orderTotalCovered = order.payments.reduce((sum, p) => sum + p.amount, 0) === order.total;
         if (orderTotalCovered && order.payments.every(p => p.state === 'Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
@@ -305,6 +305,15 @@ export class OrderService {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
+    }
+
+    async settlePayment(ctx: RequestContext, paymentId: ID): Promise<Payment> {
+        const payment = await getEntityOrThrow(this.connection, Payment, paymentId, { relations: ['order'] });
+        await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
+        if (payment.amount === payment.order.total) {
+            await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
+        }
+        return payment;
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {

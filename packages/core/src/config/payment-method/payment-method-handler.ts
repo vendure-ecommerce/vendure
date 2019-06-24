@@ -44,7 +44,7 @@ export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
  */
 export interface PaymentConfig {
     amount: number;
-    state: PaymentState;
+    state: Exclude<PaymentState, 'Refunded'>;
     transactionId?: string;
     metadata?: PaymentMetadata;
 }

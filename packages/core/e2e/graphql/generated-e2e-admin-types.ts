@@ -1518,6 +1518,7 @@ export type Mutation = {
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
+    settlePayment?: Maybe<Payment>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -1701,6 +1702,10 @@ export type MutationUpdateGlobalSettingsArgs = {
 
 export type MutationImportProductsArgs = {
     csvFile: Scalars['Upload'];
+};
+
+export type MutationSettlePaymentArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -3884,6 +3889,14 @@ export type GetOrderQuery = { __typename?: 'Query' } & {
     order: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
+export type SettlePaymentMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type SettlePaymentMutation = { __typename?: 'Mutation' } & {
+    settlePayment: Maybe<{ __typename?: 'Payment' } & Pick<Payment, 'id' | 'state'>>;
+};
+
 export type AddOptionGroupToProductMutationVariables = {
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
@@ -4807,6 +4820,12 @@ export namespace GetOrder {
     export type Variables = GetOrderQueryVariables;
     export type Query = GetOrderQuery;
     export type Order = OrderWithLinesFragment;
+}
+
+export namespace SettlePayment {
+    export type Variables = SettlePaymentMutationVariables;
+    export type Mutation = SettlePaymentMutation;
+    export type SettlePayment = NonNullable<SettlePaymentMutation['settlePayment']>;
 }
 
 export namespace AddOptionGroupToProduct {
