@@ -1,6 +1,6 @@
 import { ConfigArgType } from '@vendure/common/lib/generated-types';
 
-import { PaymentConfig, PaymentMethodHandler } from './payment-method-handler';
+import { CreatePaymentResult, PaymentMethodHandler } from './payment-method-handler';
 
 /**
  * A dummy API to simulate an SDK provided by a popular payments service.
@@ -14,6 +14,9 @@ const gripeSDK = {
                     .substr(3),
             });
         },
+        capture: (transactionId: string) => {
+            return true;
+        },
     },
 };
 
@@ -25,9 +28,10 @@ export const examplePaymentHandler = new PaymentMethodHandler({
     code: 'example-payment-provider',
     description: 'Example Payment Provider',
     args: {
+        automaticCapture: ConfigArgType.BOOLEAN,
         apiKey: ConfigArgType.STRING,
     },
-    createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
+    createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
         try {
             const result = await gripeSDK.charges.create({
                 apiKey: args.apiKey,
@@ -36,11 +40,9 @@ export const examplePaymentHandler = new PaymentMethodHandler({
             });
             return {
                 amount: order.total,
-                state: 'Settled' as 'Settled',
+                state: args.automaticCapture ? 'Settled' : 'Authorized',
                 transactionId: result.id.toString(),
-                metadata: {
-                    sampleMetadata: 'some arbitrary values',
-                },
+                metadata,
             };
         } catch (err) {
             return {
@@ -51,5 +53,14 @@ export const examplePaymentHandler = new PaymentMethodHandler({
                 },
             };
         }
+    },
+    settlePayment: async (order, payment, args) => {
+        const result = await gripeSDK.charges.capture(payment.transactionId);
+        return {
+            success: result,
+            metadata: {
+                captureId: '1234567',
+            },
+        };
     },
 });

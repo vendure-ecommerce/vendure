@@ -5,12 +5,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    OrderItemsLimitError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, IllegalOperationError, OrderItemsLimitError, UserInputError, } from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
@@ -309,9 +304,14 @@ export class OrderService {
 
     async settlePayment(ctx: RequestContext, paymentId: ID): Promise<Payment> {
         const payment = await getEntityOrThrow(this.connection, Payment, paymentId, { relations: ['order'] });
-        await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
-        if (payment.amount === payment.order.total) {
-            await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
+        const settlePaymentResult = await this.paymentMethodService.settlePayment(payment, payment.order);
+        if (settlePaymentResult.success) {
+            await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
+            payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
+            await this.connection.getRepository(Payment).save(payment);
+            if (payment.amount === payment.order.total) {
+                await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
+            }
         }
         return payment;
     }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ConfigArgType, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, ConfigArgType, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
@@ -63,6 +63,18 @@ export class PaymentMethodService {
     }
 
     async createPayment(order: Order, method: string, metadata: PaymentMetadata): Promise<Payment> {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(method);
+        const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
+        const payment = new Payment(result);
+        return this.connection.getRepository(Payment).save(payment);
+    }
+
+    async settlePayment(payment: Payment, order: Order) {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+        return handler.settlePayment(order, payment, paymentMethod.configArgs);
+    }
+
+    private async getMethodAndHandler(method: string): Promise<{ paymentMethod: PaymentMethod, handler: PaymentMethodHandler }> {
         const paymentMethod = await this.connection.getRepository(PaymentMethod).findOne({
             where: {
                 code: method,
@@ -76,9 +88,7 @@ export class PaymentMethodService {
         if (!handler) {
             throw new UserInputError(`error.no-payment-handler-with-code`, { code: paymentMethod.code });
         }
-        const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
-        const payment = new Payment(result);
-        return this.connection.getRepository(Payment).save(payment);
+        return { paymentMethod, handler };
     }
 
     private async ensurePaymentMethodsExist() {
@@ -91,7 +101,18 @@ export class PaymentMethodService {
         const toRemove = existingPaymentMethods.filter(
             h => !paymentMethodHandlers.find(pm => pm.code === h.code),
         );
+        const toUpdate = existingPaymentMethods.filter(
+            h => !toCreate.find(x => x.code === h.code) && !toRemove.find(x => x.code === h.code),
+        );
 
+        for (const paymentMethod of toUpdate) {
+            const handler = paymentMethodHandlers.find(h => h.code === paymentMethod.code);
+            if (!handler) {
+                continue;
+            }
+            paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
+            await this.connection.getRepository(PaymentMethod).save(paymentMethod);
+        }
         for (const handler of toCreate) {
             let paymentMethod = existingPaymentMethods.find(pm => pm.code === handler.code);
 
@@ -102,22 +123,27 @@ export class PaymentMethodService {
                     configArgs: [],
                 });
             }
-
-            for (const [name, type] of Object.entries(handler.args)) {
-                if (!paymentMethod.configArgs.find(ca => ca.name === name)) {
-                    paymentMethod.configArgs.push({
-                        name,
-                        type,
-                        value: this.getDefaultValue(type),
-                    });
-                }
-            }
-            paymentMethod.configArgs = paymentMethod.configArgs.filter(ca =>
-                handler.args.hasOwnProperty(ca.name),
-            );
+            paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
             await this.connection.getRepository(PaymentMethod).save(paymentMethod);
         }
         await this.connection.getRepository(PaymentMethod).remove(toRemove);
+    }
+
+    private buildConfigArgsArray(handler: PaymentMethodHandler, existingConfigArgs: ConfigArg[]): ConfigArg[] {
+        let configArgs: ConfigArg[] = [];
+        for (const [name, type] of Object.entries(handler.args)) {
+            if (!existingConfigArgs.find(ca => ca.name === name)) {
+                configArgs.push({
+                    name,
+                    type,
+                    value: this.getDefaultValue(type),
+                });
+            }
+        }
+        configArgs = configArgs.filter(ca =>
+            handler.args.hasOwnProperty(ca.name),
+        );
+        return [...existingConfigArgs, ...configArgs];
     }
 
     private getDefaultValue(type: PaymentMethodArgType): string {

@@ -8,7 +8,7 @@ import {
 } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';
-import { PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import {
     PaymentState,
     PaymentTransitionData,
@@ -42,10 +42,16 @@ export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
  *
  * @docsCategory payment
  */
-export interface PaymentConfig {
+export interface CreatePaymentResult {
     amount: number;
     state: Exclude<PaymentState, 'Refunded'>;
     transactionId?: string;
+    metadata?: PaymentMetadata;
+}
+
+export interface SettlePaymentResult {
+    success: boolean;
+    errorMessage?: string;
     metadata?: PaymentMetadata;
 }
 
@@ -59,7 +65,19 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
-) => PaymentConfig | Promise<PaymentConfig>;
+) => CreatePaymentResult | Promise<CreatePaymentResult>;
+
+/**
+ * @description
+ * This function contains the logic for settling a payment. See {@link PaymentMethodHandler} for an example.
+ *
+ * @docsCategory payment
+ */
+export type SettlePaymentFn<T extends PaymentMethodArgs> = (
+    order: Order,
+    payment: Payment,
+    args: ConfigArgValues<T>,
+) => SettlePaymentResult | Promise<SettlePaymentResult>;
 
 /**
  * @description
@@ -80,11 +98,16 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
     description: string;
     /**
      * @description
-     * This function provides the actual logic for creating a payment. For example,
+     * This function provides the logic for creating a payment. For example,
      * it may call out to a third-party service with the data and should return a
-     * {@link PaymentConfig} object contains the details of the payment.
+     * {@link CreatePaymentResult} object contains the details of the payment.
      */
     createPayment: CreatePaymentFn<T>;
+    /**
+     * @description
+     * This function provides the logic for settling a payment.
+     */
+    settlePayment: SettlePaymentFn<T>;
     /**
      * @description
      * Optional provider-specific arguments which, when specified, are
@@ -162,6 +185,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
     /** @internal */
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;
+    private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
@@ -169,6 +193,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
         this.description = config.description;
         this.args = config.args;
         this.createPaymentFn = config.createPayment;
+        this.settlePaymentFn = config.settlePayment;
         this.onTransitionStartFn = config.onStateTransitionStart;
     }
 
@@ -184,6 +209,16 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
             method: this.code,
             ...paymentConfig,
         };
+    }
+
+    /**
+     * @description
+     * Called internally to settle a payment
+     *
+     * @internal
+     */
+    async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
+        return this.settlePaymentFn(order, payment, argsArrayToHash(args));
     }
 
     /**
