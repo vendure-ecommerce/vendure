@@ -322,6 +322,16 @@ export const ORDER_FRAGMENT = gql`
     }
 `;
 
+export const ORDER_ITEM_FRAGMENT = gql`
+    fragment OrderItem on OrderItem {
+        id
+        unitPrice
+        unitPriceIncludesTax
+        unitPriceWithTax
+        taxRate
+    }
+`;
+
 export const ORDER_WITH_LINES_FRAGMENT = gql`
     fragment OrderWithLines on Order {
         id
@@ -349,11 +359,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             unitPriceWithTax
             quantity
             items {
-                id
-                unitPrice
-                unitPriceIncludesTax
-                unitPriceWithTax
-                taxRate
+                ...OrderItem
             }
             totalPrice
         }
@@ -385,6 +391,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
     }
     ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
+    ${ORDER_ITEM_FRAGMENT}
 `;
 
 export const PROMOTION_FRAGMENT = gql`

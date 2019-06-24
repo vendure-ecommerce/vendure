@@ -739,6 +739,16 @@ export type FacetValueTranslation = {
     name: Scalars['String'];
 };
 
+export type Fulfillment = Node & {
+    __typename?: 'Fulfillment';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    orderItems: Array<OrderItem>;
+    method: Scalars['String'];
+    trackingCode?: Maybe<Scalars['String']>;
+};
+
 export type GlobalSettings = {
     __typename?: 'GlobalSettings';
     id: Scalars['ID'];
@@ -1362,6 +1372,7 @@ export type OrderItem = Node & {
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
     adjustments: Array<Adjustment>;
+    fulfillment?: Maybe<Fulfillment>;
 };
 
 export type OrderLine = Node & {

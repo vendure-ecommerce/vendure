@@ -55,6 +55,7 @@ type OrderItem implements Node {
     unitPriceIncludesTax: Boolean!
     taxRate: Float!
     adjustments: [Adjustment!]!
+    fulfillment: Fulfillment
 }
 
 type OrderLine implements Node {
@@ -81,4 +82,13 @@ type Payment implements Node {
     state: String!
     transactionId: String
     metadata: JSON
+}
+
+type Fulfillment implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    orderItems: [OrderItem!]!
+    method: String!
+    trackingCode: String
 }

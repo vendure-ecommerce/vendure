@@ -1,16 +1,17 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
-import { CreateAddressInput, ShippingMethodQuote } from '@vendure/common/lib/generated-types';
+import { CreateAddressInput, CreateFulfillmentInput, ShippingMethodQuote } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, IllegalOperationError, OrderItemsLimitError, UserInputError, } from '../../common/error/errors';
+import { EntityNotFoundError, IllegalOperationError, InternalServerError, OrderItemsLimitError, UserInputError } from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Customer } from '../../entity/customer/customer.entity';
+import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -70,6 +71,7 @@ export class OrderService {
                 'lines.productVariant.taxCategory',
                 'lines.featuredAsset',
                 'lines.items',
+                'lines.items.fulfillment',
                 'lines.taxCategory',
             ],
         });
@@ -314,6 +316,73 @@ export class OrderService {
             }
         }
         return payment;
+    }
+
+    async createFulfillment(ctx: RequestContext, input: CreateFulfillmentInput) {
+        if (!input.orderId && (!input.orderItemIds || input.orderItemIds.length === 0)) {
+            throw new UserInputError('error.create-fulfillment-specify-order-id-or-order-item-ids');
+        }
+        const relatedOrders = new Map<ID, Order>();
+        const orderItems = new Map<ID, OrderItem>();
+
+        if (input.orderItemIds && input.orderItemIds.length) {
+            const items = await this.connection.getRepository(OrderItem).findByIds(input.orderItemIds, {
+                relations: ['line', 'line.order', 'fulfillment'],
+            });
+            for (const item of items) {
+                const order = item.line.order;
+                if (!relatedOrders.has(order.id)) {
+                    relatedOrders.set(order.id, order);
+                }
+                orderItems.set(item.id, item);
+            }
+        }
+        if (input.orderId) {
+            const order = await this.findOne(ctx, input.orderId);
+            if (order) {
+                relatedOrders.set(order.id, order);
+                order.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItem[]).forEach(item => {
+                    orderItems.set(item.id, item);
+                });
+            }
+        }
+        for (const item of Array.from(orderItems.values())) {
+            if (!!item.fulfillment) {
+                throw new IllegalOperationError('error.create-fulfillment-items-already-fulfilled');
+            }
+        }
+        const relatedOrdersArray = Array.from(relatedOrders.values());
+        for (const order of relatedOrdersArray) {
+            if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled') {
+                throw new IllegalOperationError('error.create-fulfillment-orders-must-be-settled');
+            }
+        }
+
+        const fulfillment = await this.connection.getRepository(Fulfillment).save(new Fulfillment({
+            trackingCode: input.trackingCode,
+            method: input.method,
+            orderItems: Array.from(orderItems.values()),
+        }));
+
+        for (const order of relatedOrdersArray) {
+            const orderWithFulfillments = await this.connection.getRepository(Order).findOne(order.id, {
+                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            });
+            if (!orderWithFulfillments) {
+                throw new InternalServerError('error.could-not-find-order');
+            }
+            const allOrderItemsFulfilled = orderWithFulfillments.lines
+                .reduce((items, line) => [...items, ...line.items], [] as OrderItem[])
+                .every(orderItem => {
+                    return !!orderItem.fulfillment;
+                });
+            if (allOrderItemsFulfilled) {
+                await this.transitionToState(ctx, order.id, 'Fulfilled');
+            } else {
+                await this.transitionToState(ctx, order.id, 'PartiallyFulfilled');
+            }
+        }
+        return fulfillment;
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {

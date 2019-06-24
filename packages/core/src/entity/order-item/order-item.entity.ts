@@ -4,6 +4,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
+import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 
 /**
@@ -28,6 +29,9 @@ export class OrderItem extends VendureEntity {
     @Column() taxRate: number;
 
     @Column('simple-json') pendingAdjustments: Adjustment[];
+
+    @ManyToOne(type => Fulfillment)
+    fulfillment: Fulfillment;
 
     @Calculated()
     get unitPriceWithTax(): number {

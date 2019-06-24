@@ -449,6 +449,13 @@ export type CreateFacetValueWithFacetInput = {
   translations: Array<FacetValueTranslationInput>,
 };
 
+export type CreateFulfillmentInput = {
+  orderItemIds?: Maybe<Array<Scalars['ID']>>,
+  orderId?: Maybe<Scalars['ID']>,
+  method: Scalars['String'],
+  trackingCode?: Maybe<Scalars['String']>,
+};
+
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>,
   assetIds?: Maybe<Array<Scalars['ID']>>,
@@ -1034,6 +1041,16 @@ export type FacetValueTranslationInput = {
   customFields?: Maybe<Scalars['JSON']>,
 };
 
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment',
+  id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  updatedAt: Scalars['DateTime'],
+  orderItems: Array<OrderItem>,
+  method: Scalars['String'],
+  trackingCode?: Maybe<Scalars['String']>,
+};
+
 export type GlobalSettings = {
   __typename?: 'GlobalSettings',
   id: Scalars['ID'],
@@ -1523,6 +1540,7 @@ export type Mutation = {
   updateGlobalSettings: GlobalSettings,
   importProducts?: Maybe<ImportInfo>,
   settlePayment?: Maybe<Payment>,
+  createFulfillment?: Maybe<Fulfillment>,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
   /** Create a new ProductOptionGroup */
@@ -1555,14 +1573,14 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
-  /** Create a new TaxCategory */
-  createTaxCategory: TaxCategory,
-  /** Update an existing TaxCategory */
-  updateTaxCategory: TaxCategory,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
   updateTaxRate: TaxRate,
+  /** Create a new TaxCategory */
+  createTaxCategory: TaxCategory,
+  /** Update an existing TaxCategory */
+  updateTaxCategory: TaxCategory,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1750,6 +1768,11 @@ export type MutationSettlePaymentArgs = {
 };
 
 
+export type MutationCreateFulfillmentArgs = {
+  input: CreateFulfillmentInput
+};
+
+
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput
 };
@@ -1840,16 +1863,6 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 
-export type MutationCreateTaxCategoryArgs = {
-  input: CreateTaxCategoryInput
-};
-
-
-export type MutationUpdateTaxCategoryArgs = {
-  input: UpdateTaxCategoryInput
-};
-
-
 export type MutationCreateTaxRateArgs = {
   input: CreateTaxRateInput
 };
@@ -1857,6 +1870,16 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput
+};
+
+
+export type MutationCreateTaxCategoryArgs = {
+  input: CreateTaxCategoryInput
+};
+
+
+export type MutationUpdateTaxCategoryArgs = {
+  input: UpdateTaxCategoryInput
 };
 
 
@@ -1984,6 +2007,7 @@ export type OrderItem = Node & {
   unitPriceIncludesTax: Scalars['Boolean'],
   taxRate: Scalars['Float'],
   adjustments: Array<Adjustment>,
+  fulfillment?: Maybe<Fulfillment>,
 };
 
 export type OrderLine = Node & {
@@ -2422,10 +2446,10 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
-  taxCategories: Array<TaxCategory>,
-  taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
   taxRate?: Maybe<TaxRate>,
+  taxCategories: Array<TaxCategory>,
+  taxCategory?: Maybe<TaxCategory>,
   zones: Array<Zone>,
   zone?: Maybe<Zone>,
   networkStatus: NetworkStatus,
@@ -2598,17 +2622,17 @@ export type QueryShippingMethodArgs = {
 };
 
 
-export type QueryTaxCategoryArgs = {
-  id: Scalars['ID']
-};
-
-
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryTaxCategoryArgs = {
   id: Scalars['ID']
 };
 

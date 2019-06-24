@@ -1,13 +1,22 @@
 /* tslint:disable:no-non-null-assertion */
 import gql from 'graphql-tag';
 import path from 'path';
+import { expand } from 'rxjs/operators';
 
 import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
-import { GetCustomerList, GetOrder, GetOrderList, OrderFragment, SettlePayment } from './graphql/generated-e2e-admin-types';
+import {
+    CreateFulfillment,
+    GetCustomerList,
+    GetOrder,
+    GetOrderList,
+    OrderFragment,
+    OrderItemFragment,
+    SettlePayment,
+} from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     AddPaymentToOrder,
@@ -27,13 +36,13 @@ import {
 } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Orders resolver', () => {
     const adminClient = new TestAdminClient();
     const shopClient = new TestShopClient();
     const server = new TestServer();
     let customers: GetCustomerList.Items[];
-    let orders: OrderFragment[];
     const password = 'test';
 
     beforeAll(async () => {
@@ -68,9 +77,17 @@ describe('Orders resolver', () => {
             productVariantId: 'T_1',
             quantity: 1,
         });
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_2',
+            quantity: 1,
+        });
         await shopClient.asUserWithCredentials(customers[1].emailAddress, password);
         await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
             productVariantId: 'T_2',
+            quantity: 1,
+        });
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_3',
             quantity: 1,
         });
     }, TEST_SETUP_TIMEOUT_MS);
@@ -82,7 +99,6 @@ describe('Orders resolver', () => {
     it('orders', async () => {
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
         expect(result.orders.items.map(o => o.id)).toEqual(['T_1', 'T_2']);
-        orders = result.orders.items;
     });
 
     it('order', async () => {
@@ -160,6 +176,100 @@ describe('Orders resolver', () => {
 
             expect(result.order!.state).toBe('PaymentSettled');
             expect(result.order!.payments![0].state).toBe('Settled');
+        });
+    });
+
+    describe('fulfillment', () => {
+
+        it('throws if Order is not in "PaymentSettled" state', assertThrowsWithMessage(async () => {
+                const { orders } = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
+                const nonSettledOrder = orders.items.find(o => o.state !== 'PaymentSettled');
+                if (!nonSettledOrder) {
+                    fail('Could not find an Order not in the PaymentSettled state');
+                    return;
+                }
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                    input: {
+                        orderId: nonSettledOrder.id,
+                        method: 'Test',
+                    },
+                });
+            },
+            'One or more OrderItems belong to an Order which is in an invalid state',
+            ),
+        );
+
+        it('throws if neither orderId not orderItemIds are specified', assertThrowsWithMessage(async () => {
+                const { orders } = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
+                const nonSettledOrder = orders.items.find(o => o.state !== 'PaymentSettled');
+                if (!nonSettledOrder) {
+                    fail('Could not find an Order not in the PaymentSettled state');
+                    return;
+                }
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                    input: {
+                        method: 'Test',
+                    },
+                });
+            },
+            'Please specify either orderId or orderItemIds',
+            ),
+        );
+
+        it('creates a partial fulfillment', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            expect(order!.state).toBe('PaymentSettled');
+
+            const orderItems = order!.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItemFragment[]);
+
+            const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                input: {
+                    orderItemIds: [orderItems[0].id],
+                    method: 'Test',
+                    trackingCode: '123456',
+                },
+            });
+
+            expect(createFulfillment!.method).toBe('Test');
+            expect(createFulfillment!.trackingCode).toBe('123456');
+            expect(createFulfillment!.orderItems).toEqual([{ id: orderItems[0].id }]);
+
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            expect(result.order!.state).toBe('PartiallyFulfilled');
+        });
+
+        it('throws if an OrderItem already part of a Fulfillment', assertThrowsWithMessage(async () => {
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                    input: {
+                        method: 'Test',
+                        orderId: 'T_2',
+                    },
+                });
+            },
+            'One or more OrderItems have already been fulfilled',
+            ),
+        );
+
+        it('completes fulfillment', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            expect(order!.state).toBe('PartiallyFulfilled');
+
+            const orderItems = order!.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItemFragment[]);
+
+            const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                input: {
+                    orderItemIds: [orderItems[1].id],
+                    method: 'Test2',
+                    trackingCode: '56789',
+                },
+            });
+
+            expect(createFulfillment!.method).toBe('Test2');
+            expect(createFulfillment!.trackingCode).toBe('56789');
+            expect(createFulfillment!.orderItems).toEqual([{ id: orderItems[1].id }]);
+
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            expect(result.order!.state).toBe('Fulfilled');
         });
     });
 });
@@ -272,6 +382,19 @@ export const SETTLE_PAYMENT = gql`
             id
             state
             metadata
+        }
+    }
+`;
+
+export const CREATE_FULFILLMENT = gql`
+    mutation CreateFulfillment($input: CreateFulfillmentInput!) {
+        createFulfillment(input: $input) {
+            id
+            method
+            trackingCode
+            orderItems {
+                id
+            }
         }
     }
 `;
