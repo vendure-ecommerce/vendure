@@ -88,7 +88,7 @@ describe('Orders resolver', () => {
         });
         await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
             productVariantId: 'T_3',
-            quantity: 1,
+            quantity: 2,
         });
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -182,15 +182,12 @@ describe('Orders resolver', () => {
     describe('fulfillment', () => {
 
         it('throws if Order is not in "PaymentSettled" state', assertThrowsWithMessage(async () => {
-                const { orders } = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-                const nonSettledOrder = orders.items.find(o => o.state !== 'PaymentSettled');
-                if (!nonSettledOrder) {
-                    fail('Could not find an Order not in the PaymentSettled state');
-                    return;
-                }
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_1' });
+                expect(order!.state).toBe('PaymentAuthorized');
+
                 await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
                     input: {
-                        orderId: nonSettledOrder.id,
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                         method: 'Test',
                     },
                 });
@@ -199,32 +196,42 @@ describe('Orders resolver', () => {
             ),
         );
 
-        it('throws if neither orderId not orderItemIds are specified', assertThrowsWithMessage(async () => {
-                const { orders } = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-                const nonSettledOrder = orders.items.find(o => o.state !== 'PaymentSettled');
-                if (!nonSettledOrder) {
-                    fail('Could not find an Order not in the PaymentSettled state');
-                    return;
-                }
+        it('throws if lines is empty', assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+                expect(order!.state).toBe('PaymentSettled');
                 await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
                     input: {
+                        lines: [],
                         method: 'Test',
                     },
                 });
             },
-            'Please specify either orderId or orderItemIds',
+            'Nothing to fulfill',
+            ),
+        );
+
+        it('throws if all quantities are zero', assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+                expect(order!.state).toBe('PaymentSettled');
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+                    input: {
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                        method: 'Test',
+                    },
+                });
+            },
+            'Nothing to fulfill',
             ),
         );
 
         it('creates a partial fulfillment', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
             expect(order!.state).toBe('PaymentSettled');
-
-            const orderItems = order!.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItemFragment[]);
+            const lines = order!.lines;
 
             const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
                 input: {
-                    orderItemIds: [orderItems[0].id],
+                    lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     method: 'Test',
                     trackingCode: '123456',
                 },
@@ -232,17 +239,29 @@ describe('Orders resolver', () => {
 
             expect(createFulfillment!.method).toBe('Test');
             expect(createFulfillment!.trackingCode).toBe('123456');
-            expect(createFulfillment!.orderItems).toEqual([{ id: orderItems[0].id }]);
+            expect(createFulfillment!.orderItems).toEqual([
+                { id: lines[0].items[0].id },
+                { id: lines[1].items[0].id },
+            ]);
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            // expect(result.order!.lines).toEqual({});
             expect(result.order!.state).toBe('PartiallyFulfilled');
+            expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(createFulfillment!.id);
+            expect(result.order!.lines[1].items[1].fulfillment!.id).toBe(createFulfillment!.id);
+            expect(result.order!.lines[1].items[0].fulfillment).toBe(null);
         });
 
         it('throws if an OrderItem already part of a Fulfillment', assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+                expect(order!.state).toBe('PartiallyFulfilled');
                 await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
                     input: {
                         method: 'Test',
-                        orderId: 'T_2',
+                        lines: [{
+                            orderLineId: order!.lines[0].id,
+                            quantity: 1,
+                        }],
                     },
                 });
             },
@@ -258,7 +277,10 @@ describe('Orders resolver', () => {
 
             const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
                 input: {
-                    orderItemIds: [orderItems[1].id],
+                    lines: [{
+                        orderLineId: order!.lines[1].id,
+                        quantity: 1,
+                    }],
                     method: 'Test2',
                     trackingCode: '56789',
                 },

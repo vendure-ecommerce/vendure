@@ -329,6 +329,9 @@ export const ORDER_ITEM_FRAGMENT = gql`
         unitPriceIncludesTax
         unitPriceWithTax
         taxRate
+        fulfillment {
+            id
+        }
     }
 `;
 

@@ -449,8 +449,7 @@ export type CreateFacetValueWithFacetInput = {
 };
 
 export type CreateFulfillmentInput = {
-  orderItemIds?: Maybe<Array<Scalars['ID']>>,
-  orderId?: Maybe<Scalars['ID']>,
+  lines: Array<FulfillmentLineInput>,
   method: Scalars['String'],
   trackingCode?: Maybe<Scalars['String']>,
 };
@@ -1050,6 +1049,11 @@ export type Fulfillment = Node & {
   trackingCode?: Maybe<Scalars['String']>,
 };
 
+export type FulfillmentLineInput = {
+  orderLineId: Scalars['ID'],
+  quantity: Scalars['Int'],
+};
+
 export type GlobalSettings = {
   __typename?: 'GlobalSettings',
   id: Scalars['ID'],
@@ -1572,14 +1576,14 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate,
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1857,16 +1861,6 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
-};
-
-
 export type MutationCreateTaxCategoryArgs = {
   input: CreateTaxCategoryInput
 };
@@ -1874,6 +1868,16 @@ export type MutationCreateTaxCategoryArgs = {
 
 export type MutationUpdateTaxCategoryArgs = {
   input: UpdateTaxCategoryInput
+};
+
+
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput
 };
 
 
@@ -2424,10 +2428,10 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
-  taxRates: TaxRateList,
-  taxRate?: Maybe<TaxRate>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
+  taxRates: TaxRateList,
+  taxRate?: Maybe<TaxRate>,
   zones: Array<Zone>,
   zone?: Maybe<Zone>,
 };
@@ -2597,17 +2601,17 @@ export type QueryShippingMethodArgs = {
 };
 
 
+export type QueryTaxCategoryArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryTaxCategoryArgs = {
   id: Scalars['ID']
 };
 

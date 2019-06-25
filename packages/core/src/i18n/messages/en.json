@@ -10,7 +10,7 @@
     "country-code-not-valid":  "The countryCode \"{ countryCode }\" was not recognized",
     "create-fulfillment-items-already-fulfilled": "One or more OrderItems have already been fulfilled",
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",
-    "create-fulfillment-specify-order-id-or-order-item-ids": "Please specify either orderId or orderItemIds",
+    "create-fulfillment-nothing-to-fulfill": "Nothing to fulfill",
     "email-address-not-available": "This email address is not available",
     "email-address-not-verified": "Please verify this email address before logging in",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",

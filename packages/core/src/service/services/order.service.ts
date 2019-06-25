@@ -319,33 +319,33 @@ export class OrderService {
     }
 
     async createFulfillment(ctx: RequestContext, input: CreateFulfillmentInput) {
-        if (!input.orderId && (!input.orderItemIds || input.orderItemIds.length === 0)) {
-            throw new UserInputError('error.create-fulfillment-specify-order-id-or-order-item-ids');
+        if (!input.lines || input.lines.length === 0 || input.lines.reduce((total, line) => total + line.quantity, 0) === 0) {
+            throw new UserInputError('error.create-fulfillment-nothing-to-fulfill');
         }
         const relatedOrders = new Map<ID, Order>();
         const orderItems = new Map<ID, OrderItem>();
 
-        if (input.orderItemIds && input.orderItemIds.length) {
-            const items = await this.connection.getRepository(OrderItem).findByIds(input.orderItemIds, {
-                relations: ['line', 'line.order', 'fulfillment'],
-            });
-            for (const item of items) {
-                const order = item.line.order;
-                if (!relatedOrders.has(order.id)) {
-                    relatedOrders.set(order.id, order);
-                }
-                orderItems.set(item.id, item);
+        const lines = await this.connection.getRepository(OrderLine).findByIds(input.lines.map(l => l.orderLineId), {
+            relations: ['order', 'items', 'items.fulfillment'],
+        });
+        for (const line of lines) {
+            const inputLine = input.lines.find(l => idsAreEqual(l.orderLineId, line.id));
+            if (!inputLine) {
+                continue;
             }
-        }
-        if (input.orderId) {
-            const order = await this.findOne(ctx, input.orderId);
-            if (order) {
+            const order = line.order;
+            if (!relatedOrders.has(order.id)) {
                 relatedOrders.set(order.id, order);
-                order.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItem[]).forEach(item => {
-                    orderItems.set(item.id, item);
-                });
             }
+            const unfulfilledItems = line.items.filter(i => !i.fulfillment);
+            if (unfulfilledItems.length < inputLine.quantity) {
+                throw new IllegalOperationError('error.create-fulfillment-items-already-fulfilled');
+            }
+            unfulfilledItems.slice(0, inputLine.quantity).forEach(item => {
+                orderItems.set(item.id, item);
+            });
         }
+
         for (const item of Array.from(orderItems.values())) {
             if (!!item.fulfillment) {
                 throw new IllegalOperationError('error.create-fulfillment-items-already-fulfilled');

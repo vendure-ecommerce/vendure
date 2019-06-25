@@ -39,7 +39,7 @@ export class OrderResolver {
     }
 
     @Mutation()
-    @Decode('orderId', 'orderItemIds')
+    @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
     async createFulfillment(@Ctx() ctx: RequestContext, @Args() args: MutationCreateFulfillmentArgs) {
         return this.orderService.createFulfillment(ctx, args.input);

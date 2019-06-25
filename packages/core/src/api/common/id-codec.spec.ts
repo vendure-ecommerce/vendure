@@ -157,6 +157,19 @@ describe('IdCodecService', () => {
             expect(result.items[0].friends[0].name.id).toBe(ENCODED);
         });
 
+        it('works with lists with a nullable object property', () => {
+            const input = {
+                items: [
+                    { user: null },
+                    { user: { id: 'id' }},
+                ],
+            };
+
+            const result = idCodec.encode(input);
+            expect(result.items[0].user).toBe(null);
+            expect(result.items[1].user).toEqual({ id: ENCODED });
+        });
+
         it('works with nested list of nested lists', () => {
             const input = {
                 items: [
@@ -262,6 +275,19 @@ describe('IdCodecService', () => {
             expect(result).toEqual({
                 items: [{ id: DECODED, name: 'foo' }, { id: DECODED, name: 'bar' }],
             });
+        });
+
+        it('works with lists with a nullable object property', () => {
+            const input = {
+                items: [
+                    { user: null },
+                    { user: { id: 'id' }},
+                ],
+            };
+
+            const result = idCodec.decode(input);
+            expect(result.items[0].user).toBe(null);
+            expect(result.items[1].user).toEqual({ id: DECODED });
         });
 
         it('works with large and nested list', () => {

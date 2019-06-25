@@ -12,8 +12,13 @@ type Mutation {
 input OrderListOptions
 
 input CreateFulfillmentInput {
-    orderItemIds: [ID!]
-    orderId: ID
+    lines: [FulfillmentLineInput!]!
     method: String!
     trackingCode: String
 }
+
+input FulfillmentLineInput {
+    orderLineId: ID!
+    quantity: Int!
+}
+

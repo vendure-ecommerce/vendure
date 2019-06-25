@@ -112,7 +112,7 @@ export class IdCodec {
     private isSimpleObject(target: any): boolean {
         const values = Object.values(target);
         for (const value of values) {
-            if (this.isObject(value)) {
+            if (this.isObject(value) || value === null) {
                 return false;
             }
         }
