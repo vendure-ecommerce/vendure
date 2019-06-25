@@ -220,7 +220,7 @@ describe('EmailPlugin', () => {
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'OrderComplete', ctx, order));
+            eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'PaymentAuthorized', ctx, order));
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
