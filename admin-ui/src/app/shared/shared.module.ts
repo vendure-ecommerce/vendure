@@ -31,6 +31,7 @@ import { FacetValueSelectorComponent } from './components/facet-value-selector/f
 import { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
+import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
@@ -102,6 +103,7 @@ const DECLARATIONS = [
     DropdownTriggerDirective,
     DropdownItemDirective,
     OrderStateLabelComponent,
+    FormattedAddressComponent,
 ];
 
 @NgModule({

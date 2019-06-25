@@ -17,22 +17,7 @@
     </div>
     <div class="card-block">
         <div class="card-text">
-            <ul class="address-lines" *ngIf="!editing">
-                <li *ngIf="address.fullName">{{ address.fullName }}</li>
-                <li *ngIf="address.streetLine1">{{ address.streetLine1 }}</li>
-                <li *ngIf="address.streetLine2">{{ address.streetLine2 }}</li>
-                <li *ngIf="address.city">{{ address.city }}</li>
-                <li *ngIf="address.province">{{ address.province }}</li>
-                <li *ngIf="address.postalCode">{{ address.postalCode }}</li>
-                <li *ngIf="address.country">
-                    <clr-icon shape="world" size="12"></clr-icon>
-                    {{ address.country.name }}
-                </li>
-                <li *ngIf="address.phoneNumber">
-                    <clr-icon shape="phone-handset" size="12"></clr-icon>
-                    {{ address.phoneNumber }}
-                </li>
-            </ul>
+            <vdr-formatted-address [address]="address" *ngIf="!editing"></vdr-formatted-address>
             <form [formGroup]="addressForm" *ngIf="editing">
                 <clr-input-container>
                     <label>{{ 'customer.full-name' | translate }}</label>
