@@ -9,7 +9,7 @@ import { ServerConfigService } from '../data/server-config';
 import { LanguageCode } from './generated-types';
 import { getDefaultLanguage } from './utilities/get-default-language';
 
-export abstract class BaseDetailComponent<Entity extends { id: string }> {
+export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> {
     entity$: Observable<Entity>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
@@ -27,7 +27,9 @@ export abstract class BaseDetailComponent<Entity extends { id: string }> {
     init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data => data.entity as Observable<Entity>),
-            distinctUntilChanged((a, b) => a.id === b.id),
+            distinctUntilChanged((a, b) => {
+                return a.id === b.id && a.updatedAt === b.updatedAt;
+            }),
             tap(entity => (this.id = entity.id)),
             shareReplay(1),
         );

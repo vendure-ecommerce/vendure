@@ -15,6 +15,8 @@ export class BackgroundColorFromDirective implements OnChanges {
     @Input() private vdrBackgroundColorFrom: string;
 
     ngOnChanges(): void {
-        this.backgroundColor = stringToColor(this.vdrBackgroundColorFrom);
+        if (this.vdrBackgroundColorFrom !== '') {
+            this.backgroundColor = stringToColor(this.vdrBackgroundColorFrom);
+        }
     }
 }

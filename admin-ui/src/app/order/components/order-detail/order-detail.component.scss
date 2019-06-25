@@ -1,7 +1,20 @@
 @import "variables";
 
+.date-detail {
+    color: $color-grey-500;
+    padding-left: 6px;
+}
+
 ul.payment-metadata {
    list-style-type: none;
+}
+.metadata-prop {
+    color: $color-grey-500;
+}
+
+.shipping-address {
+    list-style-type: none;
+    line-height: 1.3em;
 }
 
 .order-lines {
@@ -13,5 +26,12 @@ ul.payment-metadata {
     .total td {
         font-weight: bold;
         border-top: 1px dashed $color-grey-300;
+    }
+}
+
+.order-cards {
+    h6 {
+        margin-top: 6px;
+        color: $color-grey-500;
     }
 }

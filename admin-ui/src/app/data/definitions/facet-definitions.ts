@@ -21,6 +21,7 @@ export const FACET_VALUE_FRAGMENT = gql`
 export const FACET_WITH_VALUES_FRAGMENT = gql`
     fragment FacetWithValues on Facet {
         id
+        updatedAt
         languageCode
         isPrivate
         code

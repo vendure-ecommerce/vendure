@@ -1,0 +1,33 @@
+@import "variables";
+
+:host {
+    ::ng-deep vdr-chip {
+        &.PaymentAuthorized, &.PaymentSettled {
+            .wrapper {
+                color: $color-warning-700;
+            }
+            .chip-label {
+                color: $color-warning-700;
+                background-color: $color-warning-400;
+            }
+        }
+        &.Fulfilled {
+            .wrapper {
+                color: $color-success-700;
+            }
+            .chip-label {
+                color: $color-success-700;
+                background-color: $color-success-400;
+            }
+        }
+        &.Cancelled {
+            .wrapper {
+                color: $color-error-700;
+            }
+            .chip-label {
+                color: $color-error-700;
+                background-color: $color-error-400;
+            }
+        }
+    }
+}

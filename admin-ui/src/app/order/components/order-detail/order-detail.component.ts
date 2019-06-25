@@ -41,7 +41,9 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
         if (!shippingAddress) {
             return [];
         }
-        return Object.values(shippingAddress).filter(val => val !== 'ShippingAddress');
+        return Object.values(shippingAddress)
+            .filter(val => val !== 'OrderAddress')
+            .filter(line => !!line);
     }
 
     getPaymentMetadata(payment: OrderWithLines.Payments) {
@@ -56,8 +58,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
                 } else {
                     this.notificationService.error(_('order.settle-payment-error'));
                 }
-                payment.state = settlePayment.state;
-                this.changeDetector.markForCheck();
+                this.dataService.order.getOrder(this.id).single$.subscribe();
             }
         });
     }

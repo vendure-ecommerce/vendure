@@ -37,6 +37,7 @@ import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
+import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
@@ -100,6 +101,7 @@ const DECLARATIONS = [
     DropdownMenuComponent,
     DropdownTriggerDirective,
     DropdownItemDirective,
+    OrderStateLabelComponent,
 ];
 
 @NgModule({
