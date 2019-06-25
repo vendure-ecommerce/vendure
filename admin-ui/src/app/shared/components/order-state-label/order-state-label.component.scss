@@ -2,31 +2,31 @@
 
 :host {
     ::ng-deep vdr-chip {
-        &.PaymentAuthorized, &.PaymentSettled {
+        &.PaymentAuthorized, &.PaymentSettled, &.PartiallyFulfilled {
             .wrapper {
-                color: $color-warning-700;
+                border-color: $color-warning-200;
             }
             .chip-label {
-                color: $color-warning-700;
-                background-color: $color-warning-400;
+                color: $color-warning-600;
+                background-color: $color-warning-100;
             }
         }
         &.Fulfilled {
             .wrapper {
-                color: $color-success-700;
+                border-color: $color-success-200;
             }
             .chip-label {
-                color: $color-success-700;
-                background-color: $color-success-400;
+                color: $color-success-600;
+                background-color: $color-success-100;
             }
         }
         &.Cancelled {
             .wrapper {
-                color: $color-error-700;
+                border-color: $color-error-200;
             }
             .chip-label {
-                color: $color-error-700;
-                background-color: $color-error-400;
+                color: $color-error-600;
+                background-color: $color-error-100;
             }
         }
     }

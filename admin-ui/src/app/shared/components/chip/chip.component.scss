@@ -18,6 +18,10 @@
 .chip-label {
     padding: 3px 6px;
     line-height: 1em;
+    border-radius: 3px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .chip-icon {

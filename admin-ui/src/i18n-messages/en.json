@@ -406,7 +406,12 @@
   },
   "order": {
     "amount": "Amount",
+    "create-fulfillment": "Create fulfillment",
+    "create-fulfillment-success": "Created fulfillment",
     "customer": "Customer",
+    "fulfill": "Fulfill",
+    "fulfill-order": "Fulfill order",
+    "fulfillment-method": "Fulfillment method",
     "payment": "Payment",
     "payment-metadata": "Payment metadata",
     "payment-method": "Payment method",
@@ -419,6 +424,7 @@
     "settle-payment-success": "Sucessfully settled payment",
     "shipping": "Shipping",
     "shipping-address": "Shipping address",
+    "shipping-method": "Shipping method",
     "state": "State",
     "state-adding-items": "Adding items",
     "state-arranging-payment": "Arranging payment",
@@ -429,6 +435,7 @@
     "state-payment-settled": "Payment settled",
     "sub-total": "Sub total",
     "total": "Total",
+    "tracking-code": "Tracking code",
     "transaction-id": "Transaction ID",
     "unit-price": "Unit price"
   },

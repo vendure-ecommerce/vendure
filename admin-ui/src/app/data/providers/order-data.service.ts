@@ -1,5 +1,16 @@
-import { GetOrder, GetOrderList, SettlePayment } from '../../common/generated-types';
-import { GET_ORDER, GET_ORDERS_LIST, SETTLE_PAYMENT } from '../definitions/order-definitions';
+import {
+    CreateFulfillment,
+    CreateFulfillmentInput,
+    GetOrder,
+    GetOrderList,
+    SettlePayment,
+} from '../../common/generated-types';
+import {
+    CREATE_FULFILLMENT,
+    GET_ORDER,
+    GET_ORDERS_LIST,
+    SETTLE_PAYMENT,
+} from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
 
@@ -23,5 +34,14 @@ export class OrderDataService {
         return this.baseDataService.mutate<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
             id,
         });
+    }
+
+    createFullfillment(input: CreateFulfillmentInput) {
+        return this.baseDataService.mutate<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+            CREATE_FULFILLMENT,
+            {
+                input,
+            },
+        );
     }
 }

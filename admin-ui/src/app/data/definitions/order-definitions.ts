@@ -72,6 +72,11 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
                 unitPriceIncludesTax
                 unitPriceWithTax
                 taxRate
+                fulfillment {
+                    id
+                    method
+                    trackingCode
+                }
             }
             totalPrice
         }
@@ -103,6 +108,15 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
     }
     ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
+`;
+
+export const FULFILLMENT_FRAGMENT = gql`
+    fragment Fulfillment on Fulfillment {
+        id
+        updatedAt
+        method
+        trackingCode
+    }
 `;
 
 export const GET_ORDERS_LIST = gql`
@@ -137,4 +151,13 @@ export const SETTLE_PAYMENT = gql`
             metadata
         }
     }
+`;
+
+export const CREATE_FULFILLMENT = gql`
+    mutation CreateFulfillment($input: CreateFulfillmentInput!) {
+        createFulfillment(input: $input) {
+            ...Fulfillment
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
 `;

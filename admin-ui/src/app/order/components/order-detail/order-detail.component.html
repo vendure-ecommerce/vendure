@@ -10,7 +10,15 @@
         </div>
     </vdr-ab-left>
 
-    <vdr-ab-right></vdr-ab-right>
+    <vdr-ab-right>
+        <button
+            class="btn btn-primary"
+            (click)="fulfillOrder()"
+            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled'"
+        >
+            {{ 'order.fulfill-order' | translate }}
+        </button>
+    </vdr-ab-right>
 </vdr-action-bar>
 
 <div *ngIf="entity$ | async as order">
@@ -28,14 +36,18 @@
                     </tr>
                 </thead>
                 <tr *ngFor="let line of order.lines" class="order-line">
-                    <td class="thumb"><img [src]="line.featuredAsset.preview + '?preset=tiny'" /></td>
-                    <td class="name">{{ line.productVariant.name }}</td>
-                    <td class="sku">{{ line.productVariant.sku }}</td>
-                    <td class="unit-price">
+                    <td class="align-middle thumb">
+                        <img [src]="line.featuredAsset.preview + '?preset=tiny'" />
+                    </td>
+                    <td class="align-middle name">{{ line.productVariant.name }}</td>
+                    <td class="align-middle sku">{{ line.productVariant.sku }}</td>
+                    <td class="align-middle unit-price">
                         {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
                     </td>
-                    <td class="quantity">{{ line.quantity }}</td>
-                    <td class="total">{{ line.totalPrice / 100 | currency: order.currencyCode }}</td>
+                    <td class="align-middle quantity">{{ line.quantity }}</td>
+                    <td class="align-middle total">
+                        {{ line.totalPrice / 100 | currency: order.currencyCode }}
+                    </td>
                 </tr>
                 <tr class="sub-total">
                     <td class="left">{{ 'order.sub-total' | translate }}</td>
@@ -76,11 +88,7 @@
                         <h6 *ngIf="getShippingAddressLines(order.shippingAddress).length">
                             {{ 'order.shipping-address' | translate }}
                         </h6>
-                        <ul class="shipping-address">
-                            <li *ngFor="let line of getShippingAddressLines(order.shippingAddress)">
-                                {{ line }}
-                            </li>
-                        </ul>
+                        <vdr-formatted-address [address]="order.shippingAddress"></vdr-formatted-address>
                     </div>
                 </div>
             </div>

@@ -19,5 +19,6 @@ import { CustomerResolver } from './providers/routing/customer-resolver';
         AddressCardComponent,
     ],
     providers: [CustomerResolver],
+    exports: [AddressCardComponent],
 })
 export class CustomerModule {}

@@ -23,6 +23,10 @@ a:focus, button:focus {
 
 .table {
     border-color: $color-grey-200;
+
+    td.align-middle {
+        vertical-align: middle!important;
+    }
 }
 
 .full-label, .compact-label {
