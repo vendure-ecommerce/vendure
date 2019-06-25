@@ -1323,6 +1323,7 @@ export type Order = Node & {
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
     payments?: Maybe<Array<Payment>>;
+    fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;

@@ -2,6 +2,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import { CreateAddressInput, CreateFulfillmentInput, ShippingMethodQuote } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -383,6 +385,29 @@ export class OrderService {
             }
         }
         return fulfillment;
+    }
+
+    async getOrderFulfillments(order: Order): Promise<Fulfillment[]> {
+        let lines: OrderLine[];
+        if (order.lines && order.lines[0] && order.lines[0].items && order.lines[0].items[0].fulfillment !== undefined) {
+            lines = order.lines;
+        } else {
+            lines = await this.connection.getRepository(OrderLine).find({
+                where: {
+                    order: order.id,
+                },
+                relations: ['items', 'items.fulfillment'],
+            });
+        }
+        const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
+        return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
+    }
+
+    async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
+        const fulfillment = await getEntityOrThrow(this.connection, Fulfillment, id,  {
+            relations: ['orderItems'],
+        });
+        return fulfillment.orderItems;
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {

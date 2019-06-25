@@ -1,7 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import gql from 'graphql-tag';
 import path from 'path';
-import { expand } from 'rxjs/operators';
 
 import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
@@ -12,8 +11,10 @@ import {
     CreateFulfillment,
     GetCustomerList,
     GetOrder,
+    GetOrderFulfillmentItems,
+    GetOrderFulfillments,
     GetOrderList,
-    OrderFragment,
+    GetOrderListFulfillments,
     OrderItemFragment,
     SettlePayment,
 } from './graphql/generated-e2e-admin-types';
@@ -53,10 +54,7 @@ describe('Orders resolver', () => {
             },
             {
                 paymentOptions: {
-                    paymentMethodHandlers: [
-                        twoStagePaymentMethod,
-                        failsToSettlePaymentMethod,
-                    ],
+                    paymentMethodHandlers: [twoStagePaymentMethod, failsToSettlePaymentMethod],
                 },
             },
         );
@@ -88,7 +86,7 @@ describe('Orders resolver', () => {
         });
         await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
             productVariantId: 'T_3',
-            quantity: 2,
+            quantity: 3,
         });
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -107,7 +105,6 @@ describe('Orders resolver', () => {
     });
 
     describe('payments', () => {
-
         it('settlePayment fails', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
@@ -128,14 +125,19 @@ describe('Orders resolver', () => {
             expect(order.state).toBe('PaymentAuthorized');
 
             const payment = order.payments![0];
-            const { settlePayment } = await adminClient.query<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+            const { settlePayment } = await adminClient.query<
+                SettlePayment.Mutation,
+                SettlePayment.Variables
+                >(SETTLE_PAYMENT, {
                 id: payment.id,
             });
 
             expect(settlePayment!.id).toBe(payment.id);
             expect(settlePayment!.state).toBe('Authorized');
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: order.id });
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: order.id,
+            });
 
             expect(result.order!.state).toBe('PaymentAuthorized');
         });
@@ -160,7 +162,10 @@ describe('Orders resolver', () => {
             expect(order.state).toBe('PaymentAuthorized');
 
             const payment = order.payments![0];
-            const { settlePayment } = await adminClient.query<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+            const { settlePayment } = await adminClient.query<
+                SettlePayment.Mutation,
+                SettlePayment.Variables
+                >(SETTLE_PAYMENT, {
                 id: payment.id,
             });
 
@@ -172,7 +177,9 @@ describe('Orders resolver', () => {
                 moreData: 42,
             });
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: order.id });
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: order.id,
+            });
 
             expect(result.order!.state).toBe('PaymentSettled');
             expect(result.order!.payments![0].state).toBe('Settled');
@@ -180,118 +187,232 @@ describe('Orders resolver', () => {
     });
 
     describe('fulfillment', () => {
-
-        it('throws if Order is not in "PaymentSettled" state', assertThrowsWithMessage(async () => {
-                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_1' });
+        it(
+            'throws if Order is not in "PaymentSettled" state',
+            assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: 'T_1',
+                });
                 expect(order!.state).toBe('PaymentAuthorized');
 
-                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
-                    input: {
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                        method: 'Test',
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                    CREATE_FULFILLMENT,
+                    {
+                        input: {
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                            method: 'Test',
+                        },
                     },
-                });
-            },
-            'One or more OrderItems belong to an Order which is in an invalid state',
-            ),
+                );
+            }, 'One or more OrderItems belong to an Order which is in an invalid state'),
         );
 
-        it('throws if lines is empty', assertThrowsWithMessage(async () => {
-                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
-                expect(order!.state).toBe('PaymentSettled');
-                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
-                    input: {
-                        lines: [],
-                        method: 'Test',
-                    },
+        it(
+            'throws if lines is empty',
+            assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: 'T_2',
                 });
-            },
-            'Nothing to fulfill',
-            ),
+                expect(order!.state).toBe('PaymentSettled');
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                    CREATE_FULFILLMENT,
+                    {
+                        input: {
+                            lines: [],
+                            method: 'Test',
+                        },
+                    },
+                );
+            }, 'Nothing to fulfill'),
         );
 
-        it('throws if all quantities are zero', assertThrowsWithMessage(async () => {
-                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
-                expect(order!.state).toBe('PaymentSettled');
-                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
-                    input: {
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
-                        method: 'Test',
-                    },
+        it(
+            'throws if all quantities are zero',
+            assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: 'T_2',
                 });
-            },
-            'Nothing to fulfill',
-            ),
+                expect(order!.state).toBe('PaymentSettled');
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                    CREATE_FULFILLMENT,
+                    {
+                        input: {
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                            method: 'Test',
+                        },
+                    },
+                );
+            }, 'Nothing to fulfill'),
         );
 
         it('creates a partial fulfillment', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
             expect(order!.state).toBe('PaymentSettled');
             const lines = order!.lines;
 
-            const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+            const { createFulfillment } = await adminClient.query<
+                CreateFulfillment.Mutation,
+                CreateFulfillment.Variables
+                >(CREATE_FULFILLMENT, {
                 input: {
                     lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
-                    method: 'Test',
-                    trackingCode: '123456',
+                    method: 'Test1',
+                    trackingCode: '111',
                 },
             });
 
-            expect(createFulfillment!.method).toBe('Test');
-            expect(createFulfillment!.trackingCode).toBe('123456');
+            expect(createFulfillment!.method).toBe('Test1');
+            expect(createFulfillment!.trackingCode).toBe('111');
             expect(createFulfillment!.orderItems).toEqual([
                 { id: lines[0].items[0].id },
                 { id: lines[1].items[0].id },
             ]);
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
-            // expect(result.order!.lines).toEqual({});
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+
             expect(result.order!.state).toBe('PartiallyFulfilled');
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(createFulfillment!.id);
-            expect(result.order!.lines[1].items[1].fulfillment!.id).toBe(createFulfillment!.id);
-            expect(result.order!.lines[1].items[0].fulfillment).toBe(null);
+            expect(result.order!.lines[1].items[2].fulfillment!.id).toBe(createFulfillment!.id);
+            expect(result.order!.lines[1].items[1].fulfillment).toBeNull();
+            expect(result.order!.lines[1].items[0].fulfillment).toBeNull();
         });
 
-        it('throws if an OrderItem already part of a Fulfillment', assertThrowsWithMessage(async () => {
-                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
-                expect(order!.state).toBe('PartiallyFulfilled');
-                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
-                    input: {
-                        method: 'Test',
-                        lines: [{
-                            orderLineId: order!.lines[0].id,
-                            quantity: 1,
-                        }],
-                    },
-                });
-            },
-            'One or more OrderItems have already been fulfilled',
-            ),
-        );
-
-        it('completes fulfillment', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+        it('creates a second partial fulfillment', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
             expect(order!.state).toBe('PartiallyFulfilled');
+            const lines = order!.lines;
 
-            const orderItems = order!.lines.reduce((items, line) => [...items, ...line.items], [] as OrderItemFragment[]);
-
-            const { createFulfillment } = await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(CREATE_FULFILLMENT, {
+            const { createFulfillment } = await adminClient.query<
+                CreateFulfillment.Mutation,
+                CreateFulfillment.Variables
+                >(CREATE_FULFILLMENT, {
                 input: {
-                    lines: [{
-                        orderLineId: order!.lines[1].id,
-                        quantity: 1,
-                    }],
+                    lines: [{ orderLineId: lines[1].id, quantity: 1 }],
                     method: 'Test2',
-                    trackingCode: '56789',
+                    trackingCode: '222',
                 },
             });
 
-            expect(createFulfillment!.method).toBe('Test2');
-            expect(createFulfillment!.trackingCode).toBe('56789');
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+            // expect(result.order!.lines).toEqual({});
+            expect(result.order!.state).toBe('PartiallyFulfilled');
+            expect(result.order!.lines[1].items[2].fulfillment).not.toBeNull();
+            expect(result.order!.lines[1].items[1].fulfillment).not.toBeNull();
+            expect(result.order!.lines[1].items[0].fulfillment).toBeNull();
+        });
+
+        it(
+            'throws if an OrderItem already part of a Fulfillment',
+            assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: 'T_2',
+                });
+                expect(order!.state).toBe('PartiallyFulfilled');
+                await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                    CREATE_FULFILLMENT,
+                    {
+                        input: {
+                            method: 'Test',
+                            lines: [
+                                {
+                                    orderLineId: order!.lines[0].id,
+                                    quantity: 1,
+                                },
+                            ],
+                        },
+                    },
+                );
+            }, 'One or more OrderItems have already been fulfilled'),
+        );
+
+        it('completes fulfillment', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+            expect(order!.state).toBe('PartiallyFulfilled');
+
+            const orderItems = order!.lines.reduce(
+                (items, line) => [...items, ...line.items],
+                [] as OrderItemFragment[],
+            );
+
+            const { createFulfillment } = await adminClient.query<
+                CreateFulfillment.Mutation,
+                CreateFulfillment.Variables
+                >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: [
+                        {
+                            orderLineId: order!.lines[1].id,
+                            quantity: 1,
+                        },
+                    ],
+                    method: 'Test3',
+                    trackingCode: '333',
+                },
+            });
+
+            expect(createFulfillment!.method).toBe('Test3');
+            expect(createFulfillment!.trackingCode).toBe('333');
             expect(createFulfillment!.orderItems).toEqual([{ id: orderItems[1].id }]);
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
             expect(result.order!.state).toBe('Fulfilled');
+        });
+
+        it('order.fullfillments resolver for single order', async () => {
+            const { order } = await adminClient.query<
+                GetOrderFulfillments.Query,
+                GetOrderFulfillments.Variables
+                >(GET_ORDER_FULFILLMENTS, {
+                id: 'T_2',
+            });
+
+            expect(order!.fulfillments).toEqual([
+                { id: 'T_1', method: 'Test1' },
+                { id: 'T_2', method: 'Test2' },
+                { id: 'T_3', method: 'Test3' },
+            ]);
+        });
+
+        it('order.fullfillments resolver for order list', async () => {
+            const { orders } = await adminClient.query<GetOrderListFulfillments.Query>(
+                GET_ORDER_LIST_FULFILLMENTS,
+            );
+
+            expect(orders.items[0].fulfillments).toEqual([]);
+            expect(orders.items[1].fulfillments).toEqual([
+                { id: 'T_1', method: 'Test1' },
+                { id: 'T_2', method: 'Test2' },
+                { id: 'T_3', method: 'Test3' },
+            ]);
+        });
+
+        it('order.fullfillments.orderItems resolver', async () => {
+            const { order } = await adminClient.query<
+                GetOrderFulfillmentItems.Query,
+                GetOrderFulfillmentItems.Variables
+                >(GET_ORDER_FULFILLMENT_ITEMS, {
+                id: 'T_2',
+            });
+
+            expect(order!.fulfillments![0].orderItems).toEqual([
+                { id: 'T_3' },
+                { id: 'T_4' },
+            ]);
+            expect(order!.fulfillments![1].orderItems).toEqual([
+                { id: 'T_5' },
+            ]);
         });
     });
 });
@@ -345,29 +466,23 @@ const failsToSettlePaymentMethod = new PaymentMethodHandler({
 });
 
 async function proceedToArrangingPayment(shopClient: TestShopClient): Promise<ID> {
-    await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-        SET_SHIPPING_ADDRESS,
-        {
-            input: {
-                fullName: 'name',
-                streetLine1: '12 the street',
-                city: 'foo',
-                postalCode: '123456',
-                countryCode: 'US',
-            },
+    await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(SET_SHIPPING_ADDRESS, {
+        input: {
+            fullName: 'name',
+            streetLine1: '12 the street',
+            city: 'foo',
+            postalCode: '123456',
+            countryCode: 'US',
         },
-    );
+    });
 
     const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
         GET_ELIGIBLE_SHIPPING_METHODS,
     );
 
-    await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-        SET_SHIPPING_METHOD,
-        {
-            id: eligibleShippingMethods[1].id,
-        },
-    );
+    await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
+        id: eligibleShippingMethods[1].id,
+    });
 
     const { transitionOrderToState } = await shopClient.query<
         TransitionToState.Mutation,
@@ -416,6 +531,46 @@ export const CREATE_FULFILLMENT = gql`
             trackingCode
             orderItems {
                 id
+            }
+        }
+    }
+`;
+
+export const GET_ORDER_FULFILLMENTS = gql`
+    query GetOrderFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            fulfillments {
+                id
+                method
+            }
+        }
+    }
+`;
+
+export const GET_ORDER_LIST_FULFILLMENTS = gql`
+    query GetOrderListFulfillments {
+        orders {
+            items {
+                id
+                fulfillments {
+                    id
+                    method
+                }
+            }
+        }
+    }
+`;
+
+export const GET_ORDER_FULFILLMENT_ITEMS = gql`
+    query GetOrderFulfillmentItems($id: ID!) {
+        order(id: $id) {
+            id
+            fulfillments {
+                id
+                orderItems {
+                    id
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ type Order implements Node {
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
     payments: [Payment!]
+    fulfillments: [Fulfillment!]
     subTotalBeforeTax: Int!
     subTotal: Int!
     currencyCode: CurrencyCode!

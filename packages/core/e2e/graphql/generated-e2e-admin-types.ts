@@ -1493,18 +1493,18 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
-    /** Create a new Collection */
-    createCollection: Collection;
-    /** Update an existing Collection */
-    updateCollection: Collection;
-    /** Move a Collection to a different parent or index */
-    moveCollection: Collection;
     /** Create a new Country */
     createCountry: Country;
     /** Update an existing Country */
     updateCountry: Country;
     /** Delete a Country */
     deleteCountry: DeletionResponse;
+    /** Create a new Collection */
+    createCollection: Collection;
+    /** Update an existing Collection */
+    updateCollection: Collection;
+    /** Move a Collection to a different parent or index */
+    moveCollection: Collection;
     /** Create a new CustomerGroup */
     createCustomerGroup: CustomerGroup;
     /** Update an existing CustomerGroup */
@@ -1537,8 +1537,8 @@ export type Mutation = {
     updateFacetValues: Array<FacetValue>;
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
-    updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
+    updateGlobalSettings: GlobalSettings;
     settlePayment?: Maybe<Payment>;
     createFulfillment?: Maybe<Fulfillment>;
     /** Update an existing PaymentMethod */
@@ -1624,18 +1624,6 @@ export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
 };
 
-export type MutationCreateCollectionArgs = {
-    input: CreateCollectionInput;
-};
-
-export type MutationUpdateCollectionArgs = {
-    input: UpdateCollectionInput;
-};
-
-export type MutationMoveCollectionArgs = {
-    input: MoveCollectionInput;
-};
-
 export type MutationCreateCountryArgs = {
     input: CreateCountryInput;
 };
@@ -1646,6 +1634,18 @@ export type MutationUpdateCountryArgs = {
 
 export type MutationDeleteCountryArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationCreateCollectionArgs = {
+    input: CreateCollectionInput;
+};
+
+export type MutationUpdateCollectionArgs = {
+    input: UpdateCollectionInput;
+};
+
+export type MutationMoveCollectionArgs = {
+    input: MoveCollectionInput;
 };
 
 export type MutationCreateCustomerGroupArgs = {
@@ -1718,12 +1718,12 @@ export type MutationDeleteFacetValuesArgs = {
     force?: Maybe<Scalars['Boolean']>;
 };
 
-export type MutationUpdateGlobalSettingsArgs = {
-    input: UpdateGlobalSettingsInput;
-};
-
 export type MutationImportProductsArgs = {
     csvFile: Scalars['Upload'];
+};
+
+export type MutationUpdateGlobalSettingsArgs = {
+    input: UpdateGlobalSettingsInput;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -1878,6 +1878,7 @@ export type Order = Node & {
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
     payments?: Maybe<Array<Payment>>;
+    fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;
@@ -2332,20 +2333,20 @@ export type Query = {
     channels: Array<Channel>;
     channel?: Maybe<Channel>;
     activeChannel: Channel;
+    countries: CountryList;
+    country?: Maybe<Country>;
     collections: CollectionList;
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperation>;
-    countries: CountryList;
-    country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
     customers: CustomerList;
     customer?: Maybe<Customer>;
     facets: FacetList;
     facet?: Maybe<Facet>;
-    globalSettings: GlobalSettings;
     job?: Maybe<JobInfo>;
     jobs: Array<JobInfo>;
+    globalSettings: GlobalSettings;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -2393,6 +2394,14 @@ export type QueryChannelArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryCountriesArgs = {
+    options?: Maybe<CountryListOptions>;
+};
+
+export type QueryCountryArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryCollectionsArgs = {
     languageCode?: Maybe<LanguageCode>;
     options?: Maybe<CollectionListOptions>;
@@ -2401,14 +2410,6 @@ export type QueryCollectionsArgs = {
 export type QueryCollectionArgs = {
     id: Scalars['ID'];
     languageCode?: Maybe<LanguageCode>;
-};
-
-export type QueryCountriesArgs = {
-    options?: Maybe<CountryListOptions>;
-};
-
-export type QueryCountryArgs = {
-    id: Scalars['ID'];
 };
 
 export type QueryCustomerGroupArgs = {
@@ -3936,6 +3937,52 @@ export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
+export type GetOrderFulfillmentsQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
+    order: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+                fulfillments: Maybe<
+                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                >;
+            }
+    >;
+};
+
+export type GetOrderListFulfillmentsQueryVariables = {};
+
+export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
+    orders: { __typename?: 'OrderList' } & {
+        items: Array<
+            { __typename?: 'Order' } & Pick<Order, 'id'> & {
+                    fulfillments: Maybe<
+                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                    >;
+                }
+        >;
+    };
+};
+
+export type GetOrderFulfillmentItemsQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
+    order: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+                fulfillments: Maybe<
+                    Array<
+                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'> & {
+                                orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
+                            }
+                    >
+                >;
+            }
+    >;
+};
+
 export type AddOptionGroupToProductMutationVariables = {
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
@@ -4878,6 +4925,39 @@ export namespace CreateFulfillment {
     export type CreateFulfillment = NonNullable<CreateFulfillmentMutation['createFulfillment']>;
     export type OrderItems = NonNullable<
         (NonNullable<CreateFulfillmentMutation['createFulfillment']>)['orderItems'][0]
+    >;
+}
+
+export namespace GetOrderFulfillments {
+    export type Variables = GetOrderFulfillmentsQueryVariables;
+    export type Query = GetOrderFulfillmentsQuery;
+    export type Order = NonNullable<GetOrderFulfillmentsQuery['order']>;
+    export type Fulfillments = NonNullable<
+        (NonNullable<(NonNullable<GetOrderFulfillmentsQuery['order']>)['fulfillments']>)[0]
+    >;
+}
+
+export namespace GetOrderListFulfillments {
+    export type Variables = GetOrderListFulfillmentsQueryVariables;
+    export type Query = GetOrderListFulfillmentsQuery;
+    export type Orders = GetOrderListFulfillmentsQuery['orders'];
+    export type Items = NonNullable<GetOrderListFulfillmentsQuery['orders']['items'][0]>;
+    export type Fulfillments = NonNullable<
+        (NonNullable<(NonNullable<GetOrderListFulfillmentsQuery['orders']['items'][0]>)['fulfillments']>)[0]
+    >;
+}
+
+export namespace GetOrderFulfillmentItems {
+    export type Variables = GetOrderFulfillmentItemsQueryVariables;
+    export type Query = GetOrderFulfillmentItemsQuery;
+    export type Order = NonNullable<GetOrderFulfillmentItemsQuery['order']>;
+    export type Fulfillments = NonNullable<
+        (NonNullable<(NonNullable<GetOrderFulfillmentItemsQuery['order']>)['fulfillments']>)[0]
+    >;
+    export type OrderItems = NonNullable<
+        (NonNullable<
+            (NonNullable<(NonNullable<GetOrderFulfillmentItemsQuery['order']>)['fulfillments']>)[0]
+        >)['orderItems'][0]
     >;
 }
 

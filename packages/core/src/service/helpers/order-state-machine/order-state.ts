@@ -32,7 +32,7 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PartiallyFulfilled', 'Fulfilled', 'Cancelled'],
     },
     PartiallyFulfilled: {
-        to: ['Cancelled', 'Fulfilled'],
+        to: ['Cancelled', 'Fulfilled', 'PartiallyFulfilled'],
     },
     Fulfilled: {
         to: ['Cancelled'],

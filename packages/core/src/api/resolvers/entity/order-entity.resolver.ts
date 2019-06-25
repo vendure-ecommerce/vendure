@@ -24,4 +24,9 @@ export class OrderEntityResolver {
             return null;
         }
     }
+
+    @ResolveProperty()
+    async fulfillments(@Parent() order: Order) {
+        return this.orderService.getOrderFulfillments(order);
+    }
 }
