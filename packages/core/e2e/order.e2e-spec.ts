@@ -2,12 +2,15 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { StockMovementType } from '../../common/lib/generated-types';
+import { pick } from '../../common/lib/pick';
 import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import {
+    CancelOrder,
     CreateFulfillment,
     GetCustomerList,
     GetOrder,
@@ -15,8 +18,11 @@ import {
     GetOrderFulfillments,
     GetOrderList,
     GetOrderListFulfillments,
+    GetProductWithVariants,
+    GetStockMovement,
     OrderItemFragment,
     SettlePayment,
+    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
@@ -26,7 +32,7 @@ import {
     SetShippingMethod,
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { GET_CUSTOMER_LIST, GET_PRODUCT_WITH_VARIANTS, GET_STOCK_MOVEMENT, UPDATE_PRODUCT_VARIANTS, } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
@@ -112,7 +118,7 @@ describe('Orders resolver', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 AddPaymentToOrder.Mutation,
                 AddPaymentToOrder.Variables
-                >(ADD_PAYMENT, {
+            >(ADD_PAYMENT, {
                 input: {
                     method: failsToSettlePaymentMethod.code,
                     metadata: {
@@ -128,7 +134,7 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 SettlePayment.Mutation,
                 SettlePayment.Variables
-                >(SETTLE_PAYMENT, {
+            >(SETTLE_PAYMENT, {
                 id: payment.id,
             });
 
@@ -149,7 +155,7 @@ describe('Orders resolver', () => {
             const { addPaymentToOrder } = await shopClient.query<
                 AddPaymentToOrder.Mutation,
                 AddPaymentToOrder.Variables
-                >(ADD_PAYMENT, {
+            >(ADD_PAYMENT, {
                 input: {
                     method: twoStagePaymentMethod.code,
                     metadata: {
@@ -165,7 +171,7 @@ describe('Orders resolver', () => {
             const { settlePayment } = await adminClient.query<
                 SettlePayment.Mutation,
                 SettlePayment.Variables
-                >(SETTLE_PAYMENT, {
+            >(SETTLE_PAYMENT, {
                 id: payment.id,
             });
 
@@ -255,7 +261,7 @@ describe('Orders resolver', () => {
             const { createFulfillment } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
-                >(CREATE_FULFILLMENT, {
+            >(CREATE_FULFILLMENT, {
                 input: {
                     lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     method: 'Test1',
@@ -291,7 +297,7 @@ describe('Orders resolver', () => {
             const { createFulfillment } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
-                >(CREATE_FULFILLMENT, {
+            >(CREATE_FULFILLMENT, {
                 input: {
                     lines: [{ orderLineId: lines[1].id, quantity: 1 }],
                     method: 'Test2',
@@ -347,7 +353,7 @@ describe('Orders resolver', () => {
             const { createFulfillment } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
-                >(CREATE_FULFILLMENT, {
+            >(CREATE_FULFILLMENT, {
                 input: {
                     lines: [
                         {
@@ -374,7 +380,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,
                 GetOrderFulfillments.Variables
-                >(GET_ORDER_FULFILLMENTS, {
+            >(GET_ORDER_FULFILLMENTS, {
                 id: 'T_2',
             });
 
@@ -402,16 +408,128 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillmentItems.Query,
                 GetOrderFulfillmentItems.Variables
-                >(GET_ORDER_FULFILLMENT_ITEMS, {
+            >(GET_ORDER_FULFILLMENT_ITEMS, {
                 id: 'T_2',
             });
 
-            expect(order!.fulfillments![0].orderItems).toEqual([
-                { id: 'T_3' },
-                { id: 'T_4' },
+            expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }, { id: 'T_4' }]);
+            expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_5' }]);
+        });
+    });
+
+    describe('cancellation', () => {
+        let orderId: string;
+        let product: GetProductWithVariants.Product;
+        let productVariantId: string;
+
+        beforeAll(async () => {
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_3',
+            });
+            product = result.product!;
+            productVariantId = product.variants[0].id;
+
+            // Set the ProductVariant to trackInventory
+            const { updateProductVariants } = await adminClient.query<
+                UpdateProductVariants.Mutation,
+                UpdateProductVariants.Variables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: productVariantId,
+                        trackInventory: true,
+                    },
+                ],
+            });
+
+            // Add the ProductVariant to the Order
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId,
+                quantity: 1,
+            });
+            orderId = addItemToOrder!.id;
+        });
+
+        it(
+            'cannot cancel from AddingItems state',
+            assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: orderId,
+                });
+                expect(order!.state).toBe('AddingItems');
+                await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+                    id: orderId,
+                });
+            }, 'Cannot transition Order from "AddingItems" to "Cancelled"'),
+        );
+
+        it(
+            'cannot cancel from ArrangingPayment state',
+            assertThrowsWithMessage(async () => {
+                await proceedToArrangingPayment(shopClient);
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: orderId,
+                });
+                expect(order!.state).toBe('ArrangingPayment');
+                await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+                    id: orderId,
+                });
+            }, 'Cannot transition Order from "ArrangingPayment" to "Cancelled"'),
+        );
+
+        it('reallocates stock back in', async () => {
+            const { addPaymentToOrder } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: twoStagePaymentMethod.code,
+                    metadata: {
+                        baz: 'quux',
+                    },
+                },
+            });
+
+            expect(addPaymentToOrder!.state).toBe('PaymentAuthorized');
+
+            const result1 = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                {
+                    id: product.id,
+                },
+            );
+            const variant1 = result1.product!.variants[0];
+            expect(variant1.stockOnHand).toBe(99);
+            expect(variant1.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
+                { type: StockMovementType.ADJUSTMENT, quantity: 100 },
+                { type: StockMovementType.SALE, quantity: -1 },
             ]);
-            expect(order!.fulfillments![1].orderItems).toEqual([
-                { id: 'T_5' },
+
+            const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+                id: orderId,
+            });
+
+            expect(cancelOrder!.state).toBe('Cancelled');
+
+            const result2 = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                {
+                    id: product.id,
+                },
+            );
+            const variant2 = result2.product!.variants[0];
+            expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
+                { type: StockMovementType.ADJUSTMENT, quantity: 100 },
+                { type: StockMovementType.SALE, quantity: -1 },
+                { type: StockMovementType.CANCELLATION, quantity: 1 },
             ]);
         });
     });
@@ -487,7 +605,7 @@ async function proceedToArrangingPayment(shopClient: TestShopClient): Promise<ID
     const { transitionOrderToState } = await shopClient.query<
         TransitionToState.Mutation,
         TransitionToState.Variables
-        >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+    >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
 
     return transitionOrderToState!.id;
 }
@@ -572,6 +690,16 @@ export const GET_ORDER_FULFILLMENT_ITEMS = gql`
                     id
                 }
             }
+        }
+    }
+`;
+
+export const CANCEL_ORDER = gql`
+    mutation CancelOrder($id: ID!) {
+        cancelOrder(id: $id) {
+            id
+            state
+            active
         }
     }
 `;

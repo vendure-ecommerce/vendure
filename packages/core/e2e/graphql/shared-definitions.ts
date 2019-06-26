@@ -11,7 +11,8 @@ import {
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
     ROLE_FRAGMENT,
-    TAX_RATE_FRAGMENT
+    TAX_RATE_FRAGMENT,
+    VARIANT_WITH_STOCK_FRAGMENT,
 } from './fragments';
 
 export const CREATE_ADMINISTRATOR = gql`
@@ -244,4 +245,16 @@ export const GET_PRODUCT_SIMPLE = gql`
             slug
         }
     }
+`;
+
+export const GET_STOCK_MOVEMENT = gql`
+    query GetStockMovement($id: ID!) {
+        product(id: $id) {
+            id
+            variants {
+                ...VariantWithStock
+            }
+        }
+    }
+    ${VARIANT_WITH_STOCK_FRAGMENT}
 `;

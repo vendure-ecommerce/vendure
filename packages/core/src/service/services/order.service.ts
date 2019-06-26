@@ -410,6 +410,10 @@ export class OrderService {
         return fulfillment.orderItems;
     }
 
+    async cancelOrder(ctx: RequestContext, id: ID): Promise<Order> {
+        return this.transitionToState(ctx, id, 'Cancelled');
+    }
+
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.customer && !idsAreEqual(order.customer.id, customer.id)) {

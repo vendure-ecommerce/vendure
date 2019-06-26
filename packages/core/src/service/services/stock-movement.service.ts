@@ -11,6 +11,7 @@ import { ShippingEligibilityChecker } from '../../config/shipping-method/shippin
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
+import { Cancellation } from '../../entity/stock-movement/cancellation.entity';
 import { Sale } from '../../entity/stock-movement/sale.entity';
 import { StockAdjustment } from '../../entity/stock-movement/stock-adjustment.entity';
 import { StockMovement } from '../../entity/stock-movement/stock-movement.entity';
@@ -78,5 +79,24 @@ export class StockMovementService {
             }
         }
         return this.connection.getRepository(Sale).save(sales);
+    }
+
+    async createCancellationsForOrder(order: Order): Promise<Cancellation[]> {
+        const cancellations: Cancellation[] = [];
+        for (const line of order.lines) {
+            const { productVariant } = line;
+            const cancellation = new Cancellation({
+                productVariant,
+                quantity: line.quantity,
+                orderLine: line,
+            });
+            cancellations.push(cancellation);
+
+            if (productVariant.trackInventory === true) {
+                productVariant.stockOnHand += line.quantity;
+                await this.connection.getRepository(ProductVariant).save(productVariant);
+            }
+        }
+        return this.connection.getRepository(Cancellation).save(cancellations);
     }
 }

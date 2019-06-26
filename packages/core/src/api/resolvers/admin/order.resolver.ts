@@ -1,10 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationCancelOrderArgs,
     MutationCreateFulfillmentArgs,
     MutationSettlePaymentArgs,
     Permission,
     QueryOrderArgs,
-    QueryOrdersArgs
+    QueryOrdersArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -43,5 +44,11 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async createFulfillment(@Ctx() ctx: RequestContext, @Args() args: MutationCreateFulfillmentArgs) {
         return this.orderService.createFulfillment(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async cancelOrder(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderArgs) {
+        return this.orderService.cancelOrder(ctx, args.id);
     }
 }

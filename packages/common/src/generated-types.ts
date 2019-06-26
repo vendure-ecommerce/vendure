@@ -1544,6 +1544,7 @@ export type Mutation = {
   importProducts?: Maybe<ImportInfo>,
   settlePayment?: Maybe<Payment>,
   createFulfillment?: Maybe<Fulfillment>,
+  cancelOrder?: Maybe<Order>,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
   /** Create a new ProductOptionGroup */
@@ -1771,6 +1772,11 @@ export type MutationCreateFulfillmentArgs = {
 };
 
 
+export type MutationCancelOrderArgs = {
+  id: Scalars['ID']
+};
+
+
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput
 };
@@ -1940,6 +1946,7 @@ export type Order = Node & {
   lines: Array<OrderLine>,
   adjustments: Array<Adjustment>,
   payments?: Maybe<Array<Payment>>,
+  fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
   subTotal: Scalars['Int'],
   currencyCode: CurrencyCode,

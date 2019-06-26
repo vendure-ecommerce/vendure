@@ -1493,18 +1493,18 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
-    /** Create a new Country */
-    createCountry: Country;
-    /** Update an existing Country */
-    updateCountry: Country;
-    /** Delete a Country */
-    deleteCountry: DeletionResponse;
     /** Create a new Collection */
     createCollection: Collection;
     /** Update an existing Collection */
     updateCollection: Collection;
     /** Move a Collection to a different parent or index */
     moveCollection: Collection;
+    /** Create a new Country */
+    createCountry: Country;
+    /** Update an existing Country */
+    updateCountry: Country;
+    /** Delete a Country */
+    deleteCountry: DeletionResponse;
     /** Create a new CustomerGroup */
     createCustomerGroup: CustomerGroup;
     /** Update an existing CustomerGroup */
@@ -1537,10 +1537,11 @@ export type Mutation = {
     updateFacetValues: Array<FacetValue>;
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
-    importProducts?: Maybe<ImportInfo>;
     updateGlobalSettings: GlobalSettings;
+    importProducts?: Maybe<ImportInfo>;
     settlePayment?: Maybe<Payment>;
     createFulfillment?: Maybe<Fulfillment>;
+    cancelOrder?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -1624,18 +1625,6 @@ export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
 };
 
-export type MutationCreateCountryArgs = {
-    input: CreateCountryInput;
-};
-
-export type MutationUpdateCountryArgs = {
-    input: UpdateCountryInput;
-};
-
-export type MutationDeleteCountryArgs = {
-    id: Scalars['ID'];
-};
-
 export type MutationCreateCollectionArgs = {
     input: CreateCollectionInput;
 };
@@ -1646,6 +1635,18 @@ export type MutationUpdateCollectionArgs = {
 
 export type MutationMoveCollectionArgs = {
     input: MoveCollectionInput;
+};
+
+export type MutationCreateCountryArgs = {
+    input: CreateCountryInput;
+};
+
+export type MutationUpdateCountryArgs = {
+    input: UpdateCountryInput;
+};
+
+export type MutationDeleteCountryArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateCustomerGroupArgs = {
@@ -1718,12 +1719,12 @@ export type MutationDeleteFacetValuesArgs = {
     force?: Maybe<Scalars['Boolean']>;
 };
 
-export type MutationImportProductsArgs = {
-    csvFile: Scalars['Upload'];
-};
-
 export type MutationUpdateGlobalSettingsArgs = {
     input: UpdateGlobalSettingsInput;
+};
+
+export type MutationImportProductsArgs = {
+    csvFile: Scalars['Upload'];
 };
 
 export type MutationSettlePaymentArgs = {
@@ -1732,6 +1733,10 @@ export type MutationSettlePaymentArgs = {
 
 export type MutationCreateFulfillmentArgs = {
     input: CreateFulfillmentInput;
+};
+
+export type MutationCancelOrderArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -2333,20 +2338,20 @@ export type Query = {
     channels: Array<Channel>;
     channel?: Maybe<Channel>;
     activeChannel: Channel;
-    countries: CountryList;
-    country?: Maybe<Country>;
     collections: CollectionList;
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperation>;
+    countries: CountryList;
+    country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
     customers: CustomerList;
     customer?: Maybe<Customer>;
     facets: FacetList;
     facet?: Maybe<Facet>;
+    globalSettings: GlobalSettings;
     job?: Maybe<JobInfo>;
     jobs: Array<JobInfo>;
-    globalSettings: GlobalSettings;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -2394,14 +2399,6 @@ export type QueryChannelArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryCountriesArgs = {
-    options?: Maybe<CountryListOptions>;
-};
-
-export type QueryCountryArgs = {
-    id: Scalars['ID'];
-};
-
 export type QueryCollectionsArgs = {
     languageCode?: Maybe<LanguageCode>;
     options?: Maybe<CollectionListOptions>;
@@ -2410,6 +2407,14 @@ export type QueryCollectionsArgs = {
 export type QueryCollectionArgs = {
     id: Scalars['ID'];
     languageCode?: Maybe<LanguageCode>;
+};
+
+export type QueryCountriesArgs = {
+    options?: Maybe<CountryListOptions>;
+};
+
+export type QueryCountryArgs = {
+    id: Scalars['ID'];
 };
 
 export type QueryCustomerGroupArgs = {
@@ -3630,6 +3635,20 @@ export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<
     'id' | 'identifier' | 'channelTokens'
 >;
 
+export type VariantWithStockFragment = { __typename?: 'ProductVariant' } & Pick<
+    ProductVariant,
+    'id' | 'stockOnHand'
+> & {
+        stockMovements: { __typename?: 'StockMovementList' } & Pick<StockMovementList, 'totalItems'> & {
+                items: Array<
+                    { __typename?: 'StockAdjustment' | 'Sale' | 'Cancellation' | 'Return' } & Pick<
+                        StockMovement,
+                        'id' | 'type' | 'quantity'
+                    >
+                >;
+            };
+    };
+
 export type CreateAdministratorMutationVariables = {
     input: CreateAdministratorInput;
 };
@@ -3838,6 +3857,18 @@ export type GetProductSimpleQuery = { __typename?: 'Query' } & {
     product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'slug'>>;
 };
 
+export type GetStockMovementQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetStockMovementQuery = { __typename?: 'Query' } & {
+    product: Maybe<
+        { __typename?: 'Product' } & Pick<Product, 'id'> & {
+                variants: Array<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>;
+            }
+    >;
+};
+
 export type GetProductsQueryVariables = {
     options?: Maybe<ProductListOptions>;
 };
@@ -3981,6 +4012,14 @@ export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
                 >;
             }
     >;
+};
+
+export type CancelOrderMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type CancelOrderMutation = { __typename?: 'Mutation' } & {
+    cancelOrder: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'active'>>;
 };
 
 export type AddOptionGroupToProductMutationVariables = {
@@ -4203,32 +4242,6 @@ export type GetCustomerIdsQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & {
         items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
     };
-};
-
-export type VariantWithStockFragment = { __typename?: 'ProductVariant' } & Pick<
-    ProductVariant,
-    'id' | 'stockOnHand'
-> & {
-        stockMovements: { __typename?: 'StockMovementList' } & Pick<StockMovementList, 'totalItems'> & {
-                items: Array<
-                    { __typename?: 'StockAdjustment' | 'Sale' | 'Cancellation' | 'Return' } & Pick<
-                        StockMovement,
-                        'id' | 'type' | 'quantity'
-                    >
-                >;
-            };
-    };
-
-export type GetStockMovementQueryVariables = {
-    id: Scalars['ID'];
-};
-
-export type GetStockMovementQuery = { __typename?: 'Query' } & {
-    product: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                variants: Array<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>;
-            }
-    >;
 };
 
 export type UpdateStockMutationVariables = {
@@ -4698,6 +4711,16 @@ export namespace CurrentUser {
     export type Fragment = CurrentUserFragment;
 }
 
+export namespace VariantWithStock {
+    export type Fragment = VariantWithStockFragment;
+    export type StockMovements = VariantWithStockFragment['stockMovements'];
+    export type Items = NonNullable<VariantWithStockFragment['stockMovements']['items'][0]>;
+    export type StockMovementInlineFragment = DiscriminateUnion<
+        RequireField<NonNullable<VariantWithStockFragment['stockMovements']['items'][0]>, '__typename'>,
+        { __typename: 'StockMovement' }
+    >;
+}
+
 export namespace CreateAdministrator {
     export type Variables = CreateAdministratorMutationVariables;
     export type Mutation = CreateAdministratorMutation;
@@ -4836,6 +4859,13 @@ export namespace GetProductSimple {
     export type Product = NonNullable<GetProductSimpleQuery['product']>;
 }
 
+export namespace GetStockMovement {
+    export type Variables = GetStockMovementQueryVariables;
+    export type Query = GetStockMovementQuery;
+    export type Product = NonNullable<GetStockMovementQuery['product']>;
+    export type Variants = VariantWithStockFragment;
+}
+
 export namespace GetProducts {
     export type Variables = GetProductsQueryVariables;
     export type Query = GetProductsQuery;
@@ -4959,6 +4989,12 @@ export namespace GetOrderFulfillmentItems {
             (NonNullable<(NonNullable<GetOrderFulfillmentItemsQuery['order']>)['fulfillments']>)[0]
         >)['orderItems'][0]
     >;
+}
+
+export namespace CancelOrder {
+    export type Variables = CancelOrderMutationVariables;
+    export type Mutation = CancelOrderMutation;
+    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
 }
 
 export namespace AddOptionGroupToProduct {
@@ -5135,23 +5171,6 @@ export namespace GetCustomerIds {
     export type Query = GetCustomerIdsQuery;
     export type Customers = GetCustomerIdsQuery['customers'];
     export type Items = NonNullable<GetCustomerIdsQuery['customers']['items'][0]>;
-}
-
-export namespace VariantWithStock {
-    export type Fragment = VariantWithStockFragment;
-    export type StockMovements = VariantWithStockFragment['stockMovements'];
-    export type Items = NonNullable<VariantWithStockFragment['stockMovements']['items'][0]>;
-    export type StockMovementInlineFragment = DiscriminateUnion<
-        RequireField<NonNullable<VariantWithStockFragment['stockMovements']['items'][0]>, '__typename'>,
-        { __typename: 'StockMovement' }
-    >;
-}
-
-export namespace GetStockMovement {
-    export type Variables = GetStockMovementQueryVariables;
-    export type Query = GetStockMovementQuery;
-    export type Product = NonNullable<GetStockMovementQuery['product']>;
-    export type Variants = VariantWithStockFragment;
 }
 
 export namespace UpdateStock {

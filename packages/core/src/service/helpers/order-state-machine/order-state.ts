@@ -26,16 +26,16 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems'],
     },
     PaymentAuthorized: {
-        to: ['PaymentSettled'],
+        to: ['PaymentSettled', 'Cancelled'],
     },
     PaymentSettled: {
-        to: ['PartiallyFulfilled', 'Fulfilled', 'Cancelled'],
+        to: ['PartiallyFulfilled', 'Fulfilled'],
     },
     PartiallyFulfilled: {
-        to: ['Cancelled', 'Fulfilled', 'PartiallyFulfilled'],
+        to: ['Fulfilled', 'PartiallyFulfilled'],
     },
     Fulfilled: {
-        to: ['Cancelled'],
+        to: [],
     },
     Cancelled: {
         to: [],

@@ -26,6 +26,10 @@ export class OrderStateMachine {
         return this.initialState;
     }
 
+    canTransition(currentState: OrderState, newState: OrderState): boolean {
+        return  new FSM(this.config, currentState).canTransitionTo(newState);
+    }
+
     getNextStates(order: Order): OrderState[] {
         const fsm = new FSM(this.config, order.state);
         return fsm.getNextStates();
@@ -59,6 +63,9 @@ export class OrderStateMachine {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
             await this.stockMovementService.createSalesForOrder(data.order);
+        }
+        if (toState === 'Cancelled') {
+            await this.stockMovementService.createCancellationsForOrder(data.order);
         }
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
     }

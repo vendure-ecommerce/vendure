@@ -6,6 +6,7 @@ import { PaymentMethodHandler } from '../src/config/payment-method/payment-metho
 import { OrderState } from '../src/service/helpers/order-state-machine/order-state';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddressInput,
     GetStockMovement,
@@ -15,6 +16,7 @@ import {
     VariantWithStockFragment,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder, AddPaymentToOrder, PaymentInput, SetShippingAddress, TransitionToState } from './graphql/generated-e2e-shop-types';
+import { GET_STOCK_MOVEMENT } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, SET_SHIPPING_ADDRESS, TRANSITION_TO_STATE } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
@@ -235,36 +237,10 @@ const testPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
+    settlePayment: order => ({
+        success: true,
+    }),
 });
-
-const VARIANT_WITH_STOCK_FRAGMENT = gql`
-    fragment VariantWithStock on ProductVariant {
-        id
-        stockOnHand
-        stockMovements {
-            items {
-                ... on StockMovement {
-                    id
-                    type
-                    quantity
-                }
-            }
-            totalItems
-        }
-    }
-`;
-
-const GET_STOCK_MOVEMENT = gql`
-    query GetStockMovement($id: ID!) {
-        product(id: $id) {
-            id
-            variants {
-                ...VariantWithStock
-            }
-        }
-    }
-    ${VARIANT_WITH_STOCK_FRAGMENT}
-`;
 
 const UPDATE_STOCK_ON_HAND = gql`
     mutation UpdateStock($input: [UpdateProductVariantInput!]!) {

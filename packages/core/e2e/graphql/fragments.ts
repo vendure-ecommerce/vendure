@@ -452,3 +452,19 @@ export const CURRENT_USER_FRAGMENT = gql`
         channelTokens
     }
 `;
+export const VARIANT_WITH_STOCK_FRAGMENT = gql`
+    fragment VariantWithStock on ProductVariant {
+        id
+        stockOnHand
+        stockMovements {
+            items {
+                ... on StockMovement {
+                    id
+                    type
+                    quantity
+                }
+            }
+            totalItems
+        }
+    }
+`;
