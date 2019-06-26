@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { CreateFulfillmentInput, OrderWithLinesFragment } from '../../../common/generated-types';
+import {
+    CreateFulfillmentInput,
+    OrderWithLines,
+    OrderWithLinesFragment,
+} from '../../../common/generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({
@@ -20,12 +24,17 @@ export class FulfillOrderDialogComponent implements Dialog<CreateFulfillmentInpu
         this.fulfillmentQuantities = this.order.lines.reduce((result, line) => {
             return {
                 ...result,
-                [line.id]: line.quantity,
+                [line.id]: this.getUnfulfilledCount(line),
             };
         }, {});
         if (this.order.shippingMethod) {
             this.method = this.order.shippingMethod.description;
         }
+    }
+
+    getUnfulfilledCount(line: OrderWithLines.Lines): number {
+        const fulfilled = line.items.reduce((sum, item) => sum + (item.fulfillment ? 1 : 0), 0);
+        return line.quantity - fulfilled;
     }
 
     select() {

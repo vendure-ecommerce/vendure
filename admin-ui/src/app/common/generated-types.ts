@@ -1551,7 +1551,6 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
-  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1566,6 +1565,7 @@ export type Mutation = {
   generateVariantsForProduct: Product,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
+  reindex: JobInfo,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1962,6 +1962,7 @@ export type Order = Node & {
   lines: Array<OrderLine>,
   adjustments: Array<Adjustment>,
   payments?: Maybe<Array<Payment>>,
+  fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
   subTotal: Scalars['Int'],
   currencyCode: CurrencyCode,
@@ -2437,10 +2438,10 @@ export type Query = {
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
+  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
@@ -2578,11 +2579,6 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
-export type QuerySearchArgs = {
-  input: SearchInput
-};
-
-
 export type QueryProductsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<ProductListOptions>
@@ -2593,6 +2589,11 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>,
   slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput
 };
 
 
@@ -3430,9 +3431,9 @@ export type ShippingAddressFragment = ({ __typename?: 'OrderAddress' } & Pick<Or
 
 export type OrderFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)> });
 
-export type OrderWithLinesFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method' | 'trackingCode'>)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>)>> });
+export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>);
 
-export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'updatedAt' | 'method' | 'trackingCode'>);
+export type OrderWithLinesFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>)>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
 
 export type GetOrderListQueryVariables = {
   options?: Maybe<OrderListOptions>
@@ -4203,6 +4204,10 @@ export namespace Order {
   export type Customer = (NonNullable<OrderFragment['customer']>);
 }
 
+export namespace Fulfillment {
+  export type Fragment = FulfillmentFragment;
+}
+
 export namespace OrderWithLines {
   export type Fragment = OrderWithLinesFragment;
   export type Customer = (NonNullable<OrderWithLinesFragment['customer']>);
@@ -4210,15 +4215,12 @@ export namespace OrderWithLines {
   export type FeaturedAsset = (NonNullable<(NonNullable<OrderWithLinesFragment['lines'][0]>)['featuredAsset']>);
   export type ProductVariant = (NonNullable<OrderWithLinesFragment['lines'][0]>)['productVariant'];
   export type Items = (NonNullable<(NonNullable<OrderWithLinesFragment['lines'][0]>)['items'][0]>);
-  export type Fulfillment = (NonNullable<(NonNullable<(NonNullable<OrderWithLinesFragment['lines'][0]>)['items'][0]>)['fulfillment']>);
+  export type Fulfillment = FulfillmentFragment;
   export type Adjustments = AdjustmentFragment;
   export type ShippingMethod = (NonNullable<OrderWithLinesFragment['shippingMethod']>);
   export type ShippingAddress = ShippingAddressFragment;
   export type Payments = (NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>);
-}
-
-export namespace Fulfillment {
-  export type Fragment = FulfillmentFragment;
+  export type Fulfillments = FulfillmentFragment;
 }
 
 export namespace GetOrderList {

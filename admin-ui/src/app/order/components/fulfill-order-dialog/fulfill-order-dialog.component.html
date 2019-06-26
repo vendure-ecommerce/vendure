@@ -8,19 +8,24 @@
                     <th></th>
                     <th>{{ 'order.product-name' | translate }}</th>
                     <th>{{ 'order.product-sku' | translate }}</th>
-                    <th>{{ 'order.quantity' | translate }}</th>
+                    <th>{{ 'order.unfulfilled' | translate }}</th>
                     <th>{{ 'order.fulfill' | translate }}</th>
                 </tr>
             </thead>
-            <tr *ngFor="let line of order.lines" class="order-line">
+            <tr
+                *ngFor="let line of order.lines"
+                class="order-line"
+                [class.ignore]="getUnfulfilledCount(line) === 0"
+            >
                 <td class="align-middle thumb">
                     <img [src]="line.featuredAsset.preview + '?preset=tiny'" />
                 </td>
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
-                <td class="align-middle quantity">{{ line.quantity }}</td>
+                <td class="align-middle quantity">{{ getUnfulfilledCount(line) }}</td>
                 <td class="align-middle fulfil">
                     <input
+                        [disabled]="getUnfulfilledCount(line) === 0"
                         [(ngModel)]="fulfillmentQuantities[line.id]"
                         type="number"
                         [max]="line.quantity"

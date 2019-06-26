@@ -40,6 +40,16 @@ export const ORDER_FRAGMENT = gql`
     }
 `;
 
+export const FULFILLMENT_FRAGMENT = gql`
+    fragment Fulfillment on Fulfillment {
+        id
+        createdAt
+        updatedAt
+        method
+        trackingCode
+    }
+`;
+
 export const ORDER_WITH_LINES_FRAGMENT = gql`
     fragment OrderWithLines on Order {
         id
@@ -73,9 +83,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
                 unitPriceWithTax
                 taxRate
                 fulfillment {
-                    id
-                    method
-                    trackingCode
+                    ...Fulfillment
                 }
             }
             totalPrice
@@ -104,19 +112,14 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             state
             metadata
         }
+        fulfillments {
+            ...Fulfillment
+        }
         total
     }
     ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
-`;
-
-export const FULFILLMENT_FRAGMENT = gql`
-    fragment Fulfillment on Fulfillment {
-        id
-        updatedAt
-        method
-        trackingCode
-    }
+    ${FULFILLMENT_FRAGMENT}
 `;
 
 export const GET_ORDERS_LIST = gql`

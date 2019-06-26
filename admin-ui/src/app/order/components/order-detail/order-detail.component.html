@@ -3,7 +3,6 @@
         <div class="clr-row clr-flex-column">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
             <div class="date-detail">
-                <clr-icon shape="calendar"></clr-icon>
                 {{ 'common.updated' | translate }}:
                 <strong>{{ order.updatedAt | date: 'medium' }}</strong>
             </div>
@@ -44,7 +43,9 @@
                     <td class="align-middle unit-price">
                         {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
                     </td>
-                    <td class="align-middle quantity">{{ line.quantity }}</td>
+                    <td class="align-middle quantity">
+                        <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
+                    </td>
                     <td class="align-middle total">
                         {{ line.totalPrice / 100 | currency: order.currencyCode }}
                     </td>
@@ -98,28 +99,56 @@
                         {{ 'order.payment' | translate }}
                     </div>
                     <div class="card-block">
-                        <h6>{{ 'order.payment-state' | translate }}</h6>
-                        {{ payment.state }}
-                        <h6>{{ 'order.payment-method' | translate }}</h6>
-                        {{ payment.method }}
-                        <h6>{{ 'order.amount' | translate }}</h6>
-                        {{ payment.amount / 100 | currency: order.currencyCode }}
-                        <h6>{{ 'order.transaction-id' | translate }}</h6>
-                        {{ payment.transactionId }}
-                        <h6>{{ 'order.payment-metadata' | translate }}</h6>
-                        <ul class="payment-metadata">
-                            <li *ngFor="let entry of getPaymentMetadata(payment)">
-                                <span class="metadata-prop">{{ entry[0] }}:</span>
-                                {{ entry[1] }}
-                            </li>
-                        </ul>
+                        <vdr-labeled-data [label]="'order.payment-state' | translate">
+                            {{ payment.state }}
+                        </vdr-labeled-data>
+                        <vdr-labeled-data [label]="'order.payment-method' | translate">
+                            {{ payment.method }}
+                        </vdr-labeled-data>
+                        <vdr-labeled-data [label]="'order.amount' | translate">
+                            {{ payment.amount / 100 | currency: order.currencyCode }}
+                        </vdr-labeled-data>
+                        <vdr-labeled-data [label]="'order.transaction-id' | translate">
+                            {{ payment.transactionId }}
+                        </vdr-labeled-data>
+                        <vdr-labeled-data [label]="'order.payment-metadata' | translate">
+                            <ul class="payment-metadata">
+                                <li *ngFor="let entry of getPaymentMetadata(payment)">
+                                    <span class="metadata-prop">{{ entry[0] }}:</span>
+                                    {{ entry[1] }}
+                                </li>
+                            </ul>
+                        </vdr-labeled-data>
                     </div>
                     <div class="card-footer">
                         <ng-container *ngIf="payment.state === 'Authorized'">
-                            <button class="btn btn-sm btn-link" (click)="settlePayment(payment)">
+                            <button class="btn btn-sm btn-primary" (click)="settlePayment(payment)">
                                 {{ 'order.settle-payment' | translate }}
                             </button>
                         </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="order.fulfillments && order.fulfillments.length">
+                <div class="card">
+                    <div class="card-header">
+                        {{ 'order.fulfillment' | translate }}
+                    </div>
+                    <div class="card-block">
+                        <div class="fulfillment-detail" *ngFor="let fulfillment of order.fulfillments">
+                            <vdr-labeled-data [label]="'common.created-at' | translate">
+                                {{ fulfillment.createdAt | date: 'medium' }}
+                            </vdr-labeled-data>
+                            <vdr-labeled-data [label]="'order.fulfillment-method' | translate">
+                                {{ fulfillment.method }}
+                            </vdr-labeled-data>
+                            <vdr-labeled-data
+                                *ngIf="fulfillment.trackingCode"
+                                [label]="'order.tracking-code' | translate"
+                            >
+                                {{ fulfillment.trackingCode }}
+                            </vdr-labeled-data>
+                        </div>
                     </div>
                 </div>
             </ng-container>

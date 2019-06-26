@@ -1,0 +1,18 @@
+@import "variables";
+
+.item-fulfilled {
+    color: $color-success-500;
+}
+.item-partially-fulfilled {
+    color: $color-warning-500;
+}
+.item-not-fulfilled {
+    color: $color-error-500;
+}
+
+.fulfillment-detail {
+    margin: 6px 12px;
+    &:not(:last-of-type) {
+        border-bottom: 1px dashed $color-grey-300;
+    }
+}

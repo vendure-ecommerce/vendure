@@ -35,3 +35,8 @@ ul.payment-metadata {
         color: $color-grey-500;
     }
 }
+
+.fulfillment-detail:not(:last-of-type) {
+    border-bottom: 1px dashed $color-grey-300;
+    margin-bottom: 12px;
+}

@@ -33,6 +33,7 @@ import { FormFieldComponent } from './components/form-field/form-field.component
 import { FormItemComponent } from './components/form-item/form-item.component';
 import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
+import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
@@ -104,6 +105,7 @@ const DECLARATIONS = [
     DropdownItemDirective,
     OrderStateLabelComponent,
     FormattedAddressComponent,
+    LabeledDataComponent,
 ];
 
 @NgModule({

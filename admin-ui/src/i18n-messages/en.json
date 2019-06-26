@@ -411,7 +411,12 @@
     "customer": "Customer",
     "fulfill": "Fulfill",
     "fulfill-order": "Fulfill order",
+    "fulfillment": "Fulfillment",
     "fulfillment-method": "Fulfillment method",
+    "item-count": "{count} {count, plural, one {item} other {items}}",
+    "line-fulfillment-all": "All items fulfilled",
+    "line-fulfillment-none": "No items fulfilled",
+    "line-fulfillment-partial": "{ count } of { total } items fulfilled",
     "payment": "Payment",
     "payment-metadata": "Payment metadata",
     "payment-method": "Payment method",
@@ -437,6 +442,7 @@
     "total": "Total",
     "tracking-code": "Tracking code",
     "transaction-id": "Transaction ID",
+    "unfulfilled": "Unfulfilled",
     "unit-price": "Unit price"
   },
   "settings": {

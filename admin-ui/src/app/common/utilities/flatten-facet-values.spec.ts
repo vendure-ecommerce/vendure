@@ -56,6 +56,7 @@ describe('flattenFacetValues()', () => {
                 name: 'Brand',
                 translations: [],
                 values: [facetValue1, facetValue2, facetValue3],
+                updatedAt: '',
             },
             {
                 id: '2',
@@ -65,6 +66,7 @@ describe('flattenFacetValues()', () => {
                 name: 'Type',
                 translations: [],
                 values: [facetValue4, facetValue5],
+                updatedAt: '',
             },
         ];
 
