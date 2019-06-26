@@ -1,9 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
 import path from 'path';
 
-import { LanguageCode } from '../../common/src/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '../../common/src/shared-constants';
-import { EventBus, Order, OrderStateTransitionEvent, VendureEvent } from '../../core';
+import { LanguageCode } from '../../common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '../../common/lib/shared-constants';
+import { Order } from '../../core/dist/entity/order/order.entity';
+import { EventBus } from '../../core/dist/event-bus/event-bus';
+import { OrderStateTransitionEvent } from '../../core/dist/event-bus/events/order-state-transition-event';
+import { VendureEvent } from '../../core/dist/event-bus/vendure-event';
 
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailEventHandler, EmailEventListener } from './event-listener';

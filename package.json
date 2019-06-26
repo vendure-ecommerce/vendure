@@ -24,7 +24,7 @@
     "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../ && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
     "test:common": "jest --config packages/common/jest.config.js",
     "test:core": "jest --config packages/core/jest.config.js",
-    "test:email-plugin": "jest --config packages/email-plugin/jest.config.js",
+    "test:email-plugin": "jest --config packages/email-plugin/jest.config.js --maxWorkers=1",
     "test:elasticsearch-plugin": "jest --config packages/elasticsearch-plugin/jest.config.js",
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
     "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
