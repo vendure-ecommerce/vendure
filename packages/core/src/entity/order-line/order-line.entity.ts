@@ -43,46 +43,45 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get unitPrice(): number {
-        return this.items ? this.items[0].unitPrice : 0;
+        return this.activeItems.length ? this.activeItems[0].unitPrice : 0;
     }
 
     @Calculated()
     get unitPriceWithTax(): number {
-        return this.items ? this.items[0].unitPriceWithTax : 0;
+        return this.activeItems.length ? this.activeItems[0].unitPriceWithTax : 0;
     }
 
     @Calculated()
     get quantity(): number {
-        return this.items ? this.items.length : 0;
+        return this.activeItems.length;
     }
 
     @Calculated()
     get totalPrice(): number {
-        return this.items
-            ? this.items.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0)
-            : 0;
+        return this.activeItems.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
     }
 
     @Calculated()
     get adjustments(): Adjustment[] {
-        if (this.items) {
-            return this.items.reduce(
-                (adjustments, item) => [...adjustments, ...item.adjustments],
-                [] as Adjustment[],
-            );
-        }
-        return [];
+        return this.activeItems.reduce(
+            (adjustments, item) => [...adjustments, ...item.adjustments],
+            [] as Adjustment[],
+        );
     }
 
     get lineTax(): number {
-        return this.items.reduce((total, item) => total + item.unitTax, 0);
+        return this.activeItems.reduce((total, item) => total + item.unitTax, 0);
+    }
+
+    get activeItems(): OrderItem[] {
+        return (this.items || []).filter(i => !i.cancelled);
     }
 
     /**
      * Sets whether the unitPrice of each OrderItem in the line includes tax.
      */
     setUnitPriceIncludesTax(includesTax: boolean) {
-        this.items.forEach(item => {
+        this.activeItems.forEach(item => {
             item.unitPriceIncludesTax = includesTax;
         });
     }
@@ -91,7 +90,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Sets the tax rate being applied to each Orderitem in this line.
      */
     setTaxRate(taxRate: number) {
-        this.items.forEach(item => {
+        this.activeItems.forEach(item => {
             item.taxRate = taxRate;
         });
     }
@@ -101,6 +100,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
-        this.items.forEach(item => item.clearAdjustments(type));
+        this.activeItems.forEach(item => item.clearAdjustments(type));
     }
 }

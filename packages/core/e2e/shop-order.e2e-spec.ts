@@ -833,6 +833,9 @@ const testPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
+    settlePayment: order => ({
+        success: true,
+    }),
 });
 
 const testFailingPaymentMethod = new PaymentMethodHandler({
@@ -846,4 +849,7 @@ const testFailingPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
+    settlePayment: order => ({
+        success: true,
+    }),
 });

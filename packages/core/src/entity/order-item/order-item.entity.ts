@@ -33,6 +33,8 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => Fulfillment)
     fulfillment: Fulfillment;
 
+    @Column({ default: false }) cancelled: boolean;
+
     @Calculated()
     get unitPriceWithTax(): number {
         if (this.unitPriceIncludesTax) {

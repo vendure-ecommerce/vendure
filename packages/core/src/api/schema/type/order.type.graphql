@@ -51,6 +51,7 @@ type OrderItem implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    cancelled: Boolean!
     unitPrice: Int!
     unitPriceWithTax: Int!
     unitPriceIncludesTax: Boolean!

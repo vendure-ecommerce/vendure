@@ -1,13 +1,25 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
-import { CreateAddressInput, CreateFulfillmentInput, ShippingMethodQuote } from '@vendure/common/lib/generated-types';
+import {
+    CancelOrderLinesInput,
+    CreateAddressInput,
+    CreateFulfillmentInput,
+    OrderLineInput,
+    ShippingMethodQuote,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, IllegalOperationError, InternalServerError, OrderItemsLimitError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    IllegalOperationError,
+    InternalServerError,
+    OrderItemsLimitError,
+    UserInputError,
+} from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
@@ -35,6 +47,7 @@ import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
+import { StockMovementService } from './stock-movement.service';
 
 export class OrderService {
     constructor(
@@ -50,6 +63,7 @@ export class OrderService {
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
         private listQueryBuilder: ListQueryBuilder,
+        private stockMovementService: StockMovementService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -181,7 +195,10 @@ export class OrderService {
         this.assertNotOverOrderItemsLimit(order, quantity);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
         let orderLine = order.lines.find(line => {
-            return idsAreEqual(line.productVariant.id, productVariantId) && JSON.stringify(line.customFields) === JSON.stringify(customFields);
+            return (
+                idsAreEqual(line.productVariant.id, productVariantId) &&
+                JSON.stringify(line.customFields) === JSON.stringify(customFields)
+            );
         });
 
         if (!orderLine) {
@@ -321,52 +338,34 @@ export class OrderService {
     }
 
     async createFulfillment(ctx: RequestContext, input: CreateFulfillmentInput) {
-        if (!input.lines || input.lines.length === 0 || input.lines.reduce((total, line) => total + line.quantity, 0) === 0) {
+        if (
+            !input.lines ||
+            input.lines.length === 0 ||
+            input.lines.reduce((total, line) => total + line.quantity, 0) === 0
+        ) {
             throw new UserInputError('error.create-fulfillment-nothing-to-fulfill');
         }
-        const relatedOrders = new Map<ID, Order>();
-        const orderItems = new Map<ID, OrderItem>();
+        const { items, orders } = await this.getOrdersAndItemsFromLines(
+            input.lines,
+            i => !i.fulfillment,
+            'error.create-fulfillment-items-already-fulfilled',
+        );
 
-        const lines = await this.connection.getRepository(OrderLine).findByIds(input.lines.map(l => l.orderLineId), {
-            relations: ['order', 'items', 'items.fulfillment'],
-        });
-        for (const line of lines) {
-            const inputLine = input.lines.find(l => idsAreEqual(l.orderLineId, line.id));
-            if (!inputLine) {
-                continue;
-            }
-            const order = line.order;
-            if (!relatedOrders.has(order.id)) {
-                relatedOrders.set(order.id, order);
-            }
-            const unfulfilledItems = line.items.filter(i => !i.fulfillment);
-            if (unfulfilledItems.length < inputLine.quantity) {
-                throw new IllegalOperationError('error.create-fulfillment-items-already-fulfilled');
-            }
-            unfulfilledItems.slice(0, inputLine.quantity).forEach(item => {
-                orderItems.set(item.id, item);
-            });
-        }
-
-        for (const item of Array.from(orderItems.values())) {
-            if (!!item.fulfillment) {
-                throw new IllegalOperationError('error.create-fulfillment-items-already-fulfilled');
-            }
-        }
-        const relatedOrdersArray = Array.from(relatedOrders.values());
-        for (const order of relatedOrdersArray) {
+        for (const order of orders) {
             if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled') {
                 throw new IllegalOperationError('error.create-fulfillment-orders-must-be-settled');
             }
         }
 
-        const fulfillment = await this.connection.getRepository(Fulfillment).save(new Fulfillment({
-            trackingCode: input.trackingCode,
-            method: input.method,
-            orderItems: Array.from(orderItems.values()),
-        }));
+        const fulfillment = await this.connection.getRepository(Fulfillment).save(
+            new Fulfillment({
+                trackingCode: input.trackingCode,
+                method: input.method,
+                orderItems: items,
+            }),
+        );
 
-        for (const order of relatedOrdersArray) {
+        for (const order of orders) {
             const orderWithFulfillments = await this.connection.getRepository(Order).findOne(order.id, {
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
@@ -374,7 +373,7 @@ export class OrderService {
                 throw new InternalServerError('error.could-not-find-order');
             }
             const allOrderItemsFulfilled = orderWithFulfillments.lines
-                .reduce((items, line) => [...items, ...line.items], [] as OrderItem[])
+                .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
                 .every(orderItem => {
                     return !!orderItem.fulfillment;
                 });
@@ -389,7 +388,12 @@ export class OrderService {
 
     async getOrderFulfillments(order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
-        if (order.lines && order.lines[0] && order.lines[0].items && order.lines[0].items[0].fulfillment !== undefined) {
+        if (
+            order.lines &&
+            order.lines[0] &&
+            order.lines[0].items &&
+            order.lines[0].items[0].fulfillment !== undefined
+        ) {
             lines = order.lines;
         } else {
             lines = await this.connection.getRepository(OrderLine).find({
@@ -404,14 +408,50 @@ export class OrderService {
     }
 
     async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
-        const fulfillment = await getEntityOrThrow(this.connection, Fulfillment, id,  {
+        const fulfillment = await getEntityOrThrow(this.connection, Fulfillment, id, {
             relations: ['orderItems'],
         });
         return fulfillment.orderItems;
     }
 
-    async cancelOrder(ctx: RequestContext, id: ID): Promise<Order> {
-        return this.transitionToState(ctx, id, 'Cancelled');
+    async cancelOrderLines(ctx: RequestContext, input: CancelOrderLinesInput): Promise<OrderLine[]> {
+        if (
+            !input.lines ||
+            input.lines.length === 0 ||
+            input.lines.reduce((total, line) => total + line.quantity, 0) === 0
+        ) {
+            throw new UserInputError('error.cancel-order-lines-nothing-to-cancel');
+        }
+        const { items, orders } = await this.getOrdersAndItemsFromLines(
+            input.lines,
+                i => !i.cancelled,
+            'error.cancel-order-lines-quantity-too-high',
+        );
+        for (const order of orders) {
+            if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+                throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', { state: order.state });
+            }
+        }
+        await this.stockMovementService.createCancellationsForOrderItems(items);
+        for (const item of items) {
+            await this.connection.getRepository(OrderItem).update(item.id, { cancelled: true });
+        }
+        for (const order of orders) {
+            const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
+                relations: ['lines', 'lines.items'],
+            });
+            if (!orderWithItems) {
+                throw new InternalServerError('error.could-not-find-order');
+            }
+            const allOrderItemsCancelled = orderWithItems.lines
+                .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
+                .every(orderItem => orderItem.cancelled);
+            if (allOrderItemsCancelled) {
+                await this.transitionToState(ctx, order.id, 'Cancelled');
+            }
+        }
+        return this.connection.getRepository(OrderLine)
+            .findByIds(input.lines.map(l => l.orderLineId), { relations: ['items'] });
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
@@ -479,7 +519,10 @@ export class OrderService {
         return orderItem;
     }
 
-    private createOrderLineFromVariant(productVariant: ProductVariant, customFields?: { [key: string]: any; }): OrderLine {
+    private createOrderLineFromVariant(
+        productVariant: ProductVariant,
+        customFields?: { [key: string]: any },
+    ): OrderLine {
         return new OrderLine({
             productVariant,
             taxCategory: productVariant.taxCategory,
@@ -531,5 +574,41 @@ export class OrderService {
         await this.connection.getRepository(OrderItem).save(order.getOrderItems());
         await this.connection.getRepository(OrderLine).save(order.lines);
         return order;
+    }
+
+    private async getOrdersAndItemsFromLines(
+        orderLinesInput: OrderLineInput[],
+        itemMatcher: (i: OrderItem) => boolean,
+        noMatchesError: string,
+    ): Promise<{ orders: Order[]; items: OrderItem[] }> {
+        const orders = new Map<ID, Order>();
+        const items = new Map<ID, OrderItem>();
+
+        const lines = await this.connection
+            .getRepository(OrderLine)
+            .findByIds(orderLinesInput.map(l => l.orderLineId), {
+                relations: ['order', 'items', 'items.fulfillment'],
+            });
+        for (const line of lines) {
+            const inputLine = orderLinesInput.find(l => idsAreEqual(l.orderLineId, line.id));
+            if (!inputLine) {
+                continue;
+            }
+            const order = line.order;
+            if (!orders.has(order.id)) {
+                orders.set(order.id, order);
+            }
+            const matchingItems = line.items.filter(itemMatcher);
+            if (matchingItems.length < inputLine.quantity) {
+                throw new IllegalOperationError(noMatchesError);
+            }
+            matchingItems.slice(0, inputLine.quantity).forEach(item => {
+                items.set(item.id, item);
+            });
+        }
+        return {
+            orders: Array.from(orders.values()),
+            items: Array.from(items.values()),
+        };
     }
 }

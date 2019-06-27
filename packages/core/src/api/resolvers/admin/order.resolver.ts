@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    MutationCancelOrderArgs,
+    MutationCancelOrderLinesArgs,
     MutationCreateFulfillmentArgs,
     MutationSettlePaymentArgs,
     Permission,
@@ -47,8 +47,9 @@ export class OrderResolver {
     }
 
     @Mutation()
+    @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
-    async cancelOrder(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderArgs) {
-        return this.orderService.cancelOrder(ctx, args.id);
+    async cancelOrderLines(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderLinesArgs) {
+        return this.orderService.cancelOrderLines(ctx, args.input);
     }
 }

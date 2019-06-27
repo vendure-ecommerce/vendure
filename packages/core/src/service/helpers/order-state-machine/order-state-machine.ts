@@ -64,9 +64,6 @@ export class OrderStateMachine {
             data.order.orderPlacedAt = new Date();
             await this.stockMovementService.createSalesForOrder(data.order);
         }
-        if (toState === 'Cancelled') {
-            await this.stockMovementService.createCancellationsForOrder(data.order);
-        }
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
     }
 

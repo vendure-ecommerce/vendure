@@ -1,5 +1,8 @@
 {
   "error": {
+    "cancel-order-lines-invalid-order-state": "Cannot cancel OrderLines from an Order in the \"{ state }\" state",
+    "cancel-order-lines-nothing-to-cancel": "Nothing to cancel",
+    "cancel-order-lines-quantity-too-high": "Quantity to cancel is greater than existing OrderLine quantity",
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
     "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",

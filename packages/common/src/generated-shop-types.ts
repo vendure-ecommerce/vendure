@@ -1368,6 +1368,7 @@ export type OrderItem = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    cancelled: Scalars['Boolean'];
     unitPrice: Scalars['Int'];
     unitPriceWithTax: Scalars['Int'];
     unitPriceIncludesTax: Scalars['Boolean'];

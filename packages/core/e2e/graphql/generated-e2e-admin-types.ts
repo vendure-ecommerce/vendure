@@ -172,6 +172,11 @@ export type Cancellation = Node &
         orderLine: OrderLine;
     };
 
+export type CancelOrderLinesInput = {
+    lines: Array<OrderLineInput>;
+    reason?: Maybe<Scalars['String']>;
+};
+
 export type Channel = Node & {
     __typename?: 'Channel';
     id: Scalars['ID'];
@@ -449,7 +454,7 @@ export type CreateFacetValueWithFacetInput = {
 };
 
 export type CreateFulfillmentInput = {
-    lines: Array<FulfillmentLineInput>;
+    lines: Array<OrderLineInput>;
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
 };
@@ -1047,11 +1052,6 @@ export type Fulfillment = Node & {
     trackingCode?: Maybe<Scalars['String']>;
 };
 
-export type FulfillmentLineInput = {
-    orderLineId: Scalars['ID'];
-    quantity: Scalars['Int'];
-};
-
 export type GlobalSettings = {
     __typename?: 'GlobalSettings';
     id: Scalars['ID'];
@@ -1541,7 +1541,7 @@ export type Mutation = {
     importProducts?: Maybe<ImportInfo>;
     settlePayment?: Maybe<Payment>;
     createFulfillment?: Maybe<Fulfillment>;
-    cancelOrder?: Maybe<Order>;
+    cancelOrderLines: Array<OrderLine>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -1563,25 +1563,25 @@ export type Mutation = {
     generateVariantsForProduct: Product;
     /** Update existing ProductVariants */
     updateProductVariants: Array<Maybe<ProductVariant>>;
-    createPromotion: Promotion;
-    updatePromotion: Promotion;
-    deletePromotion: DeletionResponse;
     /** Create a new Role */
     createRole: Role;
     /** Update an existing Role */
     updateRole: Role;
+    createPromotion: Promotion;
+    updatePromotion: Promotion;
+    deletePromotion: DeletionResponse;
     /** Create a new ShippingMethod */
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
     updateShippingMethod: ShippingMethod;
-    /** Create a new TaxCategory */
-    createTaxCategory: TaxCategory;
-    /** Update an existing TaxCategory */
-    updateTaxCategory: TaxCategory;
     /** Create a new TaxRate */
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
     updateTaxRate: TaxRate;
+    /** Create a new TaxCategory */
+    createTaxCategory: TaxCategory;
+    /** Update an existing TaxCategory */
+    updateTaxCategory: TaxCategory;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -1735,8 +1735,8 @@ export type MutationCreateFulfillmentArgs = {
     input: CreateFulfillmentInput;
 };
 
-export type MutationCancelOrderArgs = {
-    id: Scalars['ID'];
+export type MutationCancelOrderLinesArgs = {
+    input: CancelOrderLinesInput;
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -1784,6 +1784,14 @@ export type MutationUpdateProductVariantsArgs = {
     input: Array<UpdateProductVariantInput>;
 };
 
+export type MutationCreateRoleArgs = {
+    input: CreateRoleInput;
+};
+
+export type MutationUpdateRoleArgs = {
+    input: UpdateRoleInput;
+};
+
 export type MutationCreatePromotionArgs = {
     input: CreatePromotionInput;
 };
@@ -1796,14 +1804,6 @@ export type MutationDeletePromotionArgs = {
     id: Scalars['ID'];
 };
 
-export type MutationCreateRoleArgs = {
-    input: CreateRoleInput;
-};
-
-export type MutationUpdateRoleArgs = {
-    input: UpdateRoleInput;
-};
-
 export type MutationCreateShippingMethodArgs = {
     input: CreateShippingMethodInput;
 };
@@ -1812,20 +1812,20 @@ export type MutationUpdateShippingMethodArgs = {
     input: UpdateShippingMethodInput;
 };
 
-export type MutationCreateTaxCategoryArgs = {
-    input: CreateTaxCategoryInput;
-};
-
-export type MutationUpdateTaxCategoryArgs = {
-    input: UpdateTaxCategoryInput;
-};
-
 export type MutationCreateTaxRateArgs = {
     input: CreateTaxRateInput;
 };
 
 export type MutationUpdateTaxRateArgs = {
     input: UpdateTaxRateInput;
+};
+
+export type MutationCreateTaxCategoryArgs = {
+    input: CreateTaxCategoryInput;
+};
+
+export type MutationUpdateTaxCategoryArgs = {
+    input: UpdateTaxCategoryInput;
 };
 
 export type MutationCreateZoneArgs = {
@@ -1928,6 +1928,7 @@ export type OrderItem = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    cancelled: Scalars['Boolean'];
     unitPrice: Scalars['Int'];
     unitPriceWithTax: Scalars['Int'];
     unitPriceIncludesTax: Scalars['Boolean'];
@@ -1951,6 +1952,11 @@ export type OrderLine = Node & {
     adjustments: Array<Adjustment>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderLineInput = {
+    orderLineId: Scalars['ID'];
+    quantity: Scalars['Int'];
 };
 
 export type OrderList = PaginatedList & {
@@ -2350,10 +2356,10 @@ export type Query = {
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
-    job?: Maybe<JobInfo>;
-    jobs: Array<JobInfo>;
     order?: Maybe<Order>;
     orders: OrderList;
+    job?: Maybe<JobInfo>;
+    jobs: Array<JobInfo>;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
     productOptionGroups: Array<ProductOptionGroup>;
@@ -2362,19 +2368,19 @@ export type Query = {
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    roles: RoleList;
+    role?: Maybe<Role>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
     adjustmentOperations: AdjustmentOperations;
-    roles: RoleList;
-    role?: Maybe<Role>;
     shippingMethods: ShippingMethodList;
     shippingMethod?: Maybe<ShippingMethod>;
     shippingEligibilityCheckers: Array<ConfigurableOperation>;
     shippingCalculators: Array<ConfigurableOperation>;
-    taxCategories: Array<TaxCategory>;
-    taxCategory?: Maybe<TaxCategory>;
     taxRates: TaxRateList;
     taxRate?: Maybe<TaxRate>;
+    taxCategories: Array<TaxCategory>;
+    taxCategory?: Maybe<TaxCategory>;
     zones: Array<Zone>;
     zone?: Maybe<Zone>;
 };
@@ -2439,20 +2445,20 @@ export type QueryFacetArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
-export type QueryJobArgs = {
-    jobId: Scalars['String'];
-};
-
-export type QueryJobsArgs = {
-    input?: Maybe<JobListInput>;
-};
-
 export type QueryOrderArgs = {
     id: Scalars['ID'];
 };
 
 export type QueryOrdersArgs = {
     options?: Maybe<OrderListOptions>;
+};
+
+export type QueryJobArgs = {
+    jobId: Scalars['String'];
+};
+
+export type QueryJobsArgs = {
+    input?: Maybe<JobListInput>;
 };
 
 export type QueryPaymentMethodsArgs = {
@@ -2488,20 +2494,20 @@ export type QueryProductArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
-export type QueryPromotionArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryPromotionsArgs = {
-    options?: Maybe<PromotionListOptions>;
-};
-
 export type QueryRolesArgs = {
     options?: Maybe<RoleListOptions>;
 };
 
 export type QueryRoleArgs = {
     id: Scalars['ID'];
+};
+
+export type QueryPromotionArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryPromotionsArgs = {
+    options?: Maybe<PromotionListOptions>;
 };
 
 export type QueryShippingMethodsArgs = {
@@ -2512,15 +2518,15 @@ export type QueryShippingMethodArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryTaxCategoryArgs = {
-    id: Scalars['ID'];
-};
-
 export type QueryTaxRatesArgs = {
     options?: Maybe<TaxRateListOptions>;
 };
 
 export type QueryTaxRateArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryTaxCategoryArgs = {
     id: Scalars['ID'];
 };
 
@@ -3562,7 +3568,7 @@ export type OrderFragment = { __typename?: 'Order' } & Pick<
 
 export type OrderItemFragment = { __typename?: 'OrderItem' } & Pick<
     OrderItem,
-    'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'
+    'id' | 'cancelled' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'
 > & { fulfillment: Maybe<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'>> };
 
 export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
@@ -4015,11 +4021,15 @@ export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
 };
 
 export type CancelOrderMutationVariables = {
-    id: Scalars['ID'];
+    input: CancelOrderLinesInput;
 };
 
 export type CancelOrderMutation = { __typename?: 'Mutation' } & {
-    cancelOrder: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'active'>>;
+    cancelOrderLines: Array<
+        { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
+                items: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'cancelled'>>;
+            }
+    >;
 };
 
 export type AddOptionGroupToProductMutationVariables = {
@@ -4994,7 +5004,8 @@ export namespace GetOrderFulfillmentItems {
 export namespace CancelOrder {
     export type Variables = CancelOrderMutationVariables;
     export type Mutation = CancelOrderMutation;
-    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
+    export type CancelOrderLines = NonNullable<CancelOrderMutation['cancelOrderLines'][0]>;
+    export type Items = NonNullable<(NonNullable<CancelOrderMutation['cancelOrderLines'][0]>)['items'][0]>;
 }
 
 export namespace AddOptionGroupToProduct {

@@ -325,6 +325,7 @@ export const ORDER_FRAGMENT = gql`
 export const ORDER_ITEM_FRAGMENT = gql`
     fragment OrderItem on OrderItem {
         id
+        cancelled
         unitPrice
         unitPriceIncludesTax
         unitPriceWithTax

@@ -8,6 +8,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
+import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
@@ -81,19 +82,22 @@ export class StockMovementService {
         return this.connection.getRepository(Sale).save(sales);
     }
 
-    async createCancellationsForOrder(order: Order): Promise<Cancellation[]> {
+    async createCancellationsForOrderItems(items: OrderItem[]): Promise<Cancellation[]> {
+        const orderItems = await this.connection.getRepository(OrderItem).findByIds(items.map(i => i.id), {
+            relations: ['line', 'line.productVariant'],
+        });
         const cancellations: Cancellation[] = [];
-        for (const line of order.lines) {
-            const { productVariant } = line;
+        for (const item of orderItems) {
+            const { productVariant } = item.line;
             const cancellation = new Cancellation({
                 productVariant,
-                quantity: line.quantity,
-                orderLine: line,
+                quantity: 1,
+                orderItem: item,
             });
             cancellations.push(cancellation);
 
             if (productVariant.trackInventory === true) {
-                productVariant.stockOnHand += line.quantity;
+                productVariant.stockOnHand += 1;
                 await this.connection.getRepository(ProductVariant).save(productVariant);
             }
         }
