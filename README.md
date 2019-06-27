@@ -55,12 +55,12 @@ Vendure uses [TypeORM](http://typeorm.io), so it compatible will any database wh
 
 1. Configure the [dev config](./packages/dev-server/dev-config.ts), making sure the connection settings in the `getDbConfig()` function are correct for the database type you will be using.
 2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the `getDbConfig()` settings. If you are using SQLite, you can skip this step.
-3. Populate mock data with `yarn dev-server:populate --db=<mysql|postgres|sqlite>`. If you do not specify the `db` argument, it will default to "mysql".
+3. Populate mock data with `DB=<mysql|postgres|sqlite> yarn dev-server:populate`. If you do not specify the `db` argument, it will default to "mysql".
 
 ### 5. Run the dev server
 
 ```
-yarn dev-server:start --db=<mysql|postgres|sqlite>
+DB=<mysql|postgres|sqlite> yarn dev-server:start
 ```
 
  If you do not specify the `db` argument, it will default to "mysql".
