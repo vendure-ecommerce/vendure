@@ -37,6 +37,7 @@ import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.re
 import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
 import { ProductVariantAdminEntityResolver, ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
+import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
 import { ShopEnvironmentResolver } from './resolvers/shop/shop-environment.resolver';
@@ -86,6 +87,7 @@ export const entityResolvers = [
     ProductEntityResolver,
     ProductOptionGroupEntityResolver,
     ProductVariantEntityResolver,
+    RefundEntityResolver,
 ];
 
 export const adminEntityResolvers = [

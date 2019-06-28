@@ -1,6 +1,6 @@
 import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { idType } from '../../config/config-helpers';
@@ -10,6 +10,7 @@ import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
+import { Refund } from '../refund/refund.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
 /**
@@ -53,6 +54,9 @@ export class Order extends VendureEntity {
 
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
+
+    @OneToMany(type => Refund, refund => refund.order)
+    refunds: Refund[];
 
     @Column('varchar')
     currencyCode: CurrencyCode;

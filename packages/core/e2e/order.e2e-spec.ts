@@ -6,6 +6,8 @@ import { StockMovementType } from '../../common/lib/generated-types';
 import { pick } from '../../common/lib/pick';
 import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
+import { PaymentMetadata } from '../src/entity/payment/payment.entity';
+import { RefundState } from '../src/service/helpers/refund-state-machine/refund-state';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
@@ -20,8 +22,8 @@ import {
     GetOrderListFulfillments,
     GetProductWithVariants,
     GetStockMovement,
-    OrderItemFragment,
-    SettlePayment,
+    OrderItemFragment, RefundOrder,
+    SettlePayment, SettleRefund,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -60,7 +62,11 @@ describe('Orders resolver', () => {
             },
             {
                 paymentOptions: {
-                    paymentMethodHandlers: [twoStagePaymentMethod, failsToSettlePaymentMethod],
+                    paymentMethodHandlers: [
+                        twoStagePaymentMethod,
+                        failsToSettlePaymentMethod,
+                        singleStageRefundablePaymentMethod,
+                    ],
                 },
             },
         );
@@ -258,7 +264,7 @@ describe('Orders resolver', () => {
             expect(order!.state).toBe('PaymentSettled');
             const lines = order!.lines;
 
-            const { createFulfillment } = await adminClient.query<
+            const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
                 >(CREATE_FULFILLMENT, {
@@ -269,9 +275,9 @@ describe('Orders resolver', () => {
                 },
             });
 
-            expect(createFulfillment!.method).toBe('Test1');
-            expect(createFulfillment!.trackingCode).toBe('111');
-            expect(createFulfillment!.orderItems).toEqual([
+            expect(fulfillOrder!.method).toBe('Test1');
+            expect(fulfillOrder!.trackingCode).toBe('111');
+            expect(fulfillOrder!.orderItems).toEqual([
                 { id: lines[0].items[0].id },
                 { id: lines[1].items[0].id },
             ]);
@@ -281,8 +287,8 @@ describe('Orders resolver', () => {
             });
 
             expect(result.order!.state).toBe('PartiallyFulfilled');
-            expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(createFulfillment!.id);
-            expect(result.order!.lines[1].items[2].fulfillment!.id).toBe(createFulfillment!.id);
+            expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
+            expect(result.order!.lines[1].items[2].fulfillment!.id).toBe(fulfillOrder!.id);
             expect(result.order!.lines[1].items[1].fulfillment).toBeNull();
             expect(result.order!.lines[1].items[0].fulfillment).toBeNull();
         });
@@ -294,7 +300,7 @@ describe('Orders resolver', () => {
             expect(order!.state).toBe('PartiallyFulfilled');
             const lines = order!.lines;
 
-            const { createFulfillment } = await adminClient.query<
+            const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
                 >(CREATE_FULFILLMENT, {
@@ -350,7 +356,7 @@ describe('Orders resolver', () => {
                 [] as OrderItemFragment[],
             );
 
-            const { createFulfillment } = await adminClient.query<
+            const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
                 >(CREATE_FULFILLMENT, {
@@ -366,9 +372,9 @@ describe('Orders resolver', () => {
                 },
             });
 
-            expect(createFulfillment!.method).toBe('Test3');
-            expect(createFulfillment!.trackingCode).toBe('333');
-            expect(createFulfillment!.orderItems).toEqual([{ id: orderItems[1].id }]);
+            expect(fulfillOrder!.method).toBe('Test3');
+            expect(fulfillOrder!.trackingCode).toBe('333');
+            expect(fulfillOrder!.orderItems).toEqual([{ id: orderItems[1].id }]);
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
@@ -547,14 +553,14 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            const { cancelOrderLines } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+            const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                 },
             });
 
-            expect(cancelOrderLines[0].quantity).toBe(1);
-            expect(cancelOrderLines[0].items).toEqual([
+            expect(cancelOrder.lines[0].quantity).toBe(1);
+            expect(cancelOrder.lines[0].items).toEqual([
                 { id: 'T_7', cancelled: true },
                 { id: 'T_8', cancelled: false },
             ]);
@@ -612,10 +618,195 @@ describe('Orders resolver', () => {
             ]);
         });
     });
+
+    describe('refunds', () => {
+        let orderId: string;
+        let product: GetProductWithVariants.Product;
+        let productVariantId: string;
+        let paymentId: string;
+        let refundId: string;
+
+        beforeAll(async () => {
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_3',
+            });
+            product = result.product!;
+            productVariantId = product.variants[0].id;
+
+            // Set the ProductVariant to trackInventory
+            const { updateProductVariants } = await adminClient.query<
+                UpdateProductVariants.Mutation,
+                UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: productVariantId,
+                        trackInventory: true,
+                    },
+                ],
+            });
+
+            // Add the ProductVariant to the Order
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                productVariantId,
+                quantity: 2,
+            });
+            orderId = addItemToOrder!.id;
+        });
+
+        it(
+            'cannot refund from PaymentAuthorized state',
+            assertThrowsWithMessage(async () => {
+                await proceedToArrangingPayment(shopClient);
+                const { addPaymentToOrder } = await shopClient.query<
+                    AddPaymentToOrder.Mutation,
+                    AddPaymentToOrder.Variables
+                    >(ADD_PAYMENT, {
+                    input: {
+                        method: twoStagePaymentMethod.code,
+                        metadata: {
+                            baz: 'quux',
+                        },
+                    },
+                });
+                expect(addPaymentToOrder!.state).toBe('PaymentAuthorized');
+                paymentId = addPaymentToOrder!.payments![0].id;
+
+                await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                    input: {
+                        lines: addPaymentToOrder!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        shipping: 0,
+                        adjustment: 0,
+                        paymentId,
+                    },
+                });
+            }, 'Cannot refund an Order in the "PaymentAuthorized" state'),
+        );
+
+        it(
+            'throws if no lines and no shipping',
+            assertThrowsWithMessage(async () => {
+                    const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                        id: orderId,
+                    });
+                    const { settlePayment } = await adminClient.query<
+                        SettlePayment.Mutation,
+                        SettlePayment.Variables
+                        >(SETTLE_PAYMENT, {
+                        id: order!.payments![0].id,
+                    });
+
+                    expect(settlePayment!.state).toBe('Settled');
+
+                    await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                        input: {
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                            shipping: 0,
+                            adjustment: 0,
+                            paymentId,
+                        },
+                    });
+                }, 'Nothing to refund',
+            ),
+        );
+
+        it(
+            'throws if paymentId not valid',
+            assertThrowsWithMessage(async () => {
+                    const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                        id: orderId,
+                    });
+                    const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                        input: {
+                            lines: [],
+                            shipping: 100,
+                            adjustment: 0,
+                            paymentId: 'T_999',
+                        },
+                    });
+                }, 'No Payment with the id \'999\' could be found',
+            ),
+        );
+
+        it(
+            'throws if payment and order lines do not belong to the same Order',
+            assertThrowsWithMessage(async () => {
+                    const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                        id: orderId,
+                    });
+                    const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                        input: {
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                            shipping: 100,
+                            adjustment: 0,
+                            paymentId: 'T_1',
+                        },
+                    });
+                }, 'The Payment and OrderLines do not belong to the same Order',
+            ),
+        );
+
+        it('creates a Refund to be manually settled', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                input: {
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order!.shipping,
+                    adjustment: 0,
+                    paymentId,
+                },
+            });
+
+            expect(refundOrder.shipping).toBe(order!.shipping);
+            expect(refundOrder.items).toBe(order!.subTotal);
+            expect(refundOrder.total).toBe(order!.total);
+            expect(refundOrder.transactionId).toBe(null);
+            expect(refundOrder.state).toBe('Pending');
+            refundId = refundOrder.id;
+        });
+
+        it('throws if attempting to refund the same item more than once', assertThrowsWithMessage(async () => {
+                const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                    id: orderId,
+                });
+                const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+                    input: {
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                        shipping: order!.shipping,
+                        adjustment: 0,
+                        paymentId,
+                    },
+                });
+            },
+            'Cannot refund an OrderItem which has already been refunded',
+            ),
+        );
+
+        it('manually settle a Refund', async () => {
+            const { settleRefund } = await adminClient.query<SettleRefund.Mutation, SettleRefund.Variables>(SETTLE_REFUND, {
+                input: {
+                    id: refundId,
+                    transactionId: 'aaabbb',
+                },
+            });
+
+            expect(settleRefund.state).toBe('Settled');
+            expect(settleRefund.transactionId).toBe('aaabbb');
+        });
+    });
 });
 
 /**
- * A two-stage (authorize, capture) payment method.
+ * A two-stage (authorize, capture) payment method, with no createRefund method.
  */
 const twoStagePaymentMethod = new PaymentMethodHandler({
     code: 'authorize-only-payment-method',
@@ -635,6 +826,33 @@ const twoStagePaymentMethod = new PaymentMethodHandler({
             metadata: {
                 moreData: 42,
             },
+        };
+    },
+});
+
+/**
+ * A payment method which includes a createRefund method.
+ */
+const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
+    code: 'single-stage-refundable-payment-method',
+    description: 'Test Payment Method',
+    args: {},
+    createPayment: (order, args, metadata) => {
+        return {
+            amount: order.total,
+            state: 'Settled',
+            transactionId: '12345',
+            metadata,
+        };
+    },
+    settlePayment: () => {
+        return { success: true };
+    },
+    createRefund: (input, total, order, payment, args) => {
+        return {
+            amount: total,
+            state: 'Settled',
+            transactionId: 'abc123',
         };
     },
 });
@@ -721,8 +939,8 @@ export const SETTLE_PAYMENT = gql`
 `;
 
 export const CREATE_FULFILLMENT = gql`
-    mutation CreateFulfillment($input: CreateFulfillmentInput!) {
-        createFulfillment(input: $input) {
+    mutation CreateFulfillment($input: FulfillOrderInput!) {
+        fulfillOrder(input: $input) {
             id
             method
             trackingCode
@@ -774,14 +992,44 @@ export const GET_ORDER_FULFILLMENT_ITEMS = gql`
 `;
 
 export const CANCEL_ORDER = gql`
-    mutation CancelOrder($input: CancelOrderLinesInput!) {
-        cancelOrderLines(input: $input) {
+    mutation CancelOrder($input: CancelOrderInput!) {
+        cancelOrder(input: $input) {
             id
-            quantity
-            items {
-                id
-                cancelled
+            lines {
+                quantity
+                items {
+                    id
+                    cancelled
+                }
             }
+        }
+    }
+`;
+
+export const REFUND_ORDER = gql`
+    mutation RefundOrder($input: RefundOrderInput!) {
+        refundOrder(input: $input) {
+            id
+            state
+            items
+            transactionId
+            shipping
+            total
+            metadata
+        }
+    }
+`;
+
+export const SETTLE_REFUND = gql`
+    mutation SettleRefund($input: SettleRefundInput!) {
+        settleRefund(input: $input) {
+            id
+            state
+            items
+            transactionId
+            shipping
+            total
+            metadata
         }
     }
 `;

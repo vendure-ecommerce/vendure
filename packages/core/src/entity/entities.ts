@@ -29,13 +29,13 @@ import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
 import { Promotion } from './promotion/promotion.entity';
+import { Refund } from './refund/refund.entity';
 import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
 import { Cancellation } from './stock-movement/cancellation.entity';
-import { Return } from './stock-movement/return.entity';
 import { Sale } from './stock-movement/sale.entity';
 import { StockAdjustment } from './stock-movement/stock-adjustment.entity';
 import { StockMovement } from './stock-movement/stock-movement.entity';
@@ -82,7 +82,7 @@ export const coreEntitiesMap = {
     ProductVariantPrice,
     ProductVariantTranslation,
     Promotion,
-    Return,
+    Refund,
     Role,
     Sale,
     Session,

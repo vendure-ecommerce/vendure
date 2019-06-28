@@ -1323,6 +1323,7 @@ export type Order = Node & {
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
     payments?: Maybe<Array<Payment>>;
+    refunds?: Maybe<Array<Refund>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
     subTotal: Scalars['Int'];
@@ -1732,6 +1733,23 @@ export type QueryProductsArgs = {
 
 export type QuerySearchArgs = {
     input: SearchInput;
+};
+
+export type Refund = Node & {
+    __typename?: 'Refund';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    items: Scalars['Int'];
+    shipping: Scalars['Int'];
+    adjustment: Scalars['Int'];
+    total: Scalars['Int'];
+    method?: Maybe<Scalars['String']>;
+    state: Scalars['String'];
+    transactionId?: Maybe<Scalars['String']>;
+    orderItems: Array<OrderItem>;
+    paymentId: Scalars['ID'];
+    metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type RegisterCustomerInput = {

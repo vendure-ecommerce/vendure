@@ -1,4 +1,4 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg, ConfigArgType, RefundOrderInput } from '@vendure/common/lib/generated-types';
 
 import {
     argsArrayToHash,
@@ -13,6 +13,7 @@ import {
     PaymentState,
     PaymentTransitionData,
 } from '../../service/helpers/payment-state-machine/payment-state';
+import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
 export type PaymentMethodArgType = ConfigArgType.INT | ConfigArgType.STRING | ConfigArgType.BOOLEAN;
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
@@ -49,6 +50,18 @@ export interface CreatePaymentResult {
     metadata?: PaymentMetadata;
 }
 
+/**
+ * @description
+ * This object is the return value of the {@link CreateRefundFn}.
+ *
+ * @docsCategory payment
+ */
+export interface CreateRefundResult {
+    state: RefundState;
+    transactionId?: string;
+    metadata?: PaymentMetadata;
+}
+
 export interface SettlePaymentResult {
     success: boolean;
     errorMessage?: string;
@@ -81,6 +94,20 @@ export type SettlePaymentFn<T extends PaymentMethodArgs> = (
 
 /**
  * @description
+ * This function contains the logic for creating a payment. See {@link PaymentMethodHandler} for an example.
+ *
+ * @docsCategory payment
+ */
+export type CreateRefundFn<T extends PaymentMethodArgs> = (
+    input: RefundOrderInput,
+    total: number,
+    order: Order,
+    payment: Payment,
+    args: ConfigArgValues<T>,
+) => CreateRefundResult | Promise<CreateRefundResult>;
+
+/**
+ * @description
  * Defines the object which is used to construct the {@link PaymentMethodHandler}.
  *
  * @docsCategory payment
@@ -108,6 +135,14 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * This function provides the logic for settling a payment.
      */
     settlePayment: SettlePaymentFn<T>;
+    /**
+     * @description
+     * This function provides the logic for refunding a payment created with this
+     * payment method. Some payment providers may not provide the facility to
+     * programmatically create a refund. In such a case, this method should be
+     * omitted and any Refunds will have to be settled manually by an administrator.
+     */
+    createRefund?: CreateRefundFn<T>;
     /**
      * @description
      * Optional provider-specific arguments which, when specified, are
@@ -186,6 +221,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
+    private readonly createRefundFn?: CreateRefundFn<T>;
     private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
@@ -194,6 +230,8 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
         this.args = config.args;
         this.createPaymentFn = config.createPayment;
         this.settlePaymentFn = config.settlePayment;
+        this.settlePaymentFn = config.settlePayment;
+        this.createRefundFn = config.createRefund;
         this.onTransitionStartFn = config.onStateTransitionStart;
     }
 
@@ -219,6 +257,20 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
      */
     async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
         return this.settlePaymentFn(order, payment, argsArrayToHash(args));
+    }
+
+    /**
+     * @description
+     * Called internally to create a refund
+     *
+     * @internal
+     */
+    async createRefund(input: RefundOrderInput,
+                       total: number,
+                       order: Order,
+                       payment: Payment,
+                       args: ConfigArg[]) {
+        return this.createRefundFn ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args)) : false;
     }
 
     /**

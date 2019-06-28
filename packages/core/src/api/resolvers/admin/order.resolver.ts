@@ -1,8 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    MutationCancelOrderLinesArgs,
-    MutationCreateFulfillmentArgs,
-    MutationSettlePaymentArgs,
+    MutationCancelOrderArgs,
+    MutationFulfillOrderArgs,
+    MutationRefundOrderArgs,
+    MutationSettlePaymentArgs, MutationSettleRefundArgs,
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
@@ -42,14 +43,27 @@ export class OrderResolver {
     @Mutation()
     @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
-    async createFulfillment(@Ctx() ctx: RequestContext, @Args() args: MutationCreateFulfillmentArgs) {
+    async fulfillOrder(@Ctx() ctx: RequestContext, @Args() args: MutationFulfillOrderArgs) {
         return this.orderService.createFulfillment(ctx, args.input);
     }
 
     @Mutation()
     @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
-    async cancelOrderLines(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderLinesArgs) {
-        return this.orderService.cancelOrderLines(ctx, args.input);
+    async cancelOrder(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderArgs) {
+        return this.orderService.cancelOrder(ctx, args.input);
+    }
+
+    @Mutation()
+    @Decode('orderLineId', 'paymentId')
+    @Allow(Permission.UpdateOrder)
+    async refundOrder(@Ctx() ctx: RequestContext, @Args() args: MutationRefundOrderArgs) {
+        return this.orderService.refundOrder(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async settleRefund(@Ctx() ctx: RequestContext, @Args() args: MutationSettleRefundArgs) {
+        return this.orderService.settleRefund(ctx, args.input);
     }
 }

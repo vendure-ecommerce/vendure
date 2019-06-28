@@ -1,10 +1,12 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import {
-    CancelOrderLinesInput,
+    CancelOrderInput,
     CreateAddressInput,
-    CreateFulfillmentInput,
+    FulfillOrderInput,
     OrderLineInput,
+    RefundOrderInput,
+    SettleRefundInput,
     ShippingMethodQuote,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -13,16 +15,10 @@ import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    InternalServerError,
-    OrderItemsLimitError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, IllegalOperationError, InternalServerError, OrderItemsLimitError, UserInputError } from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { idsAreEqual } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
@@ -32,6 +28,7 @@ import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
+import { Refund } from '../../entity/refund/refund.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
@@ -39,6 +36,7 @@ import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
+import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -64,6 +62,7 @@ export class OrderService {
         private paymentMethodService: PaymentMethodService,
         private listQueryBuilder: ListQueryBuilder,
         private stockMovementService: StockMovementService,
+        private refundStateMachine: RefundStateMachine,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -144,6 +143,19 @@ export class OrderService {
                 order: { id: orderId } as any,
             },
         });
+    }
+
+    getOrderRefunds(orderId: ID): Promise<Refund[]> {
+        return this.connection.getRepository(Refund).find({
+            where: {
+                order: { id: orderId } as any,
+            },
+        });
+    }
+
+    async getRefundOrderItems(refundId: ID): Promise<OrderItem[]> {
+        const refund = await getEntityOrThrow(this.connection, Refund, refundId, { relations: ['orderItems'] });
+        return refund.orderItems;
     }
 
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
@@ -337,7 +349,7 @@ export class OrderService {
         return payment;
     }
 
-    async createFulfillment(ctx: RequestContext, input: CreateFulfillmentInput) {
+    async createFulfillment(ctx: RequestContext, input: FulfillOrderInput) {
         if (
             !input.lines ||
             input.lines.length === 0 ||
@@ -414,7 +426,7 @@ export class OrderService {
         return fulfillment.orderItems;
     }
 
-    async cancelOrderLines(ctx: RequestContext, input: CancelOrderLinesInput): Promise<OrderLine[]> {
+    async cancelOrder(ctx: RequestContext, input: CancelOrderInput): Promise<Order> {
         if (
             !input.lines ||
             input.lines.length === 0 ||
@@ -424,34 +436,70 @@ export class OrderService {
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             input.lines,
-                i => !i.cancelled,
+            i => !i.cancellationId,
             'error.cancel-order-lines-quantity-too-high',
         );
-        for (const order of orders) {
-            if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
-                throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', { state: order.state });
-            }
+        if (1 < orders.length) {
+            throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
+        }
+        const order = orders[0];
+        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+            throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', { state: order.state });
         }
         await this.stockMovementService.createCancellationsForOrderItems(items);
-        for (const item of items) {
-            await this.connection.getRepository(OrderItem).update(item.id, { cancelled: true });
+
+        const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
+            relations: ['lines', 'lines.items'],
+        });
+        if (!orderWithItems) {
+            throw new InternalServerError('error.could-not-find-order');
         }
-        for (const order of orders) {
-            const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
-                relations: ['lines', 'lines.items'],
-            });
-            if (!orderWithItems) {
-                throw new InternalServerError('error.could-not-find-order');
-            }
-            const allOrderItemsCancelled = orderWithItems.lines
-                .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
-                .every(orderItem => orderItem.cancelled);
-            if (allOrderItemsCancelled) {
-                await this.transitionToState(ctx, order.id, 'Cancelled');
-            }
+        const allOrderItemsCancelled = orderWithItems.lines
+            .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
+            .every(orderItem => !!orderItem.cancellationId);
+        if (allOrderItemsCancelled) {
+            await this.transitionToState(ctx, order.id, 'Cancelled');
         }
-        return this.connection.getRepository(OrderLine)
-            .findByIds(input.lines.map(l => l.orderLineId), { relations: ['items'] });
+        return assertFound(this.findOne(ctx, order.id));
+    }
+
+    async refundOrder(ctx: RequestContext, input: RefundOrderInput): Promise<Refund> {
+        if (
+            (!input.lines ||
+            input.lines.length === 0 ||
+            input.lines.reduce((total, line) => total + line.quantity, 0) === 0) &&
+            input.shipping === 0
+        ) {
+            throw new UserInputError('error.refund-order-lines-nothing-to-refund');
+        }
+        const { items, orders } = await this.getOrdersAndItemsFromLines(
+            input.lines,
+            i => !i.cancellationId,
+            'error.refund-order-lines-quantity-too-high',
+        );
+        if (1 < orders.length) {
+            throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
+        }
+        const payment = await getEntityOrThrow(this.connection, Payment, input.paymentId, { relations: ['order'] });
+        if (orders && orders.length && !idsAreEqual(payment.order.id, orders[0].id)) {
+            throw new IllegalOperationError('error.refund-order-payment-lines-mismatch');
+        }
+        const order = payment.order;
+        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment' || order.state === 'PaymentAuthorized') {
+            throw new IllegalOperationError('error.refund-order-lines-invalid-order-state', {state: order.state});
+        }
+        if (items.some(i => !!i.refundId)) {
+            throw new IllegalOperationError('error.refund-order-item-already-refunded');
+        }
+
+        return await this.paymentMethodService.createRefund(input, order, items, payment);
+    }
+
+    async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
+        const refund = await getEntityOrThrow(this.connection, Refund, input.id, { relations: ['order'] });
+        refund.transactionId = input.transactionId;
+        this.refundStateMachine.transition(ctx, refund.order, refund, 'Settled');
+        return this.connection.getRepository(Refund).save(refund);
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {

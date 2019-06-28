@@ -1,11 +1,14 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { Column, Entity, ManyToOne, OneToOne, RelationId } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { idType } from '../../config/config-helpers';
 import { VendureEntity } from '../base/base.entity';
 import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
+import { Refund } from '../refund/refund.entity';
+import { Cancellation } from '../stock-movement/cancellation.entity';
 
 /**
  * @description
@@ -33,7 +36,25 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => Fulfillment)
     fulfillment: Fulfillment;
 
-    @Column({ default: false }) cancelled: boolean;
+    @Column({ type: idType(), nullable: true })
+    fulfillmentId: ID | null;
+
+    @ManyToOne(type => Refund)
+    refund: Refund;
+
+    @Column({ type: idType(), nullable: true })
+    refundId: ID | null;
+
+    @OneToOne(type => Cancellation, cancellation => cancellation.orderItem)
+    cancellation: Cancellation;
+
+    @RelationId('cancellation')
+    cancellationId: ID | null;
+
+    @Calculated()
+    get cancelled(): boolean {
+        return !!this.cancellationId;
+    }
 
     @Calculated()
     get unitPriceWithTax(): number {

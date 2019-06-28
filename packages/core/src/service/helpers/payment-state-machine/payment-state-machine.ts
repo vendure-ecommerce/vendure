@@ -23,7 +23,7 @@ export class PaymentStateMachine {
             this.eventBus.publish(new PaymentStateTransitionEvent(fromState, toState, data.ctx, data.payment, data.order));
         },
         onError: (fromState, toState, message) => {
-            throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {
+            throw new IllegalOperationError(message || 'error.cannot-transition-payment-from-to', {
                 fromState,
                 toState,
             });

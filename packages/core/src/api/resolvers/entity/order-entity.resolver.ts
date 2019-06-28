@@ -10,7 +10,18 @@ export class OrderEntityResolver {
 
     @ResolveProperty()
     async payments(@Parent() order: Order) {
+        if (order.payments) {
+            return order.payments;
+        }
         return this.orderService.getOrderPayments(order.id);
+    }
+
+    @ResolveProperty()
+    async refunds(@Parent() order: Order) {
+        if (order.refunds) {
+            return order.refunds;
+        }
+        return this.orderService.getOrderRefunds(order.id);
     }
 
     @ResolveProperty()

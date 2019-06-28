@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ConfigArg, ConfigArgType, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, ConfigArgType, RefundOrderInput, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
@@ -15,9 +15,12 @@ import {
     PaymentMethodArgType,
     PaymentMethodHandler,
 } from '../../config/payment-method/payment-method-handler';
+import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Refund } from '../../entity/refund/refund.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -72,6 +75,31 @@ export class PaymentMethodService {
     async settlePayment(payment: Payment, order: Order) {
         const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
         return handler.settlePayment(order, payment, paymentMethod.configArgs);
+    }
+
+    async createRefund(input: RefundOrderInput, order: Order, items: OrderItem[], payment: Payment): Promise<Refund> {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+        const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
+        const refundAmount = itemAmount + input.shipping + input.adjustment;
+        const refund = new Refund({
+            payment,
+            order,
+            orderItems: items,
+            items: itemAmount,
+            adjustment: input.adjustment,
+            shipping: input.shipping,
+            total: refundAmount,
+            method: payment.method,
+            state: 'Pending',
+            metadata: {},
+        });
+        const createRefundResult = await handler.createRefund(input, refundAmount, order, payment, paymentMethod.configArgs);
+        if (createRefundResult) {
+            refund.state = createRefundResult.state;
+            refund.transactionId = createRefundResult.transactionId || '';
+            refund.metadata = createRefundResult.metadata || {};
+        }
+        return this.connection.getRepository(Refund).save(refund);
     }
 
     private async getMethodAndHandler(method: string): Promise<{ paymentMethod: PaymentMethod, handler: PaymentMethodHandler }> {
