@@ -11,7 +11,6 @@ type Order implements Node {
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
     payments: [Payment!]
-    refunds: [Refund!]
     fulfillments: [Fulfillment!]
     subTotalBeforeTax: Int!
     subTotal: Int!
@@ -59,6 +58,7 @@ type OrderItem implements Node {
     taxRate: Float!
     adjustments: [Adjustment!]!
     fulfillment: Fulfillment
+    refundId: ID
 }
 
 type OrderLine implements Node {
@@ -84,6 +84,7 @@ type Payment implements Node {
     amount: Int!
     state: String!
     transactionId: String
+    refunds: [Refund!]!
     metadata: JSON
 }
 

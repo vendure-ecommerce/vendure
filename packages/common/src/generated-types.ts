@@ -1540,8 +1540,8 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  updateGlobalSettings: GlobalSettings,
   importProducts?: Maybe<ImportInfo>,
+  updateGlobalSettings: GlobalSettings,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
@@ -1553,7 +1553,6 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
-  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1568,6 +1567,7 @@ export type Mutation = {
   generateVariantsForProduct: Product,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
+  reindex: JobInfo,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1754,13 +1754,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
@@ -1958,7 +1958,6 @@ export type Order = Node & {
   lines: Array<OrderLine>,
   adjustments: Array<Adjustment>,
   payments?: Maybe<Array<Payment>>,
-  refunds?: Maybe<Array<Refund>>,
   fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
   subTotal: Scalars['Int'],
@@ -2011,6 +2010,7 @@ export type OrderItem = Node & {
   taxRate: Scalars['Float'],
   adjustments: Array<Adjustment>,
   fulfillment?: Maybe<Fulfillment>,
+  refundId?: Maybe<Scalars['ID']>,
 };
 
 export type OrderLine = Node & {
@@ -2077,6 +2077,7 @@ export type Payment = Node & {
   amount: Scalars['Int'],
   state: Scalars['String'],
   transactionId?: Maybe<Scalars['String']>,
+  refunds: Array<Refund>,
   metadata?: Maybe<Scalars['JSON']>,
 };
 
@@ -2441,10 +2442,10 @@ export type Query = {
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
+  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
@@ -2579,11 +2580,6 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
-export type QuerySearchArgs = {
-  input: SearchInput
-};
-
-
 export type QueryProductsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<ProductListOptions>
@@ -2594,6 +2590,11 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>,
   slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput
 };
 
 

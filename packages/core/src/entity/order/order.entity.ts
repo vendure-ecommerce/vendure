@@ -55,9 +55,6 @@ export class Order extends VendureEntity {
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
 
-    @OneToMany(type => Refund, refund => refund.order)
-    refunds: Refund[];
-
     @Column('varchar')
     currencyCode: CurrencyCode;
 

@@ -83,7 +83,6 @@ export class PaymentMethodService {
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         const refund = new Refund({
             payment,
-            order,
             orderItems: items,
             items: itemAmount,
             adjustment: input.adjustment,

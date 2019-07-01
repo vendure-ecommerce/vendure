@@ -34,6 +34,7 @@ import { CustomerEntityResolver } from './resolvers/entity/customer-entity.resol
 import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
+import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
 import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
 import { ProductVariantAdminEntityResolver, ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
@@ -84,6 +85,7 @@ export const entityResolvers = [
     FulfillmentEntityResolver,
     OrderEntityResolver,
     OrderLineEntityResolver,
+    PaymentEntityResolver,
     ProductEntityResolver,
     ProductOptionGroupEntityResolver,
     ProductVariantEntityResolver,

@@ -1,9 +1,10 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
+import { Refund } from '../refund/refund.entity';
 
 export type PaymentMetadata = { [key: string]: string | number | boolean };
 
@@ -33,4 +34,7 @@ export class Payment extends VendureEntity {
 
     @ManyToOne(type => Order, order => order.payments)
     order: Order;
+
+    @OneToMany(type => Refund, refund => refund.payment)
+    refunds: Refund[];
 }

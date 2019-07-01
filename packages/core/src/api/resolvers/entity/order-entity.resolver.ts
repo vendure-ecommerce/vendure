@@ -17,14 +17,6 @@ export class OrderEntityResolver {
     }
 
     @ResolveProperty()
-    async refunds(@Parent() order: Order) {
-        if (order.refunds) {
-            return order.refunds;
-        }
-        return this.orderService.getOrderRefunds(order.id);
-    }
-
-    @ResolveProperty()
     async shippingMethod(@Parent() order: Order) {
         if (order.shippingMethodId) {
             // Does not need to be decoded because it is an internal property

@@ -145,17 +145,17 @@ export class OrderService {
         });
     }
 
-    getOrderRefunds(orderId: ID): Promise<Refund[]> {
-        return this.connection.getRepository(Refund).find({
-            where: {
-                order: { id: orderId } as any,
-            },
-        });
-    }
-
     async getRefundOrderItems(refundId: ID): Promise<OrderItem[]> {
         const refund = await getEntityOrThrow(this.connection, Refund, refundId, { relations: ['orderItems'] });
         return refund.orderItems;
+    }
+
+    getPaymentRefunds(paymentId: ID): Promise<Refund[]> {
+        return this.connection.getRepository(Refund).find({
+            where: {
+                paymentId,
+            },
+        });
     }
 
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
@@ -496,9 +496,9 @@ export class OrderService {
     }
 
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
-        const refund = await getEntityOrThrow(this.connection, Refund, input.id, { relations: ['order'] });
+        const refund = await getEntityOrThrow(this.connection, Refund, input.id, { relations: ['payment', 'payment.order'] });
         refund.transactionId = input.transactionId;
-        this.refundStateMachine.transition(ctx, refund.order, refund, 'Settled');
+        this.refundStateMachine.transition(ctx, refund.payment.order, refund, 'Settled');
         return this.connection.getRepository(Refund).save(refund);
     }
 
