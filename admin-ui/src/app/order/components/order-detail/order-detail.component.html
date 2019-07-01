@@ -26,11 +26,14 @@
                     type="button"
                     class="btn"
                     vdrDropdownItem
-                    *ngIf="!order.active"
+                    *ngIf="!order.active && order.state !== 'Cancelled'"
                     (click)="cancelOrRefund(order)"
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
-                    {{ 'order.refund-and-cancel-order' | translate }}
+                    <ng-container *ngIf="order.state !== 'PaymentAuthorized'; else cancelOnly">
+                        {{ 'order.refund-and-cancel-order' | translate }}
+                    </ng-container>
+                    <ng-template #cancelOnly>{{ 'order.cancel-order' | translate }}</ng-template>
                 </button>
             </vdr-dropdown-menu>
         </vdr-dropdown>
@@ -121,6 +124,8 @@
                     *ngFor="let payment of order.payments"
                     [currencyCode]="order.currencyCode"
                     [payment]="payment"
+                    (settlePayment)="settlePayment($event)"
+                    (settleRefund)="settleRefund($event)"
                 ></vdr-order-payment-detail>
             </ng-container>
             <ng-container *ngIf="order.fulfillments && order.fulfillments.length">

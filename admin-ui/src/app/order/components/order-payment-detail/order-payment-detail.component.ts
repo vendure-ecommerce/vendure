@@ -13,6 +13,7 @@ export class OrderPaymentDetailComponent {
     @Input() payment: OrderWithLines.Payments;
     @Input() currencyCode: CurrencyCode;
     @Output() settlePayment = new EventEmitter<OrderWithLines.Payments>();
+    @Output() settleRefund = new EventEmitter<OrderWithLines.Refunds>();
 
     getPaymentMetadata(payment: OrderWithLines.Payments) {
         return Object.entries(payment.metadata);

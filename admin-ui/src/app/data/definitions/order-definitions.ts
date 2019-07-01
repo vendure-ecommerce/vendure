@@ -9,6 +9,18 @@ export const ADJUSTMENT_FRAGMENT = gql`
     }
 `;
 
+export const REFUND_FRAGMENT = gql`
+    fragment Refund on Refund {
+        id
+        state
+        items
+        shipping
+        adjustment
+        transactionId
+        paymentId
+    }
+`;
+
 export const SHIPPING_ADDRESS_FRAGMENT = gql`
     fragment ShippingAddress on OrderAddress {
         fullName
@@ -122,6 +134,7 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
                 adjustment
                 total
                 paymentId
+                transactionId
                 method
                 orderItems {
                     id
@@ -193,13 +206,17 @@ export const CANCEL_ORDER = gql`
 export const REFUND_ORDER = gql`
     mutation RefundOrder($input: RefundOrderInput!) {
         refundOrder(input: $input) {
-            id
-            state
-            items
-            shipping
-            adjustment
-            transactionId
-            paymentId
+            ...Refund
         }
     }
+    ${REFUND_FRAGMENT}
+`;
+
+export const SETTLE_REFUND = gql`
+    mutation SettleRefund($input: SettleRefundInput!) {
+        settleRefund(input: $input) {
+            ...Refund
+        }
+    }
+    ${REFUND_FRAGMENT}
 `;

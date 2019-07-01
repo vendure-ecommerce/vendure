@@ -8,6 +8,8 @@ import {
     RefundOrder,
     RefundOrderInput,
     SettlePayment,
+    SettleRefund,
+    SettleRefundInput,
 } from '../../common/generated-types';
 import {
     CANCEL_ORDER,
@@ -16,6 +18,7 @@ import {
     GET_ORDERS_LIST,
     REFUND_ORDER,
     SETTLE_PAYMENT,
+    SETTLE_REFUND,
 } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -59,6 +62,12 @@ export class OrderDataService {
 
     refundOrder(input: RefundOrderInput) {
         return this.baseDataService.mutate<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+            input,
+        });
+    }
+
+    settleRefund(input: SettleRefundInput, orderId: string) {
+        return this.baseDataService.mutate<SettleRefund.Mutation, SettleRefund.Variables>(SETTLE_REFUND, {
             input,
         });
     }

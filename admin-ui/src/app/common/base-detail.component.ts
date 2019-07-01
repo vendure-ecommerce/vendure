@@ -27,9 +27,6 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data => data.entity as Observable<Entity>),
-            distinctUntilChanged((a, b) => {
-                return a.id === b.id && a.updatedAt === b.updatedAt;
-            }),
             tap(entity => (this.id = entity.id)),
             shareReplay(1),
         );

@@ -15,6 +15,7 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
+import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
 @Component({
     selector: 'vdr-order-detail',
@@ -101,6 +102,37 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
         } else {
             this.refundOrder(order);
         }
+    }
+
+    settleRefund(refund: OrderWithLines.Refunds) {
+        this.modalService
+            .fromComponent(SettleRefundDialogComponent, {
+                size: 'md',
+                locals: {
+                    refund,
+                },
+            })
+            .pipe(
+                switchMap(transactionId => {
+                    if (transactionId) {
+                        return this.dataService.order.settleRefund(
+                            {
+                                transactionId,
+                                id: refund.id,
+                            },
+                            this.id,
+                        );
+                    } else {
+                        return of(undefined);
+                    }
+                }),
+                // switchMap(result => this.refetchOrder(result)),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('order.settle-refund-success'));
+                }
+            });
     }
 
     private cancelOrder(order: OrderWithLines.Fragment) {

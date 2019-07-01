@@ -12,6 +12,8 @@ import { OrderListComponent } from './components/order-list/order-list.component
 import { OrderPaymentDetailComponent } from './components/order-payment-detail/order-payment-detail.component';
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
 import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
+import { RefundStateLabelComponent } from './components/refund-state-label/refund-state-label.component';
+import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { orderRoutes } from './order.routes';
 import { OrderResolver } from './providers/routing/order-resolver';
 
@@ -27,8 +29,15 @@ import { OrderResolver } from './providers/routing/order-resolver';
         PaymentStateLabelComponent,
         LineRefundsComponent,
         OrderPaymentDetailComponent,
+        RefundStateLabelComponent,
+        SettleRefundDialogComponent,
     ],
-    entryComponents: [FulfillOrderDialogComponent, RefundOrderDialogComponent, CancelOrderDialogComponent],
+    entryComponents: [
+        FulfillOrderDialogComponent,
+        RefundOrderDialogComponent,
+        CancelOrderDialogComponent,
+        SettleRefundDialogComponent,
+    ],
     providers: [OrderResolver],
 })
 export class OrderModule {}

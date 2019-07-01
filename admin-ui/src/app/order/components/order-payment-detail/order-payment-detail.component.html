@@ -25,7 +25,12 @@
         </vdr-labeled-data>
     </div>
     <ng-container *ngFor="let refund of payment.refunds">
-        <div class="card-header">{{ 'order.refund' | translate }} #{{ refund.id }}</div>
+        <div class="card-header payment-header">
+            <clr-icon shape="redo" class="refund-icon" dir="down"></clr-icon>
+            {{ 'order.refund' | translate }} #{{ refund.id }}
+            <div class="clr-flex-fill"></div>
+            <vdr-refund-state-label [state]="refund.state"></vdr-refund-state-label>
+        </div>
         <div class="card-block">
             <vdr-labeled-data [label]="'common.created-at' | translate">
                 {{ refund.createdAt | date: 'medium' }}
@@ -33,13 +38,19 @@
             <vdr-labeled-data [label]="'order.refund-total' | translate">
                 {{ refund.total / 100 | currency: currencyCode }}
             </vdr-labeled-data>
+            <vdr-labeled-data [label]="'order.transaction-id' | translate" *ngIf="refund.transactionId">
+                {{ refund.transactionId }}
+            </vdr-labeled-data>
+        </div>
+        <div class="card-footer" *ngIf="refund.state === 'Pending'">
+            <button class="btn btn-sm btn-primary" (click)="settleRefund.emit(refund)">
+                {{ 'order.settle-refund' | translate }}
+            </button>
         </div>
     </ng-container>
-    <div class="card-footer">
-        <ng-container *ngIf="payment.state === 'Authorized'">
-            <button class="btn btn-sm btn-primary" (click)="settlePayment.emit(payment)">
-                {{ 'order.settle-payment' | translate }}
-            </button>
-        </ng-container>
+    <div class="card-footer" *ngIf="payment.state === 'Authorized'">
+        <button class="btn btn-sm btn-primary" (click)="settlePayment.emit(payment)">
+            {{ 'order.settle-payment' | translate }}
+        </button>
     </div>
 </div>
