@@ -2,27 +2,64 @@
 !include theme.puml
 title Order State Diagram
 
-[*] --> AddingItems: AddProductVariantToOrder
-AddingItems: Customer is adding items to order
-AddingItems: All non-shipping Adjustments get applied here
+state ShopAPI {
+    [*] --> AddingItems: addItemToOrder
+    state AddingItems {
+        AddingItems: Customer adds items to the order
+        AddingItems: Customer details are set
+        AddingItems: Shipping destination is set
+        AddingItems: Shipping method is selected
+    }
 
-AddingItems --> ArrangingShipping:Next
-ArrangingShipping: Shipping destination is set
-ArrangingShipping: Shipping Adjustment added to Order
+    state ArrangingPayment {
+        ArrangingPayment: Payment provider is used to take payment
+    }
+}
 
-ArrangingShipping --> AddingItems:Previous
-ArrangingShipping --> ArrangingPayment:Next
-ArrangingPayment: Payment provider is used to take payment
+state AdminAPI {
+    state PaymentAuthorized {
+        PaymentAuthorized: The payment has been authorized by the
+        PaymentAuthorized: payment provider.
+    }
 
-ArrangingPayment --> ArrangingShipping:Previous
-ArrangingPayment --> OrderComplete:Next
-OrderComplete: Order is complete and ready to be processed
+    state PaymentSettled {
+        PaymentSettled: The payment has been settled with the payment
+        PaymentSettled: provider, i.e. the transaction is complete.
+    }
 
-OrderComplete --> Cancelled:Cancel
-Cancelled: Customer or Admin cancelled the order
+    state PartiallyFulfilled {
+        PartiallyFulfilled: One or more OrderItems have been dispatched to the Customer
+    }
 
-Cancelled --> [*]
+    state Fulfilled #9d9 {
+        Fulfilled: All OrderItems have been dispatched to the Customer
+    }
 
-OrderComplete --> [*]
+
+    state Cancelled #d99 {
+        Cancelled: All OrderItems in the Order have been cancelled
+    }
+    Cancelled --> [*]
+
+    Fulfilled --> [*]
+}
+
+
+AddingItems --> ArrangingPayment: transitionOrderToState
+ArrangingPayment --> AddingItems: transitionOrderToState
+ArrangingPayment --> PaymentAuthorized: addPaymentToOrder
+ArrangingPayment -----> PaymentSettled: addPaymentToOrder
+PaymentAuthorized --> PaymentSettled: settlePayment
+PaymentSettled --> Fulfilled: fulfillOrder
+PaymentSettled --> PartiallyFulfilled: fulfillOrder
+PartiallyFulfilled --> PartiallyFulfilled: fulfillOrder
+PartiallyFulfilled --> Fulfilled: fulfillOrder
+
+PaymentAuthorized --> Cancelled: cancelOrder
+PaymentSettled --> Cancelled: cancelOrder
+PartiallyFulfilled --> Cancelled: cancelOrder
+Fulfilled --> Cancelled: cancelOrder
+
+
 
 @enduml

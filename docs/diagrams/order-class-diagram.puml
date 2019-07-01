@@ -1,0 +1,38 @@
+@startuml
+!include theme.puml
+title Vendure Order Class Diagram
+
+enum OrderState {
+    AddingItems
+    ArrangingPayment
+    PaymentAuthorized
+    ...
+}
+
+class Order {
+    state: OrderState
+    lines: OrderLine[]
+    subTotal: number
+    shipping: number
+    total: number
+}
+
+class OrderLine {
+    quantity: number
+    unitPrice: number
+    quantity: number
+    totalPrice: number
+    productVariant: ProductVariant
+    items: OrderItem[]
+}
+
+class OrderItem {
+    unitPrice: number
+    taxRate: number
+}
+
+Order -- OrderState
+Order *-- "0..*" OrderLine
+OrderLine *-- "0..*" OrderItem
+
+@enduml
