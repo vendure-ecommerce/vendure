@@ -1,10 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import {
-    CreateFulfillmentInput,
-    OrderWithLines,
-    OrderWithLinesFragment,
-} from '../../../common/generated-types';
+import { FulfillOrderInput, OrderWithLines, OrderWithLinesFragment } from '../../../common/generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({
@@ -13,9 +9,9 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./fulfill-order-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FulfillOrderDialogComponent implements Dialog<CreateFulfillmentInput>, OnInit {
+export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, OnInit {
     order: OrderWithLinesFragment;
-    resolveWith: (result?: CreateFulfillmentInput) => void;
+    resolveWith: (result?: FulfillOrderInput) => void;
     method = '';
     trackingCode = '';
     fulfillmentQuantities: { [lineId: string]: number } = {};

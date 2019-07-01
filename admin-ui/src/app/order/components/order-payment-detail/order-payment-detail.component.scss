@@ -1,0 +1,14 @@
+@import "variables";
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+ul.payment-metadata {
+    list-style-type: none;
+}
+.metadata-prop {
+    color: $color-grey-500;
+}

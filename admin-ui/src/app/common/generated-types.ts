@@ -172,6 +172,11 @@ export type Cancellation = Node & StockMovement & {
   orderLine: OrderLine,
 };
 
+export type CancelOrderInput = {
+  lines: Array<OrderLineInput>,
+  reason?: Maybe<Scalars['String']>,
+};
+
 export type Channel = Node & {
   __typename?: 'Channel',
   id: Scalars['ID'],
@@ -447,12 +452,6 @@ export type CreateFacetValueInput = {
 export type CreateFacetValueWithFacetInput = {
   code: Scalars['String'],
   translations: Array<FacetValueTranslationInput>,
-};
-
-export type CreateFulfillmentInput = {
-  lines: Array<FulfillmentLineInput>,
-  method: Scalars['String'],
-  trackingCode?: Maybe<Scalars['String']>,
 };
 
 export type CreateProductInput = {
@@ -1050,9 +1049,10 @@ export type Fulfillment = Node & {
   trackingCode?: Maybe<Scalars['String']>,
 };
 
-export type FulfillmentLineInput = {
-  orderLineId: Scalars['ID'],
-  quantity: Scalars['Int'],
+export type FulfillOrderInput = {
+  lines: Array<OrderLineInput>,
+  method: Scalars['String'],
+  trackingCode?: Maybe<Scalars['String']>,
 };
 
 export type GlobalSettings = {
@@ -1541,10 +1541,13 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  updateGlobalSettings: GlobalSettings,
   importProducts?: Maybe<ImportInfo>,
-  settlePayment?: Maybe<Payment>,
-  createFulfillment?: Maybe<Fulfillment>,
+  updateGlobalSettings: GlobalSettings,
+  settlePayment: Payment,
+  fulfillOrder: Fulfillment,
+  cancelOrder: Order,
+  refundOrder: Refund,
+  settleRefund: Refund,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
   /** Create a new ProductOptionGroup */
@@ -1757,13 +1760,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
@@ -1772,8 +1775,23 @@ export type MutationSettlePaymentArgs = {
 };
 
 
-export type MutationCreateFulfillmentArgs = {
-  input: CreateFulfillmentInput
+export type MutationFulfillOrderArgs = {
+  input: FulfillOrderInput
+};
+
+
+export type MutationCancelOrderArgs = {
+  input: CancelOrderInput
+};
+
+
+export type MutationRefundOrderArgs = {
+  input: RefundOrderInput
+};
+
+
+export type MutationSettleRefundArgs = {
+  input: SettleRefundInput
 };
 
 
@@ -2007,12 +2025,14 @@ export type OrderItem = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  cancelled: Scalars['Boolean'],
   unitPrice: Scalars['Int'],
   unitPriceWithTax: Scalars['Int'],
   unitPriceIncludesTax: Scalars['Boolean'],
   taxRate: Scalars['Float'],
   adjustments: Array<Adjustment>,
   fulfillment?: Maybe<Fulfillment>,
+  refundId?: Maybe<Scalars['ID']>,
 };
 
 export type OrderLine = Node & {
@@ -2030,6 +2050,11 @@ export type OrderLine = Node & {
   adjustments: Array<Adjustment>,
   order: Order,
   customFields?: Maybe<Scalars['JSON']>,
+};
+
+export type OrderLineInput = {
+  orderLineId: Scalars['ID'],
+  quantity: Scalars['Int'],
 };
 
 export type OrderList = PaginatedList & {
@@ -2074,6 +2099,7 @@ export type Payment = Node & {
   amount: Scalars['Int'],
   state: Scalars['String'],
   transactionId?: Maybe<Scalars['String']>,
+  refunds: Array<Refund>,
   metadata?: Maybe<Scalars['JSON']>,
 };
 
@@ -2646,6 +2672,31 @@ export type QueryZoneArgs = {
   id: Scalars['ID']
 };
 
+export type Refund = Node & {
+  __typename?: 'Refund',
+  id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  updatedAt: Scalars['DateTime'],
+  items: Scalars['Int'],
+  shipping: Scalars['Int'],
+  adjustment: Scalars['Int'],
+  total: Scalars['Int'],
+  method?: Maybe<Scalars['String']>,
+  state: Scalars['String'],
+  transactionId?: Maybe<Scalars['String']>,
+  orderItems: Array<OrderItem>,
+  paymentId: Scalars['ID'],
+  metadata?: Maybe<Scalars['JSON']>,
+};
+
+export type RefundOrderInput = {
+  lines: Array<OrderLineInput>,
+  shipping: Scalars['Int'],
+  adjustment: Scalars['Int'],
+  paymentId: Scalars['ID'],
+  reason?: Maybe<Scalars['String']>,
+};
+
 export type Return = Node & StockMovement & {
   __typename?: 'Return',
   id: Scalars['ID'],
@@ -2765,6 +2816,11 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
   __typename?: 'ServerConfig',
   customFields?: Maybe<Scalars['JSON']>,
+};
+
+export type SettleRefundInput = {
+  id: Scalars['ID'],
+  transactionId: Scalars['String'],
 };
 
 export type ShippingMethod = Node & {
@@ -3433,7 +3489,7 @@ export type OrderFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'crea
 
 export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>);
 
-export type OrderWithLinesFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>)>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
+export type OrderWithLinesFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'method'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
 
 export type GetOrderListQueryVariables = {
   options?: Maybe<OrderListOptions>
@@ -3454,14 +3510,28 @@ export type SettlePaymentMutationVariables = {
 };
 
 
-export type SettlePaymentMutation = ({ __typename?: 'Mutation' } & { settlePayment: Maybe<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>)> });
+export type SettlePaymentMutation = ({ __typename?: 'Mutation' } & { settlePayment: ({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>) });
 
 export type CreateFulfillmentMutationVariables = {
-  input: CreateFulfillmentInput
+  input: FulfillOrderInput
 };
 
 
-export type CreateFulfillmentMutation = ({ __typename?: 'Mutation' } & { createFulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> });
+export type CreateFulfillmentMutation = ({ __typename?: 'Mutation' } & { fulfillOrder: ({ __typename?: 'Fulfillment' } & FulfillmentFragment) });
+
+export type CancelOrderMutationVariables = {
+  input: CancelOrderInput
+};
+
+
+export type CancelOrderMutation = ({ __typename?: 'Mutation' } & { cancelOrder: ({ __typename?: 'Order' } & OrderWithLinesFragment) });
+
+export type RefundOrderMutationVariables = {
+  input: RefundOrderInput
+};
+
+
+export type RefundOrderMutation = ({ __typename?: 'Mutation' } & { refundOrder: ({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'state' | 'items' | 'shipping' | 'adjustment' | 'transactionId' | 'paymentId'>) });
 
 export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
@@ -4220,6 +4290,8 @@ export namespace OrderWithLines {
   export type ShippingMethod = (NonNullable<OrderWithLinesFragment['shippingMethod']>);
   export type ShippingAddress = ShippingAddressFragment;
   export type Payments = (NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>);
+  export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>)['refunds'][0]>);
+  export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);
   export type Fulfillments = FulfillmentFragment;
 }
 
@@ -4239,13 +4311,25 @@ export namespace GetOrder {
 export namespace SettlePayment {
   export type Variables = SettlePaymentMutationVariables;
   export type Mutation = SettlePaymentMutation;
-  export type SettlePayment = (NonNullable<SettlePaymentMutation['settlePayment']>);
+  export type SettlePayment = SettlePaymentMutation['settlePayment'];
 }
 
 export namespace CreateFulfillment {
   export type Variables = CreateFulfillmentMutationVariables;
   export type Mutation = CreateFulfillmentMutation;
-  export type CreateFulfillment = FulfillmentFragment;
+  export type FulfillOrder = FulfillmentFragment;
+}
+
+export namespace CancelOrder {
+  export type Variables = CancelOrderMutationVariables;
+  export type Mutation = CancelOrderMutation;
+  export type CancelOrder = OrderWithLinesFragment;
+}
+
+export namespace RefundOrder {
+  export type Variables = RefundOrderMutationVariables;
+  export type Mutation = RefundOrderMutation;
+  export type RefundOrder = RefundOrderMutation['refundOrder'];
 }
 
 export namespace Asset {

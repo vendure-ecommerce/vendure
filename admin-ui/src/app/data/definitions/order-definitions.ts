@@ -82,6 +82,8 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
                 unitPriceIncludesTax
                 unitPriceWithTax
                 taxRate
+                refundId
+                cancelled
                 fulfillment {
                     ...Fulfillment
                 }
@@ -106,11 +108,25 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         }
         payments {
             id
+            createdAt
             transactionId
             amount
             method
             state
             metadata
+            refunds {
+                id
+                createdAt
+                state
+                items
+                adjustment
+                total
+                paymentId
+                method
+                orderItems {
+                    id
+                }
+            }
         }
         fulfillments {
             ...Fulfillment
@@ -157,10 +173,33 @@ export const SETTLE_PAYMENT = gql`
 `;
 
 export const CREATE_FULFILLMENT = gql`
-    mutation CreateFulfillment($input: CreateFulfillmentInput!) {
-        createFulfillment(input: $input) {
+    mutation CreateFulfillment($input: FulfillOrderInput!) {
+        fulfillOrder(input: $input) {
             ...Fulfillment
         }
     }
     ${FULFILLMENT_FRAGMENT}
+`;
+
+export const CANCEL_ORDER = gql`
+    mutation CancelOrder($input: CancelOrderInput!) {
+        cancelOrder(input: $input) {
+            ...OrderWithLines
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const REFUND_ORDER = gql`
+    mutation RefundOrder($input: RefundOrderInput!) {
+        refundOrder(input: $input) {
+            id
+            state
+            items
+            shipping
+            adjustment
+            transactionId
+            paymentId
+        }
+    }
 `;

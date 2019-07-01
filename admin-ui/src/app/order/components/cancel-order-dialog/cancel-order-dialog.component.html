@@ -1,0 +1,65 @@
+<ng-template vdrDialogTitle>{{ 'order.cancel-order' | translate }}</ng-template>
+
+<div class="fulfillment-wrapper">
+    <div class="order-lines">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ 'order.product-name' | translate }}</th>
+                    <th>{{ 'order.product-sku' | translate }}</th>
+                    <th>{{ 'order.quantity' | translate }}</th>
+                    <th>{{ 'order.unit-price' | translate }}</th>
+                    <th>{{ 'order.cancel' | translate }}</th>
+                </tr>
+            </thead>
+            <tr
+                *ngFor="let line of order.lines"
+                class="order-line"
+                [class.is-cancelled]="line.quantity === 0"
+            >
+                <td class="align-middle thumb">
+                    <img [src]="line.featuredAsset.preview + '?preset=tiny'" />
+                </td>
+                <td class="align-middle name">{{ line.productVariant.name }}</td>
+                <td class="align-middle sku">{{ line.productVariant.sku }}</td>
+                <td class="align-middle quantity">{{ line.quantity }}</td>
+                <td class="align-middle quantity">
+                    {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                </td>
+                <td class="align-middle fulfil">
+                    <input
+                        *ngIf="line.quantity > 0"
+                        [(ngModel)]="lineQuantities[line.id]"
+                        type="number"
+                        [max]="line.quantity"
+                        min="0"
+                    />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="cancellation-details">
+        <label class="clr-control-label">{{ 'order.cancellation-reason' | translate }}</label>
+        <ng-select
+            [items]="reasons"
+            bindLabel="name"
+            autofocus
+            bindValue="id"
+            [addTag]="true"
+            [(ngModel)]="reason"
+        ></ng-select>
+    </div>
+</div>
+
+<ng-template vdrDialogButtons>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button
+        type="submit"
+        (click)="select()"
+        [disabled]="!reason || selectionCount === 0"
+        class="btn btn-primary"
+    >
+        {{ 'order.cancel' | translate }}
+    </button>
+</ng-template>

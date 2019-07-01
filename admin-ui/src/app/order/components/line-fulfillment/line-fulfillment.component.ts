@@ -21,7 +21,7 @@ export class LineFulfillmentComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
             this.fulfilledCount = this.getFulfilledCount(this.line);
-            this.fulfillmentStatus = this.getFulfillmentStatus(this.fulfilledCount, this.line.quantity);
+            this.fulfillmentStatus = this.getFulfillmentStatus(this.fulfilledCount, this.line.items.length);
             this.fulfillments = this.getFulfillments(this.line);
         }
     }

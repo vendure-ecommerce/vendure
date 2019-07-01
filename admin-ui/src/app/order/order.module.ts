@@ -3,10 +3,15 @@ import { RouterModule } from '@angular/router';
 
 import { SharedModule } from '../shared/shared.module';
 
+import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from './components/fulfill-order-dialog/fulfill-order-dialog.component';
 import { LineFulfillmentComponent } from './components/line-fulfillment/line-fulfillment.component';
+import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
+import { OrderPaymentDetailComponent } from './components/order-payment-detail/order-payment-detail.component';
+import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
+import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
 import { orderRoutes } from './order.routes';
 import { OrderResolver } from './providers/routing/order-resolver';
 
@@ -17,8 +22,13 @@ import { OrderResolver } from './providers/routing/order-resolver';
         OrderDetailComponent,
         FulfillOrderDialogComponent,
         LineFulfillmentComponent,
+        RefundOrderDialogComponent,
+        CancelOrderDialogComponent,
+        PaymentStateLabelComponent,
+        LineRefundsComponent,
+        OrderPaymentDetailComponent,
     ],
-    entryComponents: [FulfillOrderDialogComponent],
+    entryComponents: [FulfillOrderDialogComponent, RefundOrderDialogComponent, CancelOrderDialogComponent],
     providers: [OrderResolver],
 })
 export class OrderModule {}

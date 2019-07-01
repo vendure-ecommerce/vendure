@@ -1,15 +1,9 @@
 @import "variables";
+@import "mixins";
 
 .date-detail {
     color: $color-grey-500;
     padding-left: 6px;
-}
-
-ul.payment-metadata {
-   list-style-type: none;
-}
-.metadata-prop {
-    color: $color-grey-500;
 }
 
 .shipping-address {
@@ -18,6 +12,11 @@ ul.payment-metadata {
 }
 
 .order-lines {
+
+    .is-cancelled td {
+        text-decoration: line-through;
+        background-color: $color-grey-200;
+    }
 
     .sub-total td {
         border-top: 1px dashed $color-grey-300;

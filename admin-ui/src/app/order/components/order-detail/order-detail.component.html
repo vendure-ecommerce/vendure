@@ -17,6 +17,23 @@
         >
             {{ 'order.fulfill-order' | translate }}
         </button>
+        <vdr-dropdown>
+            <button class="icon-button" vdrDropdownTrigger>
+                <clr-icon shape="ellipsis-vertical"></clr-icon>
+            </button>
+            <vdr-dropdown-menu vdrPosition="bottom-right">
+                <button
+                    type="button"
+                    class="btn"
+                    vdrDropdownItem
+                    *ngIf="!order.active"
+                    (click)="cancelOrRefund(order)"
+                >
+                    <clr-icon shape="error-standard" class="is-error"></clr-icon>
+                    {{ 'order.refund-and-cancel-order' | translate }}
+                </button>
+            </vdr-dropdown-menu>
+        </vdr-dropdown>
     </vdr-ab-right>
 </vdr-action-bar>
 
@@ -34,7 +51,11 @@
                         <th>{{ 'order.total' | translate }}</th>
                     </tr>
                 </thead>
-                <tr *ngFor="let line of order.lines" class="order-line">
+                <tr
+                    *ngFor="let line of order.lines"
+                    class="order-line"
+                    [class.is-cancelled]="line.quantity === 0"
+                >
                     <td class="align-middle thumb">
                         <img [src]="line.featuredAsset.preview + '?preset=tiny'" />
                     </td>
@@ -44,6 +65,8 @@
                         {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
                     </td>
                     <td class="align-middle quantity">
+                        {{ line.quantity }}
+                        <vdr-line-refunds [line]="line"></vdr-line-refunds>
                         <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
                     </td>
                     <td class="align-middle total">
@@ -94,40 +117,11 @@
                 </div>
             </div>
             <ng-container *ngIf="order.payments && order.payments.length">
-                <div class="card" *ngFor="let payment of order.payments">
-                    <div class="card-header">
-                        {{ 'order.payment' | translate }}
-                    </div>
-                    <div class="card-block">
-                        <vdr-labeled-data [label]="'order.payment-state' | translate">
-                            {{ payment.state }}
-                        </vdr-labeled-data>
-                        <vdr-labeled-data [label]="'order.payment-method' | translate">
-                            {{ payment.method }}
-                        </vdr-labeled-data>
-                        <vdr-labeled-data [label]="'order.amount' | translate">
-                            {{ payment.amount / 100 | currency: order.currencyCode }}
-                        </vdr-labeled-data>
-                        <vdr-labeled-data [label]="'order.transaction-id' | translate">
-                            {{ payment.transactionId }}
-                        </vdr-labeled-data>
-                        <vdr-labeled-data [label]="'order.payment-metadata' | translate">
-                            <ul class="payment-metadata">
-                                <li *ngFor="let entry of getPaymentMetadata(payment)">
-                                    <span class="metadata-prop">{{ entry[0] }}:</span>
-                                    {{ entry[1] }}
-                                </li>
-                            </ul>
-                        </vdr-labeled-data>
-                    </div>
-                    <div class="card-footer">
-                        <ng-container *ngIf="payment.state === 'Authorized'">
-                            <button class="btn btn-sm btn-primary" (click)="settlePayment(payment)">
-                                {{ 'order.settle-payment' | translate }}
-                            </button>
-                        </ng-container>
-                    </div>
-                </div>
+                <vdr-order-payment-detail
+                    *ngFor="let payment of order.payments"
+                    [currencyCode]="order.currencyCode"
+                    [payment]="payment"
+                ></vdr-order-payment-detail>
             </ng-container>
             <ng-container *ngIf="order.fulfillments && order.fulfillments.length">
                 <div class="card">

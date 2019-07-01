@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
+import { omit } from 'shared/omit';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
@@ -11,7 +12,9 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
+import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 
 @Component({
     selector: 'vdr-order-detail',
@@ -51,10 +54,6 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
             .filter(line => !!line);
     }
 
-    getPaymentMetadata(payment: OrderWithLines.Payments) {
-        return Object.entries(payment.metadata);
-    }
-
     settlePayment(payment: OrderWithLines.Payments) {
         this.dataService.order.settlePayment(payment.id).subscribe(({ settlePayment }) => {
             if (settlePayment) {
@@ -87,19 +86,90 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
                         return of(undefined);
                     }
                 }),
-                switchMap(result => {
-                    if (result) {
-                        return this.dataService.order.getOrder(this.id).single$;
-                    } else {
-                        return of(undefined);
-                    }
-                }),
+                switchMap(result => this.refetchOrder(result)),
             )
             .subscribe(result => {
                 if (result) {
                     this.notificationService.success(_('order.create-fulfillment-success'));
                 }
             });
+    }
+
+    cancelOrRefund(order: OrderWithLines.Fragment) {
+        if (order.state === 'PaymentAuthorized') {
+            this.cancelOrder(order);
+        } else {
+            this.refundOrder(order);
+        }
+    }
+
+    private cancelOrder(order: OrderWithLines.Fragment) {
+        this.modalService
+            .fromComponent(CancelOrderDialogComponent, {
+                size: 'xl',
+                locals: {
+                    order,
+                },
+            })
+            .pipe(
+                switchMap(input => {
+                    if (input) {
+                        return this.dataService.order.cancelOrder(input);
+                    } else {
+                        return of(undefined);
+                    }
+                }),
+                switchMap(result => this.refetchOrder(result)),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('order.cancelled-order-success'));
+                }
+            });
+    }
+
+    private refundOrder(order: OrderWithLines.Fragment) {
+        this.modalService
+            .fromComponent(RefundOrderDialogComponent, {
+                size: 'xl',
+                locals: {
+                    order,
+                },
+            })
+            .pipe(
+                switchMap(input => {
+                    if (input) {
+                        return this.dataService.order.refundOrder(omit(input, ['cancel'])).pipe(
+                            switchMap(result => {
+                                if (input.cancel.length) {
+                                    return this.dataService.order.cancelOrder({
+                                        lines: input.cancel,
+                                        reason: input.reason,
+                                    });
+                                } else {
+                                    return of(result);
+                                }
+                            }),
+                        );
+                    } else {
+                        return of(undefined);
+                    }
+                }),
+                switchMap(result => this.refetchOrder(result)),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('order.refund-order-success'));
+                }
+            });
+    }
+
+    private refetchOrder(result: object | undefined) {
+        if (result) {
+            return this.dataService.order.getOrder(this.id).single$;
+        } else {
+            return of(undefined);
+        }
     }
 
     protected setFormValues(entity: Order.Fragment): void {

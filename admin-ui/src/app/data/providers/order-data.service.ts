@@ -1,14 +1,20 @@
 import {
+    CancelOrder,
+    CancelOrderInput,
     CreateFulfillment,
-    CreateFulfillmentInput,
+    FulfillOrderInput,
     GetOrder,
     GetOrderList,
+    RefundOrder,
+    RefundOrderInput,
     SettlePayment,
 } from '../../common/generated-types';
 import {
+    CANCEL_ORDER,
     CREATE_FULFILLMENT,
     GET_ORDER,
     GET_ORDERS_LIST,
+    REFUND_ORDER,
     SETTLE_PAYMENT,
 } from '../definitions/order-definitions';
 
@@ -36,12 +42,24 @@ export class OrderDataService {
         });
     }
 
-    createFullfillment(input: CreateFulfillmentInput) {
+    createFullfillment(input: FulfillOrderInput) {
         return this.baseDataService.mutate<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
             CREATE_FULFILLMENT,
             {
                 input,
             },
         );
+    }
+
+    cancelOrder(input: CancelOrderInput) {
+        return this.baseDataService.mutate<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+            input,
+        });
+    }
+
+    refundOrder(input: RefundOrderInput) {
+        return this.baseDataService.mutate<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
+            input,
+        });
     }
 }
