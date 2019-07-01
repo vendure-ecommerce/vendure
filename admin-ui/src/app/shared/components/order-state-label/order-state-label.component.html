@@ -1,4 +1,4 @@
-<vdr-chip [ngClass]="state">
+<vdr-chip [ngClass]="state" [colorType]="chipColorType">
     <clr-icon shape="check-circle" *ngIf="state === 'Fulfilled'"></clr-icon>
     <clr-icon shape="check-circle" *ngIf="state === 'PartiallyFulfilled'"></clr-icon>
     {{ stateToken | translate }}

@@ -22,4 +22,17 @@ export class OrderStateLabelComponent {
     get stateToken(): string {
         return this.stateI18nTokens[this.state as any] || this.state;
     }
+
+    get chipColorType() {
+        switch (this.state) {
+            case 'PaymentAuthorized':
+            case 'PaymentSettled':
+            case 'PartiallyFulfilled':
+                return 'warning';
+            case 'Fulfilled':
+                return 'success';
+            case 'Cancelled':
+                return 'error';
+        }
+    }
 }

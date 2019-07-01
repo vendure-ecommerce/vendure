@@ -13,6 +13,31 @@
         color: transparentize($color-grey-100, 0.2);
         border-color: transparent;
     }
+
+    &.warning {
+        border-color: $color-warning-200;
+        .chip-label {
+            color: $color-warning-600;
+            background-color: $color-warning-100;
+        }
+    }
+
+    &.success {
+        border-color: $color-success-200;
+        .chip-label {
+            color: $color-success-600;
+            background-color: $color-success-100;
+        }
+    }
+
+    &.error {
+        border-color: $color-error-200;
+        .chip-label {
+            color: $color-error-600;
+            background-color: $color-error-100;
+        }
+    }
+
 }
 
 .chip-label {

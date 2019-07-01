@@ -16,5 +16,6 @@ export class ChipComponent {
      * color based on the string value passed in.
      */
     @Input() colorFrom = '';
+    @Input() colorType: 'error' | 'success' | 'warning';
     @Output() iconClick = new EventEmitter<MouseEvent>();
 }
