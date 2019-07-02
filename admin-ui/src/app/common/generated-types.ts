@@ -19,6 +19,11 @@ export type Scalars = {
 };
 
 
+export type AddNoteToOrderInput = {
+  id: Scalars['ID'],
+  note: Scalars['String'],
+};
+
 export type Address = Node & {
   __typename?: 'Address',
   id: Scalars['ID'],
@@ -1066,6 +1071,50 @@ export type GlobalSettings = {
   customFields?: Maybe<Scalars['JSON']>,
 };
 
+export type HistoryEntry = Node & {
+  __typename?: 'HistoryEntry',
+  id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  updatedAt: Scalars['DateTime'],
+  type: HistoryEntryType,
+  administrator?: Maybe<Administrator>,
+  data: Scalars['JSON'],
+};
+
+export type HistoryEntryFilterParameter = {
+  createdAt?: Maybe<DateOperators>,
+  updatedAt?: Maybe<DateOperators>,
+  type?: Maybe<StringOperators>,
+};
+
+export type HistoryEntryList = PaginatedList & {
+  __typename?: 'HistoryEntryList',
+  items: Array<HistoryEntry>,
+  totalItems: Scalars['Int'],
+};
+
+export type HistoryEntryListOptions = {
+  skip?: Maybe<Scalars['Int']>,
+  take?: Maybe<Scalars['Int']>,
+  sort?: Maybe<HistoryEntrySortParameter>,
+  filter?: Maybe<HistoryEntryFilterParameter>,
+};
+
+export type HistoryEntrySortParameter = {
+  id?: Maybe<SortOrder>,
+  createdAt?: Maybe<SortOrder>,
+  updatedAt?: Maybe<SortOrder>,
+};
+
+export enum HistoryEntryType {
+  ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
+  ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
+  ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+  ORDER_CANCELLATION = 'ORDER_CANCELLATION',
+  ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+  ORDER_NOTE = 'ORDER_NOTE'
+}
+
 export type ImportInfo = {
   __typename?: 'ImportInfo',
   errors?: Maybe<Array<Scalars['String']>>,
@@ -1503,12 +1552,6 @@ export type Mutation = {
   updateCollection: Collection,
   /** Move a Collection to a different parent or index */
   moveCollection: Collection,
-  /** Create a new Country */
-  createCountry: Country,
-  /** Update an existing Country */
-  updateCountry: Country,
-  /** Delete a Country */
-  deleteCountry: DeletionResponse,
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup,
   /** Update an existing CustomerGroup */
@@ -1517,6 +1560,12 @@ export type Mutation = {
   addCustomersToGroup: CustomerGroup,
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup,
+  /** Create a new Country */
+  createCountry: Country,
+  /** Update an existing Country */
+  updateCountry: Country,
+  /** Delete a Country */
+  deleteCountry: DeletionResponse,
   /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
   createCustomer: Customer,
   /** Update an existing Customer */
@@ -1541,19 +1590,21 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  importProducts?: Maybe<ImportInfo>,
   updateGlobalSettings: GlobalSettings,
+  importProducts?: Maybe<ImportInfo>,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
   refundOrder: Refund,
   settleRefund: Refund,
+  addNoteToOrder: Order,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
+  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1568,7 +1619,6 @@ export type Mutation = {
   generateVariantsForProduct: Product,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
-  reindex: JobInfo,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1659,21 +1709,6 @@ export type MutationMoveCollectionArgs = {
 };
 
 
-export type MutationCreateCountryArgs = {
-  input: CreateCountryInput
-};
-
-
-export type MutationUpdateCountryArgs = {
-  input: UpdateCountryInput
-};
-
-
-export type MutationDeleteCountryArgs = {
-  id: Scalars['ID']
-};
-
-
 export type MutationCreateCustomerGroupArgs = {
   input: CreateCustomerGroupInput
 };
@@ -1693,6 +1728,21 @@ export type MutationAddCustomersToGroupArgs = {
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'],
   customerIds: Array<Scalars['ID']>
+};
+
+
+export type MutationCreateCountryArgs = {
+  input: CreateCountryInput
+};
+
+
+export type MutationUpdateCountryArgs = {
+  input: UpdateCountryInput
+};
+
+
+export type MutationDeleteCountryArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -1760,13 +1810,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
@@ -1792,6 +1842,11 @@ export type MutationRefundOrderArgs = {
 
 export type MutationSettleRefundArgs = {
   input: SettleRefundInput
+};
+
+
+export type MutationAddNoteToOrderArgs = {
+  input: AddNoteToOrderInput
 };
 
 
@@ -1989,6 +2044,12 @@ export type Order = Node & {
   shippingMethod?: Maybe<ShippingMethod>,
   totalBeforeTax: Scalars['Int'],
   total: Scalars['Int'],
+  history: HistoryEntryList,
+};
+
+
+export type OrderHistoryArgs = {
+  options?: Maybe<HistoryEntryListOptions>
 };
 
 export type OrderAddress = {
@@ -2447,10 +2508,10 @@ export type Query = {
   collections: CollectionList,
   collection?: Maybe<Collection>,
   collectionFilters: Array<ConfigurableOperation>,
-  countries: CountryList,
-  country?: Maybe<Country>,
   customerGroups: Array<CustomerGroup>,
   customerGroup?: Maybe<CustomerGroup>,
+  countries: CountryList,
+  country?: Maybe<Country>,
   customers: CustomerList,
   customer?: Maybe<Customer>,
   facets: FacetList,
@@ -2464,10 +2525,10 @@ export type Query = {
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
+  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
-  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
@@ -2526,17 +2587,17 @@ export type QueryCollectionArgs = {
 };
 
 
+export type QueryCustomerGroupArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryCountriesArgs = {
   options?: Maybe<CountryListOptions>
 };
 
 
 export type QueryCountryArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryCustomerGroupArgs = {
   id: Scalars['ID']
 };
 
@@ -2605,6 +2666,11 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
+export type QuerySearchArgs = {
+  input: SearchInput
+};
+
+
 export type QueryProductsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<ProductListOptions>
@@ -2615,11 +2681,6 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>,
   slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput
 };
 
 
@@ -3491,7 +3552,7 @@ export type OrderFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'crea
 
 export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>);
 
-export type OrderWithLinesFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'transactionId' | 'method'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
+export type OrderDetailFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'transactionId' | 'method'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
 
 export type GetOrderListQueryVariables = {
   options?: Maybe<OrderListOptions>
@@ -3505,7 +3566,7 @@ export type GetOrderQueryVariables = {
 };
 
 
-export type GetOrderQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & OrderWithLinesFragment)> });
+export type GetOrderQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & OrderDetailFragment)> });
 
 export type SettlePaymentMutationVariables = {
   id: Scalars['ID']
@@ -3526,7 +3587,7 @@ export type CancelOrderMutationVariables = {
 };
 
 
-export type CancelOrderMutation = ({ __typename?: 'Mutation' } & { cancelOrder: ({ __typename?: 'Order' } & OrderWithLinesFragment) });
+export type CancelOrderMutation = ({ __typename?: 'Mutation' } & { cancelOrder: ({ __typename?: 'Order' } & OrderDetailFragment) });
 
 export type RefundOrderMutationVariables = {
   input: RefundOrderInput
@@ -4291,20 +4352,20 @@ export namespace Fulfillment {
   export type Fragment = FulfillmentFragment;
 }
 
-export namespace OrderWithLines {
-  export type Fragment = OrderWithLinesFragment;
-  export type Customer = (NonNullable<OrderWithLinesFragment['customer']>);
-  export type Lines = (NonNullable<OrderWithLinesFragment['lines'][0]>);
-  export type FeaturedAsset = (NonNullable<(NonNullable<OrderWithLinesFragment['lines'][0]>)['featuredAsset']>);
-  export type ProductVariant = (NonNullable<OrderWithLinesFragment['lines'][0]>)['productVariant'];
-  export type Items = (NonNullable<(NonNullable<OrderWithLinesFragment['lines'][0]>)['items'][0]>);
+export namespace OrderDetail {
+  export type Fragment = OrderDetailFragment;
+  export type Customer = (NonNullable<OrderDetailFragment['customer']>);
+  export type Lines = (NonNullable<OrderDetailFragment['lines'][0]>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<OrderDetailFragment['lines'][0]>)['featuredAsset']>);
+  export type ProductVariant = (NonNullable<OrderDetailFragment['lines'][0]>)['productVariant'];
+  export type Items = (NonNullable<(NonNullable<OrderDetailFragment['lines'][0]>)['items'][0]>);
   export type Fulfillment = FulfillmentFragment;
   export type Adjustments = AdjustmentFragment;
-  export type ShippingMethod = (NonNullable<OrderWithLinesFragment['shippingMethod']>);
+  export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
   export type ShippingAddress = ShippingAddressFragment;
-  export type Payments = (NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>);
-  export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>)['refunds'][0]>);
-  export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);
+  export type Payments = (NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>);
+  export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>);
+  export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);
   export type Fulfillments = FulfillmentFragment;
 }
 
@@ -4318,7 +4379,7 @@ export namespace GetOrderList {
 export namespace GetOrder {
   export type Variables = GetOrderQueryVariables;
   export type Query = GetOrderQuery;
-  export type Order = OrderWithLinesFragment;
+  export type Order = OrderDetailFragment;
 }
 
 export namespace SettlePayment {
@@ -4336,7 +4397,7 @@ export namespace CreateFulfillment {
 export namespace CancelOrder {
   export type Variables = CancelOrderMutationVariables;
   export type Mutation = CancelOrderMutation;
-  export type CancelOrder = OrderWithLinesFragment;
+  export type CancelOrder = OrderDetailFragment;
 }
 
 export namespace RefundOrder {

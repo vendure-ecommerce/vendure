@@ -62,8 +62,8 @@ export const FULFILLMENT_FRAGMENT = gql`
     }
 `;
 
-export const ORDER_WITH_LINES_FRAGMENT = gql`
-    fragment OrderWithLines on Order {
+export const ORDER_DETAIL_FRAGMENT = gql`
+    fragment OrderDetail on Order {
         id
         createdAt
         updatedAt
@@ -166,10 +166,10 @@ export const GET_ORDERS_LIST = gql`
 export const GET_ORDER = gql`
     query GetOrder($id: ID!) {
         order(id: $id) {
-            ...OrderWithLines
+            ...OrderDetail
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${ORDER_DETAIL_FRAGMENT}
 `;
 
 export const SETTLE_PAYMENT = gql`
@@ -197,10 +197,10 @@ export const CREATE_FULFILLMENT = gql`
 export const CANCEL_ORDER = gql`
     mutation CancelOrder($input: CancelOrderInput!) {
         cancelOrder(input: $input) {
-            ...OrderWithLines
+            ...OrderDetail
         }
     }
-    ${ORDER_WITH_LINES_FRAGMENT}
+    ${ORDER_DETAIL_FRAGMENT}
 `;
 
 export const REFUND_ORDER = gql`

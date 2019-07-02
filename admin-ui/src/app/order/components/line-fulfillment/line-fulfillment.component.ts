@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { unique } from 'shared/unique';
 
-import { OrderWithLines } from '../../../common/generated-types';
+import { OrderDetail } from '../../../common/generated-types';
 
 export type FulfillmentStatus = 'full' | 'partial' | 'none';
 
@@ -12,11 +12,11 @@ export type FulfillmentStatus = 'full' | 'partial' | 'none';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineFulfillmentComponent implements OnChanges {
-    @Input() line: OrderWithLines.Lines;
+    @Input() line: OrderDetail.Lines;
     @Input() orderState: string;
     fulfilledCount = 0;
     fulfillmentStatus: FulfillmentStatus;
-    fulfillments: Array<{ count: number; fulfillment: OrderWithLines.Fulfillment }> = [];
+    fulfillments: Array<{ count: number; fulfillment: OrderDetail.Fulfillment }> = [];
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
@@ -29,7 +29,7 @@ export class LineFulfillmentComponent implements OnChanges {
     /**
      * Returns the number of items in an OrderLine which are fulfilled.
      */
-    private getFulfilledCount(line: OrderWithLines.Lines): number {
+    private getFulfilledCount(line: OrderDetail.Lines): number {
         return line.items.reduce((sum, item) => sum + (item.fulfillment ? 1 : 0), 0);
     }
 
@@ -44,8 +44,8 @@ export class LineFulfillmentComponent implements OnChanges {
     }
 
     private getFulfillments(
-        line: OrderWithLines.Lines,
-    ): Array<{ count: number; fulfillment: OrderWithLines.Fulfillment }> {
+        line: OrderDetail.Lines,
+    ): Array<{ count: number; fulfillment: OrderDetail.Fulfillment }> {
         const counts: { [fulfillmentId: string]: number } = {};
 
         for (const item of line.items) {
@@ -61,7 +61,7 @@ export class LineFulfillmentComponent implements OnChanges {
             (fulfillments, item) => {
                 return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
             },
-            [] as OrderWithLines.Fulfillment[],
+            [] as OrderDetail.Fulfillment[],
         );
 
         return Object.entries(counts).map(([id, count]) => {

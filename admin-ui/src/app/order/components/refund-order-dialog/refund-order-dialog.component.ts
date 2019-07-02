@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import {
+    OrderDetail,
+    OrderDetailFragment,
     OrderLineInput,
-    OrderWithLines,
-    OrderWithLinesFragment,
     RefundOrderInput,
 } from '../../../common/generated-types';
 import { I18nService } from '../../../core/providers/i18n/i18n.service';
@@ -18,7 +18,7 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
 })
 export class RefundOrderDialogComponent
     implements OnInit, Dialog<RefundOrderInput & { cancel: OrderLineInput[] }> {
-    order: OrderWithLinesFragment;
+    order: OrderDetailFragment;
     resolveWith: (result?: RefundOrderInput & { cancel: OrderLineInput[] }) => void;
     reason: string;
     lineQuantities: { [lineId: string]: { quantity: number; cancel: boolean } } = {};
@@ -37,7 +37,7 @@ export class RefundOrderDialogComponent
         return itemTotal + (this.refundShipping ? this.order.shipping : 0) + this.adjustment;
     }
 
-    lineCanBeRefunded(line: OrderWithLines.Lines): boolean {
+    lineCanBeRefunded(line: OrderDetail.Lines): boolean {
         return 0 < line.items.filter(i => i.refundId == null && !i.cancelled).length;
     }
 

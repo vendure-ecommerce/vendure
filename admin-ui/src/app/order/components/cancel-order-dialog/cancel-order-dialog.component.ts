@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
-import { CancelOrderInput, OrderWithLinesFragment } from '../../../common/generated-types';
+import { CancelOrderInput, OrderDetailFragment } from '../../../common/generated-types';
 import { I18nService } from '../../../core/providers/i18n/i18n.service';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
@@ -12,7 +12,7 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CancelOrderDialogComponent implements OnInit, Dialog<CancelOrderInput> {
-    order: OrderWithLinesFragment;
+    order: OrderDetailFragment;
     resolveWith: (result?: CancelOrderInput) => void;
     reason: string;
     lineQuantities: { [lineId: string]: number } = {};

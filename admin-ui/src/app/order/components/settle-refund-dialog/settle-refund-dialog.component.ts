@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { OrderWithLines } from '../../../common/generated-types';
+import { OrderDetail } from '../../../common/generated-types';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
 export class SettleRefundDialogComponent implements Dialog<string> {
     resolveWith: (result?: string) => void;
     transactionId = '';
-    refund: OrderWithLines.Refunds;
+    refund: OrderDetail.Refunds;
 
     submit() {
         this.resolveWith(this.transactionId);

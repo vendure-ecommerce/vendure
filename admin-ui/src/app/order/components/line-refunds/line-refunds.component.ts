@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { OrderWithLines } from '../../../common/generated-types';
+import { OrderDetail } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-line-refunds',
@@ -9,7 +9,7 @@ import { OrderWithLines } from '../../../common/generated-types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineRefundsComponent {
-    @Input() line: OrderWithLines.Lines;
+    @Input() line: OrderDetail.Lines;
 
     getRefundedCount(): number {
         return this.line.items.filter(i => i.refundId != null && !i.cancelled).length;

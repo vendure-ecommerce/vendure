@@ -7,7 +7,7 @@ import { omit } from 'shared/omit';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import { Order, OrderWithLines } from '../../../common/generated-types';
+import { Order, OrderDetail } from '../../../common/generated-types';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
@@ -23,7 +23,7 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
     styleUrls: ['./order-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fragment>
+export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
     constructor(
@@ -55,7 +55,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
             .filter(line => !!line);
     }
 
-    settlePayment(payment: OrderWithLines.Payments) {
+    settlePayment(payment: OrderDetail.Payments) {
         this.dataService.order.settlePayment(payment.id).subscribe(({ settlePayment }) => {
             if (settlePayment) {
                 if (settlePayment.state === 'Settled') {
@@ -96,7 +96,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
             });
     }
 
-    cancelOrRefund(order: OrderWithLines.Fragment) {
+    cancelOrRefund(order: OrderDetail.Fragment) {
         if (order.state === 'PaymentAuthorized') {
             this.cancelOrder(order);
         } else {
@@ -104,7 +104,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
         }
     }
 
-    settleRefund(refund: OrderWithLines.Refunds) {
+    settleRefund(refund: OrderDetail.Refunds) {
         this.modalService
             .fromComponent(SettleRefundDialogComponent, {
                 size: 'md',
@@ -135,7 +135,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
             });
     }
 
-    private cancelOrder(order: OrderWithLines.Fragment) {
+    private cancelOrder(order: OrderDetail.Fragment) {
         this.modalService
             .fromComponent(CancelOrderDialogComponent, {
                 size: 'xl',
@@ -160,7 +160,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderWithLines.Fra
             });
     }
 
-    private refundOrder(order: OrderWithLines.Fragment) {
+    private refundOrder(order: OrderDetail.Fragment) {
         this.modalService
             .fromComponent(RefundOrderDialogComponent, {
                 size: 'xl',
