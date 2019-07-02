@@ -10,6 +10,7 @@ import { PaymentMethodHandler } from '../src/config/payment-method/payment-metho
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import {
+    AddNoteToOrder,
     CancelOrder,
     CreateFulfillment,
     GetCustomerList,
@@ -995,6 +996,32 @@ describe('Orders resolver', () => {
             ]);
         });
     });
+
+    it('addNoteToOrder', async () => {
+        const { addNoteToOrder } = await adminClient.query<AddNoteToOrder.Mutation, AddNoteToOrder.Variables>(ADD_NOTE_TO_ORDER, {
+            input: {
+                id: 'T_4',
+                note: 'A test note',
+            },
+        });
+
+        expect(addNoteToOrder.id).toBe('T_4');
+
+        const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, {
+            id: 'T_4',
+            options: {
+                skip: 6,
+            },
+        });
+
+        expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.ORDER_NOTE, data: {
+                    note: 'A test note',
+                },
+            },
+        ]);
+    });
 });
 
 /**
@@ -1241,6 +1268,14 @@ export const GET_ORDER_HISTORY = gql`
                     data
                 }
             }
+        }
+    }
+`;
+
+export const ADD_NOTE_TO_ORDER = gql`
+    mutation AddNoteToOrder($input: AddNoteToOrderInput!) {
+        addNoteToOrder(input: $input) {
+            id
         }
     }
 `;

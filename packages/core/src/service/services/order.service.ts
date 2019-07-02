@@ -1,6 +1,7 @@
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import {
+    AddNoteToOrderInput,
     CancelOrderInput,
     CreateAddressInput,
     FulfillOrderInput,
@@ -530,6 +531,19 @@ export class OrderService {
         }
         order.customer = customer;
         return this.connection.getRepository(Order).save(order);
+    }
+
+    async addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, input.id);
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: order.id,
+            type: HistoryEntryType.ORDER_NOTE,
+            data: {
+                note: input.note,
+            },
+        });
+        return order;
     }
 
     /**

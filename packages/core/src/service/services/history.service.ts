@@ -37,6 +37,9 @@ export type OrderHistoryEntryData = {
         to: RefundState;
         reason?: string;
     };
+    [HistoryEntryType.ORDER_NOTE]: {
+        note: string;
+    };
 };
 
 export interface CreateOrderHistoryEntryArgs<T extends keyof OrderHistoryEntryData> {

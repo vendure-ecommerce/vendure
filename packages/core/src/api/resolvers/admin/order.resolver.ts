@@ -1,9 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
     MutationFulfillOrderArgs,
     MutationRefundOrderArgs,
-    MutationSettlePaymentArgs, MutationSettleRefundArgs,
+    MutationSettlePaymentArgs,
+    MutationSettleRefundArgs,
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
@@ -65,5 +67,11 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async settleRefund(@Ctx() ctx: RequestContext, @Args() args: MutationSettleRefundArgs) {
         return this.orderService.settleRefund(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async addNoteToOrder(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToOrderArgs) {
+        return this.orderService.addNoteToOrder(ctx, args.input);
     }
 }

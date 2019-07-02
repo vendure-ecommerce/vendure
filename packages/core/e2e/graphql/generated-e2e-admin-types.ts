@@ -18,6 +18,11 @@ export type Scalars = {
     Upload: any;
 };
 
+export type AddNoteToOrderInput = {
+    id: Scalars['ID'];
+    note: Scalars['String'];
+};
+
 export type Address = Node & {
     __typename?: 'Address';
     id: Scalars['ID'];
@@ -1543,12 +1548,6 @@ export type Mutation = {
     updateCollection: Collection;
     /** Move a Collection to a different parent or index */
     moveCollection: Collection;
-    /** Create a new Country */
-    createCountry: Country;
-    /** Update an existing Country */
-    updateCountry: Country;
-    /** Delete a Country */
-    deleteCountry: DeletionResponse;
     /** Create a new CustomerGroup */
     createCustomerGroup: CustomerGroup;
     /** Update an existing CustomerGroup */
@@ -1557,6 +1556,12 @@ export type Mutation = {
     addCustomersToGroup: CustomerGroup;
     /** Remove Customers from a CustomerGroup */
     removeCustomersFromGroup: CustomerGroup;
+    /** Create a new Country */
+    createCountry: Country;
+    /** Update an existing Country */
+    updateCountry: Country;
+    /** Delete a Country */
+    deleteCountry: DeletionResponse;
     /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
     createCustomer: Customer;
     /** Update an existing Customer */
@@ -1588,6 +1593,7 @@ export type Mutation = {
     cancelOrder: Order;
     refundOrder: Refund;
     settleRefund: Refund;
+    addNoteToOrder: Order;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -1620,14 +1626,14 @@ export type Mutation = {
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
     updateShippingMethod: ShippingMethod;
-    /** Create a new TaxRate */
-    createTaxRate: TaxRate;
-    /** Update an existing TaxRate */
-    updateTaxRate: TaxRate;
     /** Create a new TaxCategory */
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
     updateTaxCategory: TaxCategory;
+    /** Create a new TaxRate */
+    createTaxRate: TaxRate;
+    /** Update an existing TaxRate */
+    updateTaxRate: TaxRate;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -1683,18 +1689,6 @@ export type MutationMoveCollectionArgs = {
     input: MoveCollectionInput;
 };
 
-export type MutationCreateCountryArgs = {
-    input: CreateCountryInput;
-};
-
-export type MutationUpdateCountryArgs = {
-    input: UpdateCountryInput;
-};
-
-export type MutationDeleteCountryArgs = {
-    id: Scalars['ID'];
-};
-
 export type MutationCreateCustomerGroupArgs = {
     input: CreateCustomerGroupInput;
 };
@@ -1711,6 +1705,18 @@ export type MutationAddCustomersToGroupArgs = {
 export type MutationRemoveCustomersFromGroupArgs = {
     customerGroupId: Scalars['ID'];
     customerIds: Array<Scalars['ID']>;
+};
+
+export type MutationCreateCountryArgs = {
+    input: CreateCountryInput;
+};
+
+export type MutationUpdateCountryArgs = {
+    input: UpdateCountryInput;
+};
+
+export type MutationDeleteCountryArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateCustomerArgs = {
@@ -1793,6 +1799,10 @@ export type MutationSettleRefundArgs = {
     input: SettleRefundInput;
 };
 
+export type MutationAddNoteToOrderArgs = {
+    input: AddNoteToOrderInput;
+};
+
 export type MutationUpdatePaymentMethodArgs = {
     input: UpdatePaymentMethodInput;
 };
@@ -1866,20 +1876,20 @@ export type MutationUpdateShippingMethodArgs = {
     input: UpdateShippingMethodInput;
 };
 
-export type MutationCreateTaxRateArgs = {
-    input: CreateTaxRateInput;
-};
-
-export type MutationUpdateTaxRateArgs = {
-    input: UpdateTaxRateInput;
-};
-
 export type MutationCreateTaxCategoryArgs = {
     input: CreateTaxCategoryInput;
 };
 
 export type MutationUpdateTaxCategoryArgs = {
     input: UpdateTaxCategoryInput;
+};
+
+export type MutationCreateTaxRateArgs = {
+    input: CreateTaxRateInput;
+};
+
+export type MutationUpdateTaxRateArgs = {
+    input: UpdateTaxRateInput;
 };
 
 export type MutationCreateZoneArgs = {
@@ -2408,10 +2418,10 @@ export type Query = {
     collections: CollectionList;
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperation>;
-    countries: CountryList;
-    country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
+    countries: CountryList;
+    country?: Maybe<Country>;
     customers: CustomerList;
     customer?: Maybe<Customer>;
     facets: FacetList;
@@ -2438,10 +2448,10 @@ export type Query = {
     shippingMethod?: Maybe<ShippingMethod>;
     shippingEligibilityCheckers: Array<ConfigurableOperation>;
     shippingCalculators: Array<ConfigurableOperation>;
-    taxRates: TaxRateList;
-    taxRate?: Maybe<TaxRate>;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
+    taxRates: TaxRateList;
+    taxRate?: Maybe<TaxRate>;
     zones: Array<Zone>;
     zone?: Maybe<Zone>;
 };
@@ -2476,15 +2486,15 @@ export type QueryCollectionArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
+export type QueryCustomerGroupArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryCountriesArgs = {
     options?: Maybe<CountryListOptions>;
 };
 
 export type QueryCountryArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
@@ -2579,15 +2589,15 @@ export type QueryShippingMethodArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryTaxCategoryArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryTaxRatesArgs = {
     options?: Maybe<TaxRateListOptions>;
 };
 
 export type QueryTaxRateArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryTaxCategoryArgs = {
     id: Scalars['ID'];
 };
 
@@ -4167,6 +4177,14 @@ export type GetOrderHistoryQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type AddNoteToOrderMutationVariables = {
+    input: AddNoteToOrderInput;
+};
+
+export type AddNoteToOrderMutation = { __typename?: 'Mutation' } & {
+    addNoteToOrder: { __typename?: 'Order' } & Pick<Order, 'id'>;
+};
+
 export type AddOptionGroupToProductMutationVariables = {
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
@@ -5165,6 +5183,12 @@ export namespace GetOrderHistory {
     export type Administrator = NonNullable<
         (NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>)['administrator']
     >;
+}
+
+export namespace AddNoteToOrder {
+    export type Variables = AddNoteToOrderMutationVariables;
+    export type Mutation = AddNoteToOrderMutation;
+    export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
 }
 
 export namespace AddOptionGroupToProduct {
