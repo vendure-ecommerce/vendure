@@ -3,7 +3,16 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';
 
-const ID_KEYS = ['id', 'productId', 'productVariantId', 'collectionIds'];
+const ID_KEYS = [
+    'id',
+    'productId',
+    'productVariantId',
+    'collectionIds',
+    'paymentId',
+    'fulfillmentId',
+    'orderItemIds',
+    'refundId',
+];
 
 /**
  * This service is responsible for encoding/decoding entity IDs according to the configured EntityIdStrategy.
@@ -85,7 +94,11 @@ export class IdCodec {
             target = this.transform(target, transformFn, transformKeys);
             for (const key of Object.keys(target)) {
                 if (this.isObject(target[key as keyof T])) {
-                    target[key as keyof T] = this.transformRecursive(target[key as keyof T], transformFn, transformKeys);
+                    target[key as keyof T] = this.transformRecursive(
+                        target[key as keyof T],
+                        transformFn,
+                        transformKeys,
+                    );
                 }
             }
         }

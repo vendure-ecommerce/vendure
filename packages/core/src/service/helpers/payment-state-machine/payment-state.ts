@@ -9,9 +9,12 @@ import { Payment } from '../../../entity/payment/payment.entity';
  *
  * @docsCategory payment
  */
-export type PaymentState = 'Authorized' | 'Settled' | 'Declined';
+export type PaymentState = 'Created' | 'Authorized' | 'Settled' | 'Declined';
 
 export const paymentStateTransitions: Transitions<PaymentState> = {
+    Created: {
+        to: ['Authorized', 'Settled', 'Declined'],
+    },
     Authorized: {
         to: ['Settled'],
     },

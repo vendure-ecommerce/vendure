@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -7,6 +8,7 @@ import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
+import { HistoryService } from '../../services/history.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
@@ -18,6 +20,7 @@ export class OrderStateMachine {
 
     constructor(private configService: ConfigService,
                 private stockMovementService: StockMovementService,
+                private historyService: HistoryService,
                 private eventBus: EventBus) {
         this.config = this.initConfig();
     }
@@ -65,6 +68,15 @@ export class OrderStateMachine {
             await this.stockMovementService.createSalesForOrder(data.order);
         }
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
+        await this.historyService.createHistoryEntryForOrder({
+            orderId: data.order.id,
+            type: HistoryEntryType.ORDER_STATE_TRANSITION,
+            ctx: data.ctx,
+            data: {
+                from: fromState,
+                to: toState,
+            },
+        });
     }
 
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {

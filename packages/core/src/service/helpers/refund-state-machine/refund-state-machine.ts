@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -8,6 +9,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { RefundStateTransitionEvent } from '../../../event-bus/events/refund-state-transition-event';
+import { HistoryService } from '../../services/history.service';
 
 import { RefundState, refundStateTransitions, RefundTransitionData } from './refund-state';
 
@@ -19,8 +21,19 @@ export class RefundStateMachine {
         onTransitionStart: async (fromState, toState, data) => {
             return true;
         },
-        onTransitionEnd: (fromState, toState, data) => {
+        onTransitionEnd: async (fromState, toState, data) => {
             this.eventBus.publish(new RefundStateTransitionEvent(fromState, toState, data.ctx, data.refund, data.order));
+            await this.historyService.createHistoryEntryForOrder({
+                ctx: data.ctx,
+                orderId: data.order.id,
+                type: HistoryEntryType.ORDER_REFUND_TRANSITION,
+                data: {
+                    refundId: data.refund.id,
+                    from: fromState,
+                    to: toState,
+                    reason: data.refund.reason,
+                },
+            });
         },
         onError: (fromState, toState, message) => {
             throw new IllegalOperationError(message || 'error.cannot-transition-refund-from-to', {
@@ -31,6 +44,7 @@ export class RefundStateMachine {
     };
 
     constructor(private configService: ConfigService,
+                private historyService: HistoryService,
                 private eventBus: EventBus) {}
 
     getNextStates(refund: Refund): RefundState[] {

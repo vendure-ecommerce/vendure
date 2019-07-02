@@ -1065,6 +1065,50 @@ export type GlobalSettings = {
   customFields?: Maybe<Scalars['JSON']>,
 };
 
+export type HistoryEntry = Node & {
+  __typename?: 'HistoryEntry',
+  id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  updatedAt: Scalars['DateTime'],
+  type: HistoryEntryType,
+  administrator?: Maybe<Administrator>,
+  data: Scalars['JSON'],
+};
+
+export type HistoryEntryFilterParameter = {
+  createdAt?: Maybe<DateOperators>,
+  updatedAt?: Maybe<DateOperators>,
+  type?: Maybe<StringOperators>,
+};
+
+export type HistoryEntryList = PaginatedList & {
+  __typename?: 'HistoryEntryList',
+  items: Array<HistoryEntry>,
+  totalItems: Scalars['Int'],
+};
+
+export type HistoryEntryListOptions = {
+  skip?: Maybe<Scalars['Int']>,
+  take?: Maybe<Scalars['Int']>,
+  sort?: Maybe<HistoryEntrySortParameter>,
+  filter?: Maybe<HistoryEntryFilterParameter>,
+};
+
+export type HistoryEntrySortParameter = {
+  id?: Maybe<SortOrder>,
+  createdAt?: Maybe<SortOrder>,
+  updatedAt?: Maybe<SortOrder>,
+};
+
+export enum HistoryEntryType {
+  ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
+  ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
+  ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+  ORDER_CANCELLATION = 'ORDER_CANCELLATION',
+  ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+  ORDER_NOTE = 'ORDER_NOTE'
+}
+
 export type ImportInfo = {
   __typename?: 'ImportInfo',
   errors?: Maybe<Array<Scalars['String']>>,
@@ -1540,8 +1584,8 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  importProducts?: Maybe<ImportInfo>,
   updateGlobalSettings: GlobalSettings,
+  importProducts?: Maybe<ImportInfo>,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
@@ -1553,6 +1597,7 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
+  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1567,7 +1612,6 @@ export type Mutation = {
   generateVariantsForProduct: Product,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
-  reindex: JobInfo,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1579,14 +1623,14 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
-  /** Create a new TaxCategory */
-  createTaxCategory: TaxCategory,
-  /** Update an existing TaxCategory */
-  updateTaxCategory: TaxCategory,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
   updateTaxRate: TaxRate,
+  /** Create a new TaxCategory */
+  createTaxCategory: TaxCategory,
+  /** Update an existing TaxCategory */
+  updateTaxCategory: TaxCategory,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1754,13 +1798,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
@@ -1879,16 +1923,6 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 
-export type MutationCreateTaxCategoryArgs = {
-  input: CreateTaxCategoryInput
-};
-
-
-export type MutationUpdateTaxCategoryArgs = {
-  input: UpdateTaxCategoryInput
-};
-
-
 export type MutationCreateTaxRateArgs = {
   input: CreateTaxRateInput
 };
@@ -1896,6 +1930,16 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput
+};
+
+
+export type MutationCreateTaxCategoryArgs = {
+  input: CreateTaxCategoryInput
+};
+
+
+export type MutationUpdateTaxCategoryArgs = {
+  input: UpdateTaxCategoryInput
 };
 
 
@@ -1967,6 +2011,12 @@ export type Order = Node & {
   shippingMethod?: Maybe<ShippingMethod>,
   totalBeforeTax: Scalars['Int'],
   total: Scalars['Int'],
+  history: HistoryEntryList,
+};
+
+
+export type OrderHistoryArgs = {
+  options?: Maybe<HistoryEntryListOptions>
 };
 
 export type OrderAddress = {
@@ -2442,10 +2492,10 @@ export type Query = {
   paymentMethod?: Maybe<PaymentMethod>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
+  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
-  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
@@ -2455,10 +2505,10 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
-  taxCategories: Array<TaxCategory>,
-  taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
   taxRate?: Maybe<TaxRate>,
+  taxCategories: Array<TaxCategory>,
+  taxCategory?: Maybe<TaxCategory>,
   zones: Array<Zone>,
   zone?: Maybe<Zone>,
 };
@@ -2580,6 +2630,11 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
+export type QuerySearchArgs = {
+  input: SearchInput
+};
+
+
 export type QueryProductsArgs = {
   languageCode?: Maybe<LanguageCode>,
   options?: Maybe<ProductListOptions>
@@ -2590,11 +2645,6 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>,
   slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput
 };
 
 
@@ -2628,17 +2678,17 @@ export type QueryShippingMethodArgs = {
 };
 
 
-export type QueryTaxCategoryArgs = {
-  id: Scalars['ID']
-};
-
-
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryTaxCategoryArgs = {
   id: Scalars['ID']
 };
 
@@ -2659,6 +2709,7 @@ export type Refund = Node & {
   method?: Maybe<Scalars['String']>,
   state: Scalars['String'],
   transactionId?: Maybe<Scalars['String']>,
+  reason?: Maybe<Scalars['String']>,
   orderItems: Array<OrderItem>,
   paymentId: Scalars['ID'],
   metadata?: Maybe<Scalars['JSON']>,

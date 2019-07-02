@@ -760,6 +760,50 @@ export type GlobalSettings = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type HistoryEntry = Node & {
+    __typename?: 'HistoryEntry';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    type: HistoryEntryType;
+    administrator?: Maybe<Administrator>;
+    data: Scalars['JSON'];
+};
+
+export type HistoryEntryFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    type?: Maybe<StringOperators>;
+};
+
+export type HistoryEntryList = PaginatedList & {
+    __typename?: 'HistoryEntryList';
+    items: Array<HistoryEntry>;
+    totalItems: Scalars['Int'];
+};
+
+export type HistoryEntryListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<HistoryEntrySortParameter>;
+    filter?: Maybe<HistoryEntryFilterParameter>;
+};
+
+export type HistoryEntrySortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+};
+
+export enum HistoryEntryType {
+    ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
+    ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
+    ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+    ORDER_CANCELLATION = 'ORDER_CANCELLATION',
+    ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+    ORDER_NOTE = 'ORDER_NOTE',
+}
+
 export type ImportInfo = {
     __typename?: 'ImportInfo';
     errors?: Maybe<Array<Scalars['String']>>;
@@ -1332,6 +1376,11 @@ export type Order = Node & {
     shippingMethod?: Maybe<ShippingMethod>;
     totalBeforeTax: Scalars['Int'];
     total: Scalars['Int'];
+    history: HistoryEntryList;
+};
+
+export type OrderHistoryArgs = {
+    options?: Maybe<HistoryEntryListOptions>;
 };
 
 export type OrderAddress = {
@@ -1748,6 +1797,7 @@ export type Refund = Node & {
     method?: Maybe<Scalars['String']>;
     state: Scalars['String'];
     transactionId?: Maybe<Scalars['String']>;
+    reason?: Maybe<Scalars['String']>;
     orderItems: Array<OrderItem>;
     paymentId: Scalars['ID'];
     metadata?: Maybe<Scalars['JSON']>;

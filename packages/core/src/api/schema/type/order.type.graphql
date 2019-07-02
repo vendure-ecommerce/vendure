@@ -20,6 +20,7 @@ type Order implements Node {
     shippingMethod: ShippingMethod
     totalBeforeTax: Int!
     total: Int!
+    history(options: HistoryEntryListOptions): HistoryEntryList!
 }
 
 type OrderAddress {
@@ -99,6 +100,7 @@ type Refund implements Node {
     method: String
     state: String!
     transactionId: String
+    reason: String
     orderItems: [OrderItem!]!
     paymentId: ID!
     metadata: JSON

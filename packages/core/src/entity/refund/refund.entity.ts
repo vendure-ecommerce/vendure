@@ -23,6 +23,8 @@ export class Refund extends VendureEntity {
 
     @Column() method: string;
 
+    @Column({ nullable: true }) reason: string;
+
     @Column('varchar') state: RefundState;
 
     @Column({ nullable: true }) transactionId: string;

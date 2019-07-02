@@ -46,6 +46,15 @@ export class AdministratorService {
         });
     }
 
+    findOneByUserId(userId: ID): Promise<Administrator | undefined> {
+        return this.connection.getRepository(Administrator).findOne({
+            where: {
+                user: { id: userId },
+                deletedAt: null,
+            },
+        });
+    }
+
     async create(input: CreateAdministratorInput): Promise<Administrator> {
         const administrator = new Administrator(input);
         administrator.user = await this.userService.createAdminUser(input.emailAddress, input.password);

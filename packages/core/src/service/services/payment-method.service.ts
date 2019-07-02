@@ -6,6 +6,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
@@ -22,6 +23,8 @@ import { PaymentMethod } from '../../entity/payment-method/payment-method.entity
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
+import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -31,6 +34,8 @@ export class PaymentMethodService {
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
+        private paymentStateMachine: PaymentStateMachine,
+        private refundStateMachine: RefundStateMachine,
     ) {}
 
     async initPaymentMethods() {
@@ -65,11 +70,13 @@ export class PaymentMethodService {
         return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(order: Order, method: string, metadata: PaymentMetadata): Promise<Payment> {
+    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: PaymentMetadata): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
-        const payment = new Payment(result);
-        return this.connection.getRepository(Payment).save(payment);
+        const payment = await this.connection.getRepository(Payment).save(new Payment({ ...result, state: 'Created' }));
+        await this.paymentStateMachine.transition(ctx, order, payment, result.state);
+        await this.connection.getRepository(Payment).save(payment);
+        return payment;
     }
 
     async settlePayment(payment: Payment, order: Order) {
@@ -77,14 +84,15 @@ export class PaymentMethodService {
         return handler.settlePayment(order, payment, paymentMethod.configArgs);
     }
 
-    async createRefund(input: RefundOrderInput, order: Order, items: OrderItem[], payment: Payment): Promise<Refund> {
+    async createRefund(ctx: RequestContext, input: RefundOrderInput, order: Order, items: OrderItem[], payment: Payment): Promise<Refund> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
         const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
         const refundAmount = itemAmount + input.shipping + input.adjustment;
-        const refund = new Refund({
+        let refund = new Refund({
             payment,
             orderItems: items,
             items: itemAmount,
+            reason: input.reason,
             adjustment: input.adjustment,
             shipping: input.shipping,
             total: refundAmount,
@@ -94,11 +102,14 @@ export class PaymentMethodService {
         });
         const createRefundResult = await handler.createRefund(input, refundAmount, order, payment, paymentMethod.configArgs);
         if (createRefundResult) {
-            refund.state = createRefundResult.state;
             refund.transactionId = createRefundResult.transactionId || '';
             refund.metadata = createRefundResult.metadata || {};
         }
-        return this.connection.getRepository(Refund).save(refund);
+        refund = await this.connection.getRepository(Refund).save(refund);
+        if (createRefundResult) {
+            await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+        }
+        return refund;
     }
 
     private async getMethodAndHandler(method: string): Promise<{ paymentMethod: PaymentMethod, handler: PaymentMethodHandler }> {

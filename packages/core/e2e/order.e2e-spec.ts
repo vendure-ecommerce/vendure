@@ -2,12 +2,10 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { StockMovementType } from '../../common/lib/generated-types';
+import { HistoryEntryType, StockMovementType } from '../../common/lib/generated-types';
 import { pick } from '../../common/lib/pick';
 import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
-import { PaymentMetadata } from '../src/entity/payment/payment.entity';
-import { RefundState } from '../src/service/helpers/refund-state-machine/refund-state';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
@@ -18,12 +16,15 @@ import {
     GetOrder,
     GetOrderFulfillmentItems,
     GetOrderFulfillments,
+    GetOrderHistory,
     GetOrderList,
     GetOrderListFulfillments,
     GetProductWithVariants,
     GetStockMovement,
-    OrderItemFragment, RefundOrder,
-    SettlePayment, SettleRefund,
+    OrderItemFragment,
+    RefundOrder,
+    SettlePayment,
+    SettleRefund,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -116,6 +117,12 @@ describe('Orders resolver', () => {
         expect(result.order!.id).toBe('T_2');
     });
 
+    it('order history initially empty', async () => {
+        const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, { id: 'T_1' });
+        expect(order!.history.totalItems).toBe(0);
+        expect(order!.history.items).toEqual([]);
+    });
+
     describe('payments', () => {
         it('settlePayment fails', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
@@ -195,6 +202,44 @@ describe('Orders resolver', () => {
 
             expect(result.order!.state).toBe('PaymentSettled');
             expect(result.order!.payments![0].state).toBe('Settled');
+        });
+
+        it('order history contains expected entries', async () => {
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, { id: 'T_2' });
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'AddingItems',
+                        to: 'ArrangingPayment',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_PAYMENT_TRANSITION, data: {
+                        paymentId: 'T_2',
+                        from: 'Created',
+                        to: 'Authorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'ArrangingPayment',
+                        to: 'PaymentAuthorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_PAYMENT_TRANSITION, data: {
+                        paymentId: 'T_2',
+                        from: 'Authorized',
+                        to: 'Settled',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PaymentAuthorized',
+                        to: 'PaymentSettled',
+                    },
+                },
+            ]);
         });
     });
 
@@ -382,6 +427,51 @@ describe('Orders resolver', () => {
             expect(result.order!.state).toBe('Fulfilled');
         });
 
+        it('order history contains expected entries', async () => {
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, {
+                id: 'T_2',
+                options: {
+                    skip: 5,
+                },
+            });
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_FULLFILLMENT, data: {
+                        fulfillmentId: 'T_1',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PaymentSettled',
+                        to: 'PartiallyFulfilled',
+                    },
+                },
+
+                {
+                    type: HistoryEntryType.ORDER_FULLFILLMENT, data: {
+                        fulfillmentId: 'T_2',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PartiallyFulfilled',
+                        to: 'PartiallyFulfilled',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_FULLFILLMENT, data: {
+                        fulfillmentId: 'T_3',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PartiallyFulfilled',
+                        to: 'Fulfilled',
+                    },
+                },
+            ]);
+        });
+
         it('order.fullfillments resolver for single order', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,
@@ -556,6 +646,7 @@ describe('Orders resolver', () => {
             const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    reason: 'cancel reason 1',
                 },
             });
 
@@ -594,6 +685,7 @@ describe('Orders resolver', () => {
             await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    reason: 'cancel reason 2',
                 },
             });
 
@@ -615,6 +707,54 @@ describe('Orders resolver', () => {
                 { type: StockMovementType.SALE, quantity: -2 },
                 { type: StockMovementType.CANCELLATION, quantity: 1 },
                 { type: StockMovementType.CANCELLATION, quantity: 1 },
+            ]);
+        });
+
+        it('order history contains expected entries', async () => {
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, {
+                id: orderId,
+                options: {
+                    skip: 0,
+                },
+            });
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'AddingItems',
+                        to: 'ArrangingPayment',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_PAYMENT_TRANSITION, data: {
+                        paymentId: 'T_3',
+                        from: 'Created',
+                        to: 'Authorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'ArrangingPayment',
+                        to: 'PaymentAuthorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_CANCELLATION, data: {
+                        orderItemIds: ['T_7'],
+                        reason: 'cancel reason 1',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_CANCELLATION, data: {
+                        orderItemIds: ['T_8'],
+                        reason: 'cancel reason 2',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PaymentAuthorized',
+                        to: 'Cancelled',
+                    },
+                },
             ]);
         });
     });
@@ -762,6 +902,7 @@ describe('Orders resolver', () => {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                     shipping: order!.shipping,
                     adjustment: 0,
+                    reason: 'foo',
                     paymentId,
                 },
             });
@@ -801,6 +942,57 @@ describe('Orders resolver', () => {
 
             expect(settleRefund.state).toBe('Settled');
             expect(settleRefund.transactionId).toBe('aaabbb');
+        });
+
+        it('order history contains expected entries', async () => {
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(GET_ORDER_HISTORY, {
+                id: orderId,
+                options: {
+                    skip: 0,
+                },
+            });
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'AddingItems',
+                        to: 'ArrangingPayment',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_PAYMENT_TRANSITION, data: {
+                        paymentId: 'T_4',
+                        from: 'Created',
+                        to: 'Authorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'ArrangingPayment',
+                        to: 'PaymentAuthorized',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_PAYMENT_TRANSITION, data: {
+                        paymentId: 'T_4',
+                        from: 'Authorized',
+                        to: 'Settled',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION, data: {
+                        from: 'PaymentAuthorized',
+                        to: 'PaymentSettled',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_REFUND_TRANSITION, data: {
+                        refundId: 'T_1',
+                        reason: 'foo',
+                        from: 'Pending',
+                        to: 'Settled',
+                    },
+                },
+            ]);
         });
     });
 });
@@ -1030,6 +1222,25 @@ export const SETTLE_REFUND = gql`
             shipping
             total
             metadata
+        }
+    }
+`;
+
+export const GET_ORDER_HISTORY = gql`
+    query GetOrderHistory($id: ID!, $options: HistoryEntryListOptions) {
+        order(id: $id) {
+            id
+            history(options: $options) {
+                totalItems
+                items {
+                    id
+                    type
+                    administrator {
+                        id
+                    }
+                    data
+                }
+            }
         }
     }
 `;

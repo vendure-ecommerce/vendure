@@ -4,6 +4,7 @@ import {
     CancelOrderInput,
     CreateAddressInput,
     FulfillOrderInput,
+    HistoryEntryType,
     OrderLineInput,
     RefundOrderInput,
     SettleRefundInput,
@@ -43,6 +44,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
+import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
 import { StockMovementService } from './stock-movement.service';
@@ -63,6 +65,7 @@ export class OrderService {
         private listQueryBuilder: ListQueryBuilder,
         private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
+        private historyService: HistoryService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -321,7 +324,7 @@ export class OrderService {
         if (order.state !== 'ArrangingPayment') {
             throw new IllegalOperationError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
         }
-        const payment = await this.paymentMethodService.createPayment(order, input.method, input.metadata);
+        const payment = await this.paymentMethodService.createPayment(ctx, order, input.method, input.metadata);
         order.payments = [...(order.payments || []), payment];
         await this.connection.getRepository(Order).save(order);
 
@@ -378,6 +381,14 @@ export class OrderService {
         );
 
         for (const order of orders) {
+            await this.historyService.createHistoryEntryForOrder({
+                ctx,
+                orderId: order.id,
+                type: HistoryEntryType.ORDER_FULLFILLMENT,
+                data: {
+                    fulfillmentId: fulfillment.id,
+                },
+            });
             const orderWithFulfillments = await this.connection.getRepository(Order).findOne(order.id, {
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
@@ -386,6 +397,7 @@ export class OrderService {
             }
             const allOrderItemsFulfilled = orderWithFulfillments.lines
                 .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
+                .filter(orderItem => !orderItem.cancelled)
                 .every(orderItem => {
                     return !!orderItem.fulfillment;
                 });
@@ -447,6 +459,15 @@ export class OrderService {
             throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', { state: order.state });
         }
         await this.stockMovementService.createCancellationsForOrderItems(items);
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: order.id,
+            type: HistoryEntryType.ORDER_CANCELLATION,
+            data: {
+                orderItemIds: items.map(i => i.id),
+                reason: input.reason || undefined,
+            },
+        });
 
         const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
             relations: ['lines', 'lines.items'],
@@ -492,13 +513,13 @@ export class OrderService {
             throw new IllegalOperationError('error.refund-order-item-already-refunded');
         }
 
-        return await this.paymentMethodService.createRefund(input, order, items, payment);
+        return await this.paymentMethodService.createRefund(ctx, input, order, items, payment);
     }
 
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
         const refund = await getEntityOrThrow(this.connection, Refund, input.id, { relations: ['payment', 'payment.order'] });
         refund.transactionId = input.transactionId;
-        this.refundStateMachine.transition(ctx, refund.payment.order, refund, 'Settled');
+        await this.refundStateMachine.transition(ctx, refund.payment.order, refund, 'Settled');
         return this.connection.getRepository(Refund).save(refund);
     }
 
