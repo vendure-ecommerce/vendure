@@ -1,28 +1,12 @@
 <div class="card">
     <div class="card-header payment-header">
-        <div>{{ 'order.payment' | translate }}</div>
+        <div>{{ 'order.payment' | translate }} #{{ payment.id }}</div>
         <div class="payment-state">
             <vdr-payment-state-label [state]="payment.state"></vdr-payment-state-label>
         </div>
     </div>
     <div class="card-block">
-        <vdr-labeled-data [label]="'order.payment-method' | translate">
-            {{ payment.method }}
-        </vdr-labeled-data>
-        <vdr-labeled-data [label]="'order.amount' | translate">
-            {{ payment.amount / 100 | currency: currencyCode }}
-        </vdr-labeled-data>
-        <vdr-labeled-data [label]="'order.transaction-id' | translate">
-            {{ payment.transactionId }}
-        </vdr-labeled-data>
-        <vdr-labeled-data [label]="'order.payment-metadata' | translate">
-            <ul class="payment-metadata">
-                <li *ngFor="let entry of getPaymentMetadata(payment)">
-                    <span class="metadata-prop">{{ entry[0] }}:</span>
-                    {{ entry[1] }}
-                </li>
-            </ul>
-        </vdr-labeled-data>
+        <vdr-payment-detail [payment]="payment" [currencyCode]="currencyCode"></vdr-payment-detail>
     </div>
     <ng-container *ngFor="let refund of payment.refunds">
         <div class="card-header payment-header">
@@ -40,6 +24,9 @@
             </vdr-labeled-data>
             <vdr-labeled-data [label]="'order.transaction-id' | translate" *ngIf="refund.transactionId">
                 {{ refund.transactionId }}
+            </vdr-labeled-data>
+            <vdr-labeled-data [label]="'order.refund-reason' | translate" *ngIf="refund.reason">
+                {{ refund.reason }}
             </vdr-labeled-data>
         </div>
         <div class="card-footer" *ngIf="refund.state === 'Pending'">

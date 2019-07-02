@@ -134,6 +134,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
                 adjustment
                 total
                 paymentId
+                reason
                 transactionId
                 method
                 orderItems {
@@ -219,4 +220,26 @@ export const SETTLE_REFUND = gql`
         }
     }
     ${REFUND_FRAGMENT}
+`;
+
+export const GET_ORDER_HISTORY = gql`
+    query GetOrderHistory($id: ID!, $options: HistoryEntryListOptions) {
+        order(id: $id) {
+            id
+            history(options: $options) {
+                totalItems
+                items {
+                    id
+                    type
+                    createdAt
+                    administrator {
+                        id
+                        firstName
+                        lastName
+                    }
+                    data
+                }
+            }
+        }
+    }
 `;

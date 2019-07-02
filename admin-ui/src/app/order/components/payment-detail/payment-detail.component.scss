@@ -1,0 +1,10 @@
+@import "variables";
+
+ul.payment-metadata {
+    list-style-type: none;
+    line-height: 16px;
+    margin-top: 8px;
+}
+.metadata-prop {
+    color: $color-grey-400;
+}

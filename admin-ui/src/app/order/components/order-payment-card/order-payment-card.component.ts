@@ -5,17 +5,13 @@ import { OrderDetail } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-order-payment-detail',
-    templateUrl: './order-payment-detail.component.html',
-    styleUrls: ['./order-payment-detail.component.scss'],
+    templateUrl: './order-payment-card.component.html',
+    styleUrls: ['./order-payment-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderPaymentDetailComponent {
+export class OrderPaymentCardComponent {
     @Input() payment: OrderDetail.Payments;
     @Input() currencyCode: CurrencyCode;
     @Output() settlePayment = new EventEmitter<OrderDetail.Payments>();
     @Output() settleRefund = new EventEmitter<OrderDetail.Refunds>();
-
-    getPaymentMetadata(payment: OrderDetail.Payments) {
-        return Object.entries(payment.metadata);
-    }
 }

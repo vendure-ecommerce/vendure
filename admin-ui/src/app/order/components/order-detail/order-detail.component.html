@@ -103,6 +103,8 @@
                     <td>{{ order.total / 100 | currency: order.currencyCode }}</td>
                 </tr>
             </table>
+
+            <vdr-order-history [order]="order"></vdr-order-history>
         </div>
         <div class="clr-col-lg-4 order-cards">
             <div class="card">
@@ -135,18 +137,10 @@
                     </div>
                     <div class="card-block">
                         <div class="fulfillment-detail" *ngFor="let fulfillment of order.fulfillments">
-                            <vdr-labeled-data [label]="'common.created-at' | translate">
-                                {{ fulfillment.createdAt | date: 'medium' }}
-                            </vdr-labeled-data>
-                            <vdr-labeled-data [label]="'order.fulfillment-method' | translate">
-                                {{ fulfillment.method }}
-                            </vdr-labeled-data>
-                            <vdr-labeled-data
-                                *ngIf="fulfillment.trackingCode"
-                                [label]="'order.tracking-code' | translate"
-                            >
-                                {{ fulfillment.trackingCode }}
-                            </vdr-labeled-data>
+                            <vdr-fulfillment-detail
+                                [fulfillmentId]="fulfillment.id"
+                                [order]="order"
+                            ></vdr-fulfillment-detail>
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,9 @@ import {
     CreateFulfillment,
     FulfillOrderInput,
     GetOrder,
+    GetOrderHistory,
     GetOrderList,
+    HistoryEntryListOptions,
     RefundOrder,
     RefundOrderInput,
     SettlePayment,
@@ -15,6 +17,7 @@ import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     GET_ORDER,
+    GET_ORDER_HISTORY,
     GET_ORDERS_LIST,
     REFUND_ORDER,
     SETTLE_PAYMENT,
@@ -37,6 +40,16 @@ export class OrderDataService {
 
     getOrder(id: string) {
         return this.baseDataService.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id });
+    }
+
+    getOrderHistory(id: string, options?: HistoryEntryListOptions) {
+        return this.baseDataService.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
+            GET_ORDER_HISTORY,
+            {
+                id,
+                options,
+            },
+        );
     }
 
     settlePayment(id: string) {

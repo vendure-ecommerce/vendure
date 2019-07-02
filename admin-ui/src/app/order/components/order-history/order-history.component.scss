@@ -1,0 +1,129 @@
+@import "variables";
+
+:host {
+    margin-top: 48px;
+    display: block;
+}
+.entry-list {
+    margin-top: 24px;
+    margin-left: 24px;
+    margin-right: 12px;
+}
+.entry {
+    display: flex;
+}
+.timeline {
+    border-left: 2px solid $color-primary-100;
+    padding-bottom: 24px;
+    position: relative;
+
+    &:before {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 10px;
+        left: -2px;
+        border-left: 2px solid $color-primary-100;
+    }
+    &:after {
+        content: '';
+        display: block;
+        border-radius: 50%;
+        width: 8px;
+        height: 8px;
+        background-color: $color-grey-200;
+        border: 1px solid $color-grey-400;
+        position: absolute;
+        left: -5px;
+        top: 4px;
+    }
+
+    .custom-icon {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        left: -17px;
+        top: -4px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: $color-primary-600;
+        background-color: $color-grey-100;
+        border: 1px solid $color-grey-300;
+        display: none;
+    }
+
+    .complete {
+        color: $color-success-400;
+    }
+    .cancelled {
+        color: $color-error-400;
+    }
+}
+.entry.has-custom-icon {
+    .timeline:after {
+        display: none;
+    }
+    .custom-icon {
+        display: flex;
+    }
+}
+.entry:last-of-type {
+    .timeline {
+        border-left-color: transparent;
+    }
+}
+
+.entry-body {
+    flex: 1;
+    padding-bottom: 18px;
+    padding-left: 12px;
+    line-height: 16px;
+    margin-left: 12px;
+}
+
+.featured-entry {
+    .title {
+        font-size: 16px;
+        line-height: 26px;
+    }
+}
+
+.detail {
+    display: flex;
+    color: $color-grey-400;
+    font-size: 12px;
+    .time {
+    }
+    .name {
+        margin-left: 12px;
+    }
+}
+
+.success {
+    .timeline:before {
+        background-color: $color-success-200;
+        border: 1px solid $color-success-400;
+    }
+}
+
+.error {
+    .timeline:before {
+        background-color: $color-error-200;
+        border: 1px solid $color-error-400;
+    }
+}
+
+.warning {
+    .timeline:before {
+        background-color: $color-warning-200;
+        border: 1px solid $color-warning-400;
+    }
+}
+.items-list {
+    font-size: 12px;
+
+    ul {
+        list-style-type: none;
+    }
+}

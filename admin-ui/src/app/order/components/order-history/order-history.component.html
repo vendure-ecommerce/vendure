@@ -1,0 +1,119 @@
+<h4>{{ 'order.order-history' | translate }}</h4>
+<div class="entry-list">
+    <div class="entry"></div>
+    <div
+        *ngFor="let entry of history$ | async"
+        [ngClass]="getClassForEntry(entry)"
+        [class.has-custom-icon]="!!getTimelineIcon(entry)"
+        class="entry"
+    >
+        <div class="timeline">
+            <div class="custom-icon">
+                <clr-icon
+                    *ngIf="getTimelineIcon(entry) === 'complete'"
+                    shape="success-standard"
+                    size="24"
+                    class="complete is-solid"
+                ></clr-icon>
+                <clr-icon *ngIf="getTimelineIcon(entry) === 'fulfillment'" shape="truck" size="24"></clr-icon>
+                <clr-icon
+                    *ngIf="getTimelineIcon(entry) === 'payment'"
+                    shape="credit-card"
+                    size="24"
+                ></clr-icon>
+                <clr-icon
+                    *ngIf="getTimelineIcon(entry) === 'cancelled'"
+                    shape="ban"
+                    size="24"
+                    class="cancelled"
+                ></clr-icon>
+            </div>
+        </div>
+        <div class="entry-body" [ngSwitch]="entry.type">
+            <div class="detail">
+                <div class="time">
+                    {{ entry.createdAt | date: 'short' }}
+                </div>
+                <div class="name">
+                    {{ getName(entry) }}
+                </div>
+            </div>
+            <ng-container *ngSwitchCase="type.ORDER_STATE_TRANSITION">
+                <div class="featured-entry" *ngIf="entry.data.to === 'Fulfilled'">
+                    <div class="title">
+                        {{ 'order.history-order-fulfilled' | translate }}
+                    </div>
+                </div>
+                <div class="featured-entry" *ngIf="entry.data.to === 'Cancelled'">
+                    <div class="title">
+                        {{ 'order.history-order-cancelled' | translate }}
+                    </div>
+                </div>
+                <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Fulfilled'">
+                    {{
+                        'order.history-order-transition'
+                            | translate: { from: entry.data.from, to: entry.data.to }
+                    }}
+                </ng-template>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_PAYMENT_TRANSITION">
+                <div
+                    class="featured-entry"
+                    *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition"
+                >
+                    <div class="title">
+                        {{ 'order.history-payment-settled' | translate }}
+                    </div>
+                    {{ 'order.transaction-id' | translate }}: {{ getPayment(entry)?.transactionId }}
+                    <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">
+                        <vdr-payment-detail
+                            [payment]="payment"
+                            [currencyCode]="order.currencyCode"
+                        ></vdr-payment-detail>
+                    </vdr-history-entry-detail>
+                </div>
+                <ng-template #regularPaymentTransition>
+                    {{
+                        'order.history-payment-transition'
+                            | translate: { from: entry.data.from, to: entry.data.to }
+                    }}
+                </ng-template>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_REFUND_TRANSITION">
+                {{
+                    'order.history-refund-transition'
+                        | translate: { from: entry.data.from, to: entry.data.to }
+                }}
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
+                {{ 'order.history-items-cancelled' | translate: { count: entry.data.orderItemIds.length } }}
+                <vdr-history-entry-detail *ngIf="getCancelledItems(entry) as items">
+                    <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
+                        {{ entry.data.reason }}
+                    </vdr-labeled-data>
+                    <vdr-labeled-data [label]="'order.contents' | translate">
+                        <div class="items-list">
+                            <ul>
+                                <li *ngFor="let item of items">{{ item.name }} x {{ item.quantity }}</li>
+                            </ul>
+                        </div>
+                    </vdr-labeled-data>
+                </vdr-history-entry-detail>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_FULLFILLMENT">
+                <div class="featured-entry">
+                    <div class="title">
+                        {{ 'order.history-fulfillment-created' | translate }}
+                    </div>
+                    {{ 'order.tracking-code' | translate }}: {{ getFullfillment(entry)?.trackingCode }}
+                    <vdr-history-entry-detail *ngIf="getFullfillment(entry) as fulfillment">
+                        <vdr-fulfillment-detail
+                            [fulfillmentId]="fulfillment.id"
+                            [order]="order"
+                        ></vdr-fulfillment-detail>
+                    </vdr-history-entry-detail>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
