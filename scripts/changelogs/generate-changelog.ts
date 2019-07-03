@@ -21,6 +21,7 @@ const VALID_SCOPES: string[] = [
     'common',
     'core',
     'create',
+    'elasticsearch-plugin',
     'email-plugin',
     'email',
 ];
