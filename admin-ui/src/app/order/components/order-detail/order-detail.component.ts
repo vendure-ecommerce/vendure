@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { startWith, switchMap, take } from 'rxjs/operators';
 import { omit } from 'shared/omit';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import { Order, OrderDetail } from '../../../common/generated-types';
+import { GetOrderHistory, Order, OrderDetail, SortOrder } from '../../../common/generated-types';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
@@ -26,6 +26,8 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
+    history$: Observable<GetOrderHistory.Items[] | null>;
+    fetchHistory = new Subject<void>();
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -40,6 +42,18 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
 
     ngOnInit() {
         this.init();
+        this.history$ = this.fetchHistory.pipe(
+            startWith(null),
+            switchMap(() => {
+                return this.dataService.order
+                    .getOrderHistory(this.id, {
+                        sort: {
+                            createdAt: SortOrder.DESC,
+                        },
+                    })
+                    .mapStream(data => data.order && data.order.history.items);
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -135,6 +149,18 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
             });
     }
 
+    addNote(note: string) {
+        this.dataService.order
+            .addNoteToOrder({
+                id: this.id,
+                note,
+            })
+            .pipe(switchMap(result => this.refetchOrder(result)))
+            .subscribe(result => {
+                this.notificationService.success(_('order.add-note-success'));
+            });
+    }
+
     private cancelOrder(order: OrderDetail.Fragment) {
         this.modalService
             .fromComponent(CancelOrderDialogComponent, {
@@ -197,6 +223,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     }
 
     private refetchOrder(result: object | undefined) {
+        this.fetchHistory.next();
         if (result) {
             return this.dataService.order.getOrder(this.id).single$;
         } else {

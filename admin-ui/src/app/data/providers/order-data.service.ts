@@ -1,4 +1,6 @@
 import {
+    AddNoteToOrder,
+    AddNoteToOrderInput,
     CancelOrder,
     CancelOrderInput,
     CreateFulfillment,
@@ -14,6 +16,7 @@ import {
     SettleRefundInput,
 } from '../../common/generated-types';
 import {
+    ADD_NOTE_TO_ORDER,
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     GET_ORDER,
@@ -83,5 +86,14 @@ export class OrderDataService {
         return this.baseDataService.mutate<SettleRefund.Mutation, SettleRefund.Variables>(SETTLE_REFUND, {
             input,
         });
+    }
+
+    addNoteToOrder(input: AddNoteToOrderInput) {
+        return this.baseDataService.mutate<AddNoteToOrder.Mutation, AddNoteToOrder.Variables>(
+            ADD_NOTE_TO_ORDER,
+            {
+                input,
+            },
+        );
     }
 }

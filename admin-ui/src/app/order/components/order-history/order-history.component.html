@@ -1,8 +1,20 @@
 <h4>{{ 'order.order-history' | translate }}</h4>
 <div class="entry-list">
-    <div class="entry"></div>
+    <div class="entry has-custom-icon">
+        <div class="timeline">
+            <div class="custom-icon">
+                <clr-icon shape="note" size="24" class="compose-note"></clr-icon>
+            </div>
+        </div>
+        <div class="entry-body note-entry">
+            <textarea [(ngModel)]="note" name="note" class="note"></textarea>
+            <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
+                {{ 'order.add-note' | translate }}
+            </button>
+        </div>
+    </div>
     <div
-        *ngFor="let entry of history$ | async"
+        *ngFor="let entry of history"
         [ngClass]="getClassForEntry(entry)"
         [class.has-custom-icon]="!!getTimelineIcon(entry)"
         class="entry"
@@ -27,6 +39,7 @@
                     size="24"
                     class="cancelled"
                 ></clr-icon>
+                <clr-icon *ngIf="getTimelineIcon(entry) === 'note'" shape="note" size="24"></clr-icon>
             </div>
         </div>
         <div class="entry-body" [ngSwitch]="entry.type">
@@ -62,7 +75,7 @@
                     *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition"
                 >
                     <div class="title">
-                        {{ 'order.history-payment-settled' | translate }}
+                        {{ 'order.history-payment-settled' | translate: { id: entry.data.paymentId } }}
                     </div>
                     {{ 'order.transaction-id' | translate }}: {{ getPayment(entry)?.transactionId }}
                     <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">
@@ -75,14 +88,15 @@
                 <ng-template #regularPaymentTransition>
                     {{
                         'order.history-payment-transition'
-                            | translate: { from: entry.data.from, to: entry.data.to }
+                            | translate
+                                : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
                     }}
                 </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_REFUND_TRANSITION">
                 {{
                     'order.history-refund-transition'
-                        | translate: { from: entry.data.from, to: entry.data.to }
+                        | translate: { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
                 }}
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
@@ -92,11 +106,7 @@
                         {{ entry.data.reason }}
                     </vdr-labeled-data>
                     <vdr-labeled-data [label]="'order.contents' | translate">
-                        <div class="items-list">
-                            <ul>
-                                <li *ngFor="let item of items">{{ item.name }} x {{ item.quantity }}</li>
-                            </ul>
-                        </div>
+                        <vdr-simple-item-list [items]="items"></vdr-simple-item-list>
                     </vdr-labeled-data>
                 </vdr-history-entry-detail>
             </ng-container>
@@ -112,6 +122,11 @@
                             [order]="order"
                         ></vdr-fulfillment-detail>
                     </vdr-history-entry-detail>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_NOTE">
+                <div class="featured-entry">
+                    <div class="note-text">{{ entry.data.note }}</div>
                 </div>
             </ng-container>
         </div>

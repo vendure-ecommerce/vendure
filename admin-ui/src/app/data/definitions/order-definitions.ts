@@ -243,3 +243,11 @@ export const GET_ORDER_HISTORY = gql`
         }
     }
 `;
+
+export const ADD_NOTE_TO_ORDER = gql`
+    mutation AddNoteToOrder($input: AddNoteToOrderInput!) {
+        addNoteToOrder(input: $input) {
+            id
+        }
+    }
+`;

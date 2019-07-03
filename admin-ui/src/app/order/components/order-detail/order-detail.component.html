@@ -104,7 +104,11 @@
                 </tr>
             </table>
 
-            <vdr-order-history [order]="order"></vdr-order-history>
+            <vdr-order-history
+                [order]="order"
+                [history]="history$ | async"
+                (addNote)="addNote($event)"
+            ></vdr-order-history>
         </div>
         <div class="clr-col-lg-4 order-cards">
             <div class="card">

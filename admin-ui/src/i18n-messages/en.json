@@ -405,6 +405,8 @@
     "tax-rates": "Tax Rates"
   },
   "order": {
+    "add-note": "Add note",
+    "add-note-success": "Note successfully added",
     "amount": "Amount",
     "cancel": "Cancel",
     "cancel-order": "Cancel Order",

@@ -59,6 +59,9 @@
     .cancelled {
         color: $color-error-400;
     }
+    .compose-note {
+        color: $color-grey-400;
+    }
 }
 .entry.has-custom-icon {
     .timeline:after {
@@ -76,16 +79,22 @@
 
 .entry-body {
     flex: 1;
-    padding-bottom: 18px;
+    padding-bottom: 24px;
     padding-left: 12px;
     line-height: 16px;
     margin-left: 12px;
+    color: $color-grey-500;
 }
 
 .featured-entry {
     .title {
+        color: $color-grey-800;
         font-size: 16px;
         line-height: 26px;
+    }
+    .note-text {
+        color: $color-grey-800;
+        white-space: pre-wrap;
     }
 }
 
@@ -120,10 +129,17 @@
         border: 1px solid $color-warning-400;
     }
 }
-.items-list {
-    font-size: 12px;
 
-    ul {
-        list-style-type: none;
+.note-entry {
+    display: flex;
+
+    button {
+        margin: 0;
     }
+}
+textarea.note {
+    flex: 1;
+    height: 36px;
+    border-radius: 3px;
+    margin-right: 6px;
 }

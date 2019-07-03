@@ -3612,6 +3612,13 @@ export type GetOrderHistoryQueryVariables = {
 
 export type GetOrderHistoryQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & Pick<Order, 'id'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & { items: Array<({ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'data'> & { administrator: Maybe<({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'firstName' | 'lastName'>)> })> }) })> });
 
+export type AddNoteToOrderMutationVariables = {
+  input: AddNoteToOrderInput
+};
+
+
+export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id' | 'updatedAt'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'>) }) });
+
 export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name'>)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
@@ -4428,6 +4435,13 @@ export namespace GetOrderHistory {
   export type History = (NonNullable<GetOrderHistoryQuery['order']>)['history'];
   export type Items = (NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>);
   export type Administrator = (NonNullable<(NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>)['administrator']>);
+}
+
+export namespace AddNoteToOrder {
+  export type Variables = AddNoteToOrderMutationVariables;
+  export type Mutation = AddNoteToOrderMutation;
+  export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+  export type History = AddNoteToOrderMutation['addNoteToOrder']['history'];
 }
 
 export namespace Asset {

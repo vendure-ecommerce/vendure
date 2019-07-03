@@ -1,15 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
     GetOrderHistory,
     HistoryEntryType,
     OrderDetail,
     OrderDetailFragment,
-    SortOrder,
 } from '../../../common/generated-types';
-import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-order-history',
@@ -17,32 +13,12 @@ import { DataService } from '../../../data/providers/data.service';
     styleUrls: ['./order-history.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderHistoryComponent implements OnInit, OnChanges {
+export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
-    history$: Observable<GetOrderHistory.Items[] | null>;
+    @Input() history: GetOrderHistory.Items[];
+    @Output() addNote = new EventEmitter<string>();
+    note = '';
     readonly type = HistoryEntryType;
-    private orderChange = new Subject<void>();
-
-    constructor(private dataService: DataService) {}
-
-    ngOnInit() {
-        this.history$ = this.orderChange.pipe(
-            startWith(null),
-            switchMap(() => {
-                return this.dataService.order
-                    .getOrderHistory(this.order.id, {
-                        sort: {
-                            createdAt: SortOrder.DESC,
-                        },
-                    })
-                    .mapStream(data => data.order && data.order.history.items);
-            }),
-        );
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        this.orderChange.next();
-    }
 
     getClassForEntry(entry: GetOrderHistory.Items): 'success' | 'error' | 'warning' | undefined {
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
@@ -123,5 +99,10 @@ export class OrderHistoryComponent implements OnInit, OnChanges {
             }
         }
         return '';
+    }
+
+    addNoteToOrder() {
+        this.addNote.emit(this.note);
+        this.note = '';
     }
 }
