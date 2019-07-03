@@ -1,6 +1,6 @@
 {
   "name": "@vendure/common",
-  "version": "0.1.2-beta.5",
+  "version": "0.1.2-beta.6",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
