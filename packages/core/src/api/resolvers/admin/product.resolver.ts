@@ -5,6 +5,7 @@ import {
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
+    MutationDeleteProductVariantArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
@@ -50,7 +51,11 @@ export class ProductResolver {
         @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
         if (args.id) {
-            return this.productService.findOne(ctx, args.id);
+            const product = await this.productService.findOne(ctx, args.id);
+            if (args.slug && product && product.slug !== args.slug) {
+                throw new UserInputError(`error.product-id-slug-mismatch`);
+            }
+            return product;
         } else if (args.slug) {
             return this.productService.findOneBySlug(ctx, args.slug);
         } else {
@@ -131,5 +136,14 @@ export class ProductResolver {
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
         return Promise.all(input.map(i => this.productVariantService.update(ctx, i)));
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteProductVariant(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductVariantArgs,
+    ): Promise<DeletionResponse> {
+        return this.productVariantService.softDelete(ctx, args.id);
     }
 }

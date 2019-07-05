@@ -37,6 +37,7 @@
     "password-reset-token-has-expired": "Password reset token has expired.",
     "password-reset-token-not-recognized": "Password reset token not recognized",
     "product-id-or-slug-must-be-provided": "Either the product id or slug must be provided",
+    "product-id-slug-mismatch": "The provided id and slug refer to different Products",
     "product-variant-option-ids-not-compatible": "ProductVariant optionIds must include one optionId from each of the groups: {groupNames}",
     "product-variant-options-combination-already-exists": "A ProductVariant already exists with the options: {optionNames}",
     "refund-order-item-already-refunded": "Cannot refund an OrderItem which has already been refunded",

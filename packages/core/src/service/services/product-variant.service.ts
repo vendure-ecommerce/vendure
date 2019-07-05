@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductVariantInput, UpdateProductVariantInput } from '@vendure/common/lib/generated-types';
+import { CreateProductVariantInput, DeletionResponse, DeletionResult, UpdateProductVariantInput } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
@@ -71,6 +71,7 @@ export class ProductVariantService {
             .find({
                 where: {
                     product: { id: productId } as any,
+                    deletedAt: null,
                 },
                 relations: [
                     'options',
@@ -272,6 +273,16 @@ export class ProductVariantService {
             'facetValues',
             ['facetValues', 'facet'],
         ]);
+    }
+
+    async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const variant = await getEntityOrThrow(this.connection, ProductVariant, id);
+        variant.deletedAt = new Date();
+        await this.connection.getRepository(ProductVariant).save(variant);
+        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     async generateVariantsForProduct(

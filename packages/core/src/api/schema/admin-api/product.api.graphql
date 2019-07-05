@@ -25,6 +25,9 @@ type Mutation {
 
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
+
+    "Delete a ProductVariant"
+    deleteProductVariant(id: ID!): DeletionResponse!
 }
 
 type Product {

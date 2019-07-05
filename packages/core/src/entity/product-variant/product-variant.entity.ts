@@ -2,6 +2,7 @@ import { CurrencyCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
+import { SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
@@ -27,10 +28,13 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
  * @docsCategory entities
  */
 @Entity()
-export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields {
+export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
+
+    @Column({ type: Date, nullable: true, default: null })
+    deletedAt: Date | null;
 
     name: LocaleString;
 

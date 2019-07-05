@@ -5,14 +5,13 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { PRODUCT_WITH_VARIANTS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
     CreateProductVariants,
     DeleteProduct,
+    DeleteProductVariant,
     DeletionResult,
-    GenerateProductVariants,
     GetAssetList,
     GetOptionGroup,
     GetProductList,
@@ -160,11 +159,21 @@ describe('Product resolver', () => {
             }, 'Either the product id or slug must be provided'),
         );
 
+        it(
+            'throws if id and slug do not refer to the same Product',
+            assertThrowsWithMessage(async () => {
+                await client.query<GetProductSimple.Query, GetProductSimple.Variables>(GET_PRODUCT_SIMPLE, {
+                    id: 'T_2',
+                    slug: 'laptop',
+                });
+            }, 'The provided id and slug refer to different Products'),
+        );
+
         it('returns expected properties', async () => {
             const { product } = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 languageCode: LanguageCode.en,
                 id: 'T_2',
             });
@@ -418,7 +427,7 @@ describe('Product resolver', () => {
             const productResult = await client.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 id: newProduct.id,
                 languageCode: LanguageCode.en,
             });
@@ -480,7 +489,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_2',
                 productId: newProduct.id,
             });
@@ -522,7 +531,7 @@ describe('Product resolver', () => {
             const { addOptionGroupToProduct } = await client.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: newProductWithAssets.id,
             });
@@ -531,7 +540,7 @@ describe('Product resolver', () => {
             const result = await client.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
-                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: newProductWithAssets.id,
             });
@@ -546,7 +555,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_3',
                         productId: 'T_2',
                     }),
@@ -561,7 +570,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '1',
                         productId: '999',
                     }),
@@ -576,7 +585,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
@@ -590,15 +599,21 @@ describe('Product resolver', () => {
             let optionGroup3: GetOptionGroup.ProductOptionGroup;
 
             beforeAll(async () => {
-                await client.query<
-                    AddOptionGroupToProduct.Mutation,
-                    AddOptionGroupToProduct.Variables
-                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                    optionGroupId: 'T_3',
-                    productId: newProduct.id,
-                });
-                const result1 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(GET_OPTION_GROUP, { id: 'T_2' });
-                const result2 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(GET_OPTION_GROUP, { id: 'T_3' });
+                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        optionGroupId: 'T_3',
+                        productId: newProduct.id,
+                    },
+                );
+                const result1 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
+                    GET_OPTION_GROUP,
+                    { id: 'T_2' },
+                );
+                const result2 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
+                    GET_OPTION_GROUP,
+                    { id: 'T_3' },
+                );
                 optionGroup2 = result1.productOptionGroup!;
                 optionGroup3 = result2.productOptionGroup!;
             });
@@ -606,38 +621,38 @@ describe('Product resolver', () => {
             it(
                 'createProductVariants throws if optionIds not compatible with product',
                 assertThrowsWithMessage(async () => {
-                    await client.query<
-                        CreateProductVariants.Mutation,
-                        CreateProductVariants.Variables
-                        >(CREATE_PRODUCT_VARIANTS, {
-                        input: [
-                            {
-                                productId: newProduct.id,
-                                sku: 'PV1',
-                                optionIds: [],
-                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
-                            },
-                        ],
-                    });
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV1',
+                                    optionIds: [],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                                },
+                            ],
+                        },
+                    );
                 }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
             );
 
             it(
                 'createProductVariants throws if optionIds are duplicated',
                 assertThrowsWithMessage(async () => {
-                    await client.query<
-                        CreateProductVariants.Mutation,
-                        CreateProductVariants.Variables
-                        >(CREATE_PRODUCT_VARIANTS, {
-                        input: [
-                            {
-                                productId: newProduct.id,
-                                sku: 'PV1',
-                                optionIds: [optionGroup2.options[0].id, optionGroup2.options[1].id],
-                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
-                            },
-                        ],
-                    });
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV1',
+                                    optionIds: [optionGroup2.options[0].id, optionGroup2.options[1].id],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                                },
+                            ],
+                        },
+                    );
                 }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
             );
 
@@ -645,7 +660,7 @@ describe('Product resolver', () => {
                 const { createProductVariants } = await client.query<
                     CreateProductVariants.Mutation,
                     CreateProductVariants.Variables
-                    >(CREATE_PRODUCT_VARIANTS, {
+                >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             productId: newProduct.id,
@@ -660,27 +675,58 @@ describe('Product resolver', () => {
                     { id: optionGroup2.options[0].id },
                     { id: optionGroup3.options[0].id },
                 ]);
+            });
+
+            it('createProductVariants adds multiple variants at once', async () => {
+                const { createProductVariants } = await client.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'PV2',
+                            optionIds: [optionGroup2.options[1].id, optionGroup3.options[0].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
+                        },
+                        {
+                            productId: newProduct.id,
+                            sku: 'PV3',
+                            optionIds: [optionGroup2.options[1].id, optionGroup3.options[1].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Variant 3' }],
+                        },
+                    ],
+                });
+                expect(createProductVariants[0]!.name).toBe('Variant 2');
+                expect(createProductVariants[1]!.name).toBe('Variant 3');
+                expect(createProductVariants[0]!.options.map(pick(['id']))).toEqual([
+                    { id: optionGroup2.options[1].id },
+                    { id: optionGroup3.options[0].id },
+                ]);
+                expect(createProductVariants[1]!.options.map(pick(['id']))).toEqual([
+                    { id: optionGroup2.options[1].id },
+                    { id: optionGroup3.options[1].id },
+                ]);
                 variants = createProductVariants.filter(notNullOrUndefined);
             });
 
-            it('createProductVariants throws if options combination exists', assertThrowsWithMessage(
-                async () => {
-                    await client.query<
-                        CreateProductVariants.Mutation,
-                        CreateProductVariants.Variables
-                        >(CREATE_PRODUCT_VARIANTS, {
-                        input: [
-                            {
-                                productId: newProduct.id,
-                                sku: 'PV2',
-                                optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
-                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
-                            },
-                        ],
-                    });
-                },
-                'A ProductVariant already exists with the options: 16gb, 24-inch',
-                ),
+            it(
+                'createProductVariants throws if options combination already exists',
+                assertThrowsWithMessage(async () => {
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV2',
+                                    optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
+                                },
+                            ],
+                        },
+                    );
+                }, 'A ProductVariant already exists with the options: 16gb, 24-inch'),
             );
 
             it('updateProductVariants updates variants', async () => {
@@ -688,7 +734,7 @@ describe('Product resolver', () => {
                 const { updateProductVariants } = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -712,7 +758,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -735,7 +781,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -758,7 +804,7 @@ describe('Product resolver', () => {
                 const result = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -795,6 +841,33 @@ describe('Product resolver', () => {
                     `No ProductVariant with the id '999' could be found`,
                 ),
             );
+
+            it('deleteProductVariant', async () => {
+                const result1 = await client.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct.id,
+                });
+                expect(result1.product!.variants.map(v => v.id)).toEqual(['T_35', 'T_36', 'T_37']);
+
+                const { deleteProductVariant } = await client.query<
+                    DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: result1.product!.variants[0].id,
+                });
+
+                expect(deleteProductVariant.result).toBe(DeletionResult.DELETED);
+
+                const result2 = await client.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct.id,
+                });
+                expect(result2.product!.variants.map(v => v.id)).toEqual(['T_36', 'T_37']);
+            });
         });
     });
 
@@ -871,7 +944,7 @@ describe('Product resolver', () => {
                     client.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
@@ -922,6 +995,15 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
+        }
+    }
+`;
+
+export const DELETE_PRODUCT_VARIANT = gql`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
         }
     }
 `;

@@ -1541,10 +1541,10 @@ export type Mutation = {
     updateAdministrator: Administrator;
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
-    login: LoginResult;
-    logout: Scalars['Boolean'];
     /** Create a new Asset */
     createAssets: Array<Asset>;
+    login: LoginResult;
+    logout: Scalars['Boolean'];
     /** Create a new Channel */
     createChannel: Channel;
     /** Update an existing Channel */
@@ -1601,16 +1601,13 @@ export type Mutation = {
     refundOrder: Refund;
     settleRefund: Refund;
     addNoteToOrder: Order;
+    /** Update an existing PaymentMethod */
+    updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
     createProductOptionGroup: ProductOptionGroup;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
     reindex: JobInfo;
-    /** Update an existing PaymentMethod */
-    updatePaymentMethod: PaymentMethod;
-    createPromotion: Promotion;
-    updatePromotion: Promotion;
-    deletePromotion: DeletionResponse;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -1622,22 +1619,26 @@ export type Mutation = {
     /** Remove an OptionGroup from a Product */
     removeOptionGroupFromProduct: Product;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
-    generateVariantsForProduct: Product;
     createProductVariants: Array<Maybe<ProductVariant>>;
     /** Update existing ProductVariants */
     updateProductVariants: Array<Maybe<ProductVariant>>;
+    /** Delete a ProductVariant */
+    deleteProductVariant: DeletionResponse;
+    createPromotion: Promotion;
+    updatePromotion: Promotion;
+    deletePromotion: DeletionResponse;
     /** Create a new Role */
     createRole: Role;
     /** Update an existing Role */
     updateRole: Role;
-    /** Create a new TaxCategory */
-    createTaxCategory: TaxCategory;
-    /** Update an existing TaxCategory */
-    updateTaxCategory: TaxCategory;
     /** Create a new ShippingMethod */
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
     updateShippingMethod: ShippingMethod;
+    /** Create a new TaxCategory */
+    createTaxCategory: TaxCategory;
+    /** Update an existing TaxCategory */
+    updateTaxCategory: TaxCategory;
     /** Create a new TaxRate */
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
@@ -1667,14 +1668,14 @@ export type MutationAssignRoleToAdministratorArgs = {
     roleId: Scalars['ID'];
 };
 
+export type MutationCreateAssetsArgs = {
+    input: Array<CreateAssetInput>;
+};
+
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
     rememberMe?: Maybe<Scalars['Boolean']>;
-};
-
-export type MutationCreateAssetsArgs = {
-    input: Array<CreateAssetInput>;
 };
 
 export type MutationCreateChannelArgs = {
@@ -1811,28 +1812,16 @@ export type MutationAddNoteToOrderArgs = {
     input: AddNoteToOrderInput;
 };
 
+export type MutationUpdatePaymentMethodArgs = {
+    input: UpdatePaymentMethodInput;
+};
+
 export type MutationCreateProductOptionGroupArgs = {
     input: CreateProductOptionGroupInput;
 };
 
 export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
-};
-
-export type MutationUpdatePaymentMethodArgs = {
-    input: UpdatePaymentMethodInput;
-};
-
-export type MutationCreatePromotionArgs = {
-    input: CreatePromotionInput;
-};
-
-export type MutationUpdatePromotionArgs = {
-    input: UpdatePromotionInput;
-};
-
-export type MutationDeletePromotionArgs = {
-    id: Scalars['ID'];
 };
 
 export type MutationCreateProductArgs = {
@@ -1857,19 +1846,28 @@ export type MutationRemoveOptionGroupFromProductArgs = {
     optionGroupId: Scalars['ID'];
 };
 
-export type MutationGenerateVariantsForProductArgs = {
-    productId: Scalars['ID'];
-    defaultTaxCategoryId?: Maybe<Scalars['ID']>;
-    defaultPrice?: Maybe<Scalars['Int']>;
-    defaultSku?: Maybe<Scalars['String']>;
-};
-
 export type MutationCreateProductVariantsArgs = {
     input: Array<CreateProductVariantInput>;
 };
 
 export type MutationUpdateProductVariantsArgs = {
     input: Array<UpdateProductVariantInput>;
+};
+
+export type MutationDeleteProductVariantArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationCreatePromotionArgs = {
+    input: CreatePromotionInput;
+};
+
+export type MutationUpdatePromotionArgs = {
+    input: UpdatePromotionInput;
+};
+
+export type MutationDeletePromotionArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateRoleArgs = {
@@ -1880,20 +1878,20 @@ export type MutationUpdateRoleArgs = {
     input: UpdateRoleInput;
 };
 
-export type MutationCreateTaxCategoryArgs = {
-    input: CreateTaxCategoryInput;
-};
-
-export type MutationUpdateTaxCategoryArgs = {
-    input: UpdateTaxCategoryInput;
-};
-
 export type MutationCreateShippingMethodArgs = {
     input: CreateShippingMethodInput;
 };
 
 export type MutationUpdateShippingMethodArgs = {
     input: UpdateShippingMethodInput;
+};
+
+export type MutationCreateTaxCategoryArgs = {
+    input: CreateTaxCategoryInput;
+};
+
+export type MutationUpdateTaxCategoryArgs = {
+    input: UpdateTaxCategoryInput;
 };
 
 export type MutationCreateTaxRateArgs = {
@@ -2422,9 +2420,9 @@ export type Query = {
     __typename?: 'Query';
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
-    me?: Maybe<CurrentUser>;
     assets: AssetList;
     asset?: Maybe<Asset>;
+    me?: Maybe<CurrentUser>;
     channels: Array<Channel>;
     channel?: Maybe<Channel>;
     activeChannel: Channel;
@@ -2444,25 +2442,25 @@ export type Query = {
     jobs: Array<JobInfo>;
     order?: Maybe<Order>;
     orders: OrderList;
+    paymentMethods: PaymentMethodList;
+    paymentMethod?: Maybe<PaymentMethod>;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     search: SearchResponse;
-    paymentMethods: PaymentMethodList;
-    paymentMethod?: Maybe<PaymentMethod>;
-    promotion?: Maybe<Promotion>;
-    promotions: PromotionList;
-    adjustmentOperations: AdjustmentOperations;
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    promotion?: Maybe<Promotion>;
+    promotions: PromotionList;
+    adjustmentOperations: AdjustmentOperations;
     roles: RoleList;
     role?: Maybe<Role>;
-    taxCategories: Array<TaxCategory>;
-    taxCategory?: Maybe<TaxCategory>;
     shippingMethods: ShippingMethodList;
     shippingMethod?: Maybe<ShippingMethod>;
     shippingEligibilityCheckers: Array<ConfigurableOperation>;
     shippingCalculators: Array<ConfigurableOperation>;
+    taxCategories: Array<TaxCategory>;
+    taxCategory?: Maybe<TaxCategory>;
     taxRates: TaxRateList;
     taxRate?: Maybe<TaxRate>;
     zones: Array<Zone>;
@@ -2545,6 +2543,14 @@ export type QueryOrdersArgs = {
     options?: Maybe<OrderListOptions>;
 };
 
+export type QueryPaymentMethodsArgs = {
+    options?: Maybe<PaymentMethodListOptions>;
+};
+
+export type QueryPaymentMethodArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryProductOptionGroupsArgs = {
     languageCode?: Maybe<LanguageCode>;
     filterTerm?: Maybe<Scalars['String']>;
@@ -2559,22 +2565,6 @@ export type QuerySearchArgs = {
     input: SearchInput;
 };
 
-export type QueryPaymentMethodsArgs = {
-    options?: Maybe<PaymentMethodListOptions>;
-};
-
-export type QueryPaymentMethodArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryPromotionArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryPromotionsArgs = {
-    options?: Maybe<PromotionListOptions>;
-};
-
 export type QueryProductsArgs = {
     languageCode?: Maybe<LanguageCode>;
     options?: Maybe<ProductListOptions>;
@@ -2586,6 +2576,14 @@ export type QueryProductArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
+export type QueryPromotionArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryPromotionsArgs = {
+    options?: Maybe<PromotionListOptions>;
+};
+
 export type QueryRolesArgs = {
     options?: Maybe<RoleListOptions>;
 };
@@ -2594,15 +2592,15 @@ export type QueryRoleArgs = {
     id: Scalars['ID'];
 };
 
-export type QueryTaxCategoryArgs = {
-    id: Scalars['ID'];
-};
-
 export type QueryShippingMethodsArgs = {
     options?: Maybe<ShippingMethodListOptions>;
 };
 
 export type QueryShippingMethodArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryTaxCategoryArgs = {
     id: Scalars['ID'];
 };
 
@@ -4248,6 +4246,14 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type DeleteProductVariantMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
+    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type DeletePromotionMutationVariables = {
     id: Scalars['ID'];
 };
@@ -5252,6 +5258,12 @@ export namespace GetOptionGroup {
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
     export type Options = NonNullable<(NonNullable<GetOptionGroupQuery['productOptionGroup']>)['options'][0]>;
+}
+
+export namespace DeleteProductVariant {
+    export type Variables = DeleteProductVariantMutationVariables;
+    export type Mutation = DeleteProductVariantMutation;
+    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
 }
 
 export namespace DeletePromotion {

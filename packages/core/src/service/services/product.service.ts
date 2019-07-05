@@ -150,7 +150,8 @@ export class ProductService {
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await getEntityOrThrow(this.connection, Product, productId);
-        await this.connection.getRepository(Product).update({ id: productId }, { deletedAt: new Date() });
+        product.deletedAt = new Date();
+        await this.connection.getRepository(Product).save(product);
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return {
             result: DeletionResult.DELETED,
