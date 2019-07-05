@@ -6,17 +6,12 @@ export function samplesEach<T>(sample: T[], groups: T[][]): boolean {
     if (sample.length !== groups.length) {
         return false;
     }
-    const groupMap = groups.reduce((map, group) => {
-        map.set(group, false);
-        return map;
-    }, new Map<T[], boolean>());
-    for (const item of sample) {
-        const unseenGroups = Array.from(groupMap.entries()).filter(([group, seen]) => !seen).map(e => e[0]);
-        for (const group of unseenGroups) {
+    return groups.every(group => {
+        for (const item of sample) {
             if (group.includes(item)) {
-                groupMap.set(group, true);
+                return true;
             }
         }
-    }
-    return Array.from(groupMap.values()).every(v => !!v);
+        return false;
+    });
 }
