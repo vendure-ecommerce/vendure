@@ -1,14 +1,21 @@
 import gql from 'graphql-tag';
 
-import { CREATE_ASSETS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
-
 import { createUploadPostData } from './create-upload-post-data';
 
 describe('createUploadPostData()', () => {
     it('creates correct output for createAssets mutation', () => {
-        const result = createUploadPostData(CREATE_ASSETS, ['a.jpg', 'b.jpg'], filePaths => ({
-            input: filePaths.map(() => ({ file: null })),
-        }));
+        const result = createUploadPostData(gql`
+                mutation CreateAssets($input: [CreateAssetInput!]!) {
+                    createAssets(input: $input) {
+                        id
+                        name
+                    }
+                }`
+            ,
+            ['a.jpg', 'b.jpg'],
+            filePaths => ({
+                input: filePaths.map(() => ({ file: null })),
+            }));
 
         expect(result.operations.operationName).toBe('CreateAssets');
         expect(result.operations.variables).toEqual({

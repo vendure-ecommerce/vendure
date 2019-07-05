@@ -1,19 +1,7 @@
 import faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 
-import { CREATE_CHANNEL } from '../../../admin-ui/src/app/data/definitions/settings-definitions';
-import { CREATE_SHIPPING_METHOD } from '../../../admin-ui/src/app/data/definitions/shipping-definitions';
-import {
-    Channel,
-    CreateAddressInput,
-    CreateCustomerInput,
-    CurrencyCode,
-    LanguageCode,
-    ProductVariant,
-} from '../e2e/graphql/generated-e2e-admin-types';
-import { defaultShippingCalculator } from '../src/config/shipping-method/default-shipping-calculator';
-import { defaultShippingEligibilityChecker } from '../src/config/shipping-method/default-shipping-eligibility-checker';
-import { Customer } from '../src/entity/customer/customer.entity';
+import { CreateAddressInput, CreateCustomerInput } from '../e2e/graphql/generated-e2e-admin-types';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
 

@@ -6,7 +6,6 @@ import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 import { Curl } from 'node-libcurl';
 
-import { CREATE_ASSETS } from '../../../admin-ui/src/app/data/definitions/product-definitions';
 import { ImportInfo } from '../e2e/graphql/generated-e2e-admin-types';
 import { getConfig } from '../src/config/config-helpers';
 
@@ -61,7 +60,14 @@ export class SimpleGraphQLClient {
 
     uploadAssets(filePaths: string[]): Promise<any> {
         return this.fileUploadMutation({
-            mutation: CREATE_ASSETS,
+            mutation: gql`
+                mutation CreateAssets($input: [CreateAssetInput!]!) {
+                    createAssets(input: $input) {
+                        id
+                        name
+                    }
+                }
+            `,
             filePaths,
             mapVariables: fp => ({
                 input: fp.map(() => ({ file: null })),
