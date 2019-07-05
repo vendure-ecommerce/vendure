@@ -208,7 +208,8 @@ export class Importer {
                 if (0 < variant.facets.length) {
                     facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
                 }
-                const createdVariant = await this.productVariantService.create(ctx, createdProduct, {
+                const createdVariant = await this.productVariantService.create(ctx, {
+                    productId: createdProduct.id as string,
                     facetValueIds,
                     featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
                     assetIds: variantAssets.map(a => a.id) as string[],

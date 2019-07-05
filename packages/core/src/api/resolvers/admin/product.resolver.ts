@@ -3,8 +3,8 @@ import {
     DeletionResponse,
     MutationAddOptionGroupToProductArgs,
     MutationCreateProductArgs,
+    MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
-    MutationGenerateVariantsForProductArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
@@ -16,7 +16,6 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { assertFound } from '../../../common/utils';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -113,21 +112,14 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @Allow(Permission.CreateCatalog)
-    @Decode('productId', 'defaultTaxCategoryId')
-    async generateVariantsForProduct(
+    @Allow(Permission.UpdateCatalog)
+    @Decode('taxCategoryId', 'facetValueIds', 'featuredAssetId', 'assetIds', 'optionIds')
+    async createProductVariants(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationGenerateVariantsForProductArgs,
-    ): Promise<Translated<Product>> {
-        const { productId, defaultTaxCategoryId, defaultPrice, defaultSku } = args;
-        await this.productVariantService.generateVariantsForProduct(
-            ctx,
-            productId,
-            defaultTaxCategoryId,
-            defaultPrice,
-            defaultSku,
-        );
-        return assertFound(this.productService.findOne(ctx, productId));
+        @Args() args: MutationCreateProductVariantsArgs,
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const { input } = args;
+        return Promise.all(input.map(i => this.productVariantService.create(ctx, i)));
     }
 
     @Mutation()
@@ -138,6 +130,6 @@ export class ProductResolver {
         @Args() args: MutationUpdateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(variant => this.productVariantService.update(ctx, variant)));
+        return Promise.all(input.map(i => this.productVariantService.update(ctx, i)));
     }
 }

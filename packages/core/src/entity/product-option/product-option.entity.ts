@@ -1,8 +1,9 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
+import { idType } from '../../config/config-helpers';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionFields } from '../custom-entity-fields';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
@@ -30,6 +31,9 @@ export class ProductOption extends VendureEntity implements Translatable, HasCus
 
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
+
+    @Column({ type: idType() })
+    groupId: ID;
 
     @Column(type => CustomProductOptionFields)
     customFields: CustomProductOptionFields;

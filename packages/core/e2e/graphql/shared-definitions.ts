@@ -70,6 +70,15 @@ export const GET_PRODUCT_LIST = gql`
     }
 `;
 
+export const CREATE_PRODUCT_VARIANTS = gql`
+    mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
+        createProductVariants(input: $input) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
 export const UPDATE_PRODUCT_VARIANTS = gql`
     mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
         updateProductVariants(input: $input) {

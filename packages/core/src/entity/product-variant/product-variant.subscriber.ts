@@ -14,7 +14,7 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
         return ProductVariant;
     }
 
-    async afterInsert(event: InsertEvent<ProductVariant>) {
+    /*async afterInsert(event: InsertEvent<ProductVariant>) {
         const { channelId, taxCategoryId } = event.queryRunner.data;
         const price = event.entity.price || 0;
         if (channelId === undefined) {
@@ -40,5 +40,5 @@ export class ProductVariantSubscriber implements EntitySubscriberInterface<Produ
             variantPrice.price = event.entity.price || 0;
             await event.manager.save(variantPrice);
         }
-    }
+    }*/
 }

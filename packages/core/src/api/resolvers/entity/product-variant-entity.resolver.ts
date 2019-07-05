@@ -3,7 +3,7 @@ import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { FacetValue, ProductOption } from '../../../entity';
+import { Asset, FacetValue, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
@@ -16,6 +16,28 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver('ProductVariant')
 export class ProductVariantEntityResolver {
     constructor(private productVariantService: ProductVariantService) {}
+
+    @ResolveProperty()
+    async assets(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<Asset[]> {
+        if (productVariant.assets) {
+            return productVariant.assets;
+        }
+        return this.productVariantService.getAssetsForVariant(ctx, productVariant.id);
+    }
+
+    @ResolveProperty()
+    async featuredAsset(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<Asset> {
+        if (productVariant.featuredAsset) {
+            return productVariant.featuredAsset;
+        }
+        return this.productVariantService.getFeaturedAssetForVariant(ctx, productVariant.id);
+    }
 
     @ResolveProperty()
     async options(
