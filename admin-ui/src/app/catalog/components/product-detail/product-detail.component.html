@@ -20,9 +20,9 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
-            [disabled]="detailForm.invalid || detailForm.pristine"
+            [disabled]="detailForm.invalid || detailForm.pristine || !variantsToCreateAreValid()"
         >
             {{ 'common.create' | translate }}
         </button>
@@ -40,7 +40,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm" *ngIf="(product$ | async) as product">
+<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product">
     <clr-tabs>
         <clr-tab>
             <button clrTabLink (click)="navigateToTab('details')">
@@ -83,7 +83,7 @@
 
                             <div class="facets">
                                 <vdr-facet-value-chip
-                                    *ngFor="let facetValue of (facetValues$ | async)"
+                                    *ngFor="let facetValue of facetValues$ | async"
                                     [facetValue]="facetValue"
                                     (remove)="removeProductFacetValue(facetValue.id)"
                                 ></vdr-facet-value-chip>
@@ -102,14 +102,21 @@
                         ></vdr-product-assets>
                     </div>
                 </div>
+
+                <div *ngIf="isNew$ | async">
+                    <h4>{{ 'catalog.product-variants' | translate }}</h4>
+                    <vdr-generate-product-variants
+                        (variantsChange)="createVariantsConfig = $event"
+                    ></vdr-generate-product-variants>
+                </div>
             </clr-tab-content>
         </clr-tab>
-        <clr-tab>
+        <clr-tab *ngIf="!(isNew$ | async)">
             <button clrTabLink (click)="navigateToTab('variants')">
                 {{ 'catalog.product-variants' | translate }}
             </button>
             <clr-tab-content *clrIfActive="(activeTab$ | async) === 'variants'">
-                <section class="form-block" *ngIf="!(isNew$ | async)">
+                <section class="form-block">
                     <div class="view-mode">
                         <div class="btn-group btn-sm">
                             <button
@@ -130,29 +137,23 @@
                             </button>
                         </div>
                     </div>
-                    <vdr-generate-product-variants
-                        *ngIf="(variants$ | async)?.length === 0; else variants"
-                        [product]="product"
-                    ></vdr-generate-product-variants>
 
-                    <ng-template #variants>
-                        <vdr-product-variants-table
-                            *ngIf="variantDisplayMode === 'table'"
-                            [variants]="variants$ | async"
-                            [optionGroups]="product.optionGroups"
-                            [productVariantsFormArray]="detailForm.get('variants')"
-                        ></vdr-product-variants-table>
-                        <vdr-product-variants-list
-                            *ngIf="variantDisplayMode === 'card'"
-                            [variants]="variants$ | async"
-                            [facets]="facets$ | async"
-                            [productVariantsFormArray]="detailForm.get('variants')"
-                            [taxCategories]="taxCategories$ | async"
-                            (assetChange)="variantAssetChange($event)"
-                            (selectionChange)="selectedVariantIds = $event"
-                            (selectFacetValueClick)="selectVariantFacetValue($event)"
-                        ></vdr-product-variants-list>
-                    </ng-template>
+                    <vdr-product-variants-table
+                        *ngIf="variantDisplayMode === 'table'"
+                        [variants]="variants$ | async"
+                        [optionGroups]="product.optionGroups"
+                        [productVariantsFormArray]="detailForm.get('variants')"
+                    ></vdr-product-variants-table>
+                    <vdr-product-variants-list
+                        *ngIf="variantDisplayMode === 'card'"
+                        [variants]="variants$ | async"
+                        [facets]="facets$ | async"
+                        [productVariantsFormArray]="detailForm.get('variants')"
+                        [taxCategories]="taxCategories$ | async"
+                        (assetChange)="variantAssetChange($event)"
+                        (selectionChange)="selectedVariantIds = $event"
+                        (selectFacetValueClick)="selectVariantFacetValue($event)"
+                    ></vdr-product-variants-list>
                 </section>
             </clr-tab-content>
         </clr-tab>

@@ -1,17 +1,99 @@
-<vdr-dropdown>
-    <button type="button" class="btn btn-primary" vdrDropdownTrigger>
-        <clr-icon shape="add"></clr-icon>
-        {{ 'catalog.generate-product-variants' | translate }}
-        <clr-icon shape="caret down"></clr-icon>
-    </button>
-    <vdr-dropdown-menu vdrPosition="bottom-right">
-        <button type="button" vdrDropdownItem (click)="generateProductVariants()">
-            {{ 'catalog.generate-variants-default-only' | translate }}
+<div *ngFor="let group of optionGroups" class="option-groups">
+    <div class="name">
+        <label>{{ 'catalog.option' | translate }}</label>
+        <input
+            placeholder="e.g. Size"
+            clrInput
+            [(ngModel)]="group.name"
+            name="name"
+            required
+            (keydown.enter)="handleEnter($event, optionValueInputComponent)"
+        />
+    </div>
+    <div class="values">
+        <label>{{ 'catalog.option-values' | translate }}</label>
+        <vdr-option-value-input
+            #optionValueInputComponent
+            [(ngModel)]="group.values"
+            (ngModelChange)="generateVariants()"
+            [groupName]="group.name"
+            [disabled]="group.name === ''"
+        ></vdr-option-value-input>
+    </div>
+    <div class="remove-group">
+        <button
+            class="btn btn-icon btn-warning-outline"
+            [title]="'catalog.remove-option' | translate"
+            (click)="removeOption(group.name)"
+        >
+            <clr-icon shape="trash"></clr-icon>
         </button>
-        <button type="button" vdrDropdownItem (click)="startProductVariantsWizard()">
-            {{ 'catalog.generate-variants-with-options' | translate }}
-        </button>
-    </vdr-dropdown-menu>
-</vdr-dropdown>
+    </div>
+</div>
+<button class="btn btn-primary-outline btn-sm" (click)="addOption()">
+    <clr-icon shape="plus"></clr-icon>
+    {{ 'catalog.add-option' | translate }}
+</button>
 
-<vdr-product-variants-wizard #productVariantsWizard [product]="product"></vdr-product-variants-wizard>
+<div class="variants-preview">
+    <table class="table">
+        <thead>
+            <tr>
+                <th *ngIf="1 < variants.length">{{ 'common.create' | translate }}</th>
+                <th *ngIf="1 < variants.length">{{ 'catalog.variant' | translate }}</th>
+                <th>{{ 'catalog.sku' | translate }}</th>
+                <th>{{ 'catalog.price' | translate }}</th>
+                <th>{{ 'catalog.stock-on-hand' | translate }}</th>
+            </tr>
+        </thead>
+        <tr
+            *ngFor="let variant of variants; trackBy: trackByFn"
+            [class.disabled]="!variantFormValues[variant.id].enabled"
+        >
+            <td *ngIf="1 < variants.length">
+                <input
+                    type="checkbox"
+                    (change)="onFormChange()"
+                    [(ngModel)]="variantFormValues[variant.id].enabled"
+                    clrCheckbox
+                />
+            </td>
+            <td *ngIf="1 < variants.length">
+                {{ variant.values.join(' ') }}
+            </td>
+            <td>
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="text"
+                        (change)="onFormChange()"
+                        [(ngModel)]="variantFormValues[variant.id].sku"
+                        [placeholder]="'catalog.sku' | translate"
+                    />
+                </clr-input-container>
+            </td>
+            <td>
+                <clr-input-container>
+                    <vdr-currency-input
+                        clrInput
+                        [(ngModel)]="variantFormValues[variant.id].price"
+                        (ngModelChange)="onFormChange()"
+                        [currencyCode]="currencyCode"
+                    ></vdr-currency-input>
+                </clr-input-container>
+            </td>
+            <td>
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="number"
+                        [(ngModel)]="variantFormValues[variant.id].stock"
+                        (change)="onFormChange()"
+                        min="0"
+                        step="1"
+                    />
+                </clr-input-container>
+            </td>
+        </tr>
+    </table>
+</div>

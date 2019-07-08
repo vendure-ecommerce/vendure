@@ -156,23 +156,13 @@ export const DELETE_PRODUCT = gql`
     }
 `;
 
-export const GENERATE_PRODUCT_VARIANTS = gql`
-    mutation GenerateProductVariants(
-        $productId: ID!
-        $defaultTaxCategoryId: ID
-        $defaultPrice: Int
-        $defaultSku: String
-    ) {
-        generateVariantsForProduct(
-            productId: $productId
-            defaultTaxCategoryId: $defaultTaxCategoryId
-            defaultPrice: $defaultPrice
-            defaultSku: $defaultSku
-        ) {
-            ...ProductWithVariants
+export const CREATE_PRODUCT_VARIANTS = gql`
+    mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
+        createProductVariants(input: $input) {
+            ...ProductVariant
         }
     }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const UPDATE_PRODUCT_VARIANTS = gql`

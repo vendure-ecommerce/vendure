@@ -7,8 +7,9 @@ import {
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
+    CreateProductVariantInput,
+    CreateProductVariants,
     DeleteProduct,
-    GenerateProductVariants,
     GetAssetList,
     GetProductList,
     GetProductOptionGroups,
@@ -28,8 +29,8 @@ import {
     CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
+    CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
-    GENERATE_PRODUCT_VARIANTS,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
@@ -121,11 +122,13 @@ export class ProductDataService {
         });
     }
 
-    generateProductVariants(productId: string, defaultPrice?: number, defaultSku?: string) {
-        return this.baseDataService.mutate<
-            GenerateProductVariants.Mutation,
-            GenerateProductVariants.Variables
-        >(GENERATE_PRODUCT_VARIANTS, { productId, defaultPrice, defaultSku });
+    createProductVariants(input: CreateProductVariantInput[]) {
+        return this.baseDataService.mutate<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+            CREATE_PRODUCT_VARIANTS,
+            {
+                input,
+            },
+        );
     }
 
     updateProductVariants(variants: UpdateProductVariantInput[]) {
