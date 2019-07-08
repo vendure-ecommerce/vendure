@@ -205,6 +205,7 @@ export class ProductVariantService {
         });
         variantPrice.variant = createdVariant;
         await this.connection.getRepository(ProductVariantPrice).save(variantPrice);
+        this.eventBus.publish(new CatalogModificationEvent(ctx, createdVariant));
         return await assertFound(this.findOne(ctx, createdVariant.id));
     }
 
@@ -385,19 +386,6 @@ export class ProductVariantService {
         if (!samplesEach(optionIds, product.optionGroups.map(g => g.options.map(o => o.id)))) {
             this.throwIncompatibleOptionsError(product.optionGroups);
         }
-        /*product.optionGroups.forEach((group, i) => {
-            const optionId = optionIds[i];
-            const index = group.options.findIndex(o => idsAreEqual(o.id, optionId));
-            if (-1 < index) {
-                optionIds[i] = '__matched__';
-            } else {
-                console.log('input', input);
-                console.log('optionIds', optionIds);
-                console.log('product.optionGroups', product.optionGroups);
-                console.log('product.optionGroups', product.optionGroups.map(g => g.options));
-                this.throwIncompatibleOptionsError(product.optionGroups);
-            }
-        });*/
         product.variants.forEach(variant => {
             const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
             const inputOptionIds = this.sortJoin(input.optionIds || [], ',');
