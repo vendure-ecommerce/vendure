@@ -128,6 +128,5 @@ describe('Import resolver', () => {
 
         expect(productResult.products.totalItems).toBe(4);
         expect(productResult.products.items).toMatchSnapshot();
-        return;
-    }, 10000);
+    }, 20000);
 });
