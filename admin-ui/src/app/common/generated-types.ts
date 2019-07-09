@@ -459,6 +459,11 @@ export type CreateFacetValueWithFacetInput = {
   translations: Array<FacetValueTranslationInput>,
 };
 
+export type CreateGroupOptionInput = {
+  code: Scalars['String'],
+  translations: Array<ProductOptionGroupTranslationInput>,
+};
+
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>,
   assetIds?: Maybe<Array<Scalars['ID']>>,
@@ -470,11 +475,12 @@ export type CreateProductInput = {
 export type CreateProductOptionGroupInput = {
   code: Scalars['String'],
   translations: Array<ProductOptionGroupTranslationInput>,
-  options: Array<CreateProductOptionInput>,
+  options: Array<CreateGroupOptionInput>,
   customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type CreateProductOptionInput = {
+  productOptionGroupId: Scalars['ID'],
   code: Scalars['String'],
   translations: Array<ProductOptionGroupTranslationInput>,
   customFields?: Maybe<Scalars['JSON']>,
@@ -1547,12 +1553,12 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator,
   /** Create a new Asset */
   createAssets: Array<Asset>,
+  login: LoginResult,
+  logout: Scalars['Boolean'],
   /** Create a new Channel */
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
-  login: LoginResult,
-  logout: Scalars['Boolean'],
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1611,6 +1617,10 @@ export type Mutation = {
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup,
+  /** Create a new ProductOption within a ProductOptionGroup */
+  createProductOption: ProductOption,
+  /** Create a new ProductOption within a ProductOptionGroup */
+  updateProductOption: ProductOption,
   reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
@@ -1686,6 +1696,13 @@ export type MutationCreateAssetsArgs = {
 };
 
 
+export type MutationLoginArgs = {
+  username: Scalars['String'],
+  password: Scalars['String'],
+  rememberMe?: Maybe<Scalars['Boolean']>
+};
+
+
 export type MutationCreateChannelArgs = {
   input: CreateChannelInput
 };
@@ -1693,13 +1710,6 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
-};
-
-
-export type MutationLoginArgs = {
-  username: Scalars['String'],
-  password: Scalars['String'],
-  rememberMe?: Maybe<Scalars['Boolean']>
 };
 
 
@@ -1871,6 +1881,16 @@ export type MutationCreateProductOptionGroupArgs = {
 
 export type MutationUpdateProductOptionGroupArgs = {
   input: UpdateProductOptionGroupInput
+};
+
+
+export type MutationCreateProductOptionArgs = {
+  input: CreateProductOptionInput
+};
+
+
+export type MutationUpdateProductOptionArgs = {
+  input: UpdateProductOptionInput
 };
 
 
@@ -2513,10 +2533,10 @@ export type Query = {
   administrator?: Maybe<Administrator>,
   assets: AssetList,
   asset?: Maybe<Asset>,
+  me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
   activeChannel: Channel,
-  me?: Maybe<CurrentUser>,
   collections: CollectionList,
   collection?: Maybe<Collection>,
   collectionFilters: Array<ConfigurableOperation>,
@@ -3164,6 +3184,13 @@ export type UpdateProductInput = {
 };
 
 export type UpdateProductOptionGroupInput = {
+  id: Scalars['ID'],
+  code?: Maybe<Scalars['String']>,
+  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>,
+  customFields?: Maybe<Scalars['JSON']>,
+};
+
+export type UpdateProductOptionInput = {
   id: Scalars['ID'],
   code?: Maybe<Scalars['String']>,
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>,

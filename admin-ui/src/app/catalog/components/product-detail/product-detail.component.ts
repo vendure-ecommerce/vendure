@@ -2,8 +2,8 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, mergeMap, shareReplay, skip, take, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, merge, Observable } from 'rxjs';
+import { distinctUntilChanged, map, mergeMap, take, withLatestFrom } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
@@ -13,7 +13,6 @@ import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/ca
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateProductInput,
-    CreateProductVariantInput,
     FacetWithValues,
     LanguageCode,
     ProductWithVariants,
@@ -27,9 +26,9 @@ import { createUpdatedTranslatable } from '../../../common/utilities/create-upda
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
-import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ProductDetailService } from '../../providers/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
 import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
@@ -71,7 +70,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     facetValues$: Observable<ProductWithVariants.FacetValues[]>;
-    facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
+    facets$: Observable<FacetWithValues.Fragment[]>;
     selectedVariantIds: string[] = [];
     variantDisplayMode: 'card' | 'table' = 'card';
     createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [] };
@@ -80,7 +79,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         route: ActivatedRoute,
         router: Router,
         serverConfigService: ServerConfigService,
-        private dataService: DataService,
+        private productDetailService: ProductDetailService,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
@@ -109,16 +108,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
-        this.taxCategories$ = this.dataService.settings
-            .getTaxCategories()
-            .mapSingle(data => data.taxCategories)
-            .pipe(shareReplay(1));
+        this.taxCategories$ = this.productDetailService.getTaxCategories();
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
         // FacetValues are provided initially by the nested array of the
         // Product entity, but once a fetch to get all Facets is made (as when
         // opening the FacetValue selector modal), then these additional values
         // are concatenated onto the initial array.
+        this.facets$ = this.productDetailService.getFacets();
         const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
         const allFacetValues$ = this.facets$.pipe(map(flattenFacetValues));
         const productGroup = this.getProductFormGroup();
@@ -241,18 +238,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     private displayFacetValueModal(): Observable<string[] | undefined> {
-        let skipValue = 0;
-        if (this.facets$.value.length === 0) {
-            this.dataService.facet
-                .getFacets(9999999, 0)
-                .mapSingle(data => data.facets.items)
-                .subscribe(items => this.facets$.next(items));
-            skipValue = 1;
-        }
-
-        return this.facets$.pipe(
-            skip(skipValue),
-            take(1),
+        return this.productDetailService.getFacets().pipe(
             mergeMap(facets =>
                 this.modalService.fromComponent(ApplyFacetDialogComponent, {
                     size: 'md',
@@ -277,86 +263,11 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         productGroup as FormGroup,
                         languageCode,
                     ) as CreateProductInput;
-                    const createProduct$ = this.dataService.product.createProduct(newProduct);
-
-                    const createOptionGroups$ = this.createVariantsConfig.groups.length
-                        ? forkJoin(
-                              this.createVariantsConfig.groups.map(c => {
-                                  return this.dataService.product.createProductOptionGroups({
-                                      code: normalizeString(c.name, '-'),
-                                      translations: [{ languageCode, name: c.name }],
-                                      options: c.values.map(v => ({
-                                          code: normalizeString(v, '-'),
-                                          translations: [{ languageCode, name: v }],
-                                      })),
-                                  });
-                              }),
-                          )
-                        : of([]);
-
-                    return forkJoin(createProduct$, createOptionGroups$).pipe(
-                        mergeMap(([{ createProduct }, createOptionGroups]) => {
-                            const optionGroups = createOptionGroups.map(g => g.createProductOptionGroup);
-                            const addOptionsToProduct$ = optionGroups.length
-                                ? forkJoin(
-                                      optionGroups.map(optionGroup => {
-                                          return this.dataService.product.addOptionGroupToProduct({
-                                              productId: createProduct.id,
-                                              optionGroupId: optionGroup.id,
-                                          });
-                                      }),
-                                  )
-                                : of([]);
-                            return addOptionsToProduct$.pipe(
-                                map(() => {
-                                    return { createProduct, optionGroups, languageCode };
-                                }),
-                            );
-                        }),
+                    return this.productDetailService.createProduct(
+                        newProduct,
+                        this.createVariantsConfig,
+                        languageCode,
                     );
-                }),
-                mergeMap(({ createProduct, optionGroups, languageCode }) => {
-                    const variants: CreateProductVariantInput[] = this.createVariantsConfig.variants.map(
-                        v => {
-                            const optionIds = optionGroups.length
-                                ? v.optionValues.map((optionName, index) => {
-                                      const option = optionGroups[index].options.find(
-                                          o => o.name === optionName,
-                                      );
-                                      if (!option) {
-                                          throw new Error(
-                                              `Could not find a matching ProductOption "${optionName}" when creating variant`,
-                                          );
-                                      }
-                                      return option.id;
-                                  })
-                                : [];
-                            const name = optionGroups.length
-                                ? `${createProduct.name} ${v.optionValues.join(' ')}`
-                                : createProduct.name;
-                            return {
-                                productId: createProduct.id,
-                                price: v.price,
-                                sku: v.sku,
-                                stockOnHand: v.stock,
-                                translations: [
-                                    {
-                                        languageCode,
-                                        name,
-                                    },
-                                ],
-                                optionIds,
-                            };
-                        },
-                    );
-                    return this.dataService.product
-                        .createProductVariants(variants)
-                        .pipe(
-                            map(({ createProductVariants }) => ({
-                                createProductVariants,
-                                productId: createProduct.id,
-                            })),
-                        );
                 }),
             )
             .subscribe(
@@ -385,31 +296,26 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 take(1),
                 mergeMap(([product, languageCode]) => {
                     const productGroup = this.getProductFormGroup();
-                    const updateOperations: Array<
-                        Observable<UpdateProductMutation | UpdateProductVariantsMutation>
-                    > = [];
+                    let productInput: UpdateProductInput | undefined;
+                    let variantsInput: UpdateProductVariantInput[] | undefined;
 
                     if (productGroup.dirty || this.assetsChanged()) {
-                        const newProduct = this.getUpdatedProduct(
+                        productInput = this.getUpdatedProduct(
                             product,
                             productGroup as FormGroup,
                             languageCode,
                         ) as UpdateProductInput;
-                        if (newProduct) {
-                            updateOperations.push(this.dataService.product.updateProduct(newProduct));
-                        }
                     }
                     const variantsArray = this.detailForm.get('variants');
                     if ((variantsArray && variantsArray.dirty) || this.variantAssetsChanged()) {
-                        const newVariants = this.getUpdatedProductVariants(
+                        variantsInput = this.getUpdatedProductVariants(
                             product,
                             variantsArray as FormArray,
                             languageCode,
                         );
-                        updateOperations.push(this.dataService.product.updateProductVariants(newVariants));
                     }
 
-                    return forkJoin(updateOperations);
+                    return this.productDetailService.updateProduct(languageCode, productInput, variantsInput);
                 }),
             )
             .subscribe(

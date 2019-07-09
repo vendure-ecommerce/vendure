@@ -55,7 +55,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if ('facets' in changes) {
+        if ('facets' in changes && !!changes['facets'].currentValue) {
             this.facetValues = flattenFacetValues(this.facets);
         }
     }

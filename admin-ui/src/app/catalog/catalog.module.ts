@@ -27,6 +27,7 @@ import { ProductSearchInputComponent } from './components/product-search-input/p
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { ProductDetailService } from './providers/product-detail.service';
 import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
@@ -59,6 +60,6 @@ import { ProductResolver } from './providers/routing/product-resolver';
         OptionValueInputComponent,
     ],
     entryComponents: [AssetPickerDialogComponent, ApplyFacetDialogComponent, AssetPreviewComponent],
-    providers: [ProductResolver, FacetResolver, CollectionResolver],
+    providers: [ProductResolver, FacetResolver, CollectionResolver, ProductDetailService],
 })
 export class CatalogModule {}
