@@ -46,10 +46,11 @@ import { SelectToggleComponent } from './components/select-toggle/select-toggle.
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
-import { BackgroundColorFromDirective } from './directives/background-color-from.directive';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
+import { SortPipe } from './pipes/sort.pipe';
+import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 
@@ -71,7 +72,6 @@ const DECLARATIONS = [
     ActionBarRightComponent,
     ConfigurableInputComponent,
     AffixedInputComponent,
-    BackgroundColorFromDirective,
     ChipComponent,
     CurrencyInputComponent,
     CurrencyNamePipe,
@@ -101,11 +101,13 @@ const DECLARATIONS = [
     SentenceCasePipe,
     DropdownComponent,
     DropdownMenuComponent,
+    SortPipe,
     DropdownTriggerDirective,
     DropdownItemDirective,
     OrderStateLabelComponent,
     FormattedAddressComponent,
     LabeledDataComponent,
+    StringToColorPipe,
 ];
 
 @NgModule({
