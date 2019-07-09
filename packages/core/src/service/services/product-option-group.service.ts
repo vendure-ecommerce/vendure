@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import {
-    CreateProductOptionGroupInput,
-    LanguageCode,
-    UpdateProductOptionGroupInput,
-} from '@vendure/common/lib/generated-types';
+import { CreateProductOptionGroupInput, UpdateProductOptionGroupInput } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Connection, FindManyOptions, Like } from 'typeorm';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
+import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
@@ -23,7 +19,7 @@ export class ProductOptionGroupService {
         private translatableSaver: TranslatableSaver,
     ) {}
 
-    findAll(lang: LanguageCode, filterTerm?: string): Promise<Array<Translated<ProductOptionGroup>>> {
+    findAll(ctx: RequestContext, filterTerm?: string): Promise<Array<Translated<ProductOptionGroup>>> {
         const findOptions: FindManyOptions = {
             relations: ['options'],
         };
@@ -34,32 +30,32 @@ export class ProductOptionGroupService {
         }
         return this.connection.manager
             .find(ProductOptionGroup, findOptions)
-            .then(groups => groups.map(group => translateDeep(group, lang, ['options'])));
+            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
     }
 
-    findOne(id: ID, lang: LanguageCode): Promise<Translated<ProductOptionGroup> | undefined> {
+    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection.manager
             .findOne(ProductOptionGroup, id, {
                 relations: ['options'],
             })
-            .then(group => group && translateDeep(group, lang, ['options']));
+            .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
     }
 
-    async create(input: CreateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
+    async create(ctx: RequestContext, input: CreateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.create({
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
         });
-        return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(ctx, group.id));
     }
 
-    async update(input: UpdateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
+    async update(ctx: RequestContext, input: UpdateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.update({
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
         });
-        return assertFound(this.findOne(group.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(ctx, group.id));
     }
 }

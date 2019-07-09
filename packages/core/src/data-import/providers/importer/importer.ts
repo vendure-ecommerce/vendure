@@ -173,7 +173,7 @@ export class Importer {
             const optionsMap: { [optionName: string]: string } = {};
             for (const optionGroup of product.optionGroups) {
                 const code = normalizeString(`${product.name}-${optionGroup.name}`, '-');
-                const group = await this.productOptionGroupService.create({
+                const group = await this.productOptionGroupService.create(ctx, {
                     code,
                     options: optionGroup.values.map(name => ({} as any)),
                     translations: [
@@ -184,7 +184,7 @@ export class Importer {
                     ],
                 });
                 for (const option of optionGroup.values) {
-                    const createdOption = await this.productOptionService.create(group, {
+                    const createdOption = await this.productOptionService.create(ctx, group, {
                         code: normalizeString(option, '-'),
                         translations: [
                             {

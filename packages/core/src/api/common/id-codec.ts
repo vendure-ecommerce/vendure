@@ -12,6 +12,7 @@ const ID_KEYS = [
     'fulfillmentId',
     'orderItemIds',
     'refundId',
+    'groupId',
 ];
 
 /**

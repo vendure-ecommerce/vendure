@@ -458,6 +458,11 @@ export type CreateFacetValueWithFacetInput = {
     translations: Array<FacetValueTranslationInput>;
 };
 
+export type CreateGroupOptionInput = {
+    code: Scalars['String'];
+    translations: Array<ProductOptionGroupTranslationInput>;
+};
+
 export type CreateProductInput = {
     featuredAssetId?: Maybe<Scalars['ID']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
@@ -469,11 +474,12 @@ export type CreateProductInput = {
 export type CreateProductOptionGroupInput = {
     code: Scalars['String'];
     translations: Array<ProductOptionGroupTranslationInput>;
-    options: Array<CreateProductOptionInput>;
+    options: Array<CreateGroupOptionInput>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductOptionInput = {
+    productOptionGroupId: Scalars['ID'];
     code: Scalars['String'];
     translations: Array<ProductOptionGroupTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
@@ -1561,6 +1567,14 @@ export type Mutation = {
     updateCountry: Country;
     /** Delete a Country */
     deleteCountry: DeletionResponse;
+    /** Create a new CustomerGroup */
+    createCustomerGroup: CustomerGroup;
+    /** Update an existing CustomerGroup */
+    updateCustomerGroup: CustomerGroup;
+    /** Add Customers to a CustomerGroup */
+    addCustomersToGroup: CustomerGroup;
+    /** Remove Customers from a CustomerGroup */
+    removeCustomersFromGroup: CustomerGroup;
     /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
     createCustomer: Customer;
     /** Update an existing Customer */
@@ -1573,14 +1587,6 @@ export type Mutation = {
     updateCustomerAddress: Address;
     /** Update an existing Address */
     deleteCustomerAddress: Scalars['Boolean'];
-    /** Create a new CustomerGroup */
-    createCustomerGroup: CustomerGroup;
-    /** Update an existing CustomerGroup */
-    updateCustomerGroup: CustomerGroup;
-    /** Add Customers to a CustomerGroup */
-    addCustomersToGroup: CustomerGroup;
-    /** Remove Customers from a CustomerGroup */
-    removeCustomersFromGroup: CustomerGroup;
     /** Create a new Facet */
     createFacet: Facet;
     /** Update an existing Facet */
@@ -1607,6 +1613,10 @@ export type Mutation = {
     createProductOptionGroup: ProductOptionGroup;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
+    /** Create a new ProductOption within a ProductOptionGroup */
+    createProductOption: ProductOption;
+    /** Create a new ProductOption within a ProductOptionGroup */
+    updateProductOption: ProductOption;
     reindex: JobInfo;
     /** Create a new Product */
     createProduct: Product;
@@ -1710,6 +1720,24 @@ export type MutationDeleteCountryArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationCreateCustomerGroupArgs = {
+    input: CreateCustomerGroupInput;
+};
+
+export type MutationUpdateCustomerGroupArgs = {
+    input: UpdateCustomerGroupInput;
+};
+
+export type MutationAddCustomersToGroupArgs = {
+    customerGroupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type MutationRemoveCustomersFromGroupArgs = {
+    customerGroupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
 export type MutationCreateCustomerArgs = {
     input: CreateCustomerInput;
     password?: Maybe<Scalars['String']>;
@@ -1734,24 +1762,6 @@ export type MutationUpdateCustomerAddressArgs = {
 
 export type MutationDeleteCustomerAddressArgs = {
     id: Scalars['ID'];
-};
-
-export type MutationCreateCustomerGroupArgs = {
-    input: CreateCustomerGroupInput;
-};
-
-export type MutationUpdateCustomerGroupArgs = {
-    input: UpdateCustomerGroupInput;
-};
-
-export type MutationAddCustomersToGroupArgs = {
-    customerGroupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
-};
-
-export type MutationRemoveCustomersFromGroupArgs = {
-    customerGroupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
 };
 
 export type MutationCreateFacetArgs = {
@@ -1822,6 +1832,14 @@ export type MutationCreateProductOptionGroupArgs = {
 
 export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
+};
+
+export type MutationCreateProductOptionArgs = {
+    input: CreateProductOptionInput;
+};
+
+export type MutationUpdateProductOptionArgs = {
+    input: UpdateProductOptionInput;
 };
 
 export type MutationCreateProductArgs = {
@@ -2431,10 +2449,10 @@ export type Query = {
     collectionFilters: Array<ConfigurableOperation>;
     countries: CountryList;
     country?: Maybe<Country>;
-    customers: CustomerList;
-    customer?: Maybe<Customer>;
     customerGroups: Array<CustomerGroup>;
     customerGroup?: Maybe<CustomerGroup>;
+    customers: CustomerList;
+    customer?: Maybe<Customer>;
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
@@ -2505,15 +2523,15 @@ export type QueryCountryArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryCustomerGroupArgs = {
+    id: Scalars['ID'];
+};
+
 export type QueryCustomersArgs = {
     options?: Maybe<CustomerListOptions>;
 };
 
 export type QueryCustomerArgs = {
-    id: Scalars['ID'];
-};
-
-export type QueryCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
@@ -3033,6 +3051,13 @@ export type UpdateProductInput = {
 };
 
 export type UpdateProductOptionGroupInput = {
+    id: Scalars['ID'];
+    code?: Maybe<Scalars['String']>;
+    translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductOptionInput = {
     id: Scalars['ID'];
     code?: Maybe<Scalars['String']>;
     translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
@@ -4204,6 +4229,64 @@ export type AddNoteToOrderMutation = { __typename?: 'Mutation' } & {
     addNoteToOrder: { __typename?: 'Order' } & Pick<Order, 'id'>;
 };
 
+export type ProductOptionGroupFragment = { __typename?: 'ProductOptionGroup' } & Pick<
+    ProductOptionGroup,
+    'id' | 'code' | 'name'
+> & {
+        options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'name'>>;
+        translations: Array<
+            { __typename?: 'ProductOptionGroupTranslation' } & Pick<
+                ProductOptionGroupTranslation,
+                'id' | 'languageCode' | 'name'
+            >
+        >;
+    };
+
+export type CreateProductOptionGroupMutationVariables = {
+    input: CreateProductOptionGroupInput;
+};
+
+export type CreateProductOptionGroupMutation = { __typename?: 'Mutation' } & {
+    createProductOptionGroup: { __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment;
+};
+
+export type UpdateProductOptionGroupMutationVariables = {
+    input: UpdateProductOptionGroupInput;
+};
+
+export type UpdateProductOptionGroupMutation = { __typename?: 'Mutation' } & {
+    updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment;
+};
+
+export type CreateProductOptionMutationVariables = {
+    input: CreateProductOptionInput;
+};
+
+export type CreateProductOptionMutation = { __typename?: 'Mutation' } & {
+    createProductOption: { __typename?: 'ProductOption' } & Pick<
+        ProductOption,
+        'id' | 'code' | 'name' | 'groupId'
+    > & {
+            translations: Array<
+                { __typename?: 'ProductOptionTranslation' } & Pick<
+                    ProductOptionTranslation,
+                    'id' | 'languageCode' | 'name'
+                >
+            >;
+        };
+};
+
+export type UpdateProductOptionMutationVariables = {
+    input: UpdateProductOptionInput;
+};
+
+export type UpdateProductOptionMutation = { __typename?: 'Mutation' } & {
+    updateProductOption: { __typename?: 'ProductOption' } & Pick<
+        ProductOption,
+        'id' | 'code' | 'name' | 'groupId'
+    >;
+};
+
 export type AddOptionGroupToProductMutationVariables = {
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
@@ -5223,6 +5306,39 @@ export namespace AddNoteToOrder {
     export type Variables = AddNoteToOrderMutationVariables;
     export type Mutation = AddNoteToOrderMutation;
     export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+}
+
+export namespace ProductOptionGroup {
+    export type Fragment = ProductOptionGroupFragment;
+    export type Options = NonNullable<ProductOptionGroupFragment['options'][0]>;
+    export type Translations = NonNullable<ProductOptionGroupFragment['translations'][0]>;
+}
+
+export namespace CreateProductOptionGroup {
+    export type Variables = CreateProductOptionGroupMutationVariables;
+    export type Mutation = CreateProductOptionGroupMutation;
+    export type CreateProductOptionGroup = ProductOptionGroupFragment;
+}
+
+export namespace UpdateProductOptionGroup {
+    export type Variables = UpdateProductOptionGroupMutationVariables;
+    export type Mutation = UpdateProductOptionGroupMutation;
+    export type UpdateProductOptionGroup = ProductOptionGroupFragment;
+}
+
+export namespace CreateProductOption {
+    export type Variables = CreateProductOptionMutationVariables;
+    export type Mutation = CreateProductOptionMutation;
+    export type CreateProductOption = CreateProductOptionMutation['createProductOption'];
+    export type Translations = NonNullable<
+        CreateProductOptionMutation['createProductOption']['translations'][0]
+    >;
+}
+
+export namespace UpdateProductOption {
+    export type Variables = UpdateProductOptionMutationVariables;
+    export type Mutation = UpdateProductOptionMutation;
+    export type UpdateProductOption = UpdateProductOptionMutation['updateProductOption'];
 }
 
 export namespace AddOptionGroupToProduct {

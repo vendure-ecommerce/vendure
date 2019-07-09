@@ -8,6 +8,10 @@ type Mutation {
     createProductOptionGroup(input: CreateProductOptionGroupInput!): ProductOptionGroup!
     "Update an existing ProductOptionGroup"
     updateProductOptionGroup(input: UpdateProductOptionGroupInput!): ProductOptionGroup!
+    "Create a new ProductOption within a ProductOptionGroup"
+    createProductOption(input: CreateProductOptionInput!): ProductOption!
+    "Create a new ProductOption within a ProductOptionGroup"
+    updateProductOption(input: UpdateProductOptionInput!): ProductOption!
 }
 
 input ProductOptionGroupTranslationInput {
@@ -19,7 +23,7 @@ input ProductOptionGroupTranslationInput {
 input CreateProductOptionGroupInput {
     code: String!
     translations: [ProductOptionGroupTranslationInput!]!
-    options: [CreateProductOptionInput!]!
+    options: [CreateGroupOptionInput!]!
 }
 
 input UpdateProductOptionGroupInput {
@@ -34,7 +38,19 @@ input ProductOptionTranslationInput {
     name: String
 }
 
-input CreateProductOptionInput {
+input CreateGroupOptionInput {
     code: String!
     translations: [ProductOptionGroupTranslationInput!]!
+}
+
+input CreateProductOptionInput {
+    productOptionGroupId: ID!
+    code: String!
+    translations: [ProductOptionGroupTranslationInput!]!
+}
+
+input UpdateProductOptionInput {
+    id: ID!
+    code: String
+    translations: [ProductOptionGroupTranslationInput!]
 }
