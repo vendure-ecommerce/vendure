@@ -351,14 +351,14 @@ Array [
     "name": "Artists Smock",
     "optionGroups": Array [
       Object {
-        "code": "artists-smock-colour",
-        "id": "T_4",
-        "name": "colour",
-      },
-      Object {
         "code": "artists-smock-size",
         "id": "T_3",
         "name": "size",
+      },
+      Object {
+        "code": "artists-smock-colour",
+        "id": "T_4",
+        "name": "colour",
       },
     ],
     "slug": "artists-smock",

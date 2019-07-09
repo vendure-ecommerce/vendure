@@ -41,6 +41,20 @@ export class ProductOptionGroupService {
             .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
     }
 
+    getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
+        return this.connection.manager
+            .find(ProductOptionGroup, {
+                relations: ['options'],
+                where: {
+                    product: { id },
+                },
+                order: {
+                    id: 'ASC',
+                },
+            })
+            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+    }
+
     async create(ctx: RequestContext, input: CreateProductOptionGroupInput): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.create({
             input,

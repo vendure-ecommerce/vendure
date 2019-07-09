@@ -37,7 +37,6 @@ export class ProductService {
     private readonly relations = [
         'featuredAsset',
         'assets',
-        'optionGroups',
         'channels',
         'facetValues',
         'facetValues.facet',
@@ -70,7 +69,6 @@ export class ProductService {
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
                     translateDeep(product, ctx.languageCode, [
-                        'optionGroups',
                         'facetValues',
                         ['facetValues', 'facet'],
                     ]),
@@ -93,7 +91,6 @@ export class ProductService {
             return;
         }
         return translateDeep(product, ctx.languageCode, [
-            'optionGroups',
             'facetValues',
             ['facetValues', 'facet'],
         ]);
