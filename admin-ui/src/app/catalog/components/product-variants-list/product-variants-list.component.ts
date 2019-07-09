@@ -17,12 +17,16 @@ import { notNullOrUndefined } from 'shared/shared-utils';
 import {
     FacetValue,
     FacetWithValues,
+    ProductVariant,
     ProductWithVariants,
     TaxCategory,
+    UpdateProductOptionInput,
 } from '../../../common/generated-types';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { AssetChange } from '../product-assets/product-assets.component';
 import { VariantFormValue } from '../product-detail/product-detail.component';
+import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 export interface VariantAssetChange extends AssetChange {
     variantId: string;
@@ -39,14 +43,16 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() variants: ProductWithVariants.Variants[];
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
+    @Input() optionGroups: ProductWithVariants.OptionGroups[];
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
+    @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput>();
     selectedVariantIds: string[] = [];
     private facetValues: FacetValue.Fragment[];
     private formSubscription: Subscription;
 
-    constructor(private changeDetector: ChangeDetectorRef) {}
+    constructor(private changeDetector: ChangeDetectorRef, private modalService: ModalService) {}
 
     ngOnInit() {
         this.formSubscription = this.formArray.valueChanges.subscribe(() =>
@@ -98,6 +104,11 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         this.selectionChange.emit(this.selectedVariantIds);
     }
 
+    optionGroupName(optionGroupId: string): string | undefined {
+        const group = this.optionGroups.find(g => g.id === optionGroupId);
+        return group && group.name;
+    }
+
     pendingFacetValues(index: number) {
         if (this.facets) {
             const formFacetValueIds = this.getFacetValueIds(index);
@@ -135,6 +146,21 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
 
     isVariantSelected(variantId: string): boolean {
         return -1 < this.selectedVariantIds.indexOf(variantId);
+    }
+
+    editOption(option: ProductVariant.Options) {
+        this.modalService
+            .fromComponent(UpdateProductOptionDialogComponent, {
+                size: 'md',
+                locals: {
+                    productOption: option,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    this.updateProductOption.emit(result);
+                }
+            });
     }
 
     private getFacetValueIds(index: number): string[] {

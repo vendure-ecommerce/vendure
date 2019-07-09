@@ -2,7 +2,7 @@
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'catalog.sku' | translate }}</vdr-dt-column>
-    <ng-container *ngFor="let optionGroup of optionGroups">
+    <ng-container *ngFor="let optionGroup of optionGroups | sort: 'id'">
         <vdr-dt-column>{{ optionGroup.name }}</vdr-dt-column>
     </ng-container>
     <vdr-dt-column>{{ 'catalog.price' | translate }}</vdr-dt-column>
@@ -43,8 +43,12 @@
                     />
                 </clr-input-container>
             </td>
-            <ng-container *ngFor="let option of variant.options">
-                <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <ng-container *ngFor="let option of variant.options | sort: 'groupId'">
+                <td
+                    class="left align-middle"
+                    [class.disabled]="!formArray.get([i, 'enabled']).value"
+                    [style.color]="optionGroupName(option.groupId) | stringToColor"
+                >
                     {{ option.name }}
                 </td>
             </ng-container>

@@ -1603,8 +1603,8 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  updateGlobalSettings: GlobalSettings,
   importProducts?: Maybe<ImportInfo>,
+  updateGlobalSettings: GlobalSettings,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
@@ -1829,13 +1829,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
@@ -2319,9 +2319,9 @@ export type ProductOption = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
-  languageCode?: Maybe<LanguageCode>,
-  code?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
+  languageCode: LanguageCode,
+  code: Scalars['String'],
+  name: Scalars['String'],
   groupId: Scalars['ID'],
   translations: Array<ProductOptionTranslation>,
   customFields?: Maybe<Scalars['JSON']>,
@@ -3660,7 +3660,7 @@ export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToO
 
 export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
-export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name'>)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
+export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
 export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })> });
 
@@ -3768,6 +3768,13 @@ export type SearchProductsQueryVariables = {
 
 
 export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) }) })> }) });
+
+export type UpdateProductOptionMutationVariables = {
+  input: UpdateProductOptionInput
+};
+
+
+export type UpdateProductOptionMutation = ({ __typename?: 'Mutation' } & { updateProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'name'>) });
 
 export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
@@ -4488,11 +4495,12 @@ export namespace ProductVariant {
   export type TaxRateApplied = ProductVariantFragment['taxRateApplied'];
   export type TaxCategory = ProductVariantFragment['taxCategory'];
   export type Options = (NonNullable<ProductVariantFragment['options'][0]>);
+  export type Translations = (NonNullable<(NonNullable<ProductVariantFragment['options'][0]>)['translations'][0]>);
   export type FacetValues = (NonNullable<ProductVariantFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductVariantFragment['facetValues'][0]>)['facet'];
   export type FeaturedAsset = AssetFragment;
   export type Assets = AssetFragment;
-  export type Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
+  export type _Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
 }
 
 export namespace ProductWithVariants {
@@ -4607,6 +4615,12 @@ export namespace SearchProducts {
   export type FacetValues = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>);
   export type FacetValue = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue'];
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
+}
+
+export namespace UpdateProductOption {
+  export type Variables = UpdateProductOptionMutationVariables;
+  export type Mutation = UpdateProductOptionMutation;
+  export type UpdateProductOption = UpdateProductOptionMutation['updateProductOption'];
 }
 
 export namespace ConfigurableOperation {

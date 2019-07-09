@@ -10,6 +10,7 @@ import {
     LanguageCode,
     UpdateProductInput,
     UpdateProductMutation,
+    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '../../common/generated-types';
@@ -36,7 +37,10 @@ export class ProductDetailService {
             skipValue = 1;
         }
 
-        return this.facetsSubject.pipe(skip(skipValue));
+        return this.facetsSubject.pipe(
+            skip(skipValue),
+            shareReplay(1),
+        );
     }
 
     getTaxCategories() {
@@ -127,11 +131,7 @@ export class ProductDetailService {
         );
     }
 
-    updateProduct(
-        languageCode: LanguageCode,
-        productInput?: UpdateProductInput,
-        variantInput?: UpdateProductVariantInput[],
-    ) {
+    updateProduct(productInput?: UpdateProductInput, variantInput?: UpdateProductVariantInput[]) {
         const updateOperations: Array<Observable<UpdateProductMutation | UpdateProductVariantsMutation>> = [];
         if (productInput) {
             updateOperations.push(this.dataService.product.updateProduct(productInput));
@@ -140,5 +140,9 @@ export class ProductDetailService {
             updateOperations.push(this.dataService.product.updateProductVariants(variantInput));
         }
         return forkJoin(updateOperations);
+    }
+
+    updateProductOption(input: UpdateProductOptionInput) {
+        return this.dataService.product.updateProductOption(input);
     }
 }

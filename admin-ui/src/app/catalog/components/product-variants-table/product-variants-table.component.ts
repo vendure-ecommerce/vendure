@@ -13,4 +13,9 @@ export class ProductVariantsTableComponent {
     @Input('productVariantsFormArray') formArray: FormArray;
     @Input() variants: ProductWithVariants.Variants[];
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
+
+    optionGroupName(optionGroupId: string): string | undefined {
+        const group = this.optionGroups.find(g => g.id === optionGroupId);
+        return group && group.name;
+    }
 }

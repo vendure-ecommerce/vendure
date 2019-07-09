@@ -93,6 +93,14 @@
         }
     }
 
+    .option-group-name {
+        color: $color-grey-400;
+        text-transform: uppercase;
+        font-size: 10px;
+        margin-right: 3px;
+        height: 11px;
+    }
+
     .options-facets {
         display: flex;
         color: $color-grey-400;

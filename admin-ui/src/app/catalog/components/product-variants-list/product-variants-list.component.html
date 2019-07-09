@@ -105,8 +105,16 @@
                 <div class="options-facets">
                     <div *ngIf="variant.options.length">
                         <div class="options">
-                            {{ 'catalog.options' | translate }}:
-                            <vdr-chip *ngFor="let option of variant.options">{{ option.name }}</vdr-chip>
+                            <vdr-chip
+                                *ngFor="let option of variant.options | sort: 'groupId'"
+                                [colorFrom]="optionGroupName(option.groupId)"
+                                [invert]="true"
+                                (iconClick)="editOption(option)"
+                                icon="pencil"
+                            >
+                                <span class="option-group-name">{{ optionGroupName(option.groupId) }}</span>
+                                {{ option.name }}
+                            </vdr-chip>
                         </div>
                     </div>
                     <div class="flex-spacer"></div>

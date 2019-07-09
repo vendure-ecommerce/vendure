@@ -148,9 +148,11 @@
                         *ngIf="variantDisplayMode === 'card'"
                         [variants]="variants$ | async"
                         [facets]="facets$ | async"
+                        [optionGroups]="product.optionGroups"
                         [productVariantsFormArray]="detailForm.get('variants')"
                         [taxCategories]="taxCategories$ | async"
                         (assetChange)="variantAssetChange($event)"
+                        (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"
                         (selectFacetValueClick)="selectVariantFacetValue($event)"
                     ></vdr-product-variants-list>

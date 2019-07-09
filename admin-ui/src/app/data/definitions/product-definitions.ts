@@ -40,6 +40,12 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             code
             languageCode
             name
+            groupId
+            translations {
+                id
+                languageCode
+                name
+            }
         }
         facetValues {
             id
@@ -306,6 +312,16 @@ export const SEARCH_PRODUCTS = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+export const UPDATE_PRODUCT_OPTION = gql`
+    mutation UpdateProductOption($input: UpdateProductOptionInput!) {
+        updateProductOption(input: $input) {
+            id
+            code
+            name
         }
     }
 `;

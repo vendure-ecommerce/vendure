@@ -19,6 +19,7 @@ import {
     TaxCategory,
     UpdateProductInput,
     UpdateProductMutation,
+    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '../../../common/generated-types';
@@ -194,6 +195,21 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         });
     }
 
+    updateProductOption(input: UpdateProductOptionInput) {
+        this.productDetailService.updateProductOption(input).subscribe(
+            () => {
+                this.notificationService.success(_('common.notify-update-success'), {
+                    entity: 'ProductOption',
+                });
+            },
+            err => {
+                this.notificationService.error(_('common.notify-update-error'), {
+                    entity: 'ProductOption',
+                });
+            },
+        );
+    }
+
     removeProductFacetValue(facetValueId: string) {
         const productGroup = this.getProductFormGroup();
         const currentFacetValueIds = productGroup.value.facetValueIds;
@@ -315,7 +331,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         );
                     }
 
-                    return this.productDetailService.updateProduct(languageCode, productInput, variantsInput);
+                    return this.productDetailService.updateProduct(productInput, variantsInput);
                 }),
             )
             .subscribe(

@@ -20,6 +20,8 @@ import {
     SortOrder,
     UpdateProduct,
     UpdateProductInput,
+    UpdateProductOption,
+    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
 } from '../../common/generated-types';
@@ -38,6 +40,7 @@ import {
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
+    UPDATE_PRODUCT_OPTION,
     UPDATE_PRODUCT_VARIANTS,
 } from '../definitions/product-definitions';
 import { REINDEX } from '../definitions/settings-definitions';
@@ -177,6 +180,15 @@ export class ProductDataService {
             RemoveOptionGroupFromProduct.Mutation,
             RemoveOptionGroupFromProduct.Variables
         >(REMOVE_OPTION_GROUP_FROM_PRODUCT, variables);
+    }
+
+    updateProductOption(input: UpdateProductOptionInput) {
+        return this.baseDataService.mutate<UpdateProductOption.Mutation, UpdateProductOption.Variables>(
+            UPDATE_PRODUCT_OPTION,
+            {
+                input: pick(input, ['id', 'code', 'translations']),
+            },
+        );
     }
 
     getProductOptionGroups(filterTerm?: string) {
