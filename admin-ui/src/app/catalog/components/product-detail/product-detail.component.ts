@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, forkJoin, merge, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, merge, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, mergeMap, shareReplay, skip, take, withLatestFrom } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 import { CustomFieldConfig } from 'shared/shared-types';
@@ -13,6 +13,7 @@ import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/ca
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateProductInput,
+    CreateProductVariantInput,
     FacetWithValues,
     LanguageCode,
     ProductWithVariants,
@@ -30,6 +31,7 @@ import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
+import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
 import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
 
 export type TabName = 'details' | 'variants';
@@ -72,6 +74,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     facets$ = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
     selectedVariantIds: string[] = [];
     variantDisplayMode: 'card' | 'table' = 'card';
+    createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [] };
 
     constructor(
         route: ActivatedRoute,
@@ -228,6 +231,15 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             });
     }
 
+    variantsToCreateAreValid(): boolean {
+        return (
+            0 < this.createVariantsConfig.variants.length &&
+            this.createVariantsConfig.variants.every(v => {
+                return v.sku !== '';
+            })
+        );
+    }
+
     private displayFacetValueModal(): Observable<string[] | undefined> {
         let skipValue = 0;
         if (this.facets$.value.length === 0) {
@@ -265,20 +277,101 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         productGroup as FormGroup,
                         languageCode,
                     ) as CreateProductInput;
-                    return this.dataService.product.createProduct(newProduct);
+                    const createProduct$ = this.dataService.product.createProduct(newProduct);
+
+                    const createOptionGroups$ = this.createVariantsConfig.groups.length
+                        ? forkJoin(
+                              this.createVariantsConfig.groups.map(c => {
+                                  return this.dataService.product.createProductOptionGroups({
+                                      code: normalizeString(c.name, '-'),
+                                      translations: [{ languageCode, name: c.name }],
+                                      options: c.values.map(v => ({
+                                          code: normalizeString(v, '-'),
+                                          translations: [{ languageCode, name: v }],
+                                      })),
+                                  });
+                              }),
+                          )
+                        : of([]);
+
+                    return forkJoin(createProduct$, createOptionGroups$).pipe(
+                        mergeMap(([{ createProduct }, createOptionGroups]) => {
+                            const optionGroups = createOptionGroups.map(g => g.createProductOptionGroup);
+                            const addOptionsToProduct$ = optionGroups.length
+                                ? forkJoin(
+                                      optionGroups.map(optionGroup => {
+                                          return this.dataService.product.addOptionGroupToProduct({
+                                              productId: createProduct.id,
+                                              optionGroupId: optionGroup.id,
+                                          });
+                                      }),
+                                  )
+                                : of([]);
+                            return addOptionsToProduct$.pipe(
+                                map(() => {
+                                    return { createProduct, optionGroups, languageCode };
+                                }),
+                            );
+                        }),
+                    );
+                }),
+                mergeMap(({ createProduct, optionGroups, languageCode }) => {
+                    const variants: CreateProductVariantInput[] = this.createVariantsConfig.variants.map(
+                        v => {
+                            const optionIds = optionGroups.length
+                                ? v.optionValues.map((optionName, index) => {
+                                      const option = optionGroups[index].options.find(
+                                          o => o.name === optionName,
+                                      );
+                                      if (!option) {
+                                          throw new Error(
+                                              `Could not find a matching ProductOption "${optionName}" when creating variant`,
+                                          );
+                                      }
+                                      return option.id;
+                                  })
+                                : [];
+                            const name = optionGroups.length
+                                ? `${createProduct.name} ${v.optionValues.join(' ')}`
+                                : createProduct.name;
+                            return {
+                                productId: createProduct.id,
+                                price: v.price,
+                                sku: v.sku,
+                                stockOnHand: v.stock,
+                                translations: [
+                                    {
+                                        languageCode,
+                                        name,
+                                    },
+                                ],
+                                optionIds,
+                            };
+                        },
+                    );
+                    return this.dataService.product
+                        .createProductVariants(variants)
+                        .pipe(
+                            map(({ createProductVariants }) => ({
+                                createProductVariants,
+                                productId: createProduct.id,
+                            })),
+                        );
                 }),
             )
             .subscribe(
-                data => {
+                ({ createProductVariants, productId }) => {
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Product',
                     });
                     this.assetChanges = {};
                     this.variantAssetChanges = {};
                     this.detailForm.markAsPristine();
-                    this.router.navigate(['../', data.createProduct.id], { relativeTo: this.route });
+                    this.router.navigate(['../', productId], { relativeTo: this.route });
                 },
                 err => {
+                    // tslint:disable-next-line:no-console
+                    console.error(err);
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Product',
                     });

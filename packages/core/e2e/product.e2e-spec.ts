@@ -1,16 +1,19 @@
 import { omit } from '@vendure/common/lib/omit';
+import { pick } from '@vendure/common/lib/pick';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { PRODUCT_WITH_VARIANTS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
+    CreateProductVariants,
     DeleteProduct,
+    DeleteProductVariant,
     DeletionResult,
-    GenerateProductVariants,
     GetAssetList,
+    GetOptionGroup,
     GetProductList,
     GetProductSimple,
     GetProductWithVariants,
@@ -23,6 +26,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import {
     CREATE_PRODUCT,
+    CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
@@ -155,6 +159,16 @@ describe('Product resolver', () => {
             }, 'Either the product id or slug must be provided'),
         );
 
+        it(
+            'throws if id and slug do not refer to the same Product',
+            assertThrowsWithMessage(async () => {
+                await client.query<GetProductSimple.Query, GetProductSimple.Variables>(GET_PRODUCT_SIMPLE, {
+                    id: 'T_2',
+                    slug: 'laptop',
+                });
+            }, 'The provided id and slug refer to different Products'),
+        );
+
         it('returns expected properties', async () => {
             const { product } = await client.query<
                 GetProductWithVariants.Query,
@@ -207,6 +221,7 @@ describe('Product resolver', () => {
 
     describe('product mutation', () => {
         let newProduct: ProductWithVariants.Fragment;
+        let newProductWithAssets: ProductWithVariants.Fragment;
 
         it('createProduct creates a new Product', async () => {
             const result = await client.query<CreateProduct.Mutation, CreateProduct.Variables>(
@@ -230,8 +245,8 @@ describe('Product resolver', () => {
                     },
                 },
             );
+            expect(result.createProduct).toMatchSnapshot();
             newProduct = result.createProduct;
-            expect(newProduct).toMatchSnapshot();
         });
 
         it('createProduct creates a new Product with assets', async () => {
@@ -260,6 +275,7 @@ describe('Product resolver', () => {
             );
             expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
+            newProductWithAssets = result.createProduct;
         });
 
         it('updateProduct updates a Product', async () => {
@@ -512,16 +528,40 @@ describe('Product resolver', () => {
         );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
+            const { addOptionGroupToProduct } = await client.query<
+                AddOptionGroupToProduct.Mutation,
+                AddOptionGroupToProduct.Variables
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                optionGroupId: 'T_1',
+                productId: newProductWithAssets.id,
+            });
+            expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
+
             const result = await client.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
-                productId: 'T_1',
+                productId: newProductWithAssets.id,
             });
-            expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(1);
-            expect(result.removeOptionGroupFromProduct.optionGroups[0].code).toBe('laptop-ram');
+            expect(result.removeOptionGroupFromProduct.id).toBe(newProductWithAssets.id);
+            expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(0);
         });
+
+        it(
+            'removeOptionGroupFromProduct errors if the optionGroup is being used by variants',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<
+                        RemoveOptionGroupFromProduct.Mutation,
+                        RemoveOptionGroupFromProduct.Variables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: 'T_3',
+                        productId: 'T_2',
+                    }),
+                `Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants`,
+            ),
+        );
 
         it(
             'removeOptionGroupFromProduct errors with an invalid productId',
@@ -538,56 +578,160 @@ describe('Product resolver', () => {
             ),
         );
 
+        it(
+            'removeOptionGroupFromProduct errors with an invalid optionGroupId',
+            assertThrowsWithMessage(
+                () =>
+                    client.query<
+                        RemoveOptionGroupFromProduct.Mutation,
+                        RemoveOptionGroupFromProduct.Variables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: '999',
+                        productId: newProduct.id,
+                    }),
+                `No ProductOptionGroup with the id '999' could be found`,
+            ),
+        );
+
         describe('variants', () => {
-            let variants: ProductWithVariants.Variants[];
+            let variants: CreateProductVariants.CreateProductVariants[];
+            let optionGroup2: GetOptionGroup.ProductOptionGroup;
+            let optionGroup3: GetOptionGroup.ProductOptionGroup;
 
-            it(
-                'generateVariantsForProduct throws with an invalid productId',
-                assertThrowsWithMessage(
-                    () =>
-                        client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                            GENERATE_PRODUCT_VARIANTS,
-                            {
-                                productId: '999',
-                            },
-                        ),
-                    `No Product with the id '999' could be found`,
-                ),
-            );
-
-            it(
-                'generateVariantsForProduct throws with an invalid defaultTaxCategoryId',
-                assertThrowsWithMessage(
-                    () =>
-                        client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                            GENERATE_PRODUCT_VARIANTS,
-                            {
-                                productId: newProduct.id,
-                                defaultTaxCategoryId: '999',
-                            },
-                        ),
-                    `No TaxCategory with the id '999' could be found`,
-                ),
-            );
-
-            it('generateVariantsForProduct generates variants', async () => {
-                const result = await client.query<
-                    GenerateProductVariants.Mutation,
-                    GenerateProductVariants.Variables
-                >(GENERATE_PRODUCT_VARIANTS, {
-                    productId: newProduct.id,
-                    defaultPrice: 123,
-                    defaultSku: 'ABC',
-                });
-                variants = result.generateVariantsForProduct.variants;
-                expect(variants.length).toBe(2);
-                expect(variants[0].options.length).toBe(1);
-                expect(variants[1].options.length).toBe(1);
+            beforeAll(async () => {
+                await client.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        optionGroupId: 'T_3',
+                        productId: newProduct.id,
+                    },
+                );
+                const result1 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
+                    GET_OPTION_GROUP,
+                    { id: 'T_2' },
+                );
+                const result2 = await client.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
+                    GET_OPTION_GROUP,
+                    { id: 'T_3' },
+                );
+                optionGroup2 = result1.productOptionGroup!;
+                optionGroup3 = result2.productOptionGroup!;
             });
+
+            it(
+                'createProductVariants throws if optionIds not compatible with product',
+                assertThrowsWithMessage(async () => {
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV1',
+                                    optionIds: [],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                                },
+                            ],
+                        },
+                    );
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+            );
+
+            it(
+                'createProductVariants throws if optionIds are duplicated',
+                assertThrowsWithMessage(async () => {
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV1',
+                                    optionIds: [optionGroup2.options[0].id, optionGroup2.options[1].id],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                                },
+                            ],
+                        },
+                    );
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+            );
+
+            it('createProductVariants works', async () => {
+                const { createProductVariants } = await client.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'PV1',
+                            optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                        },
+                    ],
+                });
+                expect(createProductVariants[0]!.name).toBe('Variant 1');
+                expect(createProductVariants[0]!.options.map(pick(['id']))).toEqual([
+                    { id: optionGroup2.options[0].id },
+                    { id: optionGroup3.options[0].id },
+                ]);
+            });
+
+            it('createProductVariants adds multiple variants at once', async () => {
+                const { createProductVariants } = await client.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'PV2',
+                            optionIds: [optionGroup2.options[1].id, optionGroup3.options[0].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
+                        },
+                        {
+                            productId: newProduct.id,
+                            sku: 'PV3',
+                            optionIds: [optionGroup2.options[1].id, optionGroup3.options[1].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Variant 3' }],
+                        },
+                    ],
+                });
+                expect(createProductVariants[0]!.name).toBe('Variant 2');
+                expect(createProductVariants[1]!.name).toBe('Variant 3');
+                expect(createProductVariants[0]!.options.map(pick(['id']))).toEqual([
+                    { id: optionGroup2.options[1].id },
+                    { id: optionGroup3.options[0].id },
+                ]);
+                expect(createProductVariants[1]!.options.map(pick(['id']))).toEqual([
+                    { id: optionGroup2.options[1].id },
+                    { id: optionGroup3.options[1].id },
+                ]);
+                variants = createProductVariants.filter(notNullOrUndefined);
+            });
+
+            it(
+                'createProductVariants throws if options combination already exists',
+                assertThrowsWithMessage(async () => {
+                    await client.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId: newProduct.id,
+                                    sku: 'PV2',
+                                    optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
+                                },
+                            ],
+                        },
+                    );
+                }, 'A ProductVariant already exists with the options: 16gb, 24-inch'),
+            );
 
             it('updateProductVariants updates variants', async () => {
                 const firstVariant = variants[0];
-                const result = await client.query<
+                const { updateProductVariants } = await client.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
                 >(UPDATE_PRODUCT_VARIANTS, {
@@ -600,7 +744,7 @@ describe('Product resolver', () => {
                         },
                     ],
                 });
-                const updatedVariant = result.updateProductVariants[0];
+                const updatedVariant = updateProductVariants[0];
                 if (!updatedVariant) {
                     fail('no updated variant returned.');
                     return;
@@ -697,6 +841,33 @@ describe('Product resolver', () => {
                     `No ProductVariant with the id '999' could be found`,
                 ),
             );
+
+            it('deleteProductVariant', async () => {
+                const result1 = await client.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct.id,
+                });
+                expect(result1.product!.variants.map(v => v.id)).toEqual(['T_35', 'T_36', 'T_37']);
+
+                const { deleteProductVariant } = await client.query<
+                    DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: result1.product!.variants[0].id,
+                });
+
+                expect(deleteProductVariant.result).toBe(DeletionResult.DELETED);
+
+                const result2 = await client.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct.id,
+                });
+                expect(result2.product!.variants.map(v => v.id)).toEqual(['T_36', 'T_37']);
+            });
         });
     });
 
@@ -780,20 +951,6 @@ describe('Product resolver', () => {
                 `No Product with the id '1' could be found`,
             ),
         );
-
-        it(
-            'generateVariantsForProduct throws for deleted product',
-            assertThrowsWithMessage(
-                () =>
-                    client.query<GenerateProductVariants.Mutation, GenerateProductVariants.Variables>(
-                        GENERATE_PRODUCT_VARIANTS,
-                        {
-                            productId: productToDelete.id,
-                        },
-                    ),
-                `No Product with the id '1' could be found`,
-            ),
-        );
     });
 });
 
@@ -829,21 +986,24 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     }
 `;
 
-export const GENERATE_PRODUCT_VARIANTS = gql`
-    mutation GenerateProductVariants(
-        $productId: ID!
-        $defaultTaxCategoryId: ID
-        $defaultPrice: Int
-        $defaultSku: String
-    ) {
-        generateVariantsForProduct(
-            productId: $productId
-            defaultTaxCategoryId: $defaultTaxCategoryId
-            defaultPrice: $defaultPrice
-            defaultSku: $defaultSku
-        ) {
-            ...ProductWithVariants
+export const GET_OPTION_GROUP = gql`
+    query GetOptionGroup($id: ID!) {
+        productOptionGroup(id: $id) {
+            id
+            code
+            options {
+                id
+                code
+            }
         }
     }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+export const DELETE_PRODUCT_VARIANT = gql`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
 `;

@@ -106,6 +106,9 @@ export class IdCodec {
     }
 
     private transform<T>(target: T, transformFn: (input: any) => ID, transformKeys?: string[]): T {
+        if (target == null) {
+            return target;
+        }
         const clone = Object.assign({}, target);
         if (transformKeys) {
             for (const key of transformKeys) {
@@ -123,6 +126,9 @@ export class IdCodec {
     }
 
     private isSimpleObject(target: any): boolean {
+        if (!target) {
+            return true;
+        }
         const values = Object.values(target);
         for (const value of values) {
             if (this.isObject(value) || value === null) {

@@ -11,10 +11,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError } from '../../common/error/errors';
+import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -150,7 +150,8 @@ export class ProductService {
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await getEntityOrThrow(this.connection, Product, productId);
-        await this.connection.getRepository(Product).update({ id: productId }, { deletedAt: new Date() });
+        product.deletedAt = new Date();
+        await this.connection.getRepository(Product).save(product);
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return {
             result: DeletionResult.DELETED,
@@ -184,6 +185,16 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(productId);
+        const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+        if (!optionGroup) {
+            throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
+        }
+        if (product.variants.length) {
+            throw new UserInputError('error.cannot-remove-option-group-due-to-variants', {
+                code: optionGroup.code,
+                count: product.variants.length,
+            });
+        }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 
         await this.connection.manager.save(product);
@@ -193,7 +204,7 @@ export class ProductService {
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {
         const product = await this.connection
             .getRepository(Product)
-            .findOne(productId, { relations: ['optionGroups'], where: { deletedAt: null } });
+            .findOne(productId, { relations: ['optionGroups', 'variants', 'variants.options'], where: { deletedAt: null } });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);
         }

@@ -481,17 +481,24 @@ export type CreateProductOptionInput = {
 };
 
 export type CreateProductVariantInput = {
+  productId: Scalars['ID'],
   translations: Array<ProductVariantTranslationInput>,
   facetValueIds?: Maybe<Array<Scalars['ID']>>,
   sku: Scalars['String'],
   price?: Maybe<Scalars['Int']>,
-  taxCategoryId: Scalars['ID'],
+  taxCategoryId?: Maybe<Scalars['ID']>,
   optionIds?: Maybe<Array<Scalars['ID']>>,
   featuredAssetId?: Maybe<Scalars['ID']>,
   assetIds?: Maybe<Array<Scalars['ID']>>,
   stockOnHand?: Maybe<Scalars['Int']>,
   trackInventory?: Maybe<Scalars['Boolean']>,
   customFields?: Maybe<Scalars['JSON']>,
+};
+
+export type CreateProductVariantOptionInput = {
+  optionGroupId: Scalars['ID'],
+  code: Scalars['String'],
+  translations: Array<ProductOptionTranslationInput>,
 };
 
 export type CreatePromotionInput = {
@@ -1540,12 +1547,12 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator,
   /** Create a new Asset */
   createAssets: Array<Asset>,
-  login: LoginResult,
-  logout: Scalars['Boolean'],
   /** Create a new Channel */
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  login: LoginResult,
+  logout: Scalars['Boolean'],
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1616,9 +1623,11 @@ export type Mutation = {
   /** Remove an OptionGroup from a Product */
   removeOptionGroupFromProduct: Product,
   /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
-  generateVariantsForProduct: Product,
+  createProductVariants: Array<Maybe<ProductVariant>>,
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>,
+  /** Delete a ProductVariant */
+  deleteProductVariant: DeletionResponse,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1677,13 +1686,6 @@ export type MutationCreateAssetsArgs = {
 };
 
 
-export type MutationLoginArgs = {
-  username: Scalars['String'],
-  password: Scalars['String'],
-  rememberMe?: Maybe<Scalars['Boolean']>
-};
-
-
 export type MutationCreateChannelArgs = {
   input: CreateChannelInput
 };
@@ -1691,6 +1693,13 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationLoginArgs = {
+  username: Scalars['String'],
+  password: Scalars['String'],
+  rememberMe?: Maybe<Scalars['Boolean']>
 };
 
 
@@ -1892,16 +1901,18 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 };
 
 
-export type MutationGenerateVariantsForProductArgs = {
-  productId: Scalars['ID'],
-  defaultTaxCategoryId?: Maybe<Scalars['ID']>,
-  defaultPrice?: Maybe<Scalars['Int']>,
-  defaultSku?: Maybe<Scalars['String']>
+export type MutationCreateProductVariantsArgs = {
+  input: Array<CreateProductVariantInput>
 };
 
 
 export type MutationUpdateProductVariantsArgs = {
   input: Array<UpdateProductVariantInput>
+};
+
+
+export type MutationDeleteProductVariantArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2291,6 +2302,7 @@ export type ProductOption = Node & {
   languageCode?: Maybe<LanguageCode>,
   code?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>,
+  groupId: Scalars['ID'],
   translations: Array<ProductOptionTranslation>,
   customFields?: Maybe<Scalars['JSON']>,
 };
@@ -2501,10 +2513,10 @@ export type Query = {
   administrator?: Maybe<Administrator>,
   assets: AssetList,
   asset?: Maybe<Asset>,
-  me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
   activeChannel: Channel,
+  me?: Maybe<CurrentUser>,
   collections: CollectionList,
   collection?: Maybe<Collection>,
   collectionFilters: Array<ConfigurableOperation>,
@@ -3617,7 +3629,7 @@ export type AddNoteToOrderMutationVariables = {
 };
 
 
-export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id' | 'updatedAt'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'>) }) });
+export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id'>) });
 
 export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
@@ -3648,15 +3660,12 @@ export type DeleteProductMutationVariables = {
 
 export type DeleteProductMutation = ({ __typename?: 'Mutation' } & { deleteProduct: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
 
-export type GenerateProductVariantsMutationVariables = {
-  productId: Scalars['ID'],
-  defaultTaxCategoryId?: Maybe<Scalars['ID']>,
-  defaultPrice?: Maybe<Scalars['Int']>,
-  defaultSku?: Maybe<Scalars['String']>
+export type CreateProductVariantsMutationVariables = {
+  input: Array<CreateProductVariantInput>
 };
 
 
-export type GenerateProductVariantsMutation = ({ __typename?: 'Mutation' } & { generateVariantsForProduct: ({ __typename?: 'Product' } & ProductWithVariantsFragment) });
+export type CreateProductVariantsMutation = ({ __typename?: 'Mutation' } & { createProductVariants: Array<Maybe<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>> });
 
 export type UpdateProductVariantsMutationVariables = {
   input: Array<UpdateProductVariantInput>
@@ -4441,7 +4450,6 @@ export namespace AddNoteToOrder {
   export type Variables = AddNoteToOrderMutationVariables;
   export type Mutation = AddNoteToOrderMutation;
   export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
-  export type History = AddNoteToOrderMutation['addNoteToOrder']['history'];
 }
 
 export namespace Asset {
@@ -4496,10 +4504,10 @@ export namespace DeleteProduct {
   export type DeleteProduct = DeleteProductMutation['deleteProduct'];
 }
 
-export namespace GenerateProductVariants {
-  export type Variables = GenerateProductVariantsMutationVariables;
-  export type Mutation = GenerateProductVariantsMutation;
-  export type GenerateVariantsForProduct = ProductWithVariantsFragment;
+export namespace CreateProductVariants {
+  export type Variables = CreateProductVariantsMutationVariables;
+  export type Mutation = CreateProductVariantsMutation;
+  export type CreateProductVariants = ProductVariantFragment;
 }
 
 export namespace UpdateProductVariants {

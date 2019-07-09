@@ -22,4 +22,9 @@ describe('generateAllCombinations()', () => {
             ['blue', 'large'],
         ]);
     });
+
+    it('works with second array empty', () => {
+        const result = generateAllCombinations([['red', 'green', 'blue'], []]);
+        expect(result).toEqual([['red'], ['green'], ['blue']]);
+    });
 });

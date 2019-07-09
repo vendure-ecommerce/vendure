@@ -34,6 +34,9 @@ export function generateAllCombinations<T>(
     k: number = 0,
     output: T[][] = [],
 ): T[][] {
+    if (k === 0) {
+        optionGroups = optionGroups.filter(g => 0 < g.length);
+    }
     if (k === optionGroups.length) {
         output.push(combination);
         return [];

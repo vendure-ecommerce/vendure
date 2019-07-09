@@ -1,0 +1,21 @@
+<div class="input-wrapper" [class.focus]="isFocussed" (click)="textArea.focus()">
+    <div class="chips" *ngIf="0 < options.length">
+        <vdr-chip
+            *ngFor="let option of options; last as isLast"
+            icon="times"
+            [class.selected]="isLast && lastSelected"
+            [colorFrom]="groupName"
+            (iconClick)="removeOption(option)"
+        >
+            {{ option }}
+        </vdr-chip>
+    </div>
+    <textarea
+        #textArea
+        (keyup)="handleKey($event)"
+        (focus)="isFocussed = true"
+        (blur)="isFocussed = false"
+        [(ngModel)]="input"
+        [disabled]="disabled"
+    ></textarea>
+</div>

@@ -480,17 +480,24 @@ export type CreateProductOptionInput = {
 };
 
 export type CreateProductVariantInput = {
+    productId: Scalars['ID'];
     translations: Array<ProductVariantTranslationInput>;
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     sku: Scalars['String'];
     price?: Maybe<Scalars['Int']>;
-    taxCategoryId: Scalars['ID'];
+    taxCategoryId?: Maybe<Scalars['ID']>;
     optionIds?: Maybe<Array<Scalars['ID']>>;
     featuredAssetId?: Maybe<Scalars['ID']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     stockOnHand?: Maybe<Scalars['Int']>;
     trackInventory?: Maybe<Scalars['Boolean']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateProductVariantOptionInput = {
+    optionGroupId: Scalars['ID'];
+    code: Scalars['String'];
+    translations: Array<ProductOptionTranslationInput>;
 };
 
 export type CreatePromotionInput = {
@@ -1548,14 +1555,6 @@ export type Mutation = {
     updateCollection: Collection;
     /** Move a Collection to a different parent or index */
     moveCollection: Collection;
-    /** Create a new CustomerGroup */
-    createCustomerGroup: CustomerGroup;
-    /** Update an existing CustomerGroup */
-    updateCustomerGroup: CustomerGroup;
-    /** Add Customers to a CustomerGroup */
-    addCustomersToGroup: CustomerGroup;
-    /** Remove Customers from a CustomerGroup */
-    removeCustomersFromGroup: CustomerGroup;
     /** Create a new Country */
     createCountry: Country;
     /** Update an existing Country */
@@ -1574,6 +1573,14 @@ export type Mutation = {
     updateCustomerAddress: Address;
     /** Update an existing Address */
     deleteCustomerAddress: Scalars['Boolean'];
+    /** Create a new CustomerGroup */
+    createCustomerGroup: CustomerGroup;
+    /** Update an existing CustomerGroup */
+    updateCustomerGroup: CustomerGroup;
+    /** Add Customers to a CustomerGroup */
+    addCustomersToGroup: CustomerGroup;
+    /** Remove Customers from a CustomerGroup */
+    removeCustomersFromGroup: CustomerGroup;
     /** Create a new Facet */
     createFacet: Facet;
     /** Update an existing Facet */
@@ -1612,9 +1619,11 @@ export type Mutation = {
     /** Remove an OptionGroup from a Product */
     removeOptionGroupFromProduct: Product;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
-    generateVariantsForProduct: Product;
+    createProductVariants: Array<Maybe<ProductVariant>>;
     /** Update existing ProductVariants */
     updateProductVariants: Array<Maybe<ProductVariant>>;
+    /** Delete a ProductVariant */
+    deleteProductVariant: DeletionResponse;
     createPromotion: Promotion;
     updatePromotion: Promotion;
     deletePromotion: DeletionResponse;
@@ -1689,24 +1698,6 @@ export type MutationMoveCollectionArgs = {
     input: MoveCollectionInput;
 };
 
-export type MutationCreateCustomerGroupArgs = {
-    input: CreateCustomerGroupInput;
-};
-
-export type MutationUpdateCustomerGroupArgs = {
-    input: UpdateCustomerGroupInput;
-};
-
-export type MutationAddCustomersToGroupArgs = {
-    customerGroupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
-};
-
-export type MutationRemoveCustomersFromGroupArgs = {
-    customerGroupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
-};
-
 export type MutationCreateCountryArgs = {
     input: CreateCountryInput;
 };
@@ -1743,6 +1734,24 @@ export type MutationUpdateCustomerAddressArgs = {
 
 export type MutationDeleteCustomerAddressArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationCreateCustomerGroupArgs = {
+    input: CreateCustomerGroupInput;
+};
+
+export type MutationUpdateCustomerGroupArgs = {
+    input: UpdateCustomerGroupInput;
+};
+
+export type MutationAddCustomersToGroupArgs = {
+    customerGroupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type MutationRemoveCustomersFromGroupArgs = {
+    customerGroupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
 };
 
 export type MutationCreateFacetArgs = {
@@ -1837,15 +1846,16 @@ export type MutationRemoveOptionGroupFromProductArgs = {
     optionGroupId: Scalars['ID'];
 };
 
-export type MutationGenerateVariantsForProductArgs = {
-    productId: Scalars['ID'];
-    defaultTaxCategoryId?: Maybe<Scalars['ID']>;
-    defaultPrice?: Maybe<Scalars['Int']>;
-    defaultSku?: Maybe<Scalars['String']>;
+export type MutationCreateProductVariantsArgs = {
+    input: Array<CreateProductVariantInput>;
 };
 
 export type MutationUpdateProductVariantsArgs = {
     input: Array<UpdateProductVariantInput>;
+};
+
+export type MutationDeleteProductVariantArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreatePromotionArgs = {
@@ -2202,6 +2212,7 @@ export type ProductOption = Node & {
     languageCode?: Maybe<LanguageCode>;
     code?: Maybe<Scalars['String']>;
     name?: Maybe<Scalars['String']>;
+    groupId: Scalars['ID'];
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2418,12 +2429,12 @@ export type Query = {
     collections: CollectionList;
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperation>;
-    customerGroups: Array<CustomerGroup>;
-    customerGroup?: Maybe<CustomerGroup>;
     countries: CountryList;
     country?: Maybe<Country>;
     customers: CustomerList;
     customer?: Maybe<Customer>;
+    customerGroups: Array<CustomerGroup>;
+    customerGroup?: Maybe<CustomerGroup>;
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
@@ -2486,10 +2497,6 @@ export type QueryCollectionArgs = {
     languageCode?: Maybe<LanguageCode>;
 };
 
-export type QueryCustomerGroupArgs = {
-    id: Scalars['ID'];
-};
-
 export type QueryCountriesArgs = {
     options?: Maybe<CountryListOptions>;
 };
@@ -2503,6 +2510,10 @@ export type QueryCustomersArgs = {
 };
 
 export type QueryCustomerArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
@@ -3807,6 +3818,14 @@ export type GetProductListQuery = { __typename?: 'Query' } & {
         };
 };
 
+export type CreateProductVariantsMutationVariables = {
+    input: Array<CreateProductVariantInput>;
+};
+
+export type CreateProductVariantsMutation = { __typename?: 'Mutation' } & {
+    createProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & ProductVariantFragment>>;
+};
+
 export type UpdateProductVariantsMutationVariables = {
     input: Array<UpdateProductVariantInput>;
 };
@@ -4215,15 +4234,24 @@ export type RemoveOptionGroupFromProductMutation = { __typename?: 'Mutation' } &
         };
 };
 
-export type GenerateProductVariantsMutationVariables = {
-    productId: Scalars['ID'];
-    defaultTaxCategoryId?: Maybe<Scalars['ID']>;
-    defaultPrice?: Maybe<Scalars['Int']>;
-    defaultSku?: Maybe<Scalars['String']>;
+export type GetOptionGroupQueryVariables = {
+    id: Scalars['ID'];
 };
 
-export type GenerateProductVariantsMutation = { __typename?: 'Mutation' } & {
-    generateVariantsForProduct: { __typename?: 'Product' } & ProductWithVariantsFragment;
+export type GetOptionGroupQuery = { __typename?: 'Query' } & {
+    productOptionGroup: Maybe<
+        { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & {
+                options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
+            }
+    >;
+};
+
+export type DeleteProductVariantMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
+    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type DeletePromotionMutationVariables = {
@@ -4918,6 +4946,12 @@ export namespace GetProductList {
     >;
 }
 
+export namespace CreateProductVariants {
+    export type Variables = CreateProductVariantsMutationVariables;
+    export type Mutation = CreateProductVariantsMutation;
+    export type CreateProductVariants = ProductVariantFragment;
+}
+
 export namespace UpdateProductVariants {
     export type Variables = UpdateProductVariantsMutationVariables;
     export type Mutation = UpdateProductVariantsMutation;
@@ -5219,10 +5253,17 @@ export namespace RemoveOptionGroupFromProduct {
     >;
 }
 
-export namespace GenerateProductVariants {
-    export type Variables = GenerateProductVariantsMutationVariables;
-    export type Mutation = GenerateProductVariantsMutation;
-    export type GenerateVariantsForProduct = ProductWithVariantsFragment;
+export namespace GetOptionGroup {
+    export type Variables = GetOptionGroupQueryVariables;
+    export type Query = GetOptionGroupQuery;
+    export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
+    export type Options = NonNullable<(NonNullable<GetOptionGroupQuery['productOptionGroup']>)['options'][0]>;
+}
+
+export namespace DeleteProductVariant {
+    export type Variables = DeleteProductVariantMutationVariables;
+    export type Mutation = DeleteProductVariantMutation;
+    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
 }
 
 export namespace DeletePromotion {

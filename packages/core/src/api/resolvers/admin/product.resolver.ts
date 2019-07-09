@@ -3,8 +3,9 @@ import {
     DeletionResponse,
     MutationAddOptionGroupToProductArgs,
     MutationCreateProductArgs,
+    MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
-    MutationGenerateVariantsForProductArgs,
+    MutationDeleteProductVariantArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
@@ -16,7 +17,6 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { assertFound } from '../../../common/utils';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -51,7 +51,11 @@ export class ProductResolver {
         @Args() args: QueryProductArgs,
     ): Promise<Translated<Product> | undefined> {
         if (args.id) {
-            return this.productService.findOne(ctx, args.id);
+            const product = await this.productService.findOne(ctx, args.id);
+            if (args.slug && product && product.slug !== args.slug) {
+                throw new UserInputError(`error.product-id-slug-mismatch`);
+            }
+            return product;
         } else if (args.slug) {
             return this.productService.findOneBySlug(ctx, args.slug);
         } else {
@@ -113,21 +117,14 @@ export class ProductResolver {
     }
 
     @Mutation()
-    @Allow(Permission.CreateCatalog)
-    @Decode('productId', 'defaultTaxCategoryId')
-    async generateVariantsForProduct(
+    @Allow(Permission.UpdateCatalog)
+    @Decode('taxCategoryId', 'facetValueIds', 'featuredAssetId', 'assetIds', 'optionIds')
+    async createProductVariants(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationGenerateVariantsForProductArgs,
-    ): Promise<Translated<Product>> {
-        const { productId, defaultTaxCategoryId, defaultPrice, defaultSku } = args;
-        await this.productVariantService.generateVariantsForProduct(
-            ctx,
-            productId,
-            defaultTaxCategoryId,
-            defaultPrice,
-            defaultSku,
-        );
-        return assertFound(this.productService.findOne(ctx, productId));
+        @Args() args: MutationCreateProductVariantsArgs,
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const { input } = args;
+        return Promise.all(input.map(i => this.productVariantService.create(ctx, i)));
     }
 
     @Mutation()
@@ -138,6 +135,15 @@ export class ProductResolver {
         @Args() args: MutationUpdateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(variant => this.productVariantService.update(ctx, variant)));
+        return Promise.all(input.map(i => this.productVariantService.update(ctx, i)));
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteProductVariant(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductVariantArgs,
+    ): Promise<DeletionResponse> {
+        return this.productVariantService.softDelete(ctx, args.id);
     }
 }

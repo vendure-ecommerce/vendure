@@ -1593,6 +1593,7 @@ export type ProductOption = Node & {
     languageCode?: Maybe<LanguageCode>;
     code?: Maybe<Scalars['String']>;
     name?: Maybe<Scalars['String']>;
+    groupId: Scalars['ID'];
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
 };

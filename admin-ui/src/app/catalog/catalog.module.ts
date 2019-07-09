@@ -16,20 +16,16 @@ import { CollectionDetailComponent } from './components/collection-detail/collec
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
-import { CreateOptionGroupDialogComponent } from './components/create-option-group-dialog/create-option-group-dialog.component';
-import { CreateOptionGroupFormComponent } from './components/create-option-group-form/create-option-group-form.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
+import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
-import { ProductVariantsWizardComponent } from './components/product-variants-wizard/product-variants-wizard.component';
-import { SelectOptionGroupDialogComponent } from './components/select-option-group-dialog/select-option-group-dialog.component';
-import { SelectOptionGroupComponent } from './components/select-option-group/select-option-group.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
@@ -41,11 +37,6 @@ import { ProductResolver } from './providers/routing/product-resolver';
     declarations: [
         ProductListComponent,
         ProductDetailComponent,
-        CreateOptionGroupDialogComponent,
-        ProductVariantsWizardComponent,
-        SelectOptionGroupDialogComponent,
-        CreateOptionGroupFormComponent,
-        SelectOptionGroupComponent,
         FacetListComponent,
         FacetDetailComponent,
         GenerateProductVariantsComponent,
@@ -65,14 +56,9 @@ import { ProductResolver } from './providers/routing/product-resolver';
         ProductVariantsTableComponent,
         AssetPreviewComponent,
         ProductSearchInputComponent,
+        OptionValueInputComponent,
     ],
-    entryComponents: [
-        AssetPickerDialogComponent,
-        CreateOptionGroupDialogComponent,
-        SelectOptionGroupDialogComponent,
-        ApplyFacetDialogComponent,
-        AssetPreviewComponent,
-    ],
+    entryComponents: [AssetPickerDialogComponent, ApplyFacetDialogComponent, AssetPreviewComponent],
     providers: [ProductResolver, FacetResolver, CollectionResolver],
 })
 export class CatalogModule {}
