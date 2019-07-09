@@ -1602,8 +1602,8 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
-  updateGlobalSettings: GlobalSettings,
   importProducts?: Maybe<ImportInfo>,
+  updateGlobalSettings: GlobalSettings,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
@@ -1823,13 +1823,13 @@ export type MutationDeleteFacetValuesArgs = {
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
 };
 
 
@@ -2297,9 +2297,9 @@ export type ProductOption = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
-  languageCode?: Maybe<LanguageCode>,
-  code?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
+  languageCode: LanguageCode,
+  code: Scalars['String'],
+  name: Scalars['String'],
   groupId: Scalars['ID'],
   translations: Array<ProductOptionTranslation>,
   customFields?: Maybe<Scalars['JSON']>,

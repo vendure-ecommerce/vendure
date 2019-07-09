@@ -21,9 +21,9 @@ type ProductOption implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    languageCode: LanguageCode
-    code: String
-    name: String
+    languageCode: LanguageCode!
+    code: String!
+    name: String!
     groupId: ID!
     translations: [ProductOptionTranslation!]!
 }

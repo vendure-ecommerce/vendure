@@ -1590,9 +1590,9 @@ export type ProductOption = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
-    languageCode?: Maybe<LanguageCode>;
-    code?: Maybe<Scalars['String']>;
-    name?: Maybe<Scalars['String']>;
+    languageCode: LanguageCode;
+    code: Scalars['String'];
+    name: Scalars['String'];
     groupId: Scalars['ID'];
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
