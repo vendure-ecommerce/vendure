@@ -83,4 +83,8 @@ export class CollectionTreeNodeComponent implements OnInit {
     drop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
         this.root.onDrop(event);
     }
+
+    delete(id: string) {
+        this.root.onDelete(id);
+    }
 }

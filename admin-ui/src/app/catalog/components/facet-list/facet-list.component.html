@@ -26,7 +26,7 @@
         <td class="left align-middle" [class.private]="facet.isPrivate">{{ facet.name }}</td>
         <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-facet-value-chip
-                *ngFor="let value of (facet.values | slice: 0:displayLimit[facet.id] || 3)"
+                *ngFor="let value of facet.values | slice: 0:displayLimit[facet.id] || 3"
                 [facetValue]="value"
                 [removable]="false"
                 [displayFacetName]="false"
@@ -70,6 +70,7 @@
                         (click)="deleteFacet(facet.id)"
                         vdrDropdownItem
                     >
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>
                         {{ 'common.delete' | translate }}
                     </button>
                 </vdr-dropdown-menu>

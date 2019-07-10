@@ -6,6 +6,7 @@ import {
     CollectionFilterParameter,
     CreateCollection,
     CreateCollectionInput,
+    DeleteCollection,
     GetCollection,
     GetCollectionContents,
     GetCollectionFilters,
@@ -18,6 +19,7 @@ import {
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     CREATE_COLLECTION,
+    DELETE_COLLECTION,
     GET_COLLECTION,
     GET_COLLECTION_CONTENTS,
     GET_COLLECTION_FILTERS,
@@ -97,6 +99,15 @@ export class CollectionDataService {
                 ),
             ),
             bufferCount(inputs.length),
+        );
+    }
+
+    deleteCollection(id: string) {
+        return this.baseDataService.mutate<DeleteCollection.Mutation, DeleteCollection.Variables>(
+            DELETE_COLLECTION,
+            {
+                id,
+            },
         );
     }
 

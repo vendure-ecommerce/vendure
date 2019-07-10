@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaginationInstance } from 'ngx-pagination';
-import { combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { combineLatest, EMPTY, Observable } from 'rxjs';
+import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { GetCollectionList } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
 @Component({
@@ -27,6 +28,7 @@ export class CollectionListComponent
     constructor(
         private dataService: DataService,
         private notificationService: NotificationService,
+        private modalService: ModalService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -70,6 +72,33 @@ export class CollectionListComponent
                 this.notificationService.error(_('common.notify-save-changes-error'));
             },
         });
+    }
+
+    deleteCollection(id: string) {
+        this.modalService
+            .dialog({
+                title: _('catalog.confirm-delete-collection'),
+                buttons: [
+                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-delete-success'), {
+                        entity: 'ProductVariant',
+                    });
+                    this.refresh();
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-delete-error'), {
+                        entity: 'ProductVariant',
+                    });
+                },
+            );
     }
 
     closeContents() {

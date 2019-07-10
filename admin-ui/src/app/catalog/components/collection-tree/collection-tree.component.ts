@@ -25,6 +25,7 @@ export class CollectionTreeComponent implements OnChanges {
     @Input() collections: Collection.Fragment[];
     @Input() activeCollectionId: string;
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
+    @Output() deleteCollection = new EventEmitter<string>();
     collectionTree: RootNode<Collection.Fragment>;
 
     ngOnChanges(changes: SimpleChanges) {
@@ -49,6 +50,10 @@ export class CollectionTreeComponent implements OnChanges {
 
     onMove(event: RearrangeEvent) {
         this.rearrange.emit(event);
+    }
+
+    onDelete(id: string) {
+        this.deleteCollection.emit(id);
     }
 
     private isRootNode<T extends HasParent>(node: T | RootNode<T>): node is RootNode<T> {

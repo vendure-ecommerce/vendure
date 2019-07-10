@@ -104,6 +104,15 @@ export const MOVE_COLLECTION = gql`
     ${COLLECTION_FRAGMENT}
 `;
 
+export const DELETE_COLLECTION = gql`
+    mutation DeleteCollection($id: ID!) {
+        deleteCollection(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_COLLECTION_CONTENTS = gql`
     query GetCollectionContents($id: ID!, $options: ProductVariantListOptions) {
         collection(id: $id) {

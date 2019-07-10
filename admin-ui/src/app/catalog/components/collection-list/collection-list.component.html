@@ -11,6 +11,7 @@
         [collections]="items$ | async | paginate: (paginationConfig$ | async) || {}"
         [activeCollectionId]="activeCollectionId$ | async"
         (rearrange)="onRearrange($event)"
+        (deleteCollection)="deleteCollection($event)"
     ></vdr-collection-tree>
 
     <div class="collection-contents" [class.expanded]="activeCollectionId$ | async">

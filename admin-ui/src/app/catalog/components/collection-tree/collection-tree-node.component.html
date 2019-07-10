@@ -80,6 +80,11 @@
                         <clr-icon shape="child-arrow"></clr-icon>
                         {{ item.path }}
                     </button>
+                    <div class="dropdown-divider"></div>
+                    <button class="button" vdrDropdownItem (click)="delete(collection.id)">
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                        {{ 'common.delete' | translate }}
+                    </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>
         </div>
