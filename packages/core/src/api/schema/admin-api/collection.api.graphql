@@ -11,6 +11,9 @@ type Mutation {
     "Update an existing Collection"
     updateCollection(input: UpdateCollectionInput!): Collection!
 
+    "Delete a Collection"
+    deleteCollection(id: ID!): DeletionResponse!
+
     "Move a Collection to a different parent or index"
     moveCollection(input: MoveCollectionInput!): Collection!
 }

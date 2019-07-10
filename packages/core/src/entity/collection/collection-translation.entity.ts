@@ -20,7 +20,7 @@ export class CollectionTranslation extends VendureEntity implements Translation<
 
     @Column() description: string;
 
-    @ManyToOne(type => Collection, base => base.translations)
+    @ManyToOne(type => Collection, base => base.translations, { onDelete: 'CASCADE' })
     base: Collection;
 
     @Column(type => CustomCollectionFieldsTranslation)

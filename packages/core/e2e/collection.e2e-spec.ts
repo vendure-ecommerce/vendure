@@ -3,6 +3,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { pick } from '../../common/lib/pick';
 import { StringOperator } from '../src/common/configurable-operation';
 import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
 
@@ -14,7 +15,9 @@ import {
     CreateCollection,
     CreateCollectionInput,
     CreateCollectionSelectVariants,
+    DeleteCollection,
     DeleteProduct,
+    DeletionResult,
     FacetValueFragment,
     GetAssetList,
     GetCollection,
@@ -23,6 +26,7 @@ import {
     GetCollections,
     GetCollectionsForProducts,
     GetFacetValues,
+    GetProductCollections,
     GetProductsWithVariantIds,
     LanguageCode,
     MoveCollection,
@@ -389,6 +393,105 @@ describe('Collection resolver', () => {
             const result = await client.query<GetCollections.Query>(GET_COLLECTIONS);
             return result.collections.items.filter(i => i.parent!.id === parentId);
         }
+    });
+
+    describe('deleteCollection', () => {
+
+        let collectionToDelete: CreateCollection.CreateCollection;
+        let laptopProductId: string;
+
+        beforeAll(async () => {
+            const { createCollection } = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'contains',
+                                        type: ConfigArgType.STRING_OPERATOR,
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'laptop',
+                                        type: ConfigArgType.STRING,
+                                    },
+                                ],
+                            },
+                        ],
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Delete Me', description: '' },
+                        ],
+                    },
+                },
+            );
+            collectionToDelete = createCollection;
+        });
+
+        it('throws for invalid collection id', assertThrowsWithMessage(async () => {
+                await client.query<DeleteCollection.Mutation, DeleteCollection.Variables>(DELETE_COLLECTION, {
+                    id: 'T_999',
+                });
+            },
+            'No Collection with the id \'999\' could be found',
+            ),
+        );
+
+        it('collection and product related prior to deletion', async () => {
+            const { collection } = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: collectionToDelete.id,
+            });
+            expect(collection!.productVariants.items.map(pick(['name']))).toEqual([
+                { name: 'Laptop 13 inch 8GB' },
+                { name: 'Laptop 15 inch 8GB' },
+                { name: 'Laptop 13 inch 16GB' },
+                { name: 'Laptop 15 inch 16GB' },
+            ]);
+
+            laptopProductId = collection!.productVariants.items[0].productId;
+
+            const { product } = await client.query<GetProductCollections.Query, GetProductCollections.Variables>(GET_PRODUCT_COLLECTIONS, {
+                id: laptopProductId,
+            });
+
+            expect(product!.collections).toEqual([
+                { id: 'T_3', name: 'Electronics' },
+                { id: 'T_4', name: 'Computers' },
+                { id: 'T_5', name: 'Pear' },
+                { id: 'T_6', name: 'Delete Me' },
+            ]);
+        });
+
+        it('deleteCollection works', async () => {
+            const { deleteCollection } = await client.query<DeleteCollection.Mutation, DeleteCollection.Variables>(DELETE_COLLECTION, {
+                id: collectionToDelete.id,
+            });
+
+            expect(deleteCollection.result).toBe(DeletionResult.DELETED);
+        });
+
+        it('deleted collection is null', async () => {
+            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+                id: collectionToDelete.id,
+            });
+            expect(collection).toBeNull();
+        });
+
+        it('product no longer lists collection', async () => {
+            const { product } = await client.query<GetProductCollections.Query, GetProductCollections.Variables>(GET_PRODUCT_COLLECTIONS, {
+                id: laptopProductId,
+            });
+
+            expect(product!.collections).toEqual([
+                { id: 'T_3', name: 'Electronics' },
+                { id: 'T_4', name: 'Computers' },
+                { id: 'T_5', name: 'Pear' },
+            ]);
+        });
+
     });
 
     describe('filters', () => {
@@ -770,10 +873,10 @@ describe('Collection resolver', () => {
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_7', name: 'Photo AND Pear' },
-                { id: 'T_8', name: 'Photo OR Pear' },
-                { id: 'T_9', name: 'contains camera' },
-                { id: 'T_11', name: 'endsWith camera' },
+                { id: 'T_8', name: 'Photo AND Pear' },
+                { id: 'T_9', name: 'Photo OR Pear' },
+                { id: 'T_10', name: 'contains camera' },
+                { id: 'T_12', name: 'endsWith camera' },
             ]);
         });
     });
@@ -864,6 +967,7 @@ const GET_COLLECTION_PRODUCT_VARIANTS = gql`
                     facetValues {
                         code
                     }
+                    productId
                 }
             }
         }
@@ -904,6 +1008,27 @@ const GET_COLLECTIONS_FOR_PRODUCTS = gql`
                     id
                     name
                 }
+            }
+        }
+    }
+`;
+
+const DELETE_COLLECTION = gql`
+    mutation DeleteCollection($id: ID!) {
+        deleteCollection(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+const GET_PRODUCT_COLLECTIONS = gql`
+    query GetProductCollections($id: ID!) {
+        product(id: $id) {
+            id
+            collections {
+                id
+                name
             }
         }
     }

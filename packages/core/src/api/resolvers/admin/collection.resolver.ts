@@ -1,12 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    ConfigurableOperation,
+    DeletionResponse,
+    MutationCreateCollectionArgs,
+    MutationDeleteCollectionArgs,
+    MutationMoveCollectionArgs,
+    MutationUpdateCollectionArgs,
+    Permission,
     QueryCollectionArgs,
     QueryCollectionsArgs,
-    ConfigurableOperation,
-    MutationCreateCollectionArgs,
-    MutationMoveCollectionArgs,
-    Permission,
-    MutationUpdateCollectionArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -91,6 +93,15 @@ export class CollectionResolver {
     ): Promise<Translated<Collection>> {
         const { input } = args;
         return this.collectionService.move(ctx, input).then(this.encodeFilters);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteCollection(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCollectionArgs,
+    ): Promise<DeletionResponse> {
+        return this.collectionService.delete(ctx, args.id);
     }
 
     /**

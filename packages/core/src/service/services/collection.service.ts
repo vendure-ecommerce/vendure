@@ -1,6 +1,13 @@
 import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ConfigurableOperation, CreateCollectionInput, MoveCollectionInput, UpdateCollectionInput } from '@vendure/common/lib/generated-types';
+import {
+    ConfigurableOperation,
+    CreateCollectionInput,
+    DeletionResponse,
+    DeletionResult,
+    MoveCollectionInput,
+    UpdateCollectionInput
+} from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -255,6 +262,16 @@ export class CollectionService implements OnModuleInit {
         }
         this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         return assertFound(this.findOne(ctx, collection.id));
+    }
+
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const collection = await getEntityOrThrow(this.connection, Collection, id);
+        const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
+        await this.connection.getRepository(Collection).remove(collection);
+        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
