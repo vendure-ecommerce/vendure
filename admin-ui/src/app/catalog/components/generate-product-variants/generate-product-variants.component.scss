@@ -9,10 +9,6 @@
     display: flex;
 }
 
-::ng-deep ng-dropdown-panel {
-    display: none;
-}
-
 .values {
     flex: 1;
     margin: 0 6px;
