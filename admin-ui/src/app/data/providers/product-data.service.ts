@@ -10,6 +10,7 @@ import {
     CreateProductVariantInput,
     CreateProductVariants,
     DeleteProduct,
+    DeleteProductVariant,
     GetAssetList,
     GetProductList,
     GetProductOptionGroups,
@@ -33,6 +34,7 @@ import {
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUPS,
@@ -155,6 +157,15 @@ export class ProductDataService {
         return this.baseDataService.mutate<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
             UPDATE_PRODUCT_VARIANTS,
             input,
+        );
+    }
+
+    deleteProductVariant(id: string) {
+        return this.baseDataService.mutate<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+            DELETE_PRODUCT_VARIANT,
+            {
+                id,
+            },
         );
     }
 

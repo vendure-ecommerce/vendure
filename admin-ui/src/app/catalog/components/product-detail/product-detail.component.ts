@@ -2,8 +2,8 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, merge, Observable } from 'rxjs';
-import { distinctUntilChanged, map, mergeMap, take, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
+import { distinctUntilChanged, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
@@ -251,6 +251,34 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 return v.sku !== '';
             })
         );
+    }
+
+    deleteVariant(id: string) {
+        this.modalService
+            .dialog({
+                title: _('catalog.confirm-delete-product-variant'),
+                buttons: [
+                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(response =>
+                    response ? this.productDetailService.deleteProductVariant(id, this.id) : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-delete-success'), {
+                        entity: 'ProductVariant',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-delete-error'), {
+                        entity: 'ProductVariant',
+                    });
+                },
+            );
     }
 
     private displayFacetValueModal(): Observable<string[] | undefined> {

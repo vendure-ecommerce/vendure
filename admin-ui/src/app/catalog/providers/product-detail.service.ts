@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { map, mergeMap, shareReplay, skip } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
+import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 
 import {
     CreateProductInput,
     CreateProductVariantInput,
+    DeletionResult,
     FacetWithValues,
     LanguageCode,
     UpdateProductInput,
@@ -144,5 +145,17 @@ export class ProductDetailService {
 
     updateProductOption(input: UpdateProductOptionInput) {
         return this.dataService.product.updateProductOption(input);
+    }
+
+    deleteProductVariant(id: string, productId: string) {
+        return this.dataService.product.deleteProductVariant(id).pipe(
+            switchMap(result => {
+                if (result.deleteProductVariant.result === DeletionResult.DELETED) {
+                    return this.dataService.product.getProduct(productId).single$;
+                } else {
+                    return throwError(result.deleteProductVariant.message);
+                }
+            }),
+        );
     }
 }

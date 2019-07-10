@@ -325,3 +325,12 @@ export const UPDATE_PRODUCT_OPTION = gql`
         }
     }
 `;
+
+export const DELETE_PRODUCT_VARIANT = gql`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`;
