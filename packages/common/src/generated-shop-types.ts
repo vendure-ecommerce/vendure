@@ -655,6 +655,28 @@ export type CustomerList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type CustomFieldConfig = {
+    __typename?: 'CustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+};
+
+export type CustomFields = {
+    __typename?: 'CustomFields';
+    Address: Array<CustomFieldConfig>;
+    Collection: Array<CustomFieldConfig>;
+    Customer: Array<CustomFieldConfig>;
+    Facet: Array<CustomFieldConfig>;
+    FacetValue: Array<CustomFieldConfig>;
+    GlobalSettings: Array<CustomFieldConfig>;
+    OrderLine: Array<CustomFieldConfig>;
+    Product: Array<CustomFieldConfig>;
+    ProductOption: Array<CustomFieldConfig>;
+    ProductOptionGroup: Array<CustomFieldConfig>;
+    ProductVariant: Array<CustomFieldConfig>;
+    User: Array<CustomFieldConfig>;
+};
+
 export type DateOperators = {
     eq?: Maybe<Scalars['DateTime']>;
     before?: Maybe<Scalars['DateTime']>;
@@ -1909,7 +1931,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
     __typename?: 'ServerConfig';
-    customFields?: Maybe<Scalars['JSON']>;
+    customFieldConfig: CustomFields;
 };
 
 export type ShippingMethod = Node & {

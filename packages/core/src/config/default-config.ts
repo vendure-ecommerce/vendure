@@ -1,12 +1,12 @@
 import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFields } from '@vendure/common/lib/shared-types';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { CustomFields } from './custom-field/custom-field-types';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';

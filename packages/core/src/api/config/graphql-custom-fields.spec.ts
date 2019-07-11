@@ -1,5 +1,6 @@
-import { CustomFieldConfig, CustomFields } from '@vendure/common/lib/shared-types';
 import { printSchema } from 'graphql';
+
+import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
 import { addGraphQLCustomFields, addOrderLineCustomFieldsInput } from './graphql-custom-fields';
 

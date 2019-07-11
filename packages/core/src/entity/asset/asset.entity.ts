@@ -1,6 +1,5 @@
 import { AssetType } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 import { Address } from '../address/address.entity';

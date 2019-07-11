@@ -1,9 +1,9 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { idType } from '../../config/config-helpers';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionFields } from '../custom-entity-fields';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';

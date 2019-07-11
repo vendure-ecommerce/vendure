@@ -10,7 +10,6 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
-import { CustomFieldConfig } from 'shared/shared-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
@@ -18,6 +17,7 @@ import {
     ConfigurableOperation,
     ConfigurableOperationInput,
     CreateCollectionInput,
+    CustomFieldConfig,
     FacetWithValues,
     GetActiveChannel,
     LanguageCode,

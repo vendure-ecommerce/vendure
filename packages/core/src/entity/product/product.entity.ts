@@ -1,9 +1,10 @@
-import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { doc } from 'prettier';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';

@@ -28,7 +28,12 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Product: [
+            { type: 'string', name: 'foo' },
+            { type: 'datetime', name: 'expires' },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

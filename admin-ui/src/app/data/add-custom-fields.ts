@@ -6,7 +6,8 @@ import {
     Kind,
     SelectionNode,
 } from 'graphql';
-import { CustomFields } from 'shared/shared-types';
+
+import { CustomFields } from '../common/generated-types';
 
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured
@@ -16,7 +17,10 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
     const fragmentDefs = documentNode.definitions.filter(isFragmentDefinition);
 
     for (const fragmentDef of fragmentDefs) {
-        const entityType = fragmentDef.typeCondition.name.value as keyof CustomFields;
+        const entityType = fragmentDef.typeCondition.name.value as keyof Pick<
+            CustomFields,
+            Exclude<keyof CustomFields, '__typename'>
+        >;
         const customFieldsForType = customFields[entityType];
         if (customFieldsForType && customFieldsForType.length) {
             fragmentDef.selectionSet.selections.push({

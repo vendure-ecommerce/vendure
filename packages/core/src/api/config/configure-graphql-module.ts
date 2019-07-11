@@ -17,7 +17,7 @@ import { IdEncoderExtension } from '../middleware/id-encoder-extension';
 import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
 import { generateListOptions } from './generate-list-options';
-import { addGraphQLCustomFields, addOrderLineCustomFieldsInput } from './graphql-custom-fields';
+import { addGraphQLCustomFields, addOrderLineCustomFieldsInput, addServerConfigCustomFields } from './graphql-custom-fields';
 
 export interface GraphQLApiOptions {
     apiType: 'shop' | 'admin';
@@ -130,6 +130,7 @@ async function createGraphQLOptions(
         const typeDefs = await typesLoader.mergeTypesByPaths(options.typePaths);
         let schema = generateListOptions(typeDefs);
         schema = addGraphQLCustomFields(schema, customFields);
+        schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
         const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType).map(
             e => e.schema,

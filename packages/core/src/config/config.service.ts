@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFields } from '@vendure/common/lib/shared-types';
 import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { getConfig } from './config-helpers';
+import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
 import {

@@ -1,7 +1,5 @@
 import { buildSchema, printType } from 'graphql';
 
-import { CustomFields } from '@vendure/common/lib/shared-types';
-
 import { generateListOptions } from './generate-list-options';
 // tslint:disable:no-non-null-assertion
 

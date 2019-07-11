@@ -4,13 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
-import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateFacetInput,
     CreateFacetValueInput,
+    CustomFieldConfig,
     DeletionResult,
     FacetWithValues,
     LanguageCode,

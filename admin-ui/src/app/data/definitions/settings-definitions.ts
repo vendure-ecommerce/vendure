@@ -382,14 +382,59 @@ export const UPDATE_GLOBAL_SETTINGS = gql`
     ${GLOBAL_SETTINGS_FRAGMENT}
 `;
 
+export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
+    fragment CustomFieldConfig on CustomFieldConfig {
+        name
+        type
+    }
+`;
+
 export const GET_SERVER_CONFIG = gql`
     query GetServerConfig {
         globalSettings {
             serverConfig {
-                customFields
+                customFieldConfig {
+                    Address {
+                        ...CustomFieldConfig
+                    }
+                    Collection {
+                        ...CustomFieldConfig
+                    }
+                    Customer {
+                        ...CustomFieldConfig
+                    }
+                    Facet {
+                        ...CustomFieldConfig
+                    }
+                    FacetValue {
+                        ...CustomFieldConfig
+                    }
+                    GlobalSettings {
+                        ...CustomFieldConfig
+                    }
+                    OrderLine {
+                        ...CustomFieldConfig
+                    }
+                    Product {
+                        ...CustomFieldConfig
+                    }
+                    ProductOption {
+                        ...CustomFieldConfig
+                    }
+                    ProductOptionGroup {
+                        ...CustomFieldConfig
+                    }
+                    ProductVariant {
+                        ...CustomFieldConfig
+                    }
+                    User {
+                        ...CustomFieldConfig
+                    }
+                }
             }
         }
     }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
 
 export const JOB_INFO_FRAGMENT = gql`

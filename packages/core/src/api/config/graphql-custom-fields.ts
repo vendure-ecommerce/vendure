@@ -1,6 +1,8 @@
-import { CustomFieldConfig, CustomFields, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, GraphQLArgument, GraphQLInputObjectType, GraphQLSchema, parse } from 'graphql';
+import { buildSchema, extendSchema, GraphQLInputObjectType, GraphQLSchema, parse } from 'graphql';
+
+import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in
@@ -18,6 +20,12 @@ export function addGraphQLCustomFields(
     if (!schema.getType('JSON')) {
         customFieldTypeDefs += `
             scalar JSON
+        `;
+    }
+
+    if (!schema.getType('DateTime')) {
+        customFieldTypeDefs += `
+            scalar DateTime
         `;
     }
 
@@ -139,6 +147,22 @@ export function addGraphQLCustomFields(
     return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
+export function addServerConfigCustomFields(typeDefsOrSchema: string | GraphQLSchema,
+                                            customFieldConfig: CustomFields) {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    const customFieldTypeDefs = `
+            type CustomFields {
+                ${Object.keys(customFieldConfig).reduce((output, name) => output + name + `: [CustomFieldConfig!]!\n`, '')}
+            }
+
+            extend type ServerConfig {
+                customFieldConfig: CustomFields!
+            }
+        `;
+
+    return extendSchema(schema, parse(customFieldTypeDefs));
+}
+
 /**
  * If CustomFields are defined on the OrderLine entity, then an extra `customFields` argument
  * must be added to the `addItemToOrder` and `adjustOrderLine` mutations.
@@ -178,7 +202,7 @@ export function addOrderLineCustomFieldsInput(typeDefsOrSchema: string | GraphQL
     return new GraphQLSchema(schemaConfig);
 }
 
-type GraphQLFieldType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
+type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
 
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
@@ -208,9 +232,10 @@ function getFilterOperator(type: CustomFieldType): string {
 function getGraphQlType(type: CustomFieldType): GraphQLFieldType {
     switch (type) {
         case 'string':
-        case 'datetime':
         case 'localeString':
             return 'String';
+        case 'datetime':
+            return 'DateTime';
         case 'boolean':
             return 'Boolean';
         case 'int':

@@ -20,9 +20,9 @@ export class GlobalSettingsResolver {
      * Exposes a subset of the VendureConfig which may be of use to clients.
      */
     @ResolveProperty()
-    serverConfig(): Partial<VendureConfig> {
+    serverConfig() {
         return {
-            customFields: this.configService.customFields,
+            customFieldConfig: this.configService.customFields,
         };
     }
 

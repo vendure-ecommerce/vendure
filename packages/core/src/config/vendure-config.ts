@@ -1,7 +1,6 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFields } from '@vendure/common/lib/shared-types';
 import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
@@ -13,6 +12,7 @@ import { OrderState } from '../service/helpers/order-state-machine/order-state';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';

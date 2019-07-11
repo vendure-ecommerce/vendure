@@ -1,8 +1,9 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
-import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomOrderLineFields, CustomProductFields } from '../custom-entity-fields';

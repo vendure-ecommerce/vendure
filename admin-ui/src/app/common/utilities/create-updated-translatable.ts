@@ -1,12 +1,7 @@
-import {
-    CustomFieldConfig,
-    CustomFieldsObject,
-    CustomFieldType,
-    MayHaveCustomFields,
-} from 'shared/shared-types';
+import { CustomFieldsObject, CustomFieldType } from 'shared/shared-types';
 import { assertNever } from 'shared/shared-utils';
 
-import { LanguageCode } from '../generated-types';
+import { CustomFieldConfig, LanguageCode } from '../generated-types';
 
 export interface TranslatableUpdateOptions<T extends { translations: any[] } & MayHaveCustomFields> {
     translatable: T;
@@ -15,6 +10,10 @@ export interface TranslatableUpdateOptions<T extends { translations: any[] } & M
     customFieldConfig?: CustomFieldConfig[];
     defaultTranslation?: Partial<T['translations'][number]>;
 }
+
+export type MayHaveCustomFields = {
+    customFields?: { [key: string]: any };
+};
 
 /**
  * When updating an entity which has translations, the value from the form will pertain to the current
@@ -38,7 +37,8 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
             if (field.type === 'localeString') {
                 newTranslatedCustomFields[field.name] = value;
             } else {
-                newCustomFields[field.name] = value === '' ? getDefaultValue(field.type) : value;
+                newCustomFields[field.name] =
+                    value === '' ? getDefaultValue(field.type as CustomFieldType) : value;
             }
         }
         newTranslation.customFields = newTranslatedCustomFields;
@@ -80,7 +80,7 @@ function getDefaultValue(type: CustomFieldType): any {
  * those of `obj`.
  */
 function patchObject<T extends { [key: string]: any }>(obj: T, patch: { [key: string]: any }): T {
-    const clone = Object.assign({}, obj);
+    const clone: any = Object.assign({}, obj);
     Object.keys(clone).forEach(key => {
         if (patch.hasOwnProperty(key)) {
             clone[key] = patch[key];

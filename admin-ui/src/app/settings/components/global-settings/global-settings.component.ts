@@ -2,10 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
-import { CustomFieldConfig } from 'shared/shared-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import { GlobalSettings, LanguageCode } from '../../../common/generated-types';
+import { CustomFieldConfig, GlobalSettings, LanguageCode } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

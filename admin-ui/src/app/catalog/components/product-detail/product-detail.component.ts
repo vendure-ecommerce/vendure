@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import { distinctUntilChanged, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
-import { CustomFieldConfig } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 import { unique } from 'shared/unique';
 import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
@@ -13,6 +12,7 @@ import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/ca
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateProductInput,
+    CustomFieldConfig,
     FacetWithValues,
     LanguageCode,
     ProductWithVariants,

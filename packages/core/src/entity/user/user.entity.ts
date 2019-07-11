@@ -1,6 +1,7 @@
-import { DeepPartial, HasCustomFields } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 import { Role } from '../role/role.entity';

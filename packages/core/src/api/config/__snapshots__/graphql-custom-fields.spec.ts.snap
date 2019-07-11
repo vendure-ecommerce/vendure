@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`addGraphQLCustomFields() extends a type 1`] = `
-"scalar JSON
+"scalar DateTime
+
+scalar JSON
 
 type Product {
   id: ID
@@ -23,6 +25,8 @@ input DateOperators {
   eq: String
 }
 
+scalar DateTime
+
 scalar JSON
 
 input NumberOperators {
@@ -38,7 +42,7 @@ type ProductCustomFields {
   available: Boolean
   shortName: String
   rating: Float
-  published: String
+  published: DateTime
 }
 
 input ProductFilterParameter {
@@ -56,7 +60,9 @@ input StringOperators {
 `;
 
 exports[`addGraphQLCustomFields() extends a type with SortParameters 1`] = `
-"scalar JSON
+"scalar DateTime
+
+scalar JSON
 
 type Product {
   id: ID
@@ -91,6 +97,8 @@ input CreateProductInput {
   customFields: CreateProductCustomFieldsInput
 }
 
+scalar DateTime
+
 scalar JSON
 
 type Product {
@@ -114,6 +122,8 @@ input CreateProductInput {
   image: String
   customFields: CreateProductCustomFieldsInput
 }
+
+scalar DateTime
 
 scalar JSON
 
@@ -148,7 +158,9 @@ input ProductTranslationInput {
 `;
 
 exports[`addGraphQLCustomFields() extends a type with a translation 1`] = `
-"scalar JSON
+"scalar DateTime
+
+scalar JSON
 
 type Product {
   id: ID
@@ -173,7 +185,9 @@ type ProductTranslationCustomFields {
 `;
 
 exports[`addGraphQLCustomFields() extends a type with an Update input 1`] = `
-"scalar JSON
+"scalar DateTime
+
+scalar JSON
 
 type Product {
   id: ID
@@ -197,7 +211,9 @@ input UpdateProductInput {
 `;
 
 exports[`addGraphQLCustomFields() uses JSON scalar if no custom fields defined 1`] = `
-"scalar JSON
+"scalar DateTime
+
+scalar JSON
 
 type Product {
   id: ID

@@ -1,12 +1,11 @@
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { distinctUntilChanged, map, share, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { CustomFieldConfig, CustomFields } from 'shared/shared-types';
+import { ActivatedRoute, Router } from '@angular/router';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { ServerConfigService } from '../data/server-config';
 
-import { LanguageCode } from './generated-types';
+import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { getDefaultLanguage } from './utilities/get-default-language';
 
 export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> {
@@ -62,8 +61,8 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
 
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
 
-    protected getCustomFieldConfig(key: keyof CustomFields): CustomFieldConfig[] {
-        return this.serverConfigService.serverConfig.customFields[key] || [];
+    protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
+        return this.serverConfigService.serverConfig.customFieldConfig[key] || [];
     }
 
     protected setQueryParam(key: string, value: any) {

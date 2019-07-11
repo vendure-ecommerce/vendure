@@ -1,9 +1,9 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { HasCustomFields } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductVariantFieldsTranslation } from '../custom-entity-fields';
 
