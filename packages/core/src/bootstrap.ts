@@ -10,7 +10,7 @@ import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
 import { VendureConfig } from './config/vendure-config';
-import { registerCustomEntityFields } from './entity/custom-entity-fields';
+import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;

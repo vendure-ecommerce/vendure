@@ -1,7 +1,7 @@
 import { createConnection } from 'typeorm';
 
 import { isTestEnvironment } from '../e2e/utils/test-environment';
-import { registerCustomEntityFields } from '../src/entity/custom-entity-fields';
+import { registerCustomEntityFields } from '../src/entity/register-custom-entity-fields';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
