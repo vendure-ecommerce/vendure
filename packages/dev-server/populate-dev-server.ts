@@ -30,7 +30,7 @@ if (require.main === module) {
         },
         customFields: {},
     };
-    clearAllTables(populateConfig.dbConnectionOptions, true)
+    clearAllTables(populateConfig, true)
         .then(() => populate(() => bootstrap(populateConfig),
             path.join(__dirname, '../create/assets/initial-data.json'),
             path.join(__dirname, '../create/assets/products.csv'),

@@ -3,7 +3,6 @@ import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import fs from 'fs-extra';
 
-import { VendureBootstrapFunction } from '../src/bootstrap';
 import { setConfig } from '../src/config/config-helpers';
 import { VendureConfig } from '../src/config/vendure-config';
 
@@ -32,7 +31,7 @@ export async function populateForTesting(
     config.authOptions.requireVerification = false;
 
     setConfig(config);
-    await clearAllTables(config.dbConnectionOptions, logging);
+    await clearAllTables(config, logging);
     const [app, worker] = await bootstrapFn(config);
 
     await populateInitialData(app, options.initialDataPath, logging);

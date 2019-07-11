@@ -16,7 +16,7 @@ import { TestingEntityIdStrategy } from './testing-entity-id-strategy';
  * e2e tests because on the first run (and always in CI) the sqlite databases
  * need to be generated, which can take a while.
  */
-export const TEST_SETUP_TIMEOUT_MS = 120000;
+export const TEST_SETUP_TIMEOUT_MS = process.env.E2E_DEBUG ? 1800 * 1000 : 120000;
 
 /**
  * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
@@ -25,7 +25,7 @@ export const TEST_SETUP_TIMEOUT_MS = 120000;
 if (process.env.E2E_DEBUG) {
     // tslint:disable-next-line:no-console
     console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
-    jest.setTimeout(2137 * 1000);
+    jest.setTimeout(1800 * 1000);
 }
 
 /**

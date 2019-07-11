@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../core/typings.d.ts" />
-import { bootstrap, VendureConfig } from '@vendure/core';
+import { bootstrap } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import { BaseProductRecord } from '@vendure/core/dist/data-import/providers/import-parser/import-parser';
 import stringify from 'csv-stringify';
@@ -10,14 +10,8 @@ import path from 'path';
 import { clearAllTables } from '../../core/mock-data/clear-all-tables';
 import { initialData } from '../../core/mock-data/data-sources/initial-data';
 import { populateCustomers } from '../../core/mock-data/populate-customers';
-import { devConfig } from '../dev-config';
 
-import {
-    getLoadTestConfig,
-    getMysqlConnectionOptions,
-    getProductCount,
-    getProductCsvFilePath,
-} from './load-test-config';
+import { getLoadTestConfig, getMysqlConnectionOptions, getProductCount, getProductCsvFilePath } from './load-test-config';
 
 // tslint:disable:no-console
 
@@ -32,7 +26,7 @@ if (require.main === module) {
                 const count = getProductCount();
                 const config = getLoadTestConfig('bearer');
                 const csvFile = getProductCsvFilePath();
-                return clearAllTables(config.dbConnectionOptions, true)
+                return clearAllTables(config, true)
                     .then(() => {
                         if (!fs.existsSync(csvFile)) {
                             return generateProductsCsv(count);

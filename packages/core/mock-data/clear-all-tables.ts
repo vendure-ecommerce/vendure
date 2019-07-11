@@ -1,16 +1,18 @@
-import { ConnectionOptions, createConnection } from 'typeorm';
+import { createConnection } from 'typeorm';
 
 import { isTestEnvironment } from '../e2e/utils/test-environment';
+import { registerCustomEntityFields } from '../src/entity/custom-entity-fields';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
 /**
  * Clears all tables in the detabase sepcified by the connectionOptions
  */
-export async function clearAllTables(connectionOptions: ConnectionOptions, logging = true) {
-    (connectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
+export async function clearAllTables(config: any, logging = true) {
+    (config.dbConnectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
     const name = isTestEnvironment() ? undefined : 'clearAllTables';
-    const connection = await createConnection({ ...connectionOptions, name });
+    registerCustomEntityFields(config);
+    const connection = await createConnection({ ...config.dbConnectionOptions, name });
     if (logging) {
         console.log('Clearing all tables...');
     }
