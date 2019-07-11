@@ -2,8 +2,6 @@ import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm
 
 import { CALCULATED_PROPERTIES } from '../common/calculated-decorator';
 
-import { ProductVariantSubscriber } from './product-variant/product-variant.subscriber';
-
 @EventSubscriber()
 export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
     afterLoad(event: any) {
@@ -45,6 +43,5 @@ export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
  * A map of the core TypeORM Subscribers.
  */
 export const coreSubscribersMap = {
-    ProductVariantSubscriber,
     CalculatedPropertySubscriber,
 };
