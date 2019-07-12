@@ -147,12 +147,17 @@ export function addGraphQLCustomFields(
     return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
-export function addServerConfigCustomFields(typeDefsOrSchema: string | GraphQLSchema,
-                                            customFieldConfig: CustomFields) {
+export function addServerConfigCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    customFieldConfig: CustomFields,
+) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
     const customFieldTypeDefs = `
             type CustomFields {
-                ${Object.keys(customFieldConfig).reduce((output, name) => output + name + `: [CustomFieldConfig!]!\n`, '')}
+                ${Object.keys(customFieldConfig).reduce(
+                    (output, name) => output + name + `: [CustomFieldConfig!]!\n`,
+                    '',
+                )}
             }
 
             extend type ServerConfig {
@@ -167,7 +172,10 @@ export function addServerConfigCustomFields(typeDefsOrSchema: string | GraphQLSc
  * If CustomFields are defined on the OrderLine entity, then an extra `customFields` argument
  * must be added to the `addItemToOrder` and `adjustOrderLine` mutations.
  */
-export function addOrderLineCustomFieldsInput(typeDefsOrSchema: string | GraphQLSchema, orderLineCustomFields: CustomFieldConfig[]): GraphQLSchema {
+export function addOrderLineCustomFieldsInput(
+    typeDefsOrSchema: string | GraphQLSchema,
+    orderLineCustomFields: CustomFieldConfig[],
+): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
     if (!orderLineCustomFields || orderLineCustomFields.length === 0) {
         return schema;
@@ -207,8 +215,12 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
-function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
-    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
+function mapToFields(
+    fieldDefs: CustomFieldConfig[],
+    typeFn: (fieldType: CustomFieldType) => string,
+    prefix: string = '',
+): string {
+    return fieldDefs.map(field => `${prefix}${field.name}: ${typeFn(field.type)}`).join('\n');
 }
 
 function getFilterOperator(type: CustomFieldType): string {

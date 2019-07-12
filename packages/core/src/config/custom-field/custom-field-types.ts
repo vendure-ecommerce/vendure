@@ -1,15 +1,35 @@
 import { CustomFieldConfig as GraphQLCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, CustomFieldType } from '@vendure/common/src/shared-types';
 
+// prettier-ignore
+export type DefaultValueType<T extends CustomFieldType> =
+    T extends 'string' | 'localeString' ? string :
+        T extends 'int' | 'float' ? number :
+            T extends 'boolean' ? boolean :
+                T extends 'datetime' ? Date : never;
+
 /**
  * @description
  * Configures a custom field on an entity in the {@link CustomFields} config object.
  *
  * @docsCategory custom-fields
  */
-export interface CustomFieldConfig extends Omit<GraphQLCustomFieldConfig, '__typename'> {
-    type: CustomFieldType;
-}
+export type TypedCustomFieldConfig<T extends CustomFieldType = CustomFieldType> = Omit<
+    GraphQLCustomFieldConfig,
+    '__typename'
+> & {
+    type: T;
+    defaultValue?: DefaultValueType<T>;
+    nullable?: boolean;
+};
+
+export type CustomFieldConfig =
+    | TypedCustomFieldConfig<'string'>
+    | TypedCustomFieldConfig<'localeString'>
+    | TypedCustomFieldConfig<'int'>
+    | TypedCustomFieldConfig<'float'>
+    | TypedCustomFieldConfig<'boolean'>
+    | TypedCustomFieldConfig<'datetime'>;
 
 /**
  * @description

@@ -11,6 +11,7 @@ import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
 import { VendureConfig } from './config/vendure-config';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
+import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -136,6 +137,10 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
+    if (!customFieldValidationResult.valid) {
+        throw new Error(`CustomFields config error:\n- ` + customFieldValidationResult.errors.join('\n- '));
+    }
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     return config;

@@ -937,6 +937,8 @@ export type CustomFieldConfig = {
   __typename?: 'CustomFieldConfig',
   name: Scalars['String'],
   type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
 };
 
 export type CustomFields = {
@@ -1554,6 +1556,12 @@ export enum LanguageCode {
   zu = 'zu'
 }
 
+export type LocalizedString = {
+  __typename?: 'LocalizedString',
+  languageCode: LanguageCode,
+  value: Scalars['String'],
+};
+
 export type LoginResult = {
   __typename?: 'LoginResult',
   user: CurrentUser,
@@ -1567,14 +1575,14 @@ export type MoveCollectionInput = {
 
 export type Mutation = {
   __typename?: 'Mutation',
+  /** Create a new Asset */
+  createAssets: Array<Asset>,
   /** Create a new Administrator */
   createAdministrator: Administrator,
   /** Update an existing Administrator */
   updateAdministrator: Administrator,
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator,
-  /** Create a new Asset */
-  createAssets: Array<Asset>,
   login: LoginResult,
   logout: Scalars['Boolean'],
   /** Create a new Channel */
@@ -1603,8 +1611,6 @@ export type Mutation = {
   addCustomersToGroup: CustomerGroup,
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup,
-  updateGlobalSettings: GlobalSettings,
-  importProducts?: Maybe<ImportInfo>,
   /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
   createCustomer: Customer,
   /** Update an existing Customer */
@@ -1629,6 +1635,8 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>,
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>,
+  updateGlobalSettings: GlobalSettings,
+  importProducts?: Maybe<ImportInfo>,
   settlePayment: Payment,
   fulfillOrder: Fulfillment,
   cancelOrder: Order,
@@ -1677,10 +1685,6 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1691,11 +1695,20 @@ export type Mutation = {
   addMembersToZone: Zone,
   /** Remove members from a Zone */
   removeMembersFromZone: Zone,
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate,
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate,
   requestStarted: Scalars['Int'],
   requestCompleted: Scalars['Int'],
   setAsLoggedIn: UserStatus,
   setAsLoggedOut: UserStatus,
   setUiLanguage?: Maybe<LanguageCode>,
+};
+
+
+export type MutationCreateAssetsArgs = {
+  input: Array<CreateAssetInput>
 };
 
 
@@ -1712,11 +1725,6 @@ export type MutationUpdateAdministratorArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'],
   roleId: Scalars['ID']
-};
-
-
-export type MutationCreateAssetsArgs = {
-  input: Array<CreateAssetInput>
 };
 
 
@@ -1794,16 +1802,6 @@ export type MutationRemoveCustomersFromGroupArgs = {
 };
 
 
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
-};
-
-
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
-};
-
-
 export type MutationCreateCustomerArgs = {
   input: CreateCustomerInput,
   password?: Maybe<Scalars['String']>
@@ -1865,6 +1863,16 @@ export type MutationUpdateFacetValuesArgs = {
 export type MutationDeleteFacetValuesArgs = {
   ids: Array<Scalars['ID']>,
   force?: Maybe<Scalars['Boolean']>
+};
+
+
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput
+};
+
+
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload']
 };
 
 
@@ -2010,16 +2018,6 @@ export type MutationUpdateTaxCategoryArgs = {
 };
 
 
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
-};
-
-
 export type MutationCreateZoneArgs = {
   input: CreateZoneInput
 };
@@ -2044,6 +2042,16 @@ export type MutationAddMembersToZoneArgs = {
 export type MutationRemoveMembersFromZoneArgs = {
   zoneId: Scalars['ID'],
   memberIds: Array<Scalars['ID']>
+};
+
+
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput
 };
 
 
@@ -2558,10 +2566,10 @@ export type PromotionSortParameter = {
 
 export type Query = {
   __typename?: 'Query',
-  administrators: AdministratorList,
-  administrator?: Maybe<Administrator>,
   assets: AssetList,
   asset?: Maybe<Asset>,
+  administrators: AdministratorList,
+  administrator?: Maybe<Administrator>,
   me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
@@ -2573,11 +2581,11 @@ export type Query = {
   country?: Maybe<Country>,
   customerGroups: Array<CustomerGroup>,
   customerGroup?: Maybe<CustomerGroup>,
-  globalSettings: GlobalSettings,
   customers: CustomerList,
   customer?: Maybe<Customer>,
   facets: FacetList,
   facet?: Maybe<Facet>,
+  globalSettings: GlobalSettings,
   job?: Maybe<JobInfo>,
   jobs: Array<JobInfo>,
   order?: Maybe<Order>,
@@ -2601,23 +2609,13 @@ export type Query = {
   shippingCalculators: Array<ConfigurableOperation>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
-  taxRates: TaxRateList,
-  taxRate?: Maybe<TaxRate>,
   zones: Array<Zone>,
   zone?: Maybe<Zone>,
+  taxRates: TaxRateList,
+  taxRate?: Maybe<TaxRate>,
   networkStatus: NetworkStatus,
   userStatus: UserStatus,
   uiState: UiState,
-};
-
-
-export type QueryAdministratorsArgs = {
-  options?: Maybe<AdministratorListOptions>
-};
-
-
-export type QueryAdministratorArgs = {
-  id: Scalars['ID']
 };
 
 
@@ -2627,6 +2625,16 @@ export type QueryAssetsArgs = {
 
 
 export type QueryAssetArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryAdministratorsArgs = {
+  options?: Maybe<AdministratorListOptions>
+};
+
+
+export type QueryAdministratorArgs = {
   id: Scalars['ID']
 };
 
@@ -2780,17 +2788,17 @@ export type QueryTaxCategoryArgs = {
 };
 
 
+export type QueryZoneArgs = {
+  id: Scalars['ID']
+};
+
+
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryZoneArgs = {
   id: Scalars['ID']
 };
 

@@ -9,8 +9,3 @@ type GlobalSettings {
 
 # Programatically extended by the addGraphQLCustomFields function
 type ServerConfig
-
-type CustomFieldConfig {
-    name: String!
-    type: String!
-}

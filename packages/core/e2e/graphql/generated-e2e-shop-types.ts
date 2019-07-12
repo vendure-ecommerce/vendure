@@ -659,6 +659,8 @@ export type CustomFieldConfig = {
     __typename?: 'CustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
 };
 
 export type CustomFields = {
@@ -1204,6 +1206,12 @@ export enum LanguageCode {
     /** Zulu */
     zu = 'zu',
 }
+
+export type LocalizedString = {
+    __typename?: 'LocalizedString';
+    languageCode: LanguageCode;
+    value: Scalars['String'];
+};
 
 export type LoginResult = {
     __typename?: 'LoginResult';

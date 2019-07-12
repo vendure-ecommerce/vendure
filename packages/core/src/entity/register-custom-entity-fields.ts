@@ -1,6 +1,7 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Column, ColumnType, ConnectionOptions } from 'typeorm';
+import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { CustomFields } from '../config/custom-field/custom-field-types';
 import { VendureConfig } from '../config/vendure-config';
@@ -41,9 +42,14 @@ function registerCustomFieldsForEntity(
     const dbEngine = config.dbConnectionOptions.type;
     if (customFields) {
         for (const customField of customFields) {
-            const { name, type } = customField;
+            const { name, type, defaultValue, nullable } = customField;
             const registerColumn = () =>
-                Column({ type: getColumnType(dbEngine, type), name, nullable: true })(new ctor(), name);
+                Column({
+                    type: getColumnType(dbEngine, type),
+                    default: type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue,
+                    name,
+                    nullable: nullable === false ? false : true,
+                })(new ctor(), name);
 
             if (translation) {
                 if (type === 'localeString') {
@@ -58,19 +64,48 @@ function registerCustomFieldsForEntity(
     }
 }
 
+function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: any): Date | string {
+    switch (dbEngine) {
+        case 'sqlite':
+        case 'sqljs':
+            return DateUtils.mixedDateToDatetimeString(datetime);
+        case 'mysql':
+        case 'postgres':
+        default:
+            return DateUtils.mixedDateToDate(datetime);
+    }
+}
+
 function getColumnType(dbEngine: ConnectionOptions['type'], type: CustomFieldType): ColumnType {
     switch (type) {
         case 'string':
         case 'localeString':
             return 'varchar';
         case 'boolean':
-            return dbEngine === 'mysql' ? 'tinyint' : 'bool';
+            switch (dbEngine) {
+                case 'mysql':
+                    return 'tinyint';
+                case 'postgres':
+                    return 'bool';
+                case 'sqlite':
+                case 'sqljs':
+                default:
+                    return 'boolean';
+            }
         case 'int':
             return 'int';
         case 'float':
             return 'double';
         case 'datetime':
-            return dbEngine === 'mysql' ? 'datetime' : 'timestamp';
+            switch (dbEngine) {
+                case 'postgres':
+                    return 'timestamp';
+                case 'mysql':
+                case 'sqlite':
+                case 'sqljs':
+                default:
+                    return 'datetime';
+            }
         default:
             assertNever(type);
     }
@@ -107,4 +142,3 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
 }
-

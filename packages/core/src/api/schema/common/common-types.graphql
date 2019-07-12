@@ -20,6 +20,18 @@ type Adjustment {
     amount: Int!
 }
 
+type CustomFieldConfig {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+}
+
+type LocalizedString {
+    languageCode: LanguageCode!
+    value: String!
+}
+
 """
 Certain entities allow arbitrary configuration arguments to be specified which can then
 be set in the admin-ui and used in the business logic of the app. These are the valid

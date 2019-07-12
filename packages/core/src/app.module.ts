@@ -6,7 +6,6 @@ import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
-import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 
@@ -19,10 +18,6 @@ export class AppModule implements NestModule, OnModuleDestroy, OnApplicationShut
 
     configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath } = this.configService;
-
-        // tslint:disable-next-line:no-floating-promises
-        validateCustomFieldsConfig(this.configService.customFields);
-
         const i18nextHandler = this.i18nService.handle();
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
             { handler: i18nextHandler, route: adminApiPath },

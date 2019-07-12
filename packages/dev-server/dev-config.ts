@@ -29,10 +29,10 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {
-        Product: [
-            { type: 'string', name: 'foo' },
+        /*Product: [
+            { type: 'string', name: 'name' },
             { type: 'datetime', name: 'expires' },
-        ],
+        ],*/
     },
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
