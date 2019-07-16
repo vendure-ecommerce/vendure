@@ -28,6 +28,11 @@ export type TypedCustomFieldConfig<T extends CustomFieldType, C extends CustomFi
     '__typename'
 > & {
     type: T;
+    /**
+     * Whether or not the custom field is available via the Shop API.
+     * @default true
+     */
+    public?: boolean;
     defaultValue?: DefaultValueType<T>;
     nullable?: boolean;
     validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;

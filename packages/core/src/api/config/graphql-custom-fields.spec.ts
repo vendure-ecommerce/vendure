@@ -14,7 +14,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -27,7 +27,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -45,7 +45,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -62,7 +62,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -79,7 +79,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -104,7 +104,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -126,7 +126,7 @@ describe('addGraphQLCustomFields()', () => {
         const customFieldConfig: CustomFields = {
             Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
     });
 
@@ -165,7 +165,23 @@ describe('addGraphQLCustomFields()', () => {
                 { name: 'published', type: 'datetime' },
             ],
         };
-        const result = addGraphQLCustomFields(input, customFieldConfig);
+        const result = addGraphQLCustomFields(input, customFieldConfig, false);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+
+    it('publicOnly = true', () => {
+        const input = `
+                 type Product {
+                     id: ID
+                 }
+            `;
+        const customFieldConfig: CustomFields = {
+            Product: [
+                { name: 'available', type: 'boolean', public: true },
+                { name: 'profitMargin', type: 'float', public: false },
+            ],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig, true);
         expect(printSchema(result)).toMatchSnapshot();
     });
 });

@@ -150,7 +150,7 @@ async function createGraphQLOptions(
         const customFields = configService.customFields;
         const typeDefs = await typesLoader.mergeTypesByPaths(options.typePaths);
         let schema = generateListOptions(typeDefs);
-        schema = addGraphQLCustomFields(schema, customFields);
+        schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
         const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType).map(

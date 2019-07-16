@@ -210,6 +210,22 @@ input UpdateProductInput {
 "
 `;
 
+exports[`addGraphQLCustomFields() publicOnly = true 1`] = `
+"scalar DateTime
+
+scalar JSON
+
+type Product {
+  id: ID
+  customFields: ProductCustomFields
+}
+
+type ProductCustomFields {
+  available: Boolean
+}
+"
+`;
+
 exports[`addGraphQLCustomFields() uses JSON scalar if no custom fields defined 1`] = `
 "scalar DateTime
 

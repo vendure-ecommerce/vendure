@@ -77,6 +77,18 @@ describe('Custom fields', () => {
                             type: 'string',
                             options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
                         },
+                        {
+                            name: 'nonPublic',
+                            type: 'string',
+                            defaultValue: 'hi!',
+                            public: false,
+                        },
+                        {
+                            name: 'public',
+                            type: 'string',
+                            defaultValue: 'ho!',
+                            public: true,
+                        },
                     ],
                 },
             },
@@ -125,6 +137,8 @@ describe('Custom fields', () => {
                 { name: 'validateFn1', type: 'string' },
                 { name: 'validateFn2', type: 'string' },
                 { name: 'stringWithOptions', type: 'string' },
+                { name: 'nonPublic', type: 'string' },
+                { name: 'public', type: 'string' },
             ],
         });
     });
@@ -223,20 +237,19 @@ describe('Custom fields', () => {
             }, `The custom field value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']`),
         );
 
-        it(
-            'valid string option', async () => {
-                const { updateProduct } = await adminClient.query(gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "medium" } }) {
-                            id
-                            customFields {
-                                stringWithOptions
-                            }
+        it('valid string option', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "medium" } }) {
+                        id
+                        customFields {
+                            stringWithOptions
                         }
                     }
-                `);
-                expect(updateProduct.customFields.stringWithOptions).toBe('medium');
-            });
+                }
+            `);
+            expect(updateProduct.customFields.stringWithOptions).toBe('medium');
+        });
 
         it(
             'invalid localeString',
@@ -331,5 +344,38 @@ describe('Custom fields', () => {
                 `);
             }, `The value ['invalid'] is not valid`),
         );
+    });
+
+    describe('public access', () => {
+        it(
+            'non-public throws for Shop API',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(gql`
+                    query {
+                        product(id: "T_1") {
+                            id
+                            customFields {
+                                nonPublic
+                            }
+                        }
+                    }
+                `);
+            }, `Cannot query field "nonPublic" on type "ProductCustomFields"`),
+        );
+
+        it('publicly accessible via Shop API', async () => {
+            const { product } = await shopClient.query(gql`
+                query {
+                    product(id: "T_1") {
+                        id
+                        customFields {
+                            public
+                        }
+                    }
+                }
+            `);
+
+            expect(product.customFields.public).toBe('ho!');
+        });
     });
 });

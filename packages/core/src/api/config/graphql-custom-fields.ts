@@ -12,6 +12,7 @@ import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custo
 export function addGraphQLCustomFields(
     typeDefsOrSchema: string | GraphQLSchema,
     customFieldConfig: CustomFields,
+    publicOnly: boolean,
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
 
@@ -30,7 +31,9 @@ export function addGraphQLCustomFields(
     }
 
     for (const entityName of Object.keys(customFieldConfig)) {
-        const customEntityFields = customFieldConfig[entityName as keyof CustomFields] || [];
+        const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(config => {
+            return (publicOnly === true) ? config.public !== false : true;
+        });
 
         const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
         const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
