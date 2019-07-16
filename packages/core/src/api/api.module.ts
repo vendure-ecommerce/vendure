@@ -11,6 +11,7 @@ import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AssetInterceptor } from './middleware/asset-interceptor';
 import { AuthGuard } from './middleware/auth-guard';
 import { IdInterceptor } from './middleware/id-interceptor';
+import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
 
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
@@ -54,6 +55,10 @@ import { IdInterceptor } from './middleware/id-interceptor';
         {
             provide: APP_INTERCEPTOR,
             useClass: IdInterceptor,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ValidateCustomFieldsInterceptor,
         },
     ],
 })

@@ -161,6 +161,14 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type BooleanCustomFieldConfig = CustomField & {
+  __typename?: 'BooleanCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+};
+
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>,
 };
@@ -932,13 +940,15 @@ export type CustomerSortParameter = {
   emailAddress?: Maybe<SortOrder>,
 };
 
-export type CustomFieldConfig = {
-  __typename?: 'CustomFieldConfig',
+export type CustomField = {
+  __typename?: 'CustomField',
   name: Scalars['String'],
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
 };
+
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
   __typename?: 'CustomFields',
@@ -968,6 +978,20 @@ export type DateRange = {
   end: Scalars['DateTime'],
 };
 
+
+/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeCustomFieldConfig = CustomField & {
+  __typename?: 'DateTimeCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['String']>,
+  max?: Maybe<Scalars['String']>,
+  step?: Maybe<Scalars['Int']>,
+};
 
 export type DeletionResponse = {
   __typename?: 'DeletionResponse',
@@ -1080,6 +1104,17 @@ export type FacetValueTranslationInput = {
   customFields?: Maybe<Scalars['JSON']>,
 };
 
+export type FloatCustomFieldConfig = CustomField & {
+  __typename?: 'FloatCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['Float']>,
+  max?: Maybe<Scalars['Float']>,
+  step?: Maybe<Scalars['Float']>,
+};
+
 export type Fulfillment = Node & {
   __typename?: 'Fulfillment',
   id: Scalars['ID'],
@@ -1156,6 +1191,17 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>,
   processed: Scalars['Int'],
   imported: Scalars['Int'],
+};
+
+export type IntCustomFieldConfig = CustomField & {
+  __typename?: 'IntCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['Int']>,
+  max?: Maybe<Scalars['Int']>,
+  step?: Maybe<Scalars['Int']>,
 };
 
 export type JobInfo = {
@@ -1555,6 +1601,15 @@ export enum LanguageCode {
   zu = 'zu'
 }
 
+export type LocaleStringCustomFieldConfig = CustomField & {
+  __typename?: 'LocaleStringCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  pattern?: Maybe<Scalars['String']>,
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString',
   languageCode: LanguageCode,
@@ -1574,14 +1629,14 @@ export type MoveCollectionInput = {
 
 export type Mutation = {
   __typename?: 'Mutation',
-  /** Create a new Asset */
-  createAssets: Array<Asset>,
   /** Create a new Administrator */
   createAdministrator: Administrator,
   /** Update an existing Administrator */
   updateAdministrator: Administrator,
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator,
+  /** Create a new Asset */
+  createAssets: Array<Asset>,
   login: LoginResult,
   logout: Scalars['Boolean'],
   /** Create a new Channel */
@@ -1642,8 +1697,6 @@ export type Mutation = {
   refundOrder: Refund,
   settleRefund: Refund,
   addNoteToOrder: Order,
-  /** Update an existing PaymentMethod */
-  updatePaymentMethod: PaymentMethod,
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
@@ -1652,7 +1705,8 @@ export type Mutation = {
   createProductOption: ProductOption,
   /** Create a new ProductOption within a ProductOptionGroup */
   updateProductOption: ProductOption,
-  reindex: JobInfo,
+  /** Update an existing PaymentMethod */
+  updatePaymentMethod: PaymentMethod,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1669,6 +1723,7 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>,
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse,
+  reindex: JobInfo,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1684,6 +1739,10 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate,
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1694,15 +1753,6 @@ export type Mutation = {
   addMembersToZone: Zone,
   /** Remove members from a Zone */
   removeMembersFromZone: Zone,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
-};
-
-
-export type MutationCreateAssetsArgs = {
-  input: Array<CreateAssetInput>
 };
 
 
@@ -1719,6 +1769,11 @@ export type MutationUpdateAdministratorArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'],
   roleId: Scalars['ID']
+};
+
+
+export type MutationCreateAssetsArgs = {
+  input: Array<CreateAssetInput>
 };
 
 
@@ -1900,11 +1955,6 @@ export type MutationAddNoteToOrderArgs = {
 };
 
 
-export type MutationUpdatePaymentMethodArgs = {
-  input: UpdatePaymentMethodInput
-};
-
-
 export type MutationCreateProductOptionGroupArgs = {
   input: CreateProductOptionGroupInput
 };
@@ -1922,6 +1972,11 @@ export type MutationCreateProductOptionArgs = {
 
 export type MutationUpdateProductOptionArgs = {
   input: UpdateProductOptionInput
+};
+
+
+export type MutationUpdatePaymentMethodArgs = {
+  input: UpdatePaymentMethodInput
 };
 
 
@@ -2012,6 +2067,16 @@ export type MutationUpdateTaxCategoryArgs = {
 };
 
 
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput
+};
+
+
 export type MutationCreateZoneArgs = {
   input: CreateZoneInput
 };
@@ -2036,16 +2101,6 @@ export type MutationAddMembersToZoneArgs = {
 export type MutationRemoveMembersFromZoneArgs = {
   zoneId: Scalars['ID'],
   memberIds: Array<Scalars['ID']>
-};
-
-
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
 };
 
 export type Node = {
@@ -2544,10 +2599,10 @@ export type PromotionSortParameter = {
 
 export type Query = {
   __typename?: 'Query',
-  assets: AssetList,
-  asset?: Maybe<Asset>,
   administrators: AdministratorList,
   administrator?: Maybe<Administrator>,
+  assets: AssetList,
+  asset?: Maybe<Asset>,
   me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
@@ -2564,18 +2619,18 @@ export type Query = {
   facets: FacetList,
   facet?: Maybe<Facet>,
   globalSettings: GlobalSettings,
-  job?: Maybe<JobInfo>,
-  jobs: Array<JobInfo>,
   order?: Maybe<Order>,
   orders: OrderList,
-  paymentMethods: PaymentMethodList,
-  paymentMethod?: Maybe<PaymentMethod>,
+  job?: Maybe<JobInfo>,
+  jobs: Array<JobInfo>,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
+  paymentMethods: PaymentMethodList,
+  paymentMethod?: Maybe<PaymentMethod>,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
+  search: SearchResponse,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
   adjustmentOperations: AdjustmentOperations,
@@ -2587,20 +2642,10 @@ export type Query = {
   shippingCalculators: Array<ConfigurableOperation>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
-  zones: Array<Zone>,
-  zone?: Maybe<Zone>,
   taxRates: TaxRateList,
   taxRate?: Maybe<TaxRate>,
-};
-
-
-export type QueryAssetsArgs = {
-  options?: Maybe<AssetListOptions>
-};
-
-
-export type QueryAssetArgs = {
-  id: Scalars['ID']
+  zones: Array<Zone>,
+  zone?: Maybe<Zone>,
 };
 
 
@@ -2610,6 +2655,16 @@ export type QueryAdministratorsArgs = {
 
 
 export type QueryAdministratorArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryAssetsArgs = {
+  options?: Maybe<AssetListOptions>
+};
+
+
+export type QueryAssetArgs = {
   id: Scalars['ID']
 };
 
@@ -2668,16 +2723,6 @@ export type QueryFacetArgs = {
 };
 
 
-export type QueryJobArgs = {
-  jobId: Scalars['String']
-};
-
-
-export type QueryJobsArgs = {
-  input?: Maybe<JobListInput>
-};
-
-
 export type QueryOrderArgs = {
   id: Scalars['ID']
 };
@@ -2688,13 +2733,13 @@ export type QueryOrdersArgs = {
 };
 
 
-export type QueryPaymentMethodsArgs = {
-  options?: Maybe<PaymentMethodListOptions>
+export type QueryJobArgs = {
+  jobId: Scalars['String']
 };
 
 
-export type QueryPaymentMethodArgs = {
-  id: Scalars['ID']
+export type QueryJobsArgs = {
+  input?: Maybe<JobListInput>
 };
 
 
@@ -2710,8 +2755,13 @@ export type QueryProductOptionGroupArgs = {
 };
 
 
-export type QuerySearchArgs = {
-  input: SearchInput
+export type QueryPaymentMethodsArgs = {
+  options?: Maybe<PaymentMethodListOptions>
+};
+
+
+export type QueryPaymentMethodArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2725,6 +2775,11 @@ export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>,
   slug?: Maybe<Scalars['String']>,
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput
 };
 
 
@@ -2763,17 +2818,17 @@ export type QueryTaxCategoryArgs = {
 };
 
 
-export type QueryZoneArgs = {
-  id: Scalars['ID']
-};
-
-
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryZoneArgs = {
   id: Scalars['ID']
 };
 
@@ -3027,6 +3082,15 @@ export enum StockMovementType {
   CANCELLATION = 'CANCELLATION',
   RETURN = 'RETURN'
 }
+
+export type StringCustomFieldConfig = CustomField & {
+  __typename?: 'StringCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  pattern?: Maybe<Scalars['String']>,
+};
 
 export type StringOperators = {
   eq?: Maybe<Scalars['String']>,

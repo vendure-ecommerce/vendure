@@ -1,0 +1,65 @@
+interface CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+}
+
+type StringCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    pattern: String
+}
+type LocaleStringCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    pattern: String
+}
+type IntCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    min: Int
+    max: Int
+    step: Int
+}
+type FloatCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    min: Float
+    max: Float
+    step: Float
+}
+type BooleanCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+}
+"""
+Expects the same validation formats as the <input type="datetime-local"> HTML element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+"""
+type DateTimeCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    min: String
+    max: String
+    step: Int
+}
+
+type LocalizedString {
+    languageCode: LanguageCode!
+    value: String!
+}
+
+union CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig

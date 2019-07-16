@@ -103,6 +103,14 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export type BooleanCustomFieldConfig = CustomField & {
+    __typename?: 'BooleanCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+};
+
 export type BooleanOperators = {
     eq?: Maybe<Scalars['Boolean']>;
 };
@@ -655,13 +663,21 @@ export type CustomerList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
-export type CustomFieldConfig = {
-    __typename?: 'CustomFieldConfig';
+export type CustomField = {
+    __typename?: 'CustomField';
     name: Scalars['String'];
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
 };
+
+export type CustomFieldConfig =
+    | StringCustomFieldConfig
+    | LocaleStringCustomFieldConfig
+    | IntCustomFieldConfig
+    | FloatCustomFieldConfig
+    | BooleanCustomFieldConfig
+    | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
     __typename?: 'CustomFields';
@@ -689,6 +705,20 @@ export type DateOperators = {
 export type DateRange = {
     start: Scalars['DateTime'];
     end: Scalars['DateTime'];
+};
+
+/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeCustomFieldConfig = CustomField & {
+    __typename?: 'DateTimeCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    min?: Maybe<Scalars['String']>;
+    max?: Maybe<Scalars['String']>;
+    step?: Maybe<Scalars['Int']>;
 };
 
 export type DeletionResponse = {
@@ -763,6 +793,17 @@ export type FacetValueTranslation = {
     name: Scalars['String'];
 };
 
+export type FloatCustomFieldConfig = CustomField & {
+    __typename?: 'FloatCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    min?: Maybe<Scalars['Float']>;
+    max?: Maybe<Scalars['Float']>;
+    step?: Maybe<Scalars['Float']>;
+};
+
 export type Fulfillment = Node & {
     __typename?: 'Fulfillment';
     id: Scalars['ID'];
@@ -833,6 +874,17 @@ export type ImportInfo = {
     errors?: Maybe<Array<Scalars['String']>>;
     processed: Scalars['Int'];
     imported: Scalars['Int'];
+};
+
+export type IntCustomFieldConfig = CustomField & {
+    __typename?: 'IntCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    min?: Maybe<Scalars['Int']>;
+    max?: Maybe<Scalars['Int']>;
+    step?: Maybe<Scalars['Int']>;
 };
 
 /** ISO 639-1 language code */
@@ -1206,6 +1258,15 @@ export enum LanguageCode {
     /** Zulu */
     zu = 'zu',
 }
+
+export type LocaleStringCustomFieldConfig = CustomField & {
+    __typename?: 'LocaleStringCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    pattern?: Maybe<Scalars['String']>;
+};
 
 export type LocalizedString = {
     __typename?: 'LocalizedString';
@@ -2013,6 +2074,15 @@ export enum StockMovementType {
     CANCELLATION = 'CANCELLATION',
     RETURN = 'RETURN',
 }
+
+export type StringCustomFieldConfig = CustomField & {
+    __typename?: 'StringCustomFieldConfig';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    pattern?: Maybe<Scalars['String']>;
+};
 
 export type StringOperators = {
     eq?: Maybe<Scalars['String']>;

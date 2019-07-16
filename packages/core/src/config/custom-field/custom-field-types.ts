@@ -1,4 +1,12 @@
-import { CustomFieldConfig as GraphQLCustomFieldConfig } from '@vendure/common/lib/generated-types';
+import { BooleanCustomFieldConfig as GraphQLBooleanCustomFieldConfig,
+    CustomField,
+    CustomFieldConfig as GraphQLCustomFieldConfig,
+    DateTimeCustomFieldConfig as GraphQLDateTimeCustomFieldConfig,
+    FloatCustomFieldConfig as GraphQLFloatCustomFieldConfig,
+    IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
+    LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
+    StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
+} from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, CustomFieldType } from '@vendure/common/src/shared-types';
 
 // prettier-ignore
@@ -14,22 +22,28 @@ export type DefaultValueType<T extends CustomFieldType> =
  *
  * @docsCategory custom-fields
  */
-export type TypedCustomFieldConfig<T extends CustomFieldType = CustomFieldType> = Omit<
-    GraphQLCustomFieldConfig,
+export type TypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
+    C,
     '__typename'
 > & {
     type: T;
     defaultValue?: DefaultValueType<T>;
     nullable?: boolean;
 };
+export type StringCustomFieldConfig = TypedCustomFieldConfig<'string', GraphQLStringCustomFieldConfig>;
+export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<'localeString', GraphQLLocaleStringCustomFieldConfig>;
+export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
+export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
+export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
+export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', GraphQLDateTimeCustomFieldConfig>;
 
 export type CustomFieldConfig =
-    | TypedCustomFieldConfig<'string'>
-    | TypedCustomFieldConfig<'localeString'>
-    | TypedCustomFieldConfig<'int'>
-    | TypedCustomFieldConfig<'float'>
-    | TypedCustomFieldConfig<'boolean'>
-    | TypedCustomFieldConfig<'datetime'>;
+    | StringCustomFieldConfig
+    | LocaleStringCustomFieldConfig
+    | IntCustomFieldConfig
+    | FloatCustomFieldConfig
+    | BooleanCustomFieldConfig
+    | DateTimeCustomFieldConfig;
 
 /**
  * @description

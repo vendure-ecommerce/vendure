@@ -65,14 +65,17 @@ function registerCustomFieldsForEntity(
 }
 
 function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: any): Date | string {
+    if (!datetime) {
+        return datetime;
+    }
     switch (dbEngine) {
         case 'sqlite':
         case 'sqljs':
-            return DateUtils.mixedDateToDatetimeString(datetime);
+            return DateUtils.mixedDateToUtcDatetimeString(datetime);
         case 'mysql':
         case 'postgres':
         default:
-            return DateUtils.mixedDateToDate(datetime);
+            return DateUtils.mixedDateToDate(datetime, true, true);
     }
 }
 

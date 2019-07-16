@@ -83,6 +83,25 @@ async function createGraphQLOptions(
         },
     };
 
+    const customFieldsConfigResolveType = {
+        __resolveType(value: any) {
+            switch (value.type) {
+                case 'string':
+                    return 'StringCustomFieldConfig';
+                case 'localeString':
+                    return 'LocaleStringCustomFieldConfig';
+                case 'int':
+                    return 'IntCustomFieldConfig';
+                case 'float':
+                    return 'FloatCustomFieldConfig';
+                case 'boolean':
+                    return 'BooleanCustomFieldConfig';
+                case 'datetime':
+                    return 'DateTimeCustomFieldConfig';
+            }
+        },
+    };
+
     return {
         path: '/' + options.apiPath,
         typeDefs: await createTypeDefs(options.apiType),
@@ -100,6 +119,8 @@ async function createGraphQLOptions(
             },
             StockMovementItem: stockMovementResolveType,
             StockMovement: stockMovementResolveType,
+            CustomFieldConfig: customFieldsConfigResolveType,
+            CustomField: customFieldsConfigResolveType,
         },
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
