@@ -162,6 +162,14 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type BooleanCustomFieldConfig = CustomField & {
+  __typename?: 'BooleanCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+};
+
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>,
 };
@@ -933,13 +941,15 @@ export type CustomerSortParameter = {
   emailAddress?: Maybe<SortOrder>,
 };
 
-export type CustomFieldConfig = {
-  __typename?: 'CustomFieldConfig',
+export type CustomField = {
+  __typename?: 'CustomField',
   name: Scalars['String'],
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
 };
+
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
   __typename?: 'CustomFields',
@@ -969,6 +979,20 @@ export type DateRange = {
   end: Scalars['DateTime'],
 };
 
+
+/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeCustomFieldConfig = CustomField & {
+  __typename?: 'DateTimeCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['String']>,
+  max?: Maybe<Scalars['String']>,
+  step?: Maybe<Scalars['Int']>,
+};
 
 export type DeletionResponse = {
   __typename?: 'DeletionResponse',
@@ -1081,6 +1105,17 @@ export type FacetValueTranslationInput = {
   customFields?: Maybe<Scalars['JSON']>,
 };
 
+export type FloatCustomFieldConfig = CustomField & {
+  __typename?: 'FloatCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['Float']>,
+  max?: Maybe<Scalars['Float']>,
+  step?: Maybe<Scalars['Float']>,
+};
+
 export type Fulfillment = Node & {
   __typename?: 'Fulfillment',
   id: Scalars['ID'],
@@ -1157,6 +1192,17 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>,
   processed: Scalars['Int'],
   imported: Scalars['Int'],
+};
+
+export type IntCustomFieldConfig = CustomField & {
+  __typename?: 'IntCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  min?: Maybe<Scalars['Int']>,
+  max?: Maybe<Scalars['Int']>,
+  step?: Maybe<Scalars['Int']>,
 };
 
 export type JobInfo = {
@@ -1556,6 +1602,15 @@ export enum LanguageCode {
   zu = 'zu'
 }
 
+export type LocaleStringCustomFieldConfig = CustomField & {
+  __typename?: 'LocaleStringCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  pattern?: Maybe<Scalars['String']>,
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString',
   languageCode: LanguageCode,
@@ -1575,14 +1630,14 @@ export type MoveCollectionInput = {
 
 export type Mutation = {
   __typename?: 'Mutation',
-  /** Create a new Asset */
-  createAssets: Array<Asset>,
   /** Create a new Administrator */
   createAdministrator: Administrator,
   /** Update an existing Administrator */
   updateAdministrator: Administrator,
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator,
+  /** Create a new Asset */
+  createAssets: Array<Asset>,
   login: LoginResult,
   logout: Scalars['Boolean'],
   /** Create a new Channel */
@@ -1645,6 +1700,7 @@ export type Mutation = {
   addNoteToOrder: Order,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
+  reindex: JobInfo,
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
@@ -1653,7 +1709,6 @@ export type Mutation = {
   createProductOption: ProductOption,
   /** Create a new ProductOption within a ProductOptionGroup */
   updateProductOption: ProductOption,
-  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -1685,6 +1740,10 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate,
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -1695,20 +1754,11 @@ export type Mutation = {
   addMembersToZone: Zone,
   /** Remove members from a Zone */
   removeMembersFromZone: Zone,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
   requestStarted: Scalars['Int'],
   requestCompleted: Scalars['Int'],
   setAsLoggedIn: UserStatus,
   setAsLoggedOut: UserStatus,
   setUiLanguage?: Maybe<LanguageCode>,
-};
-
-
-export type MutationCreateAssetsArgs = {
-  input: Array<CreateAssetInput>
 };
 
 
@@ -1725,6 +1775,11 @@ export type MutationUpdateAdministratorArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'],
   roleId: Scalars['ID']
+};
+
+
+export type MutationCreateAssetsArgs = {
+  input: Array<CreateAssetInput>
 };
 
 
@@ -2018,6 +2073,16 @@ export type MutationUpdateTaxCategoryArgs = {
 };
 
 
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput
+};
+
+
 export type MutationCreateZoneArgs = {
   input: CreateZoneInput
 };
@@ -2042,16 +2107,6 @@ export type MutationAddMembersToZoneArgs = {
 export type MutationRemoveMembersFromZoneArgs = {
   zoneId: Scalars['ID'],
   memberIds: Array<Scalars['ID']>
-};
-
-
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
 };
 
 
@@ -2566,10 +2621,10 @@ export type PromotionSortParameter = {
 
 export type Query = {
   __typename?: 'Query',
-  assets: AssetList,
-  asset?: Maybe<Asset>,
   administrators: AdministratorList,
   administrator?: Maybe<Administrator>,
+  assets: AssetList,
+  asset?: Maybe<Asset>,
   me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
   channel?: Maybe<Channel>,
@@ -2592,9 +2647,9 @@ export type Query = {
   orders: OrderList,
   paymentMethods: PaymentMethodList,
   paymentMethod?: Maybe<PaymentMethod>,
+  search: SearchResponse,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
@@ -2609,23 +2664,13 @@ export type Query = {
   shippingCalculators: Array<ConfigurableOperation>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
-  zones: Array<Zone>,
-  zone?: Maybe<Zone>,
   taxRates: TaxRateList,
   taxRate?: Maybe<TaxRate>,
+  zones: Array<Zone>,
+  zone?: Maybe<Zone>,
   networkStatus: NetworkStatus,
   userStatus: UserStatus,
   uiState: UiState,
-};
-
-
-export type QueryAssetsArgs = {
-  options?: Maybe<AssetListOptions>
-};
-
-
-export type QueryAssetArgs = {
-  id: Scalars['ID']
 };
 
 
@@ -2635,6 +2680,16 @@ export type QueryAdministratorsArgs = {
 
 
 export type QueryAdministratorArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryAssetsArgs = {
+  options?: Maybe<AssetListOptions>
+};
+
+
+export type QueryAssetArgs = {
   id: Scalars['ID']
 };
 
@@ -2723,6 +2778,11 @@ export type QueryPaymentMethodArgs = {
 };
 
 
+export type QuerySearchArgs = {
+  input: SearchInput
+};
+
+
 export type QueryProductOptionGroupsArgs = {
   languageCode?: Maybe<LanguageCode>,
   filterTerm?: Maybe<Scalars['String']>
@@ -2732,11 +2792,6 @@ export type QueryProductOptionGroupsArgs = {
 export type QueryProductOptionGroupArgs = {
   id: Scalars['ID'],
   languageCode?: Maybe<LanguageCode>
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput
 };
 
 
@@ -2788,17 +2843,17 @@ export type QueryTaxCategoryArgs = {
 };
 
 
-export type QueryZoneArgs = {
-  id: Scalars['ID']
-};
-
-
 export type QueryTaxRatesArgs = {
   options?: Maybe<TaxRateListOptions>
 };
 
 
 export type QueryTaxRateArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryZoneArgs = {
   id: Scalars['ID']
 };
 
@@ -3052,6 +3107,22 @@ export enum StockMovementType {
   CANCELLATION = 'CANCELLATION',
   RETURN = 'RETURN'
 }
+
+export type StringCustomFieldConfig = CustomField & {
+  __typename?: 'StringCustomFieldConfig',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+  description?: Maybe<Array<LocalizedString>>,
+  pattern?: Maybe<Scalars['String']>,
+  options?: Maybe<Array<StringFieldOption>>,
+};
+
+export type StringFieldOption = {
+  __typename?: 'StringFieldOption',
+  value: Scalars['String'],
+  label?: Maybe<Array<LocalizedString>>,
+};
 
 export type StringOperators = {
   eq?: Maybe<Scalars['String']>,
@@ -4078,12 +4149,26 @@ export type UpdateGlobalSettingsMutationVariables = {
 
 export type UpdateGlobalSettingsMutation = ({ __typename?: 'Mutation' } & { updateGlobalSettings: ({ __typename?: 'GlobalSettings' } & GlobalSettingsFragment) });
 
-export type CustomFieldConfigFragment = ({ __typename?: 'CustomFieldConfig' } & Pick<CustomFieldConfig, 'name' | 'type'>);
+export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
+
+export type StringCustomFieldFragment = ({ __typename?: 'StringCustomFieldConfig' } & Pick<StringCustomFieldConfig, 'pattern'> & { options: Maybe<Array<({ __typename?: 'StringFieldOption' } & Pick<StringFieldOption, 'value'> & { label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> })>> } & CustomFieldConfigFragment);
+
+export type LocaleStringCustomFieldFragment = ({ __typename?: 'LocaleStringCustomFieldConfig' } & Pick<LocaleStringCustomFieldConfig, 'pattern'> & CustomFieldConfigFragment);
+
+export type BooleanCustomFieldFragment = ({ __typename?: 'BooleanCustomFieldConfig' } & CustomFieldConfigFragment);
+
+export type IntCustomFieldFragment = ({ __typename?: 'IntCustomFieldConfig' } & { intMin: IntCustomFieldConfig['min'], intMax: IntCustomFieldConfig['max'], intStep: IntCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+
+export type FloatCustomFieldFragment = ({ __typename?: 'FloatCustomFieldConfig' } & { floatMin: FloatCustomFieldConfig['min'], floatMax: FloatCustomFieldConfig['max'], floatStep: FloatCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+
+export type DateTimeCustomFieldFragment = ({ __typename?: 'DateTimeCustomFieldConfig' } & { datetimeMin: DateTimeCustomFieldConfig['min'], datetimeMax: DateTimeCustomFieldConfig['max'], datetimeStep: DateTimeCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+
+export type CustomFieldsFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & (({ __typename?: 'StringCustomFieldConfig' } & StringCustomFieldFragment) | ({ __typename?: 'LocaleStringCustomFieldConfig' } & LocaleStringCustomFieldFragment) | ({ __typename?: 'BooleanCustomFieldConfig' } & BooleanCustomFieldFragment) | ({ __typename?: 'IntCustomFieldConfig' } & IntCustomFieldFragment) | ({ __typename?: 'FloatCustomFieldConfig' } & FloatCustomFieldFragment) | ({ __typename?: 'DateTimeCustomFieldConfig' } & DateTimeCustomFieldFragment)));
 
 export type GetServerConfigQueryVariables = {};
 
 
-export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & { customFieldConfig: ({ __typename?: 'CustomFields' } & { Address: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, Collection: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, Customer: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, Facet: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, FacetValue: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, GlobalSettings: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, OrderLine: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, Product: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, ProductOption: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, ProductOptionGroup: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, ProductVariant: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)>, User: Array<({ __typename?: 'CustomFieldConfig' } & CustomFieldConfigFragment)> }) }) }) });
+export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & { customFieldConfig: ({ __typename?: 'CustomFields' } & { Address: Array<CustomFieldsFragment>, Collection: Array<CustomFieldsFragment>, Customer: Array<CustomFieldsFragment>, Facet: Array<CustomFieldsFragment>, FacetValue: Array<CustomFieldsFragment>, GlobalSettings: Array<CustomFieldsFragment>, OrderLine: Array<CustomFieldsFragment>, Product: Array<CustomFieldsFragment>, ProductOption: Array<CustomFieldsFragment>, ProductOptionGroup: Array<CustomFieldsFragment>, ProductVariant: Array<CustomFieldsFragment>, User: Array<CustomFieldsFragment> }) }) }) });
 
 export type JobInfoFragment = ({ __typename?: 'JobInfo' } & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>);
 
@@ -4955,6 +5040,44 @@ export namespace UpdateGlobalSettings {
 
 export namespace CustomFieldConfig {
   export type Fragment = CustomFieldConfigFragment;
+  export type Description = (NonNullable<(NonNullable<CustomFieldConfigFragment['description']>)[0]>);
+  export type Label = (NonNullable<(NonNullable<CustomFieldConfigFragment['label']>)[0]>);
+}
+
+export namespace StringCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+  export type Options = (NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[0]>);
+  export type Label = (NonNullable<(NonNullable<(NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[0]>)['label']>)[0]>);
+}
+
+export namespace LocaleStringCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+}
+
+export namespace BooleanCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+}
+
+export namespace IntCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+}
+
+export namespace FloatCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+}
+
+export namespace DateTimeCustomField {
+  export type Fragment = CustomFieldConfigFragment;
+}
+
+export namespace CustomFields {
+  export type Fragment = CustomFieldsFragment;
+  export type StringCustomFieldConfigInlineFragment = StringCustomFieldFragment;
+  export type LocaleStringCustomFieldConfigInlineFragment = LocaleStringCustomFieldFragment;
+  export type BooleanCustomFieldConfigInlineFragment = BooleanCustomFieldFragment;
+  export type IntCustomFieldConfigInlineFragment = IntCustomFieldFragment;
+  export type FloatCustomFieldConfigInlineFragment = FloatCustomFieldFragment;
+  export type DateTimeCustomFieldConfigInlineFragment = DateTimeCustomFieldFragment;
 }
 
 export namespace GetServerConfig {
@@ -4963,18 +5086,18 @@ export namespace GetServerConfig {
   export type GlobalSettings = GetServerConfigQuery['globalSettings'];
   export type ServerConfig = GetServerConfigQuery['globalSettings']['serverConfig'];
   export type CustomFieldConfig = GetServerConfigQuery['globalSettings']['serverConfig']['customFieldConfig'];
-  export type Address = CustomFieldConfigFragment;
-  export type Collection = CustomFieldConfigFragment;
-  export type Customer = CustomFieldConfigFragment;
-  export type Facet = CustomFieldConfigFragment;
-  export type FacetValue = CustomFieldConfigFragment;
-  export type _GlobalSettings = CustomFieldConfigFragment;
-  export type OrderLine = CustomFieldConfigFragment;
-  export type Product = CustomFieldConfigFragment;
-  export type ProductOption = CustomFieldConfigFragment;
-  export type ProductOptionGroup = CustomFieldConfigFragment;
-  export type ProductVariant = CustomFieldConfigFragment;
-  export type User = CustomFieldConfigFragment;
+  export type Address = CustomFieldsFragment;
+  export type Collection = CustomFieldsFragment;
+  export type Customer = CustomFieldsFragment;
+  export type Facet = CustomFieldsFragment;
+  export type FacetValue = CustomFieldsFragment;
+  export type _GlobalSettings = CustomFieldsFragment;
+  export type OrderLine = CustomFieldsFragment;
+  export type Product = CustomFieldsFragment;
+  export type ProductOption = CustomFieldsFragment;
+  export type ProductOptionGroup = CustomFieldsFragment;
+  export type ProductVariant = CustomFieldsFragment;
+  export type User = CustomFieldsFragment;
 }
 
 export namespace JobInfo {

@@ -471,17 +471,12 @@ export type CreateGroupOptionInput = {
   translations: Array<ProductOptionGroupTranslationInput>,
 };
 
-export type CreateProductCustomFieldsInput = {
-  nickname?: Maybe<Scalars['String']>,
-  expires?: Maybe<Scalars['DateTime']>,
-};
-
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>,
   assetIds?: Maybe<Array<Scalars['ID']>>,
   facetValueIds?: Maybe<Array<Scalars['ID']>>,
   translations: Array<ProductTranslationInput>,
-  customFields?: Maybe<CreateProductCustomFieldsInput>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type CreateProductOptionGroupInput = {
@@ -1704,6 +1699,7 @@ export type Mutation = {
   addNoteToOrder: Order,
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod,
+  reindex: JobInfo,
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup,
   /** Update an existing ProductOptionGroup */
@@ -1712,7 +1708,6 @@ export type Mutation = {
   createProductOption: ProductOption,
   /** Create a new ProductOption within a ProductOptionGroup */
   updateProductOption: ProductOption,
-  reindex: JobInfo,
   /** Create a new Product */
   createProduct: Product,
   /** Update an existing Product */
@@ -2363,14 +2358,7 @@ export type Product = Node & {
   translations: Array<ProductTranslation>,
   collections: Array<Collection>,
   enabled: Scalars['Boolean'],
-  customFields?: Maybe<ProductCustomFields>,
-};
-
-export type ProductCustomFields = {
-  __typename?: 'ProductCustomFields',
-  nickname?: Maybe<Scalars['String']>,
-  localNickname?: Maybe<Scalars['String']>,
-  expires?: Maybe<Scalars['DateTime']>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type ProductFilterParameter = {
@@ -2381,9 +2369,6 @@ export type ProductFilterParameter = {
   slug?: Maybe<StringOperators>,
   description?: Maybe<StringOperators>,
   enabled?: Maybe<BooleanOperators>,
-  nickname?: Maybe<StringOperators>,
-  localNickname?: Maybe<StringOperators>,
-  expires?: Maybe<DateOperators>,
 };
 
 export type ProductList = PaginatedList & {
@@ -2464,9 +2449,6 @@ export type ProductSortParameter = {
   name?: Maybe<SortOrder>,
   slug?: Maybe<SortOrder>,
   description?: Maybe<SortOrder>,
-  nickname?: Maybe<SortOrder>,
-  localNickname?: Maybe<SortOrder>,
-  expires?: Maybe<SortOrder>,
 };
 
 export type ProductTranslation = {
@@ -2478,16 +2460,6 @@ export type ProductTranslation = {
   name: Scalars['String'],
   slug: Scalars['String'],
   description: Scalars['String'],
-  customFields?: Maybe<ProductTranslationCustomFields>,
-};
-
-export type ProductTranslationCustomFields = {
-  __typename?: 'ProductTranslationCustomFields',
-  localNickname?: Maybe<Scalars['String']>,
-};
-
-export type ProductTranslationCustomFieldsInput = {
-  localNickname?: Maybe<Scalars['String']>,
 };
 
 export type ProductTranslationInput = {
@@ -2496,7 +2468,7 @@ export type ProductTranslationInput = {
   name?: Maybe<Scalars['String']>,
   slug?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
-  customFields?: Maybe<ProductTranslationCustomFieldsInput>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type ProductVariant = Node & {
@@ -2653,9 +2625,9 @@ export type Query = {
   orders: OrderList,
   paymentMethods: PaymentMethodList,
   paymentMethod?: Maybe<PaymentMethod>,
+  search: SearchResponse,
   productOptionGroups: Array<ProductOptionGroup>,
   productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
   products: ProductList,
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>,
@@ -2781,6 +2753,11 @@ export type QueryPaymentMethodArgs = {
 };
 
 
+export type QuerySearchArgs = {
+  input: SearchInput
+};
+
+
 export type QueryProductOptionGroupsArgs = {
   languageCode?: Maybe<LanguageCode>,
   filterTerm?: Maybe<Scalars['String']>
@@ -2790,11 +2767,6 @@ export type QueryProductOptionGroupsArgs = {
 export type QueryProductOptionGroupArgs = {
   id: Scalars['ID'],
   languageCode?: Maybe<LanguageCode>
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput
 };
 
 
@@ -3279,11 +3251,6 @@ export type UpdatePaymentMethodInput = {
   configArgs?: Maybe<Array<ConfigArgInput>>,
 };
 
-export type UpdateProductCustomFieldsInput = {
-  nickname?: Maybe<Scalars['String']>,
-  expires?: Maybe<Scalars['DateTime']>,
-};
-
 export type UpdateProductInput = {
   id: Scalars['ID'],
   enabled?: Maybe<Scalars['Boolean']>,
@@ -3291,7 +3258,7 @@ export type UpdateProductInput = {
   assetIds?: Maybe<Array<Scalars['ID']>>,
   facetValueIds?: Maybe<Array<Scalars['ID']>>,
   translations?: Maybe<Array<ProductTranslationInput>>,
-  customFields?: Maybe<UpdateProductCustomFieldsInput>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type UpdateProductOptionGroupInput = {

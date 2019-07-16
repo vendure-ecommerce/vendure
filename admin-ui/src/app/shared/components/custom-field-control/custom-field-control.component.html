@@ -1,14 +1,23 @@
 <vdr-form-field [label]="label" [for]="customField.name">
     <input
-        *ngIf="customField.type === 'string' || customField.type === 'localeString'"
+        *ngIf="isTextInput"
         type="text"
         [id]="customField.name"
+        [pattern]="customField.pattern"
         [formControl]="formGroup.get(customField.name)"
     />
+    <select *ngIf="isSelectInput" clrSelect [formControl]="formGroup.get(customField.name)">
+        <option *ngFor="let option of stringOptions" [value]="option.value">
+            {{ getLabel(option.value, option.label) }}
+        </option>
+    </select>
     <input
         *ngIf="customField.type === 'int' || customField.type === 'float'"
         type="number"
         [id]="customField.name"
+        [min]="min"
+        [max]="max"
+        [step]="step"
         [formControl]="formGroup.get(customField.name)"
     />
     <clr-toggle-wrapper *ngIf="customField.type === 'boolean'">
@@ -21,9 +30,12 @@
     </clr-toggle-wrapper>
     <input
         *ngIf="customField.type === 'datetime'"
-        type="date"
+        type="datetime-local"
+        [min]="min"
+        [max]="max"
+        [step]="step"
         [id]="customField.name"
-        [formControl]="formGroup.get(customField.name)"
-        clrDate
+        [value]="formGroup.get(customField.name).value | date: 'yyyy-MM-ddTHH:mm:ss'"
+        (change)="updateDateTime(formGroup.get(customField.name), $event)"
     />
 </vdr-form-field>

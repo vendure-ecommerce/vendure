@@ -37,6 +37,7 @@
     "@commitlint/config-conventional": "^7.6.0",
     "@graphql-codegen/add": "^1.1.3",
     "@graphql-codegen/cli": "^1.1.3",
+    "@graphql-codegen/fragment-matcher": "^1.4.0",
     "@graphql-codegen/typescript": "^1.1.3",
     "@graphql-codegen/typescript-compatibility": "^1.1.3",
     "@graphql-codegen/typescript-operations": "^1.1.3",

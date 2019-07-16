@@ -1651,14 +1651,7 @@ export type Product = Node & {
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
-    customFields?: Maybe<ProductCustomFields>;
-};
-
-export type ProductCustomFields = {
-    __typename?: 'ProductCustomFields';
-    nickname?: Maybe<Scalars['String']>;
-    localNickname?: Maybe<Scalars['String']>;
-    expires?: Maybe<Scalars['DateTime']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductFilterParameter = {
@@ -1668,9 +1661,6 @@ export type ProductFilterParameter = {
     name?: Maybe<StringOperators>;
     slug?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
-    nickname?: Maybe<StringOperators>;
-    localNickname?: Maybe<StringOperators>;
-    expires?: Maybe<DateOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -1737,9 +1727,6 @@ export type ProductSortParameter = {
     name?: Maybe<SortOrder>;
     slug?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
-    nickname?: Maybe<SortOrder>;
-    localNickname?: Maybe<SortOrder>;
-    expires?: Maybe<SortOrder>;
 };
 
 export type ProductTranslation = {
@@ -1751,12 +1738,6 @@ export type ProductTranslation = {
     name: Scalars['String'];
     slug: Scalars['String'];
     description: Scalars['String'];
-    customFields?: Maybe<ProductTranslationCustomFields>;
-};
-
-export type ProductTranslationCustomFields = {
-    __typename?: 'ProductTranslationCustomFields';
-    localNickname?: Maybe<Scalars['String']>;
 };
 
 export type ProductVariant = Node & {

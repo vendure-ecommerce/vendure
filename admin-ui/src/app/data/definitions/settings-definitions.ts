@@ -383,10 +383,102 @@ export const UPDATE_GLOBAL_SETTINGS = gql`
 `;
 
 export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
-    fragment CustomFieldConfig on CustomFieldConfig {
+    fragment CustomFieldConfig on CustomField {
         name
         type
+        description {
+            languageCode
+            value
+        }
+        label {
+            languageCode
+            value
+        }
     }
+`;
+
+export const STRING_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment StringCustomField on StringCustomFieldConfig {
+        ...CustomFieldConfig
+        pattern
+        options {
+            label {
+                languageCode
+                value
+            }
+            value
+        }
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const LOCALE_STRING_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment LocaleStringCustomField on LocaleStringCustomFieldConfig {
+        ...CustomFieldConfig
+        pattern
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const BOOLEAN_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment BooleanCustomField on BooleanCustomFieldConfig {
+        ...CustomFieldConfig
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const INT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment IntCustomField on IntCustomFieldConfig {
+        ...CustomFieldConfig
+        intMin: min
+        intMax: max
+        intStep: step
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const FLOAT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment FloatCustomField on FloatCustomFieldConfig {
+        ...CustomFieldConfig
+        floatMin: min
+        floatMax: max
+        floatStep: step
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const DATE_TIME_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment DateTimeCustomField on DateTimeCustomFieldConfig {
+        ...CustomFieldConfig
+        datetimeMin: min
+        datetimeMax: max
+        datetimeStep: step
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+
+export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
+    fragment CustomFields on CustomField {
+        ... on StringCustomFieldConfig {
+            ...StringCustomField
+        }
+        ... on LocaleStringCustomFieldConfig {
+            ...LocaleStringCustomField
+        }
+        ... on BooleanCustomFieldConfig {
+            ...BooleanCustomField
+        }
+        ... on IntCustomFieldConfig {
+            ...IntCustomField
+        }
+        ... on FloatCustomFieldConfig {
+            ...FloatCustomField
+        }
+        ... on DateTimeCustomFieldConfig {
+            ...DateTimeCustomField
+        }
+    }
+    ${STRING_CUSTOM_FIELD_FRAGMENT}
+    ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
+    ${BOOLEAN_CUSTOM_FIELD_FRAGMENT}
+    ${INT_CUSTOM_FIELD_FRAGMENT}
+    ${FLOAT_CUSTOM_FIELD_FRAGMENT}
+    ${DATE_TIME_CUSTOM_FIELD_FRAGMENT}
 `;
 
 export const GET_SERVER_CONFIG = gql`
@@ -395,46 +487,46 @@ export const GET_SERVER_CONFIG = gql`
             serverConfig {
                 customFieldConfig {
                     Address {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     Collection {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     Customer {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     Facet {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     FacetValue {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     GlobalSettings {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     OrderLine {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     Product {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     ProductOption {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     ProductOptionGroup {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     ProductVariant {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                     User {
-                        ...CustomFieldConfig
+                        ...CustomFields
                     }
                 }
             }
         }
     }
-    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+    ${ALL_CUSTOM_FIELDS_FRAGMENT}
 `;
 
 export const JOB_INFO_FRAGMENT = gql`

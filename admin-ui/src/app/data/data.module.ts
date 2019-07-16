@@ -1,7 +1,7 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
@@ -9,6 +9,7 @@ import { createUploadLink } from 'apollo-upload-client';
 
 import { environment } from '../../environments/environment';
 import { getAppConfig } from '../app.config';
+import introspectionResult from '../common/introspection-result';
 import { LocalStorageService } from '../core/providers/local-storage/local-storage.service';
 
 import { clientDefaults } from './client-state/client-defaults';
@@ -27,7 +28,11 @@ export function createApollo(
     const { apiHost, apiPort, adminApiPath } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
     const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : `:${apiPort}`;
-    const apolloCache = new InMemoryCache();
+    const apolloCache = new InMemoryCache({
+        fragmentMatcher: new IntrospectionFragmentMatcher({
+            introspectionQueryResultData: introspectionResult,
+        }),
+    });
     apolloCache.writeData({
         data: clientDefaults,
     });

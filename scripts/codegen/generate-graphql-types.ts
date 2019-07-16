@@ -69,6 +69,12 @@ Promise.all([
                     plugins: clientPlugins,
                     config,
                 },
+                [path.join(__dirname, '../../admin-ui/src/app/common/introspection-result.ts')]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
+                    documents: CLIENT_QUERY_FILES,
+                    plugins: ['fragment-matcher'],
+                    config,
+                },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     plugins: commonPlugins,
