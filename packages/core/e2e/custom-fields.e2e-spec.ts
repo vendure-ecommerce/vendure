@@ -221,7 +221,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value ['hello'] does not match the pattern [^[0-9][a-z]+$]`),
+            }, `The custom field 'validateString' value ['hello'] does not match the pattern [^[0-9][a-z]+$]`),
         );
 
         it(
@@ -234,7 +234,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']`),
+            }, `The custom field 'stringWithOptions' value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']`),
         );
 
         it('valid string option', async () => {
@@ -272,7 +272,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value ['servus'] does not match the pattern [^[0-9][a-z]+$]`),
+            }, `The custom field 'validateLocaleString' value ['servus'] does not match the pattern [^[0-9][a-z]+$]`),
         );
 
         it(
@@ -285,7 +285,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value [12] is greater than the maximum [10]`),
+            }, `The custom field 'validateInt' value [12] is greater than the maximum [10]`),
         );
 
         it(
@@ -298,7 +298,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value [10.6] is greater than the maximum [10.5]`),
+            }, `The custom field 'validateFloat' value [10.6] is greater than the maximum [10.5]`),
         );
 
         it(
@@ -316,7 +316,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]`),
+            }, `The custom field 'validateDateTime' value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]`),
         );
 
         it(
