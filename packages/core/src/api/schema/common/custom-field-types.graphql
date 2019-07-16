@@ -11,7 +11,14 @@ type StringCustomFieldConfig implements CustomField {
     label: [LocalizedString!]
     description: [LocalizedString!]
     pattern: String
+    options: [StringFieldOption!]
 }
+
+type StringFieldOption {
+    value: String!
+    label: [LocalizedString!]
+}
+
 type LocaleStringCustomFieldConfig implements CustomField {
     name: String!
     type: String!

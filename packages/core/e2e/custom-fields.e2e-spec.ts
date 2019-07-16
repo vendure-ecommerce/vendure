@@ -49,17 +49,33 @@ describe('Custom fields', () => {
                             min: '2019-01-01T08:30',
                             max: '2019-06-01T08:30',
                         },
-                        { name: 'validateFn1', type: 'string', validate: value => {
+                        {
+                            name: 'validateFn1',
+                            type: 'string',
+                            validate: value => {
                                 if (value !== 'valid') {
                                     return `The value ['${value}'] is not valid`;
                                 }
                             },
                         },
-                        { name: 'validateFn2', type: 'string', validate: value => {
+                        {
+                            name: 'validateFn2',
+                            type: 'string',
+                            validate: value => {
                                 if (value !== 'valid') {
-                                    return [{ languageCode: LanguageCode.en, value: `The value ['${value}'] is not valid` }];
+                                    return [
+                                        {
+                                            languageCode: LanguageCode.en,
+                                            value: `The value ['${value}'] is not valid`,
+                                        },
+                                    ];
                                 }
                             },
+                        },
+                        {
+                            name: 'stringWithOptions',
+                            type: 'string',
+                            options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
                         },
                     ],
                 },
@@ -108,6 +124,7 @@ describe('Custom fields', () => {
                 { name: 'validateDateTime', type: 'datetime' },
                 { name: 'validateFn1', type: 'string' },
                 { name: 'validateFn2', type: 'string' },
+                { name: 'stringWithOptions', type: 'string' },
             ],
         });
     });
@@ -194,18 +211,50 @@ describe('Custom fields', () => {
         );
 
         it(
+            'invalid string option',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "tiny" } }) {
+                            id
+                        }
+                    }
+                `);
+            }, `The custom field value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']`),
+        );
+
+        it(
+            'valid string option', async () => {
+                const { updateProduct } = await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { stringWithOptions: "medium" } }) {
+                            id
+                            customFields {
+                                stringWithOptions
+                            }
+                        }
+                    }
+                `);
+                expect(updateProduct.customFields.stringWithOptions).toBe('medium');
+            });
+
+        it(
             'invalid localeString',
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            translations: [{
+                        updateProduct(
+                            input: {
                                 id: "T_1"
-                                languageCode: en,
-                                customFields: { validateLocaleString: "servus" }
-                            }]
-                        }) {
+                                translations: [
+                                    {
+                                        id: "T_1"
+                                        languageCode: en
+                                        customFields: { validateLocaleString: "servus" }
+                                    }
+                                ]
+                            }
+                        ) {
                             id
                         }
                     }
@@ -218,10 +267,7 @@ describe('Custom fields', () => {
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            customFields: { validateInt: 12 }
-                        }) {
+                        updateProduct(input: { id: "T_1", customFields: { validateInt: 12 } }) {
                             id
                         }
                     }
@@ -234,10 +280,7 @@ describe('Custom fields', () => {
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            customFields: { validateFloat: 10.6 }
-                        }) {
+                        updateProduct(input: { id: "T_1", customFields: { validateFloat: 10.6 } }) {
                             id
                         }
                     }
@@ -250,10 +293,12 @@ describe('Custom fields', () => {
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            customFields: { validateDateTime: "2019-01-01T05:25:00.000Z" }
-                        }) {
+                        updateProduct(
+                            input: {
+                                id: "T_1"
+                                customFields: { validateDateTime: "2019-01-01T05:25:00.000Z" }
+                            }
+                        ) {
                             id
                         }
                     }
@@ -266,10 +311,7 @@ describe('Custom fields', () => {
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            customFields: { validateFn1: "invalid" }
-                        }) {
+                        updateProduct(input: { id: "T_1", customFields: { validateFn1: "invalid" } }) {
                             id
                         }
                     }
@@ -282,10 +324,7 @@ describe('Custom fields', () => {
             assertThrowsWithMessage(async () => {
                 await adminClient.query(gql`
                     mutation {
-                        updateProduct(input: {
-                            id: "T_1"
-                            customFields: { validateFn2: "invalid" }
-                        }) {
+                        updateProduct(input: { id: "T_1", customFields: { validateFn2: "invalid" } }) {
                             id
                         }
                     }

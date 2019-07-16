@@ -25,6 +25,29 @@ describe('validateCustomFieldValue()', () => {
         });
     });
 
+    describe('string options', () => {
+
+        const validate = (value: string) => () => validateCustomFieldValue({
+            name: 'test',
+            type: 'string',
+            options: [
+                { value: 'small' },
+                { value: 'large' },
+            ],
+        }, value);
+
+        it('passes valid option', () => {
+            expect(validate('small')).not.toThrow();
+            expect(validate('large')).not.toThrow();
+        });
+
+        it('throws on invalid option', () => {
+            expect(validate('SMALL')).toThrowError('error.field-invalid-string-option');
+            expect(validate('')).toThrowError('error.field-invalid-string-option');
+            expect(validate('bad')).toThrowError('error.field-invalid-string-option');
+        });
+    });
+
     describe('int & float', () => {
 
         const validate = (value: number) => () => validateCustomFieldValue({

@@ -59,6 +59,16 @@ function validateStringField(config: StringCustomFieldConfig | LocaleStringCusto
             throw new UserInputError('error.field-invalid-string-pattern', { value, pattern });
         }
     }
+    const options = (config as StringCustomFieldConfig).options;
+    if (options) {
+        const validOptions = options.map(o => o.value);
+        if (!validOptions.includes(value)) {
+            throw new UserInputError('error.field-invalid-string-option', {
+                value,
+                validOptions: validOptions.map(o => `'${o}'`).join(', '),
+            });
+        }
+    }
 }
 
 function validateNumberField(config: IntCustomFieldConfig | FloatCustomFieldConfig, value: number): void {
