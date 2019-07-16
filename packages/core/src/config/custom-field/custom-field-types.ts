@@ -1,10 +1,11 @@
-import { BooleanCustomFieldConfig as GraphQLBooleanCustomFieldConfig,
+import {
+    BooleanCustomFieldConfig as GraphQLBooleanCustomFieldConfig,
     CustomField,
-    CustomFieldConfig as GraphQLCustomFieldConfig,
     DateTimeCustomFieldConfig as GraphQLDateTimeCustomFieldConfig,
     FloatCustomFieldConfig as GraphQLFloatCustomFieldConfig,
     IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
+    LocalizedString,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, CustomFieldType } from '@vendure/common/src/shared-types';
@@ -29,6 +30,7 @@ export type TypedCustomFieldConfig<T extends CustomFieldType, C extends CustomFi
     type: T;
     defaultValue?: DefaultValueType<T>;
     nullable?: boolean;
+    validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;
 };
 export type StringCustomFieldConfig = TypedCustomFieldConfig<'string', GraphQLStringCustomFieldConfig>;
 export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<'localeString', GraphQLLocaleStringCustomFieldConfig>;

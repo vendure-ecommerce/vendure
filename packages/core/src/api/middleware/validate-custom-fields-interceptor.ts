@@ -1,5 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import {
     DefinitionNode,
     GraphQLInputType,
@@ -11,7 +13,6 @@ import {
     TypeNode,
 } from 'graphql';
 
-import { assertNever } from '../../../../common/lib/shared-utils';
 import { UserInputError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import {
@@ -20,6 +21,8 @@ import {
     LocaleStringCustomFieldConfig,
     StringCustomFieldConfig,
 } from '../../config/custom-field/custom-field-types';
+import { RequestContext } from '../common/request-context';
+import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
 import { validateCustomFieldValue } from '../common/validate-custom-field-value';
 
 /**
@@ -40,16 +43,17 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
     }
 
     intercept(context: ExecutionContext, next: CallHandler<any>) {
-        const ctx = GqlExecutionContext.create(context);
-        const { operation, schema } = ctx.getInfo<GraphQLResolveInfo>();
-        const variables = ctx.getArgs();
+        const gqlExecutionContext = GqlExecutionContext.create(context);
+        const { operation, schema } = gqlExecutionContext.getInfo<GraphQLResolveInfo>();
+        const variables = gqlExecutionContext.getArgs();
+        const ctx: RequestContext = gqlExecutionContext.getContext().req[REQUEST_CONTEXT_KEY];
 
         if (operation.operation === 'mutation') {
             const inputTypeNames = this.getArgumentMap(operation, schema);
             Object.entries(inputTypeNames).forEach(([inputName, typeName]) => {
                 if (this.inputsWithCustomFields.has(typeName)) {
                     if (variables[inputName]) {
-                        this.validateInput(typeName, variables[inputName]);
+                        this.validateInput(typeName, ctx.languageCode, variables[inputName]);
                     }
                 }
             });
@@ -57,19 +61,19 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         return next.handle();
     }
 
-    private validateInput(typeName: string, variableValues?: { [key: string]: any }) {
+    private validateInput(typeName: string, languageCode: LanguageCode, variableValues?: { [key: string]: any }) {
         if (variableValues) {
             const entityName = typeName.replace(/(Create|Update)(.+)Input/, '$2');
             const customFieldConfig = this.configService.customFields[entityName as keyof CustomFields];
             if (customFieldConfig) {
                 if (variableValues.customFields) {
-                    this.validateCustomFieldsObject(customFieldConfig, variableValues.customFields);
+                    this.validateCustomFieldsObject(customFieldConfig, languageCode, variableValues.customFields);
                 }
                 const translations = variableValues.translations;
                 if (Array.isArray(translations)) {
                     for (const translation of translations) {
                         if (translation.customFields) {
-                            this.validateCustomFieldsObject(customFieldConfig, translation.customFields);
+                            this.validateCustomFieldsObject(customFieldConfig, languageCode, translation.customFields);
                         }
                     }
                 }
@@ -77,11 +81,11 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         }
     }
 
-    private validateCustomFieldsObject(customFieldConfig: CustomFieldConfig[], customFieldsObject: { [key: string]: any; }) {
+    private validateCustomFieldsObject(customFieldConfig: CustomFieldConfig[], languageCode: LanguageCode, customFieldsObject: { [key: string]: any; }) {
         for (const [key, value] of Object.entries(customFieldsObject)) {
             const config = customFieldConfig.find(c => c.name === key);
             if (config) {
-                validateCustomFieldValue(config, value);
+                validateCustomFieldValue(config, value, languageCode);
             }
         }
     }

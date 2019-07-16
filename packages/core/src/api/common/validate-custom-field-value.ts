@@ -1,5 +1,7 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
+import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { UserInputError } from '../../common/error/errors';
 import {
     CustomFieldConfig,
@@ -8,29 +10,44 @@ import {
     IntCustomFieldConfig,
     LocaleStringCustomFieldConfig,
     StringCustomFieldConfig,
+    TypedCustomFieldConfig,
 } from '../../config/custom-field/custom-field-types';
 
 /**
  * Validates the value of a custom field input against any configured constraints.
  * If validation fails, an error is thrown.
  */
-export function validateCustomFieldValue(config: CustomFieldConfig, value: any): void {
+export function validateCustomFieldValue(config: CustomFieldConfig, value: any, languageCode?: LanguageCode): void {
     switch (config.type) {
         case 'string':
         case 'localeString':
-            return validateStringField(config, value);
+            validateStringField(config, value);
             break;
         case 'int':
         case 'float':
-            return validateNumberField(config, value);
+            validateNumberField(config, value);
             break;
         case 'datetime':
-            return validateDateTimeField(config, value);
+            validateDateTimeField(config, value);
             break;
         case 'boolean':
             break;
         default:
             assertNever(config);
+    }
+    validateCustomFunction(config, value, languageCode);
+}
+
+function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(config: T, value: any, languageCode?: LanguageCode) {
+    if (typeof config.validate === 'function') {
+        const error = config.validate(value);
+        if (typeof error === 'string') {
+            throw new UserInputError(error);
+        }
+        if (Array.isArray(error)) {
+            const localizedError = error.find(e => e.languageCode === (languageCode || DEFAULT_LANGUAGE_CODE)) || error[0];
+            throw new UserInputError(localizedError.value);
+        }
     }
 }
 

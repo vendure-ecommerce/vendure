@@ -1,3 +1,5 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
 describe('validateCustomFieldValue()', () => {
@@ -63,6 +65,51 @@ describe('validateCustomFieldValue()', () => {
         it('throws on invalid range', () => {
             expect(validate('2019-01-01T08:29:00.000')).toThrowError('error.field-invalid-datetime-range-min');
             expect(validate('2019-06-01T08:30:00.100')).toThrowError('error.field-invalid-datetime-range-max');
+        });
+    });
+
+    describe('validate function', () => {
+
+        const validate1 = (value: string) => () => validateCustomFieldValue({
+            name: 'test',
+            type: 'string',
+            validate: v => {
+                if (v !== 'valid') {
+                    return 'invalid';
+                }
+            },
+        }, value);
+        const validate2 = (value: string, languageCode: LanguageCode) => () => validateCustomFieldValue({
+            name: 'test',
+            type: 'string',
+            validate: v => {
+                if (v !== 'valid') {
+                    return [
+                        { languageCode: LanguageCode.en, value: 'invalid' },
+                        { languageCode: LanguageCode.de, value: 'ungültig' },
+                    ];
+                }
+            },
+        }, value, languageCode);
+
+        it('passes validate fn string', () => {
+            expect(validate1('valid')).not.toThrow();
+        });
+
+        it('passes validate fn localized string', () => {
+            expect(validate2('valid', LanguageCode.de)).not.toThrow();
+        });
+
+        it('fails validate fn string', () => {
+            expect(validate1('bad')).toThrowError('invalid');
+        });
+
+        it('fails validate fn localized string en', () => {
+            expect(validate2('bad', LanguageCode.en)).toThrowError('invalid');
+        });
+
+        it('fails validate fn localized string de', () => {
+            expect(validate2('bad', LanguageCode.de)).toThrowError('ungültig');
         });
     });
 });

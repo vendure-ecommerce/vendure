@@ -4,6 +4,8 @@ process.env.TZ = 'UTC';
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { LanguageCode } from '../../common/lib/generated-types';
+
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
@@ -46,6 +48,18 @@ describe('Custom fields', () => {
                             type: 'datetime',
                             min: '2019-01-01T08:30',
                             max: '2019-06-01T08:30',
+                        },
+                        { name: 'validateFn1', type: 'string', validate: value => {
+                                if (value !== 'valid') {
+                                    return `The value ['${value}'] is not valid`;
+                                }
+                            },
+                        },
+                        { name: 'validateFn2', type: 'string', validate: value => {
+                                if (value !== 'valid') {
+                                    return [{ languageCode: LanguageCode.en, value: `The value ['${value}'] is not valid` }];
+                                }
+                            },
                         },
                     ],
                 },
@@ -92,6 +106,8 @@ describe('Custom fields', () => {
                 { name: 'validateInt', type: 'int' },
                 { name: 'validateFloat', type: 'float' },
                 { name: 'validateDateTime', type: 'datetime' },
+                { name: 'validateFn1', type: 'string' },
+                { name: 'validateFn2', type: 'string' },
             ],
         });
     });
@@ -243,6 +259,38 @@ describe('Custom fields', () => {
                     }
                 `);
             }, `The custom field value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]`),
+        );
+
+        it(
+            'invalid validate function with string',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: {
+                            id: "T_1"
+                            customFields: { validateFn1: "invalid" }
+                        }) {
+                            id
+                        }
+                    }
+                `);
+            }, `The value ['invalid'] is not valid`),
+        );
+
+        it(
+            'invalid validate function with localized string',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: {
+                            id: "T_1"
+                            customFields: { validateFn2: "invalid" }
+                        }) {
+                            id
+                        }
+                    }
+                `);
+            }, `The value ['invalid'] is not valid`),
         );
     });
 });
