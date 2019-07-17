@@ -45,6 +45,7 @@ export function parseFilterParams<T extends VendureEntity>(
     const output: WhereCondition[] = [];
     const alias = metadata.name.toLowerCase();
 
+    let argIndex = 1;
     for (const [key, operation] of Object.entries(filterParams)) {
         if (operation) {
             for (const [operator, operand] of Object.entries(operation as object)) {
@@ -56,8 +57,9 @@ export function parseFilterParams<T extends VendureEntity>(
                 } else {
                     throw new UserInputError('error.invalid-filter-field');
                 }
-                const condition = buildWhereCondition(fieldName, operator as Operator, operand);
+                const condition = buildWhereCondition(fieldName, operator as Operator, operand, argIndex);
                 output.push(condition);
+                argIndex++;
             }
         }
     }
@@ -65,44 +67,44 @@ export function parseFilterParams<T extends VendureEntity>(
     return output;
 }
 
-function buildWhereCondition(fieldName: string, operator: Operator, operand: any): WhereCondition {
+function buildWhereCondition(fieldName: string, operator: Operator, operand: any, argIndex: number): WhereCondition {
     switch (operator) {
         case 'eq':
             return {
-                clause: `${fieldName} = :arg1`,
-                parameters: { arg1: operand },
+                clause: `${fieldName} = :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: operand },
             };
         case 'contains':
             return {
-                clause: `${fieldName} LIKE :arg1`,
-                parameters: { arg1: `%${operand.trim()}%` },
+                clause: `${fieldName} LIKE :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
         case 'lt':
         case 'before':
             return {
-                clause: `${fieldName} < :arg1`,
-                parameters: { arg1: operand },
+                clause: `${fieldName} < :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: operand },
             };
         case 'gt':
         case 'after':
             return {
-                clause: `${fieldName} > :arg1`,
-                parameters: { arg1: operand },
+                clause: `${fieldName} > :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: operand },
             };
         case 'lte':
             return {
-                clause: `${fieldName} <= :arg1`,
-                parameters: { arg1: operand },
+                clause: `${fieldName} <= :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: operand },
             };
         case 'gte':
             return {
-                clause: `${fieldName} >= :arg1`,
-                parameters: { arg1: operand },
+                clause: `${fieldName} >= :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: operand },
             };
         case 'between':
             return {
-                clause: `${fieldName} BETWEEN :arg1 AND :arg2`,
-                parameters: { arg1: operand.start, arg2: operand.end },
+                clause: `${fieldName} BETWEEN :arg${argIndex}_a AND :arg${argIndex}_b`,
+                parameters: { [`arg${argIndex}_a`]: operand.start, [`arg${argIndex}_b`]: operand.end },
             };
         default:
             assertNever(operator);

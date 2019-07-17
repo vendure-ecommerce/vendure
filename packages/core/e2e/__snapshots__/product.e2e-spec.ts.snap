@@ -126,28 +126,3 @@ Object {
   ],
 }
 `;
-
-exports[`Product resolver products list query sorts by name 1`] = `
-Array [
-  "Bonsai Tree",
-  "Boxing Gloves",
-  "Camera Lens",
-  "Clacky Keyboard",
-  "Cruiser Skateboard",
-  "Curvy Monitor",
-  "Football",
-  "Gaming PC",
-  "Hard Drive",
-  "Instant Camera",
-  "Laptop",
-  "Orchid",
-  "Road Bike",
-  "Running Shoe",
-  "SLR Camera",
-  "Skipping Rope",
-  "Spiky Cactus",
-  "Tent",
-  "Tripod",
-  "USB Cable",
-]
-`;
