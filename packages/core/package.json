@@ -16,11 +16,9 @@
   "private": false,
   "license": "MIT",
   "scripts": {
-    "lint": "tslint --project tsconfig.json -c tslint.json",
     "tsc:watch": "tsc -p ./build/tsconfig.build.json --watch",
     "gulp:watch": "gulp -f ./build/gulpfile.ts watch",
-    "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
-    "publish:alpha": "yarn build && npm publish --access public --tag alpha"
+    "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build"
   },
   "publishConfig": {
     "access": "public"

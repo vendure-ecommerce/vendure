@@ -1,0 +1,16 @@
+{
+  "admin-ui/**/*.ts": [
+    "yarn lint:admin-ui",
+    "yarn format",
+    "git add"
+  ],
+  "admin-ui/**/*.html": [
+    "yarn format",
+    "git add"
+  ],
+  "packages/**/*.ts": [
+    "yarn lint:packages",
+    "yarn format",
+    "git add"
+  ]
+}

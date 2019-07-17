@@ -12,12 +12,8 @@
     "generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",
     "generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
-    "lint:core": "cd packages/core && yarn lint --fix",
+    "lint:packages": "yarn tslint --fix",
     "lint:admin-ui": "cd admin-ui && yarn lint --fix",
-    "precommit": "lint-staged",
-    "postcommit": "git update-index --again",
-    "commitmsg": "commitlint -e $GIT_PARAMS",
-    "prepush": "yarn test:all && cd admin-ui && yarn build --prod",
     "version": "yarn build && yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
@@ -48,11 +44,11 @@
     "conventional-changelog-core": "^3.2.2",
     "graphql": "^14.1.1",
     "graphql-tools": "^4.0.0",
-    "husky": "^2.3.0",
+    "husky": "^3.0.0",
     "jest": "^24.5.0",
     "klaw-sync": "^6.0.0",
     "lerna": "^3.14.1",
-    "lint-staged": "^7.2.0",
+    "lint-staged": "^9.2.0",
     "prettier": "^1.15.2",
     "ts-jest": "^24.0.0",
     "ts-node": "^7.0.1",
@@ -74,6 +70,14 @@
           "sentence-case"
         ]
       ]
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
+      "post-commit": "git update-index --again",
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn test:all && cd admin-ui && yarn build --prod"
     }
   }
 }
