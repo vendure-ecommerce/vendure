@@ -5,6 +5,7 @@ import { GraphQLUpload } from 'apollo-server-core';
 import { extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
+import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
@@ -148,7 +149,10 @@ async function createGraphQLOptions(
      */
     async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
         const customFields = configService.customFields;
-        const typeDefs = await typesLoader.mergeTypesByPaths(options.typePaths);
+        // Paths must be normalized to use forward-slash separators.
+        // See https://github.com/nestjs/graphql/issues/336
+        const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
+        const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
         let schema = generateListOptions(typeDefs);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);

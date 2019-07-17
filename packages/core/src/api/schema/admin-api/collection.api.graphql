@@ -18,7 +18,7 @@ type Mutation {
     moveCollection(input: MoveCollectionInput!): Collection!
 }
 
-type Collection {
+type Collection implements Node {
     isPrivate: Boolean!
 }
 

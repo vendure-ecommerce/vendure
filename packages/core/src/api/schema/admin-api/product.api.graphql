@@ -30,11 +30,11 @@ type Mutation {
     deleteProductVariant(id: ID!): DeletionResponse!
 }
 
-type Product {
+type Product implements Node {
     enabled: Boolean!
 }
 
-type ProductVariant {
+type ProductVariant implements Node {
     enabled: Boolean!
     stockOnHand: Int!
     trackInventory: Boolean!
