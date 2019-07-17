@@ -1,22 +1,19 @@
-import { Connection, getConnection, getMetadataArgsStorage } from 'typeorm';
+import { Type } from '@vendure/common/src/shared-types';
+import { getMetadataArgsStorage } from 'typeorm';
 
-import { Type } from '../../../common/lib/shared-types';
 import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
-
-import { VendureEntity } from './base/base.entity';
+import { VendureEntity } from '../entity/base/base.entity';
 
 function validateCustomFieldsForEntity(
     entity: Type<VendureEntity>,
     customFields: CustomFieldConfig[],
 ): string[] {
-    const metadata = getMetadataArgsStorage();
-    const isTranslatable =
-        -1 < metadata.relations.findIndex(r => r.target === entity && r.propertyName === 'translations');
     return [
         ...assertValidFieldNames(entity.name, customFields),
-        ...assertNoNameConflicts(entity.name, customFields),
+        ...assertNoNameConflictsWithEntity(entity, customFields),
+        ...assertNoDuplicatedCustomFieldNames(entity.name, customFields),
         ...assetNonNullablesHaveDefaults(entity.name, customFields),
-        ...(isTranslatable ? [] : assertNoLocaleStringFields(entity.name, customFields)),
+        ...(isTranslatable(entity) ? [] : assertNoLocaleStringFields(entity.name, customFields)),
     ];
 }
 
@@ -34,10 +31,24 @@ function assertValidFieldNames(entityName: string, customFields: CustomFieldConf
     return errors;
 }
 
+function assertNoNameConflictsWithEntity(entity: Type<any>, customFields: CustomFieldConfig[]): string[] {
+    const errors: string[] = [];
+    for (const field of customFields) {
+        const conflicts = (e: Type<any>): boolean => {
+            return -1 < getAllColumnNames(e).findIndex(name => name === field.name);
+        };
+        const translation = getEntityTranslation(entity);
+        if (conflicts(entity) || (translation && conflicts(translation))) {
+            errors.push(`${entity.name} entity already has a field named "${field.name}"`);
+        }
+    }
+    return errors;
+}
+
 /**
  * Assert that none of the custom field names conflict with one another.
  */
-function assertNoNameConflicts(entityName: string, customFields: CustomFieldConfig[]): string[] {
+function assertNoDuplicatedCustomFieldNames(entityName: string, customFields: CustomFieldConfig[]): string[] {
     const nameCounts = customFields
         .map(f => f.name)
         .reduce(
@@ -80,6 +91,35 @@ function assetNonNullablesHaveDefaults(entityName: string, customFields: CustomF
     return errors;
 }
 
+function isTranslatable(entity: Type<any>): boolean {
+    return !!getEntityTranslation(entity);
+}
+
+function getEntityTranslation(entity: Type<any>): Type<any> | undefined {
+    const metadata = getMetadataArgsStorage();
+    const translation = metadata.filterRelations(entity).find(r => r.propertyName === 'translations');
+    if (translation) {
+        const type = translation.type;
+        if (typeof type === 'function') {
+            return type();
+        }
+    }
+}
+
+function getAllColumnNames(entity: Type<any>): string[] {
+    const metadata = getMetadataArgsStorage();
+    const ownColumns = metadata.filterColumns(entity);
+    const relationColumns = metadata.filterRelations(entity);
+    const embeddedColumns = metadata.filterEmbeddeds(entity);
+    const baseColumns = metadata.filterColumns(VendureEntity);
+    return [
+        ...ownColumns,
+        ...relationColumns,
+        ...embeddedColumns,
+        ...baseColumns,
+    ].map(c => c.propertyName);
+}
+
 /**
  * Validates the custom fields config, e.g. by ensuring that there are no naming conflicts with the built-in fields
  * of each entity.
@@ -89,11 +129,12 @@ export function validateCustomFieldsConfig(
     entities: Array<Type<any>>,
 ): { valid: boolean; errors: string[] } {
     let errors: string[] = [];
+    getMetadataArgsStorage();
     for (const key of Object.keys(customFieldConfig)) {
         const entityName = key as keyof CustomFields;
         const customEntityFields = customFieldConfig[entityName] || [];
         const entity = entities.find(e => e.name === entityName);
-        if (entity) {
+        if (entity && customEntityFields.length) {
             errors = errors.concat(validateCustomFieldsForEntity(entity, customEntityFields));
         }
     }

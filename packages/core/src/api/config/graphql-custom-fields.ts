@@ -221,9 +221,8 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
 function mapToFields(
     fieldDefs: CustomFieldConfig[],
     typeFn: (fieldType: CustomFieldType) => string,
-    prefix: string = '',
 ): string {
-    return fieldDefs.map(field => `${prefix}${field.name}: ${typeFn(field.type)}`).join('\n');
+    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
 }
 
 function getFilterOperator(type: CustomFieldType): string {

@@ -56,7 +56,6 @@ export const GET_PRODUCT_LIST = gql`
         products(languageCode: $languageCode, options: $options) {
             items {
                 id
-                enabled
                 languageCode
                 name
                 slug

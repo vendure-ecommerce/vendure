@@ -378,4 +378,41 @@ describe('Custom fields', () => {
             expect(product.customFields.public).toBe('ho!');
         });
     });
+
+    describe('sort & filter', () => {
+
+        it('can sort by custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: {
+                        sort: {
+                            nullable: ASC
+                        }
+                    }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+
+        it('can filter by custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: {
+                        filter: {
+                            stringWithDefault: {
+                                contains: "hello"
+                            }
+                        }
+                    }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+    });
 });

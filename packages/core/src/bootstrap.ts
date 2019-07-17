@@ -139,6 +139,7 @@ export async function preBootstrapConfig(
     let config = getConfig();
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
+        process.exitCode = 1;
         throw new Error(`CustomFields config error:\n- ` + customFieldValidationResult.errors.join('\n- '));
     }
     config = await runPluginConfigurations(config);

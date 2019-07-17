@@ -1,11 +1,8 @@
 import { Type } from '@vendure/common/lib/shared-types';
 
-import { User } from '../../dist/entity/user/user.entity';
 import { CustomFields } from '../config/custom-field/custom-field-types';
 
 import { coreEntitiesMap } from './entities';
-import { ProductTranslation } from './product/product-translation.entity';
-import { Product } from './product/product.entity';
 import { validateCustomFieldsConfig } from './validate-custom-fields-config';
 
 describe('validateCustomFieldsConfig()', () => {
@@ -110,6 +107,34 @@ describe('validateCustomFieldsConfig()', () => {
         expect(result.errors).toEqual([
             'Product entity has duplicated custom field name: "foo"',
             'Product entity has duplicated custom field name: "bar"',
+        ]);
+    });
+
+    it('name conflict with existing fields', () => {
+        const config: CustomFields = {
+            Product: [
+                { name: 'id', type: 'string' },
+            ],
+        };
+        const result = validateCustomFieldsConfig(config, allEntities);
+
+        expect(result.valid).toBe(false);
+        expect(result.errors).toEqual([
+            'Product entity already has a field named "id"',
+        ]);
+    });
+
+    it('name conflict with existing fields in translation', () => {
+        const config: CustomFields = {
+            Product: [
+                { name: 'name', type: 'string' },
+            ],
+        };
+        const result = validateCustomFieldsConfig(config, allEntities);
+
+        expect(result.valid).toBe(false);
+        expect(result.errors).toEqual([
+            'Product entity already has a field named "name"',
         ]);
     });
 
