@@ -1,9 +1,9 @@
 /// <reference types="../typings" />
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
-import { GraphQLClient } from 'graphql-request';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
+import fetch, { Response } from 'node-fetch';
 import { Curl } from 'node-libcurl';
 
 import { ImportInfo } from '../e2e/graphql/generated-e2e-admin-types';
@@ -11,22 +11,32 @@ import { getConfig } from '../src/config/config-helpers';
 
 import { createUploadPostData } from './create-upload-post-data';
 
+const LOGIN = gql`
+    mutation($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+            user {
+                id
+                identifier
+                channelTokens
+            }
+        }
+    }
+`;
+
 // tslint:disable:no-console
 /**
  * A minimalistic GraphQL client for populating and querying test data.
  */
 export class SimpleGraphQLClient {
-    private client: GraphQLClient;
     private authToken: string;
     private channelToken: string;
+    private headers: { [key: string]: any } = {};
 
-    constructor(private apiUrl: string = '') {
-        this.client = new GraphQLClient(apiUrl);
-    }
+    constructor(private apiUrl: string = '') {}
 
     setAuthToken(token: string) {
         this.authToken = token;
-        this.setHeaders();
+        this.headers.Authorization = `Bearer ${this.authToken}`;
     }
 
     getAuthToken(): string {
@@ -34,45 +44,30 @@ export class SimpleGraphQLClient {
     }
 
     setChannelToken(token: string) {
-        this.channelToken = token;
-        this.setHeaders();
+        this.headers[getConfig().channelTokenKey] = token;
     }
 
     /**
      * Performs both query and mutation operations.
      */
     async query<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T> {
-        const queryString = print(query);
-        const result = await this.client.rawRequest<T>(queryString, variables);
+        const response = await this.request(query, variables);
+        const result = await this.getResult(response);
 
-        const authToken = result.headers.get(getConfig().authOptions.authTokenHeaderKey);
-        if (authToken != null) {
-            this.setAuthToken(authToken);
+        if (response.ok && !result.errors && result.data) {
+            return result.data;
+        } else {
+            const errorResult = typeof result === 'string' ? { error: result } : result;
+            throw new ClientError(
+                { ...errorResult, status: response.status },
+                { query: print(query), variables },
+            );
         }
-        return result.data as T;
     }
 
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
-        const queryString = print(query);
-        const result = await this.client.rawRequest<T>(queryString, variables);
-        return result.status;
-    }
-
-    uploadAssets(filePaths: string[]): Promise<any> {
-        return this.fileUploadMutation({
-            mutation: gql`
-                mutation CreateAssets($input: [CreateAssetInput!]!) {
-                    createAssets(input: $input) {
-                        id
-                        name
-                    }
-                }
-            `,
-            filePaths,
-            mapVariables: fp => ({
-                input: fp.map(() => ({ file: null })),
-            }),
-        });
+        const response = await this.request(query, variables);
+        return response.status;
     }
 
     importProducts(csvFilePath: string): Promise<{ importProducts: ImportInfo }> {
@@ -89,6 +84,63 @@ export class SimpleGraphQLClient {
             filePaths: [csvFilePath],
             mapVariables: () => ({ csvFile: null }),
         });
+    }
+
+    async asUserWithCredentials(username: string, password: string) {
+        // first log out as the current user
+        if (this.authToken) {
+            await this.query(
+                gql`
+                    mutation {
+                        logout
+                    }
+                `,
+            );
+        }
+        const result = await this.query(LOGIN, { username, password });
+        return result.login;
+    }
+
+    async asSuperAdmin() {
+        await this.asUserWithCredentials(SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD);
+    }
+
+    async asAnonymousUser() {
+        await this.query(
+            gql`
+                mutation {
+                    logout
+                }
+            `,
+        );
+    }
+
+    private async request(query: DocumentNode, variables?: { [key: string]: any }): Promise<Response> {
+        const queryString = print(query);
+        const body = JSON.stringify({
+            query: queryString,
+            variables: variables ? variables : undefined,
+        });
+
+        const response = await fetch(this.apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...this.headers },
+            body,
+        });
+        const authToken = response.headers.get(getConfig().authOptions.authTokenHeaderKey || '');
+        if (authToken != null) {
+            this.setAuthToken(authToken);
+        }
+        return response;
+    }
+
+    private async getResult(response: Response): Promise<any> {
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.startsWith('application/json')) {
+            return response.json();
+        } else {
+            return response.text();
+        }
     }
 
     /**
@@ -151,59 +203,17 @@ export class SimpleGraphQLClient {
             });
         });
     }
+}
 
-    async asUserWithCredentials(username: string, password: string) {
-        // first log out as the current user
-        if (this.authToken) {
-            await this.query(
-                gql`
-                    mutation {
-                        logout
-                    }
-                `,
-            );
+export class ClientError extends Error {
+    constructor(public response: any, public request: any) {
+        super(ClientError.extractMessage(response));
+    }
+    private static extractMessage(response: any): string {
+        if (response.errors) {
+            return response.errors[0].message;
+        } else {
+            return `GraphQL Error (Code: ${response.status})`;
         }
-        const result = await this.query(
-            gql`
-                mutation($username: String!, $password: String!) {
-                    login(username: $username, password: $password) {
-                        user {
-                            id
-                            identifier
-                            channelTokens
-                        }
-                    }
-                }
-            `,
-            {
-                username,
-                password,
-            },
-        );
-        return result.login;
-    }
-
-    async asSuperAdmin() {
-        await this.asUserWithCredentials(SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD);
-    }
-
-    async asAnonymousUser() {
-        await this.query(
-            gql`
-                mutation {
-                    logout
-                }
-            `,
-        );
-    }
-
-    private setHeaders() {
-        const headers: any = {
-            [getConfig().channelTokenKey]: this.channelToken,
-        };
-        if (this.authToken) {
-            headers.Authorization = `Bearer ${this.authToken}`;
-        }
-        this.client.setHeaders(headers);
     }
 }
