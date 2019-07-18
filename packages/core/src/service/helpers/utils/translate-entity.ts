@@ -1,9 +1,9 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { UnwrappedArray } from '../../../common/types/common-types';
-
+import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
-import { Translatable, Translated } from '../../../common/types/locale-types';
+import { UnwrappedArray } from '../../../common/types/common-types';
+import { Translatable, Translated, Translation } from '../../../common/types/locale-types';
 
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
@@ -38,8 +38,13 @@ export function translateEntity<T extends Translatable>(
     translatable: T,
     languageCode: LanguageCode,
 ): Translated<T> {
-    const translation =
-        translatable.translations && translatable.translations.find(t => t.languageCode === languageCode);
+    let translation: Translation<any> | undefined;
+    if (translatable.translations) {
+        translation = translatable.translations.find(t => t.languageCode === languageCode);
+        if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
+            translation = translatable.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
+        }
+    }
 
     if (!translation) {
         throw new InternalServerError(`error.entity-has-no-translation-in-language`, {
@@ -112,7 +117,11 @@ export function translateDeep<T extends Translatable>(
     return translatedEntity;
 }
 
-function translateLeaf(object: { [key: string]: any } | undefined, property: string, languageCode: LanguageCode): any {
+function translateLeaf(
+    object: { [key: string]: any } | undefined,
+    property: string,
+    languageCode: LanguageCode,
+): any {
     if (object && object[property]) {
         if (Array.isArray(object[property])) {
             return object[property].map((nested2: any) => translateEntity(nested2, languageCode));

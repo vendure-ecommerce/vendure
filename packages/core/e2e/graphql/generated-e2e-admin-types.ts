@@ -206,6 +206,7 @@ export type Channel = Node & {
 
 export type Collection = Node & {
     __typename?: 'Collection';
+    isPrivate: Scalars['Boolean'];
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -221,7 +222,6 @@ export type Collection = Node & {
     filters: Array<ConfigurableOperation>;
     translations: Array<CollectionTranslation>;
     productVariants: ProductVariantList;
-    isPrivate: Scalars['Boolean'];
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -236,13 +236,13 @@ export type CollectionBreadcrumb = {
 };
 
 export type CollectionFilterParameter = {
+    isPrivate?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     position?: Maybe<NumberOperators>;
     description?: Maybe<StringOperators>;
-    isPrivate?: Maybe<BooleanOperators>;
 };
 
 export type CollectionList = PaginatedList & {
@@ -1012,6 +1012,7 @@ export enum DeletionResult {
 
 export type Facet = Node & {
     __typename?: 'Facet';
+    isPrivate: Scalars['Boolean'];
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1020,17 +1021,16 @@ export type Facet = Node & {
     code: Scalars['String'];
     values: Array<FacetValue>;
     translations: Array<FacetTranslation>;
-    isPrivate: Scalars['Boolean'];
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type FacetFilterParameter = {
+    isPrivate?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     code?: Maybe<StringOperators>;
-    isPrivate?: Maybe<BooleanOperators>;
 };
 
 export type FacetList = PaginatedList & {
@@ -1702,7 +1702,6 @@ export type Mutation = {
     addNoteToOrder: Order;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
-    reindex: JobInfo;
     /** Create a new ProductOptionGroup */
     createProductOptionGroup: ProductOptionGroup;
     /** Update an existing ProductOptionGroup */
@@ -1711,6 +1710,7 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
+    reindex: JobInfo;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -2278,6 +2278,7 @@ export type PriceRange = {
 
 export type Product = Node & {
     __typename?: 'Product';
+    enabled: Scalars['Boolean'];
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2292,18 +2293,17 @@ export type Product = Node & {
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
-    enabled: Scalars['Boolean'];
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductFilterParameter = {
+    enabled?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     slug?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
-    enabled?: Maybe<BooleanOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -2408,6 +2408,10 @@ export type ProductTranslationInput = {
 
 export type ProductVariant = Node & {
     __typename?: 'ProductVariant';
+    enabled: Scalars['Boolean'];
+    stockOnHand: Scalars['Int'];
+    trackInventory: Scalars['Boolean'];
+    stockMovements: StockMovementList;
     id: Scalars['ID'];
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -2426,10 +2430,6 @@ export type ProductVariant = Node & {
     options: Array<ProductOption>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductVariantTranslation>;
-    enabled: Scalars['Boolean'];
-    stockOnHand: Scalars['Int'];
-    trackInventory: Scalars['Boolean'];
-    stockMovements: StockMovementList;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -2438,6 +2438,9 @@ export type ProductVariantStockMovementsArgs = {
 };
 
 export type ProductVariantFilterParameter = {
+    enabled?: Maybe<BooleanOperators>;
+    stockOnHand?: Maybe<NumberOperators>;
+    trackInventory?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
@@ -2447,9 +2450,6 @@ export type ProductVariantFilterParameter = {
     currencyCode?: Maybe<StringOperators>;
     priceIncludesTax?: Maybe<BooleanOperators>;
     priceWithTax?: Maybe<NumberOperators>;
-    enabled?: Maybe<BooleanOperators>;
-    stockOnHand?: Maybe<NumberOperators>;
-    trackInventory?: Maybe<BooleanOperators>;
 };
 
 export type ProductVariantList = PaginatedList & {
@@ -2466,6 +2466,7 @@ export type ProductVariantListOptions = {
 };
 
 export type ProductVariantSortParameter = {
+    stockOnHand?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     productId?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
@@ -2474,7 +2475,6 @@ export type ProductVariantSortParameter = {
     name?: Maybe<SortOrder>;
     price?: Maybe<SortOrder>;
     priceWithTax?: Maybe<SortOrder>;
-    stockOnHand?: Maybe<SortOrder>;
 };
 
 export type ProductVariantTranslation = {
@@ -2559,9 +2559,9 @@ export type Query = {
     orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
-    search: SearchResponse;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
+    search: SearchResponse;
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
@@ -2603,13 +2603,11 @@ export type QueryChannelArgs = {
 };
 
 export type QueryCollectionsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     options?: Maybe<CollectionListOptions>;
 };
 
 export type QueryCollectionArgs = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryCountriesArgs = {
@@ -2633,13 +2631,11 @@ export type QueryCustomerArgs = {
 };
 
 export type QueryFacetsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     options?: Maybe<FacetListOptions>;
 };
 
 export type QueryFacetArgs = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryJobArgs = {
@@ -2666,29 +2662,25 @@ export type QueryPaymentMethodArgs = {
     id: Scalars['ID'];
 };
 
-export type QuerySearchArgs = {
-    input: SearchInput;
-};
-
 export type QueryProductOptionGroupsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     filterTerm?: Maybe<Scalars['String']>;
 };
 
 export type QueryProductOptionGroupArgs = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
+};
+
+export type QuerySearchArgs = {
+    input: SearchInput;
 };
 
 export type QueryProductsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     options?: Maybe<ProductListOptions>;
 };
 
 export type QueryProductArgs = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryPromotionArgs = {
@@ -2846,6 +2838,7 @@ export type SearchResponse = {
 
 export type SearchResult = {
     __typename?: 'SearchResult';
+    enabled: Scalars['Boolean'];
     sku: Scalars['String'];
     slug: Scalars['String'];
     productId: Scalars['ID'];
@@ -2864,7 +2857,6 @@ export type SearchResult = {
     collectionIds: Array<Scalars['String']>;
     /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
-    enabled: Scalars['Boolean'];
 };
 
 /** The price of a search result product, either as a range or as a single price */
@@ -3309,7 +3301,6 @@ export type GetProductsWithVariantIdsQuery = { __typename?: 'Query' } & {
 
 export type GetCollectionQueryVariables = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetCollectionQuery = { __typename?: 'Query' } & {
@@ -3599,7 +3590,6 @@ export type EntityIdTestQuery = { __typename?: 'Query' } & {
 
 export type GetFacetWithValuesQueryVariables = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetFacetWithValuesQuery = { __typename?: 'Query' } & {
@@ -3953,7 +3943,6 @@ export type CreateProductMutation = { __typename?: 'Mutation' } & {
 export type GetProductWithVariantsQueryVariables = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetProductWithVariantsQuery = { __typename?: 'Query' } & {
@@ -3962,16 +3951,14 @@ export type GetProductWithVariantsQuery = { __typename?: 'Query' } & {
 
 export type GetProductListQueryVariables = {
     options?: Maybe<ProductListOptions>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetProductListQuery = { __typename?: 'Query' } & {
     products: { __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & {
             items: Array<
-                { __typename?: 'Product' } & Pick<
-                    Product,
-                    'id' | 'enabled' | 'languageCode' | 'name' | 'slug'
-                > & { featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>> }
+                { __typename?: 'Product' } & Pick<Product, 'id' | 'languageCode' | 'name' | 'slug'> & {
+                        featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>>;
+                    }
             >;
         };
 };
@@ -4115,7 +4102,6 @@ export type UpdateCountryMutation = { __typename?: 'Mutation' } & {
 
 export type GetFacetListQueryVariables = {
     options?: Maybe<FacetListOptions>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetFacetListQuery = { __typename?: 'Query' } & {
@@ -4135,7 +4121,6 @@ export type DeleteProductMutation = { __typename?: 'Mutation' } & {
 export type GetProductSimpleQueryVariables = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type GetProductSimpleQuery = { __typename?: 'Query' } & {
@@ -4213,6 +4198,14 @@ export type GetProductsQuery = { __typename?: 'Query' } & {
                     }
             >;
         };
+};
+
+export type UpdateOptionGroupMutationVariables = {
+    input: UpdateProductOptionGroupInput;
+};
+
+export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
+    updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
 };
 
 export type GetOrderListQueryVariables = {
@@ -5356,6 +5349,12 @@ export namespace GetProducts {
         >,
         { __typename: 'StockMovement' }
     >;
+}
+
+export namespace UpdateOptionGroup {
+    export type Variables = UpdateOptionGroupMutationVariables;
+    export type Mutation = UpdateOptionGroupMutation;
+    export type UpdateProductOptionGroup = UpdateOptionGroupMutation['updateProductOptionGroup'];
 }
 
 export namespace GetOrderList {

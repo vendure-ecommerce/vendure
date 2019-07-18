@@ -43,8 +43,8 @@ export const CREATE_PRODUCT = gql`
 `;
 
 export const GET_PRODUCT_WITH_VARIANTS = gql`
-    query GetProductWithVariants($id: ID, $slug: String, $languageCode: LanguageCode) {
-        product(languageCode: $languageCode, slug: $slug, id: $id) {
+    query GetProductWithVariants($id: ID, $slug: String) {
+        product(slug: $slug, id: $id) {
             ...ProductWithVariants
         }
     }
@@ -52,8 +52,8 @@ export const GET_PRODUCT_WITH_VARIANTS = gql`
 `;
 
 export const GET_PRODUCT_LIST = gql`
-    query GetProductList($options: ProductListOptions, $languageCode: LanguageCode) {
-        products(languageCode: $languageCode, options: $options) {
+    query GetProductList($options: ProductListOptions) {
+        products(options: $options) {
             items {
                 id
                 languageCode
@@ -227,8 +227,8 @@ export const UPDATE_COUNTRY = gql`
 `;
 
 export const GET_FACET_LIST = gql`
-    query GetFacetList($options: FacetListOptions, $languageCode: LanguageCode) {
-        facets(languageCode: $languageCode, options: $options) {
+    query GetFacetList($options: FacetListOptions) {
+        facets(options: $options) {
             items {
                 ...FacetWithValues
             }
@@ -247,8 +247,8 @@ export const DELETE_PRODUCT = gql`
 `;
 
 export const GET_PRODUCT_SIMPLE = gql`
-    query GetProductSimple($id: ID, $slug: String, $languageCode: LanguageCode) {
-        product(languageCode: $languageCode, slug: $slug, id: $id) {
+    query GetProductSimple($id: ID, $slug: String) {
+        product(slug: $slug, id: $id) {
             id
             slug
         }

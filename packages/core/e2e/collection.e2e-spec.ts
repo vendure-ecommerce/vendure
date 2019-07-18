@@ -5,7 +5,10 @@ import path from 'path';
 
 import { pick } from '../../common/lib/pick';
 import { StringOperator } from '../src/common/configurable-operation';
-import { facetValueCollectionFilter, variantNameCollectionFilter } from '../src/config/collection/default-collection-filters';
+import {
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+} from '../src/config/collection/default-collection-filters';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
@@ -262,7 +265,7 @@ describe('Collection resolver', () => {
         const { updateCollection } = await client.query<
             UpdateCollection.Mutation,
             UpdateCollection.Variables
-            >(UPDATE_COLLECTION, {
+        >(UPDATE_COLLECTION, {
             input: {
                 id: pearCollection.id,
                 assetIds: [assets[1].id],
@@ -396,52 +399,52 @@ describe('Collection resolver', () => {
     });
 
     describe('deleteCollection', () => {
-
         let collectionToDelete: CreateCollection.CreateCollection;
         let laptopProductId: string;
 
         beforeAll(async () => {
-            const { createCollection } = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
-                CREATE_COLLECTION,
-                {
-                    input: {
-                        filters: [
-                            {
-                                code: variantNameCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'operator',
-                                        value: 'contains',
-                                        type: ConfigArgType.STRING_OPERATOR,
-                                    },
-                                    {
-                                        name: 'term',
-                                        value: 'laptop',
-                                        type: ConfigArgType.STRING,
-                                    },
-                                ],
-                            },
-                        ],
-                        translations: [
-                            { languageCode: LanguageCode.en, name: 'Delete Me', description: '' },
-                        ],
-                    },
+            const { createCollection } = await client.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    filters: [
+                        {
+                            code: variantNameCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'operator',
+                                    value: 'contains',
+                                    type: ConfigArgType.STRING_OPERATOR,
+                                },
+                                {
+                                    name: 'term',
+                                    value: 'laptop',
+                                    type: ConfigArgType.STRING,
+                                },
+                            ],
+                        },
+                    ],
+                    translations: [{ languageCode: LanguageCode.en, name: 'Delete Me', description: '' }],
                 },
-            );
+            });
             collectionToDelete = createCollection;
         });
 
-        it('throws for invalid collection id', assertThrowsWithMessage(async () => {
+        it(
+            'throws for invalid collection id',
+            assertThrowsWithMessage(async () => {
                 await client.query<DeleteCollection.Mutation, DeleteCollection.Variables>(DELETE_COLLECTION, {
                     id: 'T_999',
                 });
-            },
-            'No Collection with the id \'999\' could be found',
-            ),
+            }, "No Collection with the id '999' could be found"),
         );
 
         it('collection and product related prior to deletion', async () => {
-            const { collection } = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(GET_COLLECTION_PRODUCT_VARIANTS, {
+            const { collection } = await client.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
                 id: collectionToDelete.id,
             });
             expect(collection!.productVariants.items.map(pick(['name']))).toEqual([
@@ -453,7 +456,10 @@ describe('Collection resolver', () => {
 
             laptopProductId = collection!.productVariants.items[0].productId;
 
-            const { product } = await client.query<GetProductCollections.Query, GetProductCollections.Variables>(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await client.query<
+                GetProductCollections.Query,
+                GetProductCollections.Variables
+            >(GET_PRODUCT_COLLECTIONS, {
                 id: laptopProductId,
             });
 
@@ -466,7 +472,10 @@ describe('Collection resolver', () => {
         });
 
         it('deleteCollection works', async () => {
-            const { deleteCollection } = await client.query<DeleteCollection.Mutation, DeleteCollection.Variables>(DELETE_COLLECTION, {
+            const { deleteCollection } = await client.query<
+                DeleteCollection.Mutation,
+                DeleteCollection.Variables
+            >(DELETE_COLLECTION, {
                 id: collectionToDelete.id,
             });
 
@@ -474,14 +483,20 @@ describe('Collection resolver', () => {
         });
 
         it('deleted collection is null', async () => {
-            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-                id: collectionToDelete.id,
-            });
+            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: collectionToDelete.id,
+                },
+            );
             expect(collection).toBeNull();
         });
 
         it('product no longer lists collection', async () => {
-            const { product } = await client.query<GetProductCollections.Query, GetProductCollections.Variables>(GET_PRODUCT_COLLECTIONS, {
+            const { product } = await client.query<
+                GetProductCollections.Query,
+                GetProductCollections.Variables
+            >(GET_PRODUCT_COLLECTIONS, {
                 id: laptopProductId,
             });
 
@@ -491,7 +506,6 @@ describe('Collection resolver', () => {
                 { id: 'T_5', name: 'Pear' },
             ]);
         });
-
     });
 
     describe('filters', () => {
@@ -499,7 +513,7 @@ describe('Collection resolver', () => {
             const result = await client.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
-                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+            >(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
                     translations: [{ languageCode: LanguageCode.en, name: 'Empty', description: '' }],
                     filters: [],
@@ -513,7 +527,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -545,7 +559,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -573,7 +587,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
-                    >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
                             { languageCode: LanguageCode.en, name: 'Photo AND Pear', description: '' },
@@ -608,7 +622,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
-                    >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
                             { languageCode: LanguageCode.en, name: 'Photo OR Pear', description: '' },
@@ -655,7 +669,7 @@ describe('Collection resolver', () => {
                 const { createCollection } = await client.query<
                     CreateCollection.Mutation,
                     CreateCollection.Variables
-                    >(CREATE_COLLECTION, {
+                >(CREATE_COLLECTION, {
                     input: {
                         translations: [
                             { languageCode: LanguageCode.en, name: `${operator} ${term}`, description: '' },
@@ -688,7 +702,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -704,7 +718,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
@@ -716,7 +730,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -731,7 +745,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -792,7 +806,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -820,7 +834,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -849,7 +863,7 @@ describe('Collection resolver', () => {
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
-                    >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
@@ -869,7 +883,7 @@ describe('Collection resolver', () => {
             const result = await client.query<
                 GetCollectionsForProducts.Query,
                 GetCollectionsForProducts.Variables
-                >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
+            >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
@@ -888,7 +902,7 @@ describe('Collection resolver', () => {
         const { collection } = await client.query<
             GetCollectionProducts.Query,
             GetCollectionProducts.Variables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+        >(GET_COLLECTION_PRODUCT_VARIANTS, {
             id: pearCollection.id,
         });
         expect(collection!.productVariants.items.map(i => i.name)).toEqual([
@@ -911,8 +925,8 @@ describe('Collection resolver', () => {
 });
 
 export const GET_COLLECTION = gql`
-    query GetCollection($id: ID!, $languageCode: LanguageCode) {
-        collection(id: $id, languageCode: $languageCode) {
+    query GetCollection($id: ID!) {
+        collection(id: $id) {
             ...Collection
         }
     }
@@ -943,7 +957,7 @@ const GET_FACET_VALUES = gql`
 
 const GET_COLLECTIONS = gql`
     query GetCollections {
-        collections(languageCode: en) {
+        collections {
             items {
                 id
                 name

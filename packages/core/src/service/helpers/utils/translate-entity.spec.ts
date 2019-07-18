@@ -1,5 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
+import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
@@ -123,12 +124,8 @@ describe('translateEntity()', () => {
         );
     });
 
-    it('throw if the desired translation is not available', () => {
-        product.translations = [];
-
-        expect(() => translateEntity(product, LanguageCode.zu)).toThrow(
-            'error.entity-has-no-translation-in-language',
-        );
+    it('falls back to default language', () => {
+        expect(translateEntity(product, LanguageCode.zu).name).toEqual(PRODUCT_NAME_EN);
     });
 });
 

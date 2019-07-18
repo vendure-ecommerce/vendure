@@ -1,6 +1,6 @@
 type Query {
-    collections(languageCode: LanguageCode, options: CollectionListOptions): CollectionList!
-    collection(id: ID!, languageCode: LanguageCode): Collection
+    collections(options: CollectionListOptions): CollectionList!
+    collection(id: ID!): Collection
     collectionFilters: [ConfigurableOperation!]!
 }
 

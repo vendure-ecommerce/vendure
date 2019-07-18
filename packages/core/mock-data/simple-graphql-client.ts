@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 import fetch, { Response } from 'node-fetch';
 import { Curl } from 'node-libcurl';
+import { stringify } from 'querystring';
 
 import { ImportInfo } from '../e2e/graphql/generated-e2e-admin-types';
 import { getConfig } from '../src/config/config-helpers';
@@ -22,6 +23,8 @@ const LOGIN = gql`
         }
     }
 `;
+
+export type QueryParams = { [key: string]: string | number };
 
 // tslint:disable:no-console
 /**
@@ -50,8 +53,12 @@ export class SimpleGraphQLClient {
     /**
      * Performs both query and mutation operations.
      */
-    async query<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<T> {
-        const response = await this.request(query, variables);
+    async query<T = any, V = Record<string, any>>(
+        query: DocumentNode,
+        variables?: V,
+        queryParams?: QueryParams,
+    ): Promise<T> {
+        const response = await this.request(query, variables, queryParams);
         const result = await this.getResult(response);
 
         if (response.ok && !result.errors && result.data) {
@@ -115,14 +122,20 @@ export class SimpleGraphQLClient {
         );
     }
 
-    private async request(query: DocumentNode, variables?: { [key: string]: any }): Promise<Response> {
+    private async request(
+        query: DocumentNode,
+        variables?: { [key: string]: any },
+        queryParams?: QueryParams,
+    ): Promise<Response> {
         const queryString = print(query);
         const body = JSON.stringify({
             query: queryString,
             variables: variables ? variables : undefined,
         });
 
-        const response = await fetch(this.apiUrl, {
+        const url = queryParams ? this.apiUrl + `?${stringify(queryParams)}` : this.apiUrl;
+
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...this.headers },
             body,

@@ -10,8 +10,8 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { ChannelService } from '../../service/services/channel.service';
-import { getApiType } from './get-api-type';
 
+import { getApiType } from './get-api-type';
 import { RequestContext } from './request-context';
 
 export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
@@ -66,7 +66,7 @@ export class RequestContextService {
     }
 
     private getLanguageCode(req: Request): LanguageCode | undefined {
-        return req.body && req.body.variables && req.body.variables.languageCode;
+        return req.query && req.query.languageCode;
     }
 
     private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
@@ -91,8 +91,11 @@ export class RequestContextService {
      * Returns true if any element of arr1 appears in arr2.
      */
     private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
-        return arr1.reduce((intersects, role) => {
-            return intersects || arr2.includes(role);
-        }, false as boolean);
+        return arr1.reduce(
+            (intersects, role) => {
+                return intersects || arr2.includes(role);
+            },
+            false as boolean,
+        );
     }
 }

@@ -26,7 +26,7 @@ describe('EntityIdStrategy', () => {
     it('Does not doubly-encode ids from resolved properties', async () => {
         const result = await shopClient.query<EntityIdTest.Query>(gql`
             query EntityIdTest {
-                product(id: "T_1", languageCode: en) {
+                product(id: "T_1") {
                     id
                     variants {
                         id

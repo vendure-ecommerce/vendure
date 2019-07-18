@@ -1,6 +1,6 @@
 type Query {
-    productOptionGroups(languageCode: LanguageCode, filterTerm: String): [ProductOptionGroup!]!
-    productOptionGroup(id: ID!, languageCode: LanguageCode): ProductOptionGroup
+    productOptionGroups(filterTerm: String): [ProductOptionGroup!]!
+    productOptionGroup(id: ID!): ProductOptionGroup
 }
 
 type Mutation {

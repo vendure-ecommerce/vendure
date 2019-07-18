@@ -63,9 +63,7 @@ describe('Product resolver', () => {
         it('returns all products when no options passed', async () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
-                {
-                    languageCode: LanguageCode.en,
-                },
+                {},
             );
 
             expect(result.products.items.length).toBe(20);
@@ -76,7 +74,6 @@ describe('Product resolver', () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         skip: 0,
                         take: 3,
@@ -92,7 +89,6 @@ describe('Product resolver', () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         filter: {
                             name: {
@@ -111,7 +107,6 @@ describe('Product resolver', () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         filter: {
                             name: {
@@ -132,7 +127,6 @@ describe('Product resolver', () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         sort: {
                             name: SortOrder.ASC,
@@ -169,7 +163,6 @@ describe('Product resolver', () => {
             const result = await shopClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         filter: {
                             name: {
@@ -188,7 +181,6 @@ describe('Product resolver', () => {
             const result = await shopClient.query<GetProductList.Query, GetProductList.Variables>(
                 GET_PRODUCT_LIST,
                 {
-                    languageCode: LanguageCode.en,
                     options: {
                         sort: {
                             name: SortOrder.ASC,
@@ -262,10 +254,13 @@ describe('Product resolver', () => {
         it(
             'throws if id and slug do not refer to the same Product',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(GET_PRODUCT_SIMPLE, {
-                    id: 'T_2',
-                    slug: 'laptop',
-                });
+                await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                    GET_PRODUCT_SIMPLE,
+                    {
+                        id: 'T_2',
+                        slug: 'laptop',
+                    },
+                );
             }, 'The provided id and slug refer to different Products'),
         );
 
@@ -273,8 +268,7 @@ describe('Product resolver', () => {
             const { product } = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
-                languageCode: LanguageCode.en,
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_2',
             });
 
@@ -287,13 +281,12 @@ describe('Product resolver', () => {
         });
 
         it('ProductVariant price properties are correct', async () => {
-            const result = await adminClient.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
-                GET_PRODUCT_WITH_VARIANTS,
-                {
-                    languageCode: LanguageCode.en,
-                    id: 'T_2',
-                },
-            );
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_2',
+            });
 
             if (!result.product) {
                 fail('Product not found');
@@ -307,13 +300,12 @@ describe('Product resolver', () => {
         });
 
         it('returns null when id not found', async () => {
-            const result = await adminClient.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
-                GET_PRODUCT_WITH_VARIANTS,
-                {
-                    languageCode: LanguageCode.en,
-                    id: 'bad_id',
-                },
-            );
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'bad_id',
+            });
 
             expect(result.product).toBeNull();
         });
@@ -527,9 +519,8 @@ describe('Product resolver', () => {
             const productResult = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
-                >(GET_PRODUCT_WITH_VARIANTS, {
+            >(GET_PRODUCT_WITH_VARIANTS, {
                 id: newProduct.id,
-                languageCode: LanguageCode.en,
             });
             const assets = productResult.product!.assets;
 
@@ -589,7 +580,7 @@ describe('Product resolver', () => {
             const result = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_2',
                 productId: newProduct.id,
             });
@@ -631,7 +622,7 @@ describe('Product resolver', () => {
             const { addOptionGroupToProduct } = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
-                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: newProductWithAssets.id,
             });
@@ -640,7 +631,7 @@ describe('Product resolver', () => {
             const result = await adminClient.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
-                >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: newProductWithAssets.id,
             });
@@ -655,7 +646,7 @@ describe('Product resolver', () => {
                     adminClient.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_3',
                         productId: 'T_2',
                     }),
@@ -670,7 +661,7 @@ describe('Product resolver', () => {
                     adminClient.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '1',
                         productId: '999',
                     }),
@@ -685,7 +676,7 @@ describe('Product resolver', () => {
                     adminClient.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
@@ -760,7 +751,7 @@ describe('Product resolver', () => {
                 const { createProductVariants } = await adminClient.query<
                     CreateProductVariants.Mutation,
                     CreateProductVariants.Variables
-                    >(CREATE_PRODUCT_VARIANTS, {
+                >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             productId: newProduct.id,
@@ -781,7 +772,7 @@ describe('Product resolver', () => {
                 const { createProductVariants } = await adminClient.query<
                     CreateProductVariants.Mutation,
                     CreateProductVariants.Variables
-                    >(CREATE_PRODUCT_VARIANTS, {
+                >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             productId: newProduct.id,
@@ -834,7 +825,7 @@ describe('Product resolver', () => {
                 const { updateProductVariants } = await adminClient.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -858,7 +849,7 @@ describe('Product resolver', () => {
                 const result = await adminClient.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -881,7 +872,7 @@ describe('Product resolver', () => {
                 const result = await adminClient.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -904,7 +895,7 @@ describe('Product resolver', () => {
                 const result = await adminClient.query<
                     UpdateProductVariants.Mutation,
                     UpdateProductVariants.Variables
-                    >(UPDATE_PRODUCT_VARIANTS, {
+                >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: firstVariant.id,
@@ -946,7 +937,7 @@ describe('Product resolver', () => {
                 const result1 = await adminClient.query<
                     GetProductWithVariants.Query,
                     GetProductWithVariants.Variables
-                    >(GET_PRODUCT_WITH_VARIANTS, {
+                >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
                 expect(result1.product!.variants.map(v => v.id)).toEqual(['T_35', 'T_36', 'T_37']);
@@ -954,7 +945,7 @@ describe('Product resolver', () => {
                 const { deleteProductVariant } = await adminClient.query<
                     DeleteProductVariant.Mutation,
                     DeleteProductVariant.Variables
-                    >(DELETE_PRODUCT_VARIANT, {
+                >(DELETE_PRODUCT_VARIANT, {
                     id: result1.product!.variants[0].id,
                 });
 
@@ -963,7 +954,7 @@ describe('Product resolver', () => {
                 const result2 = await adminClient.query<
                     GetProductWithVariants.Query,
                     GetProductWithVariants.Variables
-                    >(GET_PRODUCT_WITH_VARIANTS, {
+                >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
                 expect(result2.product!.variants.map(v => v.id)).toEqual(['T_36', 'T_37']);
@@ -991,12 +982,12 @@ describe('Product resolver', () => {
         });
 
         it('cannot get a deleted product', async () => {
-            const result = await adminClient.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
-                GET_PRODUCT_WITH_VARIANTS,
-                {
-                    id: productToDelete.id,
-                },
-            );
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: productToDelete.id,
+            });
 
             expect(result.product).toBe(null);
         });
@@ -1044,7 +1035,7 @@ describe('Product resolver', () => {
                     adminClient.query<
                         RemoveOptionGroupFromProduct.Mutation,
                         RemoveOptionGroupFromProduct.Variables
-                        >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),

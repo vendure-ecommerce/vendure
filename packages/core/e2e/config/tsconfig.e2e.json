@@ -5,6 +5,8 @@
     "lib": ["es2015"],
     "skipLibCheck": false,
     "inlineSourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "allowJs": true
   },
   "include": ["../**/*.e2e-spec.ts", "../**/*.d.ts"]

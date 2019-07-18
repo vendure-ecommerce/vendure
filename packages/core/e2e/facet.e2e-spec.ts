@@ -268,7 +268,10 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use returns NOT_DELETED', async () => {
-            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: speakerTypeFacet.id, force: false });
+            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
+                id: speakerTypeFacet.id,
+                force: false,
+            });
             const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
@@ -285,7 +288,10 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use can be force deleted', async () => {
-            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: speakerTypeFacet.id, force: true });
+            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
+                id: speakerTypeFacet.id,
+                force: true,
+            });
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.DELETED,
@@ -312,24 +318,28 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet with no FacetValues works', async () => {
-            const { createFacet } = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
-                input: {
-                    code: 'test',
-                    isPrivate: false,
-                    translations: [
-                        { languageCode: LanguageCode.en, name: 'Test' },
-                    ],
+            const { createFacet } = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(
+                CREATE_FACET,
+                {
+                    input: {
+                        code: 'test',
+                        isPrivate: false,
+                        translations: [{ languageCode: LanguageCode.en, name: 'Test' }],
+                    },
                 },
+            );
+            const result = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
+                id: createFacet.id,
+                force: false,
             });
-            const result = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, { id: createFacet.id, force: false });
             expect(result.deleteFacet.result).toBe(DeletionResult.DELETED);
         });
     });
 });
 
 export const GET_FACET_WITH_VALUES = gql`
-    query GetFacetWithValues($id: ID!, $languageCode: LanguageCode) {
-        facet(id: $id, languageCode: $languageCode) {
+    query GetFacetWithValues($id: ID!) {
+        facet(id: $id) {
             ...FacetWithValues
         }
     }
