@@ -45,7 +45,6 @@ export class CollectionDataService {
                     take,
                     skip,
                 },
-                languageCode: getDefaultLanguage(),
             },
         );
     }
@@ -53,7 +52,6 @@ export class CollectionDataService {
     getCollection(id: string) {
         return this.baseDataService.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id,
-            languageCode: getDefaultLanguage(),
         });
     }
 

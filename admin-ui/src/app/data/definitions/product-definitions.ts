@@ -222,8 +222,8 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
 `;
 
 export const GET_PRODUCT_WITH_VARIANTS = gql`
-    query GetProductWithVariants($id: ID!, $languageCode: LanguageCode) {
-        product(languageCode: $languageCode, id: $id) {
+    query GetProductWithVariants($id: ID!) {
+        product(id: $id) {
             ...ProductWithVariants
         }
     }
@@ -231,8 +231,8 @@ export const GET_PRODUCT_WITH_VARIANTS = gql`
 `;
 
 export const GET_PRODUCT_LIST = gql`
-    query GetProductList($options: ProductListOptions, $languageCode: LanguageCode) {
-        products(languageCode: $languageCode, options: $options) {
+    query GetProductList($options: ProductListOptions) {
+        products(options: $options) {
             items {
                 id
                 enabled
@@ -250,8 +250,8 @@ export const GET_PRODUCT_LIST = gql`
 `;
 
 export const GET_PRODUCT_OPTION_GROUPS = gql`
-    query GetProductOptionGroups($filterTerm: String, $languageCode: LanguageCode) {
-        productOptionGroups(filterTerm: $filterTerm, languageCode: $languageCode) {
+    query GetProductOptionGroups($filterTerm: String) {
+        productOptionGroups(filterTerm: $filterTerm) {
             id
             languageCode
             code

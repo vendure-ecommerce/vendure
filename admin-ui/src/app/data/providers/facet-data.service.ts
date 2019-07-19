@@ -37,7 +37,6 @@ export class FacetDataService {
                 take,
                 skip,
             },
-            languageCode: getDefaultLanguage(),
         });
     }
 
@@ -46,7 +45,6 @@ export class FacetDataService {
             GET_FACET_WITH_VALUES,
             {
                 id,
-                languageCode: getDefaultLanguage(),
             },
         );
     }

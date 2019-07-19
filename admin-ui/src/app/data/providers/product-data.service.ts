@@ -73,7 +73,6 @@ export class ProductDataService {
                 take,
                 skip,
             },
-            languageCode: getDefaultLanguage(),
         });
     }
 
@@ -82,7 +81,6 @@ export class ProductDataService {
             GET_PRODUCT_WITH_VARIANTS,
             {
                 id,
-                languageCode: getDefaultLanguage(),
             },
         );
     }
@@ -207,7 +205,6 @@ export class ProductDataService {
             GET_PRODUCT_OPTION_GROUPS,
             {
                 filterTerm,
-                languageCode: getDefaultLanguage(),
             },
         );
     }

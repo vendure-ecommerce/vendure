@@ -93,8 +93,8 @@ export const DELETE_FACET_VALUES = gql`
 `;
 
 export const GET_FACET_LIST = gql`
-    query GetFacetList($options: FacetListOptions, $languageCode: LanguageCode) {
-        facets(languageCode: $languageCode, options: $options) {
+    query GetFacetList($options: FacetListOptions) {
+        facets(options: $options) {
             items {
                 ...FacetWithValues
             }
@@ -105,8 +105,8 @@ export const GET_FACET_LIST = gql`
 `;
 
 export const GET_FACET_WITH_VALUES = gql`
-    query GetFacetWithValues($id: ID!, $languageCode: LanguageCode) {
-        facet(id: $id, languageCode: $languageCode) {
+    query GetFacetWithValues($id: ID!) {
+        facet(id: $id) {
             ...FacetWithValues
         }
     }

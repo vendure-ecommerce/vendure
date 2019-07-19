@@ -48,8 +48,8 @@ export const COLLECTION_FRAGMENT = gql`
 `;
 
 export const GET_COLLECTION_LIST = gql`
-    query GetCollectionList($options: CollectionListOptions, $languageCode: LanguageCode) {
-        collections(languageCode: $languageCode, options: $options) {
+    query GetCollectionList($options: CollectionListOptions) {
+        collections(options: $options) {
             items {
                 id
                 name
@@ -69,8 +69,8 @@ export const GET_COLLECTION_LIST = gql`
 `;
 
 export const GET_COLLECTION = gql`
-    query GetCollection($id: ID!, $languageCode: LanguageCode) {
-        collection(id: $id, languageCode: $languageCode) {
+    query GetCollection($id: ID!) {
+        collection(id: $id) {
             ...Collection
         }
     }

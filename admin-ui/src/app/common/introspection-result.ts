@@ -96,24 +96,6 @@ const result: IntrospectionResultData = {
                         name: 'ProductVariant',
                     },
                     {
-                        name: 'TaxRate',
-                    },
-                    {
-                        name: 'TaxCategory',
-                    },
-                    {
-                        name: 'CustomerGroup',
-                    },
-                    {
-                        name: 'ProductOption',
-                    },
-                    {
-                        name: 'FacetValue',
-                    },
-                    {
-                        name: 'Facet',
-                    },
-                    {
                         name: 'StockAdjustment',
                     },
                     {
@@ -154,6 +136,24 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'Return',
+                    },
+                    {
+                        name: 'TaxRate',
+                    },
+                    {
+                        name: 'TaxCategory',
+                    },
+                    {
+                        name: 'CustomerGroup',
+                    },
+                    {
+                        name: 'ProductOption',
+                    },
+                    {
+                        name: 'FacetValue',
+                    },
+                    {
+                        name: 'Facet',
                     },
                     {
                         name: 'PaymentMethod',
