@@ -5,15 +5,20 @@ import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
 import { EventBus } from '../src/event-bus/event-bus';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
 import { IdentifierChangeEvent } from '../src/event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
+import { InjectorFn, VendurePlugin } from '../src/plugin/vendure-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CreateAdministrator, CreateRole, GetCustomer, Permission } from './graphql/generated-e2e-admin-types';
+import {
+    CreateAdministrator,
+    CreateRole,
+    GetCustomer,
+    Permission,
+} from './graphql/generated-e2e-admin-types';
 import {
     GetActiveCustomer,
     RefreshToken,
@@ -391,12 +396,18 @@ describe('Shop auth & accounts', () => {
         it(
             'throws with bad token',
             assertThrowsWithMessage(async () => {
-                await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
+                await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(
+                    UPDATE_EMAIL_ADDRESS,
+                    { token: 'bad token' },
+                );
             }, 'Identifier change token not recognized'),
         );
 
         it('verify the new email address', async () => {
-            const result = await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
+            const result = await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(
+                UPDATE_EMAIL_ADDRESS,
+                { token: emailUpdateToken },
+            );
             expect(result.updateCustomerEmailAddress).toBe(true);
 
             expect(sendEmailFn).toHaveBeenCalled();

@@ -7,6 +7,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { Transitions } from '../common/finite-state-machine';
 import { Order } from '../entity/order/order.entity';
+import { VendurePlugin } from '../plugin/vendure-plugin';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -23,7 +24,6 @@ import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
-import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 /**
  * @description
