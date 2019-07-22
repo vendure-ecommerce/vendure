@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
-import { VendurePlugin } from '../plugin/vendure-plugin';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
@@ -112,7 +111,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.middleware;
     }
 
-    get plugins(): VendurePlugin[] {
+    get plugins(): Array<DynamicModule | Type<any>> {
         return this.activeConfig.plugins;
     }
 

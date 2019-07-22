@@ -1,6 +1,7 @@
 import { DynamicModule } from '@nestjs/common';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { GraphQLUpload } from 'apollo-server-core';
 import { extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
@@ -11,14 +12,19 @@ import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
-import { getPluginAPIExtensions } from '../../plugin/plugin-utils';
+import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
+import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
 import { IdCodecService } from '../common/id-codec.service';
 import { IdEncoderExtension } from '../middleware/id-encoder-extension';
 import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
 import { generateListOptions } from './generate-list-options';
-import { addGraphQLCustomFields, addOrderLineCustomFieldsInput, addServerConfigCustomFields } from './graphql-custom-fields';
+import {
+    addGraphQLCustomFields,
+    addOrderLineCustomFieldsInput,
+    addServerConfigCustomFields,
+} from './graphql-custom-fields';
 
 export interface GraphQLApiOptions {
     apiType: 'shop' | 'admin';
@@ -106,7 +112,7 @@ async function createGraphQLOptions(
     return {
         path: '/' + options.apiPath,
         typeDefs: await createTypeDefs(options.apiType),
-        include: [options.resolverModule],
+        include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
         resolvers: {
             JSON: GraphQLJSON,
             DateTime: GraphQLDateTime,
@@ -157,9 +163,9 @@ async function createGraphQLOptions(
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
-        const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType).map(
-            e => e.schema,
-        );
+        const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType)
+            .map(e => e.schema)
+            .filter(notNullOrUndefined);
 
         for (const documentNode of pluginSchemaExtensions) {
             schema = extendSchema(schema, documentNode);

@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { OnModuleInit } from '@nestjs/common';
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
 import { DocumentNode } from 'graphql';
@@ -6,11 +7,12 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { EventBus } from '../src/event-bus/event-bus';
+import { EventBusModule } from '../src/event-bus/event-bus.module';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
 import { IdentifierChangeEvent } from '../src/event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
-import { InjectorFn, VendurePlugin } from '../src/plugin/vendure-plugin';
+import { VendurePlugin } from '../src/plugin/vendure-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
@@ -58,7 +60,7 @@ describe('Shop auth & accounts', () => {
                 customerCount: 2,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
             },
         );
         await shopClient.init();
@@ -517,7 +519,7 @@ describe('Expiring tokens', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     verificationTokenDuration: '1ms',
                 },
@@ -607,7 +609,7 @@ describe('Registration without email verification', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     requireVerification: false,
                 },
@@ -683,7 +685,7 @@ describe('Updating email address without email verification', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     requireVerification: false,
                 },
@@ -731,19 +733,22 @@ describe('Updating email address without email verification', () => {
  * This mock plugin simulates an EmailPlugin which would send emails
  * on the registration & password reset events.
  */
-class TestEmailPlugin implements VendurePlugin {
-    onBootstrap(inject: InjectorFn) {
-        const eventBus = inject(EventBus);
-        eventBus.subscribe(AccountRegistrationEvent, event => {
+@VendurePlugin({
+    imports: [EventBusModule],
+})
+class TestEmailPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+    onModuleInit() {
+        this.eventBus.subscribe(AccountRegistrationEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(PasswordResetEvent, event => {
+        this.eventBus.subscribe(PasswordResetEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(IdentifierChangeRequestEvent, event => {
+        this.eventBus.subscribe(IdentifierChangeRequestEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(IdentifierChangeEvent, event => {
+        this.eventBus.subscribe(IdentifierChangeEvent, event => {
             sendEmailFn(event);
         });
     }

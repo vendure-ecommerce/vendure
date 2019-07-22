@@ -7,7 +7,7 @@ import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
 import { populateForTesting, PopulateOptions } from '../mock-data/populate-for-testing';
-import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
+import { preBootstrapConfig } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
 import { Logger } from '../src/config/logger/vendure-logger';
 import { VendureConfig } from '../src/config/vendure-config';
@@ -108,13 +108,14 @@ export class TestServer {
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<[INestApplication, INestMicroservice | undefined]> {
+    private async bootstrapForTesting(
+        userConfig: Partial<VendureConfig>,
+    ): Promise<[INestApplication, INestMicroservice | undefined]> {
         const config = await preBootstrapConfig(userConfig);
         const appModule = await import('../src/app.module');
         try {
-            const app = await NestFactory.create(appModule.AppModule, {cors: config.cors, logger: false});
+            const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
             let worker: INestMicroservice | undefined;
-            await runPluginOnBootstrapMethods(config, app);
             await app.listen(config.port);
             if (config.workerOptions.runInMainProcess) {
                 const workerModule = await import('../src/worker/worker.module');

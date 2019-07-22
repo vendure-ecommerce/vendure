@@ -12,6 +12,12 @@ import { Logger } from './config/logger/vendure-logger';
 import { VendureConfig } from './config/vendure-config';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
+import {
+    getConfigurationFunction,
+    getEntitiesFromPlugins,
+    getPluginModules,
+    hasLifecycleMethod,
+} from './plugin/plugin-metadata';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -48,7 +54,6 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    await runPluginOnBootstrapMethods(config, app);
     await app.listen(config.port, config.hostname);
     app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
@@ -126,7 +131,7 @@ export async function preBootstrapConfig(
     // base VendureEntity to be correctly configured with the primary key type
     // specified in the EntityIdStrategy.
     // tslint:disable-next-line:whitespace
-    const pluginEntities = getEntitiesFromPlugins(userConfig);
+    const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
     const entities = await getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers');
     setConfig({
@@ -154,31 +159,12 @@ async function runPluginConfigurations(
     config: ReadOnlyRequired<VendureConfig>,
 ): Promise<ReadOnlyRequired<VendureConfig>> {
     for (const plugin of config.plugins) {
-        if (plugin.configure) {
-            config = (await plugin.configure(config)) as ReadOnlyRequired<VendureConfig>;
+        const configFn = getConfigurationFunction(plugin);
+        if (typeof configFn === 'function') {
+            config = await configFn(config);
         }
     }
     return config;
-}
-
-/**
- * Run the onBootstrap() method of any configured plugins.
- */
-export async function runPluginOnBootstrapMethods(
-    config: ReadOnlyRequired<VendureConfig>,
-    app: INestApplication,
-): Promise<void> {
-    function inject<T>(type: Type<T>): T {
-        return app.get(type);
-    }
-
-    for (const plugin of config.plugins) {
-        if (plugin.onBootstrap) {
-            await plugin.onBootstrap(inject);
-            const pluginName = plugin.constructor && plugin.constructor.name || '(anonymous plugin)';
-            Logger.verbose(`Bootstrapped plugin ${pluginName}`);
-        }
-    }
 }
 
 /**
@@ -187,7 +173,7 @@ export async function runPluginOnBootstrapMethods(
 async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
     const { coreEntitiesMap } = await import('./entity/entities');
     const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
-    const pluginEntities = getEntitiesFromPlugins(userConfig);
+    const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
 
     const allEntities: Array<Type<any>> = coreEntities;
 
@@ -201,18 +187,6 @@ async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array
         }
     }
     return [...coreEntities, ...pluginEntities];
-}
-
-/**
- * Collects all entities defined in plugins into a single array.
- */
-function getEntitiesFromPlugins(userConfig: Partial<VendureConfig>): Array<Type<any>> {
-    if (!userConfig.plugins) {
-        return [];
-    }
-    return userConfig.plugins
-        .map(p => (p.defineEntities ? p.defineEntities() : []))
-        .reduce((all, entities) => [...all, ...entities], []);
 }
 
 /**

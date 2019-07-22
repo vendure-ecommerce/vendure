@@ -47,7 +47,7 @@ describe('Default search plugin', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new DefaultSearchPlugin()],
+                plugins: [DefaultSearchPlugin],
             },
         );
         await adminClient.init();
@@ -59,30 +59,39 @@ describe('Default search plugin', () => {
     });
 
     async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-            input: {
-                groupByProduct: true,
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupByProduct: true,
+                },
             },
-        });
+        );
         expect(result.search.totalItems).toBe(20);
     }
 
     async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-            input: {
-                groupByProduct: false,
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupByProduct: false,
+                },
             },
-        });
+        );
         expect(result.search.totalItems).toBe(34);
     }
 
     async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-            input: {
-                term: 'camera',
-                groupByProduct: true,
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    term: 'camera',
+                    groupByProduct: true,
+                },
             },
-        });
+        );
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Instant Camera',
             'Camera Lens',
@@ -91,12 +100,15 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetIds(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-            input: {
-                facetValueIds: ['T_1', 'T_2'],
-                groupByProduct: true,
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    facetValueIds: ['T_1', 'T_2'],
+                    groupByProduct: true,
+                },
             },
-        });
+        );
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -108,12 +120,15 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-            input: {
-                collectionId: 'T_2',
-                groupByProduct: true,
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    collectionId: 'T_2',
+                    groupByProduct: true,
+                },
             },
-        });
+        );
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
@@ -122,12 +137,15 @@ describe('Default search plugin', () => {
     }
 
     async function testSinglePrices(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
-            input: {
-                groupByProduct: false,
-                take: 3,
-            } as SearchInput,
-        });
+        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+            SEARCH_GET_PRICES,
+            {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
+                } as SearchInput,
+            },
+        );
         expect(result.search.items).toEqual([
             {
                 price: { value: 129900 },
@@ -145,12 +163,15 @@ describe('Default search plugin', () => {
     }
 
     async function testPriceRanges(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
-            input: {
-                groupByProduct: true,
-                take: 3,
-            } as SearchInput,
-        });
+        const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+            SEARCH_GET_PRICES,
+            {
+                input: {
+                    groupByProduct: true,
+                    take: 3,
+                } as SearchInput,
+            },
+        );
         expect(result.search.items).toEqual([
             {
                 price: { min: 129900, max: 229900 },
@@ -183,11 +204,14 @@ describe('Default search plugin', () => {
         it('price ranges', () => testPriceRanges(shopClient));
 
         it('returns correct facetValues when not grouped by product', async () => {
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: false,
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 21, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
@@ -199,11 +223,14 @@ describe('Default search plugin', () => {
         });
 
         it('returns correct facetValues when grouped by product', async () => {
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: true,
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -215,18 +242,22 @@ describe('Default search plugin', () => {
         });
 
         it('omits facetValues of private facets', async () => {
-            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
-                input: {
-                    code: 'profit-margin',
-                    isPrivate: true,
-                    translations: [
-                        { languageCode: LanguageCode.en, name: 'Profit Margin' },
-                    ],
-                    values: [
-                        { code: 'massive', translations: [{ languageCode: LanguageCode.en, name: 'massive' }] },
-                    ],
+            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
+                CREATE_FACET,
+                {
+                    input: {
+                        code: 'profit-margin',
+                        isPrivate: true,
+                        translations: [{ languageCode: LanguageCode.en, name: 'Profit Margin' }],
+                        values: [
+                            {
+                                code: 'massive',
+                                translations: [{ languageCode: LanguageCode.en, name: 'massive' }],
+                            },
+                        ],
+                    },
                 },
-            });
+            );
             await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                 input: {
                     id: 'T_2',
@@ -235,11 +266,14 @@ describe('Default search plugin', () => {
                 },
             });
 
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: true,
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -251,44 +285,52 @@ describe('Default search plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-                input: {
-                    groupByProduct: false,
-                    take: 1,
-                },
-            });
-            expect(pick(result.search.items[0], ['productId', 'productVariantId'])).toEqual(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
                 {
-                    productId: 'T_1',
-                    productVariantId: 'T_1',
+                    input: {
+                        groupByProduct: false,
+                        take: 1,
+                    },
                 },
             );
+            expect(pick(result.search.items[0], ['productId', 'productVariantId'])).toEqual({
+                productId: 'T_1',
+                productVariantId: 'T_1',
+            });
         });
 
         it('omits results for disabled ProductVariants', async () => {
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
-                input: [
-                    { id: 'T_3', enabled: false },
-                ],
-            });
-            await awaitRunningJobs();
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-                input: {
-                    groupByProduct: false,
-                    take: 3,
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [{ id: 'T_3', enabled: false }],
                 },
-            });
+            );
+            await awaitRunningJobs();
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        take: 3,
+                    },
+                },
+            );
             expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS_SHOP, {
-                input: {
-                    groupByProduct: false,
-                    term: 'cactus',
-                    take: 1,
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        term: 'cactus',
+                        take: 1,
+                    },
                 },
-            });
+            );
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
         });
@@ -386,7 +428,7 @@ describe('Default search plugin', () => {
             const { createCollection } = await adminClient.query<
                 CreateCollection.Mutation,
                 CreateCollection.Variables
-                >(CREATE_COLLECTION, {
+            >(CREATE_COLLECTION, {
                 input: {
                     translations: [
                         {
@@ -442,12 +484,15 @@ describe('Default search plugin', () => {
                 },
             });
             await awaitRunningJobs();
-            const result = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
-                input: {
-                    groupByProduct: true,
-                    term: 'laptop',
-                } as SearchInput,
-            });
+            const result = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                SEARCH_GET_PRICES,
+                {
+                    input: {
+                        groupByProduct: true,
+                        term: 'laptop',
+                    } as SearchInput,
+                },
+            );
             expect(result.search.items).toEqual([
                 {
                     price: { min: 129900, max: 229900 },
@@ -457,12 +502,15 @@ describe('Default search plugin', () => {
         });
 
         it('returns disabled field when not grouped', async () => {
-            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
-                input: {
-                    groupByProduct: false,
-                    take: 3,
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        groupByProduct: false,
+                        take: 3,
+                    },
                 },
-            });
+            );
             expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
                 { productVariantId: 'T_1', enabled: true },
                 { productVariantId: 'T_2', enabled: true },
@@ -471,19 +519,22 @@ describe('Default search plugin', () => {
         });
 
         it('when grouped, disabled is false if at least one variant is enabled', async () => {
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
-                input: [
-                    { id: 'T_1', enabled: false },
-                    { id: 'T_2', enabled: false },
-                ],
-            });
-            await awaitRunningJobs();
-            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
-                input: {
-                    groupByProduct: true,
-                    take: 3,
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [{ id: 'T_1', enabled: false }, { id: 'T_2', enabled: false }],
                 },
-            });
+            );
+            await awaitRunningJobs();
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        groupByProduct: true,
+                        take: 3,
+                    },
+                },
+            );
             expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                 { productId: 'T_1', enabled: true },
                 { productId: 'T_2', enabled: true },
@@ -492,18 +543,22 @@ describe('Default search plugin', () => {
         });
 
         it('when grouped, disabled is true if all variants are disabled', async () => {
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(UPDATE_PRODUCT_VARIANTS, {
-                input: [
-                    { id: 'T_4', enabled: false },
-                ],
-            });
-            await awaitRunningJobs();
-            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
-                input: {
-                    groupByProduct: true,
-                    take: 3,
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [{ id: 'T_4', enabled: false }],
                 },
-            });
+            );
+            await awaitRunningJobs();
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        groupByProduct: true,
+                        take: 3,
+                    },
+                },
+            );
             expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                 { productId: 'T_1', enabled: false },
                 { productId: 'T_2', enabled: true },
@@ -519,12 +574,15 @@ describe('Default search plugin', () => {
                 },
             });
             await awaitRunningJobs();
-            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
-                input: {
-                    groupByProduct: true,
-                    take: 3,
+            const result = await adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS,
+                {
+                    input: {
+                        groupByProduct: true,
+                        take: 3,
+                    },
                 },
-            });
+            );
             expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                 { productId: 'T_1', enabled: false },
                 { productId: 'T_2', enabled: true },

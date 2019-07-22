@@ -1,4 +1,5 @@
 export * from './event-bus';
+export * from './event-bus.module';
 export * from './vendure-event';
 export * from './events/account-registration-event';
 export * from './events/catalog-modification-event';
