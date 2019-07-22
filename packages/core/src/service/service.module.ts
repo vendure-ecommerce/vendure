@@ -88,10 +88,7 @@ let workerTypeOrmModule: DynamicModule;
  * into a format suitable for the service layer logic.
  */
 @Module({
-    imports: [
-        ConfigModule,
-        EventBusModule,
-    ],
+    imports: [ConfigModule, EventBusModule],
     providers: [
         ...exportedProviders,
         PasswordCiper,
@@ -148,9 +145,7 @@ export class ServiceModule implements OnModuleInit {
         }
         return {
             module: ServiceModule,
-            imports: [
-                defaultTypeOrmModule,
-            ],
+            imports: [defaultTypeOrmModule],
         };
     }
 
@@ -181,6 +176,13 @@ export class ServiceModule implements OnModuleInit {
         return {
             module: ServiceModule,
             imports: [workerTypeOrmModule],
+        };
+    }
+
+    static forPlugin(): DynamicModule {
+        return {
+            module: ServiceModule,
+            imports: [TypeOrmModule.forFeature()],
         };
     }
 }

@@ -1,4 +1,4 @@
-export const loggerCtx = 'DefaultSearchPlugin';
+export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
 export enum Message {
     Reindex = 'Reindex',
     UpdateVariantsById = 'UpdateVariantsById',

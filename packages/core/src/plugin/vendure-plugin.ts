@@ -1,16 +1,13 @@
-import { Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { METADATA } from '@nestjs/common/constants';
+import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
 import { DocumentNode } from 'graphql';
 
 import { VendureConfig } from '../config/vendure-config';
 
-/**
- * @description
- * A function which allows any injectable provider to be injected into the `onBootstrap` method of a {@link VendurePlugin}.
- *
- * @docsCategory plugin
- */
-export type InjectorFn = <T>(type: Type<T>) => T;
+import { PLUGIN_METADATA } from './plugin-metadata';
 
 /**
  * @description
@@ -21,7 +18,7 @@ export type InjectorFn = <T>(type: Type<T>) => T;
 export interface APIExtensionDefinition {
     /**
      * @description
-     * The schema extensions.
+     * Extensions to the schema.
      *
      * @example
      * ```TypeScript
@@ -31,7 +28,7 @@ export interface APIExtensionDefinition {
      * }`;
      * ```
      */
-    schema: DocumentNode;
+    schema?: DocumentNode;
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as Nest GraphQL resolver
@@ -42,67 +39,82 @@ export interface APIExtensionDefinition {
 
 /**
  * @description
- * A VendurePlugin is a means of configuring and/or extending the functionality of the Vendure server. In its simplest form,
- * a plugin simply modifies the VendureConfig object. Although such configuration can be directly supplied to the bootstrap
- * function, using a plugin allows one to abstract away a set of related configuration.
+ * This method is called before the app bootstraps, and can modify the VendureConfig object and perform
+ * other (potentially async) tasks needed.
+ */
+export type PluginConfigurationFn = (
+    config: Required<VendureConfig>,
+) => Required<VendureConfig> | Promise<Required<VendureConfig>>;
+
+export interface VendurePluginMetadata extends ModuleMetadata {
+    configuration?: PluginConfigurationFn;
+    /**
+     * @description
+     * The plugin may extend the default Vendure GraphQL shop api by providing extended
+     * schema definitions and any required resolvers.
+     */
+    shopApiExtensions?: APIExtensionDefinition;
+    /**
+     * @description
+     * The plugin may extend the default Vendure GraphQL admin api by providing extended
+     * schema definitions and any required resolvers.
+     */
+    adminApiExtensions?: APIExtensionDefinition;
+    /**
+     * @description
+     * The plugin may define providers which are run in the Worker context, i.e. Nest microservice controllers.
+     */
+    workers?: Array<Type<any>>;
+    /**
+     * @description
+     * The plugin may define custom database entities, which should be defined as classes annotated as per the
+     * TypeORM documentation.
+     */
+    entities?: Array<Type<any>>;
+}
+
+/**
+ * @description
+ * A VendurePlugin is a means of configuring and/or extending the functionality of the Vendure server. A Vendure Plugin is
+ * a Nestjs Module, with optional additional metadata defining things like extensions to the GraphQL API, custom
+ * configuration or new database entities.
  *
  * As well as configuring the app, a plugin may also extend the GraphQL schema by extending existing types or adding
  * entirely new types. Database entities and resolvers can also be defined to handle the extended GraphQL types.
  *
  * @docsCategory plugin
  */
-export interface VendurePlugin {
-    /**
-     * @description
-     * This method is called before the app bootstraps, and can modify the VendureConfig object and perform
-     * other (potentially async) tasks needed.
-     */
-    configure?(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>>;
-
-    /**
-     * @description
-     * This method is called after the app has bootstrapped. In this method, instances of services may be injected
-     * into the plugin. For example, the ProductService can be injected in order to enable operations on Product
-     * entities.
-     */
-    onBootstrap?(inject: InjectorFn): void | Promise<void>;
-
-    /**
-     * @description
-     * This method is called when the app closes. It can be used for any clean-up logic such as stopping servers.
-     */
-    onClose?(): void | Promise<void>;
-
-    /**
-     * @description
-     * The plugin may extend the default Vendure GraphQL shop api by implementing this method and providing extended
-     * schema definitions and any required resolvers.
-     */
-    extendShopAPI?(): APIExtensionDefinition;
-
-    /**
-     * @description
-     * The plugin may extend the default Vendure GraphQL admin api by implementing this method and providing extended
-     * schema definitions and any required resolvers.
-     */
-    extendAdminAPI?(): APIExtensionDefinition;
-
-    /**
-     * @description
-     * The plugin may define custom providers which can then be injected via the Nest DI container.
-     */
-    defineProviders?(): Provider[];
-
-    /**
-     * @description
-     * The plugin may define providers which are run in the Worker context, i.e. Nest microservice controllers.
-     */
-    defineWorkers?(): Array<Type<any>>;
-
-    /**
-     * @description
-     * The plugin may define custom database entities, which should be defined as classes annotated as per the
-     * TypeORM documentation.
-     */
-    defineEntities?(): Array<Type<any>>;
+export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator {
+    // tslint:disable-next-line:ban-types
+    return (target: Function) => {
+        for (const metadataProperty of Object.values(PLUGIN_METADATA)) {
+            const property = metadataProperty as keyof VendurePluginMetadata;
+            if (pluginMetadata[property] != null) {
+                Reflect.defineMetadata(property, pluginMetadata[property], target);
+            }
+        }
+        const nestModuleMetadata = pick(pluginMetadata, Object.values(METADATA) as any);
+        Module(nestModuleMetadata)(target);
+    };
 }
+
+export interface OnVendureBootstrap {
+    onVendureBootstrap(): void | Promise<void>;
+}
+
+export interface OnVendureWorkerBootstrap {
+    onVendureWorkerBootstrap(): void | Promise<void>;
+}
+
+export interface OnVendureClose {
+    onVendureClose(): void | Promise<void>;
+}
+
+export interface OnVendureWorkerClose {
+    onVendureWorkerClose(): void | Promise<void>;
+}
+
+export type PluginLifecycleMethods = OnVendureBootstrap &
+    OnVendureWorkerBootstrap &
+    OnVendureClose &
+    OnVendureWorkerClose;

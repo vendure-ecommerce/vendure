@@ -1,8 +1,6 @@
 import { Module, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { getConfig } from '../config/config-helpers';
 import { ConfigModule } from '../config/config.module';
 import { Logger } from '../config/logger/vendure-logger';
 import { PluginModule } from '../plugin/plugin.module';
@@ -12,11 +10,7 @@ import { MessageInterceptor } from './message-interceptor';
 import { WorkerMonitor } from './worker-monitor';
 
 @Module({
-    imports: [
-        ConfigModule,
-        ServiceModule.forWorker(),
-        PluginModule.forWorker(),
-    ],
+    imports: [ConfigModule, ServiceModule.forWorker(), PluginModule.forWorker()],
     providers: [
         WorkerMonitor,
         {
@@ -24,7 +18,6 @@ import { WorkerMonitor } from './worker-monitor';
             useClass: MessageInterceptor,
         },
     ],
-    controllers: getWorkerControllers(),
 })
 export class WorkerModule implements OnModuleDestroy, OnApplicationShutdown {
     constructor(private monitor: WorkerMonitor) {}
@@ -37,12 +30,4 @@ export class WorkerModule implements OnModuleDestroy, OnApplicationShutdown {
             Logger.info('Worker Received shutdown signal:' + signal);
         }
     }
-}
-
-function getWorkerControllers() {
-    const plugins = getConfig().plugins;
-    return plugins
-        .map(p => (p.defineWorkers ? p.defineWorkers() : undefined))
-        .filter(notNullOrUndefined)
-        .reduce((flattened, controllers) => flattened.concat(controllers), []);
 }

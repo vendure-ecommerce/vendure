@@ -17,7 +17,7 @@ import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { AsyncQueue } from '../async-queue';
-import { loggerCtx, Message } from '../constants';
+import { Message, workerLoggerCtx } from '../constants';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 export const BATCH_SIZE = 1000;
@@ -57,17 +57,19 @@ export class IndexerController {
                 const timeStart = Date.now();
                 const qb = this.getSearchIndexQueryBuilder();
                 const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
-                Logger.verbose(`Reindexing ${count} variants`, loggerCtx);
+                Logger.verbose(`Reindexing ${count} variants`, workerLoggerCtx);
                 const batches = Math.ceil(count / BATCH_SIZE);
 
                 // Ensure tax rates are up-to-date.
                 await this.taxRateService.updateActiveTaxRates();
 
-                await this.connection.getRepository(SearchIndexItem).delete({ languageCode: ctx.languageCode });
-                Logger.verbose('Deleted existing index items', loggerCtx);
+                await this.connection
+                    .getRepository(SearchIndexItem)
+                    .delete({ languageCode: ctx.languageCode });
+                Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
                 for (let i = 0; i < batches; i++) {
-                    Logger.verbose(`Processing batch ${i + 1} of ${batches}`, loggerCtx);
+                    Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
 
                     const variants = await qb
                         .where('variants__product.deletedAt IS NULL')
@@ -82,7 +84,7 @@ export class IndexerController {
                         duration: +new Date() - timeStart,
                     });
                 }
-                Logger.verbose(`Completed reindexing!`);
+                Logger.verbose(`Completed reindexing`, workerLoggerCtx);
                 observer.next({
                     total: count,
                     completed: count,
@@ -94,7 +96,13 @@ export class IndexerController {
     }
 
     @MessagePattern(Message.UpdateVariantsById)
-    updateVariantsById({ ctx: rawContext, ids }: { ctx: any, ids: ID[] }): Observable<ReindexMessageResponse> {
+    updateVariantsById({
+        ctx: rawContext,
+        ids,
+    }: {
+        ctx: any;
+        ids: ID[];
+    }): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.fromObject(rawContext);
 
         return new Observable(observer => {
@@ -109,9 +117,11 @@ export class IndexerController {
                         const end = begin + BATCH_SIZE;
                         Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                         const batchIds = ids.slice(begin, end);
-                        const batch = await this.connection.getRepository(ProductVariant).findByIds(batchIds, {
-                            relations: variantRelations,
-                        });
+                        const batch = await this.connection
+                            .getRepository(ProductVariant)
+                            .findByIds(batchIds, {
+                                relations: variantRelations,
+                            });
                         const variants = this.hydrateVariants(ctx, batch);
                         await this.saveVariants(ctx, variants);
                         observer.next({
@@ -136,7 +146,15 @@ export class IndexerController {
      * Updates the search index only for the affected entities.
      */
     @MessagePattern(Message.UpdateProductOrVariant)
-    updateProductOrVariant({ ctx: rawContext, productId, variantId }: { ctx: any, productId?: ID, variantId?: ID }): Observable<boolean> {
+    updateProductOrVariant({
+        ctx: rawContext,
+        productId,
+        variantId,
+    }: {
+        ctx: any;
+        productId?: ID;
+        variantId?: ID;
+    }): Observable<boolean> {
         const ctx = RequestContext.fromObject(rawContext);
         let updatedVariants: ProductVariant[] = [];
         let removedVariantIds: ID[] = [];
@@ -155,7 +173,7 @@ export class IndexerController {
                                 relations: variantRelations,
                             });
                         if (product.enabled === false) {
-                            updatedVariants.forEach(v => v.enabled = false);
+                            updatedVariants.forEach(v => (v.enabled = false));
                         }
                     }
                 }
@@ -167,7 +185,7 @@ export class IndexerController {
                     updatedVariants = [variant];
                 }
             }
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, loggerCtx);
+            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
             updatedVariants = this.hydrateVariants(ctx, updatedVariants);
             if (updatedVariants.length) {
                 await this.saveVariants(ctx, updatedVariants);
@@ -198,25 +216,26 @@ export class IndexerController {
     }
 
     private async saveVariants(ctx: RequestContext, variants: ProductVariant[]) {
-        const items = variants.map((v: ProductVariant) =>
-            new SearchIndexItem({
-                sku: v.sku,
-                enabled: v.enabled,
-                slug: v.product.slug,
-                price: v.price,
-                priceWithTax: v.priceWithTax,
-                languageCode: ctx.languageCode,
-                productVariantId: v.id,
-                productId: v.product.id,
-                productName: v.product.name,
-                description: v.product.description,
-                productVariantName: v.name,
-                productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
-                productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                facetIds: this.getFacetIds(v),
-                facetValueIds: this.getFacetValueIds(v),
-                collectionIds: v.collections.map(c => c.id.toString()),
-            }),
+        const items = variants.map(
+            (v: ProductVariant) =>
+                new SearchIndexItem({
+                    sku: v.sku,
+                    enabled: v.enabled,
+                    slug: v.product.slug,
+                    price: v.price,
+                    priceWithTax: v.priceWithTax,
+                    languageCode: ctx.languageCode,
+                    productVariantId: v.id,
+                    productId: v.product.id,
+                    productName: v.product.name,
+                    description: v.product.description,
+                    productVariantName: v.name,
+                    productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
+                    productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
+                    facetIds: this.getFacetIds(v),
+                    facetValueIds: this.getFacetValueIds(v),
+                    collectionIds: v.collections.map(c => c.id.toString()),
+                }),
         );
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
     }

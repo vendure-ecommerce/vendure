@@ -1,8 +1,7 @@
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { RequestHandler } from 'express';
 import proxy from 'http-proxy-middleware';
 
-import { APIExtensionDefinition, Logger, VendureConfig, VendurePlugin } from '../config';
+import { Logger, VendureConfig } from '../config';
 
 /**
  * @description
@@ -104,23 +103,13 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
 export function logProxyMiddlewares(config: VendureConfig) {
     for (const middleware of config.middleware || []) {
         if ((middleware.handler as any).proxyMiddleware) {
-            const { port, hostname, label, route } = (middleware.handler as any).proxyMiddleware as ProxyOptions;
-            Logger.info(`${label}: http://${config.hostname || 'localhost'}:${config.port}/${route}/ -> http://${hostname || 'localhost'}:${port}`);
+            const { port, hostname, label, route } = (middleware.handler as any)
+                .proxyMiddleware as ProxyOptions;
+            Logger.info(
+                `${label}: http://${config.hostname || 'localhost'}:${
+                    config.port
+                }/${route}/ -> http://${hostname || 'localhost'}:${port}`,
+            );
         }
     }
-}
-
-/**
- * Given an array of VendurePlugins, returns a flattened array of all APIExtensionDefinitions.
- */
-export function getPluginAPIExtensions(
-    plugins: VendurePlugin[],
-    apiType: 'shop' | 'admin',
-): APIExtensionDefinition[] {
-    const extensions =
-        apiType === 'shop'
-            ? plugins.map(p => (p.extendShopAPI ? p.extendShopAPI() : undefined))
-            : plugins.map(p => (p.extendAdminAPI ? p.extendAdminAPI() : undefined));
-
-    return extensions.filter(notNullOrUndefined);
 }

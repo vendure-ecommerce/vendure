@@ -1,3 +1,4 @@
+import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
@@ -7,7 +8,6 @@ import { ConnectionOptions } from 'typeorm';
 
 import { Transitions } from '../common/finite-state-machine';
 import { Order } from '../entity/order/order.entity';
-import { VendurePlugin } from '../plugin/vendure-plugin';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -489,7 +489,7 @@ export interface VendureConfig {
      *
      * @default []
      */
-    plugins?: VendurePlugin[];
+    plugins?: Array<DynamicModule | Type<any>>;
     /**
      * @description
      * Which port the Vendure server should listen on.

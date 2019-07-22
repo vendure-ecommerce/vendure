@@ -1,11 +1,7 @@
-import { Provider } from '@nestjs/common';
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
-import { CREATING_VENDURE_APP } from '@vendure/common/lib/shared-constants';
-import { Type } from '@vendure/common/lib/shared-types';
-import gql from 'graphql-tag';
 
 import { idsAreEqual } from '../../common/utils';
-import { APIExtensionDefinition, VendurePlugin } from '../../config';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -13,6 +9,8 @@ import { CatalogModificationEvent } from '../../event-bus/events/catalog-modific
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { SearchService } from '../../service/services/search.service';
+import { PluginCommonModule } from '../plugin-common.module';
+import { VendurePlugin } from '../vendure-plugin';
 
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
@@ -54,72 +52,37 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  *
  * @docsCategory DefaultSearchPlugin
  */
-export class DefaultSearchPlugin implements VendurePlugin {
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    providers: [
+        FulltextSearchService,
+        SearchIndexService,
+        { provide: SearchService, useClass: FulltextSearchService },
+    ],
+    exports: [{ provide: SearchService, useClass: FulltextSearchService }],
+    adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
+    shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
+    entities: [SearchIndexItem],
+    workers: [IndexerController],
+})
+export class DefaultSearchPlugin implements OnApplicationBootstrap {
+    constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
 
     /** @internal */
-    async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
-        const eventBus = inject(EventBus);
-        const searchIndexService = inject(SearchIndexService);
-        eventBus.subscribe(CatalogModificationEvent, event => {
+    onApplicationBootstrap() {
+        this.eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
+                return this.searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
             }
         });
-        eventBus.subscribe(CollectionModificationEvent, event => {
-            return searchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
+        this.eventBus.subscribe(CollectionModificationEvent, event => {
+            return this.searchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
         });
-        eventBus.subscribe(TaxRateModificationEvent, event => {
+        this.eventBus.subscribe(TaxRateModificationEvent, event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
             if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return searchIndexService.reindex(event.ctx).start();
+                return this.searchIndexService.reindex(event.ctx).start();
             }
         });
-    }
-
-    /** @internal */
-    extendAdminAPI(): APIExtensionDefinition {
-        return {
-            resolvers: [AdminFulltextSearchResolver],
-            schema: gql`
-                extend type SearchReindexResponse {
-                    timeTaken: Int!
-                    indexedItemCount: Int!
-                }
-            `,
-        };
-    }
-
-    /** @internal */
-    extendShopAPI(): APIExtensionDefinition {
-        return {
-            resolvers: [ShopFulltextSearchResolver],
-            schema: gql`
-                extend type SearchReindexResponse {
-                    timeTaken: Int!
-                    indexedItemCount: Int!
-                }
-            `,
-        };
-    }
-
-    /** @internal */
-    defineEntities(): Array<Type<any>> {
-        return [SearchIndexItem];
-    }
-
-    /** @internal */
-    defineProviders(): Provider[] {
-        return [
-            FulltextSearchService,
-            SearchIndexService,
-            { provide: SearchService, useClass: FulltextSearchService },
-        ];
-    }
-
-    /** @internal */
-    defineWorkers(): Array<Type<any>> {
-        return [
-            IndexerController,
-        ];
     }
 }
