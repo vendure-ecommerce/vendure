@@ -1,4 +1,14 @@
-import { createProxyHandler, EventBus, InternalServerError, Logger, Type, VendureConfig, VendurePlugin } from '@vendure/core';
+import {
+    createProxyHandler,
+    EventBus,
+    EventBusModule,
+    InternalServerError,
+    Logger,
+    OnVendureBootstrap,
+    OnVendureClose,
+    VendureConfig,
+    VendurePlugin,
+} from '@vendure/core';
 import fs from 'fs-extra';
 
 import { DevMailbox } from './dev-mailbox';
@@ -6,7 +16,12 @@ import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-listener';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { TemplateLoader } from './template-loader';
-import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, EventWithContext } from './types';
+import {
+    EmailPluginDevModeOptions,
+    EmailPluginOptions,
+    EmailTransportOptions,
+    EventWithContext,
+} from './types';
 
 /**
  * @description
@@ -100,7 +115,7 @@ import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, E
  * `outputPath` property.
  *
  * ```ts
- * new EmailPlugin({
+ * EmailPlugin.init({
  *   devMode: true,
  *   handlers: defaultEmailHandlers,
  *   templatePath: path.join(__dirname, 'vendure/email/templates'),
@@ -116,17 +131,42 @@ import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions, E
  *
  * @docsCategory EmailPlugin
  */
-export class EmailPlugin implements VendurePlugin {
-    private readonly transport: EmailTransportOptions;
-    private readonly options: EmailPluginOptions | EmailPluginDevModeOptions;
-    private eventBus: EventBus;
+@VendurePlugin({
+    imports: [EventBusModule],
+    configuration: (config: Required<VendureConfig>) => EmailPlugin.configure(config),
+})
+export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
+    private static options: EmailPluginOptions | EmailPluginDevModeOptions;
+    private transport: EmailTransportOptions;
     private templateLoader: TemplateLoader;
     private emailSender: EmailSender;
     private generator: HandlebarsMjmlGenerator;
     private devMailbox: DevMailbox | undefined;
 
-    constructor(options: EmailPluginOptions | EmailPluginDevModeOptions) {
+    constructor(private eventBus: EventBus) {}
+
+    static init(options: EmailPluginOptions | EmailPluginDevModeOptions) {
         this.options = options;
+        return EmailPlugin;
+    }
+
+    /** @internal */
+    static configure(
+        config: Required<VendureConfig>,
+    ): Required<VendureConfig> | Promise<Required<VendureConfig>> {
+        if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
+            const route = 'mailbox';
+            config.middleware.push({
+                handler: createProxyHandler({ port: this.options.mailboxPort, route, label: 'Dev Mailbox' }),
+                route,
+            });
+        }
+        return config;
+    }
+
+    /** @internal */
+    async onVendureBootstrap(): Promise<void> {
+        const options = EmailPlugin.options;
         if (isDevModeOptions(options)) {
             this.transport = {
                 type: 'file',
@@ -141,48 +181,32 @@ export class EmailPlugin implements VendurePlugin {
             }
             this.transport = options.transport;
         }
-    }
 
-    /** @internal */
-    configure(config: Required<VendureConfig>): Required<VendureConfig> | Promise<Required<VendureConfig>> {
-        if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
-            const route = 'mailbox';
-            config.middleware.push({
-                handler: createProxyHandler({ port: this.options.mailboxPort, route, label: 'Dev Mailbox' }),
-                route,
-            });
-        }
-        return config;
-    }
-
-    /** @internal */
-    async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
-        this.eventBus = inject(EventBus);
-        this.templateLoader = new TemplateLoader(this.options.templatePath);
+        this.templateLoader = new TemplateLoader(options.templatePath);
         this.emailSender = new EmailSender();
         this.generator = new HandlebarsMjmlGenerator();
 
-        if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
+        if (isDevModeOptions(options) && options.mailboxPort !== undefined) {
             this.devMailbox = new DevMailbox();
-            this.devMailbox.serve(this.options);
+            this.devMailbox.serve(options);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
         }
 
         await this.setupEventSubscribers();
         if (this.generator.onInit) {
-            await this.generator.onInit.call(this.generator, this.options);
+            await this.generator.onInit.call(this.generator, options);
         }
     }
 
     /** @internal */
-    async onClose() {
+    async onVendureClose() {
         if (this.devMailbox) {
             this.devMailbox.destroy();
         }
     }
 
     private async setupEventSubscribers() {
-        for (const handler of this.options.handlers) {
+        for (const handler of EmailPlugin.options.handlers) {
             this.eventBus.subscribe(handler.event, event => {
                 return this.handleEvent(handler, event);
             });
@@ -198,19 +222,12 @@ export class EmailPlugin implements VendurePlugin {
     private async handleEvent(handler: EmailEventHandler, event: EventWithContext) {
         Logger.debug(`Handling event "${handler.type}"`, 'EmailPlugin');
         const { type } = handler;
-        const result = handler.handle(event, this.options.globalTemplateVars);
+        const result = handler.handle(event, EmailPlugin.options.globalTemplateVars);
         if (!result) {
             return;
         }
-        const bodySource = await this.templateLoader.loadTemplate(
-            type,
-            result.templateFile,
-        );
-        const generated = await this.generator.generate(
-            result.subject,
-            bodySource,
-            result.templateVars,
-        );
+        const bodySource = await this.templateLoader.loadTemplate(type, result.templateFile);
+        const generated = await this.generator.generate(result.subject, bodySource, result.templateVars);
         const emailDetails = { ...generated, recipient: result.recipient };
         await this.emailSender.send(emailDetails, this.transport);
     }
