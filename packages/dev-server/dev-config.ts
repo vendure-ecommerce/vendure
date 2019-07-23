@@ -14,6 +14,8 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
+import { RestPlugin } from './rest-plugin';
+
 /**
  * Config settings used during development
  */
