@@ -28,7 +28,7 @@ export class RequestContextService {
      */
     async fromRequest(
         req: Request,
-        info: GraphQLResolveInfo,
+        info?: GraphQLResolveInfo,
         requiredPermissions?: Permission[],
         session?: Session,
     ): Promise<RequestContext> {
