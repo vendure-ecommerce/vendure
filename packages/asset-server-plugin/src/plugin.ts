@@ -1,4 +1,12 @@
-import { AssetStorageStrategy, createProxyHandler, InjectorFn, LocalAssetStorageStrategy, VendureConfig, VendurePlugin } from '@vendure/core';
+import {
+    AssetStorageStrategy,
+    createProxyHandler,
+    LocalAssetStorageStrategy,
+    OnVendureBootstrap,
+    OnVendureClose,
+    VendureConfig,
+    VendurePlugin,
+} from '@vendure/core';
 import express, { NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import path from 'path';
@@ -117,7 +125,7 @@ export interface AssetServerOptions {
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     new AssetServerPlugin({
+ *     AssetServerPlugin.init({
  *       route: 'assets',
  *       assetUploadDir: path.join(__dirname, 'assets'),
  *       port: 4000,
@@ -176,34 +184,29 @@ export interface AssetServerOptions {
  *
  * @docsCategory AssetServerPlugin
  */
-export class AssetServerPlugin implements VendurePlugin {
+@VendurePlugin({
+    configuration: (config: Required<VendureConfig>) => AssetServerPlugin.configure(config),
+})
+export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private server: Server;
-    private assetStorage: AssetStorageStrategy;
+    private static assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
-    private readonly presets: ImageTransformPreset[] = [
+    private presets: ImageTransformPreset[] = [
         { name: 'tiny', width: 50, height: 50, mode: 'crop' },
         { name: 'thumb', width: 150, height: 150, mode: 'crop' },
         { name: 'small', width: 300, height: 300, mode: 'resize' },
         { name: 'medium', width: 500, height: 500, mode: 'resize' },
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
+    private static options: AssetServerOptions;
 
-    constructor(private options: AssetServerOptions) {
-        if (options.presets) {
-            for (const preset of options.presets) {
-                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
-                if (-1 < existingIndex) {
-                    this.presets.splice(existingIndex, 1, preset);
-                } else {
-                    this.presets.push(preset);
-                }
-            }
-        }
+    static init(options: AssetServerOptions) {
+        AssetServerPlugin.options = options;
+        return this;
     }
 
-    /** @internal */
-    configure(config: Required<VendureConfig>) {
-        this.assetStorage = this.createAssetStorageStrategy();
+    static configure(config: Required<VendureConfig>) {
+        this.assetStorage = this.createAssetStorageStrategy(this.options);
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth || 1600,
             maxHeight: this.options.previewMaxHeight || 1600,
@@ -217,26 +220,37 @@ export class AssetServerPlugin implements VendurePlugin {
     }
 
     /** @internal */
-    onBootstrap(inject: InjectorFn): void | Promise<void> {
+    onVendureBootstrap(): void | Promise<void> {
+        if (AssetServerPlugin.options.presets) {
+            for (const preset of AssetServerPlugin.options.presets) {
+                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
+                if (-1 < existingIndex) {
+                    this.presets.splice(existingIndex, 1, preset);
+                } else {
+                    this.presets.push(preset);
+                }
+            }
+        }
         this.createAssetServer();
     }
 
     /** @internal */
-    onClose(): Promise<void> {
+    onVendureClose(): Promise<void> {
         return new Promise(resolve => {
             this.server.close(() => resolve());
         });
     }
 
-    private createAssetStorageStrategy() {
+    private static createAssetStorageStrategy(options: AssetServerOptions) {
+        const { assetUrlPrefix, assetUploadDir, route } = options;
         const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
             if (!identifier) {
                 return '';
             }
-            const prefix = this.options.assetUrlPrefix || `${request.protocol}://${request.get('host')}/${this.options.route}/`;
+            const prefix = assetUrlPrefix || `${request.protocol}://${request.get('host')}/${route}/`;
             return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
         };
-        return new LocalAssetStorageStrategy(this.options.assetUploadDir, toAbsoluteUrlFn);
+        return new LocalAssetStorageStrategy(assetUploadDir, toAbsoluteUrlFn);
     }
 
     /**
@@ -245,7 +259,7 @@ export class AssetServerPlugin implements VendurePlugin {
     private createAssetServer() {
         const assetServer = express();
         assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
-        this.server = assetServer.listen(this.options.port);
+        this.server = assetServer.listen(AssetServerPlugin.options.port);
     }
 
     /**
@@ -253,7 +267,10 @@ export class AssetServerPlugin implements VendurePlugin {
      */
     private serveStaticFile() {
         return (req: Request, res: Response) => {
-            const filePath = path.join(this.options.assetUploadDir, this.getFileNameFromRequest(req));
+            const filePath = path.join(
+                AssetServerPlugin.options.assetUploadDir,
+                this.getFileNameFromRequest(req),
+            );
             res.sendFile(filePath);
         };
     }
@@ -269,7 +286,7 @@ export class AssetServerPlugin implements VendurePlugin {
                 if (req.query) {
                     let file: Buffer;
                     try {
-                        file = await this.assetStorage.readFileToBuffer(req.path);
+                        file = await AssetServerPlugin.assetStorage.readFileToBuffer(req.path);
                     } catch (err) {
                         res.status(404).send('Resource not found');
                         return;
@@ -277,7 +294,7 @@ export class AssetServerPlugin implements VendurePlugin {
                     const image = await transformImage(file, req.query, this.presets || []);
                     const imageBuffer = await image.toBuffer();
                     const cachedFileName = this.getFileNameFromRequest(req);
-                    await this.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
+                    await AssetServerPlugin.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
                     res.set('Content-Type', `image/${(await image.metadata()).format}`);
                     res.send(imageBuffer);
                 }
