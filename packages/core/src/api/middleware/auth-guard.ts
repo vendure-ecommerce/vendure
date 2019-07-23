@@ -10,6 +10,7 @@ import { ConfigService } from '../../config/config.service';
 import { Session } from '../../entity/session/session.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { extractAuthToken } from '../common/extract-auth-token';
+import { parseContext } from '../common/parse-context';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
 import { setAuthToken } from '../common/set-auth-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
@@ -30,11 +31,7 @@ export class AuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const graphQlContext = GqlExecutionContext.create(context);
-        const ctx = graphQlContext.getContext();
-        const info = graphQlContext.getInfo<GraphQLResolveInfo>();
-        const req: Request = ctx.req;
-        const res: Response = ctx.res;
+        const { req, res, info } = parseContext(context);
         const authDisabled = this.configService.authOptions.disableAuth;
         const permissions = this.reflector.get<Permission[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
         const isPublic = !!permissions && permissions.includes(Permission.Public);
