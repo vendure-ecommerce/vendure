@@ -8,9 +8,10 @@ import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
+import { PluginModule } from './plugin/plugin.module';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule],
+    imports: [ConfigModule, I18nModule, ApiModule, PluginModule],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}

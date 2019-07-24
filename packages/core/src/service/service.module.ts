@@ -81,11 +81,9 @@ let defaultTypeOrmModule: DynamicModule;
 let workerTypeOrmModule: DynamicModule;
 
 /**
- * The ServiceModule is responsible for the service layer, i.e. accessing the database
- * and implementing the main business logic of the application.
- *
- * The exported providers are used in the ApiModule, which is responsible for parsing requests
- * into a format suitable for the service layer logic.
+ * The ServiceCoreModule is imported internally by the ServiceModule. It is arranged in this way so that
+ * there is only a single instance of this module being instantiated, and thus the lifecycle hooks will
+ * only run a single time.
  */
 @Module({
     imports: [ConfigModule, EventBusModule],
@@ -106,7 +104,7 @@ let workerTypeOrmModule: DynamicModule;
     ],
     exports: exportedProviders,
 })
-export class ServiceModule implements OnModuleInit {
+export class ServiceCoreModule implements OnModuleInit {
     constructor(
         private channelService: ChannelService,
         private roleService: RoleService,
@@ -132,7 +130,20 @@ export class ServiceModule implements OnModuleInit {
         await this.shippingMethodService.initShippingMethods();
         await this.paymentMethodService.initPaymentMethods();
     }
+}
 
+/**
+ * The ServiceModule is responsible for the service layer, i.e. accessing the database
+ * and implementing the main business logic of the application.
+ *
+ * The exported providers are used in the ApiModule, which is responsible for parsing requests
+ * into a format suitable for the service layer logic.
+ */
+@Module({
+    imports: [ServiceCoreModule],
+    exports: [ServiceCoreModule],
+})
+export class ServiceModule {
     static forRoot(): DynamicModule {
         if (!defaultTypeOrmModule) {
             defaultTypeOrmModule = TypeOrmModule.forRootAsync({
