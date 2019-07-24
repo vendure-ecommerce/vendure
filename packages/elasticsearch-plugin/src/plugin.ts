@@ -91,7 +91,6 @@ export interface ElasticsearchOptions {
     providers: [
         ElasticsearchIndexService,
         ElasticsearchService,
-        { provide: SearchService, useClass: ElasticsearchService },
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
         { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => ElasticsearchPlugin.client },
     ],
