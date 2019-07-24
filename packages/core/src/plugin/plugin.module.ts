@@ -6,7 +6,6 @@ import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/logger/vendure-logger';
 
-import { createDynamicGraphQlModulesForPlugins } from './dynamic-plugin-api.module';
 import {
     getPluginModules,
     getWorkerControllers,
@@ -27,33 +26,10 @@ const PLUGIN_PROCESS_CONTEXT = 'PLUGIN_PROCESS_CONTEXT';
  * modules and in responsible for executing any lifecycle methods defined by the plugins.
  */
 @Module({
-    imports: [ConfigModule],
+    imports: [ConfigModule, ...getConfig().plugins],
+    providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
 })
 export class PluginModule implements OnModuleInit, OnModuleDestroy {
-    static forShop(): DynamicModule {
-        return {
-            module: PluginModule,
-            providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
-            imports: [...getConfig().plugins, ...createDynamicGraphQlModulesForPlugins('shop')],
-        };
-    }
-
-    static forAdmin(): DynamicModule {
-        return {
-            module: PluginModule,
-            providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
-            imports: [...getConfig().plugins, ...createDynamicGraphQlModulesForPlugins('admin')],
-        };
-    }
-
-    static forRoot(): DynamicModule {
-        return {
-            module: PluginModule,
-            providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
-            imports: [...getConfig().plugins],
-        };
-    }
-
     static forWorker(): DynamicModule {
         return {
             module: PluginModule,
@@ -61,12 +37,6 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
             imports: [...pluginsWithWorkerControllers()],
         };
     }
-
-    private static mainBootstrapHasRun = false;
-    private static mainCloseHasRun = false;
-    private static workerBootstrapHasRun = false;
-    private static workerCloseHasRun = false;
-
     constructor(
         @Inject(PLUGIN_PROCESS_CONTEXT) private processContext: PluginProcessContext,
         private moduleRef: ModuleRef,
@@ -74,26 +44,22 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
     ) {}
 
     async onModuleInit() {
-        if (!PluginModule.mainBootstrapHasRun && this.processContext === PluginProcessContext.Main) {
-            PluginModule.mainBootstrapHasRun = true;
+        if (this.processContext === PluginProcessContext.Main) {
             this.runPluginLifecycleMethods('onVendureBootstrap', instance => {
                 const pluginName = instance.constructor.name || '(anonymous plugin)';
                 Logger.verbose(`Bootstrapped plugin ${pluginName}`);
             });
         }
-        if (!PluginModule.workerBootstrapHasRun && this.processContext === PluginProcessContext.Worker) {
-            PluginModule.workerBootstrapHasRun = true;
+        if (this.processContext === PluginProcessContext.Worker) {
             this.runPluginLifecycleMethods('onVendureWorkerBootstrap');
         }
     }
 
     async onModuleDestroy() {
-        if (!PluginModule.mainCloseHasRun && this.processContext === PluginProcessContext.Main) {
-            PluginModule.mainCloseHasRun = true;
+        if (this.processContext === PluginProcessContext.Main) {
             await this.runPluginLifecycleMethods('onVendureClose');
         }
-        if (!PluginModule.workerCloseHasRun && this.processContext === PluginProcessContext.Worker) {
-            PluginModule.workerCloseHasRun = true;
+        if (this.processContext === PluginProcessContext.Worker) {
             this.runPluginLifecycleMethods('onVendureWorkerClose');
         }
     }

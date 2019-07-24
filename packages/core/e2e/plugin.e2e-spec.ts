@@ -52,12 +52,12 @@ describe('Plugins', () => {
         await server.destroy();
     });
 
-    it('calls onVendureBootstrap once only', () => {
-        expect(onBootstrapFn.mock.calls.length).toBe(1);
+    it('calls onVendureBootstrap', () => {
+        expect(onBootstrapFn).toHaveBeenCalled();
     });
 
-    it('calls onWorkerVendureBootstrap once only', () => {
-        expect(onWorkerBootstrapFn.mock.calls.length).toBe(1);
+    it('calls onWorkerVendureBootstrap', () => {
+        expect(onWorkerBootstrapFn).toHaveBeenCalled();
     });
 
     it('can modify the config in configure()', () => {
@@ -99,12 +99,12 @@ describe('Plugins', () => {
             await server.destroy();
         });
 
-        it('calls onVendureClose once only', () => {
-            expect(onCloseFn.mock.calls.length).toBe(1);
+        it('calls onVendureClose', () => {
+            expect(onCloseFn).toHaveBeenCalled();
         });
 
-        it('calls onWorkerVendureClose once only', () => {
-            expect(onWorkerCloseFn.mock.calls.length).toBe(1);
+        it('calls onWorkerVendureClose', () => {
+            expect(onWorkerCloseFn).toHaveBeenCalled();
         });
     });
 });
