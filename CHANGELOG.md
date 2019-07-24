@@ -1,3 +1,20 @@
+## <small>0.1.2-beta.9 (2019-07-24)</small>
+
+
+#### Features
+
+* **core** Make request pipeline compatible with REST requests ([fcf9103](https://github.com/vendure-ecommerce/vendure/commit/fcf9103))
+* **core** Use query param to specify language ([2035003](https://github.com/vendure-ecommerce/vendure/commit/2035003)), closes [#128](https://github.com/vendure-ecommerce/vendure/issues/128)
+* **create** Update config template to new plugin format ([b17b1ac](https://github.com/vendure-ecommerce/vendure/commit/b17b1ac))
+
+#### Fixes
+
+* **admin-ui** Remove references to obsolete languageCode arguments ([1e81068](https://github.com/vendure-ecommerce/vendure/commit/1e81068)), closes [#128](https://github.com/vendure-ecommerce/vendure/issues/128)
+
+
+### BREAKING CHANGE
+
+* All `languageCode` GraphQL arguments have been removed from queries and instead, a "languageCode" query param may be attached to the API URL to specify the language of any translatable entities.
 ## <small>0.1.2-beta.8 (2019-07-18)</small>
 
 
