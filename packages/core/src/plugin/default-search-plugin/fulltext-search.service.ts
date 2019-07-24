@@ -24,7 +24,7 @@ import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
  * SearchStrategy implementations for db-specific code.
  */
 @Injectable()
-export class FulltextSearchService implements SearchService {
+export class FulltextSearchService {
     private searchStrategy: SearchStrategy;
     private readonly minTermLength = 2;
 
@@ -35,14 +35,20 @@ export class FulltextSearchService implements SearchService {
         private facetValueService: FacetValueService,
         private productVariantService: ProductVariantService,
         private searchIndexService: SearchIndexService,
+        private searchService: SearchService,
     ) {
+        this.searchService.adopt(this);
         this.setSearchStrategy();
     }
 
     /**
      * Perform a fulltext search according to the provided input arguments.
      */
-    async search(ctx: RequestContext, input: SearchInput, enabledOnly: boolean = false): Promise<Omit<SearchResponse, 'facetValues'>> {
+    async search(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean = false,
+    ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const items = await this.searchStrategy.getSearchResults(ctx, input, enabledOnly);
         const totalItems = await this.searchStrategy.getTotalCount(ctx, input, enabledOnly);
         return {
