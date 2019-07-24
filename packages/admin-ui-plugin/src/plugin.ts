@@ -1,4 +1,4 @@
-import { AdminUiConfig } from '@vendure/common/lib/shared-types';
+import { AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
 import {
     createProxyHandler,
     OnVendureBootstrap,
@@ -90,7 +90,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
      * @description
      * Set the plugin options
      */
-    static init(options: AdminUiOptions) {
+    static init(options: AdminUiOptions): Type<AdminUiPlugin> {
         this.options = options;
         return AdminUiPlugin;
     }

@@ -43,21 +43,24 @@ export interface ProxyOptions {
  *
  * @example
  * ```ts
- * // Example usage in the `configure` method of a VendurePlugin.
+ * // Example usage in the `configuration` method of a VendurePlugin.
  * // Imagine that we have started a Node server on port 5678
  * // running some service which we want to access via the `/my-plugin/`
  * // route of the main Vendure server.
- * configure(config: Required<VendureConfig>): Required<VendureConfig> {
- *     config.middleware.push({
- *         handler: createProxyHandler({
- *             label: 'Admin UI',
- *             route: 'my-plugin',
- *             port: 5678,
- *         }),
- *         route: 'my-plugin',
- *     });
- *     return config;
- * }
+ * \@VendurePlugin({
+ *   configure: (config: Required<VendureConfig>) => {
+ *       config.middleware.push({
+ *           handler: createProxyHandler({
+ *               label: 'Admin UI',
+ *               route: 'my-plugin',
+ *               port: 5678,
+ *           }),
+ *           route: 'my-plugin',
+ *       });
+ *       return config;
+ *   }
+ * })
+ * export class MyPlugin {}
  * ```
  *
  * @docsCategory Plugin

@@ -59,6 +59,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     workers: [IndexerController],
 })
 export class DefaultSearchPlugin implements OnVendureBootstrap {
+    /** @internal */
     constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
 
     /** @internal */

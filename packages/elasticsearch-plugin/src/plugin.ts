@@ -12,6 +12,7 @@ import {
     ProductVariant,
     SearchService,
     TaxRateModificationEvent,
+    Type,
     VendurePlugin,
 } from '@vendure/core';
 
@@ -59,7 +60,7 @@ export interface ElasticsearchOptions {
 /**
  * @description
  * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
- * engine. This is a drop-in replacement for the {@link DefaultSearchPlugin}.
+ * engine. This is a drop-in replacement for the DefaultSearchPlugin.
  *
  * ## Installation
  *
@@ -102,13 +103,17 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: Required<ElasticsearchOptions>;
     private static client: Client;
 
+    /** @internal */
     constructor(
         private eventBus: EventBus,
         private elasticsearchService: ElasticsearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
     ) {}
 
-    static init(options: ElasticsearchOptions) {
+    /**
+     * Set the plugin options.
+     */
+    static init(options: ElasticsearchOptions): Type<ElasticsearchPlugin> {
         const { host, port } = options;
         this.options = { indexPrefix: 'vendure-', batchSize: 2000, ...options };
         this.client = new Client({

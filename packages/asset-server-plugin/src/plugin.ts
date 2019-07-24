@@ -1,3 +1,4 @@
+import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
     createProxyHandler,
@@ -200,11 +201,16 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     ];
     private static options: AssetServerOptions;
 
-    static init(options: AssetServerOptions) {
+    /**
+     * @description
+     * Set the plugin options.
+     */
+    static init(options: AssetServerOptions): Type<AssetServerPlugin> {
         AssetServerPlugin.options = options;
         return this;
     }
 
+    /** @internal */
     static configure(config: Required<VendureConfig>) {
         this.assetStorage = this.createAssetStorageStrategy(this.options);
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({

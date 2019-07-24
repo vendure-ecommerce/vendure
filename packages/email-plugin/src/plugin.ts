@@ -6,6 +6,7 @@ import {
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    Type,
     VendureConfig,
     VendurePlugin,
 } from '@vendure/core';
@@ -143,9 +144,13 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private generator: HandlebarsMjmlGenerator;
     private devMailbox: DevMailbox | undefined;
 
+    /** @internal */
     constructor(private eventBus: EventBus) {}
 
-    static init(options: EmailPluginOptions | EmailPluginDevModeOptions) {
+    /**
+     * Set the plugin options.
+     */
+    static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
         this.options = options;
         return EmailPlugin;
     }
