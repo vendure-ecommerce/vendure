@@ -29,7 +29,8 @@ let projectName: string | undefined;
 
 // Set the environment variable which can then be used to
 // conditionally modify behaviour of core or plugins.
-const createEnvVar: import('@vendure/common/src/shared-constants').CREATING_VENDURE_APP = 'CREATING_VENDURE_APP';
+const createEnvVar: import('@vendure/common/src/shared-constants').CREATING_VENDURE_APP =
+    'CREATING_VENDURE_APP';
 process.env[createEnvVar] = 'true';
 
 program
@@ -41,7 +42,7 @@ program
     })
     .option(
         '--log-level <logLevel>',
-        'Log level, either \'silent\', \'info\', or \'verbose\'',
+        "Log level, either 'silent', 'info', or 'verbose'",
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -62,7 +63,14 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
 
     const root = path.resolve(name);
     const appName = path.basename(root);
-    const { dbType, usingTs, configSource, indexSource, indexWorkerSource, populateProducts } = await gatherUserResponses(root);
+    const {
+        dbType,
+        usingTs,
+        configSource,
+        indexSource,
+        indexWorkerSource,
+        populateProducts,
+    } = await gatherUserResponses(root);
 
     const useYarn = useNpm ? false : shouldUseYarn();
     const originalDirectory = process.cwd();
@@ -78,7 +86,7 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
         scripts: {
             'run:server': usingTs ? 'ts-node index.ts' : 'node index.js',
             'run:worker': usingTs ? 'ts-node index-worker.ts' : 'node index-worker.js',
-            'start': useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
+            start: useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
         },
     };
 
@@ -107,7 +115,8 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                                 return installPackages(root, useYarn, devDependencies, true, logLevel);
                             }
                         })
-                        .then(() => subscriber.complete());
+                        .then(() => subscriber.complete())
+                        .catch(err => subscriber.error(err));
                 });
             }) as any,
         },
@@ -146,7 +155,8 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                         .then(() => {
                             subscriber.next(`Copied email templates`);
                             subscriber.complete();
-                        });
+                        })
+                        .catch(err => subscriber.error(err));
                 });
             },
         },
@@ -158,14 +168,12 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                         // register ts-node so that the config file can be loaded
                         require(path.join(root, 'node_modules/ts-node')).register();
                     }
-                    const { populate } = await import(path.join(
-                        root,
-                        'node_modules/@vendure/core/dist/cli/populate',
-                    ));
-                    const { bootstrap } = await import(path.join(
-                        root,
-                        'node_modules/@vendure/core/dist/bootstrap',
-                    ));
+                    const { populate } = await import(
+                        path.join(root, 'node_modules/@vendure/core/dist/cli/populate')
+                    );
+                    const { bootstrap } = await import(
+                        path.join(root, 'node_modules/@vendure/core/dist/bootstrap')
+                    );
                     const { config } = await import(ctx.configFile);
                     const assetsDir = path.join(__dirname, '../assets');
 
@@ -211,7 +219,7 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
     try {
         await tasks.run();
     } catch (e) {
-        console.error(chalk.red(e));
+        console.error(chalk.red(JSON.stringify(e)));
         process.exit(1);
     }
     const startCommand = useYarn ? 'yarn start' : 'npm run start';

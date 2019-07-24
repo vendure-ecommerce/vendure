@@ -18,11 +18,7 @@ import { DbType, LogLevel } from './types';
 export function isSafeToCreateProjectIn(root: string, name: string) {
     // These files should be allowed to remain on a failed install,
     // but then silently removed during the next create.
-    const errorLogFilePatterns = [
-        'npm-debug.log',
-        'yarn-error.log',
-        'yarn-debug.log',
-    ];
+    const errorLogFilePatterns = ['npm-debug.log', 'yarn-error.log', 'yarn-debug.log'];
     const validFiles = [
         '.DS_Store',
         'Thumbs.db',
@@ -49,22 +45,16 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         // IntelliJ IDEA creates module files before CRA is launched
         .filter(file => !/\.iml$/.test(file))
         // Don't treat log files from previous installation as conflicts
-        .filter(
-            file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0),
-        );
+        .filter(file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0));
 
     if (conflicts.length > 0) {
-        console.log(
-            `The directory ${chalk.green(name)} contains files that could conflict:`,
-        );
+        console.log(`The directory ${chalk.green(name)} contains files that could conflict:`);
         console.log();
         for (const file of conflicts) {
             console.log(`  ${file}`);
         }
         console.log();
-        console.log(
-            'Either try using a new directory name, or remove the files listed above.',
-        );
+        console.log('Either try using a new directory name, or remove the files listed above.');
 
         return false;
     }
@@ -87,8 +77,8 @@ export function checkNodeVersion(requiredVersion: string) {
         console.error(
             chalk.red(
                 'You are running Node %s.\n' +
-                'Vendure requires Node %s or higher. \n' +
-                'Please update your version of Node.',
+                    'Vendure requires Node %s or higher. \n' +
+                    'Please update your version of Node.',
             ),
             process.version,
             requiredVersion,
@@ -142,26 +132,24 @@ export function checkThatNpmCanReadCwd() {
     console.error(
         chalk.red(
             `Could not start an npm process in the right directory.\n\n` +
-            `The current directory is: ${chalk.bold(cwd)}\n` +
-            `However, a newly started npm process runs in: ${chalk.bold(
-                npmCWD,
-            )}\n\n` +
-            `This is probably caused by a misconfigured system terminal shell.`,
+                `The current directory is: ${chalk.bold(cwd)}\n` +
+                `However, a newly started npm process runs in: ${chalk.bold(npmCWD)}\n\n` +
+                `This is probably caused by a misconfigured system terminal shell.`,
         ),
     );
     if (process.platform === 'win32') {
         console.error(
             chalk.red(`On Windows, this can usually be fixed by running:\n\n`) +
-            `  ${chalk.cyan(
-                'reg',
-            )} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
-            `  ${chalk.cyan(
-                'reg',
-            )} delete "HKLM\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n\n` +
-            chalk.red(`Try to run the above two lines in the terminal.\n`) +
-            chalk.red(
-                `To learn more about this problem, read: https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433/`,
-            ),
+                `  ${chalk.cyan(
+                    'reg',
+                )} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
+                `  ${chalk.cyan(
+                    'reg',
+                )} delete "HKLM\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n\n` +
+                chalk.red(`Try to run the above two lines in the terminal.\n`) +
+                chalk.red(
+                    `To learn more about this problem, read: https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433/`,
+                ),
         );
     }
     return false;
@@ -171,7 +159,13 @@ export function checkThatNpmCanReadCwd() {
  * Install packages via npm or yarn.
  * Based on the install function from https://github.com/facebook/create-react-app
  */
-export function installPackages(root: string, useYarn: boolean, dependencies: string[], isDev: boolean, logLevel: LogLevel): Promise<void> {
+export function installPackages(
+    root: string,
+    useYarn: boolean,
+    dependencies: string[],
+    isDev: boolean,
+    logLevel: LogLevel,
+): Promise<void> {
     return new Promise((resolve, reject) => {
         let command: string;
         let args: string[];
@@ -192,13 +186,7 @@ export function installPackages(root: string, useYarn: boolean, dependencies: st
             args.push(root);
         } else {
             command = 'npm';
-            args = [
-                'install',
-                '--save',
-                '--save-exact',
-                '--loglevel',
-                'error',
-            ].concat(dependencies);
+            args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
             if (isDev) {
                 args.push('--save-dev');
             }
@@ -212,6 +200,8 @@ export function installPackages(root: string, useYarn: boolean, dependencies: st
         child.on('close', code => {
             if (code !== 0) {
                 reject({
+                    message:
+                        'An error occurred when installing dependencies. Try running with `--log-level info` to diagnose.',
                     command: `${command} ${args.join(' ')}`,
                 });
                 return;
@@ -221,7 +211,10 @@ export function installPackages(root: string, useYarn: boolean, dependencies: st
     });
 }
 
-export function getDependencies(usingTs: boolean, dbType: DbType): { dependencies: string[]; devDependencies: string[]; } {
+export function getDependencies(
+    usingTs: boolean,
+    dbType: DbType,
+): { dependencies: string[]; devDependencies: string[] } {
     const dependencies = [
         '@vendure/core',
         '@vendure/email-plugin',
@@ -234,7 +227,7 @@ export function getDependencies(usingTs: boolean, dbType: DbType): { dependencie
         devDependencies.push('ts-node');
     }
 
-    return {dependencies, devDependencies};
+    return { dependencies, devDependencies };
 }
 
 /**
@@ -333,8 +326,11 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
 }
 
 function throwConnectionError(err: any) {
-    throw new Error(`Could not connect to the database. ` +
-        `Please check the connection settings in your Vendure config.\n[${err.message || err.toString()}]`);
+    throw new Error(
+        `Could not connect to the database. ` +
+            `Please check the connection settings in your Vendure config.\n[${err.message ||
+                err.toString()}]`,
+    );
 }
 
 function throwDatabaseDoesNotExist(name: string) {
