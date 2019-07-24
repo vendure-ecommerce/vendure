@@ -18,12 +18,16 @@ import { ElasticsearchOptions } from './plugin';
 import { ProductIndexItem, SearchHit, SearchResponseBody, VariantIndexItem } from './types';
 
 @Injectable()
-export class ElasticsearchService implements SearchService {
-
-    constructor(@Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
-                @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
-                private elasticsearchIndexService: ElasticsearchIndexService,
-                private facetValueService: FacetValueService) {}
+export class ElasticsearchService {
+    constructor(
+        @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
+        @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
+        private searchService: SearchService,
+        private elasticsearchIndexService: ElasticsearchIndexService,
+        private facetValueService: FacetValueService,
+    ) {
+        searchService.adopt(this);
+    }
 
     checkConnection() {
         return this.client.ping({}, { requestTimeout: 1000 });
@@ -51,12 +55,16 @@ export class ElasticsearchService implements SearchService {
     /**
      * Perform a fulltext search according to the provided input arguments.
      */
-    async search(ctx: RequestContext, input: SearchInput, enabledOnly: boolean = false): Promise<Omit<SearchResponse, 'facetValues'>> {
+    async search(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean = false,
+    ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(input, enabledOnly);
         if (groupByProduct) {
-            const { body }: { body: SearchResponseBody<ProductIndexItem>; } = await this.client.search({
+            const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
                 index: indexPrefix + PRODUCT_INDEX_NAME,
                 type: PRODUCT_INDEX_TYPE,
                 body: elasticSearchBody,
@@ -66,7 +74,7 @@ export class ElasticsearchService implements SearchService {
                 totalItems: body.hits.total.value,
             };
         } else {
-            const {body}: { body: SearchResponseBody<VariantIndexItem>; } = await this.client.search({
+            const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
                 index: indexPrefix + VARIANT_INDEX_NAME,
                 type: VARIANT_INDEX_TYPE,
                 body: elasticSearchBody,
@@ -95,7 +103,7 @@ export class ElasticsearchService implements SearchService {
                 terms: { field: 'facetValueIds.keyword' },
             },
         };
-        const { body }: { body: SearchResponseBody<VariantIndexItem>; } = await this.client.search({
+        const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
             index: indexPrefix + VARIANT_INDEX_NAME,
             type: VARIANT_INDEX_TYPE,
             body: elasticSearchBody,
@@ -103,10 +111,7 @@ export class ElasticsearchService implements SearchService {
 
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
-        const facetValues = await this.facetValueService.findByIds(
-            buckets.map(b => b.key),
-            ctx.languageCode,
-        );
+        const facetValues = await this.facetValueService.findByIds(buckets.map(b => b.key), ctx.languageCode);
         return facetValues.map((facetValue, index) => {
             return {
                 facetValue,
