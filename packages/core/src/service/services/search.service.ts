@@ -17,7 +17,20 @@ import { Logger } from '../../config/logger/vendure-logger';
  */
 @Injectable()
 export class SearchService {
+    private override: Pick<SearchService, 'reindex'> | undefined;
+
+    /**
+     * Adopt a concrete search service implementation to pass through the
+     * calls to.
+     */
+    adopt(override: Pick<SearchService, 'reindex'>) {
+        this.override = override;
+    }
+
     async reindex(ctx: RequestContext): Promise<JobInfo> {
+        if (this.override) {
+            return this.override.reindex(ctx);
+        }
         if (!process.env.CI) {
             Logger.warn(`The SearchService should be overridden by an appropriate search plugin.`);
         }

@@ -1,4 +1,3 @@
-import { OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 
 import { idsAreEqual } from '../../common/utils';
@@ -8,9 +7,8 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
-import { SearchService } from '../../service/services/search.service';
 import { PluginCommonModule } from '../plugin-common.module';
-import { VendurePlugin } from '../vendure-plugin';
+import { OnVendureBootstrap, VendurePlugin } from '../vendure-plugin';
 
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
@@ -54,22 +52,17 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [
-        FulltextSearchService,
-        SearchIndexService,
-        { provide: SearchService, useClass: FulltextSearchService },
-    ],
-    exports: [{ provide: SearchService, useClass: FulltextSearchService }],
+    providers: [FulltextSearchService, SearchIndexService],
     adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
     shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
     entities: [SearchIndexItem],
     workers: [IndexerController],
 })
-export class DefaultSearchPlugin implements OnApplicationBootstrap {
+export class DefaultSearchPlugin implements OnVendureBootstrap {
     constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
 
     /** @internal */
-    onApplicationBootstrap() {
+    async onVendureBootstrap() {
         this.eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
                 return this.searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
