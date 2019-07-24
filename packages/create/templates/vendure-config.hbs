@@ -56,12 +56,13 @@ const path = require('path');
     },
     customFields: {},
     plugins: [
-        new AssetServerPlugin({
+        AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'vendure/assets'),
             port: 3001,
         }),
-        new EmailPlugin({
+        DefaultSearchPlugin,
+        EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, 'vendure/email/test-emails'),
             mailboxPort: 3003,
@@ -74,8 +75,7 @@ const path = require('path');
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
-        new DefaultSearchPlugin(),
-        new AdminUiPlugin({ port: 3002 }),
+        AdminUiPlugin.init({ port: 3002 }),
     ],
 };
 {{#if isTs}}
