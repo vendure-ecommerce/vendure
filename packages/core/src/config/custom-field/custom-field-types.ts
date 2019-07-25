@@ -8,7 +8,7 @@ import {
     LocalizedString,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, CustomFieldType } from '@vendure/common/src/shared-types';
+import { CustomFieldsObject, CustomFieldType } from '@vendure/common/lib/shared-types';
 
 // prettier-ignore
 export type DefaultValueType<T extends CustomFieldType> =
@@ -38,7 +38,10 @@ export type TypedCustomFieldConfig<T extends CustomFieldType, C extends CustomFi
     validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;
 };
 export type StringCustomFieldConfig = TypedCustomFieldConfig<'string', GraphQLStringCustomFieldConfig>;
-export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<'localeString', GraphQLLocaleStringCustomFieldConfig>;
+export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<
+    'localeString',
+    GraphQLLocaleStringCustomFieldConfig
+>;
 export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;

@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/src/shared-types';
+import { Type } from '@vendure/common/lib/shared-types';
 import { getMetadataArgsStorage } from 'typeorm';
 
 import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
@@ -112,12 +112,7 @@ function getAllColumnNames(entity: Type<any>): string[] {
     const relationColumns = metadata.filterRelations(entity);
     const embeddedColumns = metadata.filterEmbeddeds(entity);
     const baseColumns = metadata.filterColumns(VendureEntity);
-    return [
-        ...ownColumns,
-        ...relationColumns,
-        ...embeddedColumns,
-        ...baseColumns,
-    ].map(c => c.propertyName);
+    return [...ownColumns, ...relationColumns, ...embeddedColumns, ...baseColumns].map(c => c.propertyName);
 }
 
 /**
