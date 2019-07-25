@@ -1,3 +1,34 @@
+## <small>0.1.2-beta.9 (2019-07-25)</small>
+
+
+#### Features
+
+* **core** Make request pipeline compatible with REST requests ([42aa5fb](https://github.com/vendure-ecommerce/vendure/commit/42aa5fb))
+* **core** Rewrite plugin system to use Nest modules ([7ec309b](https://github.com/vendure-ecommerce/vendure/commit/7ec309b)), closes [#123](https://github.com/vendure-ecommerce/vendure/issues/123)
+* **core** Use query param to specify language ([2035003](https://github.com/vendure-ecommerce/vendure/commit/2035003)), closes [#128](https://github.com/vendure-ecommerce/vendure/issues/128)
+* **create** Improve error handling ([b5e0b62](https://github.com/vendure-ecommerce/vendure/commit/b5e0b62))
+* **create** Update config template to new plugin format ([eb5d4ff](https://github.com/vendure-ecommerce/vendure/commit/eb5d4ff))
+
+#### Fixes
+
+* **admin-ui** Remove references to obsolete languageCode arguments ([1e81068](https://github.com/vendure-ecommerce/vendure/commit/1e81068)), closes [#128](https://github.com/vendure-ecommerce/vendure/issues/128)
+
+
+### BREAKING CHANGE
+
+* All `languageCode` GraphQL arguments have been removed from queries and instead, a "languageCode" query param may be attached to the API URL to specify the language of any translatable entities.
+* Vendure plugins are now defined as Nestjs modules. For
+existing installations, the VendureConfig will need to be modified so
+that plugins are not instantiated, but use the static .init() method to
+pass options to the plugin, e.g.:
+
+    ```
+    // before
+    plugins: [ new AdminUiPlugin({ port: 3002 }) ],
+
+    // after
+    plugins: [ AdminUiPlugin.init({ port: 3002 }) ],
+    ```
 ## <small>0.1.2-beta.8 (2019-07-18)</small>
 
 

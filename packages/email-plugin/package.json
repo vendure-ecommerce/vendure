@@ -1,6 +1,6 @@
 {
   "name": "@vendure/email-plugin",
-  "version": "0.1.2-beta.8",
+  "version": "0.1.2-beta.9",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -31,8 +31,8 @@
     "@types/handlebars": "^4.1.0",
     "@types/mjml": "^4.0.2",
     "@types/nodemailer": "^4.6.5",
-    "@vendure/common": "^0.1.2-beta.8",
-    "@vendure/core": "^0.1.2-beta.8",
+    "@vendure/common": "^0.1.2-beta.9",
+    "@vendure/core": "^0.1.2-beta.9",
     "rimraf": "^2.6.3",
     "typescript": "^3.4.1"
   }
