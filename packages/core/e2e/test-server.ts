@@ -7,8 +7,9 @@ import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
 import { populateForTesting, PopulateOptions } from '../mock-data/populate-for-testing';
-import { preBootstrapConfig, runPluginOnBootstrapMethods } from '../src/bootstrap';
+import { preBootstrapConfig } from '../src/bootstrap';
 import { Mutable } from '../src/common/types/common-types';
+import { DefaultLogger } from '../src/config/logger/default-logger';
 import { Logger } from '../src/config/logger/vendure-logger';
 import { VendureConfig } from '../src/config/vendure-config';
 
@@ -36,9 +37,6 @@ export class TestServer {
     ): Promise<void> {
         setTestEnvironment();
         const testingConfig = { ...testConfig, ...customConfig };
-        if (options.logging) {
-            (testingConfig.dbConnectionOptions as Mutable<ConnectionOptions>).logging = true;
-        }
         const dbFilePath = this.getDbFilePath();
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {
@@ -108,13 +106,16 @@ export class TestServer {
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<[INestApplication, INestMicroservice | undefined]> {
+    private async bootstrapForTesting(
+        userConfig: Partial<VendureConfig>,
+    ): Promise<[INestApplication, INestMicroservice | undefined]> {
         const config = await preBootstrapConfig(userConfig);
+        Logger.useLogger(config.logger);
         const appModule = await import('../src/app.module');
         try {
-            const app = await NestFactory.create(appModule.AppModule, {cors: config.cors, logger: false});
+            DefaultLogger.hideNestBoostrapLogs();
+            const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
             let worker: INestMicroservice | undefined;
-            await runPluginOnBootstrapMethods(config, app);
             await app.listen(config.port);
             if (config.workerOptions.runInMainProcess) {
                 const workerModule = await import('../src/worker/worker.module');
@@ -125,6 +126,7 @@ export class TestServer {
                 });
                 await worker.listenAsync();
             }
+            DefaultLogger.restoreOriginalLogLevel();
             return [app, worker];
         } catch (e) {
             console.log(e);

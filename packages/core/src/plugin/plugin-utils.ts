@@ -1,8 +1,7 @@
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { RequestHandler } from 'express';
 import proxy from 'http-proxy-middleware';
 
-import { APIExtensionDefinition, Logger, VendureConfig, VendurePlugin } from '../config';
+import { Logger, VendureConfig } from '../config';
 
 /**
  * @description
@@ -44,21 +43,24 @@ export interface ProxyOptions {
  *
  * @example
  * ```ts
- * // Example usage in the `configure` method of a VendurePlugin.
+ * // Example usage in the `configuration` method of a VendurePlugin.
  * // Imagine that we have started a Node server on port 5678
  * // running some service which we want to access via the `/my-plugin/`
  * // route of the main Vendure server.
- * configure(config: Required<VendureConfig>): Required<VendureConfig> {
- *     config.middleware.push({
- *         handler: createProxyHandler({
- *             label: 'Admin UI',
- *             route: 'my-plugin',
- *             port: 5678,
- *         }),
- *         route: 'my-plugin',
- *     });
- *     return config;
- * }
+ * \@VendurePlugin({
+ *   configure: (config: Required<VendureConfig>) => {
+ *       config.middleware.push({
+ *           handler: createProxyHandler({
+ *               label: 'Admin UI',
+ *               route: 'my-plugin',
+ *               port: 5678,
+ *           }),
+ *           route: 'my-plugin',
+ *       });
+ *       return config;
+ *   }
+ * })
+ * export class MyPlugin {}
  * ```
  *
  * @docsCategory Plugin
@@ -104,23 +106,13 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
 export function logProxyMiddlewares(config: VendureConfig) {
     for (const middleware of config.middleware || []) {
         if ((middleware.handler as any).proxyMiddleware) {
-            const { port, hostname, label, route } = (middleware.handler as any).proxyMiddleware as ProxyOptions;
-            Logger.info(`${label}: http://${config.hostname || 'localhost'}:${config.port}/${route}/ -> http://${hostname || 'localhost'}:${port}`);
+            const { port, hostname, label, route } = (middleware.handler as any)
+                .proxyMiddleware as ProxyOptions;
+            Logger.info(
+                `${label}: http://${config.hostname || 'localhost'}:${
+                    config.port
+                }/${route}/ -> http://${hostname || 'localhost'}:${port}`,
+            );
         }
     }
-}
-
-/**
- * Given an array of VendurePlugins, returns a flattened array of all APIExtensionDefinitions.
- */
-export function getPluginAPIExtensions(
-    plugins: VendurePlugin[],
-    apiType: 'shop' | 'admin',
-): APIExtensionDefinition[] {
-    const extensions =
-        apiType === 'shop'
-            ? plugins.map(p => (p.extendShopAPI ? p.extendShopAPI() : undefined))
-            : plugins.map(p => (p.extendAdminAPI ? p.extendAdminAPI() : undefined));
-
-    return extensions.filter(notNullOrUndefined);
 }

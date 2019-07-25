@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '../config/config.module';
 import { DataImportModule } from '../data-import/data-import.module';
-import { PluginModule } from '../plugin/plugin.module';
+import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
 import { ServiceModule } from '../service/service.module';
 
 import { IdCodecService } from './common/id-codec.service';
@@ -37,7 +37,10 @@ import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.re
 import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
 import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
-import { ProductVariantAdminEntityResolver, ProductVariantEntityResolver } from './resolvers/entity/product-variant-entity.resolver';
+import {
+    ProductVariantAdminEntityResolver,
+    ProductVariantEntityResolver,
+} from './resolvers/entity/product-variant-entity.resolver';
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
@@ -92,9 +95,7 @@ export const entityResolvers = [
     RefundEntityResolver,
 ];
 
-export const adminEntityResolvers = [
-    ProductVariantAdminEntityResolver,
-];
+export const adminEntityResolvers = [ProductVariantAdminEntityResolver];
 
 /**
  * The internal module containing some shared providers used by more than
@@ -111,8 +112,13 @@ export class ApiSharedModule {}
  * The internal module containing the Admin GraphQL API resolvers
  */
 @Module({
-    imports: [ApiSharedModule, PluginModule.forRoot(), ServiceModule.forRoot(), DataImportModule],
-    providers: [...adminResolvers, ...entityResolvers, ...adminEntityResolvers, ...PluginModule.adminApiResolvers()],
+    imports: [
+        ApiSharedModule,
+        ServiceModule.forRoot(),
+        DataImportModule,
+        ...createDynamicGraphQlModulesForPlugins('admin'),
+    ],
+    providers: [...adminResolvers, ...entityResolvers, ...adminEntityResolvers],
     exports: [...adminResolvers],
 })
 export class AdminApiModule {}
@@ -121,8 +127,8 @@ export class AdminApiModule {}
  * The internal module containing the Shop GraphQL API resolvers
  */
 @Module({
-    imports: [ApiSharedModule, PluginModule.forRoot(), ServiceModule.forRoot()],
-    providers: [...shopResolvers, ...entityResolvers, ...PluginModule.shopApiResolvers()],
-    exports: shopResolvers,
+    imports: [ApiSharedModule, ServiceModule.forRoot(), ...createDynamicGraphQlModulesForPlugins('shop')],
+    providers: [...shopResolvers, ...entityResolvers],
+    exports: [...shopResolvers],
 })
 export class ShopApiModule {}

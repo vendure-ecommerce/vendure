@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
 import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 
@@ -8,13 +8,13 @@ import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
+import { PluginModule } from './plugin/plugin.module';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule],
+    imports: [ConfigModule, I18nModule, ApiModule, PluginModule],
 })
-export class AppModule implements NestModule, OnModuleDestroy, OnApplicationShutdown {
-    constructor(private configService: ConfigService,
-                private i18nService: I18nService) {}
+export class AppModule implements NestModule, OnApplicationShutdown {
+    constructor(private configService: ConfigService, private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath } = this.configService;
@@ -36,14 +36,6 @@ export class AppModule implements NestModule, OnModuleDestroy, OnApplicationShut
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {
             consumer.apply(...handlers).forRoutes(route);
-        }
-    }
-
-    async onModuleDestroy() {
-        for (const plugin of this.configService.plugins) {
-            if (plugin.onClose) {
-                await plugin.onClose();
-            }
         }
     }
 

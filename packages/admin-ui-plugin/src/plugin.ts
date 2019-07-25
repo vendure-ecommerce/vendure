@@ -1,5 +1,11 @@
-import { AdminUiConfig } from '@vendure/common/lib/shared-types';
-import { createProxyHandler, InjectorFn, VendureConfig, VendurePlugin } from '@vendure/core';
+import { AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
+import {
+    createProxyHandler,
+    OnVendureBootstrap,
+    OnVendureClose,
+    VendureConfig,
+    VendurePlugin,
+} from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';
@@ -66,19 +72,31 @@ export interface AdminUiOptions {
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     new AdminUiPlugin({ port: 3002 }),
+ *     AdminUiPlugin.init({ port: 3002 }),
  *   ],
  * };
  * ```
  *
  * @docsCategory AdminUiPlugin
  */
-export class AdminUiPlugin implements VendurePlugin {
+@VendurePlugin({
+    configuration: (config: Required<VendureConfig>) => AdminUiPlugin.configure(config),
+})
+export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
+    private static options: AdminUiOptions;
     private server: Server;
-    constructor(private options: AdminUiOptions) {}
+
+    /**
+     * @description
+     * Set the plugin options
+     */
+    static init(options: AdminUiOptions): Type<AdminUiPlugin> {
+        this.options = options;
+        return AdminUiPlugin;
+    }
 
     /** @internal */
-    async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
+    static async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
         const route = 'admin';
         config.middleware.push({
             handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),
@@ -91,18 +109,18 @@ export class AdminUiPlugin implements VendurePlugin {
     }
 
     /** @internal */
-    onBootstrap(inject: InjectorFn): void | Promise<void> {
-        const adminUiPath = this.getAdminUiPath();
+    onVendureBootstrap() {
+        const adminUiPath = AdminUiPlugin.getAdminUiPath();
         const assetServer = express();
         assetServer.use(express.static(adminUiPath));
         assetServer.use((req, res) => {
             res.sendFile(path.join(adminUiPath, 'index.html'));
         });
-        this.server = assetServer.listen(this.options.port);
+        this.server = assetServer.listen(AdminUiPlugin.options.port);
     }
 
     /** @internal */
-    onClose(): Promise<void> {
+    onVendureClose(): Promise<void> {
         return new Promise(resolve => this.server.close(() => resolve()));
     }
 
@@ -110,7 +128,11 @@ export class AdminUiPlugin implements VendurePlugin {
      * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
      * the server admin API.
      */
-    private async overwriteAdminUiConfig(host: string | 'auto', port: number | 'auto', adminApiPath: string) {
+    private static async overwriteAdminUiConfig(
+        host: string | 'auto',
+        port: number | 'auto',
+        adminApiPath: string,
+    ) {
         const adminUiConfigPath = path.join(this.getAdminUiPath(), 'vendure-ui-config.json');
         const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
         const config: AdminUiConfig = JSON.parse(adminUiConfig);
@@ -120,7 +142,7 @@ export class AdminUiPlugin implements VendurePlugin {
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
     }
 
-    private getAdminUiPath(): string {
+    private static getAdminUiPath(): string {
         // attempt to read from the path location on a production npm install
         const prodPath = path.join(__dirname, '../admin-ui');
         if (fs.existsSync(path.join(prodPath, 'index.html'))) {

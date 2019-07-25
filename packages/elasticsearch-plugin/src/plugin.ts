@@ -1,12 +1,13 @@
 import { Client } from '@elastic/elasticsearch';
-import { Provider } from '@nestjs/common';
 import {
-    APIExtensionDefinition,
     CatalogModificationEvent,
     CollectionModificationEvent,
     EventBus,
     idsAreEqual,
     Logger,
+    OnVendureBootstrap,
+    OnVendureClose,
+    PluginCommonModule,
     Product,
     ProductVariant,
     SearchService,
@@ -14,7 +15,6 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
-import { gql } from 'apollo-server-core';
 
 import { ELASTIC_SEARCH_CLIENT, ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
@@ -60,7 +60,7 @@ export interface ElasticsearchOptions {
 /**
  * @description
  * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
- * engine. This is a drop-in replacement for the {@link DefaultSearchPlugin}.
+ * engine. This is a drop-in replacement for the DefaultSearchPlugin.
  *
  * ## Installation
  *
@@ -77,7 +77,7 @@ export interface ElasticsearchOptions {
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     new ElasticsearchPlugin({
+ *     ElasticsearchPlugin.init({
  *       host: 'http://localhost',
  *       port: 9200,
  *     }),
@@ -87,25 +87,46 @@ export interface ElasticsearchOptions {
  *
  * @docsCategory ElasticsearchPlugin
  */
-export class ElasticsearchPlugin implements VendurePlugin {
-    private readonly options: Required<ElasticsearchOptions>;
-    private readonly client: Client;
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    providers: [
+        ElasticsearchIndexService,
+        ElasticsearchService,
+        { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
+        { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => ElasticsearchPlugin.client },
+    ],
+    adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
+    shopApiExtensions: { resolvers: [ShopElasticSearchResolver] },
+    workers: [ElasticsearchIndexerController],
+})
+export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
+    private static options: Required<ElasticsearchOptions>;
+    private static client: Client;
 
-    constructor(options: ElasticsearchOptions) {
-        this.options = { indexPrefix: 'vendure-', batchSize: 2000, ...options };
+    /** @internal */
+    constructor(
+        private eventBus: EventBus,
+        private elasticsearchService: ElasticsearchService,
+        private elasticsearchIndexService: ElasticsearchIndexService,
+    ) {}
+
+    /**
+     * Set the plugin options.
+     */
+    static init(options: ElasticsearchOptions): Type<ElasticsearchPlugin> {
         const { host, port } = options;
+        this.options = { indexPrefix: 'vendure-', batchSize: 2000, ...options };
         this.client = new Client({
             node: `${host}:${port}`,
         });
+        return ElasticsearchPlugin;
     }
 
     /** @internal */
-    async onBootstrap(inject: <T>(type: Type<T>) => T): Promise<void> {
-        const elasticsearchService = inject(ElasticsearchService);
-        const elasticsearchIndexService = inject(ElasticsearchIndexService);
-        const { host, port } = this.options;
+    async onVendureBootstrap(): Promise<void> {
+        const { host, port } = ElasticsearchPlugin.options;
         try {
-            const pingResult = await elasticsearchService.checkConnection();
+            const pingResult = await this.elasticsearchService.checkConnection();
         } catch (e) {
             Logger.error(`Could not connect to Elasticsearch instance at "${host}:${port}"`, loggerCtx);
             Logger.error(JSON.stringify(e), loggerCtx);
@@ -113,73 +134,28 @@ export class ElasticsearchPlugin implements VendurePlugin {
         }
         Logger.info(`Sucessfully connected to Elasticsearch instance at "${host}:${port}"`, loggerCtx);
 
-        await elasticsearchService.createIndicesIfNotExists();
+        await this.elasticsearchService.createIndicesIfNotExists();
 
-        const eventBus = inject(EventBus);
-        eventBus.subscribe(CatalogModificationEvent, event => {
+        this.eventBus.subscribe(CatalogModificationEvent, event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return elasticsearchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
+                return this.elasticsearchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
             }
         });
-        eventBus.subscribe(CollectionModificationEvent, event => {
-            return elasticsearchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
+        this.eventBus.subscribe(CollectionModificationEvent, event => {
+            return this.elasticsearchIndexService
+                .updateVariantsById(event.ctx, event.productVariantIds)
+                .start();
         });
-        eventBus.subscribe(TaxRateModificationEvent, event => {
+        this.eventBus.subscribe(TaxRateModificationEvent, event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
             if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return elasticsearchService.reindex(event.ctx);
+                return this.elasticsearchService.reindex(event.ctx);
             }
         });
     }
 
     /** @internal */
-    onClose() {
-        return this.client.close();
-    }
-
-    /** @internal */
-    extendAdminAPI(): APIExtensionDefinition {
-        return {
-            resolvers: [AdminElasticSearchResolver],
-            schema: gql`
-                extend type SearchReindexResponse {
-                    timeTaken: Int!
-                    indexedItemCount: Int!
-                }
-            `,
-        };
-    }
-
-    /** @internal */
-    extendShopAPI(): APIExtensionDefinition {
-        return {
-            resolvers: [ShopElasticSearchResolver],
-            schema: gql`
-                extend type SearchReindexResponse {
-                    timeTaken: Int!
-                    indexedItemCount: Int!
-                }
-            `,
-        };
-    }
-
-    /** @internal */
-    defineProviders(): Provider[] {
-        return [
-            { provide: ElasticsearchIndexService, useClass: ElasticsearchIndexService },
-            AdminElasticSearchResolver,
-            ShopElasticSearchResolver,
-            ElasticsearchService,
-            { provide: SearchService, useClass: ElasticsearchService },
-            { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => this.options },
-            { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => this.client },
-        ];
-    }
-
-    /** @internal */
-    defineWorkers(): Array<Type<any>> {
-        return [
-            ElasticsearchIndexerController,
-        ];
+    onVendureClose() {
+        return ElasticsearchPlugin.client.close();
     }
 }

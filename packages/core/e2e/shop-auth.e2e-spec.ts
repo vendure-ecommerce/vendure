@@ -1,19 +1,26 @@
 /* tslint:disable:no-non-null-assertion */
+import { OnModuleInit } from '@nestjs/common';
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { InjectorFn, VendurePlugin } from '../src/config/vendure-plugin/vendure-plugin';
 import { EventBus } from '../src/event-bus/event-bus';
+import { EventBusModule } from '../src/event-bus/event-bus.module';
 import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
 import { IdentifierChangeEvent } from '../src/event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
+import { VendurePlugin } from '../src/plugin/vendure-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CreateAdministrator, CreateRole, GetCustomer, Permission } from './graphql/generated-e2e-admin-types';
+import {
+    CreateAdministrator,
+    CreateRole,
+    GetCustomer,
+    Permission,
+} from './graphql/generated-e2e-admin-types';
 import {
     GetActiveCustomer,
     RefreshToken,
@@ -53,7 +60,7 @@ describe('Shop auth & accounts', () => {
                 customerCount: 2,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
             },
         );
         await shopClient.init();
@@ -391,12 +398,18 @@ describe('Shop auth & accounts', () => {
         it(
             'throws with bad token',
             assertThrowsWithMessage(async () => {
-                await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: 'bad token' });
+                await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(
+                    UPDATE_EMAIL_ADDRESS,
+                    { token: 'bad token' },
+                );
             }, 'Identifier change token not recognized'),
         );
 
         it('verify the new email address', async () => {
-            const result = await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(UPDATE_EMAIL_ADDRESS, { token: emailUpdateToken });
+            const result = await shopClient.query<UpdateEmailAddress.Mutation, UpdateEmailAddress.Variables>(
+                UPDATE_EMAIL_ADDRESS,
+                { token: emailUpdateToken },
+            );
             expect(result.updateCustomerEmailAddress).toBe(true);
 
             expect(sendEmailFn).toHaveBeenCalled();
@@ -506,7 +519,7 @@ describe('Expiring tokens', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     verificationTokenDuration: '1ms',
                 },
@@ -596,7 +609,7 @@ describe('Registration without email verification', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     requireVerification: false,
                 },
@@ -672,7 +685,7 @@ describe('Updating email address without email verification', () => {
                 customerCount: 1,
             },
             {
-                plugins: [new TestEmailPlugin()],
+                plugins: [TestEmailPlugin],
                 authOptions: {
                     requireVerification: false,
                 },
@@ -720,19 +733,22 @@ describe('Updating email address without email verification', () => {
  * This mock plugin simulates an EmailPlugin which would send emails
  * on the registration & password reset events.
  */
-class TestEmailPlugin implements VendurePlugin {
-    onBootstrap(inject: InjectorFn) {
-        const eventBus = inject(EventBus);
-        eventBus.subscribe(AccountRegistrationEvent, event => {
+@VendurePlugin({
+    imports: [EventBusModule],
+})
+class TestEmailPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+    onModuleInit() {
+        this.eventBus.subscribe(AccountRegistrationEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(PasswordResetEvent, event => {
+        this.eventBus.subscribe(PasswordResetEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(IdentifierChangeRequestEvent, event => {
+        this.eventBus.subscribe(IdentifierChangeRequestEvent, event => {
             sendEmailFn(event);
         });
-        eventBus.subscribe(IdentifierChangeEvent, event => {
+        this.eventBus.subscribe(IdentifierChangeEvent, event => {
             sendEmailFn(event);
         });
     }

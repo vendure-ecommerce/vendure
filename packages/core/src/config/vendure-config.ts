@@ -1,3 +1,4 @@
+import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
@@ -23,7 +24,6 @@ import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
-import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 /**
  * @description
@@ -489,7 +489,7 @@ export interface VendureConfig {
      *
      * @default []
      */
-    plugins?: VendurePlugin[];
+    plugins?: Array<DynamicModule | Type<any>>;
     /**
      * @description
      * Which port the Vendure server should listen on.

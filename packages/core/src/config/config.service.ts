@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { RequestHandler } from 'express';
@@ -22,7 +22,6 @@ import {
     VendureConfig,
     WorkerOptions,
 } from './vendure-config';
-import { VendurePlugin } from './vendure-plugin/vendure-plugin';
 
 @Injectable()
 export class ConfigService implements VendureConfig {
@@ -32,9 +31,7 @@ export class ConfigService implements VendureConfig {
         this.activeConfig = getConfig();
         if (this.activeConfig.authOptions.disableAuth) {
             // tslint:disable-next-line
-            Logger.warn(
-                'Auth has been disabled. This should never be the case for a production system!',
-            );
+            Logger.warn('Auth has been disabled. This should never be the case for a production system!');
         }
     }
 
@@ -114,7 +111,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.middleware;
     }
 
-    get plugins(): VendurePlugin[] {
+    get plugins(): Array<DynamicModule | Type<any>> {
         return this.activeConfig.plugins;
     }
 
