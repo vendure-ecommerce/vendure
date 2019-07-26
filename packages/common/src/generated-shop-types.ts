@@ -1845,13 +1845,11 @@ export type Query = {
 };
 
 export type QueryCollectionsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     options?: Maybe<CollectionListOptions>;
 };
 
 export type QueryCollectionArgs = {
     id: Scalars['ID'];
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryOrderArgs = {
@@ -1865,11 +1863,9 @@ export type QueryOrderByCodeArgs = {
 export type QueryProductArgs = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
-    languageCode?: Maybe<LanguageCode>;
 };
 
 export type QueryProductsArgs = {
-    languageCode?: Maybe<LanguageCode>;
     options?: Maybe<ProductListOptions>;
 };
 
@@ -1957,8 +1953,6 @@ export type SearchInput = {
 export type SearchReindexResponse = {
     __typename?: 'SearchReindexResponse';
     success: Scalars['Boolean'];
-    timeTaken: Scalars['Int'];
-    indexedItemCount: Scalars['Int'];
 };
 
 export type SearchResponse = {

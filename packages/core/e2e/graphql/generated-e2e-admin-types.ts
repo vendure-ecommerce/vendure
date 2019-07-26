@@ -2825,8 +2825,6 @@ export type SearchInput = {
 export type SearchReindexResponse = {
     __typename?: 'SearchReindexResponse';
     success: Scalars['Boolean'];
-    timeTaken: Scalars['Int'];
-    indexedItemCount: Scalars['Int'];
 };
 
 export type SearchResponse = {

@@ -3,16 +3,16 @@ type Query {
     activeCustomer: Customer
     activeOrder: Order
     availableCountries: [Country!]!
-    collections(languageCode: LanguageCode, options: CollectionListOptions): CollectionList!
-    collection(id: ID!, languageCode: LanguageCode): Collection
+    collections(options: CollectionListOptions): CollectionList!
+    collection(id: ID!): Collection
     eligibleShippingMethods: [ShippingMethodQuote!]!
     me: CurrentUser
     nextOrderStates: [String!]!
     order(id: ID!): Order
     orderByCode(code: String!): Order
     "Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
-    product(id: ID, slug: String, languageCode: LanguageCode): Product
-    products(languageCode: LanguageCode, options: ProductListOptions): ProductList!
+    product(id: ID, slug: String): Product
+    products(options: ProductListOptions): ProductList!
     search(input: SearchInput!): SearchResponse!
 }
 
