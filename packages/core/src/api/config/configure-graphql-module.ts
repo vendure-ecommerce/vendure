@@ -16,7 +16,7 @@ import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
 import { IdCodecService } from '../common/id-codec.service';
-import { IdEncoderExtension } from '../middleware/id-encoder-extension';
+import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
 
 import { generateListOptions } from './generate-list-options';
@@ -139,13 +139,11 @@ async function createGraphQLOptions(
         },
         debug: true,
         context: (req: any) => req,
-        extensions: [
-            () => new TranslateErrorExtension(i18nService),
-            () => new IdEncoderExtension(idCodecService),
-        ],
+        extensions: [() => new TranslateErrorExtension(i18nService)],
         // This is handled by the Express cors plugin
         cors: false,
-    };
+        plugins: [new IdCodecPlugin(idCodecService)],
+    } as GqlModuleOptions;
 
     /**
      * Generates the server's GraphQL schema by combining:

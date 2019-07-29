@@ -30,10 +30,10 @@ type SearchResult {
     priceWithTax: SearchResultPrice!
     currencyCode: CurrencyCode!
     description: String!
-    facetIds: [String!]!
-    facetValueIds: [String!]!
+    facetIds: [ID!]!
+    facetValueIds: [ID!]!
     "An array of ids of the Collections in which this result appears"
-    collectionIds: [String!]!
+    collectionIds: [ID!]!
     "A relevence score for the result. Differs between database implementations"
     score: Float!
 }

@@ -2938,8 +2938,8 @@ export type Sale = Node & StockMovement & {
 
 export type SearchInput = {
   term?: Maybe<Scalars['String']>,
-  facetValueIds?: Maybe<Array<Scalars['String']>>,
-  collectionId?: Maybe<Scalars['String']>,
+  facetValueIds?: Maybe<Array<Scalars['ID']>>,
+  collectionId?: Maybe<Scalars['ID']>,
   groupByProduct?: Maybe<Scalars['Boolean']>,
   take?: Maybe<Scalars['Int']>,
   skip?: Maybe<Scalars['Int']>,
@@ -2949,8 +2949,6 @@ export type SearchInput = {
 export type SearchReindexResponse = {
   __typename?: 'SearchReindexResponse',
   success: Scalars['Boolean'],
-  timeTaken: Scalars['Int'],
-  indexedItemCount: Scalars['Int'],
 };
 
 export type SearchResponse = {

@@ -2814,8 +2814,8 @@ export type Sale = Node &
 
 export type SearchInput = {
     term?: Maybe<Scalars['String']>;
-    facetValueIds?: Maybe<Array<Scalars['String']>>;
-    collectionId?: Maybe<Scalars['String']>;
+    facetValueIds?: Maybe<Array<Scalars['ID']>>;
+    collectionId?: Maybe<Scalars['ID']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
@@ -3570,20 +3570,76 @@ export type SearchGetPricesQuery = { __typename?: 'Query' } & {
     };
 };
 
-export type EntityIdTestQueryVariables = {};
+export type IdTest1QueryVariables = {};
 
-export type EntityIdTestQuery = { __typename?: 'Query' } & {
-    product: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                variants: Array<
-                    { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'> & {
-                            options: Array<
-                                { __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name'>
-                            >;
-                        }
-                >;
-            }
-    >;
+export type IdTest1Query = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+    };
+};
+
+export type IdTest2QueryVariables = {};
+
+export type IdTest2Query = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<
+            { __typename?: 'Product' } & Pick<Product, 'id'> & {
+                    variants: Array<
+                        { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'> & {
+                                options: Array<
+                                    { __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name'>
+                                >;
+                            }
+                    >;
+                }
+        >;
+    };
+};
+
+export type IdTest3QueryVariables = {};
+
+export type IdTest3Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+};
+
+export type IdTest4MutationVariables = {};
+
+export type IdTest4Mutation = { __typename?: 'Mutation' } & {
+    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
+            featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+        };
+};
+
+export type IdTest5MutationVariables = {};
+
+export type IdTest5Mutation = { __typename?: 'Mutation' } & {
+    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id' | 'name'>;
+};
+
+export type IdTest6QueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type IdTest6Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+};
+
+export type IdTest7MutationVariables = {
+    input: UpdateProductInput;
+};
+
+export type IdTest7Mutation = { __typename?: 'Mutation' } & {
+    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
+            featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+        };
+};
+
+export type IdTest8MutationVariables = {
+    input: UpdateProductInput;
+};
+
+export type IdTest8Mutation = { __typename?: 'Mutation' } & {
+    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id' | 'name'>;
 };
 
 export type GetFacetWithValuesQueryVariables = {
@@ -4938,14 +4994,60 @@ export namespace SearchGetPrices {
     >;
 }
 
-export namespace EntityIdTest {
-    export type Variables = EntityIdTestQueryVariables;
-    export type Query = EntityIdTestQuery;
-    export type Product = NonNullable<EntityIdTestQuery['product']>;
-    export type Variants = NonNullable<(NonNullable<EntityIdTestQuery['product']>)['variants'][0]>;
+export namespace IdTest1 {
+    export type Variables = IdTest1QueryVariables;
+    export type Query = IdTest1Query;
+    export type Products = IdTest1Query['products'];
+    export type Items = NonNullable<IdTest1Query['products']['items'][0]>;
+}
+
+export namespace IdTest2 {
+    export type Variables = IdTest2QueryVariables;
+    export type Query = IdTest2Query;
+    export type Products = IdTest2Query['products'];
+    export type Items = NonNullable<IdTest2Query['products']['items'][0]>;
+    export type Variants = NonNullable<(NonNullable<IdTest2Query['products']['items'][0]>)['variants'][0]>;
     export type Options = NonNullable<
-        (NonNullable<(NonNullable<EntityIdTestQuery['product']>)['variants'][0]>)['options'][0]
+        (NonNullable<(NonNullable<IdTest2Query['products']['items'][0]>)['variants'][0]>)['options'][0]
     >;
+}
+
+export namespace IdTest3 {
+    export type Variables = IdTest3QueryVariables;
+    export type Query = IdTest3Query;
+    export type Product = NonNullable<IdTest3Query['product']>;
+}
+
+export namespace IdTest4 {
+    export type Variables = IdTest4MutationVariables;
+    export type Mutation = IdTest4Mutation;
+    export type UpdateProduct = IdTest4Mutation['updateProduct'];
+    export type FeaturedAsset = NonNullable<IdTest4Mutation['updateProduct']['featuredAsset']>;
+}
+
+export namespace IdTest5 {
+    export type Variables = IdTest5MutationVariables;
+    export type Mutation = IdTest5Mutation;
+    export type UpdateProduct = IdTest5Mutation['updateProduct'];
+}
+
+export namespace IdTest6 {
+    export type Variables = IdTest6QueryVariables;
+    export type Query = IdTest6Query;
+    export type Product = NonNullable<IdTest6Query['product']>;
+}
+
+export namespace IdTest7 {
+    export type Variables = IdTest7MutationVariables;
+    export type Mutation = IdTest7Mutation;
+    export type UpdateProduct = IdTest7Mutation['updateProduct'];
+    export type FeaturedAsset = NonNullable<IdTest7Mutation['updateProduct']['featuredAsset']>;
+}
+
+export namespace IdTest8 {
+    export type Variables = IdTest8MutationVariables;
+    export type Mutation = IdTest8Mutation;
+    export type UpdateProduct = IdTest8Mutation['updateProduct'];
 }
 
 export namespace GetFacetWithValues {
