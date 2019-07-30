@@ -17,7 +17,7 @@ import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
 import { IdCodecService } from '../common/id-codec.service';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
-import { TranslateErrorExtension } from '../middleware/translate-errors-extension';
+import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
 import { generateListOptions } from './generate-list-options';
 import {
@@ -139,10 +139,9 @@ async function createGraphQLOptions(
         },
         debug: true,
         context: (req: any) => req,
-        extensions: [() => new TranslateErrorExtension(i18nService)],
         // This is handled by the Express cors plugin
         cors: false,
-        plugins: [new IdCodecPlugin(idCodecService)],
+        plugins: [new IdCodecPlugin(idCodecService), new TranslateErrorsPlugin(i18nService)],
     } as GqlModuleOptions;
 
     /**
