@@ -24,7 +24,6 @@ import { ProductVariantService } from '../../../service/services/product-variant
 import { ProductService } from '../../../service/services/product.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -65,7 +64,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async createProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductArgs,
@@ -76,7 +74,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('assetIds', 'featuredAssetId', 'facetValueIds')
     async updateProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductArgs,
@@ -96,7 +93,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('productId', 'optionGroupId')
     async addOptionGroupToProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddOptionGroupToProductArgs,
@@ -107,7 +103,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('productId', 'optionGroupId')
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOptionGroupFromProductArgs,
@@ -118,7 +113,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('taxCategoryId', 'facetValueIds', 'featuredAssetId', 'assetIds', 'optionIds')
     async createProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductVariantsArgs,
@@ -129,7 +123,6 @@ export class ProductResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('taxCategoryId', 'facetValueIds', 'featuredAssetId', 'assetIds')
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductVariantsArgs,

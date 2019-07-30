@@ -28,7 +28,6 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -150,7 +149,6 @@ export class ShopOrderResolver {
 
     @Mutation()
     @Allow(Permission.Owner)
-    @Decode('shippingMethodId')
     async setOrderShippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetOrderShippingMethodArgs,
@@ -187,29 +185,38 @@ export class ShopOrderResolver {
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    @Decode('productVariantId')
     async addItemToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemToOrderArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
-        return this.orderService.addItemToOrder(ctx, order.id, args.productVariantId, args.quantity, (args as any).customFields);
+        return this.orderService.addItemToOrder(
+            ctx,
+            order.id,
+            args.productVariantId,
+            args.quantity,
+            (args as any).customFields,
+        );
     }
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    @Decode('orderLineId')
     async adjustOrderLine(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAdjustOrderLineArgs,
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
-        return this.orderService.adjustOrderLine(ctx, order.id, args.orderLineId, args.quantity, (args as any).customFields);
+        return this.orderService.adjustOrderLine(
+            ctx,
+            order.id,
+            args.orderLineId,
+            args.quantity,
+            (args as any).customFields,
+        );
     }
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
-    @Decode('orderLineId')
     async removeOrderLine(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOrderLineArgs,
@@ -227,7 +234,10 @@ export class ShopOrderResolver {
                 const order = await this.orderService.addPaymentToOrder(ctx, sessionOrder.id, args.input);
                 if (order.active === false) {
                     if (order.customer) {
-                        const addresses = await this.customerService.findAddressesByCustomerId(ctx, order.customer.id);
+                        const addresses = await this.customerService.findAddressesByCustomerId(
+                            ctx,
+                            order.customer.id,
+                        );
                         // If the Customer has no addresses yet, use the shipping address data
                         // to populate the initial default Address.
                         if (addresses.length === 0) {

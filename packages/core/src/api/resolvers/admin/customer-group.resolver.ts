@@ -2,17 +2,16 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationAddCustomersToGroupArgs,
     MutationCreateCustomerGroupArgs,
-    QueryCustomerGroupArgs,
-    Permission,
     MutationRemoveCustomersFromGroupArgs,
     MutationUpdateCustomerGroupArgs,
+    Permission,
+    QueryCustomerGroupArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { CustomerGroup } from '../../../entity/customer-group/customer-group.entity';
 import { CustomerGroupService } from '../../../service/services/customer-group.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('CustomerGroup')
@@ -36,7 +35,6 @@ export class CustomerGroupResolver {
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
-    @Decode('customerIds')
     async createCustomerGroup(@Args() args: MutationCreateCustomerGroupArgs): Promise<CustomerGroup> {
         return this.customerGroupService.create(args.input);
     }
@@ -49,14 +47,12 @@ export class CustomerGroupResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    @Decode('customerGroupId', 'customerIds')
     async addCustomersToGroup(@Args() args: MutationAddCustomersToGroupArgs): Promise<CustomerGroup> {
         return this.customerGroupService.addCustomersToGroup(args);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    @Decode('customerGroupId', 'customerIds')
     async removeCustomersFromGroup(
         @Args() args: MutationRemoveCustomersFromGroupArgs,
     ): Promise<CustomerGroup> {

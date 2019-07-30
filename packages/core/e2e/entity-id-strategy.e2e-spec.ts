@@ -204,6 +204,7 @@ describe('EntityIdStrategy', () => {
                 }
             }
         `);
+
         expect(products).toEqual({
             items: [
                 {

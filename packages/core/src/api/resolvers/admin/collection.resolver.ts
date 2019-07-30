@@ -19,7 +19,6 @@ import { FacetValueService } from '../../../service/services/facet-value.service
 import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -62,7 +61,6 @@ export class CollectionResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('assetIds', 'featuredAssetId', 'parentId')
     async createCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCollectionArgs,
@@ -74,7 +72,6 @@ export class CollectionResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('assetIds', 'featuredAssetId')
     async updateCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCollectionArgs,
@@ -86,7 +83,6 @@ export class CollectionResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('collectionId', 'parentId')
     async moveCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationMoveCollectionArgs,
@@ -112,5 +108,5 @@ export class CollectionResolver {
             this.idCodecService.encodeConfigurableOperation(collection.filters);
         }
         return collection;
-    }
+    };
 }

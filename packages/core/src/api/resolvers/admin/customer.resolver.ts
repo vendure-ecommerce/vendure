@@ -19,7 +19,6 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -54,7 +53,6 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
-    @Decode('customerId')
     async createCustomerAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCustomerAddressArgs,

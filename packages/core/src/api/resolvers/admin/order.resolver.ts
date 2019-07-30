@@ -17,7 +17,6 @@ import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -43,21 +42,18 @@ export class OrderResolver {
     }
 
     @Mutation()
-    @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
     async fulfillOrder(@Ctx() ctx: RequestContext, @Args() args: MutationFulfillOrderArgs) {
         return this.orderService.createFulfillment(ctx, args.input);
     }
 
     @Mutation()
-    @Decode('orderLineId')
     @Allow(Permission.UpdateOrder)
     async cancelOrder(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderArgs) {
         return this.orderService.cancelOrder(ctx, args.input);
     }
 
     @Mutation()
-    @Decode('orderLineId', 'paymentId')
     @Allow(Permission.UpdateOrder)
     async refundOrder(@Ctx() ctx: RequestContext, @Args() args: MutationRefundOrderArgs) {
         return this.orderService.refundOrder(ctx, args.input);

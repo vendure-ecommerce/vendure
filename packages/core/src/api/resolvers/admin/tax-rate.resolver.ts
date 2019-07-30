@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationCreateTaxRateArgs,
+    MutationUpdateTaxRateArgs,
     Permission,
     QueryTaxRateArgs,
     QueryTaxRatesArgs,
-    MutationUpdateTaxRateArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -12,7 +12,6 @@ import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('TaxRate')
@@ -33,7 +32,6 @@ export class TaxRateResolver {
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    @Decode('categoryId', 'zoneId', 'customerGroupId')
     async createTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateTaxRateArgs,
@@ -43,7 +41,6 @@ export class TaxRateResolver {
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    @Decode('categoryId', 'zoneId', 'customerGroupId')
     async updateTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateTaxRateArgs,

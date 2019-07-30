@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationAddMembersToZoneArgs,
     MutationCreateZoneArgs,
     MutationDeleteZoneArgs,
-    DeletionResponse,
-    Permission,
     MutationRemoveMembersFromZoneArgs,
     MutationUpdateZoneArgs,
+    Permission,
     QueryZoneArgs,
 } from '@vendure/common/lib/generated-types';
 
@@ -14,7 +14,6 @@ import { Zone } from '../../../entity/zone/zone.entity';
 import { ZoneService } from '../../../service/services/zone.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Zone')
@@ -35,7 +34,6 @@ export class ZoneResolver {
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    @Decode('memberIds')
     async createZone(@Ctx() ctx: RequestContext, @Args() args: MutationCreateZoneArgs): Promise<Zone> {
         return this.zoneService.create(ctx, args.input);
     }
@@ -57,7 +55,6 @@ export class ZoneResolver {
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    @Decode('zoneId', 'memberIds')
     async addMembersToZone(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddMembersToZoneArgs,
@@ -67,7 +64,6 @@ export class ZoneResolver {
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    @Decode('zoneId', 'memberIds')
     async removeMembersFromZone(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveMembersFromZoneArgs,

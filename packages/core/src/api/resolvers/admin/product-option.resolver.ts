@@ -16,7 +16,6 @@ import { ProductOptionGroupService } from '../../../service/services/product-opt
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
-import { Decode } from '../../decorators/decode.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
@@ -74,7 +73,6 @@ export class ProductOptionResolver {
 
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    @Decode('productOptionGroupId')
     async createProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductOptionArgs,
@@ -85,7 +83,6 @@ export class ProductOptionResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    @Decode('productOptionGroupId')
     async updateProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductOptionArgs,

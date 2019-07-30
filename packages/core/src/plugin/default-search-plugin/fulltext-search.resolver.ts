@@ -1,8 +1,13 @@
 import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { JobInfo, Permission, QuerySearchArgs, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
+import {
+    JobInfo,
+    Permission,
+    QuerySearchArgs,
+    SearchInput,
+    SearchResponse,
+} from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
-import { Decode } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { Allow } from '../../api/decorators/allow.decorator';
 import { Ctx } from '../../api/decorators/request-context.decorator';
@@ -17,7 +22,6 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
 
     @Query()
     @Allow(Permission.Public)
-    @Decode('facetValueIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
@@ -44,7 +48,6 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    @Decode('facetValueIds', 'collectionId')
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
