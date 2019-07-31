@@ -2261,6 +2261,7 @@ export type Payment = Node & {
   amount: Scalars['Int'],
   state: Scalars['String'],
   transactionId?: Maybe<Scalars['String']>,
+  errorMessage?: Maybe<Scalars['String']>,
   refunds: Array<Refund>,
   metadata?: Maybe<Scalars['JSON']>,
 };
@@ -2948,10 +2949,10 @@ export type SearchResult = {
   priceWithTax: SearchResultPrice,
   currencyCode: CurrencyCode,
   description: Scalars['String'],
-  facetIds: Array<Scalars['String']>,
-  facetValueIds: Array<Scalars['String']>,
+  facetIds: Array<Scalars['ID']>,
+  facetValueIds: Array<Scalars['ID']>,
   /** An array of ids of the Collections in which this result appears */
-  collectionIds: Array<Scalars['String']>,
+  collectionIds: Array<Scalars['ID']>,
   /** A relevence score for the result. Differs between database implementations */
   score: Scalars['Float'],
 };

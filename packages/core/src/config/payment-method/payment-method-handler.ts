@@ -26,8 +26,6 @@ export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig
  * This function is called before the state of a Payment is transitioned. Its
  * return value used to determine whether the transition can occur.
  *
- * TODO: This is currently not called by Vendure. Needs to be implemented.
- *
  * @docsCategory payment
  */
 export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
@@ -45,8 +43,23 @@ export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
  */
 export interface CreatePaymentResult {
     amount: number;
-    state: Exclude<PaymentState, 'Refunded'>;
+    state: Exclude<PaymentState, 'Refunded' | 'Error'>;
     transactionId?: string;
+    errorMessage?: string;
+    metadata?: PaymentMetadata;
+}
+
+/**
+ * @description
+ * This object is the return value of the {@link CreatePaymentFn} when there has been an error.
+ *
+ * @docsCategory payment
+ */
+export interface CreatePaymentErrorResult {
+    amount: number;
+    state: 'Error';
+    transactionId?: string;
+    errorMessage: string;
     metadata?: PaymentMetadata;
 }
 
@@ -78,7 +91,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
-) => CreatePaymentResult | Promise<CreatePaymentResult>;
+) => CreatePaymentResult | CreatePaymentErrorResult | Promise<CreatePaymentResult | CreatePaymentErrorResult>;
 
 /**
  * @description
@@ -265,12 +278,16 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
      *
      * @internal
      */
-    async createRefund(input: RefundOrderInput,
-                       total: number,
-                       order: Order,
-                       payment: Payment,
-                       args: ConfigArg[]) {
-        return this.createRefundFn ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args)) : false;
+    async createRefund(
+        input: RefundOrderInput,
+        total: number,
+        order: Order,
+        payment: Payment,
+        args: ConfigArg[],
+    ) {
+        return this.createRefundFn
+            ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args))
+            : false;
     }
 
     /**

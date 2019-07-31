@@ -1577,6 +1577,7 @@ export type Payment = Node & {
     amount: Scalars['Int'];
     state: Scalars['String'];
     transactionId?: Maybe<Scalars['String']>;
+    errorMessage?: Maybe<Scalars['String']>;
     refunds: Array<Refund>;
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -1976,10 +1977,10 @@ export type SearchResult = {
     priceWithTax: SearchResultPrice;
     currencyCode: CurrencyCode;
     description: Scalars['String'];
-    facetIds: Array<Scalars['String']>;
-    facetValueIds: Array<Scalars['String']>;
+    facetIds: Array<Scalars['ID']>;
+    facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
-    collectionIds: Array<Scalars['String']>;
+    collectionIds: Array<Scalars['ID']>;
     /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
@@ -2455,6 +2456,29 @@ export type AddPaymentToOrderMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
+export type GetActiveOrderPaymentsQueryVariables = {};
+
+export type GetActiveOrderPaymentsQuery = { __typename?: 'Query' } & {
+    activeOrder: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+                payments: Maybe<
+                    Array<
+                        { __typename?: 'Payment' } & Pick<
+                            Payment,
+                            | 'id'
+                            | 'transactionId'
+                            | 'method'
+                            | 'amount'
+                            | 'state'
+                            | 'errorMessage'
+                            | 'metadata'
+                        >
+                    >
+                >;
+            }
+    >;
+};
+
 export type GetNextOrderStatesQueryVariables = {};
 
 export type GetNextOrderStatesQuery = { __typename?: 'Query' } & Pick<Query, 'nextOrderStates'>;
@@ -2647,6 +2671,15 @@ export namespace AddPaymentToOrder {
     export type AddPaymentToOrder = TestOrderFragmentFragment;
     export type Payments = NonNullable<
         (NonNullable<(NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>)['payments']>)[0]
+    >;
+}
+
+export namespace GetActiveOrderPayments {
+    export type Variables = GetActiveOrderPaymentsQueryVariables;
+    export type Query = GetActiveOrderPaymentsQuery;
+    export type ActiveOrder = NonNullable<GetActiveOrderPaymentsQuery['activeOrder']>;
+    export type Payments = NonNullable<
+        (NonNullable<(NonNullable<GetActiveOrderPaymentsQuery['activeOrder']>)['payments']>)[0]
     >;
 }
 

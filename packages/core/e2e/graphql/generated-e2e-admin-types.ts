@@ -2196,6 +2196,7 @@ export type Payment = Node & {
     amount: Scalars['Int'];
     state: Scalars['String'];
     transactionId?: Maybe<Scalars['String']>;
+    errorMessage?: Maybe<Scalars['String']>;
     refunds: Array<Refund>;
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -2849,10 +2850,10 @@ export type SearchResult = {
     priceWithTax: SearchResultPrice;
     currencyCode: CurrencyCode;
     description: Scalars['String'];
-    facetIds: Array<Scalars['String']>;
-    facetValueIds: Array<Scalars['String']>;
+    facetIds: Array<Scalars['ID']>;
+    facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
-    collectionIds: Array<Scalars['String']>;
+    collectionIds: Array<Scalars['ID']>;
     /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
@@ -3641,6 +3642,18 @@ export type IdTest8MutationVariables = {
 export type IdTest8Mutation = { __typename?: 'Mutation' } & {
     updateProduct: { __typename?: 'Product' } & Pick<Product, 'id' | 'name'>;
 };
+
+export type IdTest9QueryVariables = {};
+
+export type IdTest9Query = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<{ __typename?: 'Product' } & ProdFragmentFragment>;
+    };
+};
+
+export type ProdFragmentFragment = { __typename?: 'Product' } & Pick<Product, 'id'> & {
+        featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+    };
 
 export type GetFacetWithValuesQueryVariables = {
     id: Scalars['ID'];
@@ -5048,6 +5061,18 @@ export namespace IdTest8 {
     export type Variables = IdTest8MutationVariables;
     export type Mutation = IdTest8Mutation;
     export type UpdateProduct = IdTest8Mutation['updateProduct'];
+}
+
+export namespace IdTest9 {
+    export type Variables = IdTest9QueryVariables;
+    export type Query = IdTest9Query;
+    export type Products = IdTest9Query['products'];
+    export type Items = ProdFragmentFragment;
+}
+
+export namespace ProdFragment {
+    export type Fragment = ProdFragmentFragment;
+    export type FeaturedAsset = NonNullable<ProdFragmentFragment['featuredAsset']>;
 }
 
 export namespace GetFacetWithValues {

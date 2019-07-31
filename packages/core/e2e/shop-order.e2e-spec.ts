@@ -4,12 +4,19 @@ import path from 'path';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CreateAddressInput, GetCountryList, GetCustomer, GetCustomerList, UpdateCountry } from './graphql/generated-e2e-admin-types';
+import {
+    CreateAddressInput,
+    GetCountryList,
+    GetCustomer,
+    GetCustomerList,
+    UpdateCountry,
+} from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     AddPaymentToOrder,
     AdjustItemQuantity,
     GetActiveOrder,
+    GetActiveOrderPayments,
     GetAvailableCountries,
     GetCustomerAddresses,
     GetNextOrderStates,
@@ -21,13 +28,19 @@ import {
     SetShippingMethod,
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
-import { GET_COUNTRY_LIST, GET_CUSTOMER, GET_CUSTOMER_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
+import {
+    GET_COUNTRY_LIST,
+    GET_CUSTOMER,
+    GET_CUSTOMER_LIST,
+    UPDATE_COUNTRY,
+} from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
     GET_ACTIVE_ORDER_ADDRESSES,
+    GET_ACTIVE_ORDER_PAYMENTS,
     GET_AVAILABLE_COUNTRIES,
     GET_ELIGIBLE_SHIPPING_METHODS,
     GET_NEXT_STATES,
@@ -55,7 +68,11 @@ describe('Shop orders', () => {
             },
             {
                 paymentOptions: {
-                    paymentMethodHandlers: [testPaymentMethod, testFailingPaymentMethod],
+                    paymentMethodHandlers: [
+                        testPaymentMethod,
+                        testFailingPaymentMethod,
+                        testErrorPaymentMethod,
+                    ],
                 },
                 orderOptions: {
                     orderItemsLimit: 99,
@@ -376,15 +393,15 @@ describe('Shop orders', () => {
         });
 
         it('adds a successful payment and transitions Order state', async () => {
-            const { addPaymentToOrder } = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(
-                ADD_PAYMENT,
-                {
-                    input: {
-                        method: testPaymentMethod.code,
-                        metadata: {},
-                    },
+            const { addPaymentToOrder } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: testPaymentMethod.code,
+                    metadata: {},
                 },
-            );
+            });
 
             const payment = addPaymentToOrder!.payments![0];
             expect(addPaymentToOrder!.state).toBe('PaymentSettled');
@@ -629,9 +646,7 @@ describe('Shop orders', () => {
 
                 expect(adjustOrderLine!.shipping).toBe(shippingMethods[1].price);
                 expect(adjustOrderLine!.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(adjustOrderLine!.shippingMethod!.description).toBe(
-                    shippingMethods[1].description,
-                );
+                expect(adjustOrderLine!.shippingMethod!.description).toBe(shippingMethods[1].description);
             });
         });
 
@@ -747,6 +762,33 @@ describe('Shop orders', () => {
                 });
             });
 
+            it('adds an error payment and returns error response', async () => {
+                try {
+                    await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(
+                        ADD_PAYMENT,
+                        {
+                            input: {
+                                method: testErrorPaymentMethod.code,
+                                metadata: {
+                                    foo: 'bar',
+                                },
+                            },
+                        },
+                    );
+                    fail('should have thrown');
+                } catch (err) {
+                    expect(err.message).toEqual('Something went horribly wrong');
+                }
+                const result = await shopClient.query<GetActiveOrderPayments.Query>(
+                    GET_ACTIVE_ORDER_PAYMENTS,
+                );
+                const payment = result.activeOrder!.payments![1];
+                expect(result.activeOrder!.payments!.length).toBe(2);
+                expect(payment.method).toBe(testErrorPaymentMethod.code);
+                expect(payment.state).toBe('Error');
+                expect(payment.errorMessage).toBe('Something went horribly wrong');
+            });
+
             it('adds a successful payment and transitions Order state', async () => {
                 const { addPaymentToOrder } = await shopClient.query<
                     AddPaymentToOrder.Mutation,
@@ -760,10 +802,10 @@ describe('Shop orders', () => {
                     },
                 });
 
-                const payment = addPaymentToOrder!.payments![0];
+                const payment = addPaymentToOrder!.payments![2];
                 expect(addPaymentToOrder!.state).toBe('PaymentSettled');
                 expect(addPaymentToOrder!.active).toBe(false);
-                expect(addPaymentToOrder!.payments!.length).toBe(1);
+                expect(addPaymentToOrder!.payments!.length).toBe(3);
                 expect(payment.method).toBe(testPaymentMethod.code);
                 expect(payment.state).toBe('Settled');
                 expect(payment.transactionId).toBe('12345');
@@ -773,7 +815,10 @@ describe('Shop orders', () => {
             });
 
             it('does not create new address when Customer already has address', async () => {
-                const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, { id: customers[0].id });
+                const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
+                    GET_CUSTOMER,
+                    { id: customers[0].id },
+                );
                 expect(customer!.addresses!.length).toBe(1);
             });
         });
@@ -846,6 +891,23 @@ const testFailingPaymentMethod = new PaymentMethodHandler({
         return {
             amount: order.total,
             state: 'Declined',
+            metadata,
+        };
+    },
+    settlePayment: order => ({
+        success: true,
+    }),
+});
+
+const testErrorPaymentMethod = new PaymentMethodHandler({
+    code: 'test-error-payment-method',
+    description: 'Test Error Payment Method',
+    args: {},
+    createPayment: (order, args, metadata) => {
+        return {
+            amount: order.total,
+            state: 'Error',
+            errorMessage: 'Something went horribly wrong',
             metadata,
         };
     },

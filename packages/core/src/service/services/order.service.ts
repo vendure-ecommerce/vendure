@@ -17,7 +17,13 @@ import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, IllegalOperationError, InternalServerError, OrderItemsLimitError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    IllegalOperationError,
+    InternalServerError,
+    OrderItemsLimitError,
+    UserInputError,
+} from '../../common/error/errors';
 import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -37,6 +43,7 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
+import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
@@ -150,7 +157,9 @@ export class OrderService {
     }
 
     async getRefundOrderItems(refundId: ID): Promise<OrderItem[]> {
-        const refund = await getEntityOrThrow(this.connection, Refund, refundId, { relations: ['orderItems'] });
+        const refund = await getEntityOrThrow(this.connection, Refund, refundId, {
+            relations: ['orderItems'],
+        });
         return refund.orderItems;
     }
 
@@ -203,7 +212,7 @@ export class OrderService {
         orderId: ID,
         productVariantId: ID,
         quantity: number,
-        customFields?: { [key: string]: any; },
+        customFields?: { [key: string]: any },
     ): Promise<Order> {
         this.assertQuantityIsPositive(quantity);
         const order = await this.getOrderOrThrow(ctx, orderId);
@@ -231,7 +240,7 @@ export class OrderService {
         orderId: ID,
         orderLineId: ID,
         quantity?: number | null,
-        customFields?: { [key: string]: any; },
+        customFields?: { [key: string]: any },
     ): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
@@ -251,7 +260,9 @@ export class OrderService {
                             unitPrice: productVariant.price,
                             pendingAdjustments: [],
                             unitPriceIncludesTax: productVariant.priceIncludesTax,
-                            taxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
+                            taxRate: productVariant.priceIncludesTax
+                                ? productVariant.taxRateApplied.value
+                                : 0,
                         }),
                     );
                     orderLine.items.push(orderItem);
@@ -325,15 +336,32 @@ export class OrderService {
         if (order.state !== 'ArrangingPayment') {
             throw new IllegalOperationError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
         }
-        const payment = await this.paymentMethodService.createPayment(ctx, order, input.method, input.metadata);
-        order.payments = [...(order.payments || []), payment];
+        const payment = await this.paymentMethodService.createPayment(
+            ctx,
+            order,
+            input.method,
+            input.metadata,
+        );
+
+        const existingPayments = await this.getOrderPayments(orderId);
+        order.payments = [...existingPayments, payment];
         await this.connection.getRepository(Order).save(order);
 
-        const orderTotalCovered = order.payments.reduce((sum, p) => sum + p.amount, 0) === order.total;
-        if (orderTotalCovered && order.payments.every(p => p.state === 'Settled')) {
+        if (payment.state === 'Error') {
+            throw new InternalServerError(payment.errorMessage);
+        }
+
+        function totalIsCovered(state: PaymentState): boolean {
+            return (
+                order.payments.filter(p => p.state === state).reduce((sum, p) => sum + p.amount, 0) ===
+                order.total
+            );
+        }
+
+        if (totalIsCovered('Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }
-        if (orderTotalCovered && order.payments.every(p => p.state === 'Authorized')) {
+        if (totalIsCovered('Authorized')) {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
@@ -457,7 +485,9 @@ export class OrderService {
         }
         const order = orders[0];
         if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
-            throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', { state: order.state });
+            throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', {
+                state: order.state,
+            });
         }
         await this.stockMovementService.createCancellationsForOrderItems(items);
         await this.historyService.createHistoryEntryForOrder({
@@ -488,8 +518,8 @@ export class OrderService {
     async refundOrder(ctx: RequestContext, input: RefundOrderInput): Promise<Refund> {
         if (
             (!input.lines ||
-            input.lines.length === 0 ||
-            input.lines.reduce((total, line) => total + line.quantity, 0) === 0) &&
+                input.lines.length === 0 ||
+                input.lines.reduce((total, line) => total + line.quantity, 0) === 0) &&
             input.shipping === 0
         ) {
             throw new UserInputError('error.refund-order-lines-nothing-to-refund');
@@ -502,13 +532,21 @@ export class OrderService {
         if (1 < orders.length) {
             throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
         }
-        const payment = await getEntityOrThrow(this.connection, Payment, input.paymentId, { relations: ['order'] });
+        const payment = await getEntityOrThrow(this.connection, Payment, input.paymentId, {
+            relations: ['order'],
+        });
         if (orders && orders.length && !idsAreEqual(payment.order.id, orders[0].id)) {
             throw new IllegalOperationError('error.refund-order-payment-lines-mismatch');
         }
         const order = payment.order;
-        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment' || order.state === 'PaymentAuthorized') {
-            throw new IllegalOperationError('error.refund-order-lines-invalid-order-state', {state: order.state});
+        if (
+            order.state === 'AddingItems' ||
+            order.state === 'ArrangingPayment' ||
+            order.state === 'PaymentAuthorized'
+        ) {
+            throw new IllegalOperationError('error.refund-order-lines-invalid-order-state', {
+                state: order.state,
+            });
         }
         if (items.some(i => !!i.refundId)) {
             throw new IllegalOperationError('error.refund-order-item-already-refunded');
@@ -518,7 +556,9 @@ export class OrderService {
     }
 
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
-        const refund = await getEntityOrThrow(this.connection, Refund, input.id, { relations: ['payment', 'payment.order'] });
+        const refund = await getEntityOrThrow(this.connection, Refund, input.id, {
+            relations: ['payment', 'payment.order'],
+        });
         refund.transactionId = input.transactionId;
         await this.refundStateMachine.transition(ctx, refund.payment.order, refund, 'Settled');
         return this.connection.getRepository(Refund).save(refund);

@@ -28,6 +28,9 @@ export class Payment extends VendureEntity {
     @Column('varchar') state: PaymentState;
 
     @Column({ nullable: true })
+    errorMessage: string;
+
+    @Column({ nullable: true })
     transactionId: string;
 
     @Column('simple-json') metadata: PaymentMetadata;

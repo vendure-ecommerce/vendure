@@ -85,6 +85,7 @@ type Payment implements Node {
     amount: Int!
     state: String!
     transactionId: String
+    errorMessage: String
     refunds: [Refund!]!
     metadata: JSON
 }

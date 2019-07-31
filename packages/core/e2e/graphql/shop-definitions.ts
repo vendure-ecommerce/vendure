@@ -95,7 +95,7 @@ export const RESET_PASSWORD = gql`
     }
 `;
 export const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
-    mutation RequestUpdateEmailAddress($password: String! $newEmailAddress: String!) {
+    mutation RequestUpdateEmailAddress($password: String!, $newEmailAddress: String!) {
         requestUpdateCustomerEmailAddress(password: $password, newEmailAddress: $newEmailAddress)
     }
 `;
@@ -105,7 +105,7 @@ export const UPDATE_EMAIL_ADDRESS = gql`
     }
 `;
 export const GET_ACTIVE_CUSTOMER = gql`
-    query GetActiveCustomer{
+    query GetActiveCustomer {
         activeCustomer {
             id
             emailAddress
@@ -156,7 +156,7 @@ export const UPDATE_PASSWORD = gql`
 `;
 
 export const GET_ACTIVE_ORDER = gql`
-    query GetActiveOrder{
+    query GetActiveOrder {
         activeOrder {
             ...TestOrderFragment
         }
@@ -183,7 +183,7 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
 `;
 
 export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
-    query GetShippingMethods{
+    query GetShippingMethods {
         eligibleShippingMethods {
             id
             price
@@ -229,7 +229,7 @@ export const GET_ORDER_BY_CODE = gql`
 `;
 
 export const GET_AVAILABLE_COUNTRIES = gql`
-    query GetAvailableCountries{
+    query GetAvailableCountries {
         availableCountries {
             id
             code
@@ -281,6 +281,23 @@ export const ADD_PAYMENT = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const GET_ACTIVE_ORDER_PAYMENTS = gql`
+    query GetActiveOrderPayments {
+        activeOrder {
+            id
+            payments {
+                id
+                transactionId
+                method
+                amount
+                state
+                errorMessage
+                metadata
+            }
+        }
+    }
+`;
+
 export const GET_NEXT_STATES = gql`
     query GetNextOrderStates {
         nextOrderStates
@@ -288,7 +305,7 @@ export const GET_NEXT_STATES = gql`
 `;
 
 export const GET_ACTIVE_ORDER_ADDRESSES = gql`
-    query GetCustomerAddresses{
+    query GetCustomerAddresses {
         activeOrder {
             customer {
                 addresses {
