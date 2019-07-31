@@ -185,7 +185,8 @@ export type Cancellation = Node & StockMovement & {
 };
 
 export type CancelOrderInput = {
-  lines: Array<OrderLineInput>,
+  orderId: Scalars['ID'],
+  lines?: Maybe<Array<OrderLineInput>>,
   reason?: Maybe<Scalars['String']>,
 };
 

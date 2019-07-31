@@ -47,7 +47,11 @@ export class StockMovementService {
             });
     }
 
-    async adjustProductVariantStock(productVariantId: ID, oldStockLevel: number, newStockLevel: number): Promise<StockAdjustment | undefined> {
+    async adjustProductVariantStock(
+        productVariantId: ID,
+        oldStockLevel: number,
+        newStockLevel: number,
+    ): Promise<StockAdjustment | undefined> {
         if (oldStockLevel === newStockLevel) {
             return;
         }
@@ -87,8 +91,17 @@ export class StockMovementService {
             relations: ['line', 'line.productVariant'],
         });
         const cancellations: Cancellation[] = [];
+        const variantsMap = new Map<ID, ProductVariant>();
         for (const item of orderItems) {
-            const { productVariant } = item.line;
+            let productVariant: ProductVariant;
+            const productVariantId = item.line.productVariant.id;
+            if (variantsMap.has(productVariantId)) {
+                // tslint:disable-next-line:no-non-null-assertion
+                productVariant = variantsMap.get(productVariantId)!;
+            } else {
+                productVariant = item.line.productVariant;
+                variantsMap.set(productVariantId, productVariant);
+            }
             const cancellation = new Cancellation({
                 productVariant,
                 quantity: 1,

@@ -279,7 +279,7 @@ describe('Shop orders', () => {
         it('nextOrderStates returns next valid states', async () => {
             const result = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
 
-            expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
+            expect(result.nextOrderStates).toEqual(['ArrangingPayment', 'Cancelled']);
         });
 
         it(
@@ -531,7 +531,7 @@ describe('Shop orders', () => {
         it('nextOrderStates returns next valid states', async () => {
             const result = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
 
-            expect(result.nextOrderStates).toEqual(['ArrangingPayment']);
+            expect(result.nextOrderStates).toEqual(['ArrangingPayment', 'Cancelled']);
         });
 
         it('logging out and back in again resumes the last active order', async () => {

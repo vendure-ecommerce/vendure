@@ -468,15 +468,41 @@ export class OrderService {
     }
 
     async cancelOrder(ctx: RequestContext, input: CancelOrderInput): Promise<Order> {
-        if (
-            !input.lines ||
-            input.lines.length === 0 ||
-            input.lines.reduce((total, line) => total + line.quantity, 0) === 0
-        ) {
+        let allOrderItemsCancelled = false;
+        if (input.lines != null) {
+            allOrderItemsCancelled = await this.cancelOrderByOrderLines(ctx, input, input.lines);
+        } else {
+            allOrderItemsCancelled = await this.cancelOrderById(ctx, input);
+        }
+        if (allOrderItemsCancelled) {
+            await this.transitionToState(ctx, input.orderId, 'Cancelled');
+        }
+        return assertFound(this.findOne(ctx, input.orderId));
+    }
+
+    private async cancelOrderById(ctx: RequestContext, input: CancelOrderInput): Promise<boolean> {
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+            return true;
+        } else {
+            const lines: OrderLineInput[] = order.lines.map(l => ({
+                orderLineId: l.id as string,
+                quantity: l.quantity,
+            }));
+            return this.cancelOrderByOrderLines(ctx, input, lines);
+        }
+    }
+
+    private async cancelOrderByOrderLines(
+        ctx: RequestContext,
+        input: CancelOrderInput,
+        lines: OrderLineInput[],
+    ): Promise<boolean> {
+        if (lines.length === 0 || lines.reduce((total, line) => total + line.quantity, 0) === 0) {
             throw new UserInputError('error.cancel-order-lines-nothing-to-cancel');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
-            input.lines,
+            lines,
             i => !i.cancellationId,
             'error.cancel-order-lines-quantity-too-high',
         );
@@ -484,12 +510,22 @@ export class OrderService {
             throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
         }
         const order = orders[0];
+        if (!idsAreEqual(order.id, input.orderId)) {
+            throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
+        }
         if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
             throw new IllegalOperationError('error.cancel-order-lines-invalid-order-state', {
                 state: order.state,
             });
         }
         await this.stockMovementService.createCancellationsForOrderItems(items);
+
+        const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
+            relations: ['lines', 'lines.items'],
+        });
+        if (!orderWithItems) {
+            throw new InternalServerError('error.could-not-find-order');
+        }
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: order.id,
@@ -499,20 +535,10 @@ export class OrderService {
                 reason: input.reason || undefined,
             },
         });
-
-        const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
-            relations: ['lines', 'lines.items'],
-        });
-        if (!orderWithItems) {
-            throw new InternalServerError('error.could-not-find-order');
-        }
         const allOrderItemsCancelled = orderWithItems.lines
             .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
             .every(orderItem => !!orderItem.cancellationId);
-        if (allOrderItemsCancelled) {
-            await this.transitionToState(ctx, order.id, 'Cancelled');
-        }
-        return assertFound(this.findOne(ctx, order.id));
+        return allOrderItemsCancelled;
     }
 
     async refundOrder(ctx: RequestContext, input: RefundOrderInput): Promise<Refund> {

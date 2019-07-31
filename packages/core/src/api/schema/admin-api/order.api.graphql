@@ -22,7 +22,10 @@ input FulfillOrderInput {
 }
 
 input CancelOrderInput {
-    lines: [OrderLineInput!]!
+    "The id of the order to be cancelled"
+    orderId: ID!
+    "Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled"
+    lines: [OrderLineInput!]
     reason: String
 }
 

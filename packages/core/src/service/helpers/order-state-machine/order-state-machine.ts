@@ -18,10 +18,12 @@ export class OrderStateMachine {
     private readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'AddingItems';
 
-    constructor(private configService: ConfigService,
-                private stockMovementService: StockMovementService,
-                private historyService: HistoryService,
-                private eventBus: EventBus) {
+    constructor(
+        private configService: ConfigService,
+        private stockMovementService: StockMovementService,
+        private historyService: HistoryService,
+        private eventBus: EventBus,
+    ) {
         this.config = this.initConfig();
     }
 
@@ -30,7 +32,7 @@ export class OrderStateMachine {
     }
 
     canTransition(currentState: OrderState, newState: OrderState): boolean {
-        return  new FSM(this.config, currentState).canTransitionTo(newState);
+        return new FSM(this.config, currentState).canTransitionTo(newState);
     }
 
     getNextStates(order: Order): OrderState[] {
@@ -66,6 +68,9 @@ export class OrderStateMachine {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
             await this.stockMovementService.createSalesForOrder(data.order);
+        }
+        if (toState === 'Cancelled') {
+            data.order.active = false;
         }
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
         await this.historyService.createHistoryEntryForOrder({

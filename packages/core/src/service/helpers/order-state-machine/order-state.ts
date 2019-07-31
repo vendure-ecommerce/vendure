@@ -20,10 +20,10 @@ export type OrderState =
 
 export const orderStateTransitions: Transitions<OrderState> = {
     AddingItems: {
-        to: ['ArrangingPayment'],
+        to: ['ArrangingPayment', 'Cancelled'],
     },
     ArrangingPayment: {
-        to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems'],
+        to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems', 'Cancelled'],
     },
     PaymentAuthorized: {
         to: ['PaymentSettled', 'Cancelled'],
