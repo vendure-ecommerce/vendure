@@ -39,6 +39,7 @@ import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
+import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
@@ -108,6 +109,7 @@ const DECLARATIONS = [
     FormattedAddressComponent,
     LabeledDataComponent,
     StringToColorPipe,
+    ObjectTreeComponent,
 ];
 
 @NgModule({

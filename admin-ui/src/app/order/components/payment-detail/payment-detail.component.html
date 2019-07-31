@@ -8,10 +8,5 @@
     {{ payment.transactionId }}
 </vdr-labeled-data>
 <vdr-labeled-data [label]="'order.payment-metadata' | translate">
-    <ul class="payment-metadata">
-        <li *ngFor="let entry of paymentMetadata">
-            <span class="metadata-prop">{{ entry[0] }}:</span>
-            {{ entry[1] }}
-        </li>
-    </ul>
+    <vdr-object-tree [value]="payment.metadata"></vdr-object-tree>
 </vdr-labeled-data>

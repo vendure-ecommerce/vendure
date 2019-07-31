@@ -11,8 +11,4 @@ import { CurrencyCode, OrderDetail } from '../../../common/generated-types';
 export class PaymentDetailComponent {
     @Input() payment: OrderDetail.Payments;
     @Input() currencyCode: CurrencyCode;
-
-    get paymentMetadata() {
-        return Object.entries(this.payment.metadata);
-    }
 }
