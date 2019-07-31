@@ -29,12 +29,13 @@
                 </td>
                 <td class="align-middle fulfil">
                     <input
-                        *ngIf="line.quantity > 0"
+                        *ngIf="line.quantity > 0 && !order.active; else nonEditable"
                         [(ngModel)]="lineQuantities[line.id]"
                         type="number"
                         [max]="line.quantity"
                         min="0"
                     />
+                    <ng-template #nonEditable>{{ line.quantity }}</ng-template>
                 </td>
             </tr>
         </table>
@@ -57,9 +58,14 @@
     <button
         type="submit"
         (click)="select()"
-        [disabled]="!reason || selectionCount === 0"
+        [disabled]="!reason || (!order.active && selectionCount === 0)"
         class="btn btn-primary"
     >
-        {{ 'order.cancel-selected-items' | translate }}
+        <ng-container *ngIf="!order.active">
+            {{ 'order.cancel-selected-items' | translate }}
+        </ng-container>
+        <ng-container *ngIf="order.active">
+            {{ 'order.cancel-order' | translate }}
+        </ng-container>
     </button>
 </ng-template>

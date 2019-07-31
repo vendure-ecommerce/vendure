@@ -111,7 +111,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     }
 
     cancelOrRefund(order: OrderDetail.Fragment) {
-        if (order.state === 'PaymentAuthorized') {
+        if (order.state === 'PaymentAuthorized' || order.active === true) {
             this.cancelOrder(order);
         } else {
             this.refundOrder(order);
@@ -201,6 +201,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                             switchMap(result => {
                                 if (input.cancel.length) {
                                     return this.dataService.order.cancelOrder({
+                                        orderId: this.id,
                                         lines: input.cancel,
                                         reason: input.reason,
                                     });

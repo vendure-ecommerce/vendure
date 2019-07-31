@@ -26,14 +26,18 @@
                     type="button"
                     class="btn"
                     vdrDropdownItem
-                    *ngIf="!order.active && order.state !== 'Cancelled'"
+                    *ngIf="order.state !== 'Cancelled'"
                     (click)="cancelOrRefund(order)"
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
-                    <ng-container *ngIf="order.state !== 'PaymentAuthorized'; else cancelOnly">
+                    <ng-container
+                        *ngIf="order.state !== 'PaymentAuthorized' && !order.active; else cancelOnly"
+                    >
                         {{ 'order.refund-and-cancel-order' | translate }}
                     </ng-container>
-                    <ng-template #cancelOnly>{{ 'order.cancel-order' | translate }}</ng-template>
+                    <ng-template #cancelOnly>
+                        {{ 'order.cancel-order' | translate }}
+                    </ng-template>
                 </button>
             </vdr-dropdown-menu>
         </vdr-dropdown>

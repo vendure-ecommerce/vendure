@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
-import { CancelOrderInput, OrderDetailFragment } from '../../../common/generated-types';
+import { CancelOrderInput, OrderDetailFragment, OrderLineInput } from '../../../common/generated-types';
 import { I18nService } from '../../../core/providers/i18n/i18n.service';
 import { Dialog } from '../../../shared/providers/modal/modal.service';
 
@@ -33,19 +33,26 @@ export class CancelOrderDialogComponent implements OnInit, Dialog<CancelOrderInp
     }
 
     select() {
-        const lines = Object.entries(this.lineQuantities)
-            .map(([orderLineId, quantity]) => ({
-                orderLineId,
-                quantity,
-            }))
-            .filter(l => 0 < l.quantity);
         this.resolveWith({
-            lines,
+            orderId: this.order.id,
+            lines: this.getLineInputs(),
             reason: this.reason,
         });
     }
 
     cancel() {
         this.resolveWith();
+    }
+
+    private getLineInputs(): OrderLineInput[] | undefined {
+        if (this.order.active) {
+            return;
+        }
+        return Object.entries(this.lineQuantities)
+            .map(([orderLineId, quantity]) => ({
+                orderLineId,
+                quantity,
+            }))
+            .filter(l => 0 < l.quantity);
     }
 }

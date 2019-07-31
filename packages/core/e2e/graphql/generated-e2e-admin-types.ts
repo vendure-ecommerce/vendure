@@ -186,7 +186,9 @@ export type Cancellation = Node &
     };
 
 export type CancelOrderInput = {
+    /** The id of the order to be cancelled */
     orderId: Scalars['ID'];
+    /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
     lines?: Maybe<Array<OrderLineInput>>;
     reason?: Maybe<Scalars['String']>;
 };
