@@ -14,4 +14,8 @@ export class OrderPaymentCardComponent {
     @Input() currencyCode: CurrencyCode;
     @Output() settlePayment = new EventEmitter<OrderDetail.Payments>();
     @Output() settleRefund = new EventEmitter<OrderDetail.Refunds>();
+
+    refundHasMetadata(refund?: OrderDetail.Refunds): boolean {
+        return !!refund && Object.keys(refund).length < 0;
+    }
 }

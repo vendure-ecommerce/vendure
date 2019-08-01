@@ -28,6 +28,9 @@
             <vdr-labeled-data [label]="'order.refund-reason' | translate" *ngIf="refund.reason">
                 {{ refund.reason }}
             </vdr-labeled-data>
+            <vdr-labeled-data [label]="'order.refund-metadata' | translate" *ngIf="refundHasMetadata(refund)">
+                <vdr-object-tree [value]="refund.metadata"></vdr-object-tree>
+            </vdr-labeled-data>
         </div>
         <div class="card-footer" *ngIf="refund.state === 'Pending'">
             <button class="btn btn-sm btn-primary" (click)="settleRefund.emit(refund)">

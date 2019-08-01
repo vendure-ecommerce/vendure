@@ -438,6 +438,7 @@
     "refund": "Refund",
     "refund-adjustment": "Adjustment",
     "refund-and-cancel-order": "Refund & cancel order",
+    "refund-metadata": "Refund metadata",
     "refund-order": "Refund order",
     "refund-order-success": "Successfully refunded order",
     "refund-reason": "Refund reason",

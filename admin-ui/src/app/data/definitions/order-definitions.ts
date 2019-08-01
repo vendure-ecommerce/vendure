@@ -137,6 +137,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
                 reason
                 transactionId
                 method
+                metadata
                 orderItems {
                     id
                 }
