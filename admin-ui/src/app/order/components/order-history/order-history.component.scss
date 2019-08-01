@@ -110,21 +110,21 @@
 }
 
 .success {
-    .timeline:before {
+    .timeline:after {
         background-color: $color-success-200;
         border: 1px solid $color-success-400;
     }
 }
 
 .error {
-    .timeline:before {
+    .timeline:after {
         background-color: $color-error-200;
         border: 1px solid $color-error-400;
     }
 }
 
 .warning {
-    .timeline:before {
+    .timeline:after {
         background-color: $color-warning-200;
         border: 1px solid $color-warning-400;
     }
