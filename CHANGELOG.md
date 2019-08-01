@@ -1,3 +1,26 @@
+## <small>0.1.2-beta.10 (2019-08-01)</small>
+
+
+#### Features
+
+* **admin-ui** Display nested payment metadata ([f90e773](https://github.com/vendure-ecommerce/vendure/commit/f90e773))
+* **admin-ui** Enable cancellation of active orders ([8224ddd](https://github.com/vendure-ecommerce/vendure/commit/8224ddd))
+* **core** Add error handling to payments ([cba63e1](https://github.com/vendure-ecommerce/vendure/commit/cba63e1))
+* **core** Allow cancellation of order by id ([8d0a0eb](https://github.com/vendure-ecommerce/vendure/commit/8d0a0eb))
+* **core** Export OrderState & PaymentState types ([8ef699d](https://github.com/vendure-ecommerce/vendure/commit/8ef699d))
+
+#### Fixes
+
+* **core** Correct ID types for SearchInput ([de78cc8](https://github.com/vendure-ecommerce/vendure/commit/de78cc8))
+* **core** Fix incorrect import paths ([663fbd8](https://github.com/vendure-ecommerce/vendure/commit/663fbd8))
+* **core** Remove LanguageCode arg from Shop API ([3b80224](https://github.com/vendure-ecommerce/vendure/commit/3b80224)), closes [#130](https://github.com/vendure-ecommerce/vendure/issues/130)
+* **core** Remove non-existent import ([e660d46](https://github.com/vendure-ecommerce/vendure/commit/e660d46))
+* **elasticsearch-plugin** Remove references to Decode decorator ([0d3d8ef](https://github.com/vendure-ecommerce/vendure/commit/0d3d8ef))
+
+
+### BREAKING CHANGE
+
+* The `languageCode` argument has been removed from all Shop API queries, namely `product`, `products`, `collection` and `collections`. Instead, LanguageCode should be specified as a query param.
 ## <small>0.1.2-beta.9 (2019-07-25)</small>
 
 
