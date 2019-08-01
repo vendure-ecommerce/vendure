@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ConfigArg, ConfigArgType, RefundOrderInput, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
+import {
+    ConfigArg,
+    ConfigArgType,
+    RefundOrderInput,
+    UpdatePaymentMethodInput,
+} from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
@@ -70,10 +75,17 @@ export class PaymentMethodService {
         return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: PaymentMetadata): Promise<Payment> {
+    async createPayment(
+        ctx: RequestContext,
+        order: Order,
+        method: string,
+        metadata: PaymentMetadata,
+    ): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
-        const payment = await this.connection.getRepository(Payment).save(new Payment({ ...result, state: 'Created' }));
+        const payment = await this.connection
+            .getRepository(Payment)
+            .save(new Payment({ ...result, state: 'Created' }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(Payment).save(payment);
         return payment;
@@ -84,7 +96,13 @@ export class PaymentMethodService {
         return handler.settlePayment(order, payment, paymentMethod.configArgs);
     }
 
-    async createRefund(ctx: RequestContext, input: RefundOrderInput, order: Order, items: OrderItem[], payment: Payment): Promise<Refund> {
+    async createRefund(
+        ctx: RequestContext,
+        input: RefundOrderInput,
+        order: Order,
+        items: OrderItem[],
+        payment: Payment,
+    ): Promise<Refund> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
         const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
         const refundAmount = itemAmount + input.shipping + input.adjustment;
@@ -100,7 +118,13 @@ export class PaymentMethodService {
             state: 'Pending',
             metadata: {},
         });
-        const createRefundResult = await handler.createRefund(input, refundAmount, order, payment, paymentMethod.configArgs);
+        const createRefundResult = await handler.createRefund(
+            input,
+            refundAmount,
+            order,
+            payment,
+            paymentMethod.configArgs,
+        );
         if (createRefundResult) {
             refund.transactionId = createRefundResult.transactionId || '';
             refund.metadata = createRefundResult.metadata || {};
@@ -108,11 +132,14 @@ export class PaymentMethodService {
         refund = await this.connection.getRepository(Refund).save(refund);
         if (createRefundResult) {
             await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+            await this.connection.getRepository(Refund).save(refund);
         }
         return refund;
     }
 
-    private async getMethodAndHandler(method: string): Promise<{ paymentMethod: PaymentMethod, handler: PaymentMethodHandler }> {
+    private async getMethodAndHandler(
+        method: string,
+    ): Promise<{ paymentMethod: PaymentMethod; handler: PaymentMethodHandler }> {
         const paymentMethod = await this.connection.getRepository(PaymentMethod).findOne({
             where: {
                 code: method,
@@ -122,7 +149,9 @@ export class PaymentMethodService {
         if (!paymentMethod) {
             throw new UserInputError(`error.payment-method-not-found`, { method });
         }
-        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(h => h.code === paymentMethod.code);
+        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(
+            h => h.code === paymentMethod.code,
+        );
         if (!handler) {
             throw new UserInputError(`error.no-payment-handler-with-code`, { code: paymentMethod.code });
         }
@@ -167,7 +196,10 @@ export class PaymentMethodService {
         await this.connection.getRepository(PaymentMethod).remove(toRemove);
     }
 
-    private buildConfigArgsArray(handler: PaymentMethodHandler, existingConfigArgs: ConfigArg[]): ConfigArg[] {
+    private buildConfigArgsArray(
+        handler: PaymentMethodHandler,
+        existingConfigArgs: ConfigArg[],
+    ): ConfigArg[] {
         let configArgs: ConfigArg[] = [];
         for (const [name, type] of Object.entries(handler.args)) {
             if (!existingConfigArgs.find(ca => ca.name === name)) {
@@ -178,9 +210,7 @@ export class PaymentMethodService {
                 });
             }
         }
-        configArgs = configArgs.filter(ca =>
-            handler.args.hasOwnProperty(ca.name),
-        );
+        configArgs = configArgs.filter(ca => handler.args.hasOwnProperty(ca.name));
         return [...existingConfigArgs, ...configArgs];
     }
 
