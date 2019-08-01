@@ -7,6 +7,8 @@
         margin-left: 2px;
         li {
             line-height: 14px;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
     }
     .quantity {
