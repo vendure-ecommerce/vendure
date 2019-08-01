@@ -6,7 +6,7 @@ import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
 import { Refund } from '../refund/refund.entity';
 
-export type PaymentMetadata = { [key: string]: string | number | boolean };
+export type PaymentMetadata = any;
 
 /**
  * @description
