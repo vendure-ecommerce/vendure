@@ -232,17 +232,20 @@ export class OrderService {
             order.lines.push(orderLine);
             await this.connection.getRepository(Order).save(order);
         }
-        return this.adjustOrderLine(ctx, orderId, orderLine.id, orderLine.quantity + quantity);
+        return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
     }
 
     async adjustOrderLine(
         ctx: RequestContext,
-        orderId: ID,
+        orderIdOrOrder: ID | Order,
         orderLineId: ID,
         quantity?: number | null,
         customFields?: { [key: string]: any },
     ): Promise<Order> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
+        const order =
+            orderIdOrOrder instanceof Order
+                ? orderIdOrOrder
+                : await this.getOrderOrThrow(ctx, orderIdOrOrder);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         this.assertAddingItemsState(order);
         if (quantity != null) {
