@@ -14,6 +14,7 @@ import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
+import { ShippingConfiguration } from './helpers/shipping-configuration/shipping-configuration';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
@@ -30,6 +31,7 @@ import { FacetService } from './services/facet.service';
 import { GlobalSettingsService } from './services/global-settings.service';
 import { HistoryService } from './services/history.service';
 import { JobService } from './services/job.service';
+import { OrderTestingService } from './services/order-testing.service';
 import { OrderService } from './services/order.service';
 import { PaymentMethodService } from './services/payment-method.service';
 import { ProductOptionGroupService } from './services/product-option-group.service';
@@ -61,6 +63,7 @@ const exportedProviders = [
     HistoryService,
     JobService,
     OrderService,
+    OrderTestingService,
     PaymentMethodService,
     ProductOptionGroupService,
     ProductOptionService,
@@ -101,6 +104,7 @@ let workerTypeOrmModule: DynamicModule;
         AssetUpdater,
         VerificationTokenGenerator,
         RefundStateMachine,
+        ShippingConfiguration,
     ],
     exports: exportedProviders,
 })

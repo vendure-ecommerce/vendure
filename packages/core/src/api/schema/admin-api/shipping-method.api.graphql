@@ -3,6 +3,7 @@ type Query {
     shippingMethod(id: ID!): ShippingMethod
     shippingEligibilityCheckers: [ConfigurableOperation!]!
     shippingCalculators: [ConfigurableOperation!]!
+    testShippingMethod(input: TestShippingMethodInput!): TestShippingMethodResult!
 }
 
 type Mutation {
@@ -28,4 +29,26 @@ input UpdateShippingMethodInput {
     description: String
     checker: ConfigurableOperationInput
     calculator: ConfigurableOperationInput
+}
+
+input TestShippingMethodInput {
+    checker: ConfigurableOperationInput!
+    calculator: ConfigurableOperationInput!
+    shippingAddress: CreateAddressInput!
+    lines: [TestShippingMethodOrderLineInput!]!
+}
+
+input TestShippingMethodOrderLineInput {
+    productVariantId: ID!
+    quantity: Int!
+}
+
+type TestShippingMethodResult {
+    eligible: Boolean!
+    price: ShippingPrice
+}
+
+type ShippingPrice {
+    price: Int!
+    priceWithTax: Int!
 }

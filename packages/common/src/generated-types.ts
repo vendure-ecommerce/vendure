@@ -2644,6 +2644,7 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
+  testShippingMethod: TestShippingMethodResult,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
@@ -2806,6 +2807,11 @@ export type QueryShippingMethodsArgs = {
 
 export type QueryShippingMethodArgs = {
   id: Scalars['ID']
+};
+
+
+export type QueryTestShippingMethodArgs = {
+  input: TestShippingMethodInput
 };
 
 
@@ -3025,6 +3031,12 @@ export type ShippingMethodSortParameter = {
   description?: Maybe<SortOrder>,
 };
 
+export type ShippingPrice = {
+  __typename?: 'ShippingPrice',
+  price: Scalars['Int'],
+  priceWithTax: Scalars['Int'],
+};
+
 /** The price value where the result has a single price */
 export type SinglePrice = {
   __typename?: 'SinglePrice',
@@ -3146,6 +3158,24 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
   value?: Maybe<SortOrder>,
+};
+
+export type TestShippingMethodInput = {
+  checker: ConfigurableOperationInput,
+  calculator: ConfigurableOperationInput,
+  shippingAddress: CreateAddressInput,
+  lines: Array<TestShippingMethodOrderLineInput>,
+};
+
+export type TestShippingMethodOrderLineInput = {
+  productVariantId: Scalars['ID'],
+  quantity: Scalars['Int'],
+};
+
+export type TestShippingMethodResult = {
+  __typename?: 'TestShippingMethodResult',
+  eligible: Scalars['Boolean'],
+  price?: Maybe<ShippingPrice>,
 };
 
 export type UpdateAddressInput = {

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
-    ConfigurableOperationInput,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
 } from '@vendure/common/lib/generated-types';
@@ -11,23 +10,20 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
-import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 
 @Injectable()
 export class ShippingMethodService {
-    shippingEligibilityCheckers: ShippingEligibilityChecker[];
-    shippingCalculators: ShippingCalculator[];
     private activeShippingMethods: ShippingMethod[];
 
     constructor(
@@ -35,11 +31,8 @@ export class ShippingMethodService {
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
-    ) {
-        this.shippingEligibilityCheckers =
-            this.configService.shippingOptions.shippingEligibilityCheckers || [];
-        this.shippingCalculators = this.configService.shippingOptions.shippingCalculators || [];
-    }
+        private shippingConfiguration: ShippingConfiguration,
+    ) {}
 
     async initShippingMethods() {
         await this.updateActiveShippingMethods();
@@ -65,8 +58,8 @@ export class ShippingMethodService {
         const shippingMethod = new ShippingMethod({
             code: input.code,
             description: input.description,
-            checker: this.parseOperationArgs(input.checker, this.getChecker(input.checker.code)),
-            calculator: this.parseOperationArgs(input.calculator, this.getCalculator(input.calculator.code)),
+            checker: this.shippingConfiguration.parseCheckerInput(input.checker),
+            calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
         });
         shippingMethod.channels = [this.channelService.getDefaultChannel()];
         const newShippingMethod = await this.connection.manager.save(shippingMethod);
@@ -81,15 +74,11 @@ export class ShippingMethodService {
         }
         const updatedShippingMethod = patchEntity(shippingMethod, omit(input, ['checker', 'calculator']));
         if (input.checker) {
-            updatedShippingMethod.checker = this.parseOperationArgs(
-                input.checker,
-                this.getChecker(input.checker.code),
-            );
+            updatedShippingMethod.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
         }
         if (input.calculator) {
-            updatedShippingMethod.calculator = this.parseOperationArgs(
+            updatedShippingMethod.calculator = this.shippingConfiguration.parseCalculatorInput(
                 input.calculator,
-                this.getCalculator(input.calculator.code),
             );
         }
         await this.connection.manager.save(updatedShippingMethod);
@@ -98,46 +87,15 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(): ConfigurableOperation[] {
-        return this.shippingEligibilityCheckers.map(configurableDefToOperation);
+        return this.shippingConfiguration.shippingEligibilityCheckers.map(configurableDefToOperation);
     }
 
     getShippingCalculators(): ConfigurableOperation[] {
-        return this.shippingCalculators.map(configurableDefToOperation);
+        return this.shippingConfiguration.shippingCalculators.map(configurableDefToOperation);
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
         return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
-    }
-
-    /**
-     * Converts the input values of the "create" and "update" mutations into the format expected by the ShippingMethod entity.
-     */
-    private parseOperationArgs(
-        input: ConfigurableOperationInput,
-        checkerOrCalculator: ShippingEligibilityChecker | ShippingCalculator,
-    ): ConfigurableOperation {
-        const output: ConfigurableOperation = {
-            code: input.code,
-            description: checkerOrCalculator.description,
-            args: input.arguments,
-        };
-        return output;
-    }
-
-    private getChecker(code: string): ShippingEligibilityChecker {
-        const match = this.shippingEligibilityCheckers.find(a => a.code === code);
-        if (!match) {
-            throw new UserInputError(`error.shipping-eligibility-checker-with-code-not-found`, { code });
-        }
-        return match;
-    }
-
-    private getCalculator(code: string): ShippingCalculator {
-        const match = this.shippingCalculators.find(a => a.code === code);
-        if (!match) {
-            throw new UserInputError(`error.shipping-calculator-with-code-not-found`, { code });
-        }
-        return match;
     }
 
     private async updateActiveShippingMethods() {
