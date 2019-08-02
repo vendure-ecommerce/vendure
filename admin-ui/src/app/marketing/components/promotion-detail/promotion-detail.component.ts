@@ -198,7 +198,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         return operations.map((o, i) => {
             return {
                 code: o.code,
-                arguments: Object.values(formValueOperations[i].args).map((value, j) => ({
+                arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
                     name: o.args[j].name,
                     value: value.toString(),
                     type: o.args[j].type,

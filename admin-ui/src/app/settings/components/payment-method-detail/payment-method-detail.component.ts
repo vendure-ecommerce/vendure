@@ -61,7 +61,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                         id,
                         code: formValue.code,
                         enabled: formValue.enabled,
-                        configArgs: Object.entries(formValue.configArgs).map(([name, value], i) => ({
+                        configArgs: Object.entries<any>(formValue.configArgs).map(([name, value], i) => ({
                             name,
                             value: value.toString(),
                             type: configArgs[i].type,
