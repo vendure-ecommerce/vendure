@@ -1,6 +1,8 @@
+import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 
-export type LocalStorageKey = 'refreshToken' | 'authToken' | 'activeChannelToken';
+export type LocalStorageKey = 'activeChannelToken';
+export type LocalStorageLocationBasedKey = 'shippingTestOrder' | 'shippingTestAddress';
 const PREFIX = 'vnd_';
 
 /**
@@ -8,12 +10,21 @@ const PREFIX = 'vnd_';
  */
 @Injectable()
 export class LocalStorageService {
+    constructor(private location: Location) {}
     /**
      * Set a key-value pair in the browser's LocalStorage
      */
     public set(key: LocalStorageKey, value: any): void {
         const keyName = this.keyName(key);
         localStorage.setItem(keyName, JSON.stringify(value));
+    }
+
+    /**
+     * Set a key-value pair specific to the current location (url)
+     */
+    public setForCurrentLocation(key: LocalStorageLocationBasedKey, value: any) {
+        const compositeKey = this.getLocationBasedKey(key);
+        this.set(compositeKey as any, value);
     }
 
     /**
@@ -40,10 +51,23 @@ export class LocalStorageService {
         return result;
     }
 
+    /**
+     * Get the value of the given key for the current location (url)
+     */
+    public getForCurrentLocation(key: LocalStorageLocationBasedKey): any {
+        const compositeKey = this.getLocationBasedKey(key);
+        return this.get(compositeKey as any);
+    }
+
     public remove(key: LocalStorageKey): void {
         const keyName = this.keyName(key);
         sessionStorage.removeItem(keyName);
         localStorage.removeItem(keyName);
+    }
+
+    private getLocationBasedKey(key: string) {
+        const path = this.location.path();
+        return key + path;
     }
 
     private keyName(key: LocalStorageKey): string {

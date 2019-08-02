@@ -566,3 +566,38 @@ export const REINDEX = gql`
     }
     ${JOB_INFO_FRAGMENT}
 `;
+
+export const SEARCH_FOR_TEST_ORDER = gql`
+    query SearchForTestOrder($term: String!, $take: Int!) {
+        search(input: { groupByProduct: false, term: $term, take: $take }) {
+            items {
+                productVariantId
+                productVariantName
+                productPreview
+                price {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                sku
+            }
+        }
+    }
+`;
+
+export const TEST_SHIPPING_METHOD = gql`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            price {
+                price
+                priceWithTax
+            }
+        }
+    }
+`;

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { merge, Observable, of, Subject } from 'rxjs';
+import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
@@ -11,12 +11,16 @@ import {
     CreateShippingMethodInput,
     GetActiveChannel,
     ShippingMethod,
+    TestShippingMethodInput,
+    TestShippingMethodResult,
     UpdateShippingMethodInput,
 } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
+import { TestAddress } from '../test-address-form/test-address-form.component';
+import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
 
 @Component({
     selector: 'vdr-shipping-method-detail',
@@ -32,6 +36,11 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     selectedChecker?: ConfigurableOperation;
     selectedCalculator?: ConfigurableOperation;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
+    testAddress: TestAddress;
+    testOrderLines: TestOrderLine[];
+    testDataUpdated = false;
+    testResult$: Observable<TestShippingMethodResult | undefined>;
+    private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(
         router: Router,
@@ -62,6 +71,36 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
             .mapStream(data => data.activeChannel);
+
+        this.testResult$ = this.fetchTestResult$.pipe(
+            switchMap(([address, lines]) => {
+                if (!this.selectedChecker || !this.selectedCalculator) {
+                    return of(undefined);
+                }
+                const formValue = this.detailForm.value;
+                const input: TestShippingMethodInput = {
+                    shippingAddress: { ...address, streetLine1: 'test' },
+                    lines: lines.map(l => ({ productVariantId: l.id, quantity: l.quantity })),
+                    checker: this.toAdjustmentOperationInput(this.selectedChecker, formValue.checker),
+                    calculator: this.toAdjustmentOperationInput(
+                        this.selectedCalculator,
+                        formValue.calculator,
+                    ),
+                };
+                return this.dataService.settings
+                    .testShippingMethod(input)
+                    .mapSingle(result => result.testShippingMethod);
+            }),
+        );
+
+        // tslint:disable:no-non-null-assertion
+        merge(
+            this.detailForm.get(['checker'])!.valueChanges,
+            this.detailForm.get(['calculator'])!.valueChanges,
+        )
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => (this.testDataUpdated = true));
+        // tslint:enable:no-non-null-assertion
     }
 
     ngOnDestroy(): void {
@@ -141,6 +180,31 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             );
     }
 
+    setTestOrderLines(event: TestOrderLine[]) {
+        this.testOrderLines = event;
+        this.testDataUpdated = true;
+    }
+
+    setTestAddress(event: TestAddress) {
+        this.testAddress = event;
+        this.testDataUpdated = true;
+    }
+
+    allTestDataPresent(): boolean {
+        return !!(
+            this.testAddress &&
+            this.testOrderLines &&
+            this.testOrderLines.length &&
+            this.selectedChecker &&
+            this.selectedCalculator
+        );
+    }
+
+    runTest() {
+        this.fetchTestResult$.next([this.testAddress, this.testOrderLines]);
+        this.testDataUpdated = false;
+    }
+
     /**
      * Maps an array of conditions or actions to the input format expected by the GraphQL API.
      */
@@ -150,7 +214,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     ): ConfigurableOperationInput {
         return {
             code: operation.code,
-            arguments: Object.values(formValueOperations.args || {}).map((value, j) => ({
+            arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
                 value: value.hasOwnProperty('value') ? (value as any).value : value.toString(),
                 type: operation.args[j].type,

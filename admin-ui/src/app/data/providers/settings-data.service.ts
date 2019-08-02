@@ -33,6 +33,9 @@ import {
     GetZones,
     JobState,
     RemoveMembersFromZone,
+    SearchForTestOrder,
+    TestShippingMethod,
+    TestShippingMethodInput,
     UpdateChannel,
     UpdateChannelInput,
     UpdateCountry,
@@ -73,6 +76,8 @@ import {
     GET_TAX_RATE_LIST,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
+    SEARCH_FOR_TEST_ORDER,
+    TEST_SHIPPING_METHOD,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
@@ -308,5 +313,24 @@ export class SettingsDataService {
         return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_ALL_JOBS, {
             input: { state: JobState.RUNNING },
         });
+    }
+
+    searchForTestOrder(term: string, take: number) {
+        return this.baseDataService.query<SearchForTestOrder.Query, SearchForTestOrder.Variables>(
+            SEARCH_FOR_TEST_ORDER,
+            {
+                take,
+                term,
+            },
+        );
+    }
+
+    testShippingMethod(input: TestShippingMethodInput) {
+        return this.baseDataService.query<TestShippingMethod.Query, TestShippingMethod.Variables>(
+            TEST_SHIPPING_METHOD,
+            {
+                input,
+            },
+        );
     }
 }

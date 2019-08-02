@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="detailForm.pristine || detailForm.invalid"
         >
@@ -89,3 +89,32 @@
         </div>
     </div>
 </form>
+<div class="testing-tool">
+    <clr-accordion>
+        <clr-accordion-panel>
+            <clr-accordion-title>{{ 'settings.test-shipping-method' | translate }}</clr-accordion-title>
+            <clr-accordion-content *clrIfExpanded>
+                <div class="clr-row">
+                    <div class="clr-col">
+                        <!--<label class="clr-control-label">{{ 'settings.test-order' | translate }}</label>-->
+                        <vdr-test-order-builder
+                            (orderLinesChange)="setTestOrderLines($event)"
+                        ></vdr-test-order-builder>
+                    </div>
+                    <div class="clr-col">
+                        <vdr-test-address-form
+                            (addressChange)="setTestAddress($event)"
+                        ></vdr-test-address-form>
+                        <vdr-shipping-method-test-result
+                            [currencyCode]="(activeChannel$ | async)?.currencyCode"
+                            [okToRun]="allTestDataPresent() && testDataUpdated && detailForm.valid"
+                            [testDataUpdated]="testDataUpdated"
+                            [testResult]="testResult$ | async"
+                            (runTest)="runTest()"
+                        ></vdr-shipping-method-test-result>
+                    </div>
+                </div>
+            </clr-accordion-content>
+        </clr-accordion-panel>
+    </clr-accordion>
+</div>

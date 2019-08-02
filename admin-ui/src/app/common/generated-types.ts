@@ -2666,6 +2666,7 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>,
   shippingEligibilityCheckers: Array<ConfigurableOperation>,
   shippingCalculators: Array<ConfigurableOperation>,
+  testShippingMethod: TestShippingMethodResult,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
@@ -2831,6 +2832,11 @@ export type QueryShippingMethodsArgs = {
 
 export type QueryShippingMethodArgs = {
   id: Scalars['ID']
+};
+
+
+export type QueryTestShippingMethodArgs = {
+  input: TestShippingMethodInput
 };
 
 
@@ -3050,6 +3056,12 @@ export type ShippingMethodSortParameter = {
   description?: Maybe<SortOrder>,
 };
 
+export type ShippingPrice = {
+  __typename?: 'ShippingPrice',
+  price: Scalars['Int'],
+  priceWithTax: Scalars['Int'],
+};
+
 /** The price value where the result has a single price */
 export type SinglePrice = {
   __typename?: 'SinglePrice',
@@ -3171,6 +3183,24 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
   value?: Maybe<SortOrder>,
+};
+
+export type TestShippingMethodInput = {
+  checker: ConfigurableOperationInput,
+  calculator: ConfigurableOperationInput,
+  shippingAddress: CreateAddressInput,
+  lines: Array<TestShippingMethodOrderLineInput>,
+};
+
+export type TestShippingMethodOrderLineInput = {
+  productVariantId: Scalars['ID'],
+  quantity: Scalars['Int'],
+};
+
+export type TestShippingMethodResult = {
+  __typename?: 'TestShippingMethodResult',
+  eligible: Scalars['Boolean'],
+  price?: Maybe<ShippingPrice>,
 };
 
 export type UiState = {
@@ -4178,6 +4208,21 @@ export type ReindexMutationVariables = {};
 
 export type ReindexMutation = ({ __typename?: 'Mutation' } & { reindex: ({ __typename?: 'JobInfo' } & JobInfoFragment) });
 
+export type SearchForTestOrderQueryVariables = {
+  term: Scalars['String'],
+  take: Scalars['Int']
+};
+
+
+export type SearchForTestOrderQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'> & { price: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>), priceWithTax: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>) })> }) });
+
+export type TestShippingMethodQueryVariables = {
+  input: TestShippingMethodInput
+};
+
+
+export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { price: Maybe<({ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>)> }) });
+
 export type ShippingMethodFragment = ({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'> & { checker: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment), calculator: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment) });
 
 export type GetShippingMethodListQueryVariables = {
@@ -4212,6 +4257,10 @@ export type UpdateShippingMethodMutationVariables = {
 
 
 export type UpdateShippingMethodMutation = ({ __typename?: 'Mutation' } & { updateShippingMethod: ({ __typename?: 'ShippingMethod' } & ShippingMethodFragment) });
+type DiscriminateUnion<T, U> = T extends U ? T : never;
+
+type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
+
 export namespace Administrator {
   export type Fragment = AdministratorFragment;
   export type User = AdministratorFragment['user'];
@@ -5107,6 +5156,24 @@ export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
   export type Reindex = JobInfoFragment;
+}
+
+export namespace SearchForTestOrder {
+  export type Variables = SearchForTestOrderQueryVariables;
+  export type Query = SearchForTestOrderQuery;
+  export type Search = SearchForTestOrderQuery['search'];
+  export type Items = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>);
+  export type Price = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'];
+  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
+  export type PriceWithTax = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'];
+  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
+}
+
+export namespace TestShippingMethod {
+  export type Variables = TestShippingMethodQueryVariables;
+  export type Query = TestShippingMethodQuery;
+  export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
+  export type Price = (NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>);
 }
 
 export namespace ShippingMethod {

@@ -17,10 +17,13 @@ import { RoleDetailComponent } from './components/role-detail/role-detail.compon
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
+import { ShippingMethodTestResultComponent } from './components/shipping-method-test-result/shipping-method-test-result.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
 import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
 import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
+import { TestAddressFormComponent } from './components/test-address-form/test-address-form.component';
+import { TestOrderBuilderComponent } from './components/test-order-builder/test-order-builder.component';
 import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/zone-selector-dialog.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
@@ -55,6 +58,9 @@ import { settingsRoutes } from './settings.routes';
         PaymentMethodListComponent,
         PaymentMethodDetailComponent,
         GlobalSettingsComponent,
+        TestOrderBuilderComponent,
+        TestAddressFormComponent,
+        ShippingMethodTestResultComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
     providers: [
