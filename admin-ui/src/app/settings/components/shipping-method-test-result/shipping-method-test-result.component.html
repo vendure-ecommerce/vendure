@@ -27,14 +27,14 @@
                 </div>
                 {{ testResult?.eligible }}
             </vdr-labeled-data>
-            <vdr-labeled-data [label]="'common.price' | translate" *ngIf="testResult?.price?.price as price">
-                {{ price / 100 | currency: currencyCode }}
+            <vdr-labeled-data [label]="'common.price' | translate" *ngIf="testResult?.price?.price != null">
+                {{ testResult.price.price / 100 | currency: currencyCode }}
             </vdr-labeled-data>
             <vdr-labeled-data
                 [label]="'common.price-with-tax' | translate"
-                *ngIf="testResult?.price?.priceWithTax as priceWithTax"
+                *ngIf="testResult?.price?.priceWithTax != null"
             >
-                {{ priceWithTax / 100 | currency: currencyCode }}
+                {{ testResult.price.priceWithTax / 100 | currency: currencyCode }}
             </vdr-labeled-data>
         </div>
     </div>
