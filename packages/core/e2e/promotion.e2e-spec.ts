@@ -8,7 +8,6 @@ import { PromotionCondition } from '../src/config/promotion/promotion-condition'
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { CONFIGURABLE_FRAGMENT, PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
-    ConfigArgType,
     CreatePromotion,
     DeletePromotion,
     DeletionResult,
@@ -68,7 +67,7 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '500', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '500', type: 'int' }],
                         },
                     ],
                     actions: [
@@ -78,7 +77,7 @@ describe('Promotion resolver', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: '["T_1"]',
-                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                    type: 'facetValueIds',
                                 },
                             ],
                         },
@@ -99,11 +98,11 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '90', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '90', type: 'int' }],
                         },
                         {
                             code: promoCondition2.code,
-                            arguments: [{ name: 'arg', value: '10', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '10', type: 'int' }],
                         },
                     ],
                 },
@@ -149,7 +148,10 @@ describe('Promotion resolver', () => {
 
         it('deletes a promotion', async () => {
             promotionToDelete = allPromotions[0];
-            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(DELETE_PROMOTION, { id: promotionToDelete.id });
+            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(
+                DELETE_PROMOTION,
+                { id: promotionToDelete.id },
+            );
 
             expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
         });
@@ -189,7 +191,7 @@ function generateTestCondition(code: string): PromotionCondition<any> {
     return new PromotionCondition({
         code,
         description: `description for ${code}`,
-        args: { arg: ConfigArgType.MONEY },
+        args: { arg: { type: 'int' } },
         check: (order, args) => true,
     });
 }
@@ -198,7 +200,7 @@ function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
         description: `description for ${code}`,
-        args: { facetValueIds: ConfigArgType.FACET_VALUE_IDS },
+        args: { facetValueIds: { type: 'facetValueIds' } },
         execute: (order, args) => {
             return 42;
         },

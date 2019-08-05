@@ -1,4 +1,5 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset, ConfigArgType } from '@vendure/common/lib/shared-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {
@@ -9,7 +10,9 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgType.FACET_VALUE_IDS | ConfigArgType.STRING | ConfigArgType.STRING_OPERATOR | ConfigArgType.BOOLEAN;
+export type CollectionFilterArgType = ConfigArgSubset<
+    'facetValueIds' | 'string' | 'stringOperator' | 'boolean'
+>;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (

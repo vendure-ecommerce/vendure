@@ -38,12 +38,12 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
         Object {
           "name": "containsAny",
-          "type": "BOOLEAN",
+          "type": "boolean",
           "value": "false",
         },
       ],
@@ -99,12 +99,12 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_3\\"]",
         },
         Object {
           "name": "containsAny",
-          "type": "BOOLEAN",
+          "type": "boolean",
           "value": "false",
         },
       ],

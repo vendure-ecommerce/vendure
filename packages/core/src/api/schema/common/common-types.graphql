@@ -20,29 +20,9 @@ type Adjustment {
     amount: Int!
 }
 
-"""
-Certain entities allow arbitrary configuration arguments to be specified which can then
-be set in the admin-ui and used in the business logic of the app. These are the valid
-data types of such arguments. The data type influences:
-
-1. How the argument form field is rendered in the admin-ui
-2. The JavaScript type into which the value is coerced before being passed to the business logic.
-
-"""
-enum ConfigArgType {
-    PERCENTAGE
-    MONEY
-    INT
-    STRING
-    DATETIME
-    BOOLEAN
-    FACET_VALUE_IDS
-    STRING_OPERATOR
-}
-
 type ConfigArg {
     name: String!
-    type: ConfigArgType!
+    type: String!
     value: String
 }
 
@@ -66,7 +46,7 @@ type DeletionResponse {
 
 input ConfigArgInput {
     name: String!
-    type: ConfigArgType!
+    type: String!
     value: String
 }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigArgType, LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
@@ -91,7 +91,10 @@ export class Populator {
 
             let featuredAssetId: string | null = null;
             if (collectionDef.featuredAssetFilename) {
-                const asset = await this.assetService.findByFileName(collectionDef.featuredAssetFilename, false);
+                const asset = await this.assetService.findByFileName(
+                    collectionDef.featuredAssetFilename,
+                    false,
+                );
                 if (asset) {
                     featuredAssetId = asset.id as string;
                 }
@@ -114,13 +117,13 @@ export class Populator {
                         arguments: [
                             {
                                 name: 'facetValueIds',
-                                type: ConfigArgType.FACET_VALUE_IDS,
+                                type: 'facetValueIds',
                                 value: JSON.stringify(facetValueIds),
                             },
                             {
                                 name: 'containsAny',
                                 value: `false`,
-                                type: ConfigArgType.BOOLEAN,
+                                type: 'boolean',
                             },
                         ],
                     },
@@ -219,13 +222,13 @@ export class Populator {
             await this.shippingMethodService.create({
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
-                    arguments: [{ name: 'orderMinimum', value: '0', type: ConfigArgType.MONEY }],
+                    arguments: [{ name: 'orderMinimum', value: '0', type: 'int' /* TODO: money */ }],
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
                     arguments: [
-                        { name: 'rate', value: method.price.toString(), type: ConfigArgType.MONEY },
-                        { name: 'taxRate', value: '0', type: ConfigArgType.PERCENTAGE },
+                        { name: 'rate', value: method.price.toString(), type: 'int' /* TODO: money */ },
+                        { name: 'taxRate', value: '0', type: 'int' /* TODO: percentage */ },
                     ],
                 },
                 description: method.name,

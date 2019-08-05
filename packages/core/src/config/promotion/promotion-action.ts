@@ -1,4 +1,5 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
@@ -12,11 +13,7 @@ import { Order } from '../../entity/order/order.entity';
 
 import { PromotionUtils } from './promotion-condition';
 
-export type PromotionActionArgType =
-    | ConfigArgType.PERCENTAGE
-    | ConfigArgType.MONEY
-    | ConfigArgType.INT
-    | ConfigArgType.FACET_VALUE_IDS;
+export type PromotionActionArgType = ConfigArgSubset<'int' | 'facetValueIds'>;
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (

@@ -1,4 +1,5 @@
-import { ConfigArg, ConfigArgType, RefundOrderInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
@@ -15,7 +16,7 @@ import {
 } from '../../service/helpers/payment-state-machine/payment-state';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
-export type PaymentMethodArgType = ConfigArgType.INT | ConfigArgType.STRING | ConfigArgType.BOOLEAN;
+export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
 

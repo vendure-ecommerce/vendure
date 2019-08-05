@@ -215,33 +215,15 @@ export type CollectionTranslation = {
 export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
-    type: ConfigArgType;
+    type: Scalars['String'];
     value?: Maybe<Scalars['String']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
-    type: ConfigArgType;
+    type: Scalars['String'];
     value?: Maybe<Scalars['String']>;
 };
-
-/** Certain entities allow arbitrary configuration arguments to be specified which can then
- * be set in the admin-ui and used in the business logic of the app. These are the valid
- * data types of such arguments. The data type influences:
- *
- * 1. How the argument form field is rendered in the admin-ui
- * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
- */
-export enum ConfigArgType {
-    PERCENTAGE = 'PERCENTAGE',
-    MONEY = 'MONEY',
-    INT = 'INT',
-    STRING = 'STRING',
-    DATETIME = 'DATETIME',
-    BOOLEAN = 'BOOLEAN',
-    FACET_VALUE_IDS = 'FACET_VALUE_IDS',
-    STRING_OPERATOR = 'STRING_OPERATOR',
-}
 
 export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';

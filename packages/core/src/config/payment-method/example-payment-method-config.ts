@@ -1,5 +1,3 @@
-import { ConfigArgType } from '@vendure/common/lib/generated-types';
-
 import { CreatePaymentResult, PaymentMethodHandler } from './payment-method-handler';
 
 /**
@@ -28,8 +26,8 @@ export const examplePaymentHandler = new PaymentMethodHandler({
     code: 'example-payment-provider',
     description: 'Example Payment Provider',
     args: {
-        automaticCapture: ConfigArgType.BOOLEAN,
-        apiKey: ConfigArgType.STRING,
+        automaticCapture: { type: 'boolean' },
+        apiKey: { type: 'string' },
     },
     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
         try {

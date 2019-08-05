@@ -47,7 +47,25 @@ export type ID = string | number;
  */
 export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
 
-export type CustomFieldsObject = { [key: string]: any; };
+/**
+ * Certain entities allow arbitrary configuration arguments to be specified which can then
+ * be set in the admin-ui and used in the business logic of the app. These are the valid
+ * data types of such arguments. The data type influences:
+ *
+ * 1. How the argument form field is rendered in the admin-ui
+ * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
+ */
+export type ConfigArgType =
+    | 'string'
+    | 'int'
+    | 'float'
+    | 'boolean'
+    | 'datetime'
+    | 'facetValueIds'
+    | 'stringOperator';
+export type ConfigArgSubset<T extends ConfigArgType> = T;
+
+export type CustomFieldsObject = { [key: string]: any };
 
 /**
  * This interface describes the shape of the JSON config file used by the Admin UI.

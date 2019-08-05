@@ -1,12 +1,18 @@
 // prettier-ignore
-import { ConfigArg, ConfigArgType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { ConfigArg, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
 
 import { InternalServerError } from './error/errors';
 
-export type ConfigArgs<T extends ConfigArgType> = {
-    [name: string]: T;
+export type ConfigArgDef<T extends ConfigArgType> = {
+    type: T;
 };
 
+export type ConfigArgs<T extends ConfigArgType> = {
+    [name: string]: ConfigArgDef<T>;
+};
+
+// TODO: replace with string options
 export type StringOperator = 'startsWith' | 'endsWith' | 'contains' | 'doesNotContain';
 
 // prettier-ignore
@@ -15,15 +21,15 @@ export type StringOperator = 'startsWith' | 'endsWith' | 'contains' | 'doesNotCo
  * in business logic.
  */
 export type ConfigArgValues<T extends ConfigArgs<any>> = {
-    [K in keyof T]: T[K] extends ConfigArgType.INT | ConfigArgType.MONEY | ConfigArgType.PERCENTAGE
+    [K in keyof T]: T[K] extends ConfigArgDef<'int' | 'float'>
         ? number
-        : T[K] extends ConfigArgType.DATETIME
+        : T[K] extends ConfigArgDef<'datetime'>
             ? Date
-            : T[K] extends ConfigArgType.BOOLEAN
+            : T[K] extends ConfigArgDef<'boolean'>
                 ? boolean
-                : T[K] extends ConfigArgType.FACET_VALUE_IDS
+                : T[K] extends ConfigArgDef<'facetValueIds'>
                     ? string[]
-                    : T[K] extends ConfigArgType.STRING_OPERATOR
+                    : T[K] extends ConfigArgDef<'stringOperator'>
                         ? StringOperator
                         : string
 };
@@ -46,7 +52,7 @@ export function configurableDefToOperation(def: ConfigurableOperationDef): Confi
     return {
         code: def.code,
         description: def.description,
-        args: Object.entries(def.args).map(([name, type]) => ({ name, type })),
+        args: Object.entries(def.args).map(([name, arg]) => ({ name, type: arg.type })),
     };
 }
 
@@ -59,7 +65,7 @@ export function configurableDefToOperation(def: ConfigurableOperationDef): Confi
  * to:
  * { foo: 'bar' }
  **/
-export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
+export function argsArrayToHash<T extends ConfigArgs<any>>(args: ConfigArg[]): ConfigArgValues<T> {
     const output: ConfigArgValues<T> = {} as any;
     for (const arg of args) {
         if (arg && arg.value != null) {
@@ -69,20 +75,18 @@ export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
     return output;
 }
 
-function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
+function coerceValueToType<T extends ConfigArgs<any>>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
     switch (arg.type as ConfigArgType) {
-        case ConfigArgType.STRING:
-        case ConfigArgType.STRING_OPERATOR:
+        case 'string':
+        case 'stringOperator':
             return arg.value as any;
-        case ConfigArgType.INT:
-        case ConfigArgType.MONEY:
-        case ConfigArgType.PERCENTAGE:
+        case 'int':
             return Number.parseInt(arg.value || '', 10) as any;
-        case ConfigArgType.DATETIME:
+        case 'datetime':
             return Date.parse(arg.value || '') as any;
-        case ConfigArgType.BOOLEAN:
+        case 'boolean':
             return !!(arg.value && (arg.value.toLowerCase() === 'true' || arg.value === '1')) as any;
-        case ConfigArgType.FACET_VALUE_IDS:
+        case 'facetValueIds':
             try {
                 return JSON.parse(arg.value as any);
             } catch (err) {

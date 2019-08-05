@@ -14,7 +14,6 @@ import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
     Collection,
-    ConfigArgType,
     CreateCollection,
     CreateCollectionInput,
     CreateCollectionSelectVariants,
@@ -109,12 +108,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('electronics')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -145,12 +144,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('computers')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -176,12 +175,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('pear')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -415,12 +414,12 @@ describe('Collection resolver', () => {
                                 {
                                     name: 'operator',
                                     value: 'contains',
-                                    type: ConfigArgType.STRING_OPERATOR,
+                                    type: 'stringOperator',
                                 },
                                 {
                                     name: 'term',
                                     value: 'laptop',
-                                    type: ConfigArgType.STRING,
+                                    type: 'string',
                                 },
                             ],
                         },
@@ -601,12 +600,12 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -636,12 +635,12 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `true`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -681,12 +680,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'operator',
                                         value: operator,
-                                        type: ConfigArgType.STRING_OPERATOR,
+                                        type: 'stringOperator',
                                     },
                                     {
                                         name: 'term',
                                         value: term,
-                                        type: ConfigArgType.STRING,
+                                        type: 'string',
                                     },
                                 ],
                             },

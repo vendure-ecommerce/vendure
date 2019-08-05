@@ -8,7 +8,6 @@ import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
-    ConfigArgType,
     CreateCollection,
     CreateFacet,
     GetRunningJobs,
@@ -390,12 +389,12 @@ describe('Default search plugin', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["T_4"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -444,12 +443,12 @@ describe('Default search plugin', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: `["T_3"]`,
-                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                    type: 'facetValueIds',
                                 },
                                 {
                                     name: 'containsAny',
                                     value: `false`,
-                                    type: ConfigArgType.BOOLEAN,
+                                    type: 'boolean',
                                 },
                             ],
                         },

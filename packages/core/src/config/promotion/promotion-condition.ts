@@ -1,5 +1,5 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset, ID } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
@@ -10,13 +10,9 @@ import {
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
 
-export type PromotionConditionArgType =
-    | ConfigArgType.INT
-    | ConfigArgType.MONEY
-    | ConfigArgType.STRING
-    | ConfigArgType.DATETIME
-    | ConfigArgType.BOOLEAN
-    | ConfigArgType.FACET_VALUE_IDS;
+export type PromotionConditionArgType = ConfigArgSubset<
+    'int' | 'string' | 'datetime' | 'boolean' | 'facetValueIds'
+>;
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 
 /**
@@ -78,6 +74,6 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> implement
     }
 
     async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
-        return await this.checkFn(order, argsArrayToHash<T>(args), utils);
+        return this.checkFn(order, argsArrayToHash<T>(args), utils);
     }
 }

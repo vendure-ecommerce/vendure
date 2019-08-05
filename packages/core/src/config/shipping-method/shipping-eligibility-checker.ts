@@ -1,14 +1,11 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingEligibilityCheckerArgType =
-    | ConfigArgType.INT
-    | ConfigArgType.MONEY
-    | ConfigArgType.STRING
-    | ConfigArgType.BOOLEAN;
+export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 
 /**
