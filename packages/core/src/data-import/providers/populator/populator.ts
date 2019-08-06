@@ -222,13 +222,13 @@ export class Populator {
             await this.shippingMethodService.create({
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
-                    arguments: [{ name: 'orderMinimum', value: '0', type: 'int' /* TODO: money */ }],
+                    arguments: [{ name: 'orderMinimum', value: '0', type: 'int' }],
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
                     arguments: [
-                        { name: 'rate', value: method.price.toString(), type: 'int' /* TODO: money */ },
-                        { name: 'taxRate', value: '0', type: 'int' /* TODO: percentage */ },
+                        { name: 'rate', value: method.price.toString(), type: 'int' },
+                        { name: 'taxRate', value: '0', type: 'int' },
                     ],
                 },
                 description: method.name,

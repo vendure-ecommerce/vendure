@@ -2,6 +2,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     CreateCollectionInput,
     DeletionResponse,
     DeletionResult,
@@ -110,7 +111,7 @@ export class CollectionService implements OnModuleInit {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    getAvailableFilters(): ConfigurableOperation[] {
+    getAvailableFilters(): ConfigurableOperationDefinition[] {
         return this.availableFilters.map(configurableDefToOperation);
     }
 

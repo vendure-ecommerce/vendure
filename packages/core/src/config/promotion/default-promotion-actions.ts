@@ -5,6 +5,9 @@ export const orderPercentageDiscount = new PromotionOrderAction({
     args: {
         discount: {
             type: 'int',
+            config: {
+                inputType: 'percentage',
+            },
         },
     },
     execute(order, args) {
@@ -18,6 +21,9 @@ export const itemPercentageDiscount = new PromotionItemAction({
     args: {
         discount: {
             type: 'int',
+            config: {
+                inputType: 'percentage',
+            },
         },
     },
     execute(orderItem, orderLine, args) {
@@ -46,6 +52,9 @@ export const discountOnItemWithFacets = new PromotionItemAction({
     args: {
         discount: {
             type: 'int',
+            config: {
+                inputType: 'percentage',
+            },
         },
         facets: {
             type: 'facetValueIds',

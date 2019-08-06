@@ -45,12 +45,6 @@ export type Adjustment = {
     amount: Scalars['Int'];
 };
 
-export type AdjustmentOperations = {
-    __typename?: 'AdjustmentOperations';
-    conditions: Array<ConfigurableOperation>;
-    actions: Array<ConfigurableOperation>;
-};
-
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
@@ -216,19 +210,33 @@ export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
     type: Scalars['String'];
-    value?: Maybe<Scalars['String']>;
+    value: Scalars['String'];
+};
+
+export type ConfigArgDefinition = {
+    __typename?: 'ConfigArgDefinition';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    config?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
     type: Scalars['String'];
-    value?: Maybe<Scalars['String']>;
+    value: Scalars['String'];
 };
 
 export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
+    description: Scalars['String'];
+};
+
+export type ConfigurableOperationDefinition = {
+    __typename?: 'ConfigurableOperationDefinition';
+    code: Scalars['String'];
+    args: Array<ConfigArgDefinition>;
     description: Scalars['String'];
 };
 
@@ -1806,6 +1814,12 @@ export type PromotionList = PaginatedList & {
     __typename?: 'PromotionList';
     items: Array<Promotion>;
     totalItems: Scalars['Int'];
+};
+
+export type PromotionOperations = {
+    __typename?: 'PromotionOperations';
+    conditions: Array<ConfigurableOperationDefinition>;
+    actions: Array<ConfigurableOperationDefinition>;
 };
 
 export type Query = {

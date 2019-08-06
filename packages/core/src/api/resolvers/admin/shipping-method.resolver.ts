@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    ConfigurableOperation,
+    ConfigurableOperationDefinition,
     MutationCreateShippingMethodArgs,
     MutationUpdateShippingMethodArgs,
     Permission,
@@ -38,13 +38,13 @@ export class ShippingMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingEligibilityCheckers(@Args() args: QueryShippingMethodArgs): ConfigurableOperation[] {
+    shippingEligibilityCheckers(@Args() args: QueryShippingMethodArgs): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingEligibilityCheckers();
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingCalculators(@Args() args: QueryShippingMethodArgs): ConfigurableOperation[] {
+    shippingCalculators(@Args() args: QueryShippingMethodArgs): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingCalculators();
     }
 

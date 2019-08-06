@@ -23,12 +23,24 @@ type Adjustment {
 type ConfigArg {
     name: String!
     type: String!
-    value: String
+    value: String!
+}
+
+type ConfigArgDefinition {
+    name: String!
+    type: String!
+    config: JSON
 }
 
 type ConfigurableOperation {
     code: String!
     args: [ConfigArg!]!
+    description: String!
+}
+
+type ConfigurableOperationDefinition {
+    code: String!
+    args: [ConfigArgDefinition!]!
     description: String!
 }
 
@@ -47,7 +59,7 @@ type DeletionResponse {
 input ConfigArgInput {
     name: String!
     type: String!
-    value: String
+    value: String!
 }
 
 input ConfigurableOperationInput {

@@ -1,12 +1,31 @@
 // prettier-ignore
-import { ConfigArg, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { ConfigArg, ConfigurableOperationDefinition, LocalizedString, Maybe, StringFieldOption } from '@vendure/common/lib/generated-types';
 import { ConfigArgType } from '@vendure/common/lib/shared-types';
 
 import { InternalServerError } from './error/errors';
 
-export type ConfigArgDef<T extends ConfigArgType> = {
+export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;
+    label?: Omit<LocalizedString, '__typename'>;
+    description?: Maybe<Array<Omit<LocalizedString, '__typename'>>>;
+}
+
+export type WithArgConfig<T> = {
+    config?: T;
 };
+
+export type StringArgConfig = WithArgConfig<{
+    options?: Maybe<StringFieldOption[]>;
+}>;
+export type IntArgConfig = WithArgConfig<{
+    inputType?: 'default' | 'percentage' | 'money';
+}>;
+
+export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
+    ? ConfigArgCommonDef<'string'> & StringArgConfig
+    : T extends 'int'
+    ? ConfigArgCommonDef<'int'> & IntArgConfig
+    : ConfigArgCommonDef<T> & WithArgConfig<never>;
 
 export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: ConfigArgDef<T>;
@@ -48,11 +67,11 @@ export interface ConfigurableOperationDef {
  * Convert a ConfigurableOperationDef into a ConfigurableOperation object, typically
  * so that it can be sent via the API.
  */
-export function configurableDefToOperation(def: ConfigurableOperationDef): ConfigurableOperation {
+export function configurableDefToOperation(def: ConfigurableOperationDef): ConfigurableOperationDefinition {
     return {
         code: def.code,
         description: def.description,
-        args: Object.entries(def.args).map(([name, arg]) => ({ name, type: arg.type })),
+        args: Object.entries(def.args).map(([name, arg]) => ({ name, type: arg.type, config: arg.config })),
     };
 }
 

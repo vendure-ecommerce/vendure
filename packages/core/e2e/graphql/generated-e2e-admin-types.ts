@@ -50,12 +50,6 @@ export type Adjustment = {
     amount: Scalars['Int'];
 };
 
-export type AdjustmentOperations = {
-    __typename?: 'AdjustmentOperations';
-    conditions: Array<ConfigurableOperation>;
-    actions: Array<ConfigurableOperation>;
-};
-
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
@@ -292,19 +286,33 @@ export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
     type: Scalars['String'];
-    value?: Maybe<Scalars['String']>;
+    value: Scalars['String'];
+};
+
+export type ConfigArgDefinition = {
+    __typename?: 'ConfigArgDefinition';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    config?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
     type: Scalars['String'];
-    value?: Maybe<Scalars['String']>;
+    value: Scalars['String'];
 };
 
 export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
+    description: Scalars['String'];
+};
+
+export type ConfigurableOperationDefinition = {
+    __typename?: 'ConfigurableOperationDefinition';
+    code: Scalars['String'];
+    args: Array<ConfigArgDefinition>;
     description: Scalars['String'];
 };
 
@@ -2510,6 +2518,12 @@ export type PromotionListOptions = {
     filter?: Maybe<PromotionFilterParameter>;
 };
 
+export type PromotionOperations = {
+    __typename?: 'PromotionOperations';
+    conditions: Array<ConfigurableOperationDefinition>;
+    actions: Array<ConfigurableOperationDefinition>;
+};
+
 export type PromotionSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
@@ -2529,7 +2543,7 @@ export type Query = {
     activeChannel: Channel;
     collections: CollectionList;
     collection?: Maybe<Collection>;
-    collectionFilters: Array<ConfigurableOperation>;
+    collectionFilters: Array<ConfigurableOperationDefinition>;
     countries: CountryList;
     country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
@@ -2553,13 +2567,14 @@ export type Query = {
     product?: Maybe<Product>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
-    adjustmentOperations: AdjustmentOperations;
+    promotionConditions: Array<ConfigurableOperationDefinition>;
+    promotionActions: Array<ConfigurableOperationDefinition>;
     roles: RoleList;
     role?: Maybe<Role>;
     shippingMethods: ShippingMethodList;
     shippingMethod?: Maybe<ShippingMethod>;
-    shippingEligibilityCheckers: Array<ConfigurableOperation>;
-    shippingCalculators: Array<ConfigurableOperation>;
+    shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+    shippingCalculators: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
@@ -4589,10 +4604,12 @@ export type UpdatePromotionMutation = { __typename?: 'Mutation' } & {
 export type GetAdjustmentOperationsQueryVariables = {};
 
 export type GetAdjustmentOperationsQuery = { __typename?: 'Query' } & {
-    adjustmentOperations: { __typename?: 'AdjustmentOperations' } & {
-        actions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-        conditions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-    };
+    promotionActions: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationFragment
+    >;
+    promotionConditions: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationFragment
+    >;
 };
 
 export type GetRolesQueryVariables = {
@@ -5702,9 +5719,8 @@ export namespace UpdatePromotion {
 export namespace GetAdjustmentOperations {
     export type Variables = GetAdjustmentOperationsQueryVariables;
     export type Query = GetAdjustmentOperationsQuery;
-    export type AdjustmentOperations = GetAdjustmentOperationsQuery['adjustmentOperations'];
-    export type Actions = ConfigurableOperationFragment;
-    export type Conditions = ConfigurableOperationFragment;
+    export type PromotionActions = ConfigurableOperationFragment;
+    export type PromotionConditions = ConfigurableOperationFragment;
 }
 
 export namespace GetRoles {

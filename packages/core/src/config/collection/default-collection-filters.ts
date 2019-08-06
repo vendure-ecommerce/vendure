@@ -39,7 +39,7 @@ export const facetValueCollectionFilter = new CollectionFilter({
 
 export const variantNameCollectionFilter = new CollectionFilter({
     args: {
-        operator: { type: 'string' },
+        operator: { type: 'stringOperator' },
         term: { type: 'string' },
     },
     code: 'variant-name-filter',

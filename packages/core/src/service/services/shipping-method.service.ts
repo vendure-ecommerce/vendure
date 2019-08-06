@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    ConfigurableOperation,
+    ConfigurableOperationDefinition,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
 } from '@vendure/common/lib/generated-types';
@@ -86,11 +86,11 @@ export class ShippingMethodService {
         return assertFound(this.findOne(shippingMethod.id));
     }
 
-    getShippingEligibilityCheckers(): ConfigurableOperation[] {
+    getShippingEligibilityCheckers(): ConfigurableOperationDefinition[] {
         return this.shippingConfiguration.shippingEligibilityCheckers.map(configurableDefToOperation);
     }
 
-    getShippingCalculators(): ConfigurableOperation[] {
+    getShippingCalculators(): ConfigurableOperationDefinition[] {
         return this.shippingConfiguration.shippingCalculators.map(configurableDefToOperation);
     }
 

@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationCreatePromotionArgs,
     MutationDeletePromotionArgs,
-    DeletionResponse,
+    MutationUpdatePromotionArgs,
     Permission,
     QueryPromotionArgs,
     QueryPromotionsArgs,
-    MutationUpdatePromotionArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -41,9 +41,14 @@ export class PromotionResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    adjustmentOperations(@Ctx() ctx: RequestContext) {
-        // TODO: split this into 2 queries, one for PromotionConditions and one for PromotionActions
-        return this.promotionService.getAdjustmentOperations();
+    promotionConditions(@Ctx() ctx: RequestContext) {
+        return this.promotionService.getPromotionConditions();
+    }
+
+    @Query()
+    @Allow(Permission.ReadSettings)
+    promotionActions(@Ctx() ctx: RequestContext) {
+        return this.promotionService.getPromotionActions();
     }
 
     @Mutation()
@@ -83,5 +88,5 @@ export class PromotionResolver {
             this.idCodecService.encodeConfigurableOperation(collection.actions);
         }
         return collection;
-    }
+    };
 }

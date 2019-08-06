@@ -8,11 +8,6 @@ type Promotion implements Node {
     actions: [ConfigurableOperation!]!
 }
 
-type AdjustmentOperations {
-    conditions: [ConfigurableOperation!]!
-    actions: [ConfigurableOperation!]!
-}
-
 type PromotionList implements PaginatedList {
     items: [Promotion!]!
     totalItems: Int!

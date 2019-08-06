@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    ConfigurableOperation,
+    ConfigurableOperationDefinition,
     DeletionResponse,
     MutationCreateCollectionArgs,
     MutationDeleteCollectionArgs,
@@ -34,7 +34,7 @@ export class CollectionResolver {
     async collectionFilters(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
-    ): Promise<ConfigurableOperation[]> {
+    ): Promise<ConfigurableOperationDefinition[]> {
         return this.collectionService.getAvailableFilters();
     }
 

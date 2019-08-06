@@ -6,7 +6,7 @@ import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/p
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CONFIGURABLE_FRAGMENT, PROMOTION_FRAGMENT } from './graphql/fragments';
+import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
     CreatePromotion,
     DeletePromotion,
@@ -134,7 +134,8 @@ describe('Promotion resolver', () => {
             GET_ADJUSTMENT_OPERATIONS,
         );
 
-        expect(result.adjustmentOperations).toMatchSnapshot();
+        expect(result.promotionActions).toMatchSnapshot();
+        expect(result.promotionConditions).toMatchSnapshot();
     });
 
     describe('deletion', () => {
@@ -254,16 +255,26 @@ export const UPDATE_PROMOTION = gql`
     ${PROMOTION_FRAGMENT}
 `;
 
+export const CONFIGURABLE_DEF_FRAGMENT = gql`
+    fragment ConfigurableOperationDef on ConfigurableOperationDefinition {
+        args {
+            name
+            type
+            config
+        }
+        code
+        description
+    }
+`;
+
 export const GET_ADJUSTMENT_OPERATIONS = gql`
     query GetAdjustmentOperations {
-        adjustmentOperations {
-            actions {
-                ...ConfigurableOperation
-            }
-            conditions {
-                ...ConfigurableOperation
-            }
+        promotionActions {
+            ...ConfigurableOperationDef
+        }
+        promotionConditions {
+            ...ConfigurableOperationDef
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_DEF_FRAGMENT}
 `;
