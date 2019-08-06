@@ -53,8 +53,9 @@ function generateGraphqlDocs(hugoOutputPath: string) {
     let objectTypesOutput = generateFrontMatter('Types', 3) + `\n\n# Types\n\n`;
     let inputTypesOutput = generateFrontMatter('Input Objects', 4) + `\n\n# Input Objects\n\n`;
     let enumsOutput = generateFrontMatter('Enums', 5) + `\n\n# Enums\n\n`;
-
-    for (const type of Object.values(schema.getTypeMap())) {
+    const sortByName = (a: { name: string; }, b: { name: string; }) => a.name < b.name ? -1 : 1;
+    const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
+    for (const type of sortedTypes) {
         if (type.name.substring(0, 2) === '__') {
             // ignore internal types
             continue;
@@ -62,7 +63,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
 
         if (isObjectType(type)) {
             if (type.name === 'Query') {
-                for (const field of Object.values(type.getFields())) {
+                for (const field of Object.values(type.getFields()).sort(sortByName)) {
                     if (field.name === 'temp__') {
                         continue;
                     }
@@ -71,7 +72,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                     queriesOutput += renderFields([field], false) + '\n\n';
                 }
             } else if (type.name === 'Mutation') {
-                for (const field of Object.values(type.getFields())) {
+                for (const field of Object.values(type.getFields()).sort(sortByName)) {
                     mutationsOutput += `## ${field.name}\n`;
                     mutationsOutput += renderDescription(field);
                     mutationsOutput += renderFields([field], false) + '\n\n';
