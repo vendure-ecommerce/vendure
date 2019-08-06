@@ -21,7 +21,6 @@ import {
  * markdown for documentation.
  */
 export class TypescriptDocsParser {
-
     private readonly atTokenPlaceholder = '__EscapedAtToken__';
 
     /**
@@ -42,7 +41,11 @@ export class TypescriptDocsParser {
 
         return statements
             .map(statement => {
-                const info = this.parseDeclaration(statement.statement, statement.sourceFile, statement.sourceLine);
+                const info = this.parseDeclaration(
+                    statement.statement,
+                    statement.sourceFile,
+                    statement.sourceLine,
+                );
                 return info;
             })
             .filter(notNullOrUndefined);
@@ -58,9 +61,11 @@ export class TypescriptDocsParser {
         return sourceFiles.reduce(
             (st, sf) => {
                 const statementsWithSources = sf.statements.map(statement => {
-                    const sourceFile = path.relative(path.join(__dirname, '..'), sf.fileName).replace(/\\/g, '/');
+                    const sourceFile = path
+                        .relative(path.join(__dirname, '..'), sf.fileName)
+                        .replace(/\\/g, '/');
                     const sourceLine = sf.getLineAndCharacterOfPosition(statement.getStart()).line + 1;
-                    return {statement, sourceFile, sourceLine};
+                    return { statement, sourceFile, sourceLine };
                 });
                 return [...st, ...statementsWithSources];
             },
@@ -115,7 +120,9 @@ export class TypescriptDocsParser {
                 ...info,
                 type: statement.type,
                 kind: 'typeAlias',
-                members: ts.isTypeLiteralNode(statement.type) ? this.parseMembers(statement.type.members) : undefined,
+                members: ts.isTypeLiteralNode(statement.type)
+                    ? this.parseMembers(statement.type.members)
+                    : undefined,
             };
         } else if (ts.isClassDeclaration(statement)) {
             return {
@@ -154,7 +161,7 @@ export class TypescriptDocsParser {
         statement: ts.ClassDeclaration | ts.InterfaceDeclaration,
         kind: ts.SyntaxKind.ExtendsKeyword | ts.SyntaxKind.ImplementsKeyword,
     ): string | undefined {
-        const {heritageClauses} = statement;
+        const { heritageClauses } = statement;
         if (!heritageClauses) {
             return;
         }
@@ -205,10 +212,10 @@ export class TypescriptDocsParser {
                     ts.isMethodDeclaration(member) ||
                     ts.isConstructorDeclaration(member) ||
                     ts.isEnumMember(member) ||
-                    ts.isGetAccessorDeclaration(member)
-                )
+                    ts.isGetAccessorDeclaration(member) ||
+                    ts.isIndexSignatureDeclaration(member))
             ) {
-                const name = member.name ? member.name.getText() : 'constructor';
+                const name = member.name ? member.name.getText() : ts.isIndexSignatureDeclaration(member) ? '[index]' : 'constructor';
                 let description = '';
                 let type = '';
                 let defaultValue = '';
@@ -228,7 +235,7 @@ export class TypescriptDocsParser {
                     description: tag => (description += tag.comment || ''),
                     example: tag => (description += this.formatExampleCode(tag.comment)),
                     default: tag => (defaultValue = tag.comment || ''),
-                    internal: tag => isInternal = true,
+                    internal: tag => (isInternal = true),
                 });
                 if (isInternal) {
                     continue;
@@ -347,7 +354,10 @@ export class TypescriptDocsParser {
         if (input == null) {
             return input;
         }
-        return input.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\s+/g, '-').toLowerCase() as T;
+        return input
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .replace(/\s+/g, '-')
+            .toLowerCase() as T;
     }
 
     /**
