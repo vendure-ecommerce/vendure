@@ -25,6 +25,13 @@ export interface MethodInfo extends MemberInfo {
     parameters: MethodParameterInfo[];
 }
 
+export interface DocsPage {
+    title: string;
+    category: string;
+    declarations: ParsedDeclaration[];
+    fileName: string;
+}
+
 export interface DeclarationInfo {
     packageName: string;
     sourceFile: string;
@@ -34,7 +41,7 @@ export interface DeclarationInfo {
     weight: number;
     category: string;
     description: string;
-    fileName: string;
+    page: string | undefined;
 }
 
 export interface InterfaceInfo extends DeclarationInfo {

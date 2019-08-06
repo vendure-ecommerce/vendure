@@ -9,7 +9,7 @@ import { assertNever } from '../../packages/common/src/shared-utils';
 import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
 import {
     ClassInfo,
-    DeclarationInfo,
+    DeclarationInfo, DocsPage,
     EnumInfo,
     FunctionInfo,
     InterfaceInfo, MethodParameterInfo,
@@ -20,45 +20,53 @@ import {
 
 export class TypescriptDocsRenderer {
 
-    render(parsedDeclarations: ParsedDeclaration[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
+    render(pages: DocsPage[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
         let generatedCount = 0;
         if (!fs.existsSync(outputPath)) {
             fs.mkdirs(outputPath);
         }
-        for (const info of parsedDeclarations) {
+
+        for (const page of pages) {
             let markdown = '';
-            switch (info.kind) {
-                case 'interface':
-                    markdown = this.renderInterfaceOrClass(info, typeMap, docsUrl);
-                    break;
-                case 'typeAlias':
-                    markdown = this.renderTypeAlias(info, typeMap, docsUrl);
-                    break;
-                case 'class':
-                    markdown = this.renderInterfaceOrClass(info, typeMap, docsUrl);
-                    break;
-                case 'enum':
-                    markdown = this.renderEnum(info, typeMap, docsUrl);
-                    break;
-                case 'function':
-                    markdown = this.renderFunction(info, typeMap, docsUrl);
-                    break;
-                default:
-                    assertNever(info);
+            markdown += generateFrontMatter(page.title, 10);
+            markdown += `\n# ${page.title}\n`;
+            for (const info of page.declarations) {
+                // markdown += `## ${info.title}\n`;
+                // markdown += '{{< declaration >}}\n';
+                switch (info.kind) {
+                    case 'interface':
+                        markdown += this.renderInterfaceOrClass(info, typeMap, docsUrl);
+                        break;
+                    case 'typeAlias':
+                        markdown += this.renderTypeAlias(info, typeMap, docsUrl);
+                        break;
+                    case 'class':
+                        markdown += this.renderInterfaceOrClass(info, typeMap, docsUrl);
+                        break;
+                    case 'enum':
+                        markdown += this.renderEnum(info, typeMap, docsUrl);
+                        break;
+                    case 'function':
+                        markdown += this.renderFunction(info, typeMap, docsUrl);
+                        break;
+                    default:
+                        assertNever(info);
+                }
+                // markdown += '{{< /declaration >}}\n';
             }
 
-            const categoryDir = path.join(outputPath, info.category);
+            const categoryDir = path.join(outputPath, page.category);
             const indexFile = path.join(categoryDir, '_index.md');
             if (!fs.existsSync(categoryDir)) {
                 fs.mkdirsSync(categoryDir);
             }
             if (!fs.existsSync(indexFile)) {
-                const indexFileContent = generateFrontMatter(info.category, 10, false) + `\n\n# ${info.category}`;
+                const indexFileContent = generateFrontMatter(page.category, 10, false) + `\n\n# ${page.category}`;
                 fs.writeFileSync(indexFile, indexFileContent);
                 generatedCount++;
             }
 
-            fs.writeFileSync(path.join(categoryDir, info.fileName + '.md'), markdown);
+            fs.writeFileSync(path.join(categoryDir, page.fileName + '.md'), markdown);
             generatedCount++;
         }
         return generatedCount;
@@ -70,14 +78,15 @@ export class TypescriptDocsRenderer {
     private renderInterfaceOrClass(info: InterfaceInfo | ClassInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, category, description, members } = info;
         let output = '';
-        output += generateFrontMatter(title, weight);
-        output += `\n\n# ${title}\n\n`;
+        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(info);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += `### Signature\n\n`;
         output += info.kind === 'interface' ? this.renderInterfaceSignature(info) : this.renderClassSignature(info);
-        output += `## Members\n\n`;
-        output += `${this.renderMembers(info, knownTypeMap, docsUrl)}\n`;
+        if (info.members && info.members.length) {
+            output += `### Members\n\n`;
+            output += `${this.renderMembers(info, knownTypeMap, docsUrl)}\n`;
+        }
         return output;
     }
 
@@ -87,14 +96,13 @@ export class TypescriptDocsRenderer {
     private renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, type, fullText } = typeAliasInfo;
         let output = '';
-        output += generateFrontMatter(title, weight);
-        output += `\n\n# ${title}\n\n`;
+        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(typeAliasInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += `### Signature\n\n`;
         output += this.renderTypeAliasSignature(typeAliasInfo);
-        if (typeAliasInfo.members) {
-            output += `## Members\n\n`;
+        if (typeAliasInfo.members && typeAliasInfo.members.length) {
+            output += `### Members\n\n`;
             output += `${this.renderMembers(typeAliasInfo, knownTypeMap, docsUrl)}\n`;
         }
         return output;
@@ -103,11 +111,10 @@ export class TypescriptDocsRenderer {
     private renderEnum(enumInfo: EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText } = enumInfo;
         let output = '';
-        output += generateFrontMatter(title, weight);
-        output += `\n\n# ${title}\n\n`;
+        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(enumInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += `### Signature\n\n`;
         output += this.renderEnumSignature(enumInfo);
         return output;
     }
@@ -115,14 +122,13 @@ export class TypescriptDocsRenderer {
     private renderFunction(functionInfo: FunctionInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText, parameters } = functionInfo;
         let output = '';
-        output += generateFrontMatter(title, weight);
-        output += `\n\n# ${title}\n\n`;
+        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(functionInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += `### Signature\n\n`;
         output += this.renderFunctionSignature(functionInfo, knownTypeMap);
         if (parameters.length) {
-            output += `## Parameters\n\n`;
+            output += `### Parameters\n\n`;
             output += this.renderFunctionParams(parameters, knownTypeMap, docsUrl);
         }
         return output;
@@ -257,9 +263,9 @@ export class TypescriptDocsRenderer {
                     type = `(${args}) => ${this.renderType(member.type, knownTypeMap, docsUrl)}`;
                 }
             }
-            output += `### ${member.name}\n\n`;
+            output += `#### ${member.name}\n\n`;
             output += `{{< member-info kind="${[...member.modifiers, member.kind].join(' ')}" type="${type}" ${defaultParam}>}}\n\n`;
-            output += `${this.renderDescription(member.description, knownTypeMap, docsUrl)}\n\n`;
+            output += `{{< member-description >}}${this.renderDescription(member.description, knownTypeMap, docsUrl)}{{< /member-description >}}\n\n`;
         }
         return output;
     }
@@ -288,7 +294,7 @@ export class TypescriptDocsRenderer {
         for (const [key, val] of knownTypeMap) {
             const re = new RegExp(`\\b${key}\\b`, 'g');
             const strippedIndex = val.replace(/\/_index$/, '');
-            typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}/'>${key}</a>`);
+            typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`);
         }
         return typeText;
     }

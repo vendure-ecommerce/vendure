@@ -65,31 +65,42 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
     const globalTypeMap: TypeMap = new Map();
 
     if (!isWatchMode) {
-        for (const {outputPath, sourceDirs} of config) {
+        for (const { outputPath, sourceDirs } of config) {
             deleteGeneratedDocs(absOutputPath(outputPath));
         }
     }
 
     for (const { outputPath, sourceDirs } of config) {
         const sourceFilePaths = getSourceFilePaths(sourceDirs);
-        const parsedDeclarations = new TypescriptDocsParser().parse(sourceFilePaths);
-        for (const info of parsedDeclarations) {
-            const { category, fileName } = info;
-            const pathToTypeDoc = `${outputPath}/${category ? category + '/' : ''}${fileName === '_index' ? '' : fileName}`;
-            globalTypeMap.set(info.title, pathToTypeDoc);
+        const docsPages = new TypescriptDocsParser().parse(sourceFilePaths);
+        for (const page of docsPages) {
+            const { category, fileName, declarations } = page;
+            for (const declaration of declarations) {
+                const pathToTypeDoc = `${outputPath}/${category ? category + '/' : ''}${
+                    fileName === '_index' ? '' : fileName
+                }#${toHash(declaration.title)}`;
+                globalTypeMap.set(declaration.title, pathToTypeDoc);
+            }
         }
         const docsUrl = `/docs`;
         const generatedCount = new TypescriptDocsRenderer().render(
-            parsedDeclarations,
+            docsPages,
             docsUrl,
             absOutputPath(outputPath),
             globalTypeMap,
         );
 
         if (generatedCount) {
-            console.log(`Generated ${generatedCount} typescript api docs for "${outputPath}" in ${+new Date() - timeStart}ms`);
+            console.log(
+                `Generated ${generatedCount} typescript api docs for "${outputPath}" in ${+new Date() -
+                    timeStart}ms`,
+            );
         }
     }
+}
+
+function toHash(title: string): string {
+    return title.replace(/\s/g, '').toLowerCase();
 }
 
 function absOutputPath(outputPath: string): string {

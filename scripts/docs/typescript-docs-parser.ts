@@ -5,7 +5,7 @@ import ts from 'typescript';
 import { notNullOrUndefined } from '../../packages/common/src/shared-utils';
 
 import {
-    ClassInfo,
+    ClassInfo, DocsPage,
     InterfaceInfo,
     MemberInfo,
     MethodInfo,
@@ -27,7 +27,7 @@ export class TypescriptDocsParser {
      * Parses the TypeScript files given by the filePaths array and returns the
      * parsed data structures ready for rendering.
      */
-    parse(filePaths: string[]): ParsedDeclaration[] {
+    parse(filePaths: string[]): DocsPage[] {
         const sourceFiles = filePaths.map(filePath => {
             return ts.createSourceFile(
                 filePath,
@@ -39,7 +39,7 @@ export class TypescriptDocsParser {
 
         const statements = this.getStatementsWithSourceLocation(sourceFiles);
 
-        return statements
+        const pageMap = statements
             .map(statement => {
                 const info = this.parseDeclaration(
                     statement.statement,
@@ -48,8 +48,27 @@ export class TypescriptDocsParser {
                 );
                 return info;
             })
-            .filter(notNullOrUndefined);
-    }
+            .filter(notNullOrUndefined)
+            .reduce((pages, declaration) => {
+                const pageTitle = declaration.page || declaration.title;
+                const existingPage = pages.get(pageTitle);
+                if (existingPage) {
+                    existingPage.declarations.push(declaration);
+                } else {
+                    const normalizedTitle = this.kebabCase(pageTitle);
+                    const fileName = normalizedTitle === declaration.category ? '_index' : normalizedTitle;
+                    pages.set(pageTitle, {
+                        title: pageTitle,
+                        category: declaration.category,
+                        declarations: [declaration],
+                        fileName,
+                    });
+                }
+                return pages;
+            }, new Map<string, DocsPage>());
+
+        return Array.from(pageMap.values());
+    };
 
     /**
      * Maps an array of parsed SourceFiles into statements, including a reference to the original file each statement
@@ -92,8 +111,7 @@ export class TypescriptDocsParser {
         const fullText = this.getDeclarationFullText(statement);
         const weight = this.getDeclarationWeight(statement);
         const description = this.getDeclarationDescription(statement);
-        const normalizedTitle = this.kebabCase(title);
-        const fileName = normalizedTitle === category ? '_index' : normalizedTitle;
+        const docsPage = this.getDocsPage(statement);
         const packageName = this.getPackageName(sourceFile);
 
         const info = {
@@ -105,7 +123,7 @@ export class TypescriptDocsParser {
             weight,
             category,
             description,
-            fileName,
+            page: docsPage,
         };
 
         if (ts.isInterfaceDeclaration(statement)) {
@@ -288,6 +306,14 @@ export class TypescriptDocsParser {
             docsWeight: tag => (weight = Number.parseInt(tag.comment || '10', 10)),
         });
         return weight;
+    }
+
+    private getDocsPage(statement: ValidDeclaration): string | undefined {
+        let docsPage: string | undefined;
+        this.parseTags(statement, {
+            docsPage: tag => docsPage = tag.comment,
+        });
+        return docsPage;
     }
 
     /**

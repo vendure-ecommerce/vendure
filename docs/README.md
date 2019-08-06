@@ -44,6 +44,11 @@ Currently, any `interface`, `class` or `type` which includes the JSDoc `@docCate
 
 This is required as its presence determines whether the declaration is extracted into the docs. Its value should be a string corresponding to the API sub-section that this declaration belongs to, e.g. "payment", "shipping" etc.
 
+##### `@docsPage`
+
+This optional tag can be used to group declarations together onto a single page. This is useful e.g. in the case of utility functions or
+type aliases, which may be considered too trivial to get an entire page to themselves.
+
 ##### `@description`
 
 This tag specifies the text description of the declaration. It supports markdown, but should not be used for code blocks, which should be tagged with `@example` (see below). Links to other declarations can be made with the `{@link SomeOtherDeclaration}` syntax. Also applies to class/interface members.
