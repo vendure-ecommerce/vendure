@@ -127,8 +127,21 @@ function generateGraphqlDocs(hugoOutputPath: string) {
 /**
  * Renders the type description if it exists.
  */
-function renderDescription(type: { description?: string | null }, appendNewlines = true): string {
-    return type.description ? `${type.description + (appendNewlines ? '\n\n' : '')}` : '';
+function renderDescription(type: { description?: string | null }): string {
+    if (!type.description) {
+        return '';
+    }
+    // Strip any JSDoc tags which may be used to annotate the generated
+    // TS types.
+    const stringsToStrip = [
+        /@docsCategory\s+[^\n]+/g,
+        /@description\s+/g,
+    ];
+    let result = type.description;
+    for (const pattern of stringsToStrip) {
+        result = result.replace(pattern, '');
+    }
+    return result + '\n\n';
 }
 
 function renderFields(
