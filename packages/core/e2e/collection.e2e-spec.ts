@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { pick } from '../../common/lib/pick';
-import { StringOperator } from '../src/common/configurable-operation';
 import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
@@ -414,7 +413,7 @@ describe('Collection resolver', () => {
                                 {
                                     name: 'operator',
                                     value: 'contains',
-                                    type: 'stringOperator',
+                                    type: 'string',
                                 },
                                 {
                                     name: 'term',
@@ -662,7 +661,7 @@ describe('Collection resolver', () => {
 
         describe('variantName filter', () => {
             async function createVariantNameFilteredCollection(
-                operator: StringOperator,
+                operator: string,
                 term: string,
             ): Promise<Collection.Fragment> {
                 const { createCollection } = await client.query<
@@ -680,7 +679,7 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'operator',
                                         value: operator,
-                                        type: 'stringOperator',
+                                        type: 'string',
                                     },
                                     {
                                         name: 'term',

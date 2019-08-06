@@ -2,6 +2,7 @@ import { pick } from '@vendure/common/lib/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { LanguageCode } from '../../common/lib/generated-types';
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
@@ -191,7 +192,7 @@ describe('Promotion resolver', () => {
 function generateTestCondition(code: string): PromotionCondition<any> {
     return new PromotionCondition({
         code,
-        description: `description for ${code}`,
+        description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
         args: { arg: { type: 'int' } },
         check: (order, args) => true,
     });
@@ -200,7 +201,7 @@ function generateTestCondition(code: string): PromotionCondition<any> {
 function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
-        description: `description for ${code}`,
+        description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
         args: { facetValueIds: { type: 'facetValueIds' } },
         execute: (order, args) => {
             return 42;

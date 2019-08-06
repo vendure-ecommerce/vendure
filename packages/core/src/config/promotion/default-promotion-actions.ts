@@ -1,3 +1,5 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
 import { PromotionItemAction, PromotionOrderAction } from './promotion-action';
 
 export const orderPercentageDiscount = new PromotionOrderAction({
@@ -13,7 +15,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
     execute(order, args) {
         return -order.subTotal * (args.discount / 100);
     },
-    description: 'Discount order by { discount }%',
+    description: [{ languageCode: LanguageCode.en, value: 'Discount order by { discount }%' }],
 });
 
 export const itemPercentageDiscount = new PromotionItemAction({
@@ -29,7 +31,7 @@ export const itemPercentageDiscount = new PromotionItemAction({
     execute(orderItem, orderLine, args) {
         return -orderLine.unitPrice * (args.discount / 100);
     },
-    description: 'Discount every item by { discount }%',
+    description: [{ languageCode: LanguageCode.en, value: 'Discount every item by { discount }%' }],
 });
 
 export const buy1Get1Free = new PromotionItemAction({
@@ -44,7 +46,7 @@ export const buy1Get1Free = new PromotionItemAction({
         }
         return 0;
     },
-    description: 'Buy 1 get 1 free',
+    description: [{ languageCode: LanguageCode.en, value: 'Buy 1 get 1 free' }],
 });
 
 export const discountOnItemWithFacets = new PromotionItemAction({
@@ -66,7 +68,9 @@ export const discountOnItemWithFacets = new PromotionItemAction({
         }
         return 0;
     },
-    description: 'Discount products with these facets by { discount }%',
+    description: [
+        { languageCode: LanguageCode.en, value: 'Discount products with these facets by { discount }%' },
+    ],
 });
 
 export const defaultPromotionActions = [

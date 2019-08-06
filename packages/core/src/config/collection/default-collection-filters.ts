@@ -1,3 +1,4 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Brackets } from 'typeorm';
 
 import { UserInputError } from '../../common/error/errors';
@@ -13,7 +14,7 @@ export const facetValueCollectionFilter = new CollectionFilter({
         containsAny: { type: 'boolean' },
     },
     code: 'facet-value-filter',
-    description: 'Filter by FacetValues',
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by FacetValues' }],
     apply: (qb, args) => {
         if (args.facetValueIds.length) {
             qb.leftJoin('productVariant.product', 'product')
@@ -39,11 +40,21 @@ export const facetValueCollectionFilter = new CollectionFilter({
 
 export const variantNameCollectionFilter = new CollectionFilter({
     args: {
-        operator: { type: 'stringOperator' },
+        operator: {
+            type: 'string',
+            config: {
+                options: [
+                    { value: 'startsWith' },
+                    { value: 'endsWith' },
+                    { value: 'contains' },
+                    { value: 'doesNotContain' },
+                ],
+            },
+        },
         term: { type: 'string' },
     },
     code: 'variant-name-filter',
-    description: 'Filter by ProductVariant name',
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
         qb.leftJoin('productVariant.translations', 'translation');
         switch (args.operator) {

@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Connection } from 'typeorm';
 
@@ -130,7 +131,7 @@ describe('OrderCalculator', () => {
         const alwaysTrueCondition = new PromotionCondition({
             args: {},
             code: 'always_true_condition',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             check() {
                 return true;
             },
@@ -139,7 +140,7 @@ describe('OrderCalculator', () => {
         const orderTotalCondition = new PromotionCondition({
             args: { minimum: { type: 'int' } },
             code: 'order_total_condition',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             check(order, args) {
                 return args.minimum <= order.total;
             },
@@ -147,7 +148,7 @@ describe('OrderCalculator', () => {
 
         const fixedPriceItemAction = new PromotionItemAction({
             code: 'fixed_price_item_action',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(item) {
                 return -item.unitPrice + 42;
@@ -156,7 +157,7 @@ describe('OrderCalculator', () => {
 
         const fixedPriceOrderAction = new PromotionOrderAction({
             code: 'fixed_price_item_action',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(order) {
                 return -order.total + 42;
@@ -223,7 +224,12 @@ describe('OrderCalculator', () => {
             const orderQuantityCondition = new PromotionCondition({
                 args: { minimum: { type: 'int' } },
                 code: 'order_quantity_condition',
-                description: 'Passes if any order line has at least the minimum quantity',
+                description: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Passes if any order line has at least the minimum quantity',
+                    },
+                ],
                 check(_order, args) {
                     for (const line of _order.lines) {
                         if (args.minimum <= line.quantity) {
@@ -240,7 +246,7 @@ describe('OrderCalculator', () => {
                 execute(_order, args) {
                     return -_order.subTotal * (args.discount / 100);
                 },
-                description: 'Discount order by { discount }%',
+                description: [{ languageCode: LanguageCode.en, value: 'Discount order by { discount }%' }],
             });
 
             const promotion1 = new Promotion({

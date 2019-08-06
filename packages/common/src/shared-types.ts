@@ -55,14 +55,8 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
  * 1. How the argument form field is rendered in the admin-ui
  * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
  */
-export type ConfigArgType =
-    | 'string'
-    | 'int'
-    | 'float'
-    | 'boolean'
-    | 'datetime'
-    | 'facetValueIds'
-    | 'stringOperator';
+export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'facetValueIds';
+
 export type ConfigArgSubset<T extends ConfigArgType> = T;
 
 export type CustomFieldsObject = { [key: string]: any };

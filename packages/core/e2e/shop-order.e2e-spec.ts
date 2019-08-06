@@ -9,6 +9,7 @@ import {
     GetCountryList,
     GetCustomer,
     GetCustomerList,
+    LanguageCode,
     UpdateCountry,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -868,7 +869,7 @@ describe('Shop orders', () => {
 
 const testPaymentMethod = new PaymentMethodHandler({
     code: 'test-payment-method',
-    description: 'Test Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {
@@ -885,7 +886,7 @@ const testPaymentMethod = new PaymentMethodHandler({
 
 const testFailingPaymentMethod = new PaymentMethodHandler({
     code: 'test-failing-payment-method',
-    description: 'Test Failing Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Failing Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {
@@ -901,7 +902,7 @@ const testFailingPaymentMethod = new PaymentMethodHandler({
 
 const testErrorPaymentMethod = new PaymentMethodHandler({
     code: 'test-error-payment-method',
-    description: 'Test Error Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Error Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {

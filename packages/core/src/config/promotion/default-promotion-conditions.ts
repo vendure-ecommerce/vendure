@@ -1,9 +1,11 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
 import { Order } from '../../entity/order/order.entity';
 
 import { PromotionCondition } from './promotion-condition';
 
 export const minimumOrderAmount = new PromotionCondition({
-    description: 'If order total is greater than { amount }',
+    description: [{ languageCode: LanguageCode.en, value: 'If order total is greater than { amount }' }],
     code: 'minimum_order_amount',
     args: {
         amount: { type: 'int', config: { inputType: 'money' } },
@@ -21,7 +23,7 @@ export const minimumOrderAmount = new PromotionCondition({
 
 export const dateRange = new PromotionCondition({
     code: 'date_range',
-    description: 'If Order placed between { start } and { end }',
+    description: [{ languageCode: LanguageCode.en, value: 'If Order placed between { start } and { end }' }],
     args: {
         start: { type: 'datetime' },
         end: { type: 'datetime' },
@@ -34,7 +36,7 @@ export const dateRange = new PromotionCondition({
 
 export const atLeastNOfProduct = new PromotionCondition({
     code: 'at_least_n_of_product',
-    description: 'Buy at least { minimum } of any product',
+    description: [{ languageCode: LanguageCode.en, value: 'Buy at least { minimum } of any product' }],
     args: { minimum: { type: 'int' } },
     check(order: Order, args) {
         return order.lines.reduce(
@@ -48,7 +50,9 @@ export const atLeastNOfProduct = new PromotionCondition({
 
 export const atLeastNWithFacets = new PromotionCondition({
     code: 'at_least_n_with_facets',
-    description: 'Buy at least { minimum } products with the given facets',
+    description: [
+        { languageCode: LanguageCode.en, value: 'Buy at least { minimum } products with the given facets' },
+    ],
     args: {
         minimum: { type: 'int' },
         facets: { type: 'facetValueIds' },

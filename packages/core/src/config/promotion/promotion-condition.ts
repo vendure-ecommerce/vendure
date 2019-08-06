@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
@@ -54,7 +55,7 @@ export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
  */
 export class PromotionCondition<T extends PromotionConditionArgs = {}> implements ConfigurableOperationDef {
     readonly code: string;
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     readonly args: PromotionConditionArgs;
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
@@ -63,7 +64,7 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> implement
         args: T;
         check: CheckPromotionConditionFn<T>;
         code: string;
-        description: string;
+        description: LocalizedStringArray;
         priorityValue?: number;
     }) {
         this.code = config.code;

@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
@@ -53,12 +54,17 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implement
     /** @internal */
     readonly code: string;
     /** @internal */
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     /** @internal */
     readonly args: ShippingCalculatorArgs;
     private readonly calculateFn: CalculateShippingFn<T>;
 
-    constructor(config: { args: T; calculate: CalculateShippingFn<T>; code: string; description: string }) {
+    constructor(config: {
+        args: T;
+        calculate: CalculateShippingFn<T>;
+        code: string;
+        description: LocalizedStringArray;
+    }) {
         this.code = config.code;
         this.description = config.description;
         this.args = config.args;

@@ -38,14 +38,14 @@ export class ShippingMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingEligibilityCheckers(@Args() args: QueryShippingMethodArgs): ConfigurableOperationDefinition[] {
-        return this.shippingMethodService.getShippingEligibilityCheckers();
+    shippingEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingMethodService.getShippingEligibilityCheckers(ctx);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingCalculators(@Args() args: QueryShippingMethodArgs): ConfigurableOperationDefinition[] {
-        return this.shippingMethodService.getShippingCalculators();
+    shippingCalculators(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
     @Mutation()

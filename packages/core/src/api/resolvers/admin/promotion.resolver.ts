@@ -42,13 +42,13 @@ export class PromotionResolver {
     @Query()
     @Allow(Permission.ReadSettings)
     promotionConditions(@Ctx() ctx: RequestContext) {
-        return this.promotionService.getPromotionConditions();
+        return this.promotionService.getPromotionConditions(ctx);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
     promotionActions(@Ctx() ctx: RequestContext) {
-        return this.promotionService.getPromotionActions();
+        return this.promotionService.getPromotionActions(ctx);
     }
 
     @Mutation()

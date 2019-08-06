@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -31,7 +32,7 @@ export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
 export interface PromotionActionConfig<T extends PromotionActionArgs> {
     args: T;
     code: string;
-    description: string;
+    description: LocalizedStringArray;
     priorityValue?: number;
 }
 export interface PromotionItemActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
@@ -51,7 +52,7 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}>
     implements ConfigurableOperationDef {
     readonly code: string;
     readonly args: PromotionActionArgs;
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     readonly priorityValue: number;
 
     protected constructor(config: PromotionActionConfig<T>) {

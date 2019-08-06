@@ -55,7 +55,6 @@ Object {
         },
       ],
       "code": "promo_action",
-      "description": "description for promo_action",
     },
   ],
   "conditions": Array [
@@ -68,7 +67,6 @@ Object {
         },
       ],
       "code": "promo_condition",
-      "description": "description for promo_condition",
     },
   ],
   "enabled": true,
@@ -88,7 +86,6 @@ Object {
         },
       ],
       "code": "promo_action",
-      "description": "description for promo_action",
     },
   ],
   "conditions": Array [
@@ -101,7 +98,6 @@ Object {
         },
       ],
       "code": "promo_condition",
-      "description": "description for promo_condition",
     },
     Object {
       "args": Array [
@@ -112,7 +108,6 @@ Object {
         },
       ],
       "code": "promo_condition2",
-      "description": "description for promo_condition2",
     },
   ],
   "enabled": true,

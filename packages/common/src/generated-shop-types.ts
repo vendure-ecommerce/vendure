@@ -217,6 +217,8 @@ export type ConfigArgDefinition = {
     __typename?: 'ConfigArgDefinition';
     name: Scalars['String'];
     type: Scalars['String'];
+    label?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
     config?: Maybe<Scalars['JSON']>;
 };
 
@@ -230,7 +232,6 @@ export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
-    description: Scalars['String'];
 };
 
 export type ConfigurableOperationDefinition = {
@@ -1814,12 +1815,6 @@ export type PromotionList = PaginatedList & {
     __typename?: 'PromotionList';
     items: Array<Promotion>;
     totalItems: Scalars['Int'];
-};
-
-export type PromotionOperations = {
-    __typename?: 'PromotionOperations';
-    conditions: Array<ConfigurableOperationDefinition>;
-    actions: Array<ConfigurableOperationDefinition>;
 };
 
 export type Query = {

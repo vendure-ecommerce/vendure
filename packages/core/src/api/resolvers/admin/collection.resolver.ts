@@ -35,7 +35,7 @@ export class CollectionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
     ): Promise<ConfigurableOperationDefinition[]> {
-        return this.collectionService.getAvailableFilters();
+        return this.collectionService.getAvailableFilters(ctx);
     }
 
     @Query()

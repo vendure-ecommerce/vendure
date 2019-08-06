@@ -293,6 +293,8 @@ export type ConfigArgDefinition = {
     __typename?: 'ConfigArgDefinition';
     name: Scalars['String'];
     type: Scalars['String'];
+    label?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
     config?: Maybe<Scalars['JSON']>;
 };
 
@@ -306,7 +308,6 @@ export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
-    description: Scalars['String'];
 };
 
 export type ConfigurableOperationDefinition = {
@@ -2518,12 +2519,6 @@ export type PromotionListOptions = {
     filter?: Maybe<PromotionFilterParameter>;
 };
 
-export type PromotionOperations = {
-    __typename?: 'PromotionOperations';
-    conditions: Array<ConfigurableOperationDefinition>;
-    actions: Array<ConfigurableOperationDefinition>;
-};
-
 export type PromotionSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
@@ -3825,7 +3820,7 @@ export type RoleFragment = { __typename?: 'Role' } & Pick<
 
 export type ConfigurableOperationFragment = { __typename?: 'ConfigurableOperation' } & Pick<
     ConfigurableOperation,
-    'code' | 'description'
+    'code'
 > & { args: Array<{ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>> };
 
 export type CollectionFragment = { __typename?: 'Collection' } & Pick<
@@ -4601,14 +4596,23 @@ export type UpdatePromotionMutation = { __typename?: 'Mutation' } & {
     updatePromotion: { __typename?: 'Promotion' } & PromotionFragment;
 };
 
+export type ConfigurableOperationDefFragment = { __typename?: 'ConfigurableOperationDefinition' } & Pick<
+    ConfigurableOperationDefinition,
+    'code' | 'description'
+> & {
+        args: Array<
+            { __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+        >;
+    };
+
 export type GetAdjustmentOperationsQueryVariables = {};
 
 export type GetAdjustmentOperationsQuery = { __typename?: 'Query' } & {
     promotionActions: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationFragment
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
     >;
     promotionConditions: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationFragment
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
     >;
 };
 
@@ -5716,11 +5720,16 @@ export namespace UpdatePromotion {
     export type UpdatePromotion = PromotionFragment;
 }
 
+export namespace ConfigurableOperationDef {
+    export type Fragment = ConfigurableOperationDefFragment;
+    export type Args = NonNullable<ConfigurableOperationDefFragment['args'][0]>;
+}
+
 export namespace GetAdjustmentOperations {
     export type Variables = GetAdjustmentOperationsQueryVariables;
     export type Query = GetAdjustmentOperationsQuery;
-    export type PromotionActions = ConfigurableOperationFragment;
-    export type PromotionConditions = ConfigurableOperationFragment;
+    export type PromotionActions = ConfigurableOperationDefFragment;
+    export type PromotionConditions = ConfigurableOperationDefFragment;
 }
 
 export namespace GetRoles {

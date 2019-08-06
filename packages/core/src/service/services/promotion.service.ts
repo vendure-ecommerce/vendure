@@ -63,12 +63,12 @@ export class PromotionService {
         return this.connection.manager.findOne(Promotion, adjustmentSourceId, { where: { deletedAt: null } });
     }
 
-    getPromotionConditions(): ConfigurableOperationDefinition[] {
-        return this.availableConditions.map(configurableDefToOperation);
+    getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableConditions.map(x => configurableDefToOperation(ctx, x));
     }
 
-    getPromotionActions(): ConfigurableOperationDefinition[] {
-        return this.availableActions.map(configurableDefToOperation);
+    getPromotionActions(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableActions.map(x => configurableDefToOperation(ctx, x));
     }
 
     /**
@@ -130,7 +130,6 @@ export class PromotionService {
         const match = this.getAdjustmentOperationByCode(type, input.code);
         const output: ConfigurableOperation = {
             code: input.code,
-            description: match.description,
             args: input.arguments,
         };
         return output;

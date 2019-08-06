@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';
@@ -136,7 +137,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * @description
      * A human-readable description for the payment method.
      */
-    description: string;
+    description: LocalizedStringArray;
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -230,7 +231,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
     /** @internal */
     readonly code: string;
     /** @internal */
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     /** @internal */
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;

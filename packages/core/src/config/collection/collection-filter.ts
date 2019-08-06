@@ -7,12 +7,11 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgSubset<
-    'facetValueIds' | 'string' | 'stringOperator' | 'boolean'
->;
+export type CollectionFilterArgType = ConfigArgSubset<'facetValueIds' | 'string' | 'boolean'>;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
@@ -23,14 +22,14 @@ export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
 export interface CollectionFilterConfig<T extends CollectionFilterArgs> {
     args: T;
     code: string;
-    description: string;
+    description: LocalizedStringArray;
     apply: ApplyCollectionFilterFn<T>;
 }
 
 export class CollectionFilter<T extends CollectionFilterArgs = {}> implements ConfigurableOperationDef {
     readonly code: string;
     readonly args: CollectionFilterArgs;
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     private readonly applyFn: ApplyCollectionFilterFn<T>;
 
     constructor(config: CollectionFilterConfig<T>) {

@@ -111,8 +111,8 @@ export class CollectionService implements OnModuleInit {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    getAvailableFilters(): ConfigurableOperationDefinition[] {
-        return this.availableFilters.map(configurableDefToOperation);
+    getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableFilters.map(x => configurableDefToOperation(ctx, x));
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {

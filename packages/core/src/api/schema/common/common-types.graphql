@@ -29,13 +29,14 @@ type ConfigArg {
 type ConfigArgDefinition {
     name: String!
     type: String!
+    label: String
+    description: String
     config: JSON
 }
 
 type ConfigurableOperation {
     code: String!
     args: [ConfigArg!]!
-    description: String!
 }
 
 type ConfigurableOperationDefinition {

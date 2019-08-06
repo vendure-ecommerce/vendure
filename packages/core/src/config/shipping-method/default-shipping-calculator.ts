@@ -1,8 +1,10 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
 import { ShippingCalculator } from './shipping-calculator';
 
 export const defaultShippingCalculator = new ShippingCalculator({
     code: 'default-shipping-calculator',
-    description: 'Default Flat-Rate Shipping Calculator',
+    description: [{ languageCode: LanguageCode.en, value: 'Default Flat-Rate Shipping Calculator' }],
     args: {
         rate: { type: 'int', config: { inputType: 'money' } },
         taxRate: { type: 'int', config: { inputType: 'percentage' } },
