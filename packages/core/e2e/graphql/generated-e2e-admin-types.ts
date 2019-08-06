@@ -50,12 +50,6 @@ export type Adjustment = {
     amount: Scalars['Int'];
 };
 
-export type AdjustmentOperations = {
-    __typename?: 'AdjustmentOperations';
-    conditions: Array<ConfigurableOperation>;
-    actions: Array<ConfigurableOperation>;
-};
-
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
@@ -291,38 +285,35 @@ export type CollectionTranslationInput = {
 export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
-    type: ConfigArgType;
-    value?: Maybe<Scalars['String']>;
+    type: Scalars['String'];
+    value: Scalars['String'];
+};
+
+export type ConfigArgDefinition = {
+    __typename?: 'ConfigArgDefinition';
+    name: Scalars['String'];
+    type: Scalars['String'];
+    label?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
+    config?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
-    type: ConfigArgType;
-    value?: Maybe<Scalars['String']>;
+    type: Scalars['String'];
+    value: Scalars['String'];
 };
-
-/** Certain entities allow arbitrary configuration arguments to be specified which can then
- * be set in the admin-ui and used in the business logic of the app. These are the valid
- * data types of such arguments. The data type influences:
- *
- * 1. How the argument form field is rendered in the admin-ui
- * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
- */
-export enum ConfigArgType {
-    PERCENTAGE = 'PERCENTAGE',
-    MONEY = 'MONEY',
-    INT = 'INT',
-    STRING = 'STRING',
-    DATETIME = 'DATETIME',
-    BOOLEAN = 'BOOLEAN',
-    FACET_VALUE_IDS = 'FACET_VALUE_IDS',
-    STRING_OPERATOR = 'STRING_OPERATOR',
-}
 
 export type ConfigurableOperation = {
     __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
+};
+
+export type ConfigurableOperationDefinition = {
+    __typename?: 'ConfigurableOperationDefinition';
+    code: Scalars['String'];
+    args: Array<ConfigArgDefinition>;
     description: Scalars['String'];
 };
 
@@ -2547,7 +2538,7 @@ export type Query = {
     activeChannel: Channel;
     collections: CollectionList;
     collection?: Maybe<Collection>;
-    collectionFilters: Array<ConfigurableOperation>;
+    collectionFilters: Array<ConfigurableOperationDefinition>;
     countries: CountryList;
     country?: Maybe<Country>;
     customerGroups: Array<CustomerGroup>;
@@ -2571,13 +2562,14 @@ export type Query = {
     product?: Maybe<Product>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
-    adjustmentOperations: AdjustmentOperations;
+    promotionConditions: Array<ConfigurableOperationDefinition>;
+    promotionActions: Array<ConfigurableOperationDefinition>;
     roles: RoleList;
     role?: Maybe<Role>;
     shippingMethods: ShippingMethodList;
     shippingMethod?: Maybe<ShippingMethod>;
-    shippingEligibilityCheckers: Array<ConfigurableOperation>;
-    shippingCalculators: Array<ConfigurableOperation>;
+    shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+    shippingCalculators: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
@@ -3828,7 +3820,7 @@ export type RoleFragment = { __typename?: 'Role' } & Pick<
 
 export type ConfigurableOperationFragment = { __typename?: 'ConfigurableOperation' } & Pick<
     ConfigurableOperation,
-    'code' | 'description'
+    'code'
 > & { args: Array<{ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>> };
 
 export type CollectionFragment = { __typename?: 'Collection' } & Pick<
@@ -4604,13 +4596,24 @@ export type UpdatePromotionMutation = { __typename?: 'Mutation' } & {
     updatePromotion: { __typename?: 'Promotion' } & PromotionFragment;
 };
 
+export type ConfigurableOperationDefFragment = { __typename?: 'ConfigurableOperationDefinition' } & Pick<
+    ConfigurableOperationDefinition,
+    'code' | 'description'
+> & {
+        args: Array<
+            { __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+        >;
+    };
+
 export type GetAdjustmentOperationsQueryVariables = {};
 
 export type GetAdjustmentOperationsQuery = { __typename?: 'Query' } & {
-    adjustmentOperations: { __typename?: 'AdjustmentOperations' } & {
-        actions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-        conditions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-    };
+    promotionActions: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
+    >;
+    promotionConditions: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
+    >;
 };
 
 export type GetRolesQueryVariables = {
@@ -5717,12 +5720,16 @@ export namespace UpdatePromotion {
     export type UpdatePromotion = PromotionFragment;
 }
 
+export namespace ConfigurableOperationDef {
+    export type Fragment = ConfigurableOperationDefFragment;
+    export type Args = NonNullable<ConfigurableOperationDefFragment['args'][0]>;
+}
+
 export namespace GetAdjustmentOperations {
     export type Variables = GetAdjustmentOperationsQueryVariables;
     export type Query = GetAdjustmentOperationsQuery;
-    export type AdjustmentOperations = GetAdjustmentOperationsQuery['adjustmentOperations'];
-    export type Actions = ConfigurableOperationFragment;
-    export type Conditions = ConfigurableOperationFragment;
+    export type PromotionActions = ConfigurableOperationDefFragment;
+    export type PromotionConditions = ConfigurableOperationDefFragment;
 }
 
 export namespace GetRoles {

@@ -1,15 +1,16 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
-import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
-import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
+import {
+    argsArrayToHash,
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDef,
+    LocalizedStringArray,
+} from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingCalculatorArgType =
-    | ConfigArgType.INT
-    | ConfigArgType.MONEY
-    | ConfigArgType.STRING
-    | ConfigArgType.PERCENTAGE
-    | ConfigArgType.BOOLEAN;
+export type ShippingCalculatorArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 
 export type ShippingPrice = {
@@ -53,12 +54,17 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implement
     /** @internal */
     readonly code: string;
     /** @internal */
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     /** @internal */
     readonly args: ShippingCalculatorArgs;
     private readonly calculateFn: CalculateShippingFn<T>;
 
-    constructor(config: { args: T; calculate: CalculateShippingFn<T>; code: string; description: string }) {
+    constructor(config: {
+        args: T;
+        calculate: CalculateShippingFn<T>;
+        code: string;
+        description: LocalizedStringArray;
+    }) {
         this.code = config.code;
         this.description = config.description;
         this.args = config.args;

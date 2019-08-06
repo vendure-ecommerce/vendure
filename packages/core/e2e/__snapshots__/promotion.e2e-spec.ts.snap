@@ -1,45 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Promotion resolver adjustmentOperations 1`] = `
-Object {
-  "actions": Array [
-    Object {
-      "args": Array [
-        Object {
-          "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
-          "value": null,
-        },
-      ],
-      "code": "promo_action",
-      "description": "description for promo_action",
-    },
-  ],
-  "conditions": Array [
-    Object {
-      "args": Array [
-        Object {
-          "name": "arg",
-          "type": "MONEY",
-          "value": null,
-        },
-      ],
-      "code": "promo_condition",
-      "description": "description for promo_condition",
-    },
-    Object {
-      "args": Array [
-        Object {
-          "name": "arg",
-          "type": "MONEY",
-          "value": null,
-        },
-      ],
-      "code": "promo_condition2",
-      "description": "description for promo_condition2",
-    },
-  ],
-}
+Array [
+  Object {
+    "args": Array [
+      Object {
+        "config": null,
+        "name": "facetValueIds",
+        "type": "facetValueIds",
+      },
+    ],
+    "code": "promo_action",
+    "description": "description for promo_action",
+  },
+]
+`;
+
+exports[`Promotion resolver adjustmentOperations 2`] = `
+Array [
+  Object {
+    "args": Array [
+      Object {
+        "config": null,
+        "name": "arg",
+        "type": "int",
+      },
+    ],
+    "code": "promo_condition",
+    "description": "description for promo_condition",
+  },
+  Object {
+    "args": Array [
+      Object {
+        "config": null,
+        "name": "arg",
+        "type": "int",
+      },
+    ],
+    "code": "promo_condition2",
+    "description": "description for promo_condition2",
+  },
+]
 `;
 
 exports[`Promotion resolver createPromotion 1`] = `
@@ -49,12 +50,11 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",
-      "description": "description for promo_action",
     },
   ],
   "conditions": Array [
@@ -62,12 +62,11 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "MONEY",
+          "type": "int",
           "value": "500",
         },
       ],
       "code": "promo_condition",
-      "description": "description for promo_condition",
     },
   ],
   "enabled": true,
@@ -82,12 +81,11 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",
-      "description": "description for promo_action",
     },
   ],
   "conditions": Array [
@@ -95,23 +93,21 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "MONEY",
+          "type": "int",
           "value": "90",
         },
       ],
       "code": "promo_condition",
-      "description": "description for promo_condition",
     },
     Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "MONEY",
+          "type": "int",
           "value": "10",
         },
       ],
       "code": "promo_condition2",
-      "description": "description for promo_condition2",
     },
   ],
   "enabled": true,

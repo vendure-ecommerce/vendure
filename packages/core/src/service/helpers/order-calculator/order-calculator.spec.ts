@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { ConfigArgType } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Connection } from 'typeorm';
 
@@ -131,16 +131,16 @@ describe('OrderCalculator', () => {
         const alwaysTrueCondition = new PromotionCondition({
             args: {},
             code: 'always_true_condition',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             check() {
                 return true;
             },
         });
 
         const orderTotalCondition = new PromotionCondition({
-            args: { minimum: ConfigArgType.MONEY },
+            args: { minimum: { type: 'int' } },
             code: 'order_total_condition',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             check(order, args) {
                 return args.minimum <= order.total;
             },
@@ -148,7 +148,7 @@ describe('OrderCalculator', () => {
 
         const fixedPriceItemAction = new PromotionItemAction({
             code: 'fixed_price_item_action',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(item) {
                 return -item.unitPrice + 42;
@@ -157,7 +157,7 @@ describe('OrderCalculator', () => {
 
         const fixedPriceOrderAction = new PromotionOrderAction({
             code: 'fixed_price_item_action',
-            description: '',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(order) {
                 return -order.total + 42;
@@ -190,7 +190,7 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderTotalCondition.code,
-                        args: [{ name: 'minimum', type: ConfigArgType.MONEY, value: '100' }],
+                        args: [{ name: 'minimum', type: 'int', value: '100' }],
                     },
                 ],
                 promotionConditions: [orderTotalCondition],
@@ -222,9 +222,14 @@ describe('OrderCalculator', () => {
 
         it('interaction between promotions', async () => {
             const orderQuantityCondition = new PromotionCondition({
-                args: { minimum: ConfigArgType.INT },
+                args: { minimum: { type: 'int' } },
                 code: 'order_quantity_condition',
-                description: 'Passes if any order line has at least the minimum quantity',
+                description: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Passes if any order line has at least the minimum quantity',
+                    },
+                ],
                 check(_order, args) {
                     for (const line of _order.lines) {
                         if (args.minimum <= line.quantity) {
@@ -237,11 +242,11 @@ describe('OrderCalculator', () => {
 
             const orderPercentageDiscount = new PromotionOrderAction({
                 code: 'order_percentage_discount',
-                args: { discount: ConfigArgType.PERCENTAGE },
+                args: { discount: { type: 'int' } },
                 execute(_order, args) {
                     return -_order.subTotal * (args.discount / 100);
                 },
-                description: 'Discount order by { discount }%',
+                description: [{ languageCode: LanguageCode.en, value: 'Discount order by { discount }%' }],
             });
 
             const promotion1 = new Promotion({
@@ -250,14 +255,14 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderQuantityCondition.code,
-                        args: [{ name: 'minimum', type: ConfigArgType.INT, value: '3' }],
+                        args: [{ name: 'minimum', type: 'int', value: '3' }],
                     },
                 ],
                 promotionConditions: [orderQuantityCondition],
                 actions: [
                     {
                         code: orderPercentageDiscount.code,
-                        args: [{ name: 'discount', type: ConfigArgType.PERCENTAGE, value: '50' }],
+                        args: [{ name: 'discount', type: 'int', value: '50' }],
                     },
                 ],
                 promotionActions: [orderPercentageDiscount],
@@ -269,14 +274,14 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderTotalCondition.code,
-                        args: [{ name: 'minimum', type: ConfigArgType.MONEY, value: '100' }],
+                        args: [{ name: 'minimum', type: 'int', value: '100' }],
                     },
                 ],
                 promotionConditions: [orderTotalCondition],
                 actions: [
                     {
                         code: orderPercentageDiscount.code,
-                        args: [{ name: 'discount', type: ConfigArgType.PERCENTAGE, value: '10' }],
+                        args: [{ name: 'discount', type: 'int', value: '10' }],
                     },
                 ],
                 promotionActions: [orderPercentageDiscount],

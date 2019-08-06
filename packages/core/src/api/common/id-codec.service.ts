@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-    ConfigArgType,
-    ConfigurableOperation,
-    ConfigurableOperationInput,
-} from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 
 import { ConfigService } from '../../config/config.service';
 
@@ -37,7 +32,7 @@ export class IdCodecService {
         const inputArray = Array.isArray(input) ? input : [input];
         for (const operationInput of inputArray) {
             for (const arg of operationInput.arguments) {
-                if (arg.type === ConfigArgType.FACET_VALUE_IDS && arg.value) {
+                if (arg.type === 'facetValueIds' && arg.value) {
                     const ids = JSON.parse(arg.value) as string[];
                     const decodedIds = ids.map(id => this.decode(id));
                     arg.value = JSON.stringify(decodedIds);
@@ -59,7 +54,7 @@ export class IdCodecService {
         const inputArray = Array.isArray(input) ? input : [input];
         for (const operation of inputArray) {
             for (const arg of operation.args) {
-                if (arg.type === ConfigArgType.FACET_VALUE_IDS && arg.value) {
+                if (arg.type === 'facetValueIds' && arg.value) {
                     const ids = JSON.parse(arg.value) as string[];
                     const encoded = ids.map(id => this.encode(id));
                     arg.value = JSON.stringify(encoded);

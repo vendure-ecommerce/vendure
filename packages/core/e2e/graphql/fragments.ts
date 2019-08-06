@@ -149,7 +149,6 @@ export const CONFIGURABLE_FRAGMENT = gql`
             value
         }
         code
-        description
     }
 `;
 
@@ -238,7 +237,6 @@ export const COUNTRY_FRAGMENT = gql`
         }
     }
 `;
-
 
 export const ADDRESS_FRAGMENT = gql`
     fragment Address on Address {

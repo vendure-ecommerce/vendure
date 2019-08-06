@@ -1,10 +1,12 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -12,11 +14,7 @@ import { Order } from '../../entity/order/order.entity';
 
 import { PromotionUtils } from './promotion-condition';
 
-export type PromotionActionArgType =
-    | ConfigArgType.PERCENTAGE
-    | ConfigArgType.MONEY
-    | ConfigArgType.INT
-    | ConfigArgType.FACET_VALUE_IDS;
+export type PromotionActionArgType = ConfigArgSubset<'int' | 'facetValueIds'>;
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
@@ -34,7 +32,7 @@ export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
 export interface PromotionActionConfig<T extends PromotionActionArgs> {
     args: T;
     code: string;
-    description: string;
+    description: LocalizedStringArray;
     priorityValue?: number;
 }
 export interface PromotionItemActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
@@ -54,7 +52,7 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}>
     implements ConfigurableOperationDef {
     readonly code: string;
     readonly args: PromotionActionArgs;
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     readonly priorityValue: number;
 
     protected constructor(config: PromotionActionConfig<T>) {

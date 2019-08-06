@@ -7,6 +7,7 @@ import { mergeMap, shareReplay, take } from 'rxjs/operators';
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreatePromotionInput,
     FacetWithValues,
@@ -35,8 +36,8 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     facets$: Observable<FacetWithValues.Fragment[]>;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
-    private allConditions: ConfigurableOperation[] = [];
-    private allActions: ConfigurableOperation[] = [];
+    private allConditions: ConfigurableOperationDefinition[] = [];
+    private allActions: ConfigurableOperationDefinition[] = [];
 
     constructor(
         router: Router,
@@ -63,9 +64,9 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             .pipe(shareReplay(1));
 
         this.promotion$ = this.entity$;
-        this.dataService.promotion.getAdjustmentOperations().single$.subscribe(data => {
-            this.allActions = data.adjustmentOperations.actions;
-            this.allConditions = data.adjustmentOperations.conditions;
+        this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe(data => {
+            this.allActions = data.promotionActions;
+            this.allConditions = data.promotionConditions;
         });
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
@@ -76,12 +77,20 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.destroy();
     }
 
-    getAvailableConditions(): ConfigurableOperation[] {
+    getAvailableConditions(): ConfigurableOperationDefinition[] {
         return this.allConditions.filter(o => !this.conditions.find(c => c.code === o.code));
     }
 
-    getAvailableActions(): ConfigurableOperation[] {
+    getConditionDefinition(condition: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
+        return this.allConditions.find(c => c.code === condition.code);
+    }
+
+    getAvailableActions(): ConfigurableOperationDefinition[] {
         return this.allActions.filter(o => !this.actions.find(a => a.code === o.code));
+    }
+
+    getActionDefinition(action: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
+        return this.allActions.find(c => c.code === action.code);
     }
 
     saveButtonEnabled(): boolean {

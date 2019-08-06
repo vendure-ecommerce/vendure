@@ -38,17 +38,16 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
         Object {
           "name": "containsAny",
-          "type": "BOOLEAN",
+          "type": "boolean",
           "value": "false",
         },
       ],
       "code": "facet-value-filter",
-      "description": "Filter by FacetValues",
     },
   ],
   "id": "T_3",
@@ -99,17 +98,16 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "FACET_VALUE_IDS",
+          "type": "facetValueIds",
           "value": "[\\"T_3\\"]",
         },
         Object {
           "name": "containsAny",
-          "type": "BOOLEAN",
+          "type": "boolean",
           "value": "false",
         },
       ],
       "code": "facet-value-filter",
-      "description": "Filter by FacetValues",
     },
   ],
   "id": "T_5",

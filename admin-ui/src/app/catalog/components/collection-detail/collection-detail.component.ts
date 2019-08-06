@@ -15,6 +15,7 @@ import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     Collection,
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
     CustomFieldConfig,
@@ -43,7 +44,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     detailForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
     filters: ConfigurableOperation[] = [];
-    allFilters: ConfigurableOperation[] = [];
+    allFilters: ConfigurableOperationDefinition[] = [];
     facets$: Observable<FacetWithValues.Fragment[]>;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     @ViewChild('collectionContents', { static: false }) contentsComponent: CollectionContentsComponent;
@@ -88,6 +89,10 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    getFilterDefinition(filter: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
+        return this.allFilters.find(f => f.code === filter.code);
     }
 
     customFieldIsSet(name: string): boolean {

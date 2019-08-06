@@ -11,7 +11,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
@@ -29,7 +29,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm" *ngIf="(entity$ | async) as category">
+<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as category">
     <div class="clr-row">
         <div class="clr-col">
             <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
@@ -79,6 +79,7 @@
                     (remove)="removeFilter($event)"
                     [facets]="facets$ | async"
                     [operation]="filter"
+                    [operationDefinition]="getFilterDefinition(filter)"
                     [formControlName]="i"
                     [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>

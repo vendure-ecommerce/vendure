@@ -4,51 +4,46 @@
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args" class="arg-row">
                 <label>{{ arg.name | sentenceCase }}</label>
-                <clr-checkbox-wrapper *ngIf="arg.type === ConfigArgType.BOOLEAN">
+                <clr-checkbox-wrapper *ngIf="getArgType(arg) === 'boolean'">
                     <input type="checkbox" clrCheckbox [formControlName]="arg.name" [id]="arg.name" />
                 </clr-checkbox-wrapper>
                 <input
-                    *ngIf="arg.type === ConfigArgType.INT"
+                    *ngIf="isIntInput(arg)"
                     [name]="arg.name"
                     type="number"
                     step="1"
                     [formControlName]="arg.name"
                 />
                 <input
-                    *ngIf="arg.type === ConfigArgType.STRING"
+                    *ngIf="isStringWithoutOptions(arg)"
                     [name]="arg.name"
                     type="text"
                     [formControlName]="arg.name"
                 />
                 <input
-                    *ngIf="arg.type === ConfigArgType.DATETIME"
+                    *ngIf="getArgType(arg) === 'datetime'"
                     [name]="arg.name"
                     type="date"
                     [formControlName]="arg.name"
                 />
                 <vdr-currency-input
-                    *ngIf="arg.type === ConfigArgType.MONEY"
+                    *ngIf="isMoneyInput(arg)"
                     [formControlName]="arg.name"
                     [currencyCode]="activeChannel?.currencyCode"
                 ></vdr-currency-input>
                 <vdr-percentage-suffix-input
-                    *ngIf="arg.type === ConfigArgType.PERCENTAGE"
+                    *ngIf="isPercentageInput(arg)"
                     [formControlName]="arg.name"
                 ></vdr-percentage-suffix-input>
                 <vdr-facet-value-selector
                     [facets]="facets"
                     [formControlName]="arg.name"
-                    *ngIf="arg.type === ConfigArgType.FACET_VALUE_IDS && facets"
+                    *ngIf="getArgType(arg) === 'facetValueIds' && facets"
                 ></vdr-facet-value-selector>
-                <select
-                    clrSelect
-                    [formControlName]="arg.name"
-                    *ngIf="arg.type === ConfigArgType.STRING_OPERATOR"
-                >
-                    <option value="contains">contains</option>
-                    <option value="doesNotContain">does not contain</option>
-                    <option value="startsWith">starts with</option>
-                    <option value="endsWith">ends with</option>
+                <select clrSelect [formControlName]="arg.name" *ngIf="isStringWithOptions(arg)">
+                    <option *ngFor="let option of getStringOptions(arg)" [value]="option.value">
+                        {{ option.label || option.value }}
+                    </option>
                 </select>
             </div>
         </form>

@@ -10,14 +10,26 @@ import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddressInput,
     GetStockMovement,
+    LanguageCode,
     StockMovementType,
     UpdateProductVariantInput,
     UpdateStock,
     VariantWithStockFragment,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, AddPaymentToOrder, PaymentInput, SetShippingAddress, TransitionToState } from './graphql/generated-e2e-shop-types';
+import {
+    AddItemToOrder,
+    AddPaymentToOrder,
+    PaymentInput,
+    SetShippingAddress,
+    TransitionToState,
+} from './graphql/generated-e2e-shop-types';
 import { GET_STOCK_MOVEMENT } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, SET_SHIPPING_ADDRESS, TRANSITION_TO_STATE } from './graphql/shop-definitions';
+import {
+    ADD_ITEM_TO_ORDER,
+    ADD_PAYMENT,
+    SET_SHIPPING_ADDRESS,
+    TRANSITION_TO_STATE,
+} from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -64,61 +76,57 @@ describe('Stock control', () => {
         });
 
         it('updating ProductVariant with same stockOnHand does not create a StockMovement', async () => {
-            const { updateProductVariants } = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
-                UPDATE_STOCK_ON_HAND,
-                {
-                    input: [
-                        {
-                            id: variants[0].id,
-                            stockOnHand: variants[0].stockOnHand,
-                        },
-                    ] as UpdateProductVariantInput[],
-                },
-            );
+            const { updateProductVariants } = await adminClient.query<
+                UpdateStock.Mutation,
+                UpdateStock.Variables
+            >(UPDATE_STOCK_ON_HAND, {
+                input: [
+                    {
+                        id: variants[0].id,
+                        stockOnHand: variants[0].stockOnHand,
+                    },
+                ] as UpdateProductVariantInput[],
+            });
 
             expect(updateProductVariants[0]!.stockMovements.items).toEqual([]);
             expect(updateProductVariants[0]!.stockMovements.totalItems).toEqual(0);
         });
 
         it('increasing stockOnHand creates a StockMovement with correct quantity', async () => {
-            const { updateProductVariants } = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
-                UPDATE_STOCK_ON_HAND,
-                {
-                    input: [
-                        {
-                            id: variants[0].id,
-                            stockOnHand: variants[0].stockOnHand + 5,
-                        },
-                    ] as UpdateProductVariantInput[],
-                },
-            );
+            const { updateProductVariants } = await adminClient.query<
+                UpdateStock.Mutation,
+                UpdateStock.Variables
+            >(UPDATE_STOCK_ON_HAND, {
+                input: [
+                    {
+                        id: variants[0].id,
+                        stockOnHand: variants[0].stockOnHand + 5,
+                    },
+                ] as UpdateProductVariantInput[],
+            });
 
             expect(updateProductVariants[0]!.stockOnHand).toBe(5);
             expect(updateProductVariants[0]!.stockMovements.totalItems).toEqual(1);
-            expect(updateProductVariants[0]!.stockMovements.items[0].type).toBe(
-                StockMovementType.ADJUSTMENT,
-            );
+            expect(updateProductVariants[0]!.stockMovements.items[0].type).toBe(StockMovementType.ADJUSTMENT);
             expect(updateProductVariants[0]!.stockMovements.items[0].quantity).toBe(5);
         });
 
         it('decreasing stockOnHand creates a StockMovement with correct quantity', async () => {
-            const { updateProductVariants } = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
-                UPDATE_STOCK_ON_HAND,
-                {
-                    input: [
-                        {
-                            id: variants[0].id,
-                            stockOnHand: variants[0].stockOnHand + 5 - 2,
-                        },
-                    ] as UpdateProductVariantInput[],
-                },
-            );
+            const { updateProductVariants } = await adminClient.query<
+                UpdateStock.Mutation,
+                UpdateStock.Variables
+            >(UPDATE_STOCK_ON_HAND, {
+                input: [
+                    {
+                        id: variants[0].id,
+                        stockOnHand: variants[0].stockOnHand + 5 - 2,
+                    },
+                ] as UpdateProductVariantInput[],
+            });
 
             expect(updateProductVariants[0]!.stockOnHand).toBe(3);
             expect(updateProductVariants[0]!.stockMovements.totalItems).toEqual(2);
-            expect(updateProductVariants[0]!.stockMovements.items[1].type).toBe(
-                StockMovementType.ADJUSTMENT,
-            );
+            expect(updateProductVariants[0]!.stockMovements.items[1].type).toBe(StockMovementType.ADJUSTMENT);
             expect(updateProductVariants[0]!.stockMovements.items[1].quantity).toBe(-2);
         });
 
@@ -189,7 +197,10 @@ describe('Stock control', () => {
         });
 
         it('creates a Sale when order completed', async () => {
-            const { addPaymentToOrder } = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(ADD_PAYMENT, {
+            const { addPaymentToOrder } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
                 input: {
                     method: testPaymentMethod.code,
                     metadata: {},
@@ -227,7 +238,7 @@ describe('Stock control', () => {
 
 const testPaymentMethod = new PaymentMethodHandler({
     code: 'test-payment-method',
-    description: 'Test Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {

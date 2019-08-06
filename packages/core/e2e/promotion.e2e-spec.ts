@@ -2,13 +2,13 @@ import { pick } from '@vendure/common/lib/pick';
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { LanguageCode } from '../../common/lib/generated-types';
 import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
 import { PromotionCondition } from '../src/config/promotion/promotion-condition';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { CONFIGURABLE_FRAGMENT, PROMOTION_FRAGMENT } from './graphql/fragments';
+import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
-    ConfigArgType,
     CreatePromotion,
     DeletePromotion,
     DeletionResult,
@@ -68,7 +68,7 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '500', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '500', type: 'int' }],
                         },
                     ],
                     actions: [
@@ -78,7 +78,7 @@ describe('Promotion resolver', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: '["T_1"]',
-                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                    type: 'facetValueIds',
                                 },
                             ],
                         },
@@ -99,11 +99,11 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '90', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '90', type: 'int' }],
                         },
                         {
                             code: promoCondition2.code,
-                            arguments: [{ name: 'arg', value: '10', type: ConfigArgType.MONEY }],
+                            arguments: [{ name: 'arg', value: '10', type: 'int' }],
                         },
                     ],
                 },
@@ -135,7 +135,8 @@ describe('Promotion resolver', () => {
             GET_ADJUSTMENT_OPERATIONS,
         );
 
-        expect(result.adjustmentOperations).toMatchSnapshot();
+        expect(result.promotionActions).toMatchSnapshot();
+        expect(result.promotionConditions).toMatchSnapshot();
     });
 
     describe('deletion', () => {
@@ -149,7 +150,10 @@ describe('Promotion resolver', () => {
 
         it('deletes a promotion', async () => {
             promotionToDelete = allPromotions[0];
-            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(DELETE_PROMOTION, { id: promotionToDelete.id });
+            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(
+                DELETE_PROMOTION,
+                { id: promotionToDelete.id },
+            );
 
             expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
         });
@@ -188,8 +192,8 @@ describe('Promotion resolver', () => {
 function generateTestCondition(code: string): PromotionCondition<any> {
     return new PromotionCondition({
         code,
-        description: `description for ${code}`,
-        args: { arg: ConfigArgType.MONEY },
+        description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
+        args: { arg: { type: 'int' } },
         check: (order, args) => true,
     });
 }
@@ -197,8 +201,8 @@ function generateTestCondition(code: string): PromotionCondition<any> {
 function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
-        description: `description for ${code}`,
-        args: { facetValueIds: ConfigArgType.FACET_VALUE_IDS },
+        description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
+        args: { facetValueIds: { type: 'facetValueIds' } },
         execute: (order, args) => {
             return 42;
         },
@@ -252,16 +256,26 @@ export const UPDATE_PROMOTION = gql`
     ${PROMOTION_FRAGMENT}
 `;
 
+export const CONFIGURABLE_DEF_FRAGMENT = gql`
+    fragment ConfigurableOperationDef on ConfigurableOperationDefinition {
+        args {
+            name
+            type
+            config
+        }
+        code
+        description
+    }
+`;
+
 export const GET_ADJUSTMENT_OPERATIONS = gql`
     query GetAdjustmentOperations {
-        adjustmentOperations {
-            actions {
-                ...ConfigurableOperation
-            }
-            conditions {
-                ...ConfigurableOperation
-            }
+        promotionActions {
+            ...ConfigurableOperationDef
+        }
+        promotionConditions {
+            ...ConfigurableOperationDef
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_DEF_FRAGMENT}
 `;

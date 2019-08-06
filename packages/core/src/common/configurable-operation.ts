@@ -1,13 +1,49 @@
 // prettier-ignore
-import { ConfigArg, ConfigArgType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import {
+    ConfigArg,
+    ConfigArgDefinition,
+    ConfigurableOperationDefinition,
+    LanguageCode,
+    LocalizedString,
+    Maybe,
+    StringFieldOption,
+} from '@vendure/common/lib/generated-types';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 
+import { RequestContext } from '../api/common/request-context';
+
+import { DEFAULT_LANGUAGE_CODE } from './constants';
 import { InternalServerError } from './error/errors';
 
-export type ConfigArgs<T extends ConfigArgType> = {
-    [name: string]: T;
+export type LocalizedStringArray = Array<Omit<LocalizedString, '__typename'>>;
+
+export interface ConfigArgCommonDef<T extends ConfigArgType> {
+    type: T;
+    label?: LocalizedStringArray;
+    description?: LocalizedStringArray;
+}
+
+export type WithArgConfig<T> = {
+    config?: T;
 };
 
-export type StringOperator = 'startsWith' | 'endsWith' | 'contains' | 'doesNotContain';
+export type StringArgConfig = WithArgConfig<{
+    options?: Maybe<StringFieldOption[]>;
+}>;
+export type IntArgConfig = WithArgConfig<{
+    inputType?: 'default' | 'percentage' | 'money';
+}>;
+
+export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
+    ? ConfigArgCommonDef<'string'> & StringArgConfig
+    : T extends 'int'
+    ? ConfigArgCommonDef<'int'> & IntArgConfig
+    : ConfigArgCommonDef<T> & WithArgConfig<never>;
+
+export type ConfigArgs<T extends ConfigArgType> = {
+    [name: string]: ConfigArgDef<T>;
+};
 
 // prettier-ignore
 /**
@@ -15,16 +51,14 @@ export type StringOperator = 'startsWith' | 'endsWith' | 'contains' | 'doesNotCo
  * in business logic.
  */
 export type ConfigArgValues<T extends ConfigArgs<any>> = {
-    [K in keyof T]: T[K] extends ConfigArgType.INT | ConfigArgType.MONEY | ConfigArgType.PERCENTAGE
+    [K in keyof T]: T[K] extends ConfigArgDef<'int' | 'float'>
         ? number
-        : T[K] extends ConfigArgType.DATETIME
+        : T[K] extends ConfigArgDef<'datetime'>
             ? Date
-            : T[K] extends ConfigArgType.BOOLEAN
+            : T[K] extends ConfigArgDef<'boolean'>
                 ? boolean
-                : T[K] extends ConfigArgType.FACET_VALUE_IDS
+                : T[K] extends ConfigArgDef<'facetValueIds'>
                     ? string[]
-                    : T[K] extends ConfigArgType.STRING_OPERATOR
-                        ? StringOperator
                         : string
 };
 
@@ -35,19 +69,62 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
 export interface ConfigurableOperationDef {
     code: string;
     args: ConfigArgs<any>;
-    description: string;
+    description: LocalizedStringArray;
 }
 
 /**
  * Convert a ConfigurableOperationDef into a ConfigurableOperation object, typically
  * so that it can be sent via the API.
  */
-export function configurableDefToOperation(def: ConfigurableOperationDef): ConfigurableOperation {
+export function configurableDefToOperation(
+    ctx: RequestContext,
+    def: ConfigurableOperationDef,
+): ConfigurableOperationDefinition {
     return {
         code: def.code,
-        description: def.description,
-        args: Object.entries(def.args).map(([name, type]) => ({ name, type })),
+        description: localizeString(def.description, ctx.languageCode),
+        args: Object.entries(def.args).map(
+            ([name, arg]) =>
+                ({
+                    name,
+                    type: arg.type,
+                    config: localizeConfig(arg, ctx.languageCode),
+                    label: arg.label && localizeString(arg.label, ctx.languageCode),
+                    description: arg.description && localizeString(arg.description, ctx.languageCode),
+                } as Required<ConfigArgDefinition>),
+        ),
     };
+}
+
+function localizeConfig(
+    arg: StringArgConfig | IntArgConfig | WithArgConfig<undefined>,
+    languageCode: LanguageCode,
+): any {
+    const { config } = arg;
+    if (!config) {
+        return config;
+    }
+    const clone = simpleDeepClone(config);
+    const options: Maybe<StringFieldOption[]> = (clone as any).options;
+    if (options) {
+        for (const option of options) {
+            if (option.label) {
+                (option as any).label = localizeString(option.label, languageCode);
+            }
+        }
+    }
+    return clone;
+}
+
+function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode): string {
+    let match = stringArray.find(x => x.languageCode === languageCode);
+    if (!match) {
+        match = stringArray.find(x => x.languageCode === DEFAULT_LANGUAGE_CODE);
+    }
+    if (!match) {
+        match = stringArray[0];
+    }
+    return match.value;
 }
 
 /**
@@ -59,7 +136,7 @@ export function configurableDefToOperation(def: ConfigurableOperationDef): Confi
  * to:
  * { foo: 'bar' }
  **/
-export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
+export function argsArrayToHash<T extends ConfigArgs<any>>(args: ConfigArg[]): ConfigArgValues<T> {
     const output: ConfigArgValues<T> = {} as any;
     for (const arg of args) {
         if (arg && arg.value != null) {
@@ -69,20 +146,17 @@ export function argsArrayToHash<T>(args: ConfigArg[]): ConfigArgValues<T> {
     return output;
 }
 
-function coerceValueToType<T>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
+function coerceValueToType<T extends ConfigArgs<any>>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
     switch (arg.type as ConfigArgType) {
-        case ConfigArgType.STRING:
-        case ConfigArgType.STRING_OPERATOR:
+        case 'string':
             return arg.value as any;
-        case ConfigArgType.INT:
-        case ConfigArgType.MONEY:
-        case ConfigArgType.PERCENTAGE:
+        case 'int':
             return Number.parseInt(arg.value || '', 10) as any;
-        case ConfigArgType.DATETIME:
+        case 'datetime':
             return Date.parse(arg.value || '') as any;
-        case ConfigArgType.BOOLEAN:
+        case 'boolean':
             return !!(arg.value && (arg.value.toLowerCase() === 'true' || arg.value === '1')) as any;
-        case ConfigArgType.FACET_VALUE_IDS:
+        case 'facetValueIds':
             try {
                 return JSON.parse(arg.value as any);
             } catch (err) {

@@ -1,7 +1,7 @@
 type Query {
     collections(options: CollectionListOptions): CollectionList!
     collection(id: ID!): Collection
-    collectionFilters: [ConfigurableOperation!]!
+    collectionFilters: [ConfigurableOperationDefinition!]!
 }
 
 type Mutation {

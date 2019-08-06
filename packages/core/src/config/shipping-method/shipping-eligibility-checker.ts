@@ -1,14 +1,15 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
-import { ConfigArgs, ConfigurableOperationDef } from '../../common/configurable-operation';
+import {
+    ConfigArgs,
+    ConfigurableOperationDef,
+    LocalizedStringArray,
+} from '../../common/configurable-operation';
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingEligibilityCheckerArgType =
-    | ConfigArgType.INT
-    | ConfigArgType.MONEY
-    | ConfigArgType.STRING
-    | ConfigArgType.BOOLEAN;
+export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 
 /**
@@ -49,7 +50,7 @@ export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs
     /** @internal */
     readonly code: string;
     /** @internal */
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     /** @internal */
     readonly args: ShippingEligibilityCheckerArgs;
     private readonly checkFn: CheckShippingEligibilityCheckerFn<T>;
@@ -58,7 +59,7 @@ export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs
         args: T;
         check: CheckShippingEligibilityCheckerFn<T>;
         code: string;
-        description: string;
+        description: LocalizedStringArray;
     }) {
         this.code = config.code;
         this.description = config.description;

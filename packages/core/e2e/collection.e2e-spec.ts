@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { pick } from '../../common/lib/pick';
-import { StringOperator } from '../src/common/configurable-operation';
 import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
@@ -14,7 +13,6 @@ import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
     Collection,
-    ConfigArgType,
     CreateCollection,
     CreateCollectionInput,
     CreateCollectionSelectVariants,
@@ -109,12 +107,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('electronics')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -145,12 +143,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('computers')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -176,12 +174,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('pear')}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -415,12 +413,12 @@ describe('Collection resolver', () => {
                                 {
                                     name: 'operator',
                                     value: 'contains',
-                                    type: ConfigArgType.STRING_OPERATOR,
+                                    type: 'string',
                                 },
                                 {
                                     name: 'term',
                                     value: 'laptop',
-                                    type: ConfigArgType.STRING,
+                                    type: 'string',
                                 },
                             ],
                         },
@@ -601,12 +599,12 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -636,12 +634,12 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: ConfigArgType.FACET_VALUE_IDS,
+                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `true`,
-                                        type: ConfigArgType.BOOLEAN,
+                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -663,7 +661,7 @@ describe('Collection resolver', () => {
 
         describe('variantName filter', () => {
             async function createVariantNameFilteredCollection(
-                operator: StringOperator,
+                operator: string,
                 term: string,
             ): Promise<Collection.Fragment> {
                 const { createCollection } = await client.query<
@@ -681,12 +679,12 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'operator',
                                         value: operator,
-                                        type: ConfigArgType.STRING_OPERATOR,
+                                        type: 'string',
                                     },
                                     {
                                         name: 'term',
                                         value: term,
-                                        type: ConfigArgType.STRING,
+                                        type: 'string',
                                     },
                                 ],
                             },

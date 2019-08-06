@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreatePromotionInput,
     DeletionResponse,
@@ -62,17 +63,12 @@ export class PromotionService {
         return this.connection.manager.findOne(Promotion, adjustmentSourceId, { where: { deletedAt: null } });
     }
 
-    /**
-     * Returns all available AdjustmentOperations.
-     */
-    getAdjustmentOperations(): {
-        conditions: ConfigurableOperation[];
-        actions: ConfigurableOperation[];
-    } {
-        return {
-            conditions: this.availableConditions.map(configurableDefToOperation),
-            actions: this.availableActions.map(configurableDefToOperation),
-        };
+    getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableConditions.map(x => configurableDefToOperation(ctx, x));
+    }
+
+    getPromotionActions(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableActions.map(x => configurableDefToOperation(ctx, x));
     }
 
     /**
@@ -134,7 +130,6 @@ export class PromotionService {
         const match = this.getAdjustmentOperationByCode(type, input.code);
         const output: ConfigurableOperation = {
             code: input.code,
-            description: match.description,
             args: input.arguments,
         };
         return output;

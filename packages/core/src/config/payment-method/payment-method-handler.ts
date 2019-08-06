@@ -1,10 +1,12 @@
-import { ConfigArg, ConfigArgType, RefundOrderInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
 import { Order } from '../../entity/order/order.entity';
@@ -15,7 +17,7 @@ import {
 } from '../../service/helpers/payment-state-machine/payment-state';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
-export type PaymentMethodArgType = ConfigArgType.INT | ConfigArgType.STRING | ConfigArgType.BOOLEAN;
+export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
 
@@ -135,7 +137,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * @description
      * A human-readable description for the payment method.
      */
-    description: string;
+    description: LocalizedStringArray;
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -229,7 +231,7 @@ export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArg
     /** @internal */
     readonly code: string;
     /** @internal */
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     /** @internal */
     readonly args: T;
     private readonly createPaymentFn: CreatePaymentFn<T>;

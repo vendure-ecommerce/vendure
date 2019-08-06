@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { merge, Observable, of, Subject } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
+    ConfigArg,
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateShippingMethodInput,
     GetActiveChannel,
@@ -31,10 +33,12 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
 export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingMethod.Fragment>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
-    checkers: ConfigurableOperation[] = [];
-    calculators: ConfigurableOperation[] = [];
+    checkers: ConfigurableOperationDefinition[] = [];
+    calculators: ConfigurableOperationDefinition[] = [];
     selectedChecker?: ConfigurableOperation;
+    selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedCalculator?: ConfigurableOperation;
+    selectedCalculatorDefinition?: ConfigurableOperationDefinition;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     testAddress: TestAddress;
     testOrderLines: TestOrderLine[];
@@ -62,10 +66,19 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
 
     ngOnInit() {
         this.init();
-        this.dataService.shippingMethod.getShippingMethodOperations().single$.subscribe(data => {
+        combineLatest(
+            this.dataService.shippingMethod.getShippingMethodOperations().single$,
+            this.entity$.pipe(take(1)),
+        ).subscribe(([data, entity]) => {
             this.checkers = data.shippingEligibilityCheckers;
             this.calculators = data.shippingCalculators;
             this.changeDetector.markForCheck();
+            this.selectedCheckerDefinition = data.shippingEligibilityCheckers.find(
+                c => c.code === (entity.checker && entity.checker.code),
+            );
+            this.selectedCalculatorDefinition = data.shippingCalculators.find(
+                c => c.code === (entity.calculator && entity.calculator.code),
+            );
         });
 
         this.activeChannel$ = this.dataService.settings
@@ -107,12 +120,26 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         this.destroy();
     }
 
-    selectChecker(checker: ConfigurableOperation) {
-        this.selectedChecker = checker;
+    selectChecker(checker: ConfigurableOperationDefinition) {
+        this.selectedCheckerDefinition = checker;
+        this.selectedChecker = this.configurableDefinitionToInstance(checker);
     }
 
-    selectCalculator(calculator: ConfigurableOperation) {
-        this.selectedCalculator = calculator;
+    selectCalculator(calculator: ConfigurableOperationDefinition) {
+        this.selectedCalculatorDefinition = calculator;
+        this.selectedCalculator = this.configurableDefinitionToInstance(calculator);
+    }
+
+    private configurableDefinitionToInstance(def: ConfigurableOperationDefinition): ConfigurableOperation {
+        return {
+            ...def,
+            args: def.args.map(arg => {
+                return {
+                    ...arg,
+                    value: '',
+                };
+            }),
+        } as ConfigurableOperation;
     }
 
     create() {

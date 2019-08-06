@@ -1,5 +1,7 @@
-import { ConfigArgType } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Brackets } from 'typeorm';
+
+import { UserInputError } from '../../common/error/errors';
 
 import { CollectionFilter } from './collection-filter';
 
@@ -8,11 +10,11 @@ import { CollectionFilter } from './collection-filter';
  */
 export const facetValueCollectionFilter = new CollectionFilter({
     args: {
-        facetValueIds: ConfigArgType.FACET_VALUE_IDS,
-        containsAny: ConfigArgType.BOOLEAN,
+        facetValueIds: { type: 'facetValueIds' },
+        containsAny: { type: 'boolean' },
     },
     code: 'facet-value-filter',
-    description: 'Filter by FacetValues',
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by FacetValues' }],
     apply: (qb, args) => {
         if (args.facetValueIds.length) {
             qb.leftJoin('productVariant.product', 'product')
@@ -22,8 +24,8 @@ export const facetValueCollectionFilter = new CollectionFilter({
                     new Brackets(qb1 => {
                         const ids = args.facetValueIds;
                         return qb1
-                            .where(`productFacetValues.id IN (:...ids)`, {ids})
-                            .orWhere(`variantFacetValues.id IN (:...ids)`, {ids});
+                            .where(`productFacetValues.id IN (:...ids)`, { ids })
+                            .orWhere(`variantFacetValues.id IN (:...ids)`, { ids });
                     }),
                 )
                 .groupBy('productVariant.id')
@@ -38,11 +40,21 @@ export const facetValueCollectionFilter = new CollectionFilter({
 
 export const variantNameCollectionFilter = new CollectionFilter({
     args: {
-        operator: ConfigArgType.STRING_OPERATOR,
-        term: ConfigArgType.STRING,
+        operator: {
+            type: 'string',
+            config: {
+                options: [
+                    { value: 'startsWith' },
+                    { value: 'endsWith' },
+                    { value: 'contains' },
+                    { value: 'doesNotContain' },
+                ],
+            },
+        },
+        term: { type: 'string' },
     },
     code: 'variant-name-filter',
-    description: 'Filter by ProductVariant name',
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
         qb.leftJoin('productVariant.translations', 'translation');
         switch (args.operator) {
@@ -54,6 +66,8 @@ export const variantNameCollectionFilter = new CollectionFilter({
                 return qb.andWhere('translation.name LIKE :term', { term: `${args.term}%` });
             case 'endsWith':
                 return qb.andWhere('translation.name LIKE :term', { term: `%${args.term}` });
+            default:
+                throw new UserInputError(`${args.operator} is not a valid operator`);
         }
     },
 });

@@ -1,22 +1,19 @@
-import { ConfigArg, ConfigArgType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArgSubset, ID } from '@vendure/common/lib/shared-types';
 
 import {
     argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
 
-export type PromotionConditionArgType =
-    | ConfigArgType.INT
-    | ConfigArgType.MONEY
-    | ConfigArgType.STRING
-    | ConfigArgType.DATETIME
-    | ConfigArgType.BOOLEAN
-    | ConfigArgType.FACET_VALUE_IDS;
+export type PromotionConditionArgType = ConfigArgSubset<
+    'int' | 'string' | 'datetime' | 'boolean' | 'facetValueIds'
+>;
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 
 /**
@@ -58,7 +55,7 @@ export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
  */
 export class PromotionCondition<T extends PromotionConditionArgs = {}> implements ConfigurableOperationDef {
     readonly code: string;
-    readonly description: string;
+    readonly description: LocalizedStringArray;
     readonly args: PromotionConditionArgs;
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
@@ -67,7 +64,7 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> implement
         args: T;
         check: CheckPromotionConditionFn<T>;
         code: string;
-        description: string;
+        description: LocalizedStringArray;
         priorityValue?: number;
     }) {
         this.code = config.code;
@@ -78,6 +75,6 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> implement
     }
 
     async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
-        return await this.checkFn(order, argsArrayToHash<T>(args), utils);
+        return this.checkFn(order, argsArrayToHash<T>(args), utils);
     }
 }

@@ -1,8 +1,8 @@
 type Query {
     shippingMethods(options: ShippingMethodListOptions): ShippingMethodList!
     shippingMethod(id: ID!): ShippingMethod
-    shippingEligibilityCheckers: [ConfigurableOperation!]!
-    shippingCalculators: [ConfigurableOperation!]!
+    shippingEligibilityCheckers: [ConfigurableOperationDefinition!]!
+    shippingCalculators: [ConfigurableOperationDefinition!]!
     testShippingMethod(input: TestShippingMethodInput!): TestShippingMethodResult!
 }
 

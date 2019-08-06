@@ -1,10 +1,10 @@
-import { ConfigArgType, ConfigurableOperation } from '../generated-types';
+import { ConfigurableOperationDefinition } from '../generated-types';
 
 /**
  * Interpolates the description of an ConfigurableOperation with the given values.
  */
 export function interpolateDescription(
-    operation: ConfigurableOperation,
+    operation: ConfigurableOperationDefinition,
     values: { [name: string]: any },
 ): string {
     if (!operation) {
@@ -19,10 +19,10 @@ export function interpolateDescription(
         }
         let formatted = value;
         const argDef = operation.args.find(arg => arg.name === normalizedArgName);
-        if (argDef && argDef.type === ConfigArgType.MONEY) {
+        if (argDef && argDef.type === 'int' && argDef.config && argDef.config.inputType === 'money') {
             formatted = value / 100;
         }
-        if (argDef && argDef.type === ConfigArgType.DATETIME && value instanceof Date) {
+        if (argDef && argDef.type === 'datetime' && value instanceof Date) {
             formatted = value.toLocaleDateString();
         }
         return formatted;

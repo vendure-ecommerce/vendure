@@ -2,14 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, take } from 'rxjs/operators';
+import { ConfigArgSubset, ConfigArgType } from 'shared/shared-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import {
-    ConfigArg,
-    ConfigArgType,
-    PaymentMethod,
-    UpdatePaymentMethodInput,
-} from '../../../common/generated-types';
+import { ConfigArg, PaymentMethod, UpdatePaymentMethodInput } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -24,7 +20,6 @@ import { ServerConfigService } from '../../../data/server-config';
 export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMethod.Fragment>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
-    readonly ConfigArgType = ConfigArgType;
 
     constructor(
         router: Router,
@@ -49,6 +44,10 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
 
     ngOnDestroy(): void {
         this.destroy();
+    }
+
+    getType(arg: PaymentMethod.ConfigArgs): ConfigArgSubset<'int' | 'string' | 'boolean'> {
+        return arg.type as any;
     }
 
     save() {
@@ -106,9 +105,9 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
 
     private parseArgValue(arg: ConfigArg): string | number | boolean {
         switch (arg.type) {
-            case ConfigArgType.INT:
+            case 'int':
                 return Number.parseInt(arg.value || '0', 10);
-            case ConfigArgType.BOOLEAN:
+            case 'boolean':
                 return arg.value === 'false' ? false : true;
             default:
                 return arg.value || '';

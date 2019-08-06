@@ -2,11 +2,12 @@ import { OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     CreateCollectionInput,
     DeletionResponse,
     DeletionResult,
     MoveCollectionInput,
-    UpdateCollectionInput
+    UpdateCollectionInput,
 } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
@@ -22,7 +23,10 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { CollectionFilter } from '../../config/collection/collection-filter';
-import { facetValueCollectionFilter, variantNameCollectionFilter } from '../../config/collection/default-collection-filters';
+import {
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+} from '../../config/collection/default-collection-filters';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -40,7 +44,10 @@ import { FacetValueService } from './facet-value.service';
 
 export class CollectionService implements OnModuleInit {
     private rootCategories: { [channelCode: string]: Collection } = {};
-    private availableFilters: Array<CollectionFilter<any>> = [facetValueCollectionFilter, variantNameCollectionFilter];
+    private availableFilters: Array<CollectionFilter<any>> = [
+        facetValueCollectionFilter,
+        variantNameCollectionFilter,
+    ];
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -104,8 +111,8 @@ export class CollectionService implements OnModuleInit {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    getAvailableFilters(): ConfigurableOperation[] {
-        return this.availableFilters.map(configurableDefToOperation);
+    getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.availableFilters.map(x => configurableDefToOperation(ctx, x));
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
@@ -170,7 +177,11 @@ export class CollectionService implements OnModuleInit {
      * Returns the descendants of a Collection as a flat array. The depth of the traversal can be limited
      * with the maxDepth argument. So to get only the immediate children, set maxDepth = 1.
      */
-    async getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER): Promise<Array<Translated<Collection>>> {
+    async getDescendants(
+        ctx: RequestContext,
+        rootId: ID,
+        maxDepth: number = Number.MAX_SAFE_INTEGER,
+    ): Promise<Array<Translated<Collection>>> {
         const getChildren = async (id: ID, _descendants: Collection[] = [], depth = 1) => {
             const children = await this.connection
                 .getRepository(Collection)
@@ -336,7 +347,7 @@ export class CollectionService implements OnModuleInit {
                     args: filter.arguments.map((inputArg, i) => {
                         return {
                             name: inputArg.name,
-                            type: match.args[inputArg.name],
+                            type: match.args[inputArg.name].type,
                             value: inputArg.value,
                         };
                     }),
@@ -363,7 +374,9 @@ export class CollectionService implements OnModuleInit {
             ...(collection.filters || []),
         ]);
         const postIds = collection.productVariants.map(v => v.id);
-        await this.connection.getRepository(Collection).save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
+        await this.connection
+            .getRepository(Collection)
+            .save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
 
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);

@@ -48,7 +48,11 @@ export class ShippingMethod extends VendureEntity implements ChannelAware {
     async apply(order: Order): Promise<ShippingPrice | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            return calculator.calculate(order, this.calculator.args);
+            const { price, priceWithTax } = await calculator.calculate(order, this.calculator.args);
+            return {
+                price: Math.round(price),
+                priceWithTax: Math.round(priceWithTax),
+            };
         }
     }
 

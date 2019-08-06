@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { LanguageCode } from '@vendure/common/lib/generated-shop-types';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -1145,7 +1146,7 @@ describe('Orders resolver', () => {
  */
 const twoStagePaymentMethod = new PaymentMethodHandler({
     code: 'authorize-only-payment-method',
-    description: 'Test Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {
@@ -1170,7 +1171,7 @@ const twoStagePaymentMethod = new PaymentMethodHandler({
  */
 const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
     code: 'single-stage-refundable-payment-method',
-    description: 'Test Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {
@@ -1197,7 +1198,7 @@ const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
  */
 const failsToSettlePaymentMethod = new PaymentMethodHandler({
     code: 'fails-to-settle-payment-method',
-    description: 'Test Payment Method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
     createPayment: (order, args, metadata) => {
         return {

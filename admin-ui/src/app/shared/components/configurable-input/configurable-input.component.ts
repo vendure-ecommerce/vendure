@@ -21,10 +21,13 @@ import {
     Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { StringFieldOption } from 'shared/generated-types';
+import { ConfigArgType } from 'shared/shared-types';
 
 import {
-    ConfigArgType,
+    ConfigArg,
     ConfigurableOperation,
+    ConfigurableOperationDefinition,
     FacetWithValues,
     GetActiveChannel,
 } from '../../../common/generated-types';
@@ -52,7 +55,8 @@ import { interpolateDescription } from '../../../common/utilities/interpolate-de
     ],
 })
 export class ConfigurableInputComponent implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
-    @Input() operation: ConfigurableOperation;
+    @Input() operation?: ConfigurableOperation;
+    @Input() operationDefinition?: ConfigurableOperationDefinition;
     @Input() facets: FacetWithValues.Fragment[] = [];
     @Input() activeChannel: GetActiveChannel.ActiveChannel;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
@@ -60,11 +64,14 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     onChange: (val: any) => void;
     onTouch: () => void;
     form = new FormGroup({});
-    ConfigArgType = ConfigArgType;
     private subscription: Subscription;
 
     interpolateDescription(): string {
-        return interpolateDescription(this.operation, this.form.value);
+        if (this.operationDefinition) {
+            return interpolateDescription(this.operationDefinition, this.form.value);
+        } else {
+            return '';
+        }
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -101,15 +108,76 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         }
     }
 
+    isIntInput(arg: ConfigArg): boolean {
+        if (this.getArgType(arg) === 'int') {
+            const config = this.getArgConfig(arg);
+            return !!(!config || config.inputType === 'default');
+        }
+        return false;
+    }
+
+    isMoneyInput(arg: ConfigArg): boolean {
+        if (this.getArgType(arg) === 'int') {
+            const config = this.getArgConfig(arg);
+            return !!(config && config.inputType === 'money');
+        }
+        return false;
+    }
+
+    isPercentageInput(arg: ConfigArg): boolean {
+        if (this.getArgType(arg) === 'int') {
+            const config = this.getArgConfig(arg);
+            return !!(config && config.inputType === 'percentage');
+        }
+        return false;
+    }
+
+    isStringWithOptions(arg: ConfigArg): boolean {
+        if (this.getArgType(arg) === 'string') {
+            return 0 < this.getStringOptions(arg).length;
+        }
+        return false;
+    }
+
+    isStringWithoutOptions(arg: ConfigArg): boolean {
+        if (this.getArgType(arg) === 'string') {
+            return this.getStringOptions(arg).length === 0;
+        }
+        return false;
+    }
+
+    getStringOptions(arg: ConfigArg): StringFieldOption[] {
+        if (this.getArgType(arg) === 'string') {
+            const config = this.getArgConfig(arg);
+            return (config && config.options) || [];
+        }
+        return [];
+    }
+
+    getArgType(arg: ConfigArg): ConfigArgType {
+        return arg.type as ConfigArgType;
+    }
+
+    private getArgConfig(arg: ConfigArg): Record<string, any> | undefined {
+        if (this.operationDefinition) {
+            const match = this.operationDefinition.args.find(argDef => argDef.name === arg.name);
+            return match && match.config;
+        }
+    }
+
     private createForm() {
+        if (!this.operation) {
+            return;
+        }
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
         this.form = new FormGroup({});
+
         if (this.operation.args) {
             for (const arg of this.operation.args) {
                 let value: any = arg.value;
-                if (arg.type === ConfigArgType.BOOLEAN) {
+                if (arg.type === 'boolean') {
                     value = arg.value === 'true';
                 }
                 this.form.addControl(arg.name, new FormControl(value, Validators.required));
@@ -119,7 +187,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         this.subscription = this.form.valueChanges.subscribe(value => {
             if (this.onChange) {
                 this.onChange({
-                    code: this.operation.code,
+                    code: this.operation && this.operation.code,
                     args: value,
                 });
             }

@@ -41,7 +41,6 @@ export class ShippingConfiguration {
     ): ConfigurableOperation {
         const output: ConfigurableOperation = {
             code: input.code,
-            description: checkerOrCalculator.description,
             args: input.arguments,
         };
         return output;

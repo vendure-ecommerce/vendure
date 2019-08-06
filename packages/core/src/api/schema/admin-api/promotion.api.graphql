@@ -1,7 +1,8 @@
 type Query {
     promotion(id: ID!): Promotion
     promotions(options: PromotionListOptions): PromotionList!
-    adjustmentOperations: AdjustmentOperations!
+    promotionConditions: [ConfigurableOperationDefinition!]!
+    promotionActions: [ConfigurableOperationDefinition!]!
 }
 
 type Mutation {

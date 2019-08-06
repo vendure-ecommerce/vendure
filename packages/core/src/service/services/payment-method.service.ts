@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import {
-    ConfigArg,
-    ConfigArgType,
-    RefundOrderInput,
-    UpdatePaymentMethodInput,
-} from '@vendure/common/lib/generated-types';
+import { ConfigArg, RefundOrderInput, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
@@ -201,12 +196,12 @@ export class PaymentMethodService {
         existingConfigArgs: ConfigArg[],
     ): ConfigArg[] {
         let configArgs: ConfigArg[] = [];
-        for (const [name, type] of Object.entries(handler.args)) {
+        for (const [name, def] of Object.entries(handler.args)) {
             if (!existingConfigArgs.find(ca => ca.name === name)) {
                 configArgs.push({
                     name,
-                    type,
-                    value: this.getDefaultValue(type),
+                    type: def.type,
+                    value: this.getDefaultValue(def.type),
                 });
             }
         }
@@ -216,11 +211,11 @@ export class PaymentMethodService {
 
     private getDefaultValue(type: PaymentMethodArgType): string {
         switch (type) {
-            case ConfigArgType.STRING:
+            case 'string':
                 return '';
-            case ConfigArgType.BOOLEAN:
+            case 'boolean':
                 return 'false';
-            case ConfigArgType.INT:
+            case 'int':
                 return '0';
             default:
                 assertNever(type);

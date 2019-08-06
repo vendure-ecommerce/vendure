@@ -6,7 +6,6 @@ import { facetValueCollectionFilter } from '../src/config/collection/default-col
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
-    ConfigArgType,
     CreateCollection,
     CreateFacet,
     DisableProduct,
@@ -249,12 +248,12 @@ describe('Shop catalog', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: `["${category.values[3].id}"]`,
-                                    type: ConfigArgType.FACET_VALUE_IDS,
+                                    type: 'facetValueIds',
                                 },
                                 {
                                     name: 'containsAny',
                                     value: `false`,
-                                    type: ConfigArgType.BOOLEAN,
+                                    type: 'boolean',
                                 },
                             ],
                         },

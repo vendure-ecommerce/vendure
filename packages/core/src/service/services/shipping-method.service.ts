@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    ConfigurableOperation,
+    ConfigurableOperationDefinition,
     CreateShippingMethodInput,
     UpdateShippingMethodInput,
 } from '@vendure/common/lib/generated-types';
@@ -9,6 +9,7 @@ import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -86,12 +87,14 @@ export class ShippingMethodService {
         return assertFound(this.findOne(shippingMethod.id));
     }
 
-    getShippingEligibilityCheckers(): ConfigurableOperation[] {
-        return this.shippingConfiguration.shippingEligibilityCheckers.map(configurableDefToOperation);
+    getShippingEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingConfiguration.shippingEligibilityCheckers.map(x =>
+            configurableDefToOperation(ctx, x),
+        );
     }
 
-    getShippingCalculators(): ConfigurableOperation[] {
-        return this.shippingConfiguration.shippingCalculators.map(configurableDefToOperation);
+    getShippingCalculators(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingConfiguration.shippingCalculators.map(x => configurableDefToOperation(ctx, x));
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {

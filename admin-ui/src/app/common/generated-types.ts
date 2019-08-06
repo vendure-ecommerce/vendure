@@ -51,12 +51,6 @@ export type Adjustment = {
   amount: Scalars['Int'],
 };
 
-export type AdjustmentOperations = {
-  __typename?: 'AdjustmentOperations',
-  conditions: Array<ConfigurableOperation>,
-  actions: Array<ConfigurableOperation>,
-};
-
 export enum AdjustmentType {
   TAX = 'TAX',
   PROMOTION = 'PROMOTION',
@@ -292,38 +286,35 @@ export type CollectionTranslationInput = {
 export type ConfigArg = {
   __typename?: 'ConfigArg',
   name: Scalars['String'],
-  type: ConfigArgType,
-  value?: Maybe<Scalars['String']>,
+  type: Scalars['String'],
+  value: Scalars['String'],
+};
+
+export type ConfigArgDefinition = {
+  __typename?: 'ConfigArgDefinition',
+  name: Scalars['String'],
+  type: Scalars['String'],
+  label?: Maybe<Scalars['String']>,
+  description?: Maybe<Scalars['String']>,
+  config?: Maybe<Scalars['JSON']>,
 };
 
 export type ConfigArgInput = {
   name: Scalars['String'],
-  type: ConfigArgType,
-  value?: Maybe<Scalars['String']>,
+  type: Scalars['String'],
+  value: Scalars['String'],
 };
-
-/** Certain entities allow arbitrary configuration arguments to be specified which can then
- * be set in the admin-ui and used in the business logic of the app. These are the valid
- * data types of such arguments. The data type influences:
- * 
- * 1. How the argument form field is rendered in the admin-ui
- * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
- */
-export enum ConfigArgType {
-  PERCENTAGE = 'PERCENTAGE',
-  MONEY = 'MONEY',
-  INT = 'INT',
-  STRING = 'STRING',
-  DATETIME = 'DATETIME',
-  BOOLEAN = 'BOOLEAN',
-  FACET_VALUE_IDS = 'FACET_VALUE_IDS',
-  STRING_OPERATOR = 'STRING_OPERATOR'
-}
 
 export type ConfigurableOperation = {
   __typename?: 'ConfigurableOperation',
   code: Scalars['String'],
   args: Array<ConfigArg>,
+};
+
+export type ConfigurableOperationDefinition = {
+  __typename?: 'ConfigurableOperationDefinition',
+  code: Scalars['String'],
+  args: Array<ConfigArgDefinition>,
   description: Scalars['String'],
 };
 
@@ -2635,7 +2626,7 @@ export type Query = {
   activeChannel: Channel,
   collections: CollectionList,
   collection?: Maybe<Collection>,
-  collectionFilters: Array<ConfigurableOperation>,
+  collectionFilters: Array<ConfigurableOperationDefinition>,
   countries: CountryList,
   country?: Maybe<Country>,
   customerGroups: Array<CustomerGroup>,
@@ -2659,13 +2650,14 @@ export type Query = {
   product?: Maybe<Product>,
   promotion?: Maybe<Promotion>,
   promotions: PromotionList,
-  adjustmentOperations: AdjustmentOperations,
+  promotionConditions: Array<ConfigurableOperationDefinition>,
+  promotionActions: Array<ConfigurableOperationDefinition>,
   roles: RoleList,
   role?: Maybe<Role>,
   shippingMethods: ShippingMethodList,
   shippingMethod?: Maybe<ShippingMethod>,
-  shippingEligibilityCheckers: Array<ConfigurableOperation>,
-  shippingCalculators: Array<ConfigurableOperation>,
+  shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>,
+  shippingCalculators: Array<ConfigurableOperationDefinition>,
   testShippingMethod: TestShippingMethodResult,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
@@ -3552,7 +3544,7 @@ export type GetUiStateQuery = ({ __typename?: 'Query' } & { uiState: ({ __typena
 export type GetCollectionFiltersQueryVariables = {};
 
 
-export type GetCollectionFiltersQuery = ({ __typename?: 'Query' } & { collectionFilters: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
+export type GetCollectionFiltersQuery = ({ __typename?: 'Query' } & { collectionFilters: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
 
 export type CollectionFragment = ({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate' | 'languageCode'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, filters: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, translations: Array<({ __typename?: 'CollectionTranslation' } & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>)>, parent: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>, children: Maybe<Array<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>> });
 
@@ -3915,8 +3907,6 @@ export type DeleteProductVariantMutationVariables = {
 
 export type DeleteProductVariantMutation = ({ __typename?: 'Mutation' } & { deleteProductVariant: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
 
-export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
-
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
 export type GetPromotionListQueryVariables = {
@@ -3936,7 +3926,7 @@ export type GetPromotionQuery = ({ __typename?: 'Query' } & { promotion: Maybe<(
 export type GetAdjustmentOperationsQueryVariables = {};
 
 
-export type GetAdjustmentOperationsQuery = ({ __typename?: 'Query' } & { adjustmentOperations: ({ __typename?: 'AdjustmentOperations' } & { actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> }) });
+export type GetAdjustmentOperationsQuery = ({ __typename?: 'Query' } & { promotionConditions: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)>, promotionActions: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
 
 export type CreatePromotionMutationVariables = {
   input: CreatePromotionInput
@@ -4223,6 +4213,10 @@ export type TestShippingMethodQueryVariables = {
 
 export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { price: Maybe<({ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>)> }) });
 
+export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
+
+export type ConfigurableOperationDefFragment = ({ __typename?: 'ConfigurableOperationDefinition' } & Pick<ConfigurableOperationDefinition, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>)> });
+
 export type ShippingMethodFragment = ({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'> & { checker: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment), calculator: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment) });
 
 export type GetShippingMethodListQueryVariables = {
@@ -4242,7 +4236,7 @@ export type GetShippingMethodQuery = ({ __typename?: 'Query' } & { shippingMetho
 export type GetShippingMethodOperationsQueryVariables = {};
 
 
-export type GetShippingMethodOperationsQuery = ({ __typename?: 'Query' } & { shippingEligibilityCheckers: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, shippingCalculators: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
+export type GetShippingMethodOperationsQuery = ({ __typename?: 'Query' } & { shippingEligibilityCheckers: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)>, shippingCalculators: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
 
 export type CreateShippingMethodMutationVariables = {
   input: CreateShippingMethodInput
@@ -4398,7 +4392,7 @@ export namespace GetUiState {
 export namespace GetCollectionFilters {
   export type Variables = GetCollectionFiltersQueryVariables;
   export type Query = GetCollectionFiltersQuery;
-  export type CollectionFilters = ConfigurableOperationFragment;
+  export type CollectionFilters = ConfigurableOperationDefFragment;
 }
 
 export namespace Collection {
@@ -4809,11 +4803,6 @@ export namespace DeleteProductVariant {
   export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
 }
 
-export namespace ConfigurableOperation {
-  export type Fragment = ConfigurableOperationFragment;
-  export type Args = (NonNullable<ConfigurableOperationFragment['args'][0]>);
-}
-
 export namespace Promotion {
   export type Fragment = PromotionFragment;
   export type Conditions = ConfigurableOperationFragment;
@@ -4836,9 +4825,8 @@ export namespace GetPromotion {
 export namespace GetAdjustmentOperations {
   export type Variables = GetAdjustmentOperationsQueryVariables;
   export type Query = GetAdjustmentOperationsQuery;
-  export type AdjustmentOperations = GetAdjustmentOperationsQuery['adjustmentOperations'];
-  export type Actions = ConfigurableOperationFragment;
-  export type Conditions = ConfigurableOperationFragment;
+  export type PromotionConditions = ConfigurableOperationDefFragment;
+  export type PromotionActions = ConfigurableOperationDefFragment;
 }
 
 export namespace CreatePromotion {
@@ -5176,6 +5164,16 @@ export namespace TestShippingMethod {
   export type Price = (NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>);
 }
 
+export namespace ConfigurableOperation {
+  export type Fragment = ConfigurableOperationFragment;
+  export type Args = (NonNullable<ConfigurableOperationFragment['args'][0]>);
+}
+
+export namespace ConfigurableOperationDef {
+  export type Fragment = ConfigurableOperationDefFragment;
+  export type Args = (NonNullable<ConfigurableOperationDefFragment['args'][0]>);
+}
+
 export namespace ShippingMethod {
   export type Fragment = ShippingMethodFragment;
   export type Checker = ConfigurableOperationFragment;
@@ -5198,8 +5196,8 @@ export namespace GetShippingMethod {
 export namespace GetShippingMethodOperations {
   export type Variables = GetShippingMethodOperationsQueryVariables;
   export type Query = GetShippingMethodOperationsQuery;
-  export type ShippingEligibilityCheckers = ConfigurableOperationFragment;
-  export type ShippingCalculators = ConfigurableOperationFragment;
+  export type ShippingEligibilityCheckers = ConfigurableOperationDefFragment;
+  export type ShippingCalculators = ConfigurableOperationDefFragment;
 }
 
 export namespace CreateShippingMethod {
