@@ -1,12 +1,14 @@
+// tslint:disable
+
 export interface IntrospectionResultData {
     __schema: {
-        types: Array<{
+        types: {
             kind: string;
             name: string;
-            possibleTypes: Array<{
+            possibleTypes: {
                 name: string;
-            }>;
-        }>;
+            }[];
+        }[];
     };
 }
 
