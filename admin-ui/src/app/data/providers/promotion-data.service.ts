@@ -38,7 +38,7 @@ export class PromotionDataService {
         });
     }
 
-    getAdjustmentOperations() {
+    getPromotionActionsAndConditions() {
         return this.baseDataService.query<GetAdjustmentOperations.Query>(GET_ADJUSTMENT_OPERATIONS);
     }
 

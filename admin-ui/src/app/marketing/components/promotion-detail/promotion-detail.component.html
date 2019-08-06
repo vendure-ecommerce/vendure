@@ -4,7 +4,7 @@
     <vdr-ab-right>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="!saveButtonEnabled()"
         >
@@ -31,6 +31,7 @@
                     (remove)="removeCondition($event)"
                     [facets]="facets$ | async"
                     [operation]="condition"
+                    [operationDefinition]="getConditionDefinition(condition)"
                     [formControlName]="i"
                     [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>
@@ -49,7 +50,7 @@
                             vdrDropdownItem
                             (click)="addCondition(condition)"
                         >
-                            {{ condition.code }}
+                            {{ condition.description }}
                         </button>
                     </vdr-dropdown-menu>
                 </vdr-dropdown>
@@ -62,6 +63,7 @@
                 (remove)="removeAction($event)"
                 [facets]="facets$ | async"
                 [operation]="action"
+                [operationDefinition]="getActionDefinition(action)"
                 [formControlName]="i"
                 [activeChannel]="activeChannel$ | async"
             ></vdr-configurable-input>
@@ -78,7 +80,7 @@
                             vdrDropdownItem
                             (click)="addAction(action)"
                         >
-                            {{ action.code }}
+                            {{ action.description }}
                         </button>
                     </vdr-dropdown-menu>
                 </vdr-dropdown>

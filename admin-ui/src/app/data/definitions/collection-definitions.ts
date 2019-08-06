@@ -1,15 +1,15 @@
 import gql from 'graphql-tag';
 
 import { ASSET_FRAGMENT } from './product-definitions';
-import { CONFIGURABLE_FRAGMENT } from './promotion-definitions';
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, CONFIGURABLE_OPERATION_FRAGMENT } from './shared-definitions';
 
 export const GET_COLLECTION_FILTERS = gql`
     query GetCollectionFilters {
         collectionFilters {
-            ...ConfigurableOperation
+            ...ConfigurableOperationDef
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
 `;
 
 export const COLLECTION_FRAGMENT = gql`
@@ -44,7 +44,7 @@ export const COLLECTION_FRAGMENT = gql`
         }
     }
     ${ASSET_FRAGMENT}
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
 export const GET_COLLECTION_LIST = gql`

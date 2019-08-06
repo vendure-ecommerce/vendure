@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-import { CONFIGURABLE_FRAGMENT } from './promotion-definitions';
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, CONFIGURABLE_OPERATION_FRAGMENT } from './shared-definitions';
 
 export const SHIPPING_METHOD_FRAGMENT = gql`
     fragment ShippingMethod on ShippingMethod {
@@ -16,7 +16,7 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
             ...ConfigurableOperation
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
 export const GET_SHIPPING_METHOD_LIST = gql`
@@ -43,13 +43,13 @@ export const GET_SHIPPING_METHOD = gql`
 export const GET_SHIPPING_METHOD_OPERATIONS = gql`
     query GetShippingMethodOperations {
         shippingEligibilityCheckers {
-            ...ConfigurableOperation
+            ...ConfigurableOperationDef
         }
         shippingCalculators {
-            ...ConfigurableOperation
+            ...ConfigurableOperationDef
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
 `;
 
 export const CREATE_SHIPPING_METHOD = gql`

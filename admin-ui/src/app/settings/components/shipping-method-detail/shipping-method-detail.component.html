@@ -36,6 +36,7 @@
             <vdr-configurable-input
                 *ngIf="selectedChecker"
                 [operation]="selectedChecker"
+                [operationDefinition]="selectedCheckerDefinition"
                 [activeChannel]="activeChannel$ | async"
                 (remove)="selectedChecker = null"
                 formControlName="checker"
@@ -51,7 +52,7 @@
                             *ngFor="let checker of checkers"
                             type="button"
                             vdrDropdownItem
-                            (click)="selectedChecker = checker"
+                            (click)="selectChecker(checker)"
                         >
                             {{ checker.description }}
                         </button>
@@ -64,6 +65,7 @@
             <vdr-configurable-input
                 *ngIf="selectedCalculator"
                 [operation]="selectedCalculator"
+                [operationDefinition]="selectedCalculatorDefinition"
                 [activeChannel]="activeChannel$ | async"
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"
@@ -79,7 +81,7 @@
                             *ngFor="let calculator of calculators"
                             type="button"
                             vdrDropdownItem
-                            (click)="selectedCalculator = calculator"
+                            (click)="selectCalculator(calculator)"
                         >
                             {{ calculator.description }}
                         </button>

@@ -1,16 +1,6 @@
 import gql from 'graphql-tag';
 
-export const CONFIGURABLE_FRAGMENT = gql`
-    fragment ConfigurableOperation on ConfigurableOperation {
-        args {
-            name
-            type
-            value
-        }
-        code
-        description
-    }
-`;
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, CONFIGURABLE_OPERATION_FRAGMENT } from './shared-definitions';
 
 export const PROMOTION_FRAGMENT = gql`
     fragment Promotion on Promotion {
@@ -26,7 +16,7 @@ export const PROMOTION_FRAGMENT = gql`
             ...ConfigurableOperation
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
 export const GET_PROMOTION_LIST = gql`
@@ -52,16 +42,14 @@ export const GET_PROMOTION = gql`
 
 export const GET_ADJUSTMENT_OPERATIONS = gql`
     query GetAdjustmentOperations {
-        adjustmentOperations {
-            actions {
-                ...ConfigurableOperation
-            }
-            conditions {
-                ...ConfigurableOperation
-            }
+        promotionConditions {
+            ...ConfigurableOperationDef
+        }
+        promotionActions {
+            ...ConfigurableOperationDef
         }
     }
-    ${CONFIGURABLE_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
 `;
 
 export const CREATE_PROMOTION = gql`
