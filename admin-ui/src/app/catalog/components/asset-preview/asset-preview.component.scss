@@ -28,7 +28,7 @@
 
 .controls {
     display: flex;
-    align-items: flex-end;
+    flex-wrap: wrap;
     flex: 1;
 
     label {
@@ -38,6 +38,7 @@
         height: 40px;
         margin-left: 6px;
         margin-right: 24px;
+        max-width: 112px;
     }
     .dimension {
         margin: 0 6px;
