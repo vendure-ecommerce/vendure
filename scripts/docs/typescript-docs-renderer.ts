@@ -15,7 +15,7 @@ import {
     InterfaceInfo, MethodParameterInfo,
     ParsedDeclaration,
     TypeAliasInfo,
-    TypeMap,
+    TypeMap, VariableInfo,
 } from './typescript-docgen-types';
 
 export class TypescriptDocsRenderer {
@@ -46,6 +46,9 @@ export class TypescriptDocsRenderer {
                         break;
                     case 'function':
                         markdown += this.renderFunction(info, typeMap, docsUrl);
+                        break;
+                    case 'variable':
+                        markdown += this.renderVariable(info, typeMap, docsUrl);
                         break;
                     default:
                         assertNever(info);
@@ -126,9 +129,18 @@ export class TypescriptDocsRenderer {
         output += `## Signature\n\n`;
         output += this.renderFunctionSignature(functionInfo, knownTypeMap);
         if (parameters.length) {
-            output += `### Parameters\n\n`;
+            output += `## Parameters\n\n`;
             output += this.renderFunctionParams(parameters, knownTypeMap, docsUrl);
         }
+        return output;
+    }
+
+    private renderVariable(variableInfo: VariableInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+        const { title, weight, description, fullText } = variableInfo;
+        let output = '';
+        output += `\n\n# ${title}\n\n`;
+        output += this.renderGenerationInfoShortcode(variableInfo);
+        output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         return output;
     }
 
@@ -303,7 +315,7 @@ export class TypescriptDocsRenderer {
     private renderDescription(description: string, knownTypeMap: TypeMap, docsUrl: string): string {
         for (const [key, val] of knownTypeMap) {
             const re = new RegExp(`{@link\\s*${key}}`, 'g');
-            description = description.replace(re, `<a href='${docsUrl}/${val}/'>${key}</a>`);
+            description = description.replace(re, `<a href='${docsUrl}/${val}'>${key}</a>`);
         }
         return description;
     }

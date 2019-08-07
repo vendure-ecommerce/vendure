@@ -74,6 +74,22 @@ export interface FunctionInfo extends DeclarationInfo {
     type?: ts.TypeNode;
 }
 
-export type ParsedDeclaration = TypeAliasInfo | ClassInfo | InterfaceInfo | EnumInfo | FunctionInfo;
-export type ValidDeclaration = ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.ClassDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration;
+export interface VariableInfo extends DeclarationInfo {
+    kind: 'variable';
+}
+
+export type ParsedDeclaration =
+    | TypeAliasInfo
+    | ClassInfo
+    | InterfaceInfo
+    | EnumInfo
+    | FunctionInfo
+    | VariableInfo;
+export type ValidDeclaration =
+    | ts.InterfaceDeclaration
+    | ts.TypeAliasDeclaration
+    | ts.ClassDeclaration
+    | ts.EnumDeclaration
+    | ts.FunctionDeclaration
+    | ts.VariableStatement;
 export type TypeMap = Map<string, string>;

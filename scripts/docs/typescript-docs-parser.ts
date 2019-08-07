@@ -107,7 +107,12 @@ export class TypescriptDocsParser {
         if (category === undefined) {
             return;
         }
-        const title = statement.name ? statement.name.getText() : 'anonymous';
+        let title: string;
+        if (ts.isVariableStatement(statement)) {
+            title = statement.declarationList.declarations[0].name.getText();
+        } else {
+            title = statement.name ? statement.name.getText() : 'anonymous';
+        }
         const fullText = this.getDeclarationFullText(statement);
         const weight = this.getDeclarationWeight(statement);
         const description = this.getDeclarationDescription(statement);
@@ -169,6 +174,11 @@ export class TypescriptDocsParser {
                 parameters,
                 type: statement.type,
             };
+        } else if (ts.isVariableStatement(statement)) {
+            return {
+                ...info,
+                kind: 'variable',
+            };
         }
     }
 
@@ -194,9 +204,14 @@ export class TypescriptDocsParser {
      * Returns the declaration name plus any type parameters.
      */
     private getDeclarationFullText(declaration: ValidDeclaration): string {
-        const name = declaration.name ? declaration.name.getText() : 'anonymous';
+        let name: string;
+        if (ts.isVariableStatement(declaration)) {
+            name = declaration.declarationList.declarations[0].name.getText();
+        } else {
+            name = declaration.name ? declaration.name.getText() : 'anonymous';
+        }
         let typeParams = '';
-        if (!ts.isEnumDeclaration(declaration) && declaration.typeParameters) {
+        if (!ts.isEnumDeclaration(declaration) && !ts.isVariableStatement(declaration) && declaration.typeParameters) {
             typeParams = '<' + declaration.typeParameters.map(tp => tp.getText()).join(', ') + '>';
         }
         return name + typeParams;
@@ -348,7 +363,8 @@ export class TypescriptDocsParser {
             ts.isTypeAliasDeclaration(statement) ||
             ts.isClassDeclaration(statement) ||
             ts.isEnumDeclaration(statement) ||
-            ts.isFunctionDeclaration(statement)
+            ts.isFunctionDeclaration(statement) ||
+            ts.isVariableStatement(statement)
         );
     }
 
