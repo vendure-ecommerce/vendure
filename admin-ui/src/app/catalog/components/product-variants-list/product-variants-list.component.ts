@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
 import {
+    CustomFieldConfig,
     FacetValue,
     FacetWithValues,
     ProductVariant,
@@ -44,6 +45,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
+    @Input() customFields: CustomFieldConfig[];
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
@@ -147,6 +149,10 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
 
     isVariantSelected(variantId: string): boolean {
         return -1 < this.selectedVariantIds.indexOf(variantId);
+    }
+
+    customFieldIsSet(index: number, name: string): boolean {
+        return !!this.formArray.at(index).get(['customFields', name]);
     }
 
     editOption(option: ProductVariant.Options) {

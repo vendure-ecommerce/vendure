@@ -46,6 +46,7 @@ export interface VariantFormValue {
     stockOnHand: number;
     trackInventory: boolean;
     facetValueIds: string[];
+    customFields?: any;
 }
 
 export interface SelectedAssets {
@@ -429,17 +430,37 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 facetValueIds,
             };
 
-            const existing = variantsFormArray.at(i);
-            if (existing) {
-                existing.setValue(group);
+            let variantFormGroup = variantsFormArray.at(i) as FormGroup | undefined;
+            if (variantFormGroup) {
+                variantFormGroup.patchValue(group);
             } else {
-                variantsFormArray.insert(
-                    i,
-                    this.formBuilder.group({
-                        ...group,
-                        facetValueIds: this.formBuilder.control(facetValueIds),
-                    }),
-                );
+                variantFormGroup = this.formBuilder.group({
+                    ...group,
+                    facetValueIds: this.formBuilder.control(facetValueIds),
+                });
+                variantsFormArray.insert(i, variantFormGroup);
+            }
+            if (this.customVariantFields.length) {
+                let customFieldsGroup = variantFormGroup.get(['customFields']) as FormGroup | undefined;
+
+                if (!customFieldsGroup) {
+                    customFieldsGroup = this.formBuilder.group(
+                        this.customVariantFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                    );
+                    variantFormGroup.addControl('customFields', customFieldsGroup);
+                }
+
+                for (const fieldDef of this.customVariantFields) {
+                    const key = fieldDef.name;
+                    const value =
+                        fieldDef.type === 'localeString'
+                            ? (variantTranslation as any).customFields[key]
+                            : (variant as any).customFields[key];
+                    const control = customFieldsGroup.get(key);
+                    if (control) {
+                        control.patchValue(value);
+                    }
+                }
             }
         });
     }

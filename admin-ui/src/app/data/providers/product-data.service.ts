@@ -149,6 +149,7 @@ export class ProductDataService {
                     'assetIds',
                     'trackInventory',
                     'stockOnHand',
+                    'customFields',
                 ]),
             ),
         };

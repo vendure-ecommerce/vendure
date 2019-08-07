@@ -1,4 +1,15 @@
-<vdr-form-field [label]="label" [for]="customField.name">
+<div class="clr-form-control" *ngIf="compact">
+    <label for="basic" class="clr-control-label">{{ label }}</label>
+    <div class="clr-control-container">
+        <div class="clr-input-wrapper">
+            <ng-container *ngTemplateOutlet="inputs"></ng-container>
+        </div>
+    </div>
+</div>
+<vdr-form-field [label]="label" [for]="customField.name" *ngIf="!compact">
+    <ng-container *ngTemplateOutlet="inputs"></ng-container>
+</vdr-form-field>
+<ng-template #inputs>
     <input
         *ngIf="isTextInput"
         type="text"
@@ -38,4 +49,4 @@
         [value]="formGroup.get(customField.name).value | date: 'yyyy-MM-ddTHH:mm:ss'"
         (change)="updateDateTime(formGroup.get(customField.name), $event)"
     />
-</vdr-form-field>
+</ng-template>

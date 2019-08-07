@@ -151,6 +151,7 @@
                         [optionGroups]="product.optionGroups"
                         [productVariantsFormArray]="detailForm.get('variants')"
                         [taxCategories]="taxCategories$ | async"
+                        [customFields]="customVariantFields"
                         (assetChange)="variantAssetChange($event)"
                         (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"

@@ -23,6 +23,7 @@ import { DataService } from '../../../data/providers/data.service';
 export class CustomFieldControlComponent implements OnInit, OnDestroy {
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldsFragment;
+    @Input() compact = false;
     @Input() showLabel = true;
     private uiLanguageCode: LanguageCode;
     private sub: Subscription;

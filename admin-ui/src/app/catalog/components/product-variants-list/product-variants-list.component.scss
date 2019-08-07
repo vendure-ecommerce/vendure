@@ -30,14 +30,21 @@
 
     .variant-body {
         display: flex;
+        flex-direction: column;
+        @media screen and (min-width: $breakpoint-small) {
+            flex-direction: row;
+        }
     }
 
     .details {
         display: flex;
+        flex-direction: column;
         flex: 1;
-        height: 36px;
         margin-right: 12px;
-
+        @media screen and (min-width: $breakpoint-small) {
+            flex-direction: row;
+            height: 36px;
+        }
         .name {
             flex: 1;
             ::ng-deep .clr-control-container {
@@ -63,13 +70,25 @@
         display: flex;
     }
 
+    .variant-form-inputs {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        @media screen and (min-width: $breakpoint-small) {
+            flex-direction: row;
+        }
+    }
+
     .variant-form-input-row {
         display: flex;
         flex-wrap: wrap;
-        margin: 0 6px 32px 24px;
+        @media screen and (min-width: $breakpoint-small) {
+            margin: 0 6px 8px 24px;
+        }
 
         > * {
             margin-right: 24px;
+            margin-bottom: 24px;
         }
     }
 
