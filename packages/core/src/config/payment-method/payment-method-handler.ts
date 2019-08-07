@@ -213,7 +213,10 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * export const examplePaymentHandler = new PaymentMethodHandler({
  *     code: 'example-payment-provider',
- *     description: 'Example Payment Provider',
+ *     description: [{
+ *         languageCode: LanguageCode.en,
+ *         value: 'Example Payment Provider',
+ *     }],
  *     args: {
  *         apiKey: { type: 'string' },
  *     },

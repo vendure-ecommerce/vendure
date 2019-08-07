@@ -37,6 +37,14 @@ export interface EmailTemplateConfig {
     subject: string;
 }
 
+/**
+ * @description
+ * A function used to define template variables available to email templates.
+ * See {@link EmailEventHandler}.setTemplateVars().
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
 export type SetTemplateVarsFn<Event> = (
     event: Event,
     globals: { [key: string]: any },
@@ -113,10 +121,12 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
 
+    /** @internal */
     get type(): T {
         return this.listener.type;
     }
 
+    /** @internal */
     get mockEvent(): Omit<Event, 'ctx'> | undefined {
         return this._mockEvent;
     }

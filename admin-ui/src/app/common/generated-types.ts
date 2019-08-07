@@ -547,7 +547,11 @@ export type CreateZoneInput = {
   memberIds?: Maybe<Array<Scalars['ID']>>,
 };
 
-/** ISO 4217 currency code */
+/** @description
+ * ISO 4217 currency code
+ * 
+ * @docsCategory common
+ */
 export enum CurrencyCode {
   /** United Arab Emirates dirham */
   AED = 'AED',
@@ -1224,7 +1228,11 @@ export enum JobState {
 }
 
 
-/** ISO 639-1 language code */
+/** @description
+ * ISO 639-1 language code
+ * 
+ * @docsCategory common
+ */
 export enum LanguageCode {
   /** Afar */
   aa = 'aa',
@@ -2319,11 +2327,17 @@ export type PaymentMethodSortParameter = {
   code?: Maybe<SortOrder>,
 };
 
-/**  Permissions for administrators and customers  */
+/** "
+ * @description
+ * Permissions for administrators and customers. Used to control access to
+ * GraphQL resolvers via the {@link Allow} decorator.
+ * 
+ * @docsCategory common
+ */
 export enum Permission {
   /**  The Authenticated role means simply that the user is logged in  */
   Authenticated = 'Authenticated',
-  /**  SuperAdmin can perform the most sensitive tasks  */
+  /**  SuperAdmin can perform the most sensitive tasks */
   SuperAdmin = 'SuperAdmin',
   /**  Owner means the user owns this entity, e.g. a Customer's own Order */
   Owner = 'Owner',

@@ -12,16 +12,17 @@ import { EmailEventHandler } from './event-listener';
  * to use when generating the email.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
  */
-export type EventWithContext = VendureEvent & { ctx: RequestContext; };
+export type EventWithContext = VendureEvent & { ctx: RequestContext };
 
 /**
  * @description
  * Configuration for the EmailPlugin.
  *
  * @docsCategory EmailPlugin
- * @docsWeight 0
- */
+ * @docsPage EmailPluginOptions
+ * */
 export interface EmailPluginOptions {
     /**
      * @description
@@ -46,7 +47,7 @@ export interface EmailPluginOptions {
      * the storefront URL could be defined here and then used in the "email address verification"
      * email.
      */
-    globalTemplateVars?: { [key: string]: any; };
+    globalTemplateVars?: { [key: string]: any };
 }
 
 /**
@@ -54,6 +55,7 @@ export interface EmailPluginOptions {
  * Configuration for running the EmailPlugin in development mode.
  *
  * @docsCategory EmailPlugin
+ * @docsPage EmailPluginOptions
  */
 export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'> {
     devMode: true;
@@ -71,18 +73,40 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
     mailboxPort?: number;
 }
 
+/**
+ * @description
+ * The credentials used for sending email via SMTP
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
 export interface SMTPCredentials {
-    /** the username */
+    /** @description The username */
     user: string;
-    /** then password */
+    /** @description The password */
     pass: string;
 }
+
+/**
+ * @description
+ * A union of all the possible transport options for sending emails.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Transport Options
+ */
+export type EmailTransportOptions =
+    | SMTPTransportOptions
+    | SendmailTransportOptions
+    | FileTransportOptions
+    | NoopTransportOptions
+    | TestingTransportOptions;
 
 /**
  * @description
  * A subset of the SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
  *
  * @docsCategory EmailPlugin
+ * @docsPage Transport Options
  */
 export interface SMTPTransportOptions {
     type: 'smtp';
@@ -138,6 +162,7 @@ export interface SMTPTransportOptions {
  * Uses the local Sendmail program to send the email.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Transport Options
  */
 export interface SendmailTransportOptions {
     type: 'sendmail';
@@ -152,6 +177,7 @@ export interface SendmailTransportOptions {
  * Outputs the email as an HTML file for development purposes.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Transport Options
  */
 export interface FileTransportOptions {
     type: 'file';
@@ -166,13 +192,18 @@ export interface FileTransportOptions {
  * Does nothing with the generated email. Mainly intended for use in testing where we don't care about the email transport.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Transport Options
  */
 export interface NoopTransportOptions {
     type: 'none';
 }
 
 /**
+ * @description
  * The final, generated email details to be sent.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
  */
 export interface EmailDetails {
     recipient: string;
@@ -185,6 +216,7 @@ export interface EmailDetails {
  * Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Transport Options
  */
 export interface TestingTransportOptions {
     type: 'testing';
@@ -194,19 +226,6 @@ export interface TestingTransportOptions {
      */
     onSend: (details: EmailDetails) => void;
 }
-
-/**
- * @description
- * A union of all the possible transport options for sending emails.
- *
- * @docsCategory EmailPlugin
- */
-export type EmailTransportOptions =
-    | SMTPTransportOptions
-    | SendmailTransportOptions
-    | FileTransportOptions
-    | NoopTransportOptions
-    | TestingTransportOptions;
 
 /**
  * @description
@@ -227,6 +246,6 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
     generate(
         subject: string,
         body: string,
-        templateVars: { [key: string]: any; },
+        templateVars: { [key: string]: any },
     ): Omit<EmailDetails, 'recipient'>;
 }
