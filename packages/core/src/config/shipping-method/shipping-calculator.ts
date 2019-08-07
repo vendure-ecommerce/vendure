@@ -40,7 +40,7 @@ export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
  *     code: 'flat-rate-calculator',
  *     description: 'Default Flat-Rate Shipping Calculator',
  *     args: {
- *         rate: ConfigArgType.MONEY,
+ *         rate: { type: 'int', config: { inputType: 'money' } },
  *     },
  *     calculate: (order, args) => {
  *         return args.rate;

@@ -1,4 +1,9 @@
-"ISO 639-1 language code"
+"""
+@description
+ISO 639-1 language code
+
+@docsCategory common
+"""
 enum LanguageCode {
     "Afar"
     aa

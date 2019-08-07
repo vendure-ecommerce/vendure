@@ -7,6 +7,7 @@ import { VendureEvent } from '../vendure-event';
  * This event is fired when a user successfully logs in via the shop or admin API `login` mutation.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class LoginEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public user: User) {

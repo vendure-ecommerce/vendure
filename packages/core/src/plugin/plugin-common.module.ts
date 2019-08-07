@@ -19,6 +19,7 @@ import { VENDURE_WORKER_CLIENT } from '../worker/constants';
  * * ServiceModule allowing the injection of any of the various entity services such as ProductService, OrderService etc.
  * * ConfigModule, allowing the injection of the ConfigService.
  * * The `VENDURE_WORKER_CLIENT` token, allowing the injection of the Nest microservice ClientProxy.
+ *
  * @docsCategory plugin
  */
 @Module({

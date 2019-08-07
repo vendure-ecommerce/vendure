@@ -9,6 +9,7 @@ import { VendureEvent } from '../vendure-event';
  * This event is fired whenever a {@link Refund} transitions from one {@link RefundState} to another.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class RefundStateTransitionEvent extends VendureEvent {
     constructor(

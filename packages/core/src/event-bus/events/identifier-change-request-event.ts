@@ -8,6 +8,7 @@ import { VendureEvent } from '../vendure-event';
  * associated with the account.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class IdentifierChangeRequestEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public user: User) {

@@ -7,6 +7,7 @@ import { ID } from '@vendure/common/lib/shared-types';
  * uuid string.
  *
  * @docsCategory entities
+ * @docsPage Entity Configuration
  */
 export type PrimaryKeyType = 'increment' | 'uuid';
 
@@ -17,8 +18,8 @@ export type PrimaryKeyType = 'increment' | 'uuid';
  * service layer.
  *
  * @docsCategory entities
- * @docsWeight 1
- */
+ * @docsPage Entity Configuration
+ * */
 export interface EntityIdStrategy<T extends ID = ID> {
     readonly primaryKeyType: PrimaryKeyType;
     encodeId: (primaryKey: T) => string;

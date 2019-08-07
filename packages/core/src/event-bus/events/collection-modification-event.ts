@@ -13,6 +13,7 @@ import { VendureEvent } from '../vendure-event';
  * 2. are now part of this collection after modification but were not before
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class CollectionModificationEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public collection: Collection, public productVariantIds: ID[]) {

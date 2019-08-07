@@ -8,6 +8,7 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * Any existing order is discarded and the guest order is set as the active order.
  *
  * @docsCategory orders
+ * @docsPage Merge Strategies
  */
 export class UseGuestStrategy implements OrderMergeStrategy {
     merge(guestOrder: Order, existingOrder: Order): OrderLine[] {

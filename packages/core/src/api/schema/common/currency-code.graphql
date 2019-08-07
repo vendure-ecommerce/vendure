@@ -1,4 +1,9 @@
-"ISO 4217 currency code"
+"""
+@description
+ISO 4217 currency code
+
+@docsCategory common
+"""
 enum CurrencyCode {
     "United Arab Emirates dirham"
     AED

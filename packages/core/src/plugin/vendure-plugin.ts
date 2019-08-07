@@ -11,50 +11,13 @@ import { PLUGIN_METADATA } from './plugin-metadata';
 
 /**
  * @description
- * An object which allows a plugin to extend the Vendure GraphQL API.
- *
- * @docsCategory plugin
- * */
-export interface APIExtensionDefinition {
-    /**
-     * @description
-     * Extensions to the schema.
-     *
-     * @example
-     * ```TypeScript
-     * const schema = gql`extend type SearchReindexResponse {
-     *     timeTaken: Int!
-     *     indexedItemCount: Int!
-     * }`;
-     * ```
-     */
-    schema?: DocumentNode;
-    /**
-     * @description
-     * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
-     * classes, i.e. using the Nest `\@Resolver()` decorator etc.
-     */
-    resolvers: Array<Type<any>>;
-}
-
-/**
- * @description
- * This method is called before the app bootstraps and should be used to perform any needed modifications to the {@link VendureConfig}.
- *
- * @docsCategory plugin
- */
-export type PluginConfigurationFn = (
-    config: Required<VendureConfig>,
-) => Required<VendureConfig> | Promise<Required<VendureConfig>>;
-
-/**
- * @description
  * Defines the metadata of a Vendure plugin. This interface is an superset of the [Nestjs ModuleMetadata](https://docs.nestjs.com/modules)
  * (which allows the definition of `imports`, `exports`, `providers` and `controllers`), which means
  * that any Nestjs Module is a valid Vendure plugin. In addition, the VendurePluginMetadata allows the definition of
  * extra properties specific to Vendure.
  *
  * @docsCategory plugin
+ * @docsPage VendurePluginMetadata
  */
 export interface VendurePluginMetadata extends ModuleMetadata {
     /**
@@ -86,6 +49,46 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      */
     entities?: Array<Type<any>>;
 }
+/**
+ * @description
+ * An object which allows a plugin to extend the Vendure GraphQL API.
+ *
+ * @docsCategory plugin
+ * @docsPage VendurePluginMetadata
+ * */
+
+export interface APIExtensionDefinition {
+    /**
+     * @description
+     * Extensions to the schema.
+     *
+     * @example
+     * ```TypeScript
+     * const schema = gql`extend type SearchReindexResponse {
+     *     timeTaken: Int!
+     *     indexedItemCount: Int!
+     * }`;
+     * ```
+     */
+    schema?: DocumentNode;
+    /**
+     * @description
+     * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
+     * classes, i.e. using the Nest `\@Resolver()` decorator etc.
+     */
+    resolvers: Array<Type<any>>;
+}
+
+/**
+ * @description
+ * This method is called before the app bootstraps and should be used to perform any needed modifications to the {@link VendureConfig}.
+ *
+ * @docsCategory plugin
+ * @docsPage VendurePluginMetadata
+ */
+export type PluginConfigurationFn = (
+    config: Required<VendureConfig>,
+) => Required<VendureConfig> | Promise<Required<VendureConfig>>;
 
 /**
  * @description
@@ -143,6 +146,7 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
  * For example, this could be used to call out to an external API or to set up {@link EventBus} listeners.
  *
  * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
  */
 export interface OnVendureBootstrap {
     onVendureBootstrap(): void | Promise<void>;
@@ -155,6 +159,7 @@ export interface OnVendureBootstrap {
  * For example, this could be used to start or connect to a server or databased used by the worker.
  *
  * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
  */
 export interface OnVendureWorkerBootstrap {
     onVendureWorkerBootstrap(): void | Promise<void>;
@@ -167,6 +172,7 @@ export interface OnVendureWorkerBootstrap {
  * For example, this could be used to clean up any processes started by the {@link OnVendureBootstrap} method.
  *
  * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
  */
 export interface OnVendureClose {
     onVendureClose(): void | Promise<void>;
@@ -179,6 +185,7 @@ export interface OnVendureClose {
  * For example, this could be used to close any open connections to external services.
  *
  * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
  */
 export interface OnVendureWorkerClose {
     onVendureWorkerClose(): void | Promise<void>;

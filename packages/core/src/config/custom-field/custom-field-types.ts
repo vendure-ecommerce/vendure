@@ -50,6 +50,7 @@ export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', Graph
 /**
  * @description
  * An object used to configure a custom field.
+ *
  * @docsCategory custom-fields
  */
 export type CustomFieldConfig =

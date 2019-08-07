@@ -8,6 +8,7 @@ import { VendureEvent } from '../vendure-event';
  * placing an order.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class AccountRegistrationEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public user: User) {

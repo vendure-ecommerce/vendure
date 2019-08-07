@@ -16,6 +16,22 @@ import { RequestContext } from '../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from './constants';
 import { InternalServerError } from './error/errors';
 
+/**
+ * @description
+ * An array of string values in a given {@link LanguageCode}, used to define human-readable string values.
+ *
+ * @example
+ * ```TypeScript
+ * const title: LocalizedStringArray = [
+ *   { languageCode: LanguageCode.en, value: 'English Title' },
+ *   { languageCode: LanguageCode.de, value: 'German Title' },
+ *   { languageCode: LanguageCode.zh, value: 'Chinese Title' },
+ * ]
+ * ```
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
+ */
 export type LocalizedStringArray = Array<Omit<LocalizedString, '__typename'>>;
 
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
@@ -41,6 +57,32 @@ export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
     ? ConfigArgCommonDef<'int'> & IntArgConfig
     : ConfigArgCommonDef<T> & WithArgConfig<never>;
 
+/**
+ * @description
+ * A object which defines the configurable arguments which may be passed to
+ * functions in those classes which implement the {@link ConfigurableOperationDef} interface.
+ *
+ * @example
+ * ```TypeScript
+ * {
+ *   operator: {
+ *     type: 'string',
+ *     config: {
+ *       options: [
+ *         { value: 'startsWith' },
+ *         { value: 'endsWith' },
+ *         { value: 'contains' },
+ *         { value: 'doesNotContain' },
+ *       ],
+ *     },
+ *   },
+ *   term: { type: 'string' },
+ * }
+ * ```
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
+ */
 export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: ConfigArgDef<T>;
 };
@@ -63,8 +105,12 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
 };
 
 /**
+ * @description
  * Defines a ConfigurableOperation, which is a method which can be configured
  * by the Administrator via the Admin API.
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
  */
 export interface ConfigurableOperationDef {
     code: string;

@@ -29,6 +29,7 @@ export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig
  * return value used to determine whether the transition can occur.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
     fromState: PaymentState,
@@ -42,6 +43,7 @@ export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
  * This object is the return value of the {@link CreatePaymentFn}.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export interface CreatePaymentResult {
     amount: number;
@@ -56,6 +58,7 @@ export interface CreatePaymentResult {
  * This object is the return value of the {@link CreatePaymentFn} when there has been an error.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export interface CreatePaymentErrorResult {
     amount: number;
@@ -70,6 +73,7 @@ export interface CreatePaymentErrorResult {
  * This object is the return value of the {@link CreateRefundFn}.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export interface CreateRefundResult {
     state: RefundState;
@@ -77,6 +81,13 @@ export interface CreateRefundResult {
     metadata?: PaymentMetadata;
 }
 
+/**
+ * @description
+ * This object is the return value of the {@link SettlePaymentFn}
+ *
+ * @docsCategory payment
+ * @docsPage Payment Method Types
+ */
 export interface SettlePaymentResult {
     success: boolean;
     errorMessage?: string;
@@ -88,6 +99,7 @@ export interface SettlePaymentResult {
  * This function contains the logic for creating a payment. See {@link PaymentMethodHandler} for an example.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export type CreatePaymentFn<T extends PaymentMethodArgs> = (
     order: Order,
@@ -100,6 +112,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
  * This function contains the logic for settling a payment. See {@link PaymentMethodHandler} for an example.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export type SettlePaymentFn<T extends PaymentMethodArgs> = (
     order: Order,
@@ -109,9 +122,10 @@ export type SettlePaymentFn<T extends PaymentMethodArgs> = (
 
 /**
  * @description
- * This function contains the logic for creating a payment. See {@link PaymentMethodHandler} for an example.
+ * This function contains the logic for creating a refund. See {@link PaymentMethodHandler} for an example.
  *
  * @docsCategory payment
+ * @docsPage Payment Method Types
  */
 export type CreateRefundFn<T extends PaymentMethodArgs> = (
     input: RefundOrderInput,
@@ -147,7 +161,10 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
     createPayment: CreatePaymentFn<T>;
     /**
      * @description
-     * This function provides the logic for settling a payment.
+     * This function provides the logic for settling a payment, also known as "capturing".
+     * For payment integrations that settle/capture the payment on creation (i.e. the
+     * `createPayment()` method returns with a state of `'Settled'`) this method
+     * need only return `{ success: true }`.
      */
     settlePayment: SettlePaymentFn<T>;
     /**
@@ -161,15 +178,17 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
     /**
      * @description
      * Optional provider-specific arguments which, when specified, are
-     * editable in the admin-ui. Typically args could be used to store an API key
+     * editable in the admin-ui. For example, args could be used to store an API key
      * for a payment provider service.
      *
      * @example
      * ```ts
      * args: {
-     *   apiKey: 'string',
+     *   apiKey: { type: 'string' },
      * }
      * ```
+     *
+     * See {@link ConfigArgs} for available configuration options.
      */
     args: T;
     /**
@@ -196,7 +215,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     code: 'example-payment-provider',
  *     description: 'Example Payment Provider',
  *     args: {
- *         apiKey: 'string',
+ *         apiKey: { type: 'string' },
  *     },
  *     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
  *         try {
@@ -221,6 +240,9 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *             };
  *         }
  *     },
+ *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> {
+ *         return { success: true };
+ *     }
  * });
  * ```
  *

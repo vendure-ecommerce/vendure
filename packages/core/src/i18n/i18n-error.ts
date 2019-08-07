@@ -1,16 +1,17 @@
 import { ApolloError } from 'apollo-server-core';
 
 /**
+ * @description
  * All errors thrown in the Vendure server must use or extend this error class. This allows the
  * error message to be translated before being served to the client.
  *
- * The message should be of the form `Could not find user {{ id }}`, with the variables argument
- * being used to provide interpolation values.
+ * The error messages should be provided in the form of a string key which corresponds to
+ * a key defined in the `i18n/messages/<languageCode>.json` files.
  *
- * @example
- * ```
- * throw new I18nError(`Could not find user {{ id }}`, { id });
- * ```
+ * Note that this class should not be directly used in code, but should be extended by
+ * a more specific Error class.
+ *
+ * @docsCategory errors
  */
 export abstract class I18nError extends ApolloError {
     protected constructor(

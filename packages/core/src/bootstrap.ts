@@ -36,8 +36,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * });
  * ```
  * @docsCategory
- * @docsWeight 0
- */
+ * */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
@@ -81,8 +80,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * });
  * ```
  * @docsCategory worker
- * @docsWeight 0
- */
+ * */
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
     if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
         Logger.useLogger(userConfig.logger || new DefaultLogger());

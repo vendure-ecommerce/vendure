@@ -21,7 +21,7 @@ export interface AssetNamingStrategy {
 
     /**
      * @description
-     * Given the source file name generated in the {@link generateSourceFileName} method, this method
+     * Given the source file name generated in the `generateSourceFileName` method, this method
      * should generate the file name of the preview image.
      *
      * The same mechanism of checking for conflicts is used as described above.

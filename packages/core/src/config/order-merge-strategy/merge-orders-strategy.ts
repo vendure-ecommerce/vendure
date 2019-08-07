@@ -9,6 +9,7 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * existing Order, the guest Order quantity will replace that of the existing Order.
  *
  * @docsCategory orders
+ * @docsPage Merge Strategies
  */
 export class MergeOrdersStrategy implements OrderMergeStrategy {
     merge(guestOrder: Order, existingOrder: Order): OrderLine[] {

@@ -7,6 +7,7 @@ import { VendureEvent } from '../vendure-event';
  * This event is fired when a Customer requests a password reset email.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class PasswordResetEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public user: User) {

@@ -9,6 +9,13 @@ import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 
+/**
+ * @description
+ * The result of the {@link TaxCalculationStrategy}.calculate() method.
+ *
+ * @docsCategory tax
+ * @docsPage Tax Types
+ */
 export interface TaxCalculationResult {
     price: number;
     priceIncludesTax: boolean;

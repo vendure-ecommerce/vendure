@@ -7,6 +7,7 @@ import { VendureEvent } from '../vendure-event';
  * This event is fired when a user logs out via the shop or admin API `logout` mutation.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class LogoutEvent extends VendureEvent {
     constructor(public ctx: RequestContext) {

@@ -5,38 +5,6 @@ import { Logger, VendureConfig } from '../config';
 
 /**
  * @description
- * Options to configure proxy middleware via {@link createProxyHandler}.
- *
- * @docsCategory Plugin
- */
-export interface ProxyOptions {
-    /**
-     * @description
-     * A human-readable label for the service which is being proxied. Used to
-     * generate more informative logs.
-     */
-    label: string;
-    /**
-     * @description
-     * The route of the Vendure server which will act as the proxy url.
-     */
-    route: string;
-    /**
-     * @description
-     * The port on which the service being proxied is running.
-     */
-    port: number;
-    /**
-     * @description
-     * The hostname of the server on which the service being proxied is running.
-     *
-     * @default 'localhost'
-     */
-    hostname?: string;
-}
-
-/**
- * @description
  * Creates a proxy middleware which proxies the given route to the given port.
  * Useful for plugins which start their own servers but should be accessible
  * via the main Vendure url.
@@ -64,6 +32,7 @@ export interface ProxyOptions {
  * ```
  *
  * @docsCategory Plugin
+ * @docsPage Plugin Utilities
  */
 export function createProxyHandler(options: ProxyOptions): RequestHandler {
     const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
@@ -98,6 +67,39 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
     // the info to be logged after bootstrap.
     (middleware as any).proxyMiddleware = options;
     return middleware;
+}
+
+/**
+ * @description
+ * Options to configure proxy middleware via {@link createProxyHandler}.
+ *
+ * @docsCategory Plugin
+ * @docsPage Plugin Utilities
+ */
+export interface ProxyOptions {
+    /**
+     * @description
+     * A human-readable label for the service which is being proxied. Used to
+     * generate more informative logs.
+     */
+    label: string;
+    /**
+     * @description
+     * The route of the Vendure server which will act as the proxy url.
+     */
+    route: string;
+    /**
+     * @description
+     * The port on which the service being proxied is running.
+     */
+    port: number;
+    /**
+     * @description
+     * The hostname of the server on which the service being proxied is running.
+     *
+     * @default 'localhost'
+     */
+    hostname?: string;
 }
 
 /**

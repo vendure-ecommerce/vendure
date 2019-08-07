@@ -3,8 +3,20 @@ import { createParamDecorator } from '@nestjs/common';
 import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
 
 /**
- * Resolver param decorator which extracts the RequestContext from the incoming
+ * @description
+ * Resolver param decorator which extracts the {@link RequestContext} from the incoming
  * request object.
+ *
+ * @example
+ * ```TypeScript
+ *  \@Query()
+ *  getAdministrators(\@Ctx() ctx: RequestContext) {
+ *      // ...
+ *  }
+ * ```
+ *
+ * @docsCategory request
+ * @docsPage Decorators
  */
 export const Ctx = createParamDecorator((data, arg) => {
     if (Array.isArray(arg)) {

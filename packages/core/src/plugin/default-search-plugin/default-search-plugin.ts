@@ -43,7 +43,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     new DefaultSearchPlugin(),
+ *     DefaultSearchPlugin,
  *   ],
  * };
  * ```

@@ -8,6 +8,7 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * If the existing order is empty, then the guest order is used. Otherwise the existing order is used.
  *
  * @docsCategory orders
+ * @docsPage Merge Strategies
  */
 export class UseGuestIfExistingEmptyStrategy implements OrderMergeStrategy {
     merge(guestOrder: Order, existingOrder: Order): OrderLine[] {

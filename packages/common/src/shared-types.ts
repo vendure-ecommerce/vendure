@@ -34,8 +34,7 @@ export type PaginatedList<T> = {
  * An entity ID. Depending on the configured {@link EntityIdStrategy}, it will be either
  * a `string` or a `number`;
  *
- * @docsCategory entities
- * @docsWeight 0
+ * @docsCategory common
  */
 export type ID = string | number;
 
@@ -48,12 +47,17 @@ export type ID = string | number;
 export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
 
 /**
- * Certain entities allow arbitrary configuration arguments to be specified which can then
- * be set in the admin-ui and used in the business logic of the app. These are the valid
- * data types of such arguments. The data type influences:
+ * @description
+ * Certain entities (those which implement {@link ConfigurableOperationDef}) allow arbitrary
+ * configuration arguments to be specified which can then be set in the admin-ui and used in
+ * the business logic of the app. These are the valid data types of such arguments.
+ * The data type influences:
  *
  * 1. How the argument form field is rendered in the admin-ui
  * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
  */
 export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'facetValueIds';
 

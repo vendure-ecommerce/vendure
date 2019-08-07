@@ -10,6 +10,7 @@ import { VendureEvent } from '../vendure-event';
  * a Payment is authorized by the payment provider.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class PaymentStateTransitionEvent extends VendureEvent {
     constructor(

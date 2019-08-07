@@ -30,8 +30,7 @@ import { TaxZoneStrategy } from './tax/tax-zone-strategy';
  * The AuthOptions define how authentication is managed.
  *
  * @docsCategory auth
- * @docsWeight 0
- */
+ * */
 export interface AuthOptions {
     /**
      * @description
@@ -109,10 +108,53 @@ export interface AuthOptions {
 }
 
 /**
+ * @docsCategory orders
+ * @docsPage OrderOptions
+ * */
+export interface OrderOptions {
+    /**
+     * @description
+     * The maximum number of individual items allowed in a single order. This option exists
+     * to prevent excessive resource usage when dealing with very large orders. For example,
+     * if an order contains a million items, then any operations on that order (modifying a quantity,
+     * adding or removing an item) will require Vendure to loop through all million items
+     * to perform price calculations against active promotions and taxes. This can have a significant
+     * performance impact for very large values.
+     *
+     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     *
+     * @default 999
+     */
+    orderItemsLimit?: number;
+    /**
+     * @description
+     * Defines custom states and transition logic for the order process state machine.
+     */
+    process?: OrderProcessOptions<string>;
+    /**
+     * @description
+     * Defines the strategy used to merge a guest Order and an existing Order when
+     * signing in.
+     *
+     * @default MergeOrdersStrategy
+     */
+    mergeStrategy?: OrderMergeStrategy;
+    /**
+     * @description
+     * Defines the strategy used to merge a guest Order and an existing Order when
+     * signing in as part of the checkout flow.
+     *
+     * @default UseGuestStrategy
+     */
+    checkoutMergeStrategy?: OrderMergeStrategy;
+}
+
+/**
  * @description
  * Defines custom states and transition logic for the order process state machine.
  *
  * @docsCategory orders
+ * @docsPage OrderOptions
  */
 export interface OrderProcessOptions<T extends string> {
     /**
@@ -145,58 +187,13 @@ export interface OrderProcessOptions<T extends string> {
 }
 
 /**
- * @docsCategory orders
- *
- * @docsWeight 0
- */
-export interface OrderOptions {
-    /**
-     * @description
-     * The maximum number of individual items allowed in a single order. This option exists
-     * to prevent excessive resource usage when dealing with very large orders. For example,
-     * if an order contains a million items, then any operations on that order (modifying a quantity,
-     * adding or removing an item) will require Vendure to loop through all million items
-     * to perform price calculations against active promotions and taxes. This can have a significant
-     * performance impact for very large values.
-     *
-     * @default 999
-     */
-    orderItemsLimit?: number;
-    /**
-     * @description
-     * Defines custom states and transition logic for the order process state machine.
-     */
-    process?: OrderProcessOptions<string>;
-    /**
-     * @description
-     * Defines the strategy used to merge a guest Order and an existing Order when
-     * signing in.
-     *
-     * @default MergeOrdersStrategy
-     */
-    mergeStrategy?: OrderMergeStrategy;
-    /**
-     * @description
-     * Defines the strategy used to merge a guest Order and an existing Order when
-     * signing in as part of the checkout flow.
-     *
-     * @default UseGuestStrategy
-     */
-    checkoutMergeStrategy?: OrderMergeStrategy;
-}
-
-/**
  * @description
  * The AssetOptions define how assets (images and other files) are named and stored, and how preview images are generated.
  *
- * {{% alert %}}
- * If you are using the `AssetServerPlugin`,
- * it is not necessary to configure these options.
- * {{% /alert %}}
+ * **Note**: If you are using the `AssetServerPlugin`, it is not necessary to configure these options.
  *
  * @docsCategory assets
- * @docsWeight 0
- */
+ * */
 export interface AssetOptions {
     /**
      * @description
@@ -231,8 +228,7 @@ export interface AssetOptions {
 /**
  * @docsCategory promotions
  *
- * @docsWeight 0
- */
+ * */
 export interface PromotionOptions {
     /**
      * @description
@@ -248,8 +244,7 @@ export interface PromotionOptions {
 
 /**
  * @docsCategory shipping
- * @docsWeight 0
- */
+ * */
 export interface ShippingOptions {
     /**
      * @description
@@ -264,14 +259,15 @@ export interface ShippingOptions {
 }
 
 /**
- * @docsCategory payment
+ * @description
+ * Defines payment-related options in the {@link VendureConfig}.
  *
- * @docsWeight 0
- */
+ * @docsCategory payment
+ * */
 export interface PaymentOptions {
     /**
      * @description
-     * An array of payment methods with which to process payments.
+     * An array of {@link PaymentMethodHandler}s with which to process payments.
      */
     paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
 }
@@ -279,8 +275,7 @@ export interface PaymentOptions {
 /**
  * @docsCategory tax
  *
- * @docsWeight 0
- */
+ * */
 export interface TaxOptions {
     /**
      * @description
@@ -374,8 +369,7 @@ export interface WorkerOptions {
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
  * @docsCategory
- * @docsWeight 1
- */
+ * */
 export interface VendureConfig {
     /**
      * @description

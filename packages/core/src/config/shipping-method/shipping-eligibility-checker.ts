@@ -35,7 +35,7 @@ export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheck
  *     code: 'min-order-total-eligibility-checker',
  *     description: 'Checks that the order total is above some minimum value',
  *     args: {
- *         orderMinimum: ConfigArgType.MONEY,
+ *         orderMinimum: { type: 'int', config: { inputType: 'money' } },
  *     },
  *     check: (order, args) => {
  *         return order.total >= args.orderMinimum;

@@ -9,6 +9,7 @@ import { VendureEvent } from '../vendure-event';
  * deleted.
  *
  * @docsCategory events
+ * @docsPage Event Types
  */
 export class CatalogModificationEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public entity: Product | ProductVariant) {
