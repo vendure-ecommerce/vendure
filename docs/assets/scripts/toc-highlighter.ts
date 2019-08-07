@@ -8,7 +8,7 @@ export class TocHighlighter {
     highlight() {
         const article = document.querySelector('article');
         if (this.tocElement && article) {
-            const headers: HTMLHeadingElement[] = Array.from(article.querySelectorAll('h1[id],h2[id],h3[id]'));
+            const headers: HTMLHeadingElement[] = Array.from(article.querySelectorAll('h1[id],h2[id],h3[id],h4[id]'));
 
             window.addEventListener('scroll', (e) => {
                 this.highlightCurrentSection(headers);

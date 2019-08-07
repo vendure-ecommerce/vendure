@@ -2,14 +2,25 @@
 
 $block-border-radius: 4px;
 
+@mixin codelike {
+    display: inline-block;
+    border-radius: 3px;
+    font-family: 'Source Code Pro', monospace;
+    background-color: $gray-100;
+    border: 1px solid $gray-200;
+}
+
 .markdown {
     line-height: 1.4;
-    margin-left: 12px;
+    @media all and (min-width: $sm-breakpoint) {
+        margin-left: 12px;
+    }
 
     h1:first-of-type {
         text-transform: capitalize;
         font-weight: 500;
         margin-top: 0;
+        margin-bottom: 0;
         font-size: 2.8em;
 
         @media all and (max-width: $sm-breakpoint){
@@ -17,18 +28,32 @@ $block-border-radius: 4px;
         }
     }
 
-    h2 {
+    h1:not(:first-of-type) {
         margin-top: 48px;
+        margin-left: -12px;
+        padding: 3px 12px;
+        @include codelike;
     }
 
-    h3 {
-        margin-top: 36px;
-        color: $gray-700;
+    h2 {
+        margin-top: 48px;
+        margin-bottom: 6px;
+    }
+
+    h3.member-title {
+        margin-top: 6px;
+        margin-left: 6px;
+        padding: 2px 6px;
+        @include codelike;
+    }
+
+    h4 {
+        margin-top: 32px;
     }
 
     h1, h2, h3, h4, h5 {
         font-family: $brand-font-face;
-        font-weight: 600;
+        font-weight: 400;
         line-height: 1.25;
 
         &[id]:target:before {

@@ -22,8 +22,13 @@
 .member-info {
     display: flex;
     align-items: center;
+    @media screen and (max-width: $sm-breakpoint) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
     margin-top: -16px;
-    font-size: 14px;
+    margin-left: 8px;
+    font-size: $font-size-12;
 
     .kind-label {
         font-size: $font-size-12;
@@ -51,11 +56,21 @@
 }
 
 /**
+ Member description for generated docs
+ */
+.member-description {
+    margin-top: 3px;
+    margin-left: 8px;
+    margin-bottom: 32px;
+}
+
+/**
  Info on the generated document
  */
 .generation-info {
     font-size: $font-size-12;
-    border-bottom: 1px dashed $gray-400;
+    margin-top: -18px;
+    border-top: 1px dashed $gray-400;
     .label {
         color: $gray-600;
     }

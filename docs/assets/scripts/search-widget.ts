@@ -184,13 +184,15 @@ export class SearchWidget {
                         });
                         if (headings.length) {
                             for (const heading of headings) {
-                                denormalized.push({
-                                    section,
-                                    title,
-                                    parent,
-                                    heading,
-                                    url,
-                                });
+                                if (heading !== title) {
+                                    denormalized.push({
+                                        section,
+                                        title,
+                                        parent,
+                                        heading,
+                                        url,
+                                    });
+                                }
                             }
                         }
                     }

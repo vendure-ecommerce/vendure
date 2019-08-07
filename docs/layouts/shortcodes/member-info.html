@@ -6,7 +6,7 @@
         <div class="label">type:</div>
         <code>{{ .Get "type" | safeHTML }}</code>
     </div>
-    {{ if isset .Params "default" }}
+    {{- if isset .Params "default" -}}
     <div class="default">
         <div class="label">default:</div>
         <code>{{ .Get "default" | safeHTML }}</code>

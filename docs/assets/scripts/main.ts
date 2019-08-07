@@ -5,6 +5,7 @@ import { initNavMenu } from './nav-menu';
 import { SearchWidget } from './search-widget';
 import { initTabs } from './tabs';
 import { TocHighlighter } from './toc-highlighter';
+import { formatDocs } from './docs-formatting';
 
 // tslint:disable-next-line
 require('../styles/main.scss');
@@ -37,5 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initNavMenu();
     initGraphQlPlaygroundWidgets();
+    formatDocs();
 
 }, false);

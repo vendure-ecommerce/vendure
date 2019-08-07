@@ -1,6 +1,29 @@
 .book-menu {
     text-transform: capitalize;
     padding-left: 12px;
+
+    nav ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+
+        li {
+            margin: 1em 0;
+        }
+
+        a {
+            display: block;
+        }
+
+        a:hover {
+            opacity: .5;
+        }
+
+        ul {
+            padding-left: $padding-16;
+        }
+    }
+
     .section {
         .section-link {
             display: flex;

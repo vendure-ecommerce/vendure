@@ -3,7 +3,7 @@ import Timer = NodeJS.Timer;
 
 export class Sequencer {
 
-    private readonly playTimer: { [name: string]: Timer; };
+    private readonly playTimer: { [name: string]: any; };
     private readonly onTransition?: (className: string) => void;
 
     constructor(private sceneElement: HTMLDivElement,

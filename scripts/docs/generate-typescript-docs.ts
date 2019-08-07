@@ -10,12 +10,19 @@ import { TypescriptDocsRenderer } from './typescript-docs-renderer';
 
 interface DocsSectionConfig {
     sourceDirs: string[];
+    exclude?: RegExp[];
     outputPath: string;
 }
 
 const sections: DocsSectionConfig[] = [
     {
-        sourceDirs: ['packages/core/src/', 'packages/common/src/'],
+        sourceDirs: [
+            'packages/core/src/',
+            'packages/common/src/',
+        ],
+        exclude: [
+            /generated-shop-types/,
+        ],
         outputPath: 'typescript-api',
     },
     {
@@ -70,8 +77,8 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
         }
     }
 
-    for (const { outputPath, sourceDirs } of config) {
-        const sourceFilePaths = getSourceFilePaths(sourceDirs);
+    for (const { outputPath, sourceDirs, exclude } of config) {
+        const sourceFilePaths = getSourceFilePaths(sourceDirs, exclude);
         const docsPages = new TypescriptDocsParser().parse(sourceFilePaths);
         for (const page of docsPages) {
             const { category, fileName, declarations } = page;
@@ -107,12 +114,22 @@ function absOutputPath(outputPath: string): string {
     return path.join(__dirname, '../../docs/content/docs/', outputPath);
 }
 
-function getSourceFilePaths(sourceDirs: string[]): string[] {
+function getSourceFilePaths(sourceDirs: string[], excludePatterns: RegExp[] = []): string[] {
     return sourceDirs
         .map(scanPath =>
             klawSync(path.join(__dirname, '../../', scanPath), {
                 nodir: true,
-                filter: item => path.extname(item.path) === '.ts',
+                filter: item => {
+                    if (path.extname(item.path) === '.ts') {
+                        for (const pattern of excludePatterns) {
+                            if (pattern.test(item.path)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                },
                 traverseAll: true,
             }),
         )
