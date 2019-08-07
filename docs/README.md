@@ -57,10 +57,6 @@ This tag specifies the text description of the declaration. It supports markdown
 
 This tag should be used to include any code blocks. Remember to specify the language after the opening delimiter for correct highlighting. Also applies to class/interface members.
 
-##### `@docsWeight`
-
-This is optional and when present, sets the "weight" of the markdown file in the Hugo front matter. A lower value makes the resulting doc page appear higher in the menu. If not specified, a default value of `10` is used.
-
 ##### `@default`
 
 This is used to specify the default value of a property, e.g. when documenting an optional configuration option.
@@ -87,7 +83,6 @@ class.
  * ```
  *
  * @docsCategory helpers
- * @docsWeight 1
  */
 export class Greeter {
 

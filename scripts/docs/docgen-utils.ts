@@ -8,7 +8,7 @@ import { basename } from 'path';
  */
 export function generateFrontMatter(title: string, weight: number, showToc: boolean = true): string {
     return `---
-title: "${title.replace(/-/g, ' ')}"
+title: "${titleCase(title.replace(/-/g, ' '))}"
 weight: ${weight}
 date: ${new Date().toISOString()}
 showtoc: ${showToc}
@@ -16,6 +16,10 @@ generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
 `;
+}
+
+export function titleCase(input: string): string {
+    return input.split(' ').map(w => w[0].toLocaleUpperCase() + w.substr(1)).join(' ');
 }
 
 /**
