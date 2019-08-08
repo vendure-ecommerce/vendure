@@ -10,7 +10,7 @@ import {
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingCalculatorArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
+export type ShippingCalculatorArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 
 export type ShippingPrice = {

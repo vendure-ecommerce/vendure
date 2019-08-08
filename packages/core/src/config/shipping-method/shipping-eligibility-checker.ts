@@ -9,7 +9,7 @@ import {
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
+export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 
 /**
