@@ -69,3 +69,15 @@ export const UPDATE_SHIPPING_METHOD = gql`
     }
     ${SHIPPING_METHOD_FRAGMENT}
 `;
+
+export const TEST_SHIPPING_METHOD = gql`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            price {
+                price
+                priceWithTax
+            }
+        }
+    }
+`;

@@ -589,15 +589,3 @@ export const SEARCH_FOR_TEST_ORDER = gql`
         }
     }
 `;
-
-export const TEST_SHIPPING_METHOD = gql`
-    query TestShippingMethod($input: TestShippingMethodInput!) {
-        testShippingMethod(input: $input) {
-            eligible
-            price {
-                price
-                priceWithTax
-            }
-        }
-    }
-`;

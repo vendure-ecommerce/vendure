@@ -100,7 +100,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                         formValue.calculator,
                     ),
                 };
-                return this.dataService.settings
+                return this.dataService.shippingMethod
                     .testShippingMethod(input)
                     .mapSingle(result => result.testShippingMethod);
             }),

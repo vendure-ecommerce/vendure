@@ -34,8 +34,6 @@ import {
     JobState,
     RemoveMembersFromZone,
     SearchForTestOrder,
-    TestShippingMethod,
-    TestShippingMethodInput,
     UpdateChannel,
     UpdateChannelInput,
     UpdateCountry,
@@ -77,7 +75,6 @@ import {
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
     SEARCH_FOR_TEST_ORDER,
-    TEST_SHIPPING_METHOD,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
@@ -321,15 +318,6 @@ export class SettingsDataService {
             {
                 take,
                 term,
-            },
-        );
-    }
-
-    testShippingMethod(input: TestShippingMethodInput) {
-        return this.baseDataService.query<TestShippingMethod.Query, TestShippingMethod.Variables>(
-            TEST_SHIPPING_METHOD,
-            {
-                input,
             },
         );
     }

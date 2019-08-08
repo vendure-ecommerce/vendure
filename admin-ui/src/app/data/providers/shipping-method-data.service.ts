@@ -4,6 +4,8 @@ import {
     GetShippingMethod,
     GetShippingMethodList,
     GetShippingMethodOperations,
+    TestShippingMethod,
+    TestShippingMethodInput,
     UpdateShippingMethod,
     UpdateShippingMethodInput,
 } from '../../common/generated-types';
@@ -12,6 +14,7 @@ import {
     GET_SHIPPING_METHOD,
     GET_SHIPPING_METHOD_LIST,
     GET_SHIPPING_METHOD_OPERATIONS,
+    TEST_SHIPPING_METHOD,
     UPDATE_SHIPPING_METHOD,
 } from '../definitions/shipping-definitions';
 
@@ -57,6 +60,15 @@ export class ShippingMethodDataService {
     updateShippingMethod(input: UpdateShippingMethodInput) {
         return this.baseDataService.mutate<UpdateShippingMethod.Mutation, UpdateShippingMethod.Variables>(
             UPDATE_SHIPPING_METHOD,
+            {
+                input,
+            },
+        );
+    }
+
+    testShippingMethod(input: TestShippingMethodInput) {
+        return this.baseDataService.query<TestShippingMethod.Query, TestShippingMethod.Variables>(
+            TEST_SHIPPING_METHOD,
             {
                 input,
             },
