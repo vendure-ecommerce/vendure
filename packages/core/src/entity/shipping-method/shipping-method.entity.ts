@@ -2,7 +2,7 @@ import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
 import { ShippingCalculator, ShippingPrice } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
@@ -21,7 +21,7 @@ import { Order } from '../order/order.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ShippingMethod extends VendureEntity implements ChannelAware {
+export class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletable {
     private readonly allCheckers: { [code: string]: ShippingEligibilityChecker } = {};
     private readonly allCalculators: { [code: string]: ShippingCalculator } = {};
 
@@ -32,6 +32,9 @@ export class ShippingMethod extends VendureEntity implements ChannelAware {
         this.allCheckers = checkers.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
         this.allCalculators = calculators.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
+
+    @Column({ type: Date, nullable: true, default: null })
+    deletedAt: Date | null;
 
     @Column() code: string;
 

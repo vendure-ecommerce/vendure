@@ -1,7 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperationDefinition,
+    DeletionResponse,
     MutationCreateShippingMethodArgs,
+    MutationDeleteShippingMethodArgs,
     MutationUpdateShippingMethodArgs,
     Permission,
     QueryShippingMethodArgs,
@@ -60,6 +62,13 @@ export class ShippingMethodResolver {
     updateShippingMethod(@Args() args: MutationUpdateShippingMethodArgs): Promise<ShippingMethod> {
         const { input } = args;
         return this.shippingMethodService.update(input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    deleteShippingMethod(@Args() args: MutationDeleteShippingMethodArgs): Promise<DeletionResponse> {
+        const { id } = args;
+        return this.shippingMethodService.softDelete(id);
     }
 
     @Query()

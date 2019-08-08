@@ -1737,6 +1737,8 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
+  /** Delete a ShippingMethod */
+  deleteShippingMethod: DeletionResponse,
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
@@ -2056,6 +2058,11 @@ export type MutationCreateShippingMethodArgs = {
 
 export type MutationUpdateShippingMethodArgs = {
   input: UpdateShippingMethodInput
+};
+
+
+export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID']
 };
 
 

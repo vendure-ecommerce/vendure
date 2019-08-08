@@ -6,7 +6,17 @@ export const defaultShippingEligibilityChecker = new ShippingEligibilityChecker(
     code: 'default-shipping-eligibility-checker',
     description: [{ languageCode: LanguageCode.en, value: 'Default Shipping Eligibility Checker' }],
     args: {
-        orderMinimum: { type: 'int', config: { inputType: 'money' } },
+        orderMinimum: {
+            type: 'int',
+            config: { inputType: 'money' },
+            label: [{ languageCode: LanguageCode.en, value: 'Minimum order value' }],
+            description: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Order is eligible only if its total is greater or equal to this value',
+                },
+            ],
+        },
     },
     check: (order, args) => {
         return order.total >= args.orderMinimum;

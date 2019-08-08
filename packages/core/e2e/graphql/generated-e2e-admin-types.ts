@@ -1740,6 +1740,8 @@ export type Mutation = {
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
     updateShippingMethod: ShippingMethod;
+    /** Delete a ShippingMethod */
+    deleteShippingMethod: DeletionResponse;
     /** Create a new TaxCategory */
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
@@ -2001,6 +2003,10 @@ export type MutationCreateShippingMethodArgs = {
 
 export type MutationUpdateShippingMethodArgs = {
     input: UpdateShippingMethodInput;
+};
+
+export type MutationDeleteShippingMethodArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateTaxCategoryArgs = {
@@ -4654,6 +4660,90 @@ export type UpdateRoleMutation = { __typename?: 'Mutation' } & {
     updateRole: { __typename?: 'Role' } & RoleFragment;
 };
 
+export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
+    ShippingMethod,
+    'id' | 'code' | 'description'
+> & {
+        calculator: { __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'>;
+        checker: { __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'>;
+    };
+
+export type GetShippingMethodListQueryVariables = {};
+
+export type GetShippingMethodListQuery = { __typename?: 'Query' } & {
+    shippingMethods: { __typename?: 'ShippingMethodList' } & Pick<ShippingMethodList, 'totalItems'> & {
+            items: Array<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
+        };
+};
+
+export type GetShippingMethodQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetShippingMethodQuery = { __typename?: 'Query' } & {
+    shippingMethod: Maybe<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
+};
+
+export type CreateShippingMethodMutationVariables = {
+    input: CreateShippingMethodInput;
+};
+
+export type CreateShippingMethodMutation = { __typename?: 'Mutation' } & {
+    createShippingMethod: { __typename?: 'ShippingMethod' } & ShippingMethodFragment;
+};
+
+export type UpdateShippingMethodMutationVariables = {
+    input: UpdateShippingMethodInput;
+};
+
+export type UpdateShippingMethodMutation = { __typename?: 'Mutation' } & {
+    updateShippingMethod: { __typename?: 'ShippingMethod' } & ShippingMethodFragment;
+};
+
+export type DeleteShippingMethodMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteShippingMethodMutation = { __typename?: 'Mutation' } & {
+    deleteShippingMethod: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type GetEligibilityCheckersQueryVariables = {};
+
+export type GetEligibilityCheckersQuery = { __typename?: 'Query' } & {
+    shippingEligibilityCheckers: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & Pick<
+            ConfigurableOperationDefinition,
+            'code' | 'description'
+        > & {
+                args: Array<
+                    { __typename?: 'ConfigArgDefinition' } & Pick<
+                        ConfigArgDefinition,
+                        'name' | 'type' | 'description' | 'label' | 'config'
+                    >
+                >;
+            }
+    >;
+};
+
+export type GetCalculatorsQueryVariables = {};
+
+export type GetCalculatorsQuery = { __typename?: 'Query' } & {
+    shippingCalculators: Array<
+        { __typename?: 'ConfigurableOperationDefinition' } & Pick<
+            ConfigurableOperationDefinition,
+            'code' | 'description'
+        > & {
+                args: Array<
+                    { __typename?: 'ConfigArgDefinition' } & Pick<
+                        ConfigArgDefinition,
+                        'name' | 'type' | 'description' | 'label' | 'config'
+                    >
+                >;
+            }
+    >;
+};
+
 export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
@@ -5763,6 +5853,61 @@ export namespace UpdateRole {
     export type Variables = UpdateRoleMutationVariables;
     export type Mutation = UpdateRoleMutation;
     export type UpdateRole = RoleFragment;
+}
+
+export namespace ShippingMethod {
+    export type Fragment = ShippingMethodFragment;
+    export type Calculator = ShippingMethodFragment['calculator'];
+    export type Checker = ShippingMethodFragment['checker'];
+}
+
+export namespace GetShippingMethodList {
+    export type Variables = GetShippingMethodListQueryVariables;
+    export type Query = GetShippingMethodListQuery;
+    export type ShippingMethods = GetShippingMethodListQuery['shippingMethods'];
+    export type Items = ShippingMethodFragment;
+}
+
+export namespace GetShippingMethod {
+    export type Variables = GetShippingMethodQueryVariables;
+    export type Query = GetShippingMethodQuery;
+    export type ShippingMethod = ShippingMethodFragment;
+}
+
+export namespace CreateShippingMethod {
+    export type Variables = CreateShippingMethodMutationVariables;
+    export type Mutation = CreateShippingMethodMutation;
+    export type CreateShippingMethod = ShippingMethodFragment;
+}
+
+export namespace UpdateShippingMethod {
+    export type Variables = UpdateShippingMethodMutationVariables;
+    export type Mutation = UpdateShippingMethodMutation;
+    export type UpdateShippingMethod = ShippingMethodFragment;
+}
+
+export namespace DeleteShippingMethod {
+    export type Variables = DeleteShippingMethodMutationVariables;
+    export type Mutation = DeleteShippingMethodMutation;
+    export type DeleteShippingMethod = DeleteShippingMethodMutation['deleteShippingMethod'];
+}
+
+export namespace GetEligibilityCheckers {
+    export type Variables = GetEligibilityCheckersQueryVariables;
+    export type Query = GetEligibilityCheckersQuery;
+    export type ShippingEligibilityCheckers = NonNullable<
+        GetEligibilityCheckersQuery['shippingEligibilityCheckers'][0]
+    >;
+    export type Args = NonNullable<
+        (NonNullable<GetEligibilityCheckersQuery['shippingEligibilityCheckers'][0]>)['args'][0]
+    >;
+}
+
+export namespace GetCalculators {
+    export type Variables = GetCalculatorsQueryVariables;
+    export type Query = GetCalculatorsQuery;
+    export type ShippingCalculators = NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>;
+    export type Args = NonNullable<(NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>)['args'][0]>;
 }
 
 export namespace GetMe {
