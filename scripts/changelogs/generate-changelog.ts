@@ -76,9 +76,9 @@ function generateChangelogForPackage() {
         });
 }
 
-function scopeIsValid(scope: string): boolean {
+function scopeIsValid(scope?: string): boolean {
     for (const validScope of VALID_SCOPES) {
-        if (scope.includes(validScope)) {
+        if (scope && scope.includes(validScope)) {
             return true;
         }
     }
