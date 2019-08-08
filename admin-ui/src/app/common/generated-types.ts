@@ -1738,6 +1738,8 @@ export type Mutation = {
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod,
+  /** Delete a ShippingMethod */
+  deleteShippingMethod: DeletionResponse,
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
@@ -2062,6 +2064,11 @@ export type MutationCreateShippingMethodArgs = {
 
 export type MutationUpdateShippingMethodArgs = {
   input: UpdateShippingMethodInput
+};
+
+
+export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -4220,13 +4227,6 @@ export type SearchForTestOrderQueryVariables = {
 
 export type SearchForTestOrderQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'> & { price: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>), priceWithTax: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>) })> }) });
 
-export type TestShippingMethodQueryVariables = {
-  input: TestShippingMethodInput
-};
-
-
-export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { price: Maybe<({ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>)> }) });
-
 export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
 export type ConfigurableOperationDefFragment = ({ __typename?: 'ConfigurableOperationDefinition' } & Pick<ConfigurableOperationDefinition, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>)> });
@@ -4265,6 +4265,20 @@ export type UpdateShippingMethodMutationVariables = {
 
 
 export type UpdateShippingMethodMutation = ({ __typename?: 'Mutation' } & { updateShippingMethod: ({ __typename?: 'ShippingMethod' } & ShippingMethodFragment) });
+
+export type DeleteShippingMethodMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteShippingMethodMutation = ({ __typename?: 'Mutation' } & { deleteShippingMethod: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
+export type TestShippingMethodQueryVariables = {
+  input: TestShippingMethodInput
+};
+
+
+export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { price: Maybe<({ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>)> }) });
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -5171,13 +5185,6 @@ export namespace SearchForTestOrder {
   export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
 }
 
-export namespace TestShippingMethod {
-  export type Variables = TestShippingMethodQueryVariables;
-  export type Query = TestShippingMethodQuery;
-  export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
-  export type Price = (NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>);
-}
-
 export namespace ConfigurableOperation {
   export type Fragment = ConfigurableOperationFragment;
   export type Args = (NonNullable<ConfigurableOperationFragment['args'][0]>);
@@ -5224,4 +5231,17 @@ export namespace UpdateShippingMethod {
   export type Variables = UpdateShippingMethodMutationVariables;
   export type Mutation = UpdateShippingMethodMutation;
   export type UpdateShippingMethod = ShippingMethodFragment;
+}
+
+export namespace DeleteShippingMethod {
+  export type Variables = DeleteShippingMethodMutationVariables;
+  export type Mutation = DeleteShippingMethodMutation;
+  export type DeleteShippingMethod = DeleteShippingMethodMutation['deleteShippingMethod'];
+}
+
+export namespace TestShippingMethod {
+  export type Variables = TestShippingMethodQueryVariables;
+  export type Query = TestShippingMethodQuery;
+  export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
+  export type Price = (NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>);
 }

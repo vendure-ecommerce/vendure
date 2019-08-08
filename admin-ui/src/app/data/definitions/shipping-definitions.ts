@@ -70,6 +70,15 @@ export const UPDATE_SHIPPING_METHOD = gql`
     ${SHIPPING_METHOD_FRAGMENT}
 `;
 
+export const DELETE_SHIPPING_METHOD = gql`
+    mutation DeleteShippingMethod($id: ID!) {
+        deleteShippingMethod(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const TEST_SHIPPING_METHOD = gql`
     query TestShippingMethod($input: TestShippingMethodInput!) {
         testShippingMethod(input: $input) {

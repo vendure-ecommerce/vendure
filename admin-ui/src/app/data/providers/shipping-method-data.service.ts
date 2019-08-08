@@ -1,6 +1,7 @@
 import {
     CreateShippingMethod,
     CreateShippingMethodInput,
+    DeleteShippingMethod,
     GetShippingMethod,
     GetShippingMethodList,
     GetShippingMethodOperations,
@@ -11,6 +12,7 @@ import {
 } from '../../common/generated-types';
 import {
     CREATE_SHIPPING_METHOD,
+    DELETE_SHIPPING_METHOD,
     GET_SHIPPING_METHOD,
     GET_SHIPPING_METHOD_LIST,
     GET_SHIPPING_METHOD_OPERATIONS,
@@ -62,6 +64,15 @@ export class ShippingMethodDataService {
             UPDATE_SHIPPING_METHOD,
             {
                 input,
+            },
+        );
+    }
+
+    deleteShippingMethod(id: string) {
+        return this.baseDataService.mutate<DeleteShippingMethod.Mutation, DeleteShippingMethod.Variables>(
+            DELETE_SHIPPING_METHOD,
+            {
+                id,
             },
         );
     }
