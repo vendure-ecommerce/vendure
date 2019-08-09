@@ -83,9 +83,10 @@ export const TEST_SHIPPING_METHOD = gql`
     query TestShippingMethod($input: TestShippingMethodInput!) {
         testShippingMethod(input: $input) {
             eligible
-            price {
+            quote {
                 price
                 priceWithTax
+                metadata
             }
         }
     }
@@ -98,6 +99,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
             description
             price
             priceWithTax
+            metadata
         }
     }
 `;

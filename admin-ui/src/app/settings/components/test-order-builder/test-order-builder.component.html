@@ -25,7 +25,7 @@
             <td class="align-middle quantity">
                 <input
                     [(ngModel)]="line.quantity"
-                    (change)="orderLinesChange.emit(lines)"
+                    (change)="updateQuantity()"
                     type="number"
                     max="9999"
                     min="1"

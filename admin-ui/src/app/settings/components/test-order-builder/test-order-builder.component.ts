@@ -66,12 +66,6 @@ export class TestOrderBuilderComponent implements OnInit {
         }
     }
 
-    removeLine(line: TestOrderLine) {
-        this.lines = this.lines.filter(l => l.id !== line.id);
-        this.persistToLocalStorage();
-        this.orderLinesChange.emit(this.lines);
-    }
-
     private addToLines(result: SearchForTestOrder.Items) {
         if (!this.lines.find(l => l.id === result.productVariantId)) {
             this.lines.push({
@@ -85,6 +79,17 @@ export class TestOrderBuilderComponent implements OnInit {
             this.persistToLocalStorage();
             this.orderLinesChange.emit(this.lines);
         }
+    }
+
+    private updateQuantity() {
+        this.persistToLocalStorage();
+        this.orderLinesChange.emit(this.lines);
+    }
+
+    removeLine(line: TestOrderLine) {
+        this.lines = this.lines.filter(l => l.id !== line.id);
+        this.persistToLocalStorage();
+        this.orderLinesChange.emit(this.lines);
     }
 
     private initSearchResults() {

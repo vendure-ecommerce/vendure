@@ -30,17 +30,21 @@
             <div class="price-row">
                 <vdr-labeled-data
                     [label]="'common.price' | translate"
-                    *ngIf="testResult?.price?.price != null"
+                    *ngIf="testResult?.quote?.price != null"
                 >
-                    {{ testResult.price.price / 100 | currency: currencyCode }}
+                    {{ testResult.quote.price / 100 | currency: currencyCode }}
                 </vdr-labeled-data>
                 <vdr-labeled-data
                     [label]="'common.price-with-tax' | translate"
-                    *ngIf="testResult?.price?.priceWithTax != null"
+                    *ngIf="testResult?.quote?.priceWithTax != null"
                 >
-                    {{ testResult.price.priceWithTax / 100 | currency: currencyCode }}
+                    {{ testResult.quote.priceWithTax / 100 | currency: currencyCode }}
                 </vdr-labeled-data>
             </div>
+            <vdr-object-tree
+                *ngIf="testResult?.quote?.metadata"
+                [value]="testResult?.quote?.metadata"
+            ></vdr-object-tree>
         </div>
     </div>
     <div class="card-footer">

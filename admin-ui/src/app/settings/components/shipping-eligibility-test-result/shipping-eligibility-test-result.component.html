@@ -15,6 +15,7 @@
                     {{ quote.priceWithTax / 100 | currency: currencyCode }}
                 </vdr-labeled-data>
             </div>
+            <vdr-object-tree *ngIf="quote.metadata" [value]="quote.metadata"></vdr-object-tree>
         </div>
     </div>
     <div class="card-block" *ngIf="testResult?.length === 0">
