@@ -5,6 +5,8 @@ import {
     GetShippingMethod,
     GetShippingMethodList,
     GetShippingMethodOperations,
+    TestEligibleShippingMethods,
+    TestEligibleShippingMethodsInput,
     TestShippingMethod,
     TestShippingMethodInput,
     UpdateShippingMethod,
@@ -16,6 +18,7 @@ import {
     GET_SHIPPING_METHOD,
     GET_SHIPPING_METHOD_LIST,
     GET_SHIPPING_METHOD_OPERATIONS,
+    TEST_ELIGIBLE_SHIPPING_METHODS,
     TEST_SHIPPING_METHOD,
     UPDATE_SHIPPING_METHOD,
 } from '../definitions/shipping-definitions';
@@ -84,5 +87,14 @@ export class ShippingMethodDataService {
                 input,
             },
         );
+    }
+
+    testEligibleShippingMethods(input: TestEligibleShippingMethodsInput) {
+        return this.baseDataService.query<
+            TestEligibleShippingMethods.Query,
+            TestEligibleShippingMethods.Variables
+        >(TEST_ELIGIBLE_SHIPPING_METHODS, {
+            input,
+        });
     }
 }

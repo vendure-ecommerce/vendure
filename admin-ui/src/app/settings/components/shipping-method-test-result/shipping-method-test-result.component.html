@@ -27,15 +27,20 @@
                 </div>
                 {{ testResult?.eligible }}
             </vdr-labeled-data>
-            <vdr-labeled-data [label]="'common.price' | translate" *ngIf="testResult?.price?.price != null">
-                {{ testResult.price.price / 100 | currency: currencyCode }}
-            </vdr-labeled-data>
-            <vdr-labeled-data
-                [label]="'common.price-with-tax' | translate"
-                *ngIf="testResult?.price?.priceWithTax != null"
-            >
-                {{ testResult.price.priceWithTax / 100 | currency: currencyCode }}
-            </vdr-labeled-data>
+            <div class="price-row">
+                <vdr-labeled-data
+                    [label]="'common.price' | translate"
+                    *ngIf="testResult?.price?.price != null"
+                >
+                    {{ testResult.price.price / 100 | currency: currencyCode }}
+                </vdr-labeled-data>
+                <vdr-labeled-data
+                    [label]="'common.price-with-tax' | translate"
+                    *ngIf="testResult?.price?.priceWithTax != null"
+                >
+                    {{ testResult.price.priceWithTax / 100 | currency: currencyCode }}
+                </vdr-labeled-data>
+            </div>
         </div>
     </div>
     <div class="card-footer">

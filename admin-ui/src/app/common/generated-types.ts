@@ -2680,6 +2680,7 @@ export type Query = {
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>,
   shippingCalculators: Array<ConfigurableOperationDefinition>,
   testShippingMethod: TestShippingMethodResult,
+  testEligibleShippingMethods: Array<ShippingMethodQuote>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
@@ -2850,6 +2851,11 @@ export type QueryShippingMethodArgs = {
 
 export type QueryTestShippingMethodArgs = {
   input: TestShippingMethodInput
+};
+
+
+export type QueryTestEligibleShippingMethodsArgs = {
+  input: TestEligibleShippingMethodsInput
 };
 
 
@@ -3196,6 +3202,11 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
   value?: Maybe<SortOrder>,
+};
+
+export type TestEligibleShippingMethodsInput = {
+  shippingAddress: CreateAddressInput,
+  lines: Array<TestShippingMethodOrderLineInput>,
 };
 
 export type TestShippingMethodInput = {
@@ -4279,6 +4290,13 @@ export type TestShippingMethodQueryVariables = {
 
 
 export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { price: Maybe<({ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>)> }) });
+
+export type TestEligibleShippingMethodsQueryVariables = {
+  input: TestEligibleShippingMethodsInput
+};
+
+
+export type TestEligibleShippingMethodsQuery = ({ __typename?: 'Query' } & { testEligibleShippingMethods: Array<({ __typename?: 'ShippingMethodQuote' } & Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax'>)> });
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -5244,4 +5262,10 @@ export namespace TestShippingMethod {
   export type Query = TestShippingMethodQuery;
   export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
   export type Price = (NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>);
+}
+
+export namespace TestEligibleShippingMethods {
+  export type Variables = TestEligibleShippingMethodsQueryVariables;
+  export type Query = TestEligibleShippingMethodsQuery;
+  export type TestEligibleShippingMethods = (NonNullable<TestEligibleShippingMethodsQuery['testEligibleShippingMethods'][0]>);
 }

@@ -26,3 +26,9 @@
         color: $color-error-500;
     }
 }
+.price-row {
+    display: flex;
+    & > *:not(:first-child) {
+        margin-left: 24px;
+    }
+}

@@ -1,0 +1,18 @@
+@import "variables";
+.result-details {
+    transition: opacity 0.2s;
+    &.stale {
+        opacity: 0.5;
+    }
+}
+
+.price-row {
+    display: flex;
+    & > *:not(:first-child) {
+        margin-left: 24px;
+    }
+}
+
+clr-icon.error {
+    color: $color-error-500;
+}

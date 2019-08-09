@@ -50,3 +50,32 @@
         </td>
     </ng-template>
 </vdr-data-table>
+
+<div class="testing-tool">
+    <clr-accordion>
+        <clr-accordion-panel>
+            <clr-accordion-title>{{ 'settings.test-shipping-methods' | translate }}</clr-accordion-title>
+            <clr-accordion-content *clrIfExpanded>
+                <div class="clr-row">
+                    <div class="clr-col">
+                        <vdr-test-order-builder
+                            (orderLinesChange)="setTestOrderLines($event)"
+                        ></vdr-test-order-builder>
+                    </div>
+                    <div class="clr-col">
+                        <vdr-test-address-form
+                            (addressChange)="setTestAddress($event)"
+                        ></vdr-test-address-form>
+                        <vdr-shipping-eligibility-test-result
+                            [currencyCode]="(activeChannel$ | async)?.currencyCode"
+                            [okToRun]="allTestDataPresent()"
+                            [testDataUpdated]="testDataUpdated"
+                            [testResult]="testResult$ | async"
+                            (runTest)="runTest()"
+                        ></vdr-shipping-eligibility-test-result>
+                    </div>
+                </div>
+            </clr-accordion-content>
+        </clr-accordion-panel>
+    </clr-accordion>
+</div>

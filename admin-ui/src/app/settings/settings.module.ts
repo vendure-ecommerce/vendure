@@ -15,6 +15,7 @@ import { PaymentMethodListComponent } from './components/payment-method-list/pay
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
+import { ShippingEligibilityTestResultComponent } from './components/shipping-eligibility-test-result/shipping-eligibility-test-result.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { ShippingMethodTestResultComponent } from './components/shipping-method-test-result/shipping-method-test-result.component';
@@ -61,6 +62,7 @@ import { settingsRoutes } from './settings.routes';
         TestOrderBuilderComponent,
         TestAddressFormComponent,
         ShippingMethodTestResultComponent,
+        ShippingEligibilityTestResultComponent,
     ],
     entryComponents: [ZoneSelectorDialogComponent],
     providers: [

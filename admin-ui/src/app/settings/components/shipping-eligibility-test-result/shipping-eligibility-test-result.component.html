@@ -1,0 +1,29 @@
+<div class="test-result card">
+    <div class="card-header">
+        {{ 'settings.test-result' | translate }}
+    </div>
+    <div class="card-block" *ngFor="let quote of testResult">
+        <div class="result-details" [class.stale]="testDataUpdated">
+            <vdr-labeled-data [label]="'settings.shipping-method' | translate">
+                {{ quote.description }}
+            </vdr-labeled-data>
+            <div class="price-row">
+                <vdr-labeled-data [label]="'common.price' | translate">
+                    {{ quote.price / 100 | currency: currencyCode }}
+                </vdr-labeled-data>
+                <vdr-labeled-data [label]="'common.price-with-tax' | translate">
+                    {{ quote.priceWithTax / 100 | currency: currencyCode }}
+                </vdr-labeled-data>
+            </div>
+        </div>
+    </div>
+    <div class="card-block" *ngIf="testResult?.length === 0">
+        <clr-icon shape="ban" class="is-solid error"></clr-icon>
+        {{ 'settings.no-eligible-shipping-methods' | translate }}
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-secondary" (click)="runTest.emit()" [disabled]="!okToRun">
+            {{ 'settings.test-shipping-methods' | translate }}
+        </button>
+    </div>
+</div>

@@ -90,3 +90,14 @@ export const TEST_SHIPPING_METHOD = gql`
         }
     }
 `;
+
+export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
+    query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
+        testEligibleShippingMethods(input: $input) {
+            id
+            description
+            price
+            priceWithTax
+        }
+    }
+`;
