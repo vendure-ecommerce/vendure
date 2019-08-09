@@ -13,23 +13,6 @@ import { Order } from '../../entity/order/order.entity';
 export type ShippingCalculatorArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
 
-export type ShippingPrice = {
-    price: number;
-    priceWithTax: number;
-};
-
-/**
- * @description
- * A function which implements the specific shipping calculation logic. It takes an {@link Order} and
- * an arguments object and should return the shipping price as an integer in cents.
- *
- * @docsCategory shipping
- */
-export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
-    order: Order,
-    args: ConfigArgValues<T>,
-) => ShippingPrice | Promise<ShippingPrice>;
-
 /**
  * @description
  * The ShippingCalculator is used by a {@link ShippingMethod} to calculate the price of shipping on a given {@link Order}.
@@ -38,17 +21,21 @@ export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
  * ```ts
  * const flatRateCalculator = new ShippingCalculator({
  *     code: 'flat-rate-calculator',
- *     description: 'Default Flat-Rate Shipping Calculator',
+ *     description: [{ languageCode: LanguageCode.en, value: 'Default Flat-Rate Shipping Calculator' }],
  *     args: {
  *         rate: { type: 'int', config: { inputType: 'money' } },
  *     },
  *     calculate: (order, args) => {
- *         return args.rate;
+ *         return {
+ *             price: args.rate,
+ *             priceWithTax: args.rate * ((100 + args.taxRate) / 100),
+ *         };
  *     },
  * });
  * ```
  *
  * @docsCategory shipping
+ * @docsPage ShippingCalculator
  */
 export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implements ConfigurableOperationDef {
     /** @internal */
@@ -77,7 +64,51 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implement
      *
      * @internal
      */
-    calculate(order: Order, args: ConfigArg[]): ShippingPrice | Promise<ShippingPrice> {
+    calculate(
+        order: Order,
+        args: ConfigArg[],
+    ): ShippingCalculationResult | Promise<ShippingCalculationResult> {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
+
+/**
+ * @description
+ * The return value of the {@link CalculateShippingFn}.
+ *
+ * @docsCategory shipping
+ * @docsPage ShippingCalculator
+ */
+export interface ShippingCalculationResult {
+    /**
+     * The shipping price without any taxes.
+     */
+    price: number;
+    /**
+     * @description
+     * The shipping price including taxes.
+     */
+    priceWithTax: number;
+    /**
+     * @description
+     * Arbitrary metadata may be returned from the calculation function. This can be used
+     * e.g. to return data on estimated delivery times or any other data which may be
+     * needed in the storefront application when listing eligible shipping methods.
+     */
+    metadata?: Record<string, any>;
+}
+
+/**
+ * @description
+ * A function which implements the specific shipping calculation logic. It takes an {@link Order} and
+ * an arguments object and should return the shipping price as an integer in cents.
+ *
+ * Should return a {@link ShippingCalculationResult} object.
+ *
+ * @docsCategory shipping
+ * @docsPage ShippingCalculator
+ */
+export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
+    order: Order,
+    args: ConfigArgValues<T>,
+) => ShippingCalculationResult | Promise<ShippingCalculationResult>;

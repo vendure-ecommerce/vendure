@@ -4,7 +4,10 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
-import { ShippingCalculator, ShippingPrice } from '../../config/shipping-method/shipping-calculator';
+import {
+    ShippingCalculationResult,
+    ShippingCalculator,
+} from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
@@ -48,13 +51,14 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
     @JoinTable()
     channels: Channel[];
 
-    async apply(order: Order): Promise<ShippingPrice | undefined> {
+    async apply(order: Order): Promise<ShippingCalculationResult | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const { price, priceWithTax } = await calculator.calculate(order, this.calculator.args);
+            const { price, priceWithTax, metadata } = await calculator.calculate(order, this.calculator.args);
             return {
                 price: Math.round(price),
                 priceWithTax: Math.round(priceWithTax),
+                metadata,
             };
         }
     }

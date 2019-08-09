@@ -305,11 +305,12 @@ export class OrderService {
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        return eligibleMethods.map(result => ({
-            id: result.method.id as string,
-            price: result.price.price,
-            priceWithTax: result.price.priceWithTax,
-            description: result.method.description,
+        return eligibleMethods.map(eligible => ({
+            id: eligible.method.id as string,
+            price: eligible.result.price,
+            priceWithTax: eligible.result.priceWithTax,
+            description: eligible.method.description,
+            metadata: eligible.result.metadata,
         }));
     }
 

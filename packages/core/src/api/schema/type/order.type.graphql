@@ -46,6 +46,7 @@ type ShippingMethodQuote {
     price: Int!
     priceWithTax: Int!
     description: String!
+    metadata: JSON
 }
 
 type OrderItem implements Node {

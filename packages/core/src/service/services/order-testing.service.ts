@@ -48,10 +48,13 @@ export class OrderTestingService {
         });
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligible = await shippingMethod.test(mockOrder);
-        const price = eligible ? await shippingMethod.apply(mockOrder) : undefined;
+        const result = eligible ? await shippingMethod.apply(mockOrder) : undefined;
         return {
             eligible,
-            price,
+            quote: result && {
+                ...result,
+                description: shippingMethod.description,
+            },
         };
     }
 
@@ -67,9 +70,10 @@ export class OrderTestingService {
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
         return eligibleMethods.map(result => ({
             id: result.method.id as string,
-            price: result.price.price,
-            priceWithTax: result.price.priceWithTax,
+            price: result.result.price,
+            priceWithTax: result.result.priceWithTax,
             description: result.method.description,
+            metadata: result.result.metadata,
         }));
     }
 

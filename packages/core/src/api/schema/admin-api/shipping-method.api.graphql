@@ -53,10 +53,12 @@ input TestShippingMethodOrderLineInput {
 
 type TestShippingMethodResult {
     eligible: Boolean!
-    price: ShippingPrice
+    quote: TestShippingMethodQuote
 }
 
-type ShippingPrice {
+type TestShippingMethodQuote {
     price: Int!
     priceWithTax: Int!
+    description: String!
+    metadata: JSON
 }

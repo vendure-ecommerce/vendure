@@ -14,18 +14,6 @@ export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheck
 
 /**
  * @description
- * A function which implements logic to determine whether a given {@link Order} is eligible for
- * a particular shipping method.
- *
- * @docsCategory shipping
- */
-export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
-    order: Order,
-    args: ConfigArgValues<T>,
-) => boolean | Promise<boolean>;
-
-/**
- * @description
  * The ShippingEligibilityChecker class is used to check whether an order qualifies for a
  * given {@link ShippingMethod}.
  *
@@ -33,7 +21,7 @@ export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheck
  * ```ts
  * const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
  *     code: 'min-order-total-eligibility-checker',
- *     description: 'Checks that the order total is above some minimum value',
+ *     description: [{ languageCode: LanguageCode.en, value: 'Checks that the order total is above some minimum value' }],
  *     args: {
  *         orderMinimum: { type: 'int', config: { inputType: 'money' } },
  *     },
@@ -44,6 +32,7 @@ export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheck
  * ```
  *
  * @docsCategory shipping
+ * @docsPage ShippingEligibilityChecker
  */
 export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}>
     implements ConfigurableOperationDef {
@@ -77,3 +66,16 @@ export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs
         return this.checkFn(order, argsArrayToHash(args));
     }
 }
+
+/**
+ * @description
+ * A function which implements logic to determine whether a given {@link Order} is eligible for
+ * a particular shipping method.
+ *
+ * @docsCategory shipping
+ * @docsPage ShippingEligibilityChecker
+ */
+export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
+    order: Order,
+    args: ConfigArgValues<T>,
+) => boolean | Promise<boolean>;

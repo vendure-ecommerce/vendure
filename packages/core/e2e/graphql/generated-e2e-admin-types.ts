@@ -2938,6 +2938,7 @@ export type ShippingMethodQuote = {
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
     description: Scalars['String'];
+    metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodSortParameter = {
@@ -2946,12 +2947,6 @@ export type ShippingMethodSortParameter = {
     updatedAt?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
-};
-
-export type ShippingPrice = {
-    __typename?: 'ShippingPrice';
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
 };
 
 /** The price value where the result has a single price */
@@ -3095,10 +3090,18 @@ export type TestShippingMethodOrderLineInput = {
     quantity: Scalars['Int'];
 };
 
+export type TestShippingMethodQuote = {
+    __typename?: 'TestShippingMethodQuote';
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    description: Scalars['String'];
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type TestShippingMethodResult = {
     __typename?: 'TestShippingMethodResult';
     eligible: Scalars['Boolean'];
-    price?: Maybe<ShippingPrice>;
+    quote?: Maybe<TestShippingMethodQuote>;
 };
 
 export type UpdateAddressInput = {
@@ -4762,7 +4765,14 @@ export type TestShippingMethodQuery = { __typename?: 'Query' } & {
     testShippingMethod: { __typename?: 'TestShippingMethodResult' } & Pick<
         TestShippingMethodResult,
         'eligible'
-    > & { price: Maybe<{ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>> };
+    > & {
+            quote: Maybe<
+                { __typename?: 'TestShippingMethodQuote' } & Pick<
+                    TestShippingMethodQuote,
+                    'price' | 'priceWithTax' | 'metadata'
+                >
+            >;
+        };
 };
 
 export type TestEligibleMethodsQueryVariables = {
@@ -4773,7 +4783,7 @@ export type TestEligibleMethodsQuery = { __typename?: 'Query' } & {
     testEligibleShippingMethods: Array<
         { __typename?: 'ShippingMethodQuote' } & Pick<
             ShippingMethodQuote,
-            'id' | 'description' | 'price' | 'priceWithTax'
+            'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'
         >
     >;
 };
@@ -5948,7 +5958,7 @@ export namespace TestShippingMethod {
     export type Variables = TestShippingMethodQueryVariables;
     export type Query = TestShippingMethodQuery;
     export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
-    export type Price = NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>;
+    export type Quote = NonNullable<TestShippingMethodQuery['testShippingMethod']['quote']>;
 }
 
 export namespace TestEligibleMethods {

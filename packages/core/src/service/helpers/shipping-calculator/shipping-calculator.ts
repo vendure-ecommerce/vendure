@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { ShippingPrice } from '../../../config/shipping-method/shipping-calculator';
+import { ShippingCalculationResult } from '../../../config/shipping-method/shipping-calculator';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { ShippingMethodService } from '../../services/shipping-method.service';
@@ -17,18 +17,18 @@ export class ShippingCalculator {
     async getEligibleShippingMethods(
         ctx: RequestContext,
         order: Order,
-    ): Promise<Array<{ method: ShippingMethod; price: ShippingPrice }>> {
+    ): Promise<Array<{ method: ShippingMethod; result: ShippingCalculationResult }>> {
         const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
-        const eligibleMethods: Array<{ method: ShippingMethod; price: ShippingPrice }> = [];
+        const eligibleMethods: Array<{ method: ShippingMethod; result: ShippingCalculationResult }> = [];
         for (const method of shippingMethods) {
             const eligible = await method.test(order);
             if (eligible) {
-                const price = await method.apply(order);
-                if (price) {
-                    eligibleMethods.push({ method, price });
+                const result = await method.apply(order);
+                if (result) {
+                    eligibleMethods.push({ method, result });
                 }
             }
         }
-        return eligibleMethods.sort((a, b) => a.price.price - b.price.price);
+        return eligibleMethods.sort((a, b) => a.result.price - b.result.price);
     }
 }

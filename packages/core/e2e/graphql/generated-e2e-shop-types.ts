@@ -2032,6 +2032,7 @@ export type ShippingMethodQuote = {
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
     description: Scalars['String'];
+    metadata?: Maybe<Scalars['JSON']>;
 };
 
 /** The price value where the result has a single price */
