@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ShippingPrice } from '../../../config/shipping-method/shipping-calculator';
@@ -20,15 +19,16 @@ export class ShippingCalculator {
         order: Order,
     ): Promise<Array<{ method: ShippingMethod; price: ShippingPrice }>> {
         const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
-        const methodsPromiseArray = shippingMethods
-            .filter(async sm => await sm.test(order))
-            .map(async method => {
+        const eligibleMethods: Array<{ method: ShippingMethod; price: ShippingPrice }> = [];
+        for (const method of shippingMethods) {
+            const eligible = await method.test(order);
+            if (eligible) {
                 const price = await method.apply(order);
                 if (price) {
-                    return { method, price };
+                    eligibleMethods.push({ method, price });
                 }
-            });
-        const methods = await Promise.all(methodsPromiseArray);
-        return methods.filter(notNullOrUndefined).sort((a, b) => a.price.price - b.price.price);
+            }
+        }
+        return eligibleMethods.sort((a, b) => a.price.price - b.price.price);
     }
 }
