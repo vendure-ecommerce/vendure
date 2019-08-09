@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { normalizeString } from 'shared/normalize-string';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
@@ -118,6 +119,15 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
 
     ngOnDestroy(): void {
         this.destroy();
+    }
+
+    updateCode(currentCode: string, nameValue: string) {
+        if (!currentCode) {
+            const codeControl = this.detailForm.get(['code']);
+            if (codeControl && codeControl.pristine) {
+                codeControl.setValue(normalizeString(nameValue, '-'));
+            }
+        }
     }
 
     selectChecker(checker: ConfigurableOperationDefinition) {
