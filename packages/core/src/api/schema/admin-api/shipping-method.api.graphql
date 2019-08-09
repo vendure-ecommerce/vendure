@@ -4,6 +4,7 @@ type Query {
     shippingEligibilityCheckers: [ConfigurableOperationDefinition!]!
     shippingCalculators: [ConfigurableOperationDefinition!]!
     testShippingMethod(input: TestShippingMethodInput!): TestShippingMethodResult!
+    testEligibleShippingMethods(input: TestEligibleShippingMethodsInput!): [ShippingMethodQuote!]!
 }
 
 type Mutation {
@@ -36,6 +37,11 @@ input UpdateShippingMethodInput {
 input TestShippingMethodInput {
     checker: ConfigurableOperationInput!
     calculator: ConfigurableOperationInput!
+    shippingAddress: CreateAddressInput!
+    lines: [TestShippingMethodOrderLineInput!]!
+}
+
+input TestEligibleShippingMethodsInput {
     shippingAddress: CreateAddressInput!
     lines: [TestShippingMethodOrderLineInput!]!
 }

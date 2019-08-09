@@ -2658,6 +2658,7 @@ export type Query = {
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>,
   shippingCalculators: Array<ConfigurableOperationDefinition>,
   testShippingMethod: TestShippingMethodResult,
+  testEligibleShippingMethods: Array<ShippingMethodQuote>,
   taxCategories: Array<TaxCategory>,
   taxCategory?: Maybe<TaxCategory>,
   taxRates: TaxRateList,
@@ -2825,6 +2826,11 @@ export type QueryShippingMethodArgs = {
 
 export type QueryTestShippingMethodArgs = {
   input: TestShippingMethodInput
+};
+
+
+export type QueryTestEligibleShippingMethodsArgs = {
+  input: TestEligibleShippingMethodsInput
 };
 
 
@@ -3171,6 +3177,11 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
   value?: Maybe<SortOrder>,
+};
+
+export type TestEligibleShippingMethodsInput = {
+  shippingAddress: CreateAddressInput,
+  lines: Array<TestShippingMethodOrderLineInput>,
 };
 
 export type TestShippingMethodInput = {

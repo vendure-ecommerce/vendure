@@ -14,6 +14,8 @@ import {
     GetEligibilityCheckers,
     GetShippingMethod,
     GetShippingMethodList,
+    TestEligibleMethods,
+    TestShippingMethod,
     UpdateShippingMethod,
 } from './graphql/generated-e2e-admin-types';
 import { TestAdminClient, TestShopClient } from './test-client';
@@ -176,6 +178,84 @@ describe('ShippingMethod resolver', () => {
         const listResult2 = await adminClient.query<GetShippingMethodList.Query>(GET_SHIPPING_METHOD_LIST);
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2']);
     });
+
+    it('testShippingMethod', async () => {
+        const { testShippingMethod } = await adminClient.query<
+            TestShippingMethod.Query,
+            TestShippingMethod.Variables
+        >(TEST_SHIPPING_METHOD, {
+            input: {
+                calculator: {
+                    code: defaultShippingCalculator.code,
+                    arguments: [
+                        {
+                            name: 'rate',
+                            type: 'int',
+                            value: '1000',
+                        },
+                        {
+                            name: 'taxRate',
+                            type: 'int',
+                            value: '20',
+                        },
+                    ],
+                },
+                checker: {
+                    code: defaultShippingEligibilityChecker.code,
+                    arguments: [
+                        {
+                            name: 'orderMinimum',
+                            type: 'int',
+                            value: '0',
+                        },
+                    ],
+                },
+                lines: [{ productVariantId: 'T_1', quantity: 1 }],
+                shippingAddress: {
+                    streetLine1: '',
+                    countryCode: 'GB',
+                },
+            },
+        });
+
+        expect(testShippingMethod).toEqual({
+            eligible: true,
+            price: {
+                price: 1000,
+                priceWithTax: 1200,
+            },
+        });
+    });
+
+    it('testEligibleShippingMethods', async () => {
+        const { testEligibleShippingMethods } = await adminClient.query<
+            TestEligibleMethods.Query,
+            TestEligibleMethods.Variables
+        >(TEST_ELIGIBLE_SHIPPING_METHODS, {
+            input: {
+                lines: [{ productVariantId: 'T_1', quantity: 1 }],
+                shippingAddress: {
+                    streetLine1: '',
+                    countryCode: 'GB',
+                },
+            },
+        });
+
+        expect(testEligibleShippingMethods).toEqual([
+            {
+                id: 'T_1',
+                description: 'Standard Shipping',
+                price: 500,
+                priceWithTax: 500,
+            },
+            {
+                id: 'T_2',
+                description: 'Express Shipping',
+                price: 1000,
+                priceWithTax: 1000,
+            },
+        ]);
+    });
 });
 
 const SHIPPING_METHOD_FRAGMENT = gql`
@@ -268,6 +348,29 @@ const GET_CALCULATORS = gql`
                 label
                 config
             }
+        }
+    }
+`;
+
+const TEST_SHIPPING_METHOD = gql`
+    query TestShippingMethod($input: TestShippingMethodInput!) {
+        testShippingMethod(input: $input) {
+            eligible
+            price {
+                price
+                priceWithTax
+            }
+        }
+    }
+`;
+
+export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
+    query TestEligibleMethods($input: TestEligibleShippingMethodsInput!) {
+        testEligibleShippingMethods(input: $input) {
+            id
+            description
+            price
+            priceWithTax
         }
     }
 `;

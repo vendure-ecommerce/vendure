@@ -2591,6 +2591,7 @@ export type Query = {
     shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
     shippingCalculators: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
+    testEligibleShippingMethods: Array<ShippingMethodQuote>;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
     taxRates: TaxRateList;
@@ -2726,6 +2727,10 @@ export type QueryShippingMethodArgs = {
 
 export type QueryTestShippingMethodArgs = {
     input: TestShippingMethodInput;
+};
+
+export type QueryTestEligibleShippingMethodsArgs = {
+    input: TestEligibleShippingMethodsInput;
 };
 
 export type QueryTaxCategoryArgs = {
@@ -3071,6 +3076,11 @@ export type TaxRateSortParameter = {
     updatedAt?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
     value?: Maybe<SortOrder>;
+};
+
+export type TestEligibleShippingMethodsInput = {
+    shippingAddress: CreateAddressInput;
+    lines: Array<TestShippingMethodOrderLineInput>;
 };
 
 export type TestShippingMethodInput = {
@@ -4744,6 +4754,30 @@ export type GetCalculatorsQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type TestShippingMethodQueryVariables = {
+    input: TestShippingMethodInput;
+};
+
+export type TestShippingMethodQuery = { __typename?: 'Query' } & {
+    testShippingMethod: { __typename?: 'TestShippingMethodResult' } & Pick<
+        TestShippingMethodResult,
+        'eligible'
+    > & { price: Maybe<{ __typename?: 'ShippingPrice' } & Pick<ShippingPrice, 'price' | 'priceWithTax'>> };
+};
+
+export type TestEligibleMethodsQueryVariables = {
+    input: TestEligibleShippingMethodsInput;
+};
+
+export type TestEligibleMethodsQuery = { __typename?: 'Query' } & {
+    testEligibleShippingMethods: Array<
+        { __typename?: 'ShippingMethodQuote' } & Pick<
+            ShippingMethodQuote,
+            'id' | 'description' | 'price' | 'priceWithTax'
+        >
+    >;
+};
+
 export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
@@ -5908,6 +5942,21 @@ export namespace GetCalculators {
     export type Query = GetCalculatorsQuery;
     export type ShippingCalculators = NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>;
     export type Args = NonNullable<(NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>)['args'][0]>;
+}
+
+export namespace TestShippingMethod {
+    export type Variables = TestShippingMethodQueryVariables;
+    export type Query = TestShippingMethodQuery;
+    export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
+    export type Price = NonNullable<TestShippingMethodQuery['testShippingMethod']['price']>;
+}
+
+export namespace TestEligibleMethods {
+    export type Variables = TestEligibleMethodsQueryVariables;
+    export type Query = TestEligibleMethodsQuery;
+    export type TestEligibleShippingMethods = NonNullable<
+        TestEligibleMethodsQuery['testEligibleShippingMethods'][0]
+    >;
 }
 
 export namespace GetMe {

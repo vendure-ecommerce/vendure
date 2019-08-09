@@ -8,6 +8,7 @@ import {
     Permission,
     QueryShippingMethodArgs,
     QueryShippingMethodsArgs,
+    QueryTestEligibleShippingMethodsArgs,
     QueryTestShippingMethodArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
@@ -76,5 +77,15 @@ export class ShippingMethodResolver {
     testShippingMethod(@Ctx() ctx: RequestContext, @Args() args: QueryTestShippingMethodArgs) {
         const { input } = args;
         return this.orderTestingService.testShippingMethod(ctx, input);
+    }
+
+    @Query()
+    @Allow(Permission.ReadSettings)
+    testEligibleShippingMethods(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryTestEligibleShippingMethodsArgs,
+    ) {
+        const { input } = args;
+        return this.orderTestingService.testEligibleShippingMethods(ctx, input);
     }
 }

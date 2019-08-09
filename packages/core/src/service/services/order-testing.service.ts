@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateAddressInput,
+    ShippingMethodQuote,
+    TestEligibleShippingMethodsInput,
     TestShippingMethodInput,
     TestShippingMethodResult,
 } from '@vendure/common/lib/generated-types';
@@ -15,6 +17,7 @@ import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
+import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 
@@ -27,6 +30,7 @@ export class OrderTestingService {
     constructor(
         @InjectConnection() private connection: Connection,
         private orderCalculator: OrderCalculator,
+        private shippingCalculator: ShippingCalculator,
         private shippingConfiguration: ShippingConfiguration,
     ) {}
 
@@ -50,6 +54,25 @@ export class OrderTestingService {
             price,
         };
     }
+
+    /**
+     * Tests all available ShippingMethods against a mock Order and return those whic hare eligible. This
+     * is intended to simulate a call to the `eligibleShippingMethods` query of the Shop API.
+     */
+    async testEligibleShippingMethods(
+        ctx: RequestContext,
+        input: TestEligibleShippingMethodsInput,
+    ): Promise<ShippingMethodQuote[]> {
+        const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
+        const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
+        return eligibleMethods.map(result => ({
+            id: result.method.id as string,
+            price: result.price.price,
+            priceWithTax: result.price.priceWithTax,
+            description: result.method.description,
+        }));
+    }
+
     private async buildMockOrder(
         ctx: RequestContext,
         shippingAddress: CreateAddressInput,
