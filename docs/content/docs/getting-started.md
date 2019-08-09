@@ -9,6 +9,9 @@ weight: 0
  
 * [Node.js](https://nodejs.org/en/) **v8.9.0** or above
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, if you are just testing out Vendure, we recommend using SQLite, which has no external requirements.
+* For windows users: make sure you have **windows build tools installed**
+  * ```npm install --global --production windows-build-tools```
+  * this should be done with administrative rights
  
 ## Installation with @vendure/create
 
