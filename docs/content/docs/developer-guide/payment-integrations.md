@@ -32,7 +32,7 @@ For a more complete example of a payment integration, see the [PaymentMethodHand
 
 ## Using an integration
 
-In you storefront application, this payment method can then be used when executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}), as the "method" field of the [`PaymentInput` object]({{< relref "/docs/graphql-api/shop/input-types#paymentinput" >}}).
+In your storefront application, this payment method can then be used when executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}), as the "method" field of the [`PaymentInput` object]({{< relref "/docs/graphql-api/shop/input-types#paymentinput" >}}).
 
 ```SDL
 mutation {
