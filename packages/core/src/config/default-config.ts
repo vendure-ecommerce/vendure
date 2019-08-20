@@ -1,5 +1,6 @@
 import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 
 import { ReadOnlyRequired } from '../common/types/common-types';
 
@@ -38,7 +39,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         disableAuth: false,
         tokenMethod: 'cookie',
         sessionSecret: 'session-secret',
-        authTokenHeaderKey: 'vendure-auth-token',
+        authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '7d',
         requireVerification: true,
         verificationTokenDuration: '7d',
