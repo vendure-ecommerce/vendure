@@ -1,5 +1,7 @@
+import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
 import {
+    AuthOptions,
     createProxyHandler,
     OnVendureBootstrap,
     OnVendureClose,
@@ -102,9 +104,9 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),
             route,
         });
-        const { adminApiPath } = config;
+        const { adminApiPath, authOptions } = config;
         const { apiHost, apiPort } = this.options;
-        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath);
+        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath, authOptions);
         return config;
     }
 
@@ -132,13 +134,21 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         host: string | 'auto',
         port: number | 'auto',
         adminApiPath: string,
+        authOptions: AuthOptions,
     ) {
         const adminUiConfigPath = path.join(this.getAdminUiPath(), 'vendure-ui-config.json');
         const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
-        const config: AdminUiConfig = JSON.parse(adminUiConfig);
+        let config: AdminUiConfig;
+        try {
+            config = JSON.parse(adminUiConfig);
+        } catch (e) {
+            throw new Error('[AdminUiPlugin] Could not parse vendure-ui-config.json file:\n' + e.message);
+        }
         config.apiHost = host || 'http://localhost';
         config.apiPort = port;
         config.adminApiPath = adminApiPath;
+        config.tokenMethod = authOptions.tokenMethod || 'cookie';
+        config.authTokenHeaderKey = authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY;
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
     }
 
