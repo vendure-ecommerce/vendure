@@ -58,7 +58,8 @@ export class ProductDetailService {
     ) {
         const createProduct$ = this.dataService.product.createProduct(input);
 
-        const createOptionGroups$ = createVariantsConfig.groups.length
+        const nonEmptyOptionGroups = createVariantsConfig.groups.filter(g => 0 < g.values.length);
+        const createOptionGroups$ = nonEmptyOptionGroups.length
             ? forkJoin(
                   createVariantsConfig.groups.map(c => {
                       return this.dataService.product.createProductOptionGroups({

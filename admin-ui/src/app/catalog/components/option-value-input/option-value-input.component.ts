@@ -67,9 +67,7 @@ export class OptionValueInputComponent implements ControlValueAccessor {
         switch (event.key) {
             case ',':
             case 'Enter':
-                this.options = unique([...this.options, ...this.parseInputIntoOptions(this.input)]);
-                this.input = '';
-                this.onChangeFn(this.options);
+                this.addOptionValue();
                 event.preventDefault();
                 break;
             case 'Backspace':
@@ -83,6 +81,17 @@ export class OptionValueInputComponent implements ControlValueAccessor {
             default:
                 this.lastSelected = false;
         }
+    }
+
+    handleBlur() {
+        this.isFocussed = false;
+        this.addOptionValue();
+    }
+
+    private addOptionValue() {
+        this.options = unique([...this.options, ...this.parseInputIntoOptions(this.input)]);
+        this.input = '';
+        this.onChangeFn(this.options);
     }
 
     private parseInputIntoOptions(input: string): string[] {

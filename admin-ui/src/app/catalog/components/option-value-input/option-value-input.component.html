@@ -14,7 +14,7 @@
         #textArea
         (keyup)="handleKey($event)"
         (focus)="isFocussed = true"
-        (blur)="isFocussed = false"
+        (blur)="handleBlur()"
         [(ngModel)]="input"
         [disabled]="disabled"
     ></textarea>
