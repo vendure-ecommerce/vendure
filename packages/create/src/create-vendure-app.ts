@@ -18,7 +18,7 @@ import {
     isSafeToCreateProjectIn,
     shouldUseYarn,
 } from './helpers';
-import { LogLevel } from './types';
+import { CliLogLevel } from './types';
 
 // tslint:disable-next-line:no-var-requires
 const packageJson = require('../package.json');
@@ -51,7 +51,7 @@ program
 
 createApp(projectName, program.useNpm, program.logLevel || 'silent');
 
-async function createApp(name: string | undefined, useNpm: boolean, logLevel: LogLevel) {
+async function createApp(name: string | undefined, useNpm: boolean, logLevel: CliLogLevel) {
     if (!runPreChecks(name, useNpm)) {
         return;
     }
@@ -171,14 +171,20 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                     const { populate } = await import(
                         path.join(root, 'node_modules/@vendure/core/dist/cli/populate')
                     );
-                    const { bootstrap } = await import(
-                        path.join(root, 'node_modules/@vendure/core/dist/bootstrap')
+                    const { bootstrap, DefaultLogger, LogLevel } = await import(
+                        path.join(root, 'node_modules/@vendure/core/dist/index')
                     );
                     const { config } = await import(ctx.configFile);
                     const assetsDir = path.join(__dirname, '../assets');
 
                     const initialDataPath = path.join(assetsDir, 'initial-data.json');
                     const port = await detectPort(3000);
+                    const vendureLogLevel =
+                        logLevel === 'silent'
+                            ? LogLevel.Error
+                            : logLevel === 'verbose'
+                            ? LogLevel.Verbose
+                            : LogLevel.Info;
                     const bootstrapFn = async () => {
                         await checkDbConnection(config.dbConnectionOptions, root);
                         return bootstrap({
@@ -189,6 +195,7 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Lo
                                 ...config.dbConnectionOptions,
                                 synchronize: true,
                             },
+                            logger: new DefaultLogger({ level: vendureLogLevel }),
                             workerOptions: {
                                 runInMainProcess: true,
                             },

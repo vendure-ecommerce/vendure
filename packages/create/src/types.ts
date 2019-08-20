@@ -9,4 +9,4 @@ export interface UserResponses {
     configSource: string;
 }
 
-export type LogLevel = 'silent' | 'info' | 'verbose';
+export type CliLogLevel = 'silent' | 'info' | 'verbose';
