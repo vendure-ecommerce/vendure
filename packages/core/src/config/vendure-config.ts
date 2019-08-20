@@ -49,7 +49,11 @@ export interface AuthOptions {
      *   cookie containing the session token. A browser-based client (making requests with credentials)
      *   should automatically send the session cookie with each request.
      * * 'bearer': Upon login, the token is returned in the response and should be then stored by the
-     *   client app. Each request should include the header 'Authorization: Bearer <token>'.
+     *   client app. Each request should include the header `Authorization: Bearer <token>`.
+     *
+     * Note that if the bearer method is used, Vendure will automatically expose the configured
+     * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
+     * by default).
      *
      * @default 'cookie'
      */

@@ -147,6 +147,7 @@ export async function preBootstrapConfig(
     }
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
+    setExposedHeaders(config);
     return config;
 }
 
@@ -185,6 +186,32 @@ async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array
         }
     }
     return [...coreEntities, ...pluginEntities];
+}
+
+/**
+ * If the 'bearer' tokenMethod is being used, then we automatically expose the authTokenHeaderKey header
+ * in the CORS options, making sure to preserve any user-configured exposedHeaders.
+ */
+function setExposedHeaders(config: ReadOnlyRequired<VendureConfig>) {
+    if (config.authOptions.tokenMethod === 'bearer') {
+        const authTokenHeaderKey = config.authOptions.authTokenHeaderKey as string;
+        const corsOptions = config.cors;
+        if (typeof corsOptions !== 'boolean') {
+            const { exposedHeaders } = corsOptions;
+            let exposedHeadersWithAuthKey: string[];
+            if (!exposedHeaders) {
+                exposedHeadersWithAuthKey = [authTokenHeaderKey];
+            } else if (typeof exposedHeaders === 'string') {
+                exposedHeadersWithAuthKey = exposedHeaders
+                    .split(',')
+                    .map(x => x.trim())
+                    .concat(authTokenHeaderKey);
+            } else {
+                exposedHeadersWithAuthKey = exposedHeaders.concat(authTokenHeaderKey);
+            }
+            corsOptions.exposedHeaders = exposedHeadersWithAuthKey;
+        }
+    }
 }
 
 /**
