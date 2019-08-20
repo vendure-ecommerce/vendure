@@ -72,4 +72,6 @@ export interface AdminUiConfig {
     apiHost: string | 'auto';
     apiPort: number | 'auto';
     adminApiPath: string;
+    tokenMethod: 'cookie' | 'bearer';
+    authTokenHeaderKey: string;
 }

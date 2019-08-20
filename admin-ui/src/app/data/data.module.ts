@@ -25,7 +25,7 @@ export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
 ): ApolloClientOptions<any> {
-    const { apiHost, apiPort, adminApiPath } = getAppConfig();
+    const { apiHost, apiPort, adminApiPath, tokenMethod } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
     const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : `:${apiPort}`;
     const apolloCache = new InMemoryCache({
@@ -52,6 +52,18 @@ export function createApollo(
                             'vendure-token': channelToken,
                         },
                     };
+                }
+            }),
+            setContext(() => {
+                if (tokenMethod === 'bearer') {
+                    const authToken = localStorageService.get('authToken');
+                    if (authToken) {
+                        return {
+                            headers: {
+                                authorization: `Bearer ${authToken}`,
+                            },
+                        };
+                    }
                 }
             }),
             createUploadLink({
