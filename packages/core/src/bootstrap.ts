@@ -56,10 +56,14 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     await app.listen(config.port, config.hostname);
     app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
-        const worker = await bootstrapWorkerInternal(config);
-        Logger.warn(`Worker is running in main process. This is not recommended for production.`);
-        Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
-        closeWorkerOnAppClose(app, worker);
+        try {
+            const worker = await bootstrapWorkerInternal(config);
+            Logger.warn(`Worker is running in main process. This is not recommended for production.`);
+            Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
+            closeWorkerOnAppClose(app, worker);
+        } catch (e) {
+            Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
+        }
     }
     logWelcomeMessage(config);
     return app;
@@ -88,7 +92,12 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
         Logger.error(errorMessage, 'Vendure Worker');
         throw new Error(errorMessage);
     } else {
-        return bootstrapWorkerInternal(userConfig);
+        try {
+            return await bootstrapWorkerInternal(userConfig);
+        } catch (e) {
+            Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
+            throw e;
+        }
     }
 }
 
@@ -110,7 +119,17 @@ async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Prom
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
-    await workerApp.listenAsync();
+
+    // A work-around to correctly handle errors when attempting to start the
+    // microservice server listening.
+    // See https://github.com/nestjs/nest/issues/2777
+    // TODO: Remove if & when the above issue is resolved.
+    await new Promise((resolve, reject) => {
+        (workerApp as any).server.server.on('error', (e: any) => {
+            reject(e);
+        });
+        workerApp.listenAsync().then(resolve);
+    });
     workerWelcomeMessage(config);
     return workerApp;
 }
@@ -128,7 +147,6 @@ export async function preBootstrapConfig(
     // Entities *must* be loaded after the user config is set in order for the
     // base VendureEntity to be correctly configured with the primary key type
     // specified in the EntityIdStrategy.
-    // tslint:disable-next-line:whitespace
     const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
     const entities = await getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers');
