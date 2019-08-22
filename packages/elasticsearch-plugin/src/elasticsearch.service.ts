@@ -100,7 +100,10 @@ export class ElasticsearchService {
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
             facetValue: {
-                terms: { field: 'facetValueIds.keyword' },
+                terms: {
+                    field: 'facetValueIds.keyword',
+                    size: this.options.facetValueMaxSize,
+                },
             },
         };
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({

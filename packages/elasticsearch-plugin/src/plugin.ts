@@ -55,6 +55,15 @@ export interface ElasticsearchOptions {
      * 2000
      */
     batchSize?: number;
+    /**
+     * @description
+     * The maximum number of FacetValues to return from the search query. Internally, this
+     * value sets the "size" property of an Elasticsearch aggregation.
+     *
+     * @default
+     * 50
+     */
+    facetValueMaxSize?: number;
 }
 
 /**
@@ -115,7 +124,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     static init(options: ElasticsearchOptions): Type<ElasticsearchPlugin> {
         const { host, port } = options;
-        this.options = { indexPrefix: 'vendure-', batchSize: 2000, ...options };
+        this.options = { indexPrefix: 'vendure-', batchSize: 2000, facetValueMaxSize: 50, ...options };
         this.client = new Client({
             node: `${host}:${port}`,
         });
