@@ -104,8 +104,8 @@ export class ElasticsearchService {
             },
         };
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
-            index: indexPrefix + VARIANT_INDEX_NAME,
-            type: VARIANT_INDEX_TYPE,
+            index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+            type: input.groupByProduct ? PRODUCT_INDEX_TYPE : VARIANT_INDEX_TYPE,
             body: elasticSearchBody,
         });
 
