@@ -76,6 +76,42 @@ export interface SearchConfig {
      * Set custom boost values for particular fields when matching against a search term.
      */
     boostFields?: BoostFieldsConfig;
+    /**
+     * @description
+     * The interval used to group search results into buckets according to price range. For example, setting this to
+     * `2000` will group into buckets every $20.00:
+     *
+     * ```JSON
+     * {
+     *   "data": {
+     *     "search": {
+     *       "totalItems": 32,
+     *       "priceRange": {
+     *         "buckets": [
+     *           {
+     *             "to": 2000,
+     *             "count": 21
+     *           },
+     *           {
+     *             "to": 4000,
+     *             "count": 7
+     *           },
+     *           {
+     *             "to": 6000,
+     *             "count": 3
+     *           },
+     *           {
+     *             "to": 12000,
+     *             "count": 1
+     *           }
+     *         ]
+     *       }
+     *     }
+     *   }
+     * }
+     * ```
+     */
+    priceRangeBucketInterval: number;
 }
 
 /**
@@ -133,6 +169,7 @@ export const defaultOptions: DeepRequired<ElasticsearchOptions> = {
             description: 1,
             sku: 1,
         },
+        priceRangeBucketInterval: 1000,
     },
 };
 

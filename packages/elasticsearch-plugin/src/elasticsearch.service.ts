@@ -5,6 +5,7 @@ import {
     DeepRequired,
     FacetValue,
     FacetValueService,
+    InternalServerError,
     Logger,
     RequestContext,
     SearchService,
@@ -22,7 +23,14 @@ import {
 } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { ElasticsearchOptions } from './options';
-import { ProductIndexItem, SearchHit, SearchResponseBody, VariantIndexItem } from './types';
+import {
+    ElasticSearchResponse,
+    ProductIndexItem,
+    SearchHit,
+    SearchPriceRange,
+    SearchResponseBody,
+    VariantIndexItem,
+} from './types';
 
 @Injectable()
 export class ElasticsearchService {
@@ -66,7 +74,7 @@ export class ElasticsearchService {
         ctx: RequestContext,
         input: SearchInput,
         enabledOnly: boolean = false,
-    ): Promise<Omit<SearchResponse, 'facetValues'>> {
+    ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'priceRange'>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(input, this.options.searchConfig, enabledOnly);
@@ -128,6 +136,73 @@ export class ElasticsearchService {
                 count: buckets[index].doc_count,
             };
         });
+    }
+
+    async priceRange(ctx: RequestContext, input: SearchInput): Promise<SearchPriceRange> {
+        const { indexPrefix, searchConfig } = this.options;
+        const { groupByProduct } = input;
+        const elasticSearchBody = buildElasticBody(input, searchConfig, true);
+        elasticSearchBody.from = 0;
+        elasticSearchBody.size = 0;
+        elasticSearchBody.aggs = {
+            minPrice: {
+                min: {
+                    field: groupByProduct ? 'priceMin' : 'price',
+                },
+            },
+            minPriceWithTax: {
+                min: {
+                    field: groupByProduct ? 'priceWithTaxMin' : 'priceWithTax',
+                },
+            },
+            maxPrice: {
+                max: {
+                    field: groupByProduct ? 'priceMax' : 'price',
+                },
+            },
+            maxPriceWithTax: {
+                max: {
+                    field: groupByProduct ? 'priceWithTaxMax' : 'priceWithTax',
+                },
+            },
+            prices: {
+                histogram: {
+                    field: groupByProduct ? 'priceMin' : 'price',
+                    interval: searchConfig.priceRangeBucketInterval,
+                },
+            },
+            pricesWithTax: {
+                histogram: {
+                    field: groupByProduct ? 'priceWithTaxMin' : 'priceWithTax',
+                    interval: searchConfig.priceRangeBucketInterval,
+                },
+            },
+        };
+        const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
+            index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+            type: input.groupByProduct ? PRODUCT_INDEX_TYPE : VARIANT_INDEX_TYPE,
+            body: elasticSearchBody,
+        });
+
+        const { aggregations } = body;
+        if (!aggregations) {
+            throw new InternalServerError(
+                'An error occurred when querying Elasticsearch for priceRange aggregations',
+            );
+        }
+        const mapPriceBuckets = (b: { key: string; doc_count: number }) => ({
+            to: Number.parseInt(b.key, 10) + searchConfig.priceRangeBucketInterval,
+            count: b.doc_count,
+        });
+
+        return {
+            min: aggregations.minPrice.value,
+            minWithTax: aggregations.minPriceWithTax.value,
+            max: aggregations.maxPrice.value,
+            maxWithTax: aggregations.maxPriceWithTax.value,
+            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+        };
     }
 
     /**

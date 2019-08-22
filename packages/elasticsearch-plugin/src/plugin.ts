@@ -15,6 +15,7 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
+import { gql } from 'apollo-server-core';
 
 import { ELASTIC_SEARCH_CLIENT, ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
@@ -22,6 +23,26 @@ import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elastic
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticsearchIndexerController } from './indexer.controller';
 import { ElasticsearchOptions, mergeWithDefaults } from './options';
+
+const schemaExtension = gql`
+    extend type SearchResponse {
+        priceRange: SearchResponsePriceRange!
+    }
+
+    type SearchResponsePriceRange {
+        min: Int!
+        minWithTax: Int!
+        max: Int!
+        maxWithTax: Int!
+        buckets: [PriceRangeBucket!]!
+        bucketsWithTax: [PriceRangeBucket!]!
+    }
+
+    type PriceRangeBucket {
+        to: Int!
+        count: Int!
+    }
+`;
 
 /**
  * @description
@@ -35,6 +56,10 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
  * or
  *
  * `npm install \@vendure/elasticsearch-plugin`
+ *
+ * Make sure to remove the `DefaultSearchPlugin` if it is still in the VendureConfig plugins array.
+ *
+ * Then add the `ElasticsearchPlugin`, calling the `.init()` method with {@link ElasticsearchOptions}:
  *
  * @example
  * ```ts
@@ -51,6 +76,112 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
  * };
  * ```
  *
+ * ## Search API Extensions
+ * This plugin extends the default search API, allowing richer querying of your product data.
+ *
+ * The [SearchResponse](/docs/graphql-api/admin/object-types/#searchresponse) type is extended with information
+ * about price ranges in the result set:
+ * ```SDL
+ * extend type SearchResponse {
+ *     priceRange: SearchResponsePriceRange!
+ * }
+ *
+ * type SearchResponsePriceRange {
+ *     min: Int!
+ *     minWithTax: Int!
+ *     max: Int!
+ *     maxWithTax: Int!
+ *     buckets: [PriceRangeBucket!]!
+ *     bucketsWithTax: [PriceRangeBucket!]!
+ * }
+ *
+ * type PriceRangeBucket {
+ *     to: Int!
+ *     count: Int!
+ * }
+ * ```
+ *
+ * This `SearchResponsePriceRange` type allows you to query data about the range of prices in the result set.
+ *
+ * ## Example Request & Response
+ *
+ * ```SDL
+ * {
+ *   search (input: { term: "table easel", groupByProduct: true }){
+ *     totalItems
+ *     priceRange {
+ *       min
+ *       max
+ *       buckets {
+ *         to
+ *         count
+ *       }
+ *     }
+ *     items {
+ *       productName
+ *       score
+ *       price {
+ *         ...on PriceRange {
+ *           min
+ *           max
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * ```JSON
+ *{
+ *  "data": {
+ *    "search": {
+ *      "totalItems": 9,
+ *      "priceRange": {
+ *        "min": 999,
+ *        "max": 6396,
+ *        "buckets": [
+ *          {
+ *            "to": 1000,
+ *            "count": 1
+ *          },
+ *          {
+ *            "to": 2000,
+ *            "count": 2
+ *          },
+ *          {
+ *            "to": 3000,
+ *            "count": 3
+ *          },
+ *          {
+ *            "to": 4000,
+ *            "count": 1
+ *          },
+ *          {
+ *            "to": 5000,
+ *            "count": 1
+ *          },
+ *          {
+ *            "to": 7000,
+ *            "count": 1
+ *          }
+ *        ]
+ *      },
+ *      "items": [
+ *        {
+ *          "productName": "Loxley Yorkshire Table Easel",
+ *          "score": 30.58831,
+ *          "price": {
+ *            "min": 4984,
+ *            "max": 4984
+ *          }
+ *        },
+ *        // ... truncated
+ *      ]
+ *    }
+ *  }
+ *}
+ * ```
+ *
  * @docsCategory ElasticsearchPlugin
  */
 @VendurePlugin({
@@ -62,7 +193,7 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
         { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => ElasticsearchPlugin.client },
     ],
     adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
-    shopApiExtensions: { resolvers: [ShopElasticSearchResolver] },
+    shopApiExtensions: { resolvers: [ShopElasticSearchResolver], schema: schemaExtension },
     workers: [ElasticsearchIndexerController],
 })
 export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {

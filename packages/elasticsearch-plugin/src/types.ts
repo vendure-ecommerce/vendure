@@ -1,25 +1,43 @@
-import { CurrencyCode, SearchResult } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, SearchResponse, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+
+export type ElasticSearchResponse = SearchResponse & {
+    priceRange: SearchPriceRange;
+};
+
+export type SearchPriceRange = {
+    min: number;
+    minWithTax: number;
+    max: number;
+    maxWithTax: number;
+    buckets: PriceRangeBucket[];
+    bucketsWithTax: PriceRangeBucket[];
+};
+
+export type PriceRangeBucket = {
+    to: number;
+    count: number;
+};
 
 export type VariantIndexItem = Omit<SearchResult, 'score' | 'price' | 'priceWithTax'> & {
     price: number;
     priceWithTax: number;
 };
 export type ProductIndexItem = {
-    sku: string[],
-    slug: string[],
-    productId: ID,
-    productName: string[],
-    productPreview: string,
-    productVariantId: ID[],
-    productVariantName: string[],
-    productVariantPreview: string[],
-    currencyCode: CurrencyCode,
-    description: string,
-    facetIds: ID[],
-    facetValueIds: ID[],
-    collectionIds: ID[],
-    enabled: boolean,
+    sku: string[];
+    slug: string[];
+    productId: ID;
+    productName: string[];
+    productPreview: string;
+    productVariantId: ID[];
+    productVariantName: string[];
+    productVariantPreview: string[];
+    currencyCode: CurrencyCode;
+    description: string;
+    facetIds: ID[];
+    facetValueIds: ID[];
+    collectionIds: ID[];
+    enabled: boolean;
     priceMin: number;
     priceMax: number;
     priceWithTaxMin: number;
@@ -61,16 +79,17 @@ export type SearchResponseBody<T = any> = {
     };
     aggregations?: {
         [key: string]: {
-            doc_count_error_upper_bound: 0,
-            sum_other_doc_count: 89,
-            buckets: Array<{ key: string; doc_count: number; }>;
-        },
-    }
+            doc_count_error_upper_bound: 0;
+            sum_other_doc_count: 89;
+            buckets: Array<{ key: string; doc_count: number }>;
+            value: any;
+        };
+    };
 };
 
 export type BulkOperationType = 'index' | 'update' | 'delete';
-export type BulkOperation = { [operation in BulkOperationType]?: { _id: string; }; };
-export type BulkOperationDoc<T> = T | { doc: T; };
+export type BulkOperation = { [operation in BulkOperationType]?: { _id: string } };
+export type BulkOperationDoc<T> = T | { doc: T };
 export type BulkResponseResult = {
     [operation in BulkOperationType]?: {
         _index: string;
@@ -87,10 +106,10 @@ export type BulkResponseResult = {
         _seq_no?: number;
         _primary_term?: number;
         error?: any;
-    };
+    }
 };
 export type BulkResponseBody = {
     took: number;
     errors: boolean;
-    items: BulkResponseResult[]
+    items: BulkResponseResult[];
 };
