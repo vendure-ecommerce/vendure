@@ -1,7 +1,14 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable } from '@nestjs/common';
 import { JobInfo, SearchInput, SearchResponse, SearchResult } from '@vendure/common/lib/generated-types';
-import { FacetValue, FacetValueService, Logger, RequestContext, SearchService } from '@vendure/core';
+import {
+    DeepRequired,
+    FacetValue,
+    FacetValueService,
+    Logger,
+    RequestContext,
+    SearchService,
+} from '@vendure/core';
 
 import { buildElasticBody } from './build-elastic-body';
 import {
@@ -14,13 +21,13 @@ import {
     VARIANT_INDEX_TYPE,
 } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { ElasticsearchOptions } from './plugin';
+import { ElasticsearchOptions } from './options';
 import { ProductIndexItem, SearchHit, SearchResponseBody, VariantIndexItem } from './types';
 
 @Injectable()
 export class ElasticsearchService {
     constructor(
-        @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
+        @Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>,
         @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
@@ -62,7 +69,7 @@ export class ElasticsearchService {
     ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
-        const elasticSearchBody = buildElasticBody(input, enabledOnly);
+        const elasticSearchBody = buildElasticBody(input, this.options.searchConfig, enabledOnly);
         if (groupByProduct) {
             const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
                 index: indexPrefix + PRODUCT_INDEX_NAME,
@@ -95,14 +102,14 @@ export class ElasticsearchService {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const { indexPrefix } = this.options;
-        const elasticSearchBody = buildElasticBody(input, enabledOnly);
+        const elasticSearchBody = buildElasticBody(input, this.options.searchConfig, enabledOnly);
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
             facetValue: {
                 terms: {
                     field: 'facetValueIds.keyword',
-                    size: this.options.facetValueMaxSize,
+                    size: this.options.searchConfig.facetValueMaxSize,
                 },
             },
         };

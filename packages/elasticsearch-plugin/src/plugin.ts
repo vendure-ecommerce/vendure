@@ -2,6 +2,7 @@ import { Client } from '@elastic/elasticsearch';
 import {
     CatalogModificationEvent,
     CollectionModificationEvent,
+    DeepRequired,
     EventBus,
     idsAreEqual,
     Logger,
@@ -10,7 +11,6 @@ import {
     PluginCommonModule,
     Product,
     ProductVariant,
-    SearchService,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
@@ -21,50 +21,7 @@ import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elasticsearch-resolver';
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticsearchIndexerController } from './indexer.controller';
-
-/**
- * @description
- * Configuration options for the {@link ElasticsearchPlugin}.
- *
- * @docsCategory ElasticsearchPlugin
- */
-export interface ElasticsearchOptions {
-    /**
-     * @description
-     * The host of the Elasticsearch server.
-     */
-    host: string;
-    /**
-     * @description
-     * The port of the Elasticsearch server.
-     */
-    port: number;
-    /**
-     * @description
-     * Prefix for the indices created by the plugin.
-     *
-     * @default
-     * 'vendure-'
-     */
-    indexPrefix?: string;
-    /**
-     * @description
-     * Batch size for bulk operations (e.g. when rebuilding the indices)
-     *
-     * @default
-     * 2000
-     */
-    batchSize?: number;
-    /**
-     * @description
-     * The maximum number of FacetValues to return from the search query. Internally, this
-     * value sets the "size" property of an Elasticsearch aggregation.
-     *
-     * @default
-     * 50
-     */
-    facetValueMaxSize?: number;
-}
+import { ElasticsearchOptions, mergeWithDefaults } from './options';
 
 /**
  * @description
@@ -109,7 +66,7 @@ export interface ElasticsearchOptions {
     workers: [ElasticsearchIndexerController],
 })
 export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
-    private static options: Required<ElasticsearchOptions>;
+    private static options: DeepRequired<ElasticsearchOptions>;
     private static client: Client;
 
     /** @internal */
@@ -124,7 +81,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     static init(options: ElasticsearchOptions): Type<ElasticsearchPlugin> {
         const { host, port } = options;
-        this.options = { indexPrefix: 'vendure-', batchSize: 2000, facetValueMaxSize: 50, ...options };
+        this.options = mergeWithDefaults(options);
         this.client = new Client({
             node: `${host}:${port}`,
         });

@@ -1,11 +1,14 @@
 import { SortOrder } from '@vendure/common/lib/generated-types';
+import { DeepRequired } from '@vendure/core';
 
 import { buildElasticBody } from './build-elastic-body';
+import { defaultOptions, SearchConfig } from './options';
 
 describe('buildElasticBody()', () => {
+    const searchConfig = defaultOptions.searchConfig;
 
     it('search term', () => {
-        const result = buildElasticBody({ term: 'test' });
+        const result = buildElasticBody({ term: 'test' }, searchConfig);
         expect(result.query).toEqual({
             bool: {
                 must: [
@@ -13,12 +16,7 @@ describe('buildElasticBody()', () => {
                         multi_match: {
                             query: 'test',
                             type: 'best_fields',
-                            fields: [
-                                'productName',
-                                'productVariantName',
-                                'description',
-                                'sku',
-                            ],
+                            fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
                         },
                     },
                 ],
@@ -27,30 +25,25 @@ describe('buildElasticBody()', () => {
     });
 
     it('facetValueIds', () => {
-        const result = buildElasticBody({ facetValueIds: ['1', '2'] });
+        const result = buildElasticBody({ facetValueIds: ['1', '2'] }, searchConfig);
         expect(result.query).toEqual({
             bool: {
-                filter:  [
-                    { term: { facetValueIds: '1' } },
-                    { term: { facetValueIds: '2' } },
-                ],
+                filter: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
             },
         });
     });
 
     it('collectionId', () => {
-        const result = buildElasticBody({ collectionId: '1' });
+        const result = buildElasticBody({ collectionId: '1' }, searchConfig);
         expect(result.query).toEqual({
             bool: {
-                filter:  [
-                    { term: { collectionIds: '1' } },
-                ],
+                filter: [{ term: { collectionIds: '1' } }],
             },
         });
     });
 
     it('paging', () => {
-        const result = buildElasticBody({ skip: 20, take: 10 });
+        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig);
         expect(result).toEqual({
             from: 20,
             size: 10,
@@ -61,57 +54,56 @@ describe('buildElasticBody()', () => {
 
     describe('sorting', () => {
         it('name', () => {
-            const result = buildElasticBody({ sort: { name: SortOrder.DESC } });
-            expect(result.sort).toEqual([
-                { productName: { order: 'desc' } },
-            ]);
+            const result = buildElasticBody({ sort: { name: SortOrder.DESC } }, searchConfig);
+            expect(result.sort).toEqual([{ productName: { order: 'desc' } }]);
         });
 
         it('price', () => {
-            const result = buildElasticBody({ sort: { price: SortOrder.ASC } });
-            expect(result.sort).toEqual([
-                { price: { order: 'asc' } },
-            ]);
+            const result = buildElasticBody({ sort: { price: SortOrder.ASC } }, searchConfig);
+            expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
 
         it('grouped price', () => {
-            const result = buildElasticBody({ sort: { price: SortOrder.ASC }, groupByProduct: true });
-            expect(result.sort).toEqual([
-                { priceMin: { order: 'asc' } },
-            ]);
+            const result = buildElasticBody(
+                { sort: { price: SortOrder.ASC }, groupByProduct: true },
+                searchConfig,
+            );
+            expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
         });
     });
 
     it('enabledOnly true', () => {
-        const result = buildElasticBody({}, true);
+        const result = buildElasticBody({}, searchConfig, true);
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    { term: { enabled: true } },
-                ],
+                filter: [{ term: { enabled: true } }],
             },
         });
     });
 
     it('enabledOnly false', () => {
-        const result = buildElasticBody({}, false);
+        const result = buildElasticBody({}, searchConfig, false);
         expect(result.query).toEqual({
             bool: {},
         });
     });
 
     it('combined inputs', () => {
-        const result = buildElasticBody({
-            term: 'test',
-            take: 25,
-            skip: 0,
-            sort: {
-                name: SortOrder.DESC,
+        const result = buildElasticBody(
+            {
+                term: 'test',
+                take: 25,
+                skip: 0,
+                sort: {
+                    name: SortOrder.DESC,
+                },
+                groupByProduct: true,
+                collectionId: '42',
+                facetValueIds: ['6', '7'],
             },
-            groupByProduct: true,
-            collectionId: '42',
-            facetValueIds: ['6', '7'],
-        }, true);
+            searchConfig,
+            true,
+        );
 
         expect(result).toEqual({
             from: 0,
@@ -123,12 +115,7 @@ describe('buildElasticBody()', () => {
                             multi_match: {
                                 query: 'test',
                                 type: 'best_fields',
-                                fields: [
-                                    'productName',
-                                    'productVariantName',
-                                    'description',
-                                    'sku',
-                                ],
+                                fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
                             },
                         },
                     ],
@@ -140,9 +127,52 @@ describe('buildElasticBody()', () => {
                     ],
                 },
             },
-            sort: [
-                { productName: { order: 'desc' } },
-            ],
+            sort: [{ productName: { order: 'desc' } }],
+        });
+    });
+
+    it('multiMatchType option', () => {
+        const result = buildElasticBody({ term: 'test' }, { ...searchConfig, multiMatchType: 'phrase' });
+        expect(result.query).toEqual({
+            bool: {
+                must: [
+                    {
+                        multi_match: {
+                            query: 'test',
+                            type: 'phrase',
+                            fields: ['productName^1', 'productVariantName^1', 'description^1', 'sku^1'],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('boostFields option', () => {
+        const config: DeepRequired<SearchConfig> = {
+            ...searchConfig,
+            ...{
+                boostFields: {
+                    description: 2,
+                    productName: 3,
+                    productVariantName: 4,
+                    sku: 5,
+                },
+            },
+        };
+        const result = buildElasticBody({ term: 'test' }, config);
+        expect(result.query).toEqual({
+            bool: {
+                must: [
+                    {
+                        multi_match: {
+                            query: 'test',
+                            type: 'best_fields',
+                            fields: ['productName^3', 'productVariantName^4', 'description^2', 'sku^5'],
+                        },
+                    },
+                ],
+            },
         });
     });
 });

@@ -1,11 +1,17 @@
 import { SearchInput, SortOrder } from '@vendure/common/lib/generated-types';
+import { DeepRequired } from '@vendure/core';
 
+import { SearchConfig } from './options';
 import { SearchRequestBody } from './types';
 
 /**
  * Given a SearchInput object, returns the corresponding Elasticsearch body.
  */
-export function buildElasticBody(input: SearchInput, enabledOnly: boolean = false): SearchRequestBody {
+export function buildElasticBody(
+    input: SearchInput,
+    searchConfig: DeepRequired<SearchConfig>,
+    enabledOnly: boolean = false,
+): SearchRequestBody {
     const { term, facetValueIds, collectionId, groupByProduct, skip, take, sort } = input;
     const query: any = {
         bool: {},
@@ -15,12 +21,12 @@ export function buildElasticBody(input: SearchInput, enabledOnly: boolean = fals
             {
                 multi_match: {
                     query: term,
-                    type: 'best_fields',
+                    type: searchConfig.multiMatchType,
                     fields: [
-                        'productName',
-                        'productVariantName',
-                        'description',
-                        'sku',
+                        `productName^${searchConfig.boostFields.productName}`,
+                        `productVariantName^${searchConfig.boostFields.productVariantName}`,
+                        `description^${searchConfig.boostFields.description}`,
+                        `sku^${searchConfig.boostFields.sku}`,
                     ],
                 },
             },
@@ -29,30 +35,26 @@ export function buildElasticBody(input: SearchInput, enabledOnly: boolean = fals
     if (facetValueIds && facetValueIds.length) {
         ensureBoolFilterExists(query);
         query.bool.filter = query.bool.filter.concat(
-            facetValueIds.map(id => ({ term: { facetValueIds: id }})),
+            facetValueIds.map(id => ({ term: { facetValueIds: id } })),
         );
     }
     if (collectionId) {
         ensureBoolFilterExists(query);
-        query.bool.filter.push(
-            { term: { collectionIds: collectionId } },
-        );
+        query.bool.filter.push({ term: { collectionIds: collectionId } });
     }
     if (enabledOnly) {
         ensureBoolFilterExists(query);
-        query.bool.filter.push(
-            { term: { enabled: true } },
-        );
+        query.bool.filter.push({ term: { enabled: true } });
     }
 
     const sortArray = [];
     if (sort) {
         if (sort.name) {
-            sortArray.push({ productName: { order: (sort.name === SortOrder.ASC) ? 'asc' : 'desc' } });
+            sortArray.push({ productName: { order: sort.name === SortOrder.ASC ? 'asc' : 'desc' } });
         }
         if (sort.price) {
             const priceField = groupByProduct ? 'priceMin' : 'price';
-            sortArray.push({ [priceField]: { order: (sort.price === SortOrder.ASC) ? 'asc' : 'desc' } });
+            sortArray.push({ [priceField]: { order: sort.price === SortOrder.ASC ? 'asc' : 'desc' } });
         }
     }
     return {
@@ -63,7 +65,7 @@ export function buildElasticBody(input: SearchInput, enabledOnly: boolean = fals
     };
 }
 
-function ensureBoolFilterExists(query: { bool: { filter?: any; } }) {
+function ensureBoolFilterExists(query: { bool: { filter?: any } }) {
     if (!query.bool.filter) {
         query.bool.filter = [];
     }

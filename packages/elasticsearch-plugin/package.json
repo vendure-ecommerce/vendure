@@ -15,7 +15,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.1.0"
+    "@elastic/elasticsearch": "^7.1.0",
+    "deepmerge": "^4.0.0"
   },
   "devDependencies": {
     "@vendure/common": "^0.1.2-beta.12",
