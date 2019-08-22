@@ -13,6 +13,20 @@ export type DeepPartial<T> = {
 };
 // tslint:enable:no-shadowed-variable
 
+// tslint:disable:ban-types
+/**
+ * A recursive implementation of Required<T>.
+ * Source: https://github.com/microsoft/TypeScript/issues/15012#issuecomment-365453623
+ */
+export type DeepRequired<T, U extends object | undefined = undefined> = T extends object
+    ? {
+          [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
+              ? NonNullable<T[P]>
+              : DeepRequired<NonNullable<T[P]>, U>
+      }
+    : T;
+// tslint:enable:ban-types
+
 /**
  * A type representing the type rather than instance of a class.
  */
