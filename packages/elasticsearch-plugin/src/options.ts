@@ -111,7 +111,7 @@ export interface SearchConfig {
      * }
      * ```
      */
-    priceRangeBucketInterval: number;
+    priceRangeBucketInterval?: number;
 }
 
 /**
