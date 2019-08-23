@@ -24,10 +24,11 @@ import {
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { ElasticsearchOptions } from './options';
 import {
+    ElasticSearchInput,
     ElasticSearchResponse,
     ProductIndexItem,
     SearchHit,
-    SearchPriceRange,
+    SearchPriceData,
     SearchResponseBody,
     VariantIndexItem,
 } from './types';
@@ -72,7 +73,7 @@ export class ElasticsearchService {
      */
     async search(
         ctx: RequestContext,
-        input: SearchInput,
+        input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'priceRange'>> {
         const { indexPrefix } = this.options;
@@ -106,7 +107,7 @@ export class ElasticsearchService {
      */
     async facetValues(
         ctx: RequestContext,
-        input: SearchInput,
+        input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const { indexPrefix } = this.options;
@@ -138,7 +139,7 @@ export class ElasticsearchService {
         });
     }
 
-    async priceRange(ctx: RequestContext, input: SearchInput): Promise<SearchPriceRange> {
+    async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {
         const { indexPrefix, searchConfig } = this.options;
         const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(input, searchConfig, true);
@@ -196,10 +197,14 @@ export class ElasticsearchService {
         });
 
         return {
-            min: aggregations.minPrice.value,
-            minWithTax: aggregations.minPriceWithTax.value,
-            max: aggregations.maxPrice.value,
-            maxWithTax: aggregations.maxPriceWithTax.value,
+            range: {
+                min: aggregations.minPrice.value || 0,
+                max: aggregations.maxPrice.value || 0,
+            },
+            rangeWithTax: {
+                min: aggregations.minPriceWithTax.value || 0,
+                max: aggregations.maxPriceWithTax.value || 0,
+            },
             buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
             bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
         };

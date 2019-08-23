@@ -175,4 +175,136 @@ describe('buildElasticBody()', () => {
             },
         });
     });
+
+    describe('price ranges', () => {
+        it('not grouped by product', () => {
+            const result = buildElasticBody(
+                { priceRange: { min: 500, max: 1500 }, groupByProduct: false },
+                searchConfig,
+            );
+            expect(result.query).toEqual({
+                bool: {
+                    filter: [
+                        {
+                            range: {
+                                price: {
+                                    gte: 500,
+                                    lte: 1500,
+                                },
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+
+        it('not grouped by product, with tax', () => {
+            const result = buildElasticBody(
+                { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: false },
+                searchConfig,
+            );
+            expect(result.query).toEqual({
+                bool: {
+                    filter: [
+                        {
+                            range: {
+                                priceWithTax: {
+                                    gte: 500,
+                                    lte: 1500,
+                                },
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+
+        it('grouped by product', () => {
+            const result = buildElasticBody(
+                { priceRange: { min: 500, max: 1500 }, groupByProduct: true },
+                searchConfig,
+            );
+            expect(result.query).toEqual({
+                bool: {
+                    filter: [
+                        {
+                            range: {
+                                priceMin: {
+                                    gte: 500,
+                                },
+                            },
+                        },
+                        {
+                            range: {
+                                priceMax: {
+                                    lte: 1500,
+                                },
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+
+        it('grouped by product, with tax', () => {
+            const result = buildElasticBody(
+                { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: true },
+                searchConfig,
+            );
+            expect(result.query).toEqual({
+                bool: {
+                    filter: [
+                        {
+                            range: {
+                                priceWithTaxMin: {
+                                    gte: 500,
+                                },
+                            },
+                        },
+                        {
+                            range: {
+                                priceWithTaxMax: {
+                                    lte: 1500,
+                                },
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+
+        it('combined with collectionId and facetValueIds filters', () => {
+            const result = buildElasticBody(
+                {
+                    priceRangeWithTax: { min: 500, max: 1500 },
+                    groupByProduct: true,
+                    collectionId: '3',
+                    facetValueIds: ['5'],
+                },
+                searchConfig,
+            );
+            expect(result.query).toEqual({
+                bool: {
+                    filter: [
+                        { term: { facetValueIds: '5' } },
+                        { term: { collectionIds: '3' } },
+                        {
+                            range: {
+                                priceWithTaxMin: {
+                                    gte: 500,
+                                },
+                            },
+                        },
+                        {
+                            range: {
+                                priceWithTaxMax: {
+                                    lte: 1500,
+                                },
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+    });
 });

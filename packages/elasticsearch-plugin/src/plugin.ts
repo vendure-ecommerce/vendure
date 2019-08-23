@@ -26,14 +26,12 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
 
 const schemaExtension = gql`
     extend type SearchResponse {
-        priceRange: SearchResponsePriceRange!
+        prices: SearchResponsePriceData!
     }
 
-    type SearchResponsePriceRange {
-        min: Int!
-        minWithTax: Int!
-        max: Int!
-        maxWithTax: Int!
+    type SearchResponsePriceData {
+        range: PriceRange!
+        rangeWithTax: PriceRange!
         buckets: [PriceRangeBucket!]!
         bucketsWithTax: [PriceRangeBucket!]!
     }
@@ -41,6 +39,16 @@ const schemaExtension = gql`
     type PriceRangeBucket {
         to: Int!
         count: Int!
+    }
+
+    extend input SearchInput {
+        priceRange: PriceRangeInput
+        priceRangeWithTax: PriceRangeInput
+    }
+
+    input PriceRangeInput {
+        min: Int!
+        max: Int!
     }
 `;
 
@@ -77,20 +85,18 @@ const schemaExtension = gql`
  * ```
  *
  * ## Search API Extensions
- * This plugin extends the default search API, allowing richer querying of your product data.
+ * This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
  *
  * The [SearchResponse](/docs/graphql-api/admin/object-types/#searchresponse) type is extended with information
  * about price ranges in the result set:
  * ```SDL
  * extend type SearchResponse {
- *     priceRange: SearchResponsePriceRange!
+ *     prices: SearchResponsePriceData!
  * }
  *
- * type SearchResponsePriceRange {
- *     min: Int!
- *     minWithTax: Int!
- *     max: Int!
- *     maxWithTax: Int!
+ * type SearchResponsePriceData {
+ *     range: PriceRange!
+ *     rangeWithTax: PriceRange!
  *     buckets: [PriceRangeBucket!]!
  *     bucketsWithTax: [PriceRangeBucket!]!
  * }
@@ -99,19 +105,38 @@ const schemaExtension = gql`
  *     to: Int!
  *     count: Int!
  * }
+ *
+ * extend input SearchInput {
+ *     priceRange: PriceRangeInput
+ *     priceRangeWithTax: PriceRangeInput
+ * }
+ *
+ * input PriceRangeInput {
+ *     min: Int!
+ *     max: Int!
+ * }
  * ```
  *
- * This `SearchResponsePriceRange` type allows you to query data about the range of prices in the result set.
+ * This `SearchResponsePriceData` type allows you to query data about the range of prices in the result set.
  *
  * ## Example Request & Response
  *
  * ```SDL
  * {
- *   search (input: { term: "table easel", groupByProduct: true }){
+ *   search (input: {
+ *     term: "table easel"
+ *     groupByProduct: true
+ *     priceRange: {
+         min: 500
+         max: 7000
+       }
+ *   }) {
  *     totalItems
- *     priceRange {
- *       min
- *       max
+ *     prices {
+ *       range {
+ *         min
+ *         max
+ *       }
  *       buckets {
  *         to
  *         count
@@ -136,9 +161,11 @@ const schemaExtension = gql`
  *  "data": {
  *    "search": {
  *      "totalItems": 9,
- *      "priceRange": {
- *        "min": 999,
- *        "max": 6396,
+ *      "prices": {
+ *        "range": {
+ *          "min": 999,
+ *          "max": 6396,
+ *        },
  *        "buckets": [
  *          {
  *            "to": 1000,

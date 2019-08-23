@@ -1,15 +1,24 @@
-import { CurrencyCode, SearchResponse, SearchResult } from '@vendure/common/lib/generated-types';
+import {
+    CurrencyCode,
+    PriceRange,
+    SearchInput,
+    SearchResponse,
+    SearchResult,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
-export type ElasticSearchResponse = SearchResponse & {
-    priceRange: SearchPriceRange;
+export type ElasticSearchInput = SearchInput & {
+    priceRange?: PriceRange;
+    priceRangeWithTax?: PriceRange;
 };
 
-export type SearchPriceRange = {
-    min: number;
-    minWithTax: number;
-    max: number;
-    maxWithTax: number;
+export type ElasticSearchResponse = SearchResponse & {
+    priceRange: SearchPriceData;
+};
+
+export type SearchPriceData = {
+    range: PriceRange;
+    rangeWithTax: PriceRange;
     buckets: PriceRangeBucket[];
     bucketsWithTax: PriceRangeBucket[];
 };

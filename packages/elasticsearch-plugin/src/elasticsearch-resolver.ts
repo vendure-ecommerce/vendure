@@ -10,7 +10,7 @@ import { Omit } from '@vendure/common/lib/omit';
 import { Allow, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
 
 import { ElasticsearchService } from './elasticsearch.service';
-import { SearchPriceRange } from './types';
+import { ElasticSearchInput, SearchPriceData } from './types';
 
 @Resolver('SearchResponse')
 export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'> {
@@ -31,16 +31,16 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
     @ResolveProperty()
     async facetValues(
         @Ctx() ctx: RequestContext,
-        @Parent() parent: { input: SearchInput },
+        @Parent() parent: { input: ElasticSearchInput },
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         return this.elasticsearchService.facetValues(ctx, parent.input, true);
     }
 
     @ResolveProperty()
-    async priceRange(
+    async prices(
         @Ctx() ctx: RequestContext,
-        @Parent() parent: { input: SearchInput },
-    ): Promise<SearchPriceRange> {
+        @Parent() parent: { input: ElasticSearchInput },
+    ): Promise<SearchPriceData> {
         return this.elasticsearchService.priceRange(ctx, parent.input);
     }
 }
