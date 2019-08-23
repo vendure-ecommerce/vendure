@@ -4,7 +4,7 @@ exports[`Collection resolver createCollection creates a root collection 1`] = `
 Object {
   "assets": Array [
     Object {
-      "fileSize": 4,
+      "fileSize": 1680,
       "id": "T_1",
       "mimeType": "image/jpeg",
       "name": "derick-david-409858-unsplash.jpg",
@@ -13,7 +13,7 @@ Object {
       "type": "IMAGE",
     },
     Object {
-      "fileSize": 4,
+      "fileSize": 1680,
       "id": "T_2",
       "mimeType": "image/jpeg",
       "name": "alexandru-acea-686569-unsplash.jpg",
@@ -25,7 +25,7 @@ Object {
   "children": Array [],
   "description": "",
   "featuredAsset": Object {
-    "fileSize": 4,
+    "fileSize": 1680,
     "id": "T_1",
     "mimeType": "image/jpeg",
     "name": "derick-david-409858-unsplash.jpg",
@@ -73,7 +73,7 @@ exports[`Collection resolver updateCollection 1`] = `
 Object {
   "assets": Array [
     Object {
-      "fileSize": 4,
+      "fileSize": 1680,
       "id": "T_1",
       "mimeType": "image/jpeg",
       "name": "derick-david-409858-unsplash.jpg",
@@ -85,7 +85,7 @@ Object {
   "children": Array [],
   "description": "Apple stuff ",
   "featuredAsset": Object {
-    "fileSize": 4,
+    "fileSize": 1680,
     "id": "T_1",
     "mimeType": "image/jpeg",
     "name": "derick-david-409858-unsplash.jpg",

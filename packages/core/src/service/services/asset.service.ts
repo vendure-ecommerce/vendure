@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAssetInput } from '@vendure/common/lib/generated-types';
+import { AssetType, CreateAssetInput } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { ReadStream } from 'fs-extra';
+import sizeOf from 'image-size';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
@@ -12,6 +13,7 @@ import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { Asset } from '../../entity/asset/asset.entity';
 import { EntityWithAssets } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -58,9 +60,11 @@ export class AssetService {
 
     async getFeaturedAsset<T extends EntityWithAssets>(entity: T): Promise<Asset | undefined> {
         const entityType = Object.getPrototypeOf(entity).constructor;
-        const entityWithFeaturedAsset = await this.connection.getRepository<EntityWithAssets>(entityType).findOne(entity.id, {
-            relations: ['featuredAsset'],
-        });
+        const entityWithFeaturedAsset = await this.connection
+            .getRepository<EntityWithAssets>(entityType)
+            .findOne(entity.id, {
+                relations: ['featuredAsset'],
+            });
         return entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset;
     }
 
@@ -100,9 +104,13 @@ export class AssetService {
             previewFileName,
             preview,
         );
+        const type = getAssetType(mimetype);
+        const { width, height } = this.getDimensions(type === AssetType.IMAGE ? sourceFile : preview);
 
         const asset = new Asset({
-            type: getAssetType(mimetype),
+            type,
+            width,
+            height,
             name: sourceFileName,
             fileSize: sourceFile.byteLength,
             mimeType: mimetype,
@@ -136,5 +144,15 @@ export class AssetService {
             outputFileName = generateNameFn(inputFileName, outputFileName);
         } while (await assetOptions.assetStorageStrategy.fileExists(outputFileName));
         return outputFileName;
+    }
+
+    private getDimensions(imageFile: Buffer): { width: number; height: number } {
+        try {
+            const { width, height } = sizeOf(imageFile);
+            return { width, height };
+        } catch (e) {
+            Logger.error(`Could not determine Asset dimensions: ` + e);
+            return { width: 0, height: 0 };
+        }
     }
 }

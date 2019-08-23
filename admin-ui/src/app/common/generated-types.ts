@@ -111,6 +111,8 @@ export type Asset = Node & {
   type: AssetType,
   fileSize: Scalars['Int'],
   mimeType: Scalars['String'],
+  width: Scalars['Int'],
+  height: Scalars['Int'],
   source: Scalars['String'],
   preview: Scalars['String'],
 };
@@ -122,6 +124,8 @@ export type AssetFilterParameter = {
   type?: Maybe<StringOperators>,
   fileSize?: Maybe<NumberOperators>,
   mimeType?: Maybe<StringOperators>,
+  width?: Maybe<NumberOperators>,
+  height?: Maybe<NumberOperators>,
   source?: Maybe<StringOperators>,
   preview?: Maybe<StringOperators>,
 };
@@ -146,6 +150,8 @@ export type AssetSortParameter = {
   name?: Maybe<SortOrder>,
   fileSize?: Maybe<SortOrder>,
   mimeType?: Maybe<SortOrder>,
+  width?: Maybe<SortOrder>,
+  height?: Maybe<SortOrder>,
   source?: Maybe<SortOrder>,
   preview?: Maybe<SortOrder>,
 };

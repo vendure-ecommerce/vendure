@@ -26,6 +26,10 @@ export class Asset extends VendureEntity {
 
     @Column() mimeType: string;
 
+    @Column({ default: 0 }) width: number;
+
+    @Column({ default: 0 }) height: number;
+
     @Column() fileSize: number;
 
     @Column() source: string;

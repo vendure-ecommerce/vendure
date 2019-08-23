@@ -3,12 +3,14 @@ import { Readable, Stream, Writable } from 'stream';
 
 import { AssetStorageStrategy } from '../../src/config/asset-storage-strategy/asset-storage-strategy';
 
+import { getTestImageBuffer } from './testing-asset-preview-strategy';
+
 /**
  * A mock storage strategy which does not actually persist the assets anywhere.
  */
 export class TestingAssetStorageStrategy implements AssetStorageStrategy {
     readFileToBuffer(identifier: string): Promise<Buffer> {
-        return Promise.resolve(Buffer.from('test'));
+        return Promise.resolve(getTestImageBuffer());
     }
 
     readFileToStream(identifier: string): Promise<Stream> {

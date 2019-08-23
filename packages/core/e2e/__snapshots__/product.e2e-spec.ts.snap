@@ -64,7 +64,7 @@ exports[`Product resolver product query returns expected properties 1`] = `
 Object {
   "assets": Array [
     Object {
-      "fileSize": 4,
+      "fileSize": 1680,
       "id": "T_2",
       "mimeType": "image/jpeg",
       "name": "alexandru-acea-686569-unsplash.jpg",
@@ -96,7 +96,7 @@ Object {
     },
   ],
   "featuredAsset": Object {
-    "fileSize": 4,
+    "fileSize": 1680,
     "id": "T_2",
     "mimeType": "image/jpeg",
     "name": "alexandru-acea-686569-unsplash.jpg",

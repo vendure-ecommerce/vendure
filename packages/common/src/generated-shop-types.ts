@@ -81,6 +81,8 @@ export type Asset = Node & {
     type: AssetType;
     fileSize: Scalars['Int'];
     mimeType: Scalars['String'];
+    width: Scalars['Int'];
+    height: Scalars['Int'];
     source: Scalars['String'];
     preview: Scalars['String'];
 };

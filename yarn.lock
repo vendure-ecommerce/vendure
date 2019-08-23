@@ -1720,6 +1720,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/image-size@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.npmjs.org/@types/image-size/-/image-size-0.7.0.tgz#a785302cdaedad7dfd985c5f2f6f721467b95de9"
+  integrity sha512-WkmNFWsC7NggeNC+2LxFJc6we3PiPf72NJUpezGNPbSe5zZ9sBcscQnSqQjYAyax3QNCyT42kNdAeT2tTvQMcQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/is-glob@4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@types/is-glob/-/is-glob-4.0.1.tgz#a93eec1714172c8eb3225a1cc5eb88c2477b7d00"
@@ -5841,7 +5848,7 @@ ignore@^5.1.1:
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.1.2.tgz#e28e584d43ad7e92f96995019cc43b9e1ac49558"
   integrity sha512-vdqWBp7MyzdmHkkRWV5nY+PfGRbYbahfuvsBCh277tq+w9zyNi7h5CYJCK0kmzti9kU+O/cB7sE8HvKv6aXAKQ==
 
-image-size@^0.7.3:
+image-size@^0.7.3, image-size@^0.7.4:
   version "0.7.4"
   resolved "https://registry.npmjs.org/image-size/-/image-size-0.7.4.tgz#092c1e541a93511917bfc957a1fc7add21c72e87"
   integrity sha512-GqPgxs+VkOr12aWwjSkyRzf5atzObWpFtiRuDgxCl2I/SDpZOKZFRD3iIAeAN6/usmn8SeLWRt7a8JRYK0Whbw==

@@ -6,6 +6,8 @@ type Asset implements Node {
     type: AssetType!
     fileSize: Int!
     mimeType: String!
+    width: Int!
+    height: Int!
     source: String!
     preview: String!
 }
