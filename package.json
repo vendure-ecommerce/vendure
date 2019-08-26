@@ -1,6 +1,6 @@
 {
   "name": "vendure",
-  "version": "0.0.0",
+  "version": "10.2.2",
   "private": true,
   "scripts": {
     "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
@@ -27,7 +27,8 @@
     "build": "lerna run build",
     "check-imports": "ts-node scripts/check-imports.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
-    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push"
+    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push",
+    "publish-local": "lerna version --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
