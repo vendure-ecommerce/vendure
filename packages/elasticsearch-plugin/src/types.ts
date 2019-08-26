@@ -98,7 +98,7 @@ export type SearchResponseBody<T = any> = {
 
 export type BulkOperationType = 'index' | 'update' | 'delete';
 export type BulkOperation = { [operation in BulkOperationType]?: { _id: string } };
-export type BulkOperationDoc<T> = T | { doc: T };
+export type BulkOperationDoc<T> = T | { doc: T; doc_as_upsert?: boolean };
 export type BulkResponseResult = {
     [operation in BulkOperationType]?: {
         _index: string;
