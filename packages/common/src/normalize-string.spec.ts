@@ -23,7 +23,7 @@ describe('normalizeString()', () => {
     it('strips non-alphanumeric characters', () => {
         expect(normalizeString('hi!!!')).toBe('hi');
         expect(normalizeString('who? me?')).toBe('who me');
-        expect(normalizeString('!"£$%^&*()+[]{};:@#~?/,|\\><`¬')).toBe('');
+        expect(normalizeString('!"£$%^&*()+[]{};:@#~?/,|\\><`¬\'=')).toBe('');
     });
 
     it('allows a subset of non-alphanumeric characters to pass through', () => {
