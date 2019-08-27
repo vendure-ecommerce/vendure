@@ -8,7 +8,6 @@ import { ServiceModule } from '../service/service.module';
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
 import { RequestContextService } from './common/request-context.service';
 import { configureGraphQLModule } from './config/configure-graphql-module';
-import { AssetInterceptor } from './middleware/asset-interceptor';
 import { AuthGuard } from './middleware/auth-guard';
 import { IdInterceptor } from './middleware/id-interceptor';
 import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
@@ -47,10 +46,6 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         {
             provide: APP_GUARD,
             useClass: AuthGuard,
-        },
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: AssetInterceptor,
         },
         {
             provide: APP_INTERCEPTOR,

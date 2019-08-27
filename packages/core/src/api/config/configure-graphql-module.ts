@@ -16,6 +16,7 @@ import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
 import { IdCodecService } from '../common/id-codec.service';
+import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
@@ -141,7 +142,11 @@ async function createGraphQLOptions(
         context: (req: any) => req,
         // This is handled by the Express cors plugin
         cors: false,
-        plugins: [new IdCodecPlugin(idCodecService), new TranslateErrorsPlugin(i18nService)],
+        plugins: [
+            new IdCodecPlugin(idCodecService),
+            new TranslateErrorsPlugin(i18nService),
+            new AssetInterceptorPlugin(configService),
+        ],
     } as GqlModuleOptions;
 
     /**

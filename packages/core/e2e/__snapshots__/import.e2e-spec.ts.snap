@@ -7,10 +7,14 @@ Array [
       Object {
         "id": "T_1",
         "name": "pps1.jpg",
+        "preview": "test-url/test-assets/pps1__preview.jpg",
+        "source": "test-url/test-assets/pps1.jpg",
       },
       Object {
         "id": "T_2",
         "name": "pps2.jpg",
+        "preview": "test-url/test-assets/pps2__preview.jpg",
+        "source": "test-url/test-assets/pps2.jpg",
       },
     ],
     "description": "A great device for stretching paper.",
@@ -18,6 +22,8 @@ Array [
     "featuredAsset": Object {
       "id": "T_1",
       "name": "pps1.jpg",
+      "preview": "test-url/test-assets/pps1__preview.jpg",
+      "source": "test-url/test-assets/pps1.jpg",
     },
     "id": "T_1",
     "name": "Perfect Paper Stretcher",
@@ -244,6 +250,8 @@ Array [
           Object {
             "id": "T_3",
             "name": "box-of-8.jpg",
+            "preview": "test-url/test-assets/box-of-8__preview.jpg",
+            "source": "test-url/test-assets/box-of-8.jpg",
           },
         ],
         "facetValues": Array [
@@ -260,6 +268,8 @@ Array [
         "featuredAsset": Object {
           "id": "T_3",
           "name": "box-of-8.jpg",
+          "preview": "test-url/test-assets/box-of-8__preview.jpg",
+          "source": "test-url/test-assets/box-of-8.jpg",
         },
         "id": "T_5",
         "name": "Giotto Mega Pencils Box of 8",
@@ -286,6 +296,8 @@ Array [
           Object {
             "id": "T_4",
             "name": "box-of-12.jpg",
+            "preview": "test-url/test-assets/box-of-12__preview.jpg",
+            "source": "test-url/test-assets/box-of-12.jpg",
           },
         ],
         "facetValues": Array [
@@ -302,6 +314,8 @@ Array [
         "featuredAsset": Object {
           "id": "T_4",
           "name": "box-of-12.jpg",
+          "preview": "test-url/test-assets/box-of-12__preview.jpg",
+          "source": "test-url/test-assets/box-of-12.jpg",
         },
         "id": "T_6",
         "name": "Giotto Mega Pencils Box of 12",

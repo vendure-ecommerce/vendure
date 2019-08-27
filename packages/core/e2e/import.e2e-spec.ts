@@ -57,10 +57,14 @@ describe('Import resolver', () => {
                             featuredAsset {
                                 id
                                 name
+                                preview
+                                source
                             }
                             assets {
                                 id
                                 name
+                                preview
+                                source
                             }
                             optionGroups {
                                 id
@@ -91,10 +95,14 @@ describe('Import resolver', () => {
                                 assets {
                                     id
                                     name
+                                    preview
+                                    source
                                 }
                                 featuredAsset {
                                     id
                                     name
+                                    preview
+                                    source
                                 }
                                 facetValues {
                                     id
@@ -109,7 +117,7 @@ describe('Import resolver', () => {
                                 trackInventory
                                 stockMovements {
                                     items {
-                                        ...on StockMovement {
+                                        ... on StockMovement {
                                             id
                                             type
                                             quantity
