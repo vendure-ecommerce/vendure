@@ -1,1 +1,14 @@
 @import "variables";
+
+.search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.search-input {
+    margin-left: 6px;
+    margin-top: 6px;
+    min-width: 300px;
+}
