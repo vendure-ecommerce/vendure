@@ -89,11 +89,14 @@ import { BaseDataService } from './base-data.service';
 export class SettingsDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getCountries(take: number = 10, skip: number = 0) {
+    getCountries(take: number = 10, skip: number = 0, filterTerm?: string) {
         return this.baseDataService.query<GetCountryList.Query, GetCountryList.Variables>(GET_COUNTRY_LIST, {
             options: {
                 take,
                 skip,
+                filter: {
+                    name: filterTerm ? { contains: filterTerm } : null,
+                },
             },
         });
     }

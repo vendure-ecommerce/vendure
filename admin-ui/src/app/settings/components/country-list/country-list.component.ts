@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { map, mergeMap, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { Country, DeletionResult, GetCountryList, GetZones, Zone } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -16,6 +17,7 @@ import { ZoneSelectorDialogComponent } from '../zone-selector-dialog/zone-select
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryListComponent implements OnInit, OnDestroy {
+    searchTerm = new FormControl('');
     countriesWithZones$: Observable<Array<GetCountryList.Items & { zones: GetZones.Zones[] }>>;
     zones$: Observable<GetZones.Zones[]>;
 
@@ -30,7 +32,9 @@ export class CountryListComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const countries$ = this.dataService.settings.getCountries(9999, 0).stream$.pipe(
+        const countries$ = this.searchTerm.valueChanges.pipe(
+            startWith(null),
+            switchMap(term => this.dataService.settings.getCountries(9999, 0, term).stream$),
             tap(data => (this.countries = data.countries.items)),
             map(data => data.countries.items),
         );

@@ -1,5 +1,12 @@
 <vdr-action-bar>
     <vdr-ab-left>
+        <input
+            type="text"
+            name="searchTerm"
+            [formControl]="searchTerm"
+            [placeholder]="'settings.search-country-by-name' | translate"
+            class="clr-input search-input"
+        />
         <div *ngIf="selectedCountryIds.length">
             <button class="btn btn-sm" (click)="addCountriesToZone()">
                 {{ 'settings.add-countries-to-zone' | translate }}

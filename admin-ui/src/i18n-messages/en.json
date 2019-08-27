@@ -516,6 +516,7 @@
     "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
     "roles": "Roles",
     "search-by-product-name-or-sku": "Search by product name or SKU",
+    "search-country-by-name": "Search countries by name",
     "section": "Section",
     "select-zone": "Select zone",
     "settings": "Settings",
