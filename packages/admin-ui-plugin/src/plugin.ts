@@ -5,7 +5,7 @@ import {
     createProxyHandler,
     OnVendureBootstrap,
     OnVendureClose,
-    VendureConfig,
+    RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
 import express from 'express';
@@ -82,7 +82,7 @@ export interface AdminUiOptions {
  * @docsCategory AdminUiPlugin
  */
 @VendurePlugin({
-    configuration: (config: Required<VendureConfig>) => AdminUiPlugin.configure(config),
+    configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
@@ -98,7 +98,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /** @internal */
-    static async configure(config: Required<VendureConfig>): Promise<Required<VendureConfig>> {
+    static async configure(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
         const route = 'admin';
         config.middleware.push({
             handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),

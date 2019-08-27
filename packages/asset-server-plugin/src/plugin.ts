@@ -5,7 +5,7 @@ import {
     LocalAssetStorageStrategy,
     OnVendureBootstrap,
     OnVendureClose,
-    VendureConfig,
+    RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
 import express, { NextFunction, Request, Response } from 'express';
@@ -186,7 +186,7 @@ export interface AssetServerOptions {
  * @docsCategory AssetServerPlugin
  */
 @VendurePlugin({
-    configuration: (config: Required<VendureConfig>) => AssetServerPlugin.configure(config),
+    configuration: config => AssetServerPlugin.configure(config),
 })
 export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private server: Server;
@@ -211,7 +211,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /** @internal */
-    static configure(config: Required<VendureConfig>) {
+    static configure(config: RuntimeVendureConfig) {
         this.assetStorage = this.createAssetStorageStrategy(this.options);
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth || 1600,

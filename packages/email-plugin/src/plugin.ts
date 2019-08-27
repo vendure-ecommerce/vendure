@@ -6,8 +6,8 @@ import {
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    RuntimeVendureConfig,
     Type,
-    VendureConfig,
     VendurePlugin,
 } from '@vendure/core';
 import fs from 'fs-extra';
@@ -134,7 +134,7 @@ import {
  */
 @VendurePlugin({
     imports: [EventBusModule],
-    configuration: (config: Required<VendureConfig>) => EmailPlugin.configure(config),
+    configuration: config => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
@@ -156,9 +156,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /** @internal */
-    static configure(
-        config: Required<VendureConfig>,
-    ): Required<VendureConfig> | Promise<Required<VendureConfig>> {
+    static configure(config: RuntimeVendureConfig): RuntimeVendureConfig {
         if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
             const route = 'mailbox';
             config.middleware.push({
