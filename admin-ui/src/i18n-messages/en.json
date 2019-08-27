@@ -166,6 +166,7 @@
     "postal-code": "Postal code",
     "province": "Province",
     "registered": "Registered",
+    "search-customers-by-email": "Search by email address",
     "set-as-default-billing-address": "Set as default billing",
     "set-as-default-shipping-address": "Set as default shipping",
     "street-line-1": "Street line 1",

@@ -1,4 +1,13 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <input
+            type="text"
+            name="searchTerm"
+            [formControl]="searchTerm"
+            [placeholder]="'customer.search-customers-by-email' | translate"
+            class="clr-input search-input"
+        />
+    </vdr-ab-left>
     <vdr-ab-right>
         <a class="btn btn-primary" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
