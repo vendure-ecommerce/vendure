@@ -5,7 +5,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
 import { DocumentNode } from 'graphql';
 
-import { VendureConfig } from '../config/vendure-config';
+import { RuntimeVendureConfig } from '../config/vendure-config';
 
 import { PLUGIN_METADATA } from './plugin-metadata';
 
@@ -87,8 +87,8 @@ export interface APIExtensionDefinition {
  * @docsPage VendurePluginMetadata
  */
 export type PluginConfigurationFn = (
-    config: Required<VendureConfig>,
-) => Required<VendureConfig> | Promise<Required<VendureConfig>>;
+    config: RuntimeVendureConfig,
+) => RuntimeVendureConfig | Promise<RuntimeVendureConfig>;
 
 /**
  * @description

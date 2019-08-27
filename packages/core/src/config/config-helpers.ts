@@ -4,7 +4,7 @@ import { ReadOnlyRequired } from '../common/types/common-types';
 
 import { defaultConfig } from './default-config';
 import { mergeConfig } from './merge-config';
-import { VendureConfig } from './vendure-config';
+import { RuntimeVendureConfig, VendureConfig } from './vendure-config';
 
 let activeConfig = defaultConfig;
 
@@ -21,7 +21,7 @@ export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
  * used before bootstrapping the app. In all other contexts, the {@link ConfigService}
  * should be used to access config settings.
  */
-export function getConfig(): ReadOnlyRequired<VendureConfig> {
+export function getConfig(): Readonly<RuntimeVendureConfig> {
     return activeConfig;
 }
 

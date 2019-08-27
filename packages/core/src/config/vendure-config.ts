@@ -372,7 +372,8 @@ export interface WorkerOptions {
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
- * @docsCategory
+ * @docsCategory configuration
+ * @docsPage Configuration
  * */
 export interface VendureConfig {
     /**
@@ -522,4 +523,21 @@ export interface VendureConfig {
      * Configures the Vendure Worker, which is used for long-running background tasks.
      */
     workerOptions?: WorkerOptions;
+}
+
+/**
+ * @description
+ * This interface represents the VendureConfig object available at run-time, i.e. the user-supplied
+ * config values have been merged with the {@link defaultConfig} values.
+ *
+ * @docsCategory configuration
+ * @docsPage Configuration
+ */
+export interface RuntimeVendureConfig extends Required<VendureConfig> {
+    assetOptions: Required<AssetOptions>;
+    authOptions: Required<AuthOptions>;
+    customFields: Required<CustomFields>;
+    importExportOptions: Required<ImportExportOptions>;
+    orderOptions: Required<OrderOptions>;
+    workerOptions: Required<WorkerOptions>;
 }

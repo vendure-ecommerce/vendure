@@ -2,12 +2,9 @@ import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 
-import { ReadOnlyRequired } from '../common/types/common-types';
-
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
-import { CustomFields } from './custom-field/custom-field-types';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
@@ -19,12 +16,16 @@ import { defaultShippingCalculator } from './shipping-method/default-shipping-ca
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultTaxCalculationStrategy } from './tax/default-tax-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
-import { VendureConfig } from './vendure-config';
+import { RuntimeVendureConfig } from './vendure-config';
 
 /**
+ * @description
  * The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
+ *
+ * @docsCategory configuration
+ * @docsPage Configuration
  */
-export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
+export const defaultConfig: RuntimeVendureConfig = {
     channelTokenKey: 'vendure-token',
     defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
@@ -101,7 +102,7 @@ export const defaultConfig: ReadOnlyRequired<VendureConfig> = {
         ProductOptionGroup: [],
         ProductVariant: [],
         User: [],
-    } as ReadOnlyRequired<CustomFields>,
+    },
     middleware: [],
     plugins: [],
 };

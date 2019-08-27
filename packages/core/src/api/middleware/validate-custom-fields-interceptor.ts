@@ -73,24 +73,19 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         if (variableValues) {
             const entityName = typeName.replace(/(Create|Update)(.+)Input/, '$2');
             const customFieldConfig = this.configService.customFields[entityName as keyof CustomFields];
-            if (customFieldConfig) {
-                if (variableValues.customFields) {
-                    this.validateCustomFieldsObject(
-                        customFieldConfig,
-                        languageCode,
-                        variableValues.customFields,
-                    );
-                }
-                const translations = variableValues.translations;
-                if (Array.isArray(translations)) {
-                    for (const translation of translations) {
-                        if (translation.customFields) {
-                            this.validateCustomFieldsObject(
-                                customFieldConfig,
-                                languageCode,
-                                translation.customFields,
-                            );
-                        }
+
+            if (variableValues.customFields) {
+                this.validateCustomFieldsObject(customFieldConfig, languageCode, variableValues.customFields);
+            }
+            const translations = variableValues.translations;
+            if (Array.isArray(translations)) {
+                for (const translation of translations) {
+                    if (translation.customFields) {
+                        this.validateCustomFieldsObject(
+                            customFieldConfig,
+                            languageCode,
+                            translation.customFields,
+                        );
                     }
                 }
             }

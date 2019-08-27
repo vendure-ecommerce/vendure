@@ -9,15 +9,10 @@ import { ReadOnlyRequired } from './common/types/common-types';
 import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
-import { VendureConfig } from './config/vendure-config';
+import { RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
-import {
-    getConfigurationFunction,
-    getEntitiesFromPlugins,
-    getPluginModules,
-    hasLifecycleMethod,
-} from './plugin/plugin-metadata';
+import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -172,9 +167,7 @@ export async function preBootstrapConfig(
 /**
  * Initialize any configured plugins.
  */
-async function runPluginConfigurations(
-    config: ReadOnlyRequired<VendureConfig>,
-): Promise<ReadOnlyRequired<VendureConfig>> {
+async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {

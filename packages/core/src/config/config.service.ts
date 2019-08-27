@@ -4,8 +4,6 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
-import { ReadOnlyRequired } from '../common/types/common-types';
-
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
@@ -17,6 +15,7 @@ import {
     OrderOptions,
     PaymentOptions,
     PromotionOptions,
+    RuntimeVendureConfig,
     ShippingOptions,
     TaxOptions,
     VendureConfig,
@@ -25,7 +24,7 @@ import {
 
 @Injectable()
 export class ConfigService implements VendureConfig {
-    private activeConfig: ReadOnlyRequired<VendureConfig>;
+    private activeConfig: RuntimeVendureConfig;
 
     constructor() {
         this.activeConfig = getConfig();
@@ -36,7 +35,7 @@ export class ConfigService implements VendureConfig {
     }
 
     get authOptions(): Required<AuthOptions> {
-        return this.activeConfig.authOptions as Required<AuthOptions>;
+        return this.activeConfig.authOptions;
     }
 
     get defaultChannelToken(): string | null {
@@ -100,10 +99,10 @@ export class ConfigService implements VendureConfig {
     }
 
     get importExportOptions(): Required<ImportExportOptions> {
-        return this.activeConfig.importExportOptions as Required<ImportExportOptions>;
+        return this.activeConfig.importExportOptions;
     }
 
-    get customFields(): CustomFields {
+    get customFields(): Required<CustomFields> {
         return this.activeConfig.customFields;
     }
 
@@ -120,6 +119,6 @@ export class ConfigService implements VendureConfig {
     }
 
     get workerOptions(): WorkerOptions {
-        return this.activeConfig.workerOptions as Required<WorkerOptions>;
+        return this.activeConfig.workerOptions;
     }
 }
