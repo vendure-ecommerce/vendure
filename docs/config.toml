@@ -1,4 +1,4 @@
-baseURL = "http://www.vendure.io/"
+baseURL = "https://www.vendure.io/"
 languageCode = "en-us"
 title = "Vendure E-commerce"
 googleAnalytics = "UA-133911942-1"
