@@ -4,12 +4,14 @@ date: 2019-02-11T10:27:46+01:00
 draft: false
 author: "Michael Bromley"
 images: 
-    - "./blog/introducing-vendure/introducing-vendure.jpg"
+    - "./introducing-vendure.jpg"
+aliases:
+    - /blog/introducing-vendure/
 ---
 
 Vendure is a new open-source headless e-commerce framework built on [Node.js](https://nodejs.org) with [TypeScript](http://www.typescriptlang.org/) and exposing a [GraphQL](https://graphql.org/) API. Today it is available to try with its first alpha release. In this post I'll outline some of the of major features and give some background to its development.
 
-{{< figure src="/blog/introducing-vendure/introducing-vendure.jpg" >}}
+{{< figure src="./introducing-vendure.jpg" >}}
 
 ## Headless Architecture
 

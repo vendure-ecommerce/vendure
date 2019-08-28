@@ -11,4 +11,6 @@ disableKinds = [
 ]
 [params]
     BookSection = "docs"
+[permalinks]
+    blog = "/blog/:year/:month/:slug/"
 

@@ -5,6 +5,8 @@ draft: false
 author: "Michael Bromley"
 images: 
     - "./blog/introducing-vendure/introducing-vendure.jpg"
+aliases:
+    - /blog/beta-release-and-roadmap-2019/
 --- 
 
 Vendure, a new headless e-commerce framework built on Nodejs, TypeScript and GraphQL, has just graduated from *alpha* to *beta*! 
