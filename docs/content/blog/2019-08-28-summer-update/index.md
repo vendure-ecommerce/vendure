@@ -4,7 +4,7 @@ date: 2019-08-28T10:00:46+01:00
 draft: false
 author: "Michael Bromley"
 images: 
-    - "./falkert-austria-michael-bromley.jpg"
+    - "/blog/2019/08/vendure-summer-update-towards-v1.0/falkert-austria-michael-bromley.jpg"
 ---
 
 After pausing for a refreshing week high in the Austrian Alps, development of Vendure continues apace. This blog post explains an upcoming change to the version numbering prior to 1.0, as well as a discussion of the remaining work to be done for the first stable release.

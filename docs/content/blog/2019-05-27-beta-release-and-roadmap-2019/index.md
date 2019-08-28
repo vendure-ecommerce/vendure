@@ -4,7 +4,7 @@ date: 2019-05-27T10:27:46+01:00
 draft: false
 author: "Michael Bromley"
 images: 
-    - "./blog/introducing-vendure/introducing-vendure.jpg"
+    - "/blog/2019/02/introducing-vendure/introducing-vendure.jpg"
 aliases:
     - /blog/beta-release-and-roadmap-2019/
 --- 
