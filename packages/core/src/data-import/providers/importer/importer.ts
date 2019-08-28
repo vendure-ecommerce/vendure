@@ -17,16 +17,14 @@ import { AssetService } from '../../../service/services/asset.service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { FacetService } from '../../../service/services/facet.service';
-import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
-import { ProductOptionService } from '../../../service/services/product-option.service';
-import { ProductVariantService } from '../../../service/services/product-variant.service';
-import { ProductService } from '../../../service/services/product.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import {
     ImportParser,
     ParsedProductVariant,
     ParsedProductWithVariants,
 } from '../import-parser/import-parser';
+
+import { FastImporterService } from './fast-importer.service';
 
 export interface ImportProgress extends ImportInfo {
     currentProduct: string;
@@ -46,14 +44,11 @@ export class Importer {
         private configService: ConfigService,
         private importParser: ImportParser,
         private channelService: ChannelService,
-        private productService: ProductService,
         private facetService: FacetService,
         private facetValueService: FacetValueService,
-        private productVariantService: ProductVariantService,
-        private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
         private taxCategoryService: TaxCategoryService,
-        private productOptionService: ProductOptionService,
+        private fastImporter: FastImporterService,
     ) {}
 
     parseAndImport(
@@ -149,13 +144,14 @@ export class Importer {
         let imported = 0;
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll();
+        await this.fastImporter.initialize();
         for (const { product, variants } of rows) {
             const createProductAssets = await this.getAssets(product.assetPaths);
             const productAssets = createProductAssets.assets;
             if (createProductAssets.errors.length) {
                 errors = errors.concat(createProductAssets.errors);
             }
-            const createdProduct = await this.productService.create(ctx, {
+            const createdProductId = await this.fastImporter.createProduct({
                 featuredAssetId: productAssets.length ? (productAssets[0].id as string) : undefined,
                 assetIds: productAssets.map(a => a.id) as string[],
                 facetValueIds: await this.getFacetValueIds(product.facets, languageCode),
@@ -173,7 +169,7 @@ export class Importer {
             const optionsMap: { [optionName: string]: string } = {};
             for (const optionGroup of product.optionGroups) {
                 const code = normalizeString(`${product.name}-${optionGroup.name}`, '-');
-                const group = await this.productOptionGroupService.create(ctx, {
+                const groupId = await this.fastImporter.createProductOptionGroup({
                     code,
                     options: optionGroup.values.map(name => ({} as any)),
                     translations: [
@@ -184,7 +180,8 @@ export class Importer {
                     ],
                 });
                 for (const option of optionGroup.values) {
-                    const createdOption = await this.productOptionService.create(ctx, group, {
+                    const createdOptionId = await this.fastImporter.createProductOption({
+                        productOptionGroupId: groupId as string,
                         code: normalizeString(option, '-'),
                         translations: [
                             {
@@ -193,9 +190,9 @@ export class Importer {
                             },
                         ],
                     });
-                    optionsMap[option] = createdOption.id as string;
+                    optionsMap[option] = createdOptionId as string;
                 }
-                await this.productService.addOptionGroupToProduct(ctx, createdProduct.id, group.id);
+                await this.fastImporter.addOptionGroupToProduct(createdProductId, groupId);
             }
 
             for (const variant of variants) {
@@ -208,8 +205,8 @@ export class Importer {
                 if (0 < variant.facets.length) {
                     facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
                 }
-                const createdVariant = await this.productVariantService.create(ctx, {
-                    productId: createdProduct.id as string,
+                const createdVariant = await this.fastImporter.createProductVariant({
+                    productId: createdProductId as string,
                     facetValueIds,
                     featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
                     assetIds: variantAssets.map(a => a.id) as string[],
@@ -247,7 +244,8 @@ export class Importer {
         const assets: Asset[] = [];
         const errors: string[] = [];
         const { importAssetsDir } = this.configService.importExportOptions;
-        for (const assetPath of assetPaths) {
+        const uniqueAssetPaths = new Set(assetPaths);
+        for (const assetPath of uniqueAssetPaths.values()) {
             const cachedAsset = this.assetMap.get(assetPath);
             if (cachedAsset) {
                 assets.push(cachedAsset);

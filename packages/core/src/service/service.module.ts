@@ -78,6 +78,7 @@ const exportedProviders = [
     TaxRateService,
     UserService,
     ZoneService,
+    TranslatableSaver,
 ];
 
 let defaultTypeOrmModule: DynamicModule;
@@ -93,7 +94,6 @@ let workerTypeOrmModule: DynamicModule;
     providers: [
         ...exportedProviders,
         PasswordCiper,
-        TranslatableSaver,
         TaxCalculator,
         OrderCalculator,
         OrderStateMachine,
