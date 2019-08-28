@@ -1,5 +1,6 @@
 {{ define "main" }}
 <div class="posts-list">
+    {{ partial "breadcrumbs" . }}
     {{ $paginator := .Paginate (where .Pages "Params.hidden" "ne" true) }}
     {{ range sort .Paginator.Pages }}
     <article class="book-posts mx-auto">

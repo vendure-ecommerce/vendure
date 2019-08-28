@@ -175,7 +175,7 @@ ul.contents-list {
 
 .book-posts {
     min-width: $body-min-width;
-    max-width: $sm-breakpoint;
+    max-width: $md-breakpoint;
     padding: $padding-16;
 
     article {
@@ -210,15 +210,13 @@ ul.contents-list {
                 margin: 12px 0;
             }
         }
-        .email-link {
-            display: flex;
-            align-items: center;
-            img {
-                width: 24px;
-                height: 24px;
-                margin-right: 6px;
-            }
+
+        img.link-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 6px;
         }
+
     }
     .copyright {
         font-size: 12px;

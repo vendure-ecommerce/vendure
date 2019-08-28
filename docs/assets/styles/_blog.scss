@@ -2,6 +2,10 @@
 
 .posts-list {
     min-height: 50vh;
+    padding: $padding-16 * 1.6;
+    min-width: $body-min-width;
+    max-width: $md-breakpoint;
+    margin: auto;
 
     h2 {
         font-family: $brand-font-face;
@@ -17,22 +21,25 @@
 }
 
 .blog-post {
-    max-width: 800px;
+    max-width: $md-breakpoint;
     margin: auto;
-    padding: 0 6px;
+    padding: $padding-16 * 1.6;
 
     header {
         overflow: hidden;
+        padding-bottom: $padding-16;
         border-bottom: 1px dashed $gray-300;
         h1 {
             font-family: $brand-font-face;
             font-size: 3em;
             font-weight: 400;
             color: $brand-color;
+            margin-bottom: 12px;
         }
-        .date-author {
-            // font-size: 14px;
-            color: $gray-700;
+        @media screen and (max-width: $sm-breakpoint) {
+            h1 {
+                font-size: 2em;
+            }
         }
     }
 
@@ -44,6 +51,64 @@
     figure {
         img {
             max-width: 100%;
+        }
+    }
+}
+
+.date-author {
+    display: flex;
+    align-items: center;
+
+    .avatar {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+    .details {
+        margin-left: 12px;
+    }
+    .name {
+        color: $gray-600;
+    }
+}
+
+.author-bio {
+    display: flex;
+    margin-top: 50px;
+    padding-top: 50px;
+    border-top: 1px dotted $gray-300;
+    .avatar {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+    }
+    .details {
+        margin-left: 24px;
+    }
+    .written-by {
+        font-size: $font-size-12;
+        text-transform: uppercase;
+        color: $gray-500;
+    }
+    .name {
+        font-family: $brand-font-face;
+        margin: 0 0 12px;
+    }
+    .bio {
+        color: $gray-700;
+        margin-bottom: 12px;
+    }
+    .links {
+        a {
+            margin-right: 12px;
+            opacity: 0.8;
+        }
+        a:hover {
+            opacity: 1;
+        }
+        img {
+            width: 24px;
+            height: 24px;
         }
     }
 }
