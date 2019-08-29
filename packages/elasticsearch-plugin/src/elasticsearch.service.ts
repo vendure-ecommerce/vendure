@@ -278,7 +278,7 @@ export class ElasticsearchService {
             productName: source.productName[0],
             productVariantId: source.productVariantId[0].toString(),
             productVariantName: source.productVariantName[0],
-            productVariantPreview: source.productVariantPreview[0],
+            productVariantPreview: source.productVariantPreview[0] || '',
             facetIds: source.facetIds as string[],
             facetValueIds: source.facetValueIds as string[],
             collectionIds: source.collectionIds as string[],
