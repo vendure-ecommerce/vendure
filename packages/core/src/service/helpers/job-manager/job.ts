@@ -12,7 +12,7 @@ export class Job {
     id: string;
     state: JobState = JobState.PENDING;
     progress = 0;
-    result = null;
+    result: any = null;
     started: Date;
     ended: Date;
 
@@ -20,6 +20,7 @@ export class Job {
         public name: string,
         public work: () => any | Promise<any>,
         private reporter: PartialJobReporter,
+        public metadata: Record<string, any> = {},
     ) {
         this.id = generatePublicId();
         this.started = new Date();
@@ -44,5 +45,6 @@ export class Job {
             this.result = e;
         }
         this.ended = new Date();
+        return this.result;
     }
 }

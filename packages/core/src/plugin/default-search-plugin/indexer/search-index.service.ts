@@ -39,6 +39,10 @@ export class SearchIndexService {
     updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
         return this.jobService.createJob({
             name: 'update-index',
+            metadata: {
+                entity: updatedEntity.constructor.name,
+                id: updatedEntity.id,
+            },
             work: reporter => {
                 const data =
                     updatedEntity instanceof Product
@@ -57,7 +61,10 @@ export class SearchIndexService {
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
         return this.jobService.createJob({
-            name: 'update-index',
+            name: 'update-variants',
+            metadata: {
+                variantIds: ids,
+            },
             work: reporter => {
                 Logger.verbose(`sending reindex message`);
                 this.workerService

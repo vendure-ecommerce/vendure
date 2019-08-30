@@ -19,6 +19,7 @@ export type PartialJobReporter = Omit<JobReporter, 'setProgress'> & Partial<Pick
 
 export interface CreateJobOptions {
     name: string;
+    metadata?: any;
     work: (reporter: JobReporter) => any | Promise<any>;
     /** Limit this job to a single instance at a time */
     singleInstance?: boolean;
@@ -60,7 +61,7 @@ export class JobService implements OnModuleInit, OnModuleDestroy {
                 }
             });
         };
-        return this.manager.createJob(options.name, wrappedWork, reporter);
+        return this.manager.createJob(options.name, wrappedWork, reporter, options.metadata);
     }
 
     getAll(input?: JobListInput): JobInfo[] {

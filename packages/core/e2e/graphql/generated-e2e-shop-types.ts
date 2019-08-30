@@ -1649,6 +1649,17 @@ export type PriceRange = {
     max: Scalars['Int'];
 };
 
+export type PriceRangeBucket = {
+    __typename?: 'PriceRangeBucket';
+    to: Scalars['Int'];
+    count: Scalars['Int'];
+};
+
+export type PriceRangeInput = {
+    min: Scalars['Int'];
+    max: Scalars['Int'];
+};
+
 export type Product = Node & {
     __typename?: 'Product';
     id: Scalars['ID'];
@@ -1962,6 +1973,8 @@ export type SearchInput = {
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
     sort?: Maybe<SearchResultSortParameter>;
+    priceRange?: Maybe<PriceRangeInput>;
+    priceRangeWithTax?: Maybe<PriceRangeInput>;
 };
 
 export type SearchReindexResponse = {
@@ -1974,6 +1987,15 @@ export type SearchResponse = {
     items: Array<SearchResult>;
     totalItems: Scalars['Int'];
     facetValues: Array<FacetValueResult>;
+    prices: SearchResponsePriceData;
+};
+
+export type SearchResponsePriceData = {
+    __typename?: 'SearchResponsePriceData';
+    range: PriceRange;
+    rangeWithTax: PriceRange;
+    buckets: Array<PriceRangeBucket>;
+    bucketsWithTax: Array<PriceRangeBucket>;
 };
 
 export type SearchResult = {

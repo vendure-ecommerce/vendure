@@ -20,6 +20,7 @@ type JobInfo {
     name: String!
     state: JobState!
     progress: Float!
+    metadata: JSON
     result: JSON
     started: DateTime
     ended: DateTime

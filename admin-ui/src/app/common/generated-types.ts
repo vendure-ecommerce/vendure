@@ -1215,6 +1215,7 @@ export type JobInfo = {
   name: Scalars['String'],
   state: JobState,
   progress: Scalars['Float'],
+  metadata?: Maybe<Scalars['JSON']>,
   result?: Maybe<Scalars['JSON']>,
   started?: Maybe<Scalars['DateTime']>,
   ended?: Maybe<Scalars['DateTime']>,

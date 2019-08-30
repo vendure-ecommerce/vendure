@@ -1218,6 +1218,7 @@ export type JobInfo = {
     name: Scalars['String'];
     state: JobState;
     progress: Scalars['Float'];
+    metadata?: Maybe<Scalars['JSON']>;
     result?: Maybe<Scalars['JSON']>;
     started?: Maybe<Scalars['DateTime']>;
     ended?: Maybe<Scalars['DateTime']>;
@@ -4277,8 +4278,12 @@ export type GetProductsQuery = { __typename?: 'Query' } & {
     products: { __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & {
             items: Array<
                 { __typename?: 'Product' } & Pick<Product, 'id' | 'name' | 'slug' | 'description'> & {
-                        featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'name'>>;
-                        assets: Array<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'name'>>;
+                        featuredAsset: Maybe<
+                            { __typename?: 'Asset' } & Pick<Asset, 'id' | 'name' | 'preview' | 'source'>
+                        >;
+                        assets: Array<
+                            { __typename?: 'Asset' } & Pick<Asset, 'id' | 'name' | 'preview' | 'source'>
+                        >;
                         optionGroups: Array<
                             { __typename?: 'ProductOptionGroup' } & Pick<
                                 ProductOptionGroup,
@@ -4302,9 +4307,17 @@ export type GetProductsQuery = { __typename?: 'Query' } & {
                                     options: Array<
                                         { __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>
                                     >;
-                                    assets: Array<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'name'>>;
+                                    assets: Array<
+                                        { __typename?: 'Asset' } & Pick<
+                                            Asset,
+                                            'id' | 'name' | 'preview' | 'source'
+                                        >
+                                    >;
                                     featuredAsset: Maybe<
-                                        { __typename?: 'Asset' } & Pick<Asset, 'id' | 'name'>
+                                        { __typename?: 'Asset' } & Pick<
+                                            Asset,
+                                            'id' | 'name' | 'preview' | 'source'
+                                        >
                                     >;
                                     facetValues: Array<
                                         { __typename?: 'FacetValue' } & Pick<

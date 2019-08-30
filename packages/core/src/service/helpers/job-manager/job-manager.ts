@@ -29,8 +29,13 @@ export class JobManager {
      * property of the job. If the function throws, the job will fail and the `result` property
      * will be the error thrown.
      */
-    createJob(name: string, work: () => Promise<any>, reporter: PartialJobReporter): Job {
-        const job = new Job(name, work, reporter);
+    createJob(
+        name: string,
+        work: () => Promise<any>,
+        reporter: PartialJobReporter,
+        metadata?: Record<string, any>,
+    ): Job {
+        const job = new Job(name, work, reporter, metadata);
         this.jobs.set(job.id, job);
         return job;
     }
@@ -84,7 +89,7 @@ export class JobManager {
     }
 
     private toJobInfo(job: Job): JobInfo {
-        const info = pick(job, ['id', 'name', 'state', 'progress', 'result', 'started', 'ended']);
+        const info = pick(job, ['id', 'name', 'state', 'progress', 'result', 'started', 'ended', 'metadata']);
         const duration = job.ended ? +job.ended - +info.started : Date.now() - +info.started;
         return { ...info, duration };
     }
