@@ -17,8 +17,8 @@ import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { AsyncQueue } from '../async-queue';
-import { Message, workerLoggerCtx } from '../constants';
 import { SearchIndexItem } from '../search-index-item.entity';
+import { ReindexMessage, UpdateProductOrVariantMessage, UpdateVariantsByIdMessage } from '../types';
 
 export const BATCH_SIZE = 1000;
 export const variantRelations = [
@@ -33,11 +33,7 @@ export const variantRelations = [
     'taxCategory',
 ];
 
-export interface ReindexMessageResponse {
-    total: number;
-    completed: number;
-    duration: number;
-}
+export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
 
 @Controller()
 export class IndexerController {
@@ -49,8 +45,8 @@ export class IndexerController {
         private taxRateService: TaxRateService,
     ) {}
 
-    @MessagePattern(Message.Reindex)
-    reindex({ ctx: rawContext }: { ctx: any }): Observable<ReindexMessageResponse> {
+    @MessagePattern(ReindexMessage.pattern)
+    reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
         return new Observable(observer => {
             (async () => {
@@ -95,14 +91,11 @@ export class IndexerController {
         });
     }
 
-    @MessagePattern(Message.UpdateVariantsById)
+    @MessagePattern(UpdateVariantsByIdMessage.pattern)
     updateVariantsById({
         ctx: rawContext,
         ids,
-    }: {
-        ctx: any;
-        ids: ID[];
-    }): Observable<ReindexMessageResponse> {
+    }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
 
         return new Observable(observer => {
@@ -145,21 +138,14 @@ export class IndexerController {
     /**
      * Updates the search index only for the affected entities.
      */
-    @MessagePattern(Message.UpdateProductOrVariant)
-    updateProductOrVariant({
-        ctx: rawContext,
-        productId,
-        variantId,
-    }: {
-        ctx: any;
-        productId?: ID;
-        variantId?: ID;
-    }): Observable<boolean> {
-        const ctx = RequestContext.fromObject(rawContext);
+    @MessagePattern(UpdateProductOrVariantMessage.pattern)
+    updateProductOrVariant(data: UpdateProductOrVariantMessage['data']): Observable<boolean> {
+        const ctx = RequestContext.fromObject(data.ctx);
+        const { productId, variantId } = data;
         let updatedVariants: ProductVariant[] = [];
         let removedVariantIds: ID[] = [];
         return defer(async () => {
-            if (productId) {
+            if (data.productId) {
                 const product = await this.connection.getRepository(Product).findOne(productId, {
                     relations: ['variants'],
                 });

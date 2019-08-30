@@ -13,7 +13,6 @@ export * from './services/facet.service';
 export * from './services/facet-value.service';
 export * from './services/global-settings.service';
 export * from './services/job.service';
-export * from './services/job.service';
 export * from './services/order.service';
 export * from './services/payment-method.service';
 export * from './services/product.service';

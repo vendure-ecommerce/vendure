@@ -1,5 +1,4 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -7,59 +6,29 @@ import { Logger } from '../../../config/logger/vendure-logger';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../service/helpers/job-manager/job';
-import { JobService } from '../../../service/services/job.service';
-import { VENDURE_WORKER_CLIENT } from '../../../worker/constants';
-import { Message } from '../constants';
-
-import { ReindexMessageResponse } from './indexer.controller';
+import { JobReporter, JobService } from '../../../service/services/job.service';
+import { WorkerService } from '../../../worker/worker.service';
+import {
+    ReindexMessage,
+    ReindexMessageResponse,
+    UpdateProductOrVariantMessage,
+    UpdateVariantsByIdMessage,
+} from '../types';
 
 /**
  * This service is responsible for messaging the {@link IndexerController} with search index updates.
  */
 @Injectable()
-export class SearchIndexService implements OnModuleDestroy {
-
-    constructor(@Inject(VENDURE_WORKER_CLIENT) private readonly client: ClientProxy,
-                private jobService: JobService) {}
+export class SearchIndexService {
+    constructor(private workerService: WorkerService, private jobService: JobService) {}
 
     reindex(ctx: RequestContext): Job {
         return this.jobService.createJob({
             name: 'reindex',
             singleInstance: true,
             work: async reporter => {
-                return new Promise((resolve, reject) => {
-                    Logger.verbose(`sending reindex message`);
-                    let total: number | undefined;
-                    let duration = 0;
-                    let completed = 0;
-                    this.client.send<ReindexMessageResponse>(Message.Reindex, { ctx })
-                        .subscribe({
-                            next: response => {
-                                if (!total) {
-                                    total = response.total;
-                                }
-                                duration = response.duration;
-                                completed = response.completed;
-                                const progress = Math.ceil((completed / total) * 100);
-                                reporter.setProgress(progress);
-                            },
-                            complete: () => {
-                                resolve({
-                                    success: true,
-                                    indexedItemCount: total,
-                                    timeTaken: duration,
-                                });
-                            },
-                            error: (err) => {
-                                Logger.error(JSON.stringify(err));
-                                resolve({
-                                    success: false,
-                                    indexedItemCount: 0,
-                                    timeTaken: 0,
-                                });
-                            },
-                        });
-                });
+                Logger.verbose(`sending reindex message`);
+                this.workerService.send(new ReindexMessage({ ctx })).subscribe(this.createObserver(reporter));
             },
         });
     }
@@ -70,63 +39,63 @@ export class SearchIndexService implements OnModuleDestroy {
     updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
         return this.jobService.createJob({
             name: 'update-index',
-            work: async () => {
-                if (updatedEntity instanceof Product) {
-                    return this.client.send(Message.UpdateProductOrVariant, { ctx, productId: updatedEntity.id })
-                        .toPromise()
-                        .catch(err => Logger.error(err));
-                } else {
-                    return this.client.send(Message.UpdateProductOrVariant, { ctx, variantId: updatedEntity.id })
-                        .toPromise()
-                        .catch(err => Logger.error(err));
-                }
-            },
-        });
-
-    }
-
-    updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.jobService.createJob({
-            name: 'update-index',
-            work: async reporter => {
-                return new Promise((resolve, reject) => {
-                    Logger.verbose(`sending reindex message`);
-                    let total: number | undefined;
-                    let duration = 0;
-                    let completed = 0;
-                    this.client.send<ReindexMessageResponse>(Message.UpdateVariantsById, { ctx, ids })
-                        .subscribe({
-                            next: response => {
-                                if (!total) {
-                                    total = response.total;
-                                }
-                                duration = response.duration;
-                                completed = response.completed;
-                                const progress = Math.ceil((completed / total) * 100);
-                                reporter.setProgress(progress);
-                            },
-                            complete: () => {
-                                resolve({
-                                    success: true,
-                                    indexedItemCount: total,
-                                    timeTaken: duration,
-                                });
-                            },
-                            error: (err) => {
-                                Logger.error(JSON.stringify(err));
-                                resolve({
-                                    success: false,
-                                    indexedItemCount: 0,
-                                    timeTaken: 0,
-                                });
-                            },
-                        });
+            work: reporter => {
+                const data =
+                    updatedEntity instanceof Product
+                        ? { ctx, productId: updatedEntity.id }
+                        : { ctx, variantId: updatedEntity.id };
+                this.workerService.send(new UpdateProductOrVariantMessage(data)).subscribe({
+                    complete: () => reporter.complete(true),
+                    error: err => {
+                        Logger.error(err);
+                        reporter.complete(false);
+                    },
                 });
             },
         });
     }
 
-    onModuleDestroy(): any {
-        this.client.close();
+    updateVariantsById(ctx: RequestContext, ids: ID[]) {
+        return this.jobService.createJob({
+            name: 'update-index',
+            work: reporter => {
+                Logger.verbose(`sending reindex message`);
+                this.workerService
+                    .send(new UpdateVariantsByIdMessage({ ctx, ids }))
+                    .subscribe(this.createObserver(reporter));
+            },
+        });
+    }
+
+    private createObserver(reporter: JobReporter) {
+        let total: number | undefined;
+        let duration = 0;
+        let completed = 0;
+        return {
+            next: (response: ReindexMessageResponse) => {
+                if (!total) {
+                    total = response.total;
+                }
+                duration = response.duration;
+                completed = response.completed;
+                const progress = Math.ceil((completed / total) * 100);
+                reporter.setProgress(progress);
+            },
+            complete: () => {
+                reporter.complete({
+                    success: true,
+                    indexedItemCount: total,
+                    timeTaken: duration,
+                });
+            },
+            error: (err: any) => {
+                Logger.error(JSON.stringify(err));
+                reporter.complete({
+                    success: false,
+                    indexedItemCount: 0,
+                    timeTaken: 0,
+                });
+            },
+        };
     }
 }

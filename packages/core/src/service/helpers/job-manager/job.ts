@@ -1,8 +1,7 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 
 import { generatePublicId } from '../../../common/generate-public-id';
-
-import { JobReporter } from './job-manager';
+import { PartialJobReporter } from '../../services/job.service';
 
 /**
  * A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
@@ -17,7 +16,11 @@ export class Job {
     started: Date;
     ended: Date;
 
-    constructor(public name: string, public work: (reporter: JobReporter) => any | Promise<any>) {
+    constructor(
+        public name: string,
+        public work: () => any | Promise<any>,
+        private reporter: PartialJobReporter,
+    ) {
         this.id = generatePublicId();
         this.started = new Date();
     }
@@ -26,15 +29,13 @@ export class Job {
         if (this.state !== JobState.PENDING) {
             return;
         }
-        const reporter: JobReporter = {
-            setProgress: (percentage: number) => {
-                this.progress = Math.max(Math.min(percentage, 100), 0);
-            },
+        this.reporter.setProgress = (percentage: number) => {
+            this.progress = Math.max(Math.min(percentage, 100), 0);
         };
         let result: any;
         try {
             this.state = JobState.RUNNING;
-            result = await this.work(reporter);
+            result = await this.work();
             this.progress = 100;
             this.result = result;
             this.state = JobState.COMPLETED;

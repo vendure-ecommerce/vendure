@@ -7,7 +7,7 @@ export * from './plugin/index';
 export * from './entity/index';
 export * from './data-import/index';
 export * from './service/index';
-export * from './worker/constants';
+export * from './worker/index';
 export * from '@vendure/common/lib/shared-types';
 export {
     Permission,

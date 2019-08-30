@@ -3,10 +3,15 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { Subject } from 'rxjs';
 
+import { JobReporter, PartialJobReporter } from '../../services/job.service';
+
 import { JobManager } from './job-manager';
 
 describe('JobManager', () => {
-    const noop = () => {};
+    const noop = () => Promise.resolve();
+    const mockReporter: PartialJobReporter = {
+        complete(result?: any): void {},
+    };
 
     it('getOne() returns null for invalid id', () => {
         const jm = new JobManager();
@@ -15,13 +20,13 @@ describe('JobManager', () => {
 
     it('createJob() returns a job', () => {
         const jm = new JobManager();
-        const job = jm.createJob('test', noop);
+        const job = jm.createJob('test', noop, mockReporter);
         expect(job.name).toBe('test');
     });
 
     it('getOne() returns job by id', () => {
         const jm = new JobManager();
-        const job1 = jm.createJob('test', noop);
+        const job1 = jm.createJob('test', noop, mockReporter);
         const job2 = jm.getOne(job1.id);
 
         expect(job1.id).toBe(job2!.id);
@@ -30,7 +35,7 @@ describe('JobManager', () => {
     it('job completes once work fn returns', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job = jm.createJob('test', () => subject.toPromise());
+        const job = jm.createJob('test', () => subject.toPromise(), mockReporter);
         job.start();
         await tick();
 
@@ -48,7 +53,7 @@ describe('JobManager', () => {
     it('job fails if work fn throws', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job = jm.createJob('test', () => subject.toPromise());
+        const job = jm.createJob('test', () => subject.toPromise(), mockReporter);
         job.start();
         await tick();
 
@@ -64,12 +69,22 @@ describe('JobManager', () => {
 
     it('reporter.setProgress updates job progress', async () => {
         const jm = new JobManager();
-        const subject = new Subject();
         const progressSubject = new Subject<number>();
-        const job = jm.createJob('test', (reporter => {
-            progressSubject.subscribe(val => reporter.setProgress(val));
-            return subject.toPromise();
-        }));
+        const testReporter: PartialJobReporter = {
+            complete(r?: any): void {},
+        };
+        const wrappedWork = () => {
+            return new Promise(async (resolve, reject) => {
+                testReporter.complete = res => resolve(res);
+                progressSubject.subscribe(
+                    val => testReporter.setProgress!(val),
+                    () => testReporter.complete(),
+                    () => testReporter.complete(),
+                );
+                const r = await progressSubject.toPromise();
+            });
+        };
+        const job = jm.createJob('test', wrappedWork, testReporter);
         job.start();
         await tick();
         expect(jm.getOne(job.id)!.progress).toBe(0);
@@ -86,7 +101,7 @@ describe('JobManager', () => {
         progressSubject.next(88);
         expect(jm.getOne(job.id)!.progress).toBe(88);
 
-        subject.complete();
+        progressSubject.complete();
         await tick();
 
         const result = jm.getOne(job.id)!;
@@ -95,36 +110,36 @@ describe('JobManager', () => {
 
     it('getAll() returns all jobs', () => {
         const jm = new JobManager();
-        const job1 = jm.createJob('job1', noop);
-        const job2 = jm.createJob('job2', noop);
-        const job3 = jm.createJob('job3', noop);
+        const job1 = jm.createJob('job1', noop, mockReporter);
+        const job2 = jm.createJob('job2', noop, mockReporter);
+        const job3 = jm.createJob('job3', noop, mockReporter);
 
         expect(jm.getAll().map(j => j.id)).toEqual([job1.id, job2.id, job3.id]);
     });
 
     it('getAll() filters by id', () => {
         const jm = new JobManager();
-        const job1 = jm.createJob('job1', noop);
-        const job2 = jm.createJob('job2', noop);
-        const job3 = jm.createJob('job3', noop);
+        const job1 = jm.createJob('job1', noop, mockReporter);
+        const job2 = jm.createJob('job2', noop, mockReporter);
+        const job3 = jm.createJob('job3', noop, mockReporter);
 
-        expect(jm.getAll({ ids: [job1.id, job3.id]}).map(j => j.id)).toEqual([job1.id, job3.id]);
+        expect(jm.getAll({ ids: [job1.id, job3.id] }).map(j => j.id)).toEqual([job1.id, job3.id]);
     });
 
     it('getAll() filters by state', async () => {
         const jm = new JobManager();
         const subject = new Subject();
-        const job1 = jm.createJob('job1', noop);
-        const job2 = jm.createJob('job2', noop);
-        const job3 = jm.createJob('job3', () => subject.toPromise());
+        const job1 = jm.createJob('job1', noop, mockReporter);
+        const job2 = jm.createJob('job2', noop, mockReporter);
+        const job3 = jm.createJob('job3', () => subject.toPromise(), mockReporter);
         job1.start();
         job2.start();
         job3.start();
 
         await tick();
 
-        expect(jm.getAll({ state: JobState.COMPLETED}).map(j => j.id)).toEqual([job1.id, job2.id]);
-        expect(jm.getAll({ state: JobState.RUNNING}).map(j => j.id)).toEqual([job3.id]);
+        expect(jm.getAll({ state: JobState.COMPLETED }).map(j => j.id)).toEqual([job1.id, job2.id]);
+        expect(jm.getAll({ state: JobState.RUNNING }).map(j => j.id)).toEqual([job3.id]);
     });
 
     it('clean() removes completed jobs older than maxAge', async () => {
@@ -132,8 +147,8 @@ describe('JobManager', () => {
         const subject1 = new Subject();
         const subject2 = new Subject();
 
-        const job1 = jm.createJob('job1', () => subject1.toPromise());
-        const job2 = jm.createJob('job2', () => subject2.toPromise());
+        const job1 = jm.createJob('job1', () => subject1.toPromise(), mockReporter);
+        const job2 = jm.createJob('job2', () => subject2.toPromise(), mockReporter);
         job1.start();
         job2.start();
 
@@ -151,16 +166,14 @@ describe('JobManager', () => {
 
         jm.clean();
 
-        expect(jm.getAll().map(pick(['name', 'state']))).toEqual([
-            { name: 'job2', state: JobState.RUNNING },
-        ]);
+        expect(jm.getAll().map(pick(['name', 'state']))).toEqual([{ name: 'job2', state: JobState.RUNNING }]);
     });
 
     it('findRunningJob() works', async () => {
         const jm = new JobManager();
         const subject1 = new Subject();
 
-        const job1 = jm.createJob('job1', () => subject1.toPromise());
+        const job1 = jm.createJob('job1', () => subject1.toPromise(), mockReporter);
         job1.start();
 
         expect(jm.findRunningJob('job1')).toBe(job1);

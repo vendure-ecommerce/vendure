@@ -8,9 +8,10 @@ import { ServiceModule } from '../service/service.module';
 
 import { MessageInterceptor } from './message-interceptor';
 import { WorkerMonitor } from './worker-monitor';
+import { WorkerServiceModule } from './worker-service.module';
 
 @Module({
-    imports: [ConfigModule, ServiceModule.forWorker(), PluginModule.forWorker()],
+    imports: [ConfigModule, ServiceModule.forWorker(), PluginModule.forWorker(), WorkerServiceModule],
     providers: [
         WorkerMonitor,
         {
