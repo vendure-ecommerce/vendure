@@ -12,7 +12,6 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -27,20 +26,24 @@ import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
 } from '../../config/collection/default-collection-filters';
+import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
+import { WorkerService } from '../../worker/worker.service';
 import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { JobService } from './job.service';
 
 export class CollectionService implements OnModuleInit {
     private rootCategories: { [channelCode: string]: Collection } = {};
@@ -57,6 +60,8 @@ export class CollectionService implements OnModuleInit {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
+        private workerService: WorkerService,
+        private jobService: JobService,
     ) {}
 
     onModuleInit() {
@@ -64,14 +69,7 @@ export class CollectionService implements OnModuleInit {
             const collections = await this.connection.getRepository(Collection).find({
                 relations: ['productVariants'],
             });
-            for (const collection of collections) {
-                const affectedVariantIds = await this.applyCollectionFilters(collection);
-                if (affectedVariantIds.length) {
-                    this.eventBus.publish(
-                        new CollectionModificationEvent(event.ctx, collection, affectedVariantIds),
-                    );
-                }
-            }
+            this.applyCollectionFilters(event.ctx, collections);
         });
     }
 
@@ -250,8 +248,7 @@ export class CollectionService implements OnModuleInit {
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
-        const affectedVariantIds = await this.applyCollectionFilters(collection);
-        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+        this.applyCollectionFilters(ctx, [collection]);
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -267,11 +264,9 @@ export class CollectionService implements OnModuleInit {
                 await this.assetUpdater.updateEntityAssets(coll, input);
             },
         });
-        let affectedVariantIds: ID[] = [];
         if (input.filters) {
-            affectedVariantIds = await this.applyCollectionFilters(collection);
+            this.applyCollectionFilters(ctx, [collection]);
         }
-        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -330,7 +325,7 @@ export class CollectionService implements OnModuleInit {
         }
 
         await this.connection.getRepository(Collection).save(siblings);
-        await this.applyCollectionFilters(target);
+        await this.applyCollectionFilters(ctx, [target]);
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 
@@ -361,36 +356,43 @@ export class CollectionService implements OnModuleInit {
     /**
      * Applies the CollectionFilters and returns an array of all affected ProductVariant ids.
      */
-    private async applyCollectionFilters(collection: Collection): Promise<ID[]> {
-        const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
-            ancestors.reduce(
-                (filters, c) => [...filters, ...(c.filters || [])],
-                [] as ConfigurableOperation[],
-            ),
-        );
-        const preIds = await this.getCollectionProductVariantIds(collection);
-        collection.productVariants = await this.getFilteredProductVariants([
-            ...ancestorFilters,
-            ...(collection.filters || []),
-        ]);
-        const postIds = collection.productVariants.map(v => v.id);
-        await this.connection
-            .getRepository(Collection)
-            .save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
+    private async applyCollectionFilters(ctx: RequestContext, collections: Collection[]): Promise<void> {
+        const collectionIds = collections.map(c => c.id);
 
-        const preIdsSet = new Set(preIds);
-        const postIdsSet = new Set(postIds);
-        const difference = [
-            ...preIds.filter(id => !postIdsSet.has(id)),
-            ...postIds.filter(id => !preIdsSet.has(id)),
-        ];
-        return difference;
+        const job = this.jobService.createJob({
+            name: 'apply-collection-filters',
+            metadata: { collectionIds },
+            singleInstance: true,
+            work: async reporter => {
+                Logger.verbose(`sending ApplyCollectionFiltersMessage message`);
+                this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
+                    next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
+                        const progress = Math.ceil((completed / total) * 100);
+                        const collection = collections.find(c => idsAreEqual(c.id, collectionId));
+                        if (collection) {
+                            this.eventBus.publish(
+                                new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                            );
+                        }
+                        reporter.setProgress(progress);
+                    },
+                    complete: () => {
+                        reporter.complete();
+                    },
+                    error: err => {
+                        Logger.error(err);
+                        reporter.complete();
+                    },
+                });
+            },
+        });
+        await job.start();
     }
 
     /**
      * Returns the IDs of the Collection's ProductVariants.
      */
-    private async getCollectionProductVariantIds(collection: Collection): Promise<ID[]> {
+    async getCollectionProductVariantIds(collection: Collection): Promise<ID[]> {
         if (collection.productVariants) {
             return collection.productVariants.map(v => v.id);
         } else {
@@ -401,46 +403,6 @@ export class CollectionService implements OnModuleInit {
                 .getMany();
             return productVariants.map(v => v.id);
         }
-    }
-
-    /**
-     * Applies the CollectionFilters and returns an array of ProductVariant entities which match.
-     */
-    private async getFilteredProductVariants(filters: ConfigurableOperation[]): Promise<ProductVariant[]> {
-        if (filters.length === 0) {
-            return [];
-        }
-        const facetFilters = filters.filter(f => f.code === facetValueCollectionFilter.code);
-        const variantNameFilters = filters.filter(f => f.code === variantNameCollectionFilter.code);
-        let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
-
-        // Apply any facetValue-based filters
-        if (facetFilters.length) {
-            const [idsArg, containsAnyArg] = facetFilters[0].args;
-            const mergedArgs = facetFilters
-                .map(f => f.args[0].value)
-                .filter(notNullOrUndefined)
-                .map(value => JSON.parse(value))
-                .reduce((all, ids) => [...all, ...ids]);
-
-            qb = facetValueCollectionFilter.apply(qb, [
-                {
-                    name: idsArg.name,
-                    type: idsArg.type,
-                    value: JSON.stringify(Array.from(new Set(mergedArgs))),
-                },
-                containsAnyArg,
-            ]);
-        }
-
-        // Apply any variant name-based filters
-        if (variantNameFilters.length) {
-            for (const filter of variantNameFilters) {
-                qb = variantNameCollectionFilter.apply(qb, filter.args);
-            }
-        }
-
-        return qb.getMany();
     }
 
     /**

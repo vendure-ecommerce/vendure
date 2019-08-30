@@ -47,6 +47,7 @@ import {
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Collection resolver', () => {
     const client = new TestAdminClient();
@@ -611,9 +612,16 @@ describe('Collection resolver', () => {
                         ],
                     } as CreateCollectionInput,
                 });
-                expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
-                    'Instant Camera',
-                ]);
+
+                await awaitRunningJobs(client);
+                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                    GET_COLLECTION,
+                    {
+                        id: result.createCollection.id,
+                    },
+                );
+
+                expect(collection!.productVariants.items.map(i => i.name)).toEqual(['Instant Camera']);
             });
 
             it('photo OR pear', async () => {
@@ -646,7 +654,16 @@ describe('Collection resolver', () => {
                         ],
                     } as CreateCollectionInput,
                 });
-                expect(result.createCollection.productVariants.items.map(i => i.name)).toEqual([
+
+                await awaitRunningJobs(client);
+                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                    GET_COLLECTION,
+                    {
+                        id: result.createCollection.id,
+                    },
+                );
+
+                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -926,6 +943,12 @@ export const GET_COLLECTION = gql`
     query GetCollection($id: ID!) {
         collection(id: $id) {
             ...Collection
+            productVariants {
+                items {
+                    id
+                    name
+                }
+            }
         }
     }
     ${COLLECTION_FRAGMENT}
@@ -989,6 +1012,7 @@ const GET_COLLECTION_PRODUCT_VARIANTS = gql`
 const CREATE_COLLECTION_SELECT_VARIANTS = gql`
     mutation CreateCollectionSelectVariants($input: CreateCollectionInput!) {
         createCollection(input: $input) {
+            id
             productVariants {
                 items {
                     name

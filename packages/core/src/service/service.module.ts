@@ -6,6 +6,7 @@ import { ConfigService } from '../config/config.service';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
+import { CollectionController } from './controllers/collection.controller';
 import { AssetUpdater } from './helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
@@ -81,6 +82,8 @@ const exportedProviders = [
     ZoneService,
     TranslatableSaver,
 ];
+
+const workerControllers = [CollectionController];
 
 let defaultTypeOrmModule: DynamicModule;
 let workerTypeOrmModule: DynamicModule;
@@ -192,6 +195,7 @@ export class ServiceModule {
         return {
             module: ServiceModule,
             imports: [workerTypeOrmModule],
+            controllers: workerControllers,
         };
     }
 

@@ -3367,7 +3367,13 @@ export type GetCollectionQueryVariables = {
 };
 
 export type GetCollectionQuery = { __typename?: 'Query' } & {
-    collection: Maybe<{ __typename?: 'Collection' } & CollectionFragment>;
+    collection: Maybe<
+        { __typename?: 'Collection' } & {
+            productVariants: { __typename?: 'ProductVariantList' } & {
+                items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
+            };
+        } & CollectionFragment
+    >;
 };
 
 export type MoveCollectionMutationVariables = {
@@ -3423,11 +3429,12 @@ export type CreateCollectionSelectVariantsMutationVariables = {
 };
 
 export type CreateCollectionSelectVariantsMutation = { __typename?: 'Mutation' } & {
-    createCollection: { __typename?: 'Collection' } & {
-        productVariants: { __typename?: 'ProductVariantList' } & Pick<ProductVariantList, 'totalItems'> & {
-                items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'name'>>;
-            };
-    };
+    createCollection: { __typename?: 'Collection' } & Pick<Collection, 'id'> & {
+            productVariants: { __typename?: 'ProductVariantList' } & Pick<
+                ProductVariantList,
+                'totalItems'
+            > & { items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'name'>> };
+        };
 };
 
 export type GetCollectionBreadcrumbsQueryVariables = {
@@ -3572,12 +3579,6 @@ export type DeleteCustomerMutationVariables = {
 
 export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
     deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
-
-export type GetRunningJobsQueryVariables = {};
-
-export type GetRunningJobsQuery = { __typename?: 'Query' } & {
-    jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
 };
 
 export type SearchProductsAdminQueryVariables = {
@@ -4268,6 +4269,12 @@ export type GetStockMovementQuery = { __typename?: 'Query' } & {
                 variants: Array<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>;
             }
     >;
+};
+
+export type GetRunningJobsQueryVariables = {};
+
+export type GetRunningJobsQuery = { __typename?: 'Query' } & {
+    jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
 };
 
 export type GetProductsQueryVariables = {
@@ -5023,6 +5030,10 @@ export namespace GetCollection {
     export type Variables = GetCollectionQueryVariables;
     export type Query = GetCollectionQuery;
     export type Collection = CollectionFragment;
+    export type ProductVariants = (NonNullable<GetCollectionQuery['collection']>)['productVariants'];
+    export type Items = NonNullable<
+        (NonNullable<GetCollectionQuery['collection']>)['productVariants']['items'][0]
+    >;
 }
 
 export namespace MoveCollection {
@@ -5161,12 +5172,6 @@ export namespace DeleteCustomer {
     export type Variables = DeleteCustomerMutationVariables;
     export type Mutation = DeleteCustomerMutation;
     export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
-}
-
-export namespace GetRunningJobs {
-    export type Variables = GetRunningJobsQueryVariables;
-    export type Query = GetRunningJobsQuery;
-    export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
 }
 
 export namespace SearchProductsAdmin {
@@ -5612,6 +5617,12 @@ export namespace GetStockMovement {
     export type Query = GetStockMovementQuery;
     export type Product = NonNullable<GetStockMovementQuery['product']>;
     export type Variants = VariantWithStockFragment;
+}
+
+export namespace GetRunningJobs {
+    export type Variables = GetRunningJobsQueryVariables;
+    export type Query = GetRunningJobsQuery;
+    export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
 }
 
 export namespace GetProducts {
