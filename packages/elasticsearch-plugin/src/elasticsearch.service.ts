@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable } from '@nestjs/common';
-import { JobInfo, SearchInput, SearchResponse, SearchResult } from '@vendure/common/lib/generated-types';
+import { JobInfo, SearchResult } from '@vendure/common/lib/generated-types';
 import {
     DeepRequired,
     FacetValue,

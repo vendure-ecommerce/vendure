@@ -22,7 +22,6 @@ import {
     ELASTIC_SEARCH_CLIENT,
     ELASTIC_SEARCH_OPTIONS,
     loggerCtx,
-    Message,
     PRODUCT_INDEX_NAME,
     PRODUCT_INDEX_TYPE,
     VARIANT_INDEX_NAME,
@@ -34,6 +33,9 @@ import {
     BulkOperationDoc,
     BulkResponseBody,
     ProductIndexItem,
+    ReindexMessage,
+    UpdateProductOrVariantMessage,
+    UpdateVariantsByIdMessage,
     VariantIndexItem,
 } from './types';
 
@@ -68,18 +70,13 @@ export class ElasticsearchIndexerController {
     /**
      * Updates the search index only for the affected entities.
      */
-    @MessagePattern(Message.UpdateProductOrVariant)
+    @MessagePattern(UpdateProductOrVariantMessage.pattern)
     updateProductOrVariant({
         ctx: rawContext,
         productId,
         variantId,
-    }: {
-        ctx: any;
-        productId?: ID;
-        variantId?: ID;
-    }): Observable<boolean> {
+    }: UpdateProductOrVariantMessage['data']): Observable<boolean> {
         const ctx = RequestContext.fromObject(rawContext);
-
         return defer(async () => {
             if (productId) {
                 await this.updateProduct(ctx, productId);
@@ -90,14 +87,11 @@ export class ElasticsearchIndexerController {
         });
     }
 
-    @MessagePattern(Message.UpdateVariantsById)
+    @MessagePattern(UpdateVariantsByIdMessage.pattern)
     updateVariantsById({
         ctx: rawContext,
         ids,
-    }: {
-        ctx: any;
-        ids: ID[];
-    }): Observable<ReindexMessageResponse> {
+    }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
@@ -164,8 +158,8 @@ export class ElasticsearchIndexerController {
         });
     }
 
-    @MessagePattern(Message.Reindex)
-    reindex({ ctx: rawContext }: { ctx: any }): Observable<ReindexMessageResponse> {
+    @MessagePattern(ReindexMessage.pattern)
+    reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
