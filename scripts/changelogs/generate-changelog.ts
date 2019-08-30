@@ -8,7 +8,7 @@ const conventionalChangelogCore = require('conventional-changelog-core');
 /**
  * The types of commit which will be included in the changelog.
  */
-const VALID_TYPES = ['feat', 'fix'];
+const VALID_TYPES = ['feat', 'fix', 'perf'];
 
 /**
  * Define which packages to create changelog entries for.
