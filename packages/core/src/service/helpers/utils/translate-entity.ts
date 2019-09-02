@@ -58,7 +58,10 @@ export function translateEntity<T extends Translatable>(
 
     for (const [key, value] of Object.entries(translation)) {
         if (key === 'customFields') {
-            Object.assign(translated[key], value);
+            if (!translated.customFields) {
+                translated.customFields = {};
+            }
+            Object.assign(translated.customFields, value);
         } else if (key !== 'base' && key !== 'id') {
             translated[key] = value;
         }

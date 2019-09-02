@@ -90,6 +90,12 @@ describe('Custom fields', () => {
                             public: true,
                         },
                     ],
+                    Facet: [
+                        {
+                            name: 'translated',
+                            type: 'localeString',
+                        },
+                    ],
                 },
             },
         );
@@ -161,6 +167,28 @@ describe('Custom fields', () => {
             name: 'Laptop',
             customFields: {
                 nullable: null,
+            },
+        });
+    });
+
+    it('get entity with localeString only', async () => {
+        const { facet } = await adminClient.query(gql`
+            query {
+                facet(id: "T_1") {
+                    id
+                    name
+                    customFields {
+                        translated
+                    }
+                }
+            }
+        `);
+
+        expect(facet).toEqual({
+            id: 'T_1',
+            name: 'category',
+            customFields: {
+                translated: null,
             },
         });
     });
@@ -380,15 +408,10 @@ describe('Custom fields', () => {
     });
 
     describe('sort & filter', () => {
-
         it('can sort by custom fields', async () => {
             const { products } = await adminClient.query(gql`
                 query {
-                    products(options: {
-                        sort: {
-                            nullable: ASC
-                        }
-                    }) {
+                    products(options: { sort: { nullable: ASC } }) {
                         totalItems
                     }
                 }
@@ -400,13 +423,7 @@ describe('Custom fields', () => {
         it('can filter by custom fields', async () => {
             const { products } = await adminClient.query(gql`
                 query {
-                    products(options: {
-                        filter: {
-                            stringWithDefault: {
-                                contains: "hello"
-                            }
-                        }
-                    }) {
+                    products(options: { filter: { stringWithDefault: { contains: "hello" } } }) {
                         totalItems
                     }
                 }
