@@ -818,6 +818,8 @@ describe('Collection resolver', () => {
                     },
                 });
 
+                await awaitRunningJobs(client);
+
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
@@ -846,6 +848,9 @@ describe('Collection resolver', () => {
                         ],
                     },
                 );
+
+                await awaitRunningJobs(client);
+
                 const result = await client.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables

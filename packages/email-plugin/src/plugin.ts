@@ -210,7 +210,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
 
     private async setupEventSubscribers() {
         for (const handler of EmailPlugin.options.handlers) {
-            this.eventBus.subscribe(handler.event, event => {
+            this.eventBus.ofType(handler.event).subscribe(event => {
                 return this.handleEvent(handler, event);
             });
         }

@@ -12,6 +12,8 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -65,12 +67,22 @@ export class CollectionService implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        this.eventBus.subscribe(CatalogModificationEvent, async event => {
+        /*this.eventBus.subscribe(CatalogModificationEvent, async event => {
             const collections = await this.connection.getRepository(Collection).find({
                 relations: ['productVariants'],
             });
             this.applyCollectionFilters(event.ctx, collections);
-        });
+        });*/
+
+        this.eventBus
+            .ofType(CatalogModificationEvent)
+            .pipe(debounceTime(50))
+            .subscribe(async event => {
+                const collections = await this.connection.getRepository(Collection).find({
+                    relations: ['productVariants'],
+                });
+                this.applyCollectionFilters(event.ctx, collections);
+            });
     }
 
     async findAll(
@@ -358,6 +370,7 @@ export class CollectionService implements OnModuleInit {
      */
     private async applyCollectionFilters(ctx: RequestContext, collections: Collection[]): Promise<void> {
         const collectionIds = collections.map(c => c.id);
+        // Logger.info('applyCollectionFilters');
 
         const job = this.jobService.createJob({
             name: 'apply-collection-filters',

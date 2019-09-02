@@ -27,7 +27,7 @@ export class SearchIndexService {
             name: 'reindex',
             singleInstance: true,
             work: async reporter => {
-                Logger.verbose(`sending reindex message`);
+                Logger.verbose(`sending ReindexMessage`);
                 this.workerService.send(new ReindexMessage({ ctx })).subscribe(this.createObserver(reporter));
             },
         });
@@ -66,7 +66,7 @@ export class SearchIndexService {
                 variantIds: ids,
             },
             work: reporter => {
-                Logger.verbose(`sending reindex message`);
+                Logger.verbose(`sending UpdateVariantsByIdMessage`);
                 this.workerService
                     .send(new UpdateVariantsByIdMessage({ ctx, ids }))
                     .subscribe(this.createObserver(reporter));

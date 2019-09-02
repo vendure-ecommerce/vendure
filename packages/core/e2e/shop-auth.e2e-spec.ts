@@ -739,16 +739,16 @@ describe('Updating email address without email verification', () => {
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.subscribe(AccountRegistrationEvent, event => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
         });
-        this.eventBus.subscribe(PasswordResetEvent, event => {
+        this.eventBus.ofType(PasswordResetEvent).subscribe(event => {
             sendEmailFn(event);
         });
-        this.eventBus.subscribe(IdentifierChangeRequestEvent, event => {
+        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe(event => {
             sendEmailFn(event);
         });
-        this.eventBus.subscribe(IdentifierChangeEvent, event => {
+        this.eventBus.ofType(IdentifierChangeEvent).subscribe(event => {
             sendEmailFn(event);
         });
     }

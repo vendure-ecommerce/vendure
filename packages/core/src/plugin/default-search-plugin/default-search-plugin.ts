@@ -1,4 +1,6 @@
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+import { buffer, debounceTime, filter, map } from 'rxjs/operators';
 
 import { idsAreEqual } from '../../common/utils';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -64,15 +66,29 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
 
     /** @internal */
     async onVendureBootstrap() {
-        this.eventBus.subscribe(CatalogModificationEvent, event => {
+        this.eventBus.ofType(CatalogModificationEvent).subscribe(event => {
             if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
                 return this.searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
             }
         });
-        this.eventBus.subscribe(CollectionModificationEvent, event => {
-            return this.searchIndexService.updateVariantsById(event.ctx, event.productVariantIds).start();
-        });
-        this.eventBus.subscribe(TaxRateModificationEvent, event => {
+
+        const collectionModification$ = this.eventBus.ofType(CollectionModificationEvent);
+        const closingNotifier$ = collectionModification$.pipe(debounceTime(50));
+        collectionModification$
+            .pipe(
+                buffer(closingNotifier$),
+                filter(events => 0 < events.length),
+                map(events => ({
+                    ctx: events[0].ctx,
+                    ids: events.reduce((ids, e) => [...ids, ...e.productVariantIds], [] as ID[]),
+                })),
+                filter(e => 0 < e.ids.length),
+            )
+            .subscribe(events => {
+                return this.searchIndexService.updateVariantsById(events.ctx, events.ids).start();
+            });
+
+        this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
             if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
                 return this.searchIndexService.reindex(event.ctx).start();
