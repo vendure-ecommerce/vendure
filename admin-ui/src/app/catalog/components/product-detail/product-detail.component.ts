@@ -404,7 +404,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 const key = fieldDef.name;
                 const value =
                     fieldDef.type === 'localeString'
-                        ? (currentTranslation as any).customFields[key]
+                        ? currentTranslation
+                            ? (currentTranslation as any).customFields[key]
+                            : null
                         : (product as any).customFields[key];
                 const control = customFieldsGroup.get(key);
                 if (control) {
