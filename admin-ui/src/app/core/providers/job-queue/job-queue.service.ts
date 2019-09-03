@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { interval, Observable, of, Subject, Subscription } from 'rxjs';
+import { interval, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { JobInfoFragment, JobState } from '../../../common/generated-types';
@@ -14,9 +14,7 @@ export class JobQueueService implements OnDestroy {
     private readonly subscription: Subscription;
 
     constructor(private dataService: DataService) {
-        const initialJobList$ = this.dataService.settings
-            .getRunningJobs()
-            .single$.subscribe(data => data.jobs.forEach(job => this.updateJob$.next(job)));
+        this.checkForJobs();
 
         this.activeJobs$ = this.updateJob$.pipe(
             scan<JobInfoFragment, Map<string, JobInfoFragment>>(
@@ -53,6 +51,15 @@ export class JobQueueService implements OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    /**
+     * After a given delay, checks the server for any active jobs.
+     */
+    checkForJobs(delay: number = 1000) {
+        timer(delay)
+            .pipe(switchMap(() => this.dataService.settings.getRunningJobs().single$))
+            .subscribe(data => data.jobs.forEach(job => this.updateJob$.next(job)));
     }
 
     addJob(jobId: string, onComplete?: (job: JobInfoFragment) => void) {

@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
@@ -12,6 +12,7 @@ import { getAppConfig } from '../app.config';
 import introspectionResult from '../common/introspection-result';
 import { LocalStorageService } from '../core/providers/local-storage/local-storage.service';
 
+import { CheckJobsLink } from './check-jobs-link';
 import { clientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
 import { OmitTypenameLink } from './omit-typename-link';
@@ -24,6 +25,7 @@ import { initializeServerConfigService, ServerConfigService } from './server-con
 export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
+    injector: Injector,
 ): ApolloClientOptions<any> {
     const { apiHost, apiPort, adminApiPath, tokenMethod } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
@@ -44,6 +46,7 @@ export function createApollo(
     return {
         link: ApolloLink.from([
             new OmitTypenameLink(),
+            new CheckJobsLink(injector),
             setContext(() => {
                 const channelToken = localStorageService.get('activeChannelToken');
                 if (channelToken) {
@@ -92,7 +95,7 @@ export function createApollo(
         {
             provide: APOLLO_OPTIONS,
             useFactory: createApollo,
-            deps: [LocalStorageService, FetchAdapter],
+            deps: [LocalStorageService, FetchAdapter, Injector],
         },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
         {

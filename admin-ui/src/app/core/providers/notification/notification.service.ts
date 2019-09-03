@@ -1,9 +1,8 @@
 import { ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
 
-import { OverlayHostService } from '../overlay-host/overlay-host.service';
-
 import { NotificationComponent } from '../../components/notification/notification.component';
 import { I18nService } from '../i18n/i18n.service';
+import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 export type NotificationType = 'info' | 'success' | 'error' | 'warning';
 export interface ToastConfig {
