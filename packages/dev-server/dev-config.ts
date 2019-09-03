@@ -50,11 +50,9 @@ export const devConfig: VendureConfig = {
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
-            // assetUploadDir: path.join(__dirname, '../../../../kbart/artsupplies-vendure/server/vendure/assets'),
             port: 5002,
         }),
         DefaultSearchPlugin,
-        RestPlugin,
         // ElasticsearchPlugin.init({
         //     host: 'http://192.168.99.100',
         //     port: 9200,

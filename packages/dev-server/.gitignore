@@ -6,3 +6,4 @@ vendure-import-error.log
 load-testing/data-sources/products*.csv
 load-testing/results/*.json
 load-testing/results/*.csv
+dev-config-override.ts
