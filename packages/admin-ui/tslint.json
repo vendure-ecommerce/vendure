@@ -1,9 +1,9 @@
 {
   "extends": [
-    "../tslint.json"
+    "../../tslint.json"
   ],
   "rulesDirectory": [
-    "node_modules/codelyzer"
+    "../../node_modules/codelyzer"
   ],
   "rules": {
     "deprecation": {

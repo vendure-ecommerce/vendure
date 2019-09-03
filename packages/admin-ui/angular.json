@@ -18,7 +18,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "baseHref": "/admin/",
-            "outputPath": "dist/vendure-admin",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -30,12 +30,12 @@
               "src/i18n-messages"
             ],
             "styles": [
-              "./node_modules/@clr/icons/clr-icons.min.css",
+              "../../node_modules/@clr/icons/clr-icons.min.css",
               "src/styles/styles.scss",
-              "./node_modules/trix/dist/trix.css"
+              "../../node_modules/trix/dist/trix.css"
             ],
             "scripts": [
-              "./node_modules/trix/dist/trix-core.js"
+              "../../node_modules/trix/dist/trix-core.js"
             ],
             "stylePreprocessorOptions": {
               "includePaths": ["./src/styles"]

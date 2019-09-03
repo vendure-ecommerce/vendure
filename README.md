@@ -12,10 +12,10 @@ This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna).
 
 ```
 vendure/
-├── admin-ui/       # Source of the admin ui app (an Angular CLI project)
 ├── docs/           # Documentation source
-├── packages/       # Source for the Vendure server & plugin packages
+├── packages/       # Source for the Vendure server, admin-ui & plugin packages
 ├── scripts/
+    ├── changelog/  # Scripts used to generate the changelog based on the git history
     ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
     ├── docs/       # Scripts used to generate documentation markdown from the source
 ```

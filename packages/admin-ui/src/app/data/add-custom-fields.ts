@@ -23,7 +23,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
         >;
         const customFieldsForType = customFields[entityType];
         if (customFieldsForType && customFieldsForType.length) {
-            fragmentDef.selectionSet.selections.push({
+            (fragmentDef.selectionSet.selections as SelectionNode[]).push({
                 name: {
                     kind: Kind.NAME,
                     value: 'customFields',
@@ -50,7 +50,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                 .find(field => field.name.value === 'translations');
 
             if (localeStrings.length && translationsField && translationsField.selectionSet) {
-                translationsField.selectionSet.selections.push({
+                (translationsField.selectionSet.selections as SelectionNode[]).push({
                     name: {
                         kind: Kind.NAME,
                         value: 'customFields',

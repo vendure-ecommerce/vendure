@@ -7,7 +7,7 @@ console.log('Building admin-ui from source...');
 exec(
     'yarn build --prod=true',
     {
-        cwd: path.join(__dirname, '../../admin-ui'),
+        cwd: path.join(__dirname, '../admin-ui'),
     },
     async error => {
         if (error) {
@@ -15,7 +15,7 @@ exec(
             process.exit(1);
         }
         console.log('done!');
-        await fs.copy('../../admin-ui/dist/vendure-admin', 'lib/admin-ui');
+        await fs.copy('../admin-ui/dist', 'lib/admin-ui');
         process.exit(0);
     },
 );
