@@ -1,4 +1,3 @@
-import { compileUiExtensions } from '@vendure/admin-ui/devkit/compile';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
 import {
@@ -16,6 +15,8 @@ import express from 'express';
 import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
+
+import { UiAppCompiler } from './ui-app-compiler.service';
 
 /**
  * @description
@@ -93,13 +94,14 @@ export interface AdminUiOptions {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
+    providers: [UiAppCompiler],
     configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
     private server: Server;
 
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService, private appCompiler: UiAppCompiler) {}
 
     /**
      * @description
@@ -123,17 +125,22 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureBootstrap() {
         const { adminApiPath, authOptions } = this.configService;
-        const { apiHost, apiPort } = AdminUiPlugin.options;
-        await this.compileAdminUiApp();
-        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath, authOptions);
+        const { apiHost, apiPort, extensions } = AdminUiPlugin.options;
+        const adminUiPath = await this.appCompiler.compileAdminUiApp(extensions);
+        await this.overwriteAdminUiConfig({
+            host: apiHost || 'auto',
+            port: apiPort || 'auto',
+            adminApiPath,
+            adminUiPath,
+            authOptions,
+        });
 
-        const adminUiPath = this.getAdminUiPath();
-        const assetServer = express();
-        assetServer.use(express.static(adminUiPath));
-        assetServer.use((req, res) => {
+        const adminUiServer = express();
+        adminUiServer.use(express.static(adminUiPath));
+        adminUiServer.use((req, res) => {
             res.sendFile(path.join(adminUiPath, 'index.html'));
         });
-        this.server = assetServer.listen(AdminUiPlugin.options.port);
+        this.server = adminUiServer.listen(AdminUiPlugin.options.port);
     }
 
     /** @internal */
@@ -141,35 +148,19 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         return new Promise(resolve => this.server.close(() => resolve()));
     }
 
-    private async compileAdminUiApp() {
-        const extensions = this.getExtensions();
-        Logger.info('Compiling Admin UI extensions...', 'AdminUiPlugin');
-        await compileUiExtensions(path.join(__dirname, '../admin-ui'), extensions);
-        Logger.info('Completed compilation!', 'AdminUiPlugin');
-    }
-
-    private getExtensions(): Array<Required<AdminUiExtension>> {
-        return (AdminUiPlugin.options.extensions || []).map(e => {
-            const id =
-                e.id ||
-                Math.random()
-                    .toString(36)
-                    .substr(4);
-            return { ...e, id };
-        });
-    }
-
     /**
      * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
      * the server admin API.
      */
-    private async overwriteAdminUiConfig(
-        host: string | 'auto',
-        port: number | 'auto',
-        adminApiPath: string,
-        authOptions: AuthOptions,
-    ) {
-        const adminUiConfigPath = path.join(this.getAdminUiPath(), 'vendure-ui-config.json');
+    private async overwriteAdminUiConfig(options: {
+        host: string | 'auto';
+        port: number | 'auto';
+        adminUiPath: string;
+        adminApiPath: string;
+        authOptions: AuthOptions;
+    }) {
+        const { host, port, adminApiPath, adminUiPath, authOptions } = options;
+        const adminUiConfigPath = path.join(adminUiPath, 'vendure-ui-config.json');
         const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
         let config: AdminUiConfig;
         try {
@@ -183,19 +174,5 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         config.tokenMethod = authOptions.tokenMethod || 'cookie';
         config.authTokenHeaderKey = authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY;
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
-    }
-
-    private getAdminUiPath(): string {
-        // attempt to read from the path location on a production npm install
-        const prodPath = path.join(__dirname, '../admin-ui');
-        if (fs.existsSync(path.join(prodPath, 'index.html'))) {
-            return prodPath;
-        }
-        // attempt to read from the path on a development install
-        const devPath = path.join(__dirname, '../lib/admin-ui');
-        if (fs.existsSync(path.join(devPath, 'index.html'))) {
-            return devPath;
-        }
-        throw new Error(`AdminUiPlugin: admin-ui app not found`);
     }
 }

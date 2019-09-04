@@ -8,7 +8,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "rimraf lib && node build.js && yarn compile",
+    "build": "rimraf lib && node -r ts-node/register build.ts && yarn compile",
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "compile": "tsc -p ./tsconfig.build.json"
   },

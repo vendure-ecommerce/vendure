@@ -12,7 +12,7 @@ const tempExtensionsModuleFile = path.join(EXTENSIONS_DIR, 'extensions.module.ts
 /**
  * Builds the admin-ui app using the Angular CLI `ng build --prod` command.
  */
-export function compileUiExtensions(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
+export function compileAdminUiApp(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
     const cwd = path.join(__dirname, '..');
     const relativeOutputPath = path.relative(cwd, outputPath);
     return new Promise((resolve, reject) => {
