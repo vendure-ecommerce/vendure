@@ -89,3 +89,10 @@ export interface AdminUiConfig {
     tokenMethod: 'cookie' | 'bearer';
     authTokenHeaderKey: string;
 }
+
+export interface AdminUiExtension {
+    id?: string;
+    ngModulePath: string;
+    ngModuleFileName: string;
+    ngModuleName: string;
+}

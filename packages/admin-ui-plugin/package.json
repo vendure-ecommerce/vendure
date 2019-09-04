@@ -25,6 +25,7 @@
     "typescript": "^3.3.4000"
   },
   "dependencies": {
+    "@vendure/admin-ui": "0.2.0",
     "fs-extra": "^8.0.1"
   }
 }

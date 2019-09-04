@@ -45,13 +45,13 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
 
     async onModuleInit() {
         if (this.processContext === PluginProcessContext.Main) {
-            this.runPluginLifecycleMethods('onVendureBootstrap', instance => {
+            await this.runPluginLifecycleMethods('onVendureBootstrap', instance => {
                 const pluginName = instance.constructor.name || '(anonymous plugin)';
                 Logger.verbose(`Bootstrapped plugin ${pluginName}`);
             });
         }
         if (this.processContext === PluginProcessContext.Worker) {
-            this.runPluginLifecycleMethods('onVendureWorkerBootstrap');
+            await this.runPluginLifecycleMethods('onVendureWorkerBootstrap');
         }
     }
 
@@ -60,7 +60,7 @@ export class PluginModule implements OnModuleInit, OnModuleDestroy {
             await this.runPluginLifecycleMethods('onVendureClose');
         }
         if (this.processContext === PluginProcessContext.Worker) {
-            this.runPluginLifecycleMethods('onVendureWorkerClose');
+            await this.runPluginLifecycleMethods('onVendureWorkerClose');
         }
     }
 

@@ -8,6 +8,10 @@
 # dependencies
 /node_modules
 
+# generated extension files
+/src/app/extensions/modules
+/src/app/extensions/extensions.module.ts.generated
+
 # IDEs and editors
 /.idea
 .project

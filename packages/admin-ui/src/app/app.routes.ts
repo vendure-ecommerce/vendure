@@ -39,6 +39,10 @@ export const routes: Route[] = [
                 path: 'settings',
                 loadChildren: './settings/settings.module#SettingsModule',
             },
+            {
+                path: 'extensions',
+                loadChildren: `./extensions/extensions.module#ExtensionsModule`,
+            },
         ],
     },
 ];

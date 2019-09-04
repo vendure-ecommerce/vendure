@@ -15,6 +15,7 @@ import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
 import { RestPlugin } from './rest-plugin';
+import { UiPlugin } from './ui-plugin/ui-plugin';
 
 /**
  * Config settings used during development
@@ -42,7 +43,7 @@ export const devConfig: VendureConfig = {
             { type: 'datetime', name: 'expires' },
         ],*/
     },
-    logger: new DefaultLogger({ level: LogLevel.Verbose }),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -69,8 +70,10 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
+        UiPlugin,
         AdminUiPlugin.init({
             port: 5001,
+            extensions: UiPlugin.uiExtensions,
         }),
     ],
 };

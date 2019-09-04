@@ -1,10 +1,14 @@
+import { compileUiExtensions } from '@vendure/admin-ui/src/compile-ui-extensions';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
-import { AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
+import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
 import {
     AuthOptions,
+    ConfigService,
     createProxyHandler,
+    Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    PluginCommonModule,
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
@@ -50,6 +54,12 @@ export interface AdminUiOptions {
      * @default 'auto'
      */
     apiPort?: number | 'auto';
+    /**
+     * @description
+     * An optional array of objects which configure extension Angular modules
+     * to be compiled into and made available by the AdminUi application.
+     */
+    extensions?: AdminUiExtension[];
 }
 
 /**
@@ -82,11 +92,14 @@ export interface AdminUiOptions {
  * @docsCategory AdminUiPlugin
  */
 @VendurePlugin({
+    imports: [PluginCommonModule],
     configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
     private server: Server;
+
+    constructor(private configService: ConfigService) {}
 
     /**
      * @description
@@ -104,15 +117,17 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),
             route,
         });
-        const { adminApiPath, authOptions } = config;
-        const { apiHost, apiPort } = this.options;
-        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath, authOptions);
         return config;
     }
 
     /** @internal */
-    onVendureBootstrap() {
-        const adminUiPath = AdminUiPlugin.getAdminUiPath();
+    async onVendureBootstrap() {
+        const { adminApiPath, authOptions } = this.configService;
+        const { apiHost, apiPort } = AdminUiPlugin.options;
+        await this.compileAdminUiApp();
+        await this.overwriteAdminUiConfig(apiHost || 'auto', apiPort || 'auto', adminApiPath, authOptions);
+
+        const adminUiPath = this.getAdminUiPath();
         const assetServer = express();
         assetServer.use(express.static(adminUiPath));
         assetServer.use((req, res) => {
@@ -126,11 +141,29 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         return new Promise(resolve => this.server.close(() => resolve()));
     }
 
+    private async compileAdminUiApp() {
+        const extensions = this.getExtensions();
+        Logger.info('Compiling Admin UI extensions...', 'AdminUiPlugin');
+        await compileUiExtensions(path.join(__dirname, '../admin-ui'), extensions);
+        Logger.info('Completed compilation!', 'AdminUiPlugin');
+    }
+
+    private getExtensions(): Array<Required<AdminUiExtension>> {
+        return (AdminUiPlugin.options.extensions || []).map(e => {
+            const id =
+                e.id ||
+                Math.random()
+                    .toString(36)
+                    .substr(4);
+            return { ...e, id };
+        });
+    }
+
     /**
      * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
      * the server admin API.
      */
-    private static async overwriteAdminUiConfig(
+    private async overwriteAdminUiConfig(
         host: string | 'auto',
         port: number | 'auto',
         adminApiPath: string,
@@ -152,7 +185,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
     }
 
-    private static getAdminUiPath(): string {
+    private getAdminUiPath(): string {
         // attempt to read from the path location on a production npm install
         const prodPath = path.join(__dirname, '../admin-ui');
         if (fs.existsSync(path.join(prodPath, 'index.html'))) {
