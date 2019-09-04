@@ -20,19 +20,11 @@ export function compileAdminUiApp(outputPath: string, extensions: Array<Required
         copyExtensionModules(extensions);
         createExtensionsModule(extensions);
 
-        const buildProcess = spawn(
-            'yarn',
-            [
-                'build',
-                /*'--prod=true', */
-                `--outputPath=${relativeOutputPath}`,
-            ],
-            {
-                cwd,
-                shell: true,
-                stdio: 'inherit',
-            },
-        );
+        const buildProcess = spawn('yarn', ['build:in-plugin', `--outputPath=${relativeOutputPath}`], {
+            cwd,
+            shell: true,
+            stdio: 'inherit',
+        });
         buildProcess.on('close', code => {
             if (code === 0) {
                 resolve();

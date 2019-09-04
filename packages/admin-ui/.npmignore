@@ -1,0 +1,7 @@
+.gitignore
+yarn-error.log
+e2e
+dist
+*.spec.ts
+src/app/extensions/modules
+src/app/extensions/*.generated

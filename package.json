@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
-    "bootstrap": "lerna bootstrap && cd admin-ui && yarn",
+    "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently --restart-tries 5 -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",
     "docs:deploy": "cd docs && yarn && cd .. && yarn docs:build",
@@ -13,17 +13,17 @@
     "generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "lint:packages": "yarn tslint --fix",
-    "lint:admin-ui": "cd admin-ui && yarn lint --fix",
+    "lint:admin-ui": "cd packages/admin-ui && yarn lint --fix",
     "version": "yarn check-imports && yarn build && yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
-    "test:all": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false && cd ../ && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
+    "test:all": "yarn test:admin-ui && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
     "test:common": "jest --config packages/common/jest.config.js",
     "test:core": "jest --config packages/core/jest.config.js",
     "test:email-plugin": "jest --config packages/email-plugin/jest.config.js --maxWorkers=1",
     "test:elasticsearch-plugin": "jest --config packages/elasticsearch-plugin/jest.config.js",
     "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
-    "test:admin-ui": "cd admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
+    "test:admin-ui": "cd packages/admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "build": "lerna run build",
     "check-imports": "ts-node scripts/check-imports.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
@@ -33,12 +33,12 @@
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
     "@commitlint/config-conventional": "^7.6.0",
-    "@graphql-codegen/add": "^1.1.3",
-    "@graphql-codegen/cli": "^1.1.3",
-    "@graphql-codegen/fragment-matcher": "^1.4.0",
-    "@graphql-codegen/typescript": "^1.1.3",
-    "@graphql-codegen/typescript-compatibility": "^1.1.3",
-    "@graphql-codegen/typescript-operations": "^1.1.3",
+    "@graphql-codegen/add": "1.2.0",
+    "@graphql-codegen/cli": "1.2.0",
+    "@graphql-codegen/fragment-matcher": "1.4.0",
+    "@graphql-codegen/typescript": "1.2.0",
+    "@graphql-codegen/typescript-compatibility": "1.2.0",
+    "@graphql-codegen/typescript-operations": "1.2.0",
     "@types/graphql": "^14.0.5",
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "^10.11.5",
@@ -58,9 +58,15 @@
     "tslint": "^5.11.0",
     "typescript": "^3.2.4"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/@types/jasmine",
+      "**/@types/jasminewd2"
+    ]
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -80,7 +86,7 @@
       "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
       "post-commit": "git update-index --again",
       "pre-commit": "lint-staged",
-      "pre-push": "yarn test:all && cd admin-ui && yarn build --prod"
+      "pre-push": "yarn test:all && cd packages/admin-ui && yarn build --prod"
     }
   }
 }

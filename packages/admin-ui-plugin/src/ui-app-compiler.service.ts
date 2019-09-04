@@ -48,7 +48,7 @@ export class UiAppCompiler {
     private extensionModulesHaveChanged(extensions: Array<Required<AdminUiExtension>>): boolean {
         fs.ensureFileSync(this.hashfile);
         const previousHash = fs.readFileSync(this.hashfile, 'utf-8');
-        if (!previousHash && extensions.length === 0) {
+        if (!previousHash && (!extensions || extensions.length === 0)) {
             // No extensions are configured and there is no last has,
             // as when the plugin is newly installed. In this case,
             // it would be unnecessary to recompile.

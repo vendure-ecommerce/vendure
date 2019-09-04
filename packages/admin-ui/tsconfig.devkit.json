@@ -1,0 +1,24 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./devkit",
+    "sourceMap": true,
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "esnext",
+    "skipLibCheck": true,
+    "lib": [
+      "es2017"
+    ]
+  },
+  "files": [
+    "devkit/compile.ts"
+  ],
+  "exclude": [
+    "src/**/*"
+  ]
+}
+
