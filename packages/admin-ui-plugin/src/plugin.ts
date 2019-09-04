@@ -1,4 +1,4 @@
-import { compileUiExtensions } from '@vendure/admin-ui/src/compile-ui-extensions';
+import { compileUiExtensions } from '@vendure/admin-ui/devkit/compile';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
 import {

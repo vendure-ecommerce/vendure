@@ -3,7 +3,7 @@ import { exec, spawn } from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-const EXTENSIONS_DIR = path.join(__dirname, 'app/extensions');
+const EXTENSIONS_DIR = path.join(__dirname, '../src/app/extensions');
 const EXTENSIONS_MODULES_DIR = 'modules';
 
 const originalExtensionsModuleFile = path.join(EXTENSIONS_DIR, 'extensions.module.ts');

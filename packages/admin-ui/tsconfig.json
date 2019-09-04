@@ -24,7 +24,8 @@
       "esnext.asynciterable"
     ],
     "paths": {
-      "shared/*": ["../common/lib/*"]
+      "shared/*": ["../common/lib/*"],
+      "@vendure/admin-ui/*": ["./*"]
     }
   }
 }
