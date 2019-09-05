@@ -22,6 +22,6 @@
     "@vendure/common": "^0.2.1",
     "@vendure/core": "^0.2.1",
     "rimraf": "^2.6.3",
-    "typescript": "^3.4.1"
+    "typescript": "~3.5.3"
   }
 }

@@ -22,7 +22,7 @@
     "@vendure/core": "^0.2.1",
     "express": "^4.16.4",
     "rimraf": "^2.6.3",
-    "typescript": "^3.3.4000"
+    "typescript": "~3.5.3"
   },
   "dependencies": {
     "fs-extra": "^8.0.1",

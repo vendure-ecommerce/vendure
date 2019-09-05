@@ -28,7 +28,7 @@
     "@vendure/core": "^0.2.1",
     "rimraf": "^2.6.3",
     "ts-node": "^8.0.3",
-    "typescript": "^3.3.4000"
+    "typescript": "~3.5.3"
   },
   "dependencies": {
     "chalk": "^2.4.2",
