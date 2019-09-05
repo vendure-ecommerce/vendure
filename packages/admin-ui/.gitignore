@@ -11,11 +11,12 @@
 # generated extension files
 /src/app/extensions/modules
 /src/app/extensions/extensions.module.ts.generated
+/src/app/extensions/extensions.module.ts.temp
 
 # compiled devkit files
-/devkit/compile.js
-/devkit/compile.d.ts
-/devkit/compile.js.map
+/devkit/*.js
+/devkit/*.d.ts
+/devkit/*.js.map
 
 # IDEs and editors
 /.idea

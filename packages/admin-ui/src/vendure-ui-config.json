@@ -1,5 +1,7 @@
 {
-  "apiHost": "http://localhost",
-  "apiPort": 3000,
-  "adminApiPath": "admin-api"
+  "apiHost": "auto",
+  "apiPort": "auto",
+  "adminApiPath": "admin-api",
+  "tokenMethod": "cookie",
+  "authTokenHeaderKey": "vendure-auth-token"
 }

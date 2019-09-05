@@ -1,28 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { compileAdminUiApp } from '@vendure/admin-ui/devkit/compile';
+import { watchAdminUiApp, Watcher } from '@vendure/admin-ui/devkit/watch';
 import { AdminUiExtension } from '@vendure/common/lib/shared-types';
 import { Logger } from '@vendure/core';
 import crypto from 'crypto';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { loggerCtx, UI_PATH } from './constants';
+
 @Injectable()
 export class UiAppCompiler {
-    private readonly outputPath = path.join(__dirname, '../admin-ui');
     private readonly hashfile = path.join(__dirname, 'modules-hash.txt');
 
-    async compileAdminUiApp(extensions: AdminUiExtension[] | undefined): Promise<string> {
-        const compiledAppExists = fs.existsSync(path.join(this.outputPath, 'index.html'));
+    watchAdminUiApp(extensions: AdminUiExtension[] | undefined, port: number): Watcher {
+        const extensionsWithId = this.normalizeExtensions(extensions);
+        Logger.info(`Starting Admin UI in Angular dev server on port ${port}`, loggerCtx);
+        return watchAdminUiApp(extensionsWithId, port);
+    }
+
+    async compileAdminUiApp(extensions: AdminUiExtension[] | undefined): Promise<void> {
+        const compiledAppExists = fs.existsSync(path.join(UI_PATH, 'index.html'));
         const extensionsWithId = this.normalizeExtensions(extensions);
 
         if (!compiledAppExists || this.extensionModulesHaveChanged(extensionsWithId)) {
-            Logger.info('Compiling Admin UI with extensions...', 'AdminUiPlugin');
+            Logger.info('Compiling Admin UI with extensions...', loggerCtx);
             await compileAdminUiApp(path.join(__dirname, '../admin-ui'), extensionsWithId);
-            Logger.info('Completed compilation!', 'AdminUiPlugin');
+            Logger.info('Completed compilation!', loggerCtx);
         } else {
-            Logger.info('Extensions not changed since last run', 'AdminUiPlugin');
+            Logger.verbose('Extensions not changed since last run', loggerCtx);
         }
-        return this.outputPath;
     }
 
     /**

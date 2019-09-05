@@ -15,7 +15,8 @@
     ]
   },
   "files": [
-    "devkit/compile.ts"
+    "devkit/compile.ts",
+    "devkit/watch.ts"
   ],
   "exclude": [
     "src/**/*"

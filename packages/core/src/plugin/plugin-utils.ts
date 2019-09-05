@@ -41,7 +41,7 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
         // TODO: how do we detect https?
         target: `http://${proxyHostname}:${options.port}`,
         pathRewrite: {
-            [`^${route}`]: `/`,
+            [`^${route}`]: `/` + (options.basePath || ''),
         },
         logProvider(provider: proxy.LogProvider): proxy.LogProvider {
             return {
@@ -100,6 +100,11 @@ export interface ProxyOptions {
      * @default 'localhost'
      */
     hostname?: string;
+    /**
+     * @description
+     * An optional base path on the proxied server.
+     */
+    basePath?: string;
 }
 
 /**
@@ -108,12 +113,12 @@ export interface ProxyOptions {
 export function logProxyMiddlewares(config: VendureConfig) {
     for (const middleware of config.middleware || []) {
         if ((middleware.handler as any).proxyMiddleware) {
-            const { port, hostname, label, route } = (middleware.handler as any)
+            const { port, hostname, label, route, basePath } = (middleware.handler as any)
                 .proxyMiddleware as ProxyOptions;
             Logger.info(
                 `${label}: http://${config.hostname || 'localhost'}:${
                     config.port
-                }/${route}/ -> http://${hostname || 'localhost'}:${port}`,
+                }/${route}/ -> http://${hostname || 'localhost'}:${port}${basePath ? `/${basePath}` : ''}`,
             );
         }
     }

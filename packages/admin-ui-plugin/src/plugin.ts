@@ -1,3 +1,4 @@
+import { Watcher } from '@vendure/admin-ui/devkit/watch';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
 import {
@@ -16,6 +17,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
+import { UI_PATH } from './constants';
 import { UiAppCompiler } from './ui-app-compiler.service';
 
 /**
@@ -61,6 +63,16 @@ export interface AdminUiOptions {
      * to be compiled into and made available by the AdminUi application.
      */
     extensions?: AdminUiExtension[];
+    /**
+     * @description
+     * Set to `true` in order to run the Admin UI in development mode (using the Angular CLI
+     * [ng serve](https://angular.io/cli/serve) command). When in watch mode, any changes to
+     * UI extension files will be watched and trigger a rebuild of the Admin UI with live
+     * reloading.
+     *
+     * @default false
+     */
+    watch?: boolean;
 }
 
 /**
@@ -100,6 +112,7 @@ export interface AdminUiOptions {
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
     private server: Server;
+    private watcher: Watcher | undefined;
 
     constructor(private configService: ConfigService, private appCompiler: UiAppCompiler) {}
 
@@ -116,36 +129,64 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     static async configure(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
         const route = 'admin';
         config.middleware.push({
-            handler: createProxyHandler({ ...this.options, route, label: 'Admin UI' }),
+            handler: createProxyHandler({
+                ...this.options,
+                route: 'admin',
+                label: 'Admin UI',
+                basePath: this.options.watch ? 'admin' : undefined,
+            }),
             route,
         });
+        if (this.options.watch) {
+            config.middleware.push({
+                handler: createProxyHandler({
+                    ...this.options,
+                    route: 'sockjs-node',
+                    label: 'Admin UI live reload',
+                    basePath: 'sockjs-node',
+                }),
+                route: 'sockjs-node',
+            });
+        }
         return config;
     }
 
     /** @internal */
     async onVendureBootstrap() {
         const { adminApiPath, authOptions } = this.configService;
-        const { apiHost, apiPort, extensions } = AdminUiPlugin.options;
-        const adminUiPath = await this.appCompiler.compileAdminUiApp(extensions);
+        const { apiHost, apiPort, extensions, watch, port } = AdminUiPlugin.options;
+        let adminUiConfigPath: string;
+
+        if (watch) {
+            this.watcher = this.appCompiler.watchAdminUiApp(extensions, port);
+            adminUiConfigPath = path.join(__dirname, '../../../admin-ui/src', 'vendure-ui-config.json');
+        } else {
+            const adminUiPath = await this.appCompiler.compileAdminUiApp(extensions);
+            const adminUiServer = express();
+            adminUiServer.use(express.static(UI_PATH));
+            adminUiServer.use((req, res) => {
+                res.sendFile(path.join(UI_PATH, 'index.html'));
+            });
+            this.server = adminUiServer.listen(AdminUiPlugin.options.port);
+            adminUiConfigPath = path.join(UI_PATH, 'vendure-ui-config.json');
+        }
         await this.overwriteAdminUiConfig({
             host: apiHost || 'auto',
             port: apiPort || 'auto',
             adminApiPath,
-            adminUiPath,
             authOptions,
+            adminUiConfigPath,
         });
-
-        const adminUiServer = express();
-        adminUiServer.use(express.static(adminUiPath));
-        adminUiServer.use((req, res) => {
-            res.sendFile(path.join(adminUiPath, 'index.html'));
-        });
-        this.server = adminUiServer.listen(AdminUiPlugin.options.port);
     }
 
     /** @internal */
-    onVendureClose(): Promise<void> {
-        return new Promise(resolve => this.server.close(() => resolve()));
+    async onVendureClose(): Promise<void> {
+        if (this.watcher) {
+            this.watcher.close();
+        }
+        if (this.server) {
+            await new Promise(resolve => this.server.close(() => resolve()));
+        }
     }
 
     /**
@@ -155,12 +196,11 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private async overwriteAdminUiConfig(options: {
         host: string | 'auto';
         port: number | 'auto';
-        adminUiPath: string;
         adminApiPath: string;
         authOptions: AuthOptions;
+        adminUiConfigPath: string;
     }) {
-        const { host, port, adminApiPath, adminUiPath, authOptions } = options;
-        const adminUiConfigPath = path.join(adminUiPath, 'vendure-ui-config.json');
+        const { host, port, adminApiPath, authOptions, adminUiConfigPath } = options;
         const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
         let config: AdminUiConfig;
         try {

@@ -60,7 +60,22 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
-            "compile-in-plugin": {
+            "plugin": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "styles": [
                 "../../@clr/icons/clr-icons.min.css",
                 "src/styles/styles.scss",
@@ -68,6 +83,26 @@
               ],
               "scripts": [
                 "../../trix/dist/trix-core.js"
+              ]
+            },
+            "plugin-watch": {
+              "styles": [
+                "../../@clr/icons/clr-icons.min.css",
+                "src/styles/styles.scss",
+                "../../trix/dist/trix.css"
+              ],
+              "scripts": [
+                "../../trix/dist/trix-core.js"
+              ]
+            },
+            "plugin-dev": {
+              "styles": [
+                "../../node_modules/@clr/icons/clr-icons.min.css",
+                "src/styles/styles.scss",
+                "../../node_modules/trix/dist/trix.css"
+              ],
+              "scripts": [
+                "../../node_modules/trix/dist/trix-core.js"
               ]
             }
           }
@@ -80,6 +115,12 @@
           "configurations": {
             "production": {
               "browserTarget": "vendure-admin:build:production"
+            },
+            "plugin": {
+              "browserTarget": "vendure-admin:build:plugin-watch"
+            },
+            "plugin-dev": {
+              "browserTarget": "vendure-admin:build:plugin-dev"
             }
           }
         },
