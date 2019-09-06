@@ -1,6 +1,6 @@
 import { Component, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ModalService, SharedModule } from '@vendure/admin-ui/devkit';
+import { ModalService, SharedModule } from '@vendure/admin-ui/src';
 
 @Component({
     selector: 'plugin-test-component',
@@ -17,9 +17,11 @@ export class TestComponent {
             .dialog({
                 title: 'Did it work?',
                 buttons: [{ label: 'Yes!!!!', returnValue: true, type: 'primary' }],
-                // tslint:disable-next-line:no-console
             })
-            .subscribe(val => console.log(val));
+            .subscribe(val => {
+                // tslint:disable-next-line:no-console
+                console.log(val);
+            });
     }
 }
 

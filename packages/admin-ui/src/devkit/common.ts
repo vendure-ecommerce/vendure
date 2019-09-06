@@ -15,13 +15,6 @@ export function isInVendureMonorepo(): boolean {
 }
 
 /**
- * Restores the placeholder ExtensionsModule file from a template.
- */
-export function restoreExtensionsModule() {
-    fs.copyFileSync(path.join(__dirname, 'extensions.module.ts.template'), originalExtensionsModuleFile);
-}
-
-/**
  * Deletes the contents of the /modules directory, which contains the plugin
  * extension modules copied over during the last compilation.
  */
@@ -60,6 +53,27 @@ export function createExtensionsModule(extensions: Array<Required<AdminUiExtensi
 export function restoreOriginalExtensionsModule() {
     fs.renameSync(originalExtensionsModuleFile, path.join(EXTENSIONS_DIR, 'extensions.module.ts.generated'));
     restoreExtensionsModule();
+}
+
+/**
+ * Restores the placeholder ExtensionsModule file from a template.
+ */
+export function restoreExtensionsModule() {
+    const source = `
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+
+/**
+ * This is a placeholder module for UI extensions provided by the AdminUiPlugin \`extensions\` option.
+ * When the {@link compileUiExtensions} function is executed, this module gets temporarily replaced
+ * by a generated module which includes all of the configured extension modules.
+ */
+@NgModule({
+    imports: [CommonModule],
+})
+export class ExtensionsModule {}
+`;
+    fs.writeFileSync(originalExtensionsModuleFile, source, 'utf-8');
 }
 
 function generateExtensionModuleTsSource(modules: Array<{ className: string; path: string }>): string {

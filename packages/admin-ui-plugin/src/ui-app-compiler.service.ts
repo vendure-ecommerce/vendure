@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { compileAdminUiApp } from '@vendure/admin-ui/devkit/compile';
-import { watchAdminUiApp, Watcher } from '@vendure/admin-ui/devkit/watch';
+import { compileAdminUiApp, watchAdminUiApp, Watcher } from '@vendure/admin-ui/devkit';
 import { AdminUiExtension } from '@vendure/common/lib/shared-types';
 import { Logger } from '@vendure/core';
 import crypto from 'crypto';

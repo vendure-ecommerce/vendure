@@ -17,7 +17,7 @@
     "version": "yarn check-imports && yarn build && yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "dev-server:populate": "cd packages/dev-server && yarn populate",
-    "test:all": "yarn test:admin-ui && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
+    "test:all": "yarn test:admin-ui && cd ../ && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
     "test:common": "jest --config packages/common/jest.config.js",
     "test:core": "jest --config packages/core/jest.config.js",
     "test:email-plugin": "jest --config packages/email-plugin/jest.config.js --maxWorkers=1",

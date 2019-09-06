@@ -1,10 +1,9 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Channel, RequestContext } from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import http from 'http';
 import path from 'path';
-
-import { LanguageCode } from '../../common/lib/generated-types';
 
 import { EmailEventHandler } from './event-listener';
 import { EmailPluginDevModeOptions, EventWithContext } from './types';
@@ -14,7 +13,10 @@ import { EmailPluginDevModeOptions, EventWithContext } from './types';
  */
 export class DevMailbox {
     server: http.Server;
-    private handleMockEventFn: (handler: EmailEventHandler<string, any>, event: EventWithContext) => void | undefined;
+    private handleMockEventFn: (
+        handler: EmailEventHandler<string, any>,
+        event: EventWithContext,
+    ) => void | undefined;
 
     serve(options: EmailPluginDevModeOptions) {
         const { outputPath, handlers, mailboxPort } = options;
@@ -36,19 +38,22 @@ export class DevMailbox {
                 const handler = handlers.find(h => h.type === type);
                 if (!handler || !handler.mockEvent) {
                     res.statusCode = 404;
-                    res.send({ success: false, error: `No mock event registered for type "${type}"`});
+                    res.send({ success: false, error: `No mock event registered for type "${type}"` });
                     return;
                 }
                 try {
-                    await this.handleMockEventFn(handler, { ...handler.mockEvent, ctx: this.createRequestContext(languageCode) });
+                    await this.handleMockEventFn(handler, {
+                        ...handler.mockEvent,
+                        ctx: this.createRequestContext(languageCode as LanguageCode),
+                    });
                     res.send({ success: true });
                 } catch (e) {
                     res.statusCode = 500;
-                    res.send({success: false, error: e.message });
+                    res.send({ success: false, error: e.message });
                 }
                 return;
             } else {
-                res.send({success: false, error: `Mock email generation not set up.`});
+                res.send({ success: false, error: `Mock email generation not set up.` });
             }
         });
         server.get('/item/:id', async (req, res) => {

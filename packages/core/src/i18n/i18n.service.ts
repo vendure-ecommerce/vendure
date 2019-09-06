@@ -28,8 +28,8 @@ export class I18nService implements OnModuleInit {
     onModuleInit() {
         return i18next
             .use(i18nextMiddleware.LanguageDetector)
-            .use(Backend)
-            .use(ICU)
+            .use(Backend as any)
+            .use(ICU as any)
             .init({
                 preload: ['en', 'de'],
                 fallbackLng: 'en',

@@ -14,9 +14,7 @@
 /src/app/extensions/extensions.module.ts.temp
 
 # compiled devkit files
-/devkit/*.js
-/devkit/*.d.ts
-/devkit/*.js.map
+/devkit
 
 # IDEs and editors
 /.idea

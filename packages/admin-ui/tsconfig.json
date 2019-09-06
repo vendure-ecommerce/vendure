@@ -25,7 +25,7 @@
     ],
     "paths": {
       "shared/*": ["../common/lib/*"],
-      "@vendure/admin-ui/*": ["./*"]
+      "@vendure/admin-ui/src/*": ["./src/*"]
     }
   }
 }

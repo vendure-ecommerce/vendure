@@ -67,6 +67,10 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                 query.args.push({
                     name: 'options',
                     type: listOptionsInput,
+                    description: null,
+                    defaultValue: null,
+                    extensions: null,
+                    astNode: null,
                 });
             }
 

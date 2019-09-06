@@ -31,9 +31,11 @@ export function addGraphQLCustomFields(
     }
 
     for (const entityName of Object.keys(customFieldConfig)) {
-        const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(config => {
-            return (publicOnly === true) ? config.public !== false : true;
-        });
+        const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
+            config => {
+                return publicOnly === true ? config.public !== false : true;
+            },
+        );
 
         const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
         const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
@@ -204,10 +206,18 @@ export function addOrderLineCustomFieldsInput(
     addItemToOrderMutation.args.push({
         name: 'customFields',
         type: input,
+        description: null,
+        defaultValue: null,
+        extensions: null,
+        astNode: null,
     });
     adjustOrderLineMutation.args.push({
         name: 'customFields',
         type: input,
+        description: null,
+        defaultValue: null,
+        extensions: null,
+        astNode: null,
     });
 
     return new GraphQLSchema(schemaConfig);
@@ -218,10 +228,7 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
-function mapToFields(
-    fieldDefs: CustomFieldConfig[],
-    typeFn: (fieldType: CustomFieldType) => string,
-): string {
+function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
     return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
 }
 
