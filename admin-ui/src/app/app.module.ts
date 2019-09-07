@@ -22,7 +22,7 @@ export class BaseHrefHolder {
 export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) {
     // Dynamically get the baseHref, which is configured in the angular.json file
     const baseHref = location.getBaseHrefFromDOM();
-    return new CustomHttpTranslationLoader(http, baseHref + '/i18n-messages/');
+    return new CustomHttpTranslationLoader(http, baseHref + 'i18n-messages/');
 }
 
 @NgModule({
