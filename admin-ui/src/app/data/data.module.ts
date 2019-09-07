@@ -29,7 +29,13 @@ export function createApollo(
 ): ApolloClientOptions<any> {
     const { apiHost, apiPort, adminApiPath, tokenMethod } = getAppConfig();
     const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
-    const port = apiPort === 'auto' ? (location.port === '' ? '' : `:${location.port}`) : `:${apiPort}`;
+    const port = apiPort
+        ? apiPort === 'auto'
+            ? location.port === ''
+                ? ''
+                : `:${location.port}`
+            : `:${apiPort}`
+        : '';
     const apolloCache = new InMemoryCache({
         fragmentMatcher: new IntrospectionFragmentMatcher({
             introspectionQueryResultData: introspectionResult,
