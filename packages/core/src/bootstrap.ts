@@ -2,7 +2,7 @@ import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { TcpClientOptions, Transport } from '@nestjs/microservices';
 import { Type } from '@vendure/common/lib/shared-types';
-import { EntitySubscriberInterface } from 'typeorm';
+import { ConnectionOptions, EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
 import { ReadOnlyRequired } from './common/types/common-types';
@@ -16,6 +16,20 @@ import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugi
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
+
+/**
+ * https://github.com/vendure-ecommerce/vendure/issues/152
+ * fix race condition when modifying DB
+ * @param {VendureConfig} userConfig
+ */
+const disableSynchronize = (userConfig: ReadOnlyRequired<VendureConfig>): ReadOnlyRequired<VendureConfig> => {
+    const config = { ...userConfig };
+    config.dbConnectionOptions = {
+        ...userConfig.dbConnectionOptions,
+        synchronize: false,
+    } as ConnectionOptions;
+    return config;
+};
 
 /**
  * @description
@@ -97,7 +111,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
 }
 
 async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
-    const config = await preBootstrapConfig(userConfig);
+    const config = disableSynchronize(await preBootstrapConfig(userConfig));
     if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
         (config.logger as any).setDefaultContext('Vendure Worker');
     }
