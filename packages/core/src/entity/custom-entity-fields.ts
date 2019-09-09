@@ -17,3 +17,4 @@ export class CustomProductVariantFields {}
 export class CustomProductVariantFieldsTranslation {}
 export class CustomUserFields {}
 export class CustomGlobalSettingsFields {}
+export class CustomOrderFields {}

@@ -16,6 +16,7 @@ import {
     CustomFacetValueFields,
     CustomFacetValueFieldsTranslation,
     CustomGlobalSettingsFields,
+    CustomOrderFields,
     CustomOrderLineFields,
     CustomProductFields,
     CustomProductFieldsTranslation,
@@ -46,7 +47,8 @@ function registerCustomFieldsForEntity(
             const registerColumn = () =>
                 Column({
                     type: getColumnType(dbEngine, type),
-                    default: type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue,
+                    default:
+                        type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue,
                     name,
                     nullable: nullable === false ? false : true,
                 })(new ctor(), name);
@@ -128,6 +130,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'Order', CustomOrderFields);
     registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);

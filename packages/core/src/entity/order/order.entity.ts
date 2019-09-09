@@ -4,8 +4,10 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationId
 
 import { Calculated } from '../../common/calculated-decorator';
 import { idType } from '../../config/config-helpers';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
+import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
@@ -25,7 +27,7 @@ import { ShippingMethod } from '../shipping-method/shipping-method.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Order extends VendureEntity {
+export class Order extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
@@ -73,6 +75,9 @@ export class Order extends VendureEntity {
 
     @Column({ default: 0 })
     shippingWithTax: number;
+
+    @Column(type => CustomOrderFields)
+    customFields: CustomOrderFields;
 
     @Calculated()
     get totalBeforeTax(): number {

@@ -139,6 +139,7 @@ export interface CustomFields {
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
+    Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];

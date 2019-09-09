@@ -96,6 +96,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Facet: [],
         FacetValue: [],
         GlobalSettings: [],
+        Order: [],
         OrderLine: [],
         Product: [],
         ProductOption: [],
