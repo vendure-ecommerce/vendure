@@ -236,6 +236,7 @@ describe('Shop catalog', () => {
         beforeAll(async () => {
             const result = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
             const category = result.facets.items[0];
+            const sportsEquipment = category.values.find(v => v.code === 'sports-equipment')!;
             const { createCollection } = await adminClient.query<
                 CreateCollection.Mutation,
                 CreateCollection.Variables
@@ -247,7 +248,7 @@ describe('Shop catalog', () => {
                             arguments: [
                                 {
                                     name: 'facetValueIds',
-                                    value: `["${category.values[3].id}"]`,
+                                    value: `["${sportsEquipment.id}"]`,
                                     type: 'facetValueIds',
                                 },
                                 {

@@ -18,7 +18,11 @@ export class SqliteSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>> {
+    async getFacetValueIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
@@ -36,7 +40,11 @@ export class SqliteSearchStrategy implements SearchStrategy {
         return createFacetIdCountMap(facetValuesResult);
     }
 
-    async getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]> {
+    async getSearchResults(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
@@ -59,6 +67,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
             if (sort.price) {
                 qb.addOrderBy('price', sort.price);
             }
+        } else {
+            qb.addOrderBy('productVariantId', 'ASC');
         }
         if (enabledOnly) {
             qb.andWhere('si.enabled = :enabled', { enabled: true });
