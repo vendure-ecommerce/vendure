@@ -59,8 +59,7 @@ export function restoreOriginalExtensionsModule() {
  * Restores the placeholder ExtensionsModule file from a template.
  */
 export function restoreExtensionsModule() {
-    const source = `
-import { CommonModule } from '@angular/common';
+    const source = `import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
 /**

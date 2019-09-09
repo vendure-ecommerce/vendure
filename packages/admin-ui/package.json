@@ -4,11 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod && yarn build:devkit",
+    "build": "yarn reset-extensions && ng build --prod && yarn build:devkit",
     "build:devkit": "tsc -p tsconfig.devkit.json",
     "test": "ng test",
     "lint": "tslint --fix",
-    "e2e": "ng e2e",
+    "reset-extensions": "rimraf ./src/app/extensions/modules && rimraf ./src/app/extensions/*.generated && rimraf ./src/app/extensions/*.temp",
     "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _"
   },
   "private": false,
