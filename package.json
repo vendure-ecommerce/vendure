@@ -86,7 +86,7 @@
       "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
       "post-commit": "git update-index --again",
       "pre-commit": "lint-staged",
-      "pre-push": "yarn test:all && cd packages/admin-ui && yarn build --prod"
+      "pre-push": "yarn test:all && cd packages/admin-ui && yarn build"
     }
   }
 }
