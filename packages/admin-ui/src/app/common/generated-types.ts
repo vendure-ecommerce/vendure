@@ -963,6 +963,7 @@ export type CustomFields = {
   Facet: Array<CustomFieldConfig>,
   FacetValue: Array<CustomFieldConfig>,
   GlobalSettings: Array<CustomFieldConfig>,
+  Order: Array<CustomFieldConfig>,
   OrderLine: Array<CustomFieldConfig>,
   Product: Array<CustomFieldConfig>,
   ProductOption: Array<CustomFieldConfig>,
@@ -2184,6 +2185,7 @@ export type Order = Node & {
   totalBeforeTax: Scalars['Int'],
   total: Scalars['Int'],
   history: HistoryEntryList,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 
@@ -4217,7 +4219,7 @@ export type CustomFieldsFragment = ({ __typename?: 'StringCustomFieldConfig' | '
 export type GetServerConfigQueryVariables = {};
 
 
-export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & { customFieldConfig: ({ __typename?: 'CustomFields' } & { Address: Array<CustomFieldsFragment>, Collection: Array<CustomFieldsFragment>, Customer: Array<CustomFieldsFragment>, Facet: Array<CustomFieldsFragment>, FacetValue: Array<CustomFieldsFragment>, GlobalSettings: Array<CustomFieldsFragment>, OrderLine: Array<CustomFieldsFragment>, Product: Array<CustomFieldsFragment>, ProductOption: Array<CustomFieldsFragment>, ProductOptionGroup: Array<CustomFieldsFragment>, ProductVariant: Array<CustomFieldsFragment>, User: Array<CustomFieldsFragment> }) }) }) });
+export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & { customFieldConfig: ({ __typename?: 'CustomFields' } & { Address: Array<CustomFieldsFragment>, Collection: Array<CustomFieldsFragment>, Customer: Array<CustomFieldsFragment>, Facet: Array<CustomFieldsFragment>, FacetValue: Array<CustomFieldsFragment>, GlobalSettings: Array<CustomFieldsFragment>, Order: Array<CustomFieldsFragment>, OrderLine: Array<CustomFieldsFragment>, Product: Array<CustomFieldsFragment>, ProductOption: Array<CustomFieldsFragment>, ProductOptionGroup: Array<CustomFieldsFragment>, ProductVariant: Array<CustomFieldsFragment>, User: Array<CustomFieldsFragment> }) }) }) });
 
 export type JobInfoFragment = ({ __typename?: 'JobInfo' } & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>);
 
@@ -5172,6 +5174,7 @@ export namespace GetServerConfig {
   export type Facet = CustomFieldsFragment;
   export type FacetValue = CustomFieldsFragment;
   export type _GlobalSettings = CustomFieldsFragment;
+  export type Order = CustomFieldsFragment;
   export type OrderLine = CustomFieldsFragment;
   export type Product = CustomFieldsFragment;
   export type ProductOption = CustomFieldsFragment;

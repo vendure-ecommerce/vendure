@@ -962,6 +962,7 @@ export type CustomFields = {
   Facet: Array<CustomFieldConfig>,
   FacetValue: Array<CustomFieldConfig>,
   GlobalSettings: Array<CustomFieldConfig>,
+  Order: Array<CustomFieldConfig>,
   OrderLine: Array<CustomFieldConfig>,
   Product: Array<CustomFieldConfig>,
   ProductOption: Array<CustomFieldConfig>,
@@ -2162,6 +2163,7 @@ export type Order = Node & {
   totalBeforeTax: Scalars['Int'],
   total: Scalars['Int'],
   history: HistoryEntryList,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 

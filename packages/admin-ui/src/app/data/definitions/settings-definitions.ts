@@ -504,6 +504,9 @@ export const GET_SERVER_CONFIG = gql`
                     GlobalSettings {
                         ...CustomFields
                     }
+                    Order {
+                        ...CustomFields
+                    }
                     OrderLine {
                         ...CustomFields
                     }
