@@ -26,6 +26,7 @@ import {
     GetCollectionProducts,
     GetCollections,
     GetCollectionsForProducts,
+    GetCollectionsWithAssets,
     GetFacetValues,
     GetProductCollections,
     GetProductsWithVariantIds,
@@ -274,6 +275,22 @@ describe('Collection resolver', () => {
         });
 
         expect(updateCollection).toMatchSnapshot();
+    });
+
+    it('collections.assets', async () => {
+        const { collections } = await client.query<GetCollectionsWithAssets.Query>(gql`
+            query GetCollectionsWithAssets {
+                collections {
+                    items {
+                        assets {
+                            name
+                        }
+                    }
+                }
+            }
+        `);
+
+        expect(collections.items[0].assets).toBeDefined();
     });
 
     describe('moveCollection', () => {

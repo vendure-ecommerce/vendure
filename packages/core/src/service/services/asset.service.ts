@@ -68,6 +68,16 @@ export class AssetService {
         return entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset;
     }
 
+    async getEntityAssets<T extends EntityWithAssets>(entity: T): Promise<Asset[] | undefined> {
+        const entityType = Object.getPrototypeOf(entity).constructor;
+        const entityWithFeaturedAsset = await this.connection
+            .getRepository<EntityWithAssets>(entityType)
+            .findOne(entity.id, {
+                relations: ['assets'],
+            });
+        return entityWithFeaturedAsset && entityWithFeaturedAsset.assets;
+    }
+
     /**
      * Create an Asset based on a file uploaded via the GraphQL API.
      */

@@ -967,6 +967,7 @@ export type CustomFields = {
     Facet: Array<CustomFieldConfig>;
     FacetValue: Array<CustomFieldConfig>;
     GlobalSettings: Array<CustomFieldConfig>;
+    Order: Array<CustomFieldConfig>;
     OrderLine: Array<CustomFieldConfig>;
     Product: Array<CustomFieldConfig>;
     ProductOption: Array<CustomFieldConfig>;
@@ -2097,6 +2098,7 @@ export type Order = Node & {
     totalBeforeTax: Scalars['Int'];
     total: Scalars['Int'];
     history: HistoryEntryList;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderHistoryArgs = {
@@ -3348,6 +3350,16 @@ export type GetCustomerCountQueryVariables = {};
 
 export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
+};
+
+export type GetCollectionsWithAssetsQueryVariables = {};
+
+export type GetCollectionsWithAssetsQuery = { __typename?: 'Query' } & {
+    collections: { __typename?: 'CollectionList' } & {
+        items: Array<
+            { __typename?: 'Collection' } & { assets: Array<{ __typename?: 'Asset' } & Pick<Asset, 'name'>> }
+        >;
+    };
 };
 
 export type GetProductsWithVariantIdsQueryVariables = {};
@@ -5014,6 +5026,16 @@ export namespace GetCustomerCount {
     export type Variables = GetCustomerCountQueryVariables;
     export type Query = GetCustomerCountQuery;
     export type Customers = GetCustomerCountQuery['customers'];
+}
+
+export namespace GetCollectionsWithAssets {
+    export type Variables = GetCollectionsWithAssetsQueryVariables;
+    export type Query = GetCollectionsWithAssetsQuery;
+    export type Collections = GetCollectionsWithAssetsQuery['collections'];
+    export type Items = NonNullable<GetCollectionsWithAssetsQuery['collections']['items'][0]>;
+    export type Assets = NonNullable<
+        (NonNullable<GetCollectionsWithAssetsQuery['collections']['items'][0]>)['assets'][0]
+    >;
 }
 
 export namespace GetProductsWithVariantIds {
