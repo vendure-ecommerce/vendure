@@ -1,4 +1,4 @@
 {
     "schemaPath": "./schema-admin.json",
-    "excludes": ["./packages/core/**/*.graphql", "./admin-ui/**/*.graphql"]
+    "excludes": ["./packages/core/**/*.graphql", "./packages/admin-ui/**/*.graphql"]
 }
