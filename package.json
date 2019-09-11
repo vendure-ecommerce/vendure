@@ -2,6 +2,9 @@
   "name": "vendure",
   "version": "10.2.2",
   "private": true,
+  "engines": {
+    "node": ">= 10.12.0 < 11 || >= 12.00"
+  },
   "scripts": {
     "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
     "bootstrap": "lerna bootstrap",
