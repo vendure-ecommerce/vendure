@@ -100,21 +100,9 @@ export class CollectionController {
 
         // Apply any facetValue-based filters
         if (facetFilters.length) {
-            const [idsArg, containsAnyArg] = facetFilters[0].args;
-            const mergedArgs = facetFilters
-                .map(f => f.args[0].value)
-                .filter(notNullOrUndefined)
-                .map(value => JSON.parse(value))
-                .reduce((all, ids) => [...all, ...ids]);
-
-            qb = facetValueCollectionFilter.apply(qb, [
-                {
-                    name: idsArg.name,
-                    type: idsArg.type,
-                    value: JSON.stringify(Array.from(new Set(mergedArgs))),
-                },
-                containsAnyArg,
-            ]);
+            for (const filter of facetFilters) {
+                qb = facetValueCollectionFilter.apply(qb, filter.args);
+            }
         }
 
         // Apply any variant name-based filters

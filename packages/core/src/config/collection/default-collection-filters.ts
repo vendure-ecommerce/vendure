@@ -1,7 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Brackets } from 'typeorm';
 
 import { UserInputError } from '../../common/error/errors';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 import { CollectionFilter } from './collection-filter';
 
@@ -16,20 +16,45 @@ export const facetValueCollectionFilter = new CollectionFilter({
     code: 'facet-value-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Filter by FacetValues' }],
     apply: (qb, args) => {
-        if (args.facetValueIds.length) {
-            qb.leftJoin('productVariant.product', 'product')
-                .leftJoin('product.facetValues', 'productFacetValues')
-                .leftJoin('productVariant.facetValues', 'variantFacetValues')
-                .andWhere(
-                    new Brackets(qb1 => {
-                        const ids = args.facetValueIds;
-                        return qb1
-                            .where(`productFacetValues.id IN (:...ids)`, { ids })
-                            .orWhere(`variantFacetValues.id IN (:...ids)`, { ids });
-                    }),
+        const ids = args.facetValueIds;
+
+        if (ids.length) {
+            const idsName = `ids_${ids.join('_')}`;
+            const countName = `count_${ids.join('_')}`;
+            const productFacetValues = qb.connection
+                .createQueryBuilder(ProductVariant, 'product_variant')
+                .select('product_variant.id', 'variant_id')
+                .addSelect('facet_value.id', 'facet_value_id')
+                .leftJoin('product_variant.facetValues', 'facet_value')
+                .where(`facet_value.id IN (:...${idsName})`);
+
+            const variantFacetValues = qb.connection
+                .createQueryBuilder(ProductVariant, 'product_variant')
+                .select('product_variant.id', 'variant_id')
+                .addSelect('facet_value.id', 'facet_value_id')
+                .leftJoin('product_variant.product', 'product')
+                .leftJoin('product.facetValues', 'facet_value')
+                .where(`facet_value.id IN (:...${idsName})`);
+
+            const union = qb.connection
+                .createQueryBuilder()
+                .select('union_table.variant_id')
+                .from(
+                    `(${productFacetValues.getQuery()} UNION ${variantFacetValues.getQuery()})`,
+                    'union_table',
                 )
-                .groupBy('productVariant.id')
-                .having(`COUNT(1) >= :count`, { count: args.containsAny ? 1 : args.facetValueIds.length });
+                .groupBy('variant_id')
+                .having(`COUNT(*) >= :${countName}`);
+
+            const variantIds = qb.connection
+                .createQueryBuilder()
+                .select('variant_ids_table.variant_id')
+                .from(`(${union.getQuery()})`, 'variant_ids_table');
+
+            qb.andWhere(`productVariant.id IN (${variantIds.getQuery()})`).setParameters({
+                [idsName]: ids,
+                [countName]: args.containsAny ? 1 : ids.length,
+            });
         } else {
             // If no facetValueIds are specified, no ProductVariants will be matched.
             qb.andWhere('1 = 0');

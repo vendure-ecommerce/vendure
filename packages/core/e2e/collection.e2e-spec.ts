@@ -131,7 +131,7 @@ describe('Collection resolver', () => {
             expect(electronicsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
         });
 
-        it('creates a nested category', async () => {
+        it('creates a nested collection', async () => {
             const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
@@ -162,7 +162,7 @@ describe('Collection resolver', () => {
             expect(computersCollection.parent!.name).toBe(electronicsCollection.name);
         });
 
-        it('creates a 2nd level nested category', async () => {
+        it('creates a 2nd level nested collection', async () => {
             const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
@@ -689,6 +689,59 @@ describe('Collection resolver', () => {
                     'Camera Lens',
                     'Tripod',
                     'SLR Camera',
+                    'Hat',
+                ]);
+            });
+
+            it('bell OR pear in computers', async () => {
+                const result = await client.query<
+                    CreateCollectionSelectVariants.Mutation,
+                    CreateCollectionSelectVariants.Variables
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    input: {
+                        parentId: computersCollection.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Bell OR Pear Computers',
+                                description: '',
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('pear')}", "${getFacetValueId('bell')}"]`,
+                                        type: 'facetValueIds',
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `true`,
+                                        type: 'boolean',
+                                    },
+                                ],
+                            },
+                        ],
+                    } as CreateCollectionInput,
+                });
+
+                await awaitRunningJobs(client);
+                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                    GET_COLLECTION,
+                    {
+                        id: result.createCollection.id,
+                    },
+                );
+
+                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                    'Curvy Monitor 24 inch',
+                    'Curvy Monitor 27 inch',
                 ]);
             });
         });
@@ -799,6 +852,7 @@ describe('Collection resolver', () => {
                     'Clacky Keyboard',
                     'USB Cable',
                     'Tripod',
+                    'Hat',
                 ]);
             });
         });
@@ -913,6 +967,55 @@ describe('Collection resolver', () => {
                 ]);
             });
         });
+
+        it('filter inheritance of nested collections (issue #158)', async () => {
+            const { createCollection: pearElectronics } = await client.query<
+                CreateCollectionSelectVariants.Mutation,
+                CreateCollectionSelectVariants.Variables
+            >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                input: {
+                    parentId: electronicsCollection.id,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'pear electronics', description: '' },
+                    ],
+                    filters: [
+                        {
+                            code: facetValueCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: `["${getFacetValueId('pear')}"]`,
+                                    type: 'facetValueIds',
+                                },
+                                {
+                                    name: 'containsAny',
+                                    value: `false`,
+                                    type: 'boolean',
+                                },
+                            ],
+                        },
+                    ],
+                } as CreateCollectionInput,
+            });
+
+            await awaitRunningJobs(client);
+
+            const result = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(
+                GET_COLLECTION_PRODUCT_VARIANTS,
+                { id: pearElectronics.id },
+            );
+            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                'Laptop 13 inch 8GB',
+                'Laptop 15 inch 8GB',
+                'Laptop 13 inch 16GB',
+                'Laptop 15 inch 16GB',
+                'Curvy Monitor 24 inch',
+                'Curvy Monitor 27 inch',
+                'Gaming PC i7-8700 240GB SSD',
+                'Instant Camera',
+                // no "Hat"
+            ]);
+        });
     });
 
     describe('Product collections property', () => {
@@ -926,8 +1029,9 @@ describe('Collection resolver', () => {
                 { id: 'T_5', name: 'Pear' },
                 { id: 'T_8', name: 'Photo AND Pear' },
                 { id: 'T_9', name: 'Photo OR Pear' },
-                { id: 'T_10', name: 'contains camera' },
-                { id: 'T_12', name: 'endsWith camera' },
+                { id: 'T_11', name: 'contains camera' },
+                { id: 'T_13', name: 'endsWith camera' },
+                { id: 'T_15', name: 'pear electronics' },
             ]);
         });
     });
