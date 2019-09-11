@@ -1,7 +1,14 @@
 #!/bin/bash
 
 # A shell script which publishes all packages to a local Verdaccio registry for testing / local dev purposes
-VERDACCIO=http://localhost:4873/
+
+if [[ -z "${VERDACCIO_URL}" ]]; then
+  VERDACCIO=http://localhost:4873/
+else
+  VERDACCIO="${VERDACCIO_URL}"
+fi
+
+echo "Publishing to Verdaccio @ $VERDACCIO"
 
 cd ../packages/admin-ui-plugin && npm publish -reg $VERDACCIO &&\
 cd ../admin-ui && npm publish -reg $VERDACCIO &&\

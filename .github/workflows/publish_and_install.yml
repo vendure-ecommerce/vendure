@@ -1,0 +1,65 @@
+name: Publish & Install
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+jobs:
+  publish_install:
+
+    runs-on: ubuntu-latest
+
+    #services:
+    #  verdaccio:
+    #    image: verdaccio/verdaccio
+    #    ports:
+    #      - 4873
+    #    # volumes:
+    #    #   - "./verdaccio:/verdaccio/conf"
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Install & build
+      run: |
+        yarn install
+        yarn bootstrap
+      env:
+        CI: true
+    - name: Install Verdaccio
+      run: |
+        npm install -g verdaccio
+        mkdir -p $HOME/.config/verdaccio
+        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+        verdaccio --config $HOME/.config/verdaccio/config.yaml &
+        sleep 10s
+    # - name: Bump version
+    #   env:
+    #     VERSION: 0.0.0-ci.${{ GITHUB_SHA }}
+    #   run: |
+    #     yarn lerna version $VERSION --no-push --no-commit-hooks
+    - name: Publish to Verdaccio
+      env:
+        #VERDACCIO_URL: http://localhost:${{ job.services.verdaccio.ports['4873'] }}
+        VERDACCIO_URL: http://localhost:4873
+      run: |
+        npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
+        npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
+        npm set registry=http://localhost:4873/
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --yes --dist-tag ci --registry http://localhost:4873/
+      # cd scripts
+      # chmod +x publish-to-verdaccio.sh
+      # ./publish-to-verdaccio.sh
+    - name: Install from Verdaccio
+      run: |
+        mkdir -p $HOME/install
+        cd $HOME/install
+        yarn init -y
+        yarn add @vendure/core@ci --registry http://localhost:4873/
+
