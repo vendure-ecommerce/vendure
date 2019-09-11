@@ -17,4 +17,3 @@ install:
 script:
   - yarn lerna run build
   - yarn test:all
-  - cd admin-ui && yarn build --prod
