@@ -11,20 +11,13 @@ jobs:
   publish_install:
 
     runs-on: ubuntu-latest
-    #services:
-    #  verdaccio:
-    #    image: verdaccio/verdaccio
-    #    ports:
-    #      - 4873
-    #    # volumes:
-    #    #   - "./verdaccio:/verdaccio/conf"
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-    - name: Install & build
+    - name: Install & bootstrap
       run: |
         yarn install
         yarn bootstrap
@@ -36,11 +29,7 @@ jobs:
         mkdir -p $HOME/.config/verdaccio
         cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
         verdaccio --config $HOME/.config/verdaccio/config.yaml &
-        sleep 10s
     - name: Publish to Verdaccio
-      env:
-        #VERDACCIO_URL: http://localhost:${{ job.services.verdaccio.ports['4873'] }}
-        VERDACCIO_URL: http://localhost:4873
       run: |
         npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
         npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
@@ -52,4 +41,3 @@ jobs:
         cd $HOME/install
         npm dist-tag ls @vendure/create
         npx @vendure/create@ci test-app --ci
-

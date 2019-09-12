@@ -23,11 +23,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: install, build, and test
+    - name: Install & build
       run: |
         yarn install
         yarn bootstrap
         yarn lerna run build
-        yarn test:all
       env:
         CI: true
+    - name: Test
+      run: yarn test:all
