@@ -1,0 +1,43 @@
+name: Publish & Install
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+jobs:
+  publish_install:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Install & bootstrap
+      run: |
+        yarn install
+        yarn bootstrap
+      env:
+        CI: true
+    - name: Install Verdaccio
+      run: |
+        npm install -g verdaccio
+        mkdir -p $HOME/.config/verdaccio
+        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+        verdaccio --config $HOME/.config/verdaccio/config.yaml &
+    - name: Publish to Verdaccio
+      run: |
+        npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
+        npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
+        npm set registry=http://localhost:4873/
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --yes --dist-tag ci --registry http://localhost:4873/
+    - name: Install via @vendure/create
+      run: |
+        mkdir -p $HOME/install
+        cd $HOME/install
+        npm dist-tag ls @vendure/create
+        npx @vendure/create@ci test-app --ci

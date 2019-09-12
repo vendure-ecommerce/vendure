@@ -106,9 +106,37 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
 }
 
 /**
+ * Returns mock "user response" without prompting, for use in CI
+ */
+export async function gatherCiUserResponses(root: string): Promise<UserResponses> {
+    const ciAnswers = {
+        dbType: 'sqlite' as const,
+        dbHost: '',
+        dbPort: '',
+        dbName: 'vendure',
+        dbUserName: '',
+        dbPassword: '',
+        language: 'ts',
+        populateProducts: true,
+    };
+    const { indexSource, indexWorkerSource, configSource } = await generateSources(root, ciAnswers);
+    return {
+        indexSource,
+        indexWorkerSource,
+        configSource,
+        usingTs: ciAnswers.language === 'ts',
+        dbType: ciAnswers.dbType,
+        populateProducts: ciAnswers.populateProducts,
+    };
+}
+
+/**
  * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(root: string, answers: any): Promise<{ indexSource: string; indexWorkerSource: string; configSource: string; }> {
+async function generateSources(
+    root: string,
+    answers: any,
+): Promise<{ indexSource: string; indexWorkerSource: string; configSource: string }> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     const templateContext = {
