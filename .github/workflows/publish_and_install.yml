@@ -50,5 +50,6 @@ jobs:
       run: |
         mkdir -p $HOME/install
         cd $HOME/install
-        npx @vendure/create test-app --ci --registry http://localhost:4873/
+        npm dist-tag ls @vendure/create
+        npx @vendure/create@ci test-app --ci
 
