@@ -18,6 +18,13 @@ export interface SoftDeletable {
 }
 
 /**
+ * Entities which can be ordered relative to their siblings in a list.
+ */
+export interface Orderable {
+    position: number;
+}
+
+/**
  * Creates a type based on T, but with all properties non-optional
  * and readonly.
  */
@@ -49,7 +56,7 @@ export interface ListQueryOptions<T extends VendureEntity> {
  * nullable fields have the type `field?: <type> | null`.
  */
 export type NullOptionals<T> = {
-    [K in keyof T]: undefined extends T[K] ? NullOptionals<T[K]> | null : NullOptionals<T[K]>
+    [K in keyof T]: undefined extends T[K] ? NullOptionals<T[K]> | null : NullOptionals<T[K]>;
 };
 
 export type SortOrder = 'ASC' | 'DESC';

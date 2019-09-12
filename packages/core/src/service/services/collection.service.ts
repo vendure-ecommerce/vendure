@@ -12,7 +12,6 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
@@ -40,6 +39,7 @@ import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
@@ -305,36 +305,18 @@ export class CollectionService implements OnModuleInit {
             throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
         }
 
-        const siblings = await this.connection
+        let siblings = await this.connection
             .getRepository(Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
-            .orderBy('collection.position', 'ASC')
             .getMany();
         const normalizedIndex = Math.max(Math.min(input.index, siblings.length), 0);
 
-        if (idsAreEqual(target.parent.id, input.parentId)) {
-            const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.collectionId));
-            if (currentIndex !== normalizedIndex) {
-                siblings.splice(normalizedIndex, 0, siblings.splice(currentIndex, 1)[0]);
-                siblings.forEach((collection, index) => {
-                    collection.position = index;
-                    if (target.id === collection.id) {
-                        target.position = index;
-                    }
-                });
-            }
-        } else {
+        if (!idsAreEqual(target.parent.id, input.parentId)) {
             target.parent = new Collection({ id: input.parentId });
-            siblings.splice(normalizedIndex, 0, target);
-            siblings.forEach((collection, index) => {
-                collection.position = index;
-                if (target.id === collection.id) {
-                    target.position = index;
-                }
-            });
         }
+        siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(Collection).save(siblings);
         await this.applyCollectionFilters(ctx, [target]);
