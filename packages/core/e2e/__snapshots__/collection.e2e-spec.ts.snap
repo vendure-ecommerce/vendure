@@ -5,20 +5,20 @@ Object {
   "assets": Array [
     Object {
       "fileSize": 1680,
-      "id": "T_1",
-      "mimeType": "image/jpeg",
-      "name": "derick-david-409858-unsplash.jpg",
-      "preview": "test-url/test-assets/derick-david-409858-unsplash__preview.jpg",
-      "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
-      "type": "IMAGE",
-    },
-    Object {
-      "fileSize": 1680,
       "id": "T_2",
       "mimeType": "image/jpeg",
       "name": "alexandru-acea-686569-unsplash.jpg",
       "preview": "test-url/test-assets/alexandru-acea-686569-unsplash__preview.jpg",
       "source": "test-url/test-assets/alexandru-acea-686569-unsplash.jpg",
+      "type": "IMAGE",
+    },
+    Object {
+      "fileSize": 1680,
+      "id": "T_1",
+      "mimeType": "image/jpeg",
+      "name": "derick-david-409858-unsplash.jpg",
+      "preview": "test-url/test-assets/derick-david-409858-unsplash__preview.jpg",
+      "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
       "type": "IMAGE",
     },
   ],
@@ -69,7 +69,7 @@ Object {
 }
 `;
 
-exports[`Collection resolver updateCollection 1`] = `
+exports[`Collection resolver updateCollection updates with assets 1`] = `
 Object {
   "assets": Array [
     Object {
@@ -79,6 +79,15 @@ Object {
       "name": "derick-david-409858-unsplash.jpg",
       "preview": "test-url/test-assets/derick-david-409858-unsplash__preview.jpg",
       "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
+      "type": "IMAGE",
+    },
+    Object {
+      "fileSize": 1680,
+      "id": "T_3",
+      "mimeType": "image/jpeg",
+      "name": "florian-olivo-1166419-unsplash.jpg",
+      "preview": "test-url/test-assets/florian-olivo-1166419-unsplash__preview.jpg",
+      "source": "test-url/test-assets/florian-olivo-1166419-unsplash.jpg",
       "type": "IMAGE",
     },
   ],

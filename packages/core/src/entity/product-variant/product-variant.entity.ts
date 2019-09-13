@@ -16,6 +16,7 @@ import { StockMovement } from '../stock-movement/stock-movement.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { TaxRate } from '../tax-rate/tax-rate.entity';
 
+import { ProductVariantAsset } from './product-variant-asset.entity';
 import { ProductVariantPrice } from './product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant-translation.entity';
 
@@ -78,9 +79,8 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @ManyToMany(type => Asset)
-    @JoinTable()
-    assets: Asset[];
+    @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant)
+    assets: ProductVariantAsset[];
 
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;

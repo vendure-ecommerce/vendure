@@ -35,7 +35,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { WorkerService } from '../../worker/worker.service';
-import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -43,6 +42,7 @@ import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
+import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 import { JobService } from './job.service';
@@ -57,7 +57,7 @@ export class CollectionService implements OnModuleInit {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
-        private assetUpdater: AssetUpdater,
+        private assetService: AssetService,
         private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
@@ -67,13 +67,6 @@ export class CollectionService implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        /*this.eventBus.subscribe(CatalogModificationEvent, async event => {
-            const collections = await this.connection.getRepository(Collection).find({
-                relations: ['productVariants'],
-            });
-            this.applyCollectionFilters(event.ctx, collections);
-        });*/
-
         this.eventBus
             .ofType(CatalogModificationEvent)
             .pipe(debounceTime(50))
@@ -257,9 +250,10 @@ export class CollectionService implements OnModuleInit {
                 }
                 coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
                 coll.filters = this.getCollectionFiltersFromInput(input);
-                await this.assetUpdater.updateEntityAssets(coll, input);
+                await this.assetService.updateFeaturedAsset(coll, input.featuredAssetId);
             },
         });
+        await this.assetService.updateEntityAssets(collection, input.assetIds);
         this.applyCollectionFilters(ctx, [collection]);
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -273,7 +267,8 @@ export class CollectionService implements OnModuleInit {
                 if (input.filters) {
                     coll.filters = this.getCollectionFiltersFromInput(input);
                 }
-                await this.assetUpdater.updateEntityAssets(coll, input);
+                await this.assetService.updateFeaturedAsset(coll, input.featuredAssetId);
+                await this.assetService.updateEntityAssets(coll, input.assetIds);
             },
         });
         if (input.filters) {

@@ -194,6 +194,39 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('updateCollection', () => {
+        it('updates with assets', async () => {
+            const { updateCollection } = await client.query<
+                UpdateCollection.Mutation,
+                UpdateCollection.Variables
+            >(UPDATE_COLLECTION, {
+                input: {
+                    id: pearCollection.id,
+                    assetIds: [assets[1].id, assets[2].id],
+                    featuredAssetId: assets[1].id,
+                    translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
+                },
+            });
+
+            expect(updateCollection).toMatchSnapshot();
+        });
+
+        it('updating existing assets', async () => {
+            const { updateCollection } = await client.query<
+                UpdateCollection.Mutation,
+                UpdateCollection.Variables
+            >(UPDATE_COLLECTION, {
+                input: {
+                    id: pearCollection.id,
+                    assetIds: [assets[3].id, assets[0].id],
+                    featuredAssetId: assets[3].id,
+                },
+            });
+
+            expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
+        });
+    });
+
     it('collection query', async () => {
         const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
@@ -259,22 +292,6 @@ describe('Collection resolver', () => {
             return;
         }
         expect(result.collection.breadcrumbs).toEqual([{ id: 'T_1', name: ROOT_COLLECTION_NAME }]);
-    });
-
-    it('updateCollection', async () => {
-        const { updateCollection } = await client.query<
-            UpdateCollection.Mutation,
-            UpdateCollection.Variables
-        >(UPDATE_COLLECTION, {
-            input: {
-                id: pearCollection.id,
-                assetIds: [assets[1].id],
-                featuredAssetId: assets[1].id,
-                translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
-            },
-        });
-
-        expect(updateCollection).toMatchSnapshot();
     });
 
     it('collections.assets', async () => {

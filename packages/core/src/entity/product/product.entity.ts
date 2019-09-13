@@ -12,6 +12,7 @@ import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
+import { ProductAsset } from './product-asset.entity';
 import { ProductTranslation } from './product-translation.entity';
 
 /**
@@ -43,9 +44,8 @@ export class Product extends VendureEntity
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @ManyToMany(type => Asset)
-    @JoinTable()
-    assets: Asset[];
+    @OneToMany(type => ProductAsset, productAsset => productAsset.product)
+    assets: ProductAsset[];
 
     @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Product>>;

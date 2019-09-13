@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateProductVariantInput, DeletionResponse, DeletionResult, UpdateProductVariantInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateProductVariantInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateProductVariantInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
@@ -12,7 +17,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { Asset, ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
+import { ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
@@ -20,7 +25,6 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
-import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -28,6 +32,7 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { samplesEach } from '../helpers/utils/samples-each';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { AssetService } from './asset.service';
 import { FacetValueService } from './facet-value.service';
 import { GlobalSettingsService } from './global-settings.service';
 import { StockMovementService } from './stock-movement.service';
@@ -44,7 +49,7 @@ export class ProductVariantService {
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
-        private assetUpdater: AssetUpdater,
+        private assetService: AssetService,
         private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
@@ -132,20 +137,6 @@ export class ProductVariantService {
             .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
     }
 
-    async getAssetsForVariant(ctx: RequestContext, variantId: ID): Promise<Asset[]> {
-        const variant = await getEntityOrThrow(this.connection, ProductVariant, variantId, {
-            relations: ['assets'],
-        });
-        return variant.assets;
-    }
-
-    async getFeaturedAssetForVariant(ctx: RequestContext, variantId: ID): Promise<Asset> {
-        const variant = await getEntityOrThrow(this.connection, ProductVariant, variantId, {
-            relations: ['featuredAsset'],
-        });
-        return variant.featuredAsset;
-    }
-
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .getRepository(ProductVariant)
@@ -185,13 +176,14 @@ export class ProductVariantService {
                 }
                 variant.product = { id: input.productId } as any;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
-                await this.assetUpdater.updateEntityAssets(variant, input);
+                await this.assetService.updateFeaturedAsset(variant, input.featuredAssetId);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        await this.assetService.updateEntityAssets(createdVariant, input.assetIds);
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
                 createdVariant.id,
@@ -235,7 +227,8 @@ export class ProductVariantService {
                         input.stockOnHand,
                     );
                 }
-                await this.assetUpdater.updateEntityAssets(updatedVariant, input);
+                await this.assetService.updateFeaturedAsset(updatedVariant, input.featuredAssetId);
+                await this.assetService.updateEntityAssets(updatedVariant, input.assetIds);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
@@ -405,7 +398,7 @@ export class ProductVariantService {
 
     private sortJoin<T>(arr: T[], glue: string, prop?: keyof T): string {
         return arr
-            .map(x => prop ? x[prop] : x)
+            .map(x => (prop ? x[prop] : x))
             .sort()
             .join(glue);
     }

@@ -20,6 +20,7 @@ import { Channel } from '../channel/channel.entity';
 import { CustomCollectionFields } from '../custom-entity-fields';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
+import { CollectionAsset } from './collection-asset.entity';
 import { CollectionTranslation } from './collection-translation.entity';
 
 /**
@@ -59,9 +60,8 @@ export class Collection extends VendureEntity
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @ManyToMany(type => Asset)
-    @JoinTable()
-    assets: Asset[];
+    @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
+    assets: CollectionAsset[];
 
     @Column('simple-json') filters: ConfigurableOperation[];
 
