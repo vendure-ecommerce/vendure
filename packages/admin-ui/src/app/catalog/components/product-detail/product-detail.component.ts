@@ -399,15 +399,13 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get(['product', 'customFields']) as FormGroup;
+            const cfCurrentTranslation =
+                (currentTranslation && (currentTranslation as any).customFields) || {};
+            const cfProduct = (product as any).customFields || {};
 
             for (const fieldDef of this.customFields) {
                 const key = fieldDef.name;
-                const value =
-                    fieldDef.type === 'localeString'
-                        ? currentTranslation
-                            ? (currentTranslation as any).customFields[key]
-                            : null
-                        : (product as any).customFields[key];
+                const value = fieldDef.type === 'localeString' ? cfCurrentTranslation[key] : cfProduct[key];
                 const control = customFieldsGroup.get(key);
                 if (control) {
                     control.patchValue(value);
