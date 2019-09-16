@@ -13,6 +13,10 @@ a:focus, button:focus {
     outline-color: $color-primary-400;
 }
 
+.flex-spacer {
+    flex: 1;
+}
+
 .btn-link.btn-warning {
     color: $color-warning-500;
 
