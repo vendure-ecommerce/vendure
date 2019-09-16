@@ -3,7 +3,7 @@
     class="tree-node"
     #dropList
     [cdkDropListData]="collectionTree"
-    [cdkDropListDisabled]="true"
+    [cdkDropListDisabled]="false"
     (cdkDropListDropped)="drop($event)"
 >
     <div
@@ -36,12 +36,9 @@
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}
             </a>
-            <!--
-                TODO: reenable once it is possible to drop into nested lists. See https://github.com/angular/material2/issues/14093
                 <div class="drag-handle" cdkDragHandle>
                     <clr-icon shape="drag-handle" size="24"></clr-icon>
                 </div>
-            -->
             <vdr-dropdown>
                 <button class="icon-button" vdrDropdownTrigger>
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
