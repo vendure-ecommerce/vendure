@@ -21,8 +21,13 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
 export interface EntityWithAssets extends VendureEntity {
-    featuredAsset: Asset;
+    featuredAsset: Asset | null;
     assets: OrderableAsset[];
+}
+
+export interface EntityAssetInput {
+    assetIds?: ID[] | null;
+    featuredAssetId?: ID | null;
 }
 
 @Injectable()
@@ -68,7 +73,7 @@ export class AssetService {
             .findOne(entity.id, {
                 relations: ['featuredAsset'],
             });
-        return entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset;
+        return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
 
     async getEntityAssets<T extends EntityWithAssets>(entity: T): Promise<Asset[] | undefined> {
@@ -85,11 +90,13 @@ export class AssetService {
         return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
-    async updateFeaturedAsset<T extends EntityWithAssets>(
-        entity: T,
-        featuredAssetId?: ID | null,
-    ): Promise<T> {
-        if (!featuredAssetId) {
+    async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
+        const { assetIds, featuredAssetId } = input;
+        if (featuredAssetId === null || (assetIds && assetIds.length === 0)) {
+            entity.featuredAsset = null;
+            return entity;
+        }
+        if (featuredAssetId === undefined) {
             return entity;
         }
         const featuredAsset = await this.findOne(featuredAssetId);
@@ -102,17 +109,20 @@ export class AssetService {
     /**
      * Updates the assets / featuredAsset of an entity, ensuring that only valid assetIds are used.
      */
-    async updateEntityAssets<T extends EntityWithAssets>(entity: T, assetIds?: ID[] | null): Promise<T> {
+    async updateEntityAssets<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
         if (!entity.id) {
             throw new InternalServerError('error.entity-must-have-an-id');
         }
+        const { assetIds, featuredAssetId } = input;
         if (assetIds && assetIds.length) {
             const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
             const sortedAssets = assetIds
                 .map(id => assets.find(a => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
-            this.removeExistingOrderableAssets(entity);
+            await this.removeExistingOrderableAssets(entity);
             entity.assets = await this.createOrderableAssets(entity, sortedAssets);
+        } else if (assetIds && assetIds.length === 0) {
+            await this.removeExistingOrderableAssets(entity);
         }
         return entity;
     }

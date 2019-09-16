@@ -108,10 +108,10 @@ export class ProductService {
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input.featuredAssetId);
+                await this.assetService.updateFeaturedAsset(p, input);
             },
         });
-        await this.assetService.updateEntityAssets(product, input.assetIds);
+        await this.assetService.updateEntityAssets(product, input);
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         return assertFound(this.findOne(ctx, product.id));
     }
@@ -127,8 +127,8 @@ export class ProductService {
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input.featuredAssetId);
-                await this.assetService.updateEntityAssets(p, input.assetIds);
+                await this.assetService.updateFeaturedAsset(p, input);
+                await this.assetService.updateEntityAssets(p, input);
             },
         });
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));
@@ -189,12 +189,10 @@ export class ProductService {
     }
 
     private async getProductWithOptionGroups(productId: ID): Promise<Product> {
-        const product = await this.connection
-            .getRepository(Product)
-            .findOne(productId, {
-                relations: ['optionGroups', 'variants', 'variants.options'],
-                where: { deletedAt: null },
-            });
+        const product = await this.connection.getRepository(Product).findOne(productId, {
+            relations: ['optionGroups', 'variants', 'variants.options'],
+            where: { deletedAt: null },
+        });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);
         }

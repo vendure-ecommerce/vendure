@@ -225,6 +225,21 @@ describe('Collection resolver', () => {
 
             expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
+
+        it('removes all assets', async () => {
+            const { updateCollection } = await client.query<
+                UpdateCollection.Mutation,
+                UpdateCollection.Variables
+            >(UPDATE_COLLECTION, {
+                input: {
+                    id: pearCollection.id,
+                    assetIds: [],
+                },
+            });
+
+            expect(updateCollection.assets).toEqual([]);
+            expect(updateCollection.featuredAsset).toBeNull();
+        });
     });
 
     it('collection query', async () => {

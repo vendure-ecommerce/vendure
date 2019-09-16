@@ -176,14 +176,14 @@ export class ProductVariantService {
                 }
                 variant.product = { id: input.productId } as any;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
-                await this.assetService.updateFeaturedAsset(variant, input.featuredAssetId);
+                await this.assetService.updateFeaturedAsset(variant, input);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
                 taxCategoryId: input.taxCategoryId,
             },
         });
-        await this.assetService.updateEntityAssets(createdVariant, input.assetIds);
+        await this.assetService.updateEntityAssets(createdVariant, input);
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
                 createdVariant.id,
@@ -227,8 +227,8 @@ export class ProductVariantService {
                         input.stockOnHand,
                     );
                 }
-                await this.assetService.updateFeaturedAsset(updatedVariant, input.featuredAssetId);
-                await this.assetService.updateEntityAssets(updatedVariant, input.assetIds);
+                await this.assetService.updateFeaturedAsset(updatedVariant, input);
+                await this.assetService.updateEntityAssets(updatedVariant, input);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,

@@ -250,10 +250,10 @@ export class CollectionService implements OnModuleInit {
                 }
                 coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
                 coll.filters = this.getCollectionFiltersFromInput(input);
-                await this.assetService.updateFeaturedAsset(coll, input.featuredAssetId);
+                await this.assetService.updateFeaturedAsset(coll, input);
             },
         });
-        await this.assetService.updateEntityAssets(collection, input.assetIds);
+        await this.assetService.updateEntityAssets(collection, input);
         this.applyCollectionFilters(ctx, [collection]);
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -267,8 +267,8 @@ export class CollectionService implements OnModuleInit {
                 if (input.filters) {
                     coll.filters = this.getCollectionFiltersFromInput(input);
                 }
-                await this.assetService.updateFeaturedAsset(coll, input.featuredAssetId);
-                await this.assetService.updateEntityAssets(coll, input.assetIds);
+                await this.assetService.updateFeaturedAsset(coll, input);
+                await this.assetService.updateEntityAssets(coll, input);
             },
         });
         if (input.filters) {
