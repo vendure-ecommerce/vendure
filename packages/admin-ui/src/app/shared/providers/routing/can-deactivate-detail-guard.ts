@@ -29,7 +29,7 @@ export class CanDeactivateDetailGuard implements CanDeactivate<BaseDetailCompone
                 return true;
             }
         }
-        if (component.detailForm && component.detailForm.dirty) {
+        if (!component.canDeactivate()) {
             return this.modalService
                 .dialog({
                     title: _('common.confirm-navigation'),

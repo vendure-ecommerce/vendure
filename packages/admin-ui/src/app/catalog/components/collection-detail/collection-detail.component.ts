@@ -202,6 +202,10 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             );
     }
 
+    canDeactivate(): boolean {
+        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+    }
+
     /**
      * Sets the values of the form on changes to the category or current language.
      */

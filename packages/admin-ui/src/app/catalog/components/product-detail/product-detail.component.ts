@@ -382,6 +382,10 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             );
     }
 
+    canDeactivate(): boolean {
+        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+    }
+
     /**
      * Sets the values of the form on changes to the product or current language.
      */

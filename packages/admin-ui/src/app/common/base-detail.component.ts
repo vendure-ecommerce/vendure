@@ -59,6 +59,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         this.setQueryParam('lang', code);
     }
 
+    canDeactivate(): boolean {
+        return this.detailForm && this.detailForm.pristine;
+    }
+
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
 
     protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
