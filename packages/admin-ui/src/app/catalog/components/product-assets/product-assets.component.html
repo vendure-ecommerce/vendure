@@ -43,9 +43,19 @@
 </ng-template>
 
 <ng-template #assetList>
-    <div class="all-assets" [class.compact]="compact">
-        <ng-container *ngFor="let asset of assets">
-            <vdr-dropdown>
+    <div class="all-assets" [class.compact]="compact" cdkDropListGroup>
+        <div
+            cdkDropList
+            [cdkDropListEnterPredicate]="dropListEnterPredicate"
+            (cdkDropListDropped)="dropListDropped($event)"
+        ></div>
+        <div
+            *ngFor="let asset of assets"
+            cdkDropList
+            [cdkDropListEnterPredicate]="dropListEnterPredicate"
+            (cdkDropListDropped)="dropListDropped($event)"
+        >
+            <vdr-dropdown cdkDrag (cdkDragMoved)="dragMoved($event)">
                 <div
                     class="asset-thumb"
                     vdrDropdownTrigger
@@ -73,6 +83,6 @@
                     </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>
-        </ng-container>
+        </div>
     </div>
 </ng-template>

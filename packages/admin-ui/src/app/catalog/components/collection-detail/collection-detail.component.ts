@@ -158,6 +158,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Collection',
                     });
+                    this.assetChanges = {};
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
@@ -185,6 +186,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             )
             .subscribe(
                 () => {
+                    this.assetChanges = {};
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.notificationService.success(_('common.notify-update-success'), {
