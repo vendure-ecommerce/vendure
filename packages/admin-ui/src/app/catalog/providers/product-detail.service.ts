@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
 import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
 import {
     CreateProductInput,
@@ -9,6 +10,7 @@ import {
     DeletionResult,
     FacetWithValues,
     LanguageCode,
+    ProductOptionGroup,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
@@ -94,7 +96,7 @@ export class ProductDetailService {
                 );
             }),
             mergeMap(({ createProduct, optionGroups }) => {
-                const variants: CreateProductVariantInput[] = createVariantsConfig.variants.map(v => {
+                const variants = createVariantsConfig.variants.map(v => {
                     const optionIds = optionGroups.length
                         ? v.optionValues.map((optionName, index) => {
                               const option = optionGroups[index].options.find(o => o.name === optionName);
@@ -106,30 +108,50 @@ export class ProductDetailService {
                               return option.id;
                           })
                         : [];
-                    const name = optionGroups.length
-                        ? `${createProduct.name} ${v.optionValues.join(' ')}`
-                        : createProduct.name;
                     return {
-                        productId: createProduct.id,
-                        price: v.price,
-                        sku: v.sku,
-                        stockOnHand: v.stock,
-                        translations: [
-                            {
-                                languageCode,
-                                name,
-                            },
-                        ],
+                        ...v,
                         optionIds,
                     };
                 });
-                return this.dataService.product.createProductVariants(variants).pipe(
-                    map(({ createProductVariants }) => ({
-                        createProductVariants,
-                        productId: createProduct.id,
-                    })),
-                );
+                const options = optionGroups.map(og => og.options).reduce((flat, o) => [...flat, ...o], []);
+                return this.createProductVariants(createProduct, variants, options, languageCode);
             }),
+        );
+    }
+
+    createProductVariants(
+        product: { name: string; id: string },
+        variantData: Array<{ price: number; sku: string; stock: number; optionIds: string[] }>,
+        options: Array<{ id: string; name: string }>,
+        languageCode: LanguageCode,
+    ) {
+        const variants: CreateProductVariantInput[] = variantData.map(v => {
+            const name = options.length
+                ? `${product.name} ${v.optionIds
+                      .map(id => options.find(o => o.id === id))
+                      .filter(notNullOrUndefined)
+                      .map(o => o.name)
+                      .join(' ')}`
+                : product.name;
+            return {
+                productId: product.id,
+                price: v.price,
+                sku: v.sku,
+                stockOnHand: v.stock,
+                translations: [
+                    {
+                        languageCode,
+                        name,
+                    },
+                ],
+                optionIds: v.optionIds,
+            };
+        });
+        return this.dataService.product.createProductVariants(variants).pipe(
+            map(({ createProductVariants }) => ({
+                createProductVariants,
+                productId: product.id,
+            })),
         );
     }
 

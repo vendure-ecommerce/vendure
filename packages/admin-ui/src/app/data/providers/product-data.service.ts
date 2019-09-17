@@ -2,18 +2,22 @@ import { pick } from 'shared/pick';
 
 import {
     AddOptionGroupToProduct,
+    AddOptionToGroup,
     CreateAssets,
     CreateProduct,
     CreateProductInput,
     CreateProductOptionGroup,
     CreateProductOptionGroupInput,
+    CreateProductOptionInput,
     CreateProductVariantInput,
     CreateProductVariants,
     DeleteProduct,
     DeleteProductVariant,
     GetAssetList,
     GetProductList,
+    GetProductOptionGroup,
     GetProductOptionGroups,
+    GetProductVariantOptions,
     GetProductWithVariants,
     Reindex,
     RemoveOptionGroupFromProduct,
@@ -29,6 +33,7 @@ import {
 import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
+    ADD_OPTION_TO_GROUP,
     CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
@@ -37,7 +42,9 @@ import {
     DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
+    GET_PRODUCT_OPTION_GROUP,
     GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     SEARCH_PRODUCTS,
@@ -79,6 +86,24 @@ export class ProductDataService {
     getProduct(id: string) {
         return this.baseDataService.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
             GET_PRODUCT_WITH_VARIANTS,
+            {
+                id,
+            },
+        );
+    }
+
+    getProductVariantsOptions(id: string) {
+        return this.baseDataService.query<GetProductVariantOptions.Query, GetProductVariantOptions.Variables>(
+            GET_PRODUCT_VARIANT_OPTIONS,
+            {
+                id,
+            },
+        );
+    }
+
+    getProductOptionGroup(id: string) {
+        return this.baseDataService.query<GetProductOptionGroup.Query, GetProductOptionGroup.Variables>(
+            GET_PRODUCT_OPTION_GROUP,
             {
                 id,
             },
@@ -183,6 +208,13 @@ export class ProductDataService {
             AddOptionGroupToProduct.Mutation,
             AddOptionGroupToProduct.Variables
         >(ADD_OPTION_GROUP_TO_PRODUCT, variables);
+    }
+
+    addOptionToGroup(input: CreateProductOptionInput) {
+        return this.baseDataService.mutate<AddOptionToGroup.Mutation, AddOptionToGroup.Variables>(
+            ADD_OPTION_TO_GROUP,
+            { input },
+        );
     }
 
     removeOptionGroupFromProduct(variables: RemoveOptionGroupFromProduct.Variables) {

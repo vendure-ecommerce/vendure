@@ -254,34 +254,6 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         );
     }
 
-    deleteVariant(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-product-variant'),
-                buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response =>
-                    response ? this.productDetailService.deleteProductVariant(id, this.id) : EMPTY,
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'ProductVariant',
-                    });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'ProductVariant',
-                    });
-                },
-            );
-    }
-
     private displayFacetValueModal(): Observable<string[] | undefined> {
         return this.productDetailService.getFacets().pipe(
             mergeMap(facets =>

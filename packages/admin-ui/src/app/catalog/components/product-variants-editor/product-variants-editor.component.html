@@ -1,0 +1,129 @@
+<vdr-action-bar>
+    <vdr-ab-right>
+        <button
+            class="btn btn-primary"
+            (click)="save()"
+            [disabled]="!formValueChanged || getVariantsToAdd().length === 0"
+        >
+            {{ 'common.add-new-variants' | translate: { count: getVariantsToAdd().length } }}
+        </button>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<div *ngFor="let group of optionGroups" class="option-groups">
+    <div class="name">
+        <label>{{ 'catalog.option' | translate }}</label>
+        <input
+            clrInput
+            [(ngModel)]="group.name"
+            name="name"
+            readonly
+        />
+    </div>
+    <div class="values">
+        <label>{{ 'catalog.option-values' | translate }}</label>
+        <vdr-option-value-input
+            #optionValueInputComponent
+            [(ngModel)]="group.values"
+            (ngModelChange)="generateVariants()"
+            [groupName]="group.name"
+            [disabled]="group.name === ''"
+        ></vdr-option-value-input>
+    </div>
+</div>
+<button class="btn btn-primary-outline btn-sm" (click)="addOption()">
+    <clr-icon shape="plus"></clr-icon>
+    {{ 'catalog.add-option' | translate }}
+</button>
+
+<div class="variants-preview">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>{{ 'common.create' | translate }}</th>
+            <th>{{ 'catalog.variant' | translate }}</th>
+            <th>{{ 'catalog.sku' | translate }}</th>
+            <th>{{ 'catalog.price' | translate }}</th>
+            <th>{{ 'catalog.stock-on-hand' | translate }}</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tr
+            *ngFor="let variant of variants; trackBy: trackByFn"
+            [class.disabled]="!variantFormValues[variant.id].enabled || variantFormValues[variant.id].existing"
+        >
+            <td>
+                <input
+                    type="checkbox"
+                    *ngIf="!variantFormValues[variant.id].existing"
+                    [(ngModel)]="variantFormValues[variant.id].enabled"
+                    name="enabled"
+                    clrCheckbox
+                    (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                />
+            </td>
+            <td>
+                {{ getVariantName(variant) }}
+            </td>
+            <td>
+                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                    <input
+                        clrInput
+                        type="text"
+                        [(ngModel)]="variantFormValues[variant.id].sku"
+                        [placeholder]="'catalog.sku' | translate"
+                        name="sku"
+                        required
+                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                    />
+                </clr-input-container>
+                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].sku }}</span>
+            </td>
+            <td>
+                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                    <vdr-currency-input
+                        clrInput
+                        [(ngModel)]="variantFormValues[variant.id].price"
+                        name="price"
+                        [currencyCode]="currencyCode"
+                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                    ></vdr-currency-input>
+                </clr-input-container>
+                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].price / 100 | currency: currencyCode }}</span>
+            </td>
+            <td>
+                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                    <input
+                        clrInput
+                        type="number"
+                        [(ngModel)]="variantFormValues[variant.id].stock"
+                        name="stock"
+                        min="0"
+                        step="1"
+                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                    />
+                </clr-input-container>
+                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].stock }}</span>
+            </td>
+            <td>
+                <vdr-dropdown *ngIf="variantFormValues[variant.id].productVariantId as productVariantId">
+                    <button class="icon-button" vdrDropdownTrigger>
+                        <clr-icon shape="ellipsis-vertical"></clr-icon>
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-right">
+                        <button
+                            type="button"
+                            class="delete-button"
+                            (click)="deleteVariant(productVariantId)"
+                            vdrDropdownItem
+                        >
+                            <clr-icon shape="trash" class="is-danger"></clr-icon>
+                            {{ 'common.delete' | translate }}
+                        </button>
+                    </vdr-dropdown-menu>
+
+                </vdr-dropdown>
+            </td>
+        </tr>
+    </table>
+</div>

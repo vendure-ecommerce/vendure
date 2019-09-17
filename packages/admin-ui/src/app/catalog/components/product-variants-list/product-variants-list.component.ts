@@ -50,7 +50,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
     @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput>();
-    @Output() deleteVariant = new EventEmitter<string>();
     selectedVariantIds: string[] = [];
     private facetValues: FacetValue.Fragment[];
     private formSubscription: Subscription;
@@ -168,10 +167,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                     this.updateProductOption.emit(result);
                 }
             });
-    }
-
-    deleteVariantClick(id: string) {
-        this.deleteVariant.emit(id);
     }
 
     private getFacetValueIds(index: number): string[] {

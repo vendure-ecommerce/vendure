@@ -1,0 +1,22 @@
+@import "variables";
+
+.option-groups {
+    display: flex;
+    &:first-of-type {
+        margin-top: 24px;
+    }
+}
+
+.values {
+    flex: 1;
+    margin: 0 6px;
+}
+
+.variants-preview {
+    tr.disabled {
+        td {
+            background-color: $color-grey-100;
+            color: $color-grey-400;
+        }
+    }
+}

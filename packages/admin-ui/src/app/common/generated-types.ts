@@ -3879,6 +3879,20 @@ export type CreateProductOptionGroupMutationVariables = {
 
 export type CreateProductOptionGroupMutation = ({ __typename?: 'Mutation' } & { createProductOptionGroup: ({ __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment) });
 
+export type GetProductOptionGroupQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type GetProductOptionGroupQuery = ({ __typename?: 'Query' } & { productOptionGroup: Maybe<({ __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment)> });
+
+export type AddOptionToGroupMutationVariables = {
+  input: CreateProductOptionInput
+};
+
+
+export type AddOptionToGroupMutation = ({ __typename?: 'Mutation' } & { createProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code' | 'groupId'>) });
+
 export type AddOptionGroupToProductMutationVariables = {
   productId: Scalars['ID'],
   optionGroupId: Scalars['ID']
@@ -3950,6 +3964,13 @@ export type DeleteProductVariantMutationVariables = {
 
 
 export type DeleteProductVariantMutation = ({ __typename?: 'Mutation' } & { deleteProductVariant: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
+export type GetProductVariantOptionsQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code' | 'groupId'>)> })> })> });
 
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
@@ -4789,6 +4810,18 @@ export namespace CreateProductOptionGroup {
   export type CreateProductOptionGroup = ProductOptionGroupFragment;
 }
 
+export namespace GetProductOptionGroup {
+  export type Variables = GetProductOptionGroupQueryVariables;
+  export type Query = GetProductOptionGroupQuery;
+  export type ProductOptionGroup = ProductOptionGroupFragment;
+}
+
+export namespace AddOptionToGroup {
+  export type Variables = AddOptionToGroupMutationVariables;
+  export type Mutation = AddOptionToGroupMutation;
+  export type CreateProductOption = AddOptionToGroupMutation['createProductOption'];
+}
+
 export namespace AddOptionGroupToProduct {
   export type Variables = AddOptionGroupToProductMutationVariables;
   export type Mutation = AddOptionGroupToProductMutation;
@@ -4859,6 +4892,16 @@ export namespace DeleteProductVariant {
   export type Variables = DeleteProductVariantMutationVariables;
   export type Mutation = DeleteProductVariantMutation;
   export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
+}
+
+export namespace GetProductVariantOptions {
+  export type Variables = GetProductVariantOptionsQueryVariables;
+  export type Query = GetProductVariantOptionsQuery;
+  export type Product = (NonNullable<GetProductVariantOptionsQuery['product']>);
+  export type OptionGroups = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>);
+  export type Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>)['options'][0]>);
+  export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
+  export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
 }
 
 export namespace Promotion {

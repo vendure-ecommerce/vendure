@@ -25,7 +25,7 @@ export type CreateProductVariantsConfig = {
 })
 export class GenerateProductVariantsComponent implements OnInit {
     @Output() variantsChange = new EventEmitter<CreateProductVariantsConfig>();
-    optionGroups: Array<{ name: string; values: string[] }> = [];
+    optionGroups: Array<{ name: string; values: Array<{ name: string; locked: boolean }> }> = [];
     currencyCode: CurrencyCode;
     variants: Array<{ id: string; values: string[] }>;
     variantFormValues: { [id: string]: CreateVariantValues } = {};
@@ -50,7 +50,9 @@ export class GenerateProductVariantsComponent implements OnInit {
 
     generateVariants() {
         const totalValuesCount = this.optionGroups.reduce((sum, group) => sum + group.values.length, 0);
-        const groups = totalValuesCount ? this.optionGroups.map(g => g.values) : [[DEFAULT_VARIANT_CODE]];
+        const groups = totalValuesCount
+            ? this.optionGroups.map(g => g.values.map(v => v.name))
+            : [[DEFAULT_VARIANT_CODE]];
         this.variants = generateAllCombinations(groups).map(values => ({ id: values.join('|'), values }));
 
         this.variants.forEach(variant => {
@@ -80,7 +82,7 @@ export class GenerateProductVariantsComponent implements OnInit {
     onFormChange() {
         const variantsToCreate = this.variants.map(v => this.variantFormValues[v.id]).filter(v => v.enabled);
         this.variantsChange.emit({
-            groups: this.optionGroups,
+            groups: this.optionGroups.map(og => ({ name: og.name, values: og.values.map(v => v.name) })),
             variants: variantsToCreate,
         });
     }

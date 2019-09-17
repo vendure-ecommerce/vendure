@@ -33,22 +33,6 @@
                         <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />
                         <label>{{ 'common.enabled' | translate }}</label>
                     </clr-toggle-wrapper>
-                    <vdr-dropdown>
-                        <button class="icon-button" vdrDropdownTrigger>
-                            <clr-icon shape="ellipsis-vertical"></clr-icon>
-                        </button>
-                        <vdr-dropdown-menu vdrPosition="bottom-right">
-                            <button
-                                type="button"
-                                class="delete-button"
-                                (click)="deleteVariantClick(variant.id)"
-                                vdrDropdownItem
-                            >
-                                <clr-icon shape="trash" class="is-danger"></clr-icon>
-                                {{ 'common.delete' | translate }}
-                            </button>
-                        </vdr-dropdown-menu>
-                    </vdr-dropdown>
                 </div>
             </div>
             <div class="card-block">
