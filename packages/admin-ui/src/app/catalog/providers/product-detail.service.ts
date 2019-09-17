@@ -53,32 +53,17 @@ export class ProductDetailService {
             .pipe(shareReplay(1));
     }
 
-    createProduct(
+    createProductWithVariants(
         input: CreateProductInput,
         createVariantsConfig: CreateProductVariantsConfig,
         languageCode: LanguageCode,
     ) {
         const createProduct$ = this.dataService.product.createProduct(input);
-
         const nonEmptyOptionGroups = createVariantsConfig.groups.filter(g => 0 < g.values.length);
-        const createOptionGroups$ = nonEmptyOptionGroups.length
-            ? forkJoin(
-                  createVariantsConfig.groups.map(c => {
-                      return this.dataService.product.createProductOptionGroups({
-                          code: normalizeString(c.name, '-'),
-                          translations: [{ languageCode, name: c.name }],
-                          options: c.values.map(v => ({
-                              code: normalizeString(v, '-'),
-                              translations: [{ languageCode, name: v }],
-                          })),
-                      });
-                  }),
-              )
-            : of([]);
+        const createOptionGroups$ = this.createProductOptionGroups(nonEmptyOptionGroups, languageCode);
 
         return forkJoin(createProduct$, createOptionGroups$).pipe(
-            mergeMap(([{ createProduct }, createOptionGroups]) => {
-                const optionGroups = createOptionGroups.map(g => g.createProductOptionGroup);
+            mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
                           optionGroups.map(optionGroup => {
@@ -117,6 +102,25 @@ export class ProductDetailService {
                 return this.createProductVariants(createProduct, variants, options, languageCode);
             }),
         );
+    }
+
+    createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
+        return groups.length
+            ? forkJoin(
+                  groups.map(c => {
+                      return this.dataService.product
+                          .createProductOptionGroups({
+                              code: normalizeString(c.name, '-'),
+                              translations: [{ languageCode, name: c.name }],
+                              options: c.values.map(v => ({
+                                  code: normalizeString(v, '-'),
+                                  translations: [{ languageCode, name: v }],
+                              })),
+                          })
+                          .pipe(map(data => data.createProductOptionGroup));
+                  }),
+              )
+            : of([]);
     }
 
     createProductVariants(

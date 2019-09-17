@@ -280,7 +280,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                         productGroup as FormGroup,
                         languageCode,
                     ) as CreateProductInput;
-                    return this.productDetailService.createProduct(
+                    return this.productDetailService.createProductWithVariants(
                         newProduct,
                         this.createVariantsConfig,
                         languageCode,

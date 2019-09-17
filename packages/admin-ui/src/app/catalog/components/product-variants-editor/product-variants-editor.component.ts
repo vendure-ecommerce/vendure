@@ -59,9 +59,9 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         }>;
     }>;
     variantFormValues: { [id: string]: VariantInfo } = {};
+    product: GetProductVariantOptions.Product;
     private currencyCode: CurrencyCode;
     private languageCode: LanguageCode;
-    private product: GetProductVariantOptions.Product;
 
     constructor(
         private route: ActivatedRoute,
@@ -195,9 +195,11 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 values: [],
             }));
 
-        this.productDetailService
-            .createProductOptionGroups(newOptionGroups, this.languageCode)
+        this.confirmDeletionOfDefault()
             .pipe(
+                mergeMap(() =>
+                    this.productDetailService.createProductOptionGroups(newOptionGroups, this.languageCode),
+                ),
                 mergeMap(createdOptionGroups => this.addOptionGroupsToProduct(createdOptionGroups)),
                 mergeMap(createdOptionGroups => this.addNewOptionsToGroups(createdOptionGroups)),
                 mergeMap(groupsIds => this.fetchOptionGroups(groupsIds)),
@@ -214,6 +216,27 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     this.initOptionsAndVariants();
                 },
             });
+    }
+
+    private confirmDeletionOfDefault(): Observable<boolean> {
+        if (this.product.variants.length === 1) {
+            return this.modalService
+                .dialog({
+                    title: _('catalog.confirm-adding-options-delete-default-title'),
+                    body: _('catalog.confirm-adding-options-delete-default-body'),
+                    buttons: [
+                        { type: 'seconday', label: _('common.cancel') },
+                        { type: 'danger', label: _('catalog.delete-default-variant'), returnValue: true },
+                    ],
+                })
+                .pipe(
+                    mergeMap(res => {
+                        return res === true ? of(true) : EMPTY;
+                    }),
+                );
+        } else {
+            return of(true);
+        }
     }
 
     private addOptionGroupsToProduct(

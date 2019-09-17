@@ -17,7 +17,7 @@
             clrInput
             [(ngModel)]="group.name"
             name="name"
-            readonly
+            [readonly]="!group.isNew"
         />
     </div>
     <div class="values">
@@ -31,7 +31,7 @@
         ></vdr-option-value-input>
     </div>
 </div>
-<button class="btn btn-primary-outline btn-sm" (click)="addOption()">
+<button class="btn btn-primary-outline btn-sm" (click)="addOption()" *ngIf="product.variants.length === 1">
     <clr-icon shape="plus"></clr-icon>
     {{ 'catalog.add-option' | translate }}
 </button>
@@ -49,7 +49,7 @@
         </tr>
         </thead>
         <tr
-            *ngFor="let variant of variants; trackBy: trackByFn"
+            *ngFor="let variant of variants"
             [class.disabled]="!variantFormValues[variant.id].enabled || variantFormValues[variant.id].existing"
         >
             <td>
@@ -59,7 +59,7 @@
                     [(ngModel)]="variantFormValues[variant.id].enabled"
                     name="enabled"
                     clrCheckbox
-                    (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                    (ngModelChange)="formValueChanged = true"
                 />
             </td>
             <td>
