@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
-import { BaseDetailComponent } from '../../../common/base-detail.component';
+import { DeactivateAware } from '../../../common/deactivate-aware';
 import { ModalService } from '../modal/modal.service';
 
 /**
@@ -14,11 +14,11 @@ import { ModalService } from '../modal/modal.service';
 export const IGNORE_CAN_DEACTIVATE_GUARD = 'IGNORE_CAN_DEACTIVATE_GUARD';
 
 @Injectable()
-export class CanDeactivateDetailGuard implements CanDeactivate<BaseDetailComponent<any>> {
+export class CanDeactivateDetailGuard implements CanDeactivate<DeactivateAware> {
     constructor(private modalService: ModalService, private router: Router) {}
 
     canDeactivate(
-        component: BaseDetailComponent<any>,
+        component: DeactivateAware,
         currentRoute: ActivatedRouteSnapshot,
         currentState: RouterStateSnapshot,
         nextState?: RouterStateSnapshot,

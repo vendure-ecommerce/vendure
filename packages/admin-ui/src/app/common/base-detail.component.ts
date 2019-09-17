@@ -5,10 +5,12 @@ import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } fro
 
 import { ServerConfigService } from '../data/server-config';
 
+import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { getDefaultLanguage } from './utilities/get-default-language';
 
-export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> {
+export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }>
+    implements DeactivateAware {
     entity$: Observable<Entity>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
