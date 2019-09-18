@@ -109,7 +109,7 @@ async function createApp(
                     const { dependencies, devDependencies } = getDependencies(usingTs, dbType);
 
                     subscriber.next(`Installing ${dependencies.join(', ')}`);
-                    installPackages(root, useYarn, dependencies, false, logLevel)
+                    installPackages(root, useYarn, dependencies, false, logLevel, isCi)
                         .then(() => {
                             if (devDependencies.length) {
                                 subscriber.next(`Installing ${devDependencies.join(', ')}`);

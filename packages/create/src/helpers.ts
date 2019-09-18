@@ -165,6 +165,7 @@ export function installPackages(
     dependencies: string[],
     isDev: boolean,
     logLevel: CliLogLevel,
+    isCi: boolean = false,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         let command: string;
@@ -174,6 +175,11 @@ export function installPackages(
             args = ['add', '--exact', '--ignore-engines'];
             if (isDev) {
                 args.push('--dev');
+            }
+            if (isCi) {
+                // In CI, publish to Verdaccio
+                // See https://github.com/yarnpkg/yarn/issues/6029
+                args.push('--registry http://localhost:4873/');
             }
             args = args.concat(dependencies);
 
