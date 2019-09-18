@@ -16,8 +16,14 @@
         [id]="customField.name"
         [pattern]="customField.pattern"
         [formControl]="formGroup.get(customField.name)"
+        [readonly]="readonly"
     />
-    <select *ngIf="isSelectInput" clrSelect [formControl]="formGroup.get(customField.name)">
+    <select
+        *ngIf="isSelectInput"
+        clrSelect
+        [formControl]="formGroup.get(customField.name)"
+        [disabled]="readonly"
+    >
         <option *ngFor="let option of stringOptions" [value]="option.value">
             {{ getLabel(option.value, option.label) }}
         </option>
@@ -30,6 +36,7 @@
         [max]="max"
         [step]="step"
         [formControl]="formGroup.get(customField.name)"
+        [readonly]="readonly"
     />
     <clr-toggle-wrapper *ngIf="customField.type === 'boolean'">
         <input
@@ -37,6 +44,7 @@
             clrToggle
             [id]="customField.name"
             [formControl]="formGroup.get(customField.name)"
+            [readonly]="readonly"
         />
     </clr-toggle-wrapper>
     <input
@@ -48,5 +56,6 @@
         [id]="customField.name"
         [value]="formGroup.get(customField.name).value | date: 'yyyy-MM-ddTHH:mm:ss'"
         (change)="updateDateTime(formGroup.get(customField.name), $event)"
+        [readonly]="readonly"
     />
 </ng-template>

@@ -56,7 +56,7 @@
         </vdr-form-field>
 
         <section formGroupName="customFields" *ngIf="customFields.length">
-            <label>{{ 'catalog.custom-fields' }}</label>
+            <label>{{ 'common.custom-fields' | translate }}</label>
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control
                     *ngIf="customFieldIsSet(customField.name)"

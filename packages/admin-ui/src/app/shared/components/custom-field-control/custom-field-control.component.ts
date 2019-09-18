@@ -25,6 +25,7 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy {
     @Input() customField: CustomFieldsFragment;
     @Input() compact = false;
     @Input() showLabel = true;
+    @Input() readonly = false;
     private uiLanguageCode: LanguageCode;
     private sub: Subscription;
 

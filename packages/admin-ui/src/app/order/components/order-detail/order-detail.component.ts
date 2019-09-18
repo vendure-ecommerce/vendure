@@ -7,7 +7,13 @@ import { omit } from 'shared/omit';
 import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import { GetOrderHistory, Order, OrderDetail, SortOrder } from '../../../common/generated-types';
+import {
+    CustomFieldConfig,
+    GetOrderHistory,
+    Order,
+    OrderDetail,
+    SortOrder,
+} from '../../../common/generated-types';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
@@ -28,6 +34,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     detailForm = new FormGroup({});
     history$: Observable<GetOrderHistory.Items[] | null>;
     fetchHistory = new Subject<void>();
+    customFields: CustomFieldConfig[];
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -42,6 +49,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
 
     ngOnInit() {
         this.init();
+        this.customFields = this.getCustomFieldConfig('Order');
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
             switchMap(() => {
