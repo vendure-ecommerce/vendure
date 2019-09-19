@@ -9,6 +9,7 @@ import { FulfillmentDetailComponent } from './components/fulfillment-detail/fulf
 import { HistoryEntryDetailComponent } from './components/history-entry-detail/history-entry-detail.component';
 import { LineFulfillmentComponent } from './components/line-fulfillment/line-fulfillment.component';
 import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
+import { OrderCustomFieldsCardComponent } from './components/order-custom-fields-card/order-custom-fields-card.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderHistoryComponent } from './components/order-history/order-history.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
@@ -41,6 +42,7 @@ import { OrderResolver } from './providers/routing/order-resolver';
         PaymentDetailComponent,
         HistoryEntryDetailComponent,
         SimpleItemListComponent,
+        OrderCustomFieldsCardComponent,
     ],
     entryComponents: [
         FulfillOrderDialogComponent,

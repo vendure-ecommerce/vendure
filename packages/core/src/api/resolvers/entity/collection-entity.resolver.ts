@@ -78,9 +78,6 @@ export class CollectionEntityResolver {
 
     @ResolveProperty()
     async assets(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Asset[] | undefined> {
-        if (collection.assets) {
-            return collection.assets;
-        }
         return this.assetService.getEntityAssets(collection);
     }
 }

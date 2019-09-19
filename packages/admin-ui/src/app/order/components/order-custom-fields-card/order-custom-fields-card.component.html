@@ -1,0 +1,17 @@
+<div class="card" *ngIf="customFieldsConfig.length">
+    <div class="card-header">
+        {{ 'common.custom-fields' | translate }}
+    </div>
+    <div class="card-block">
+        <div class="card-text custom-field-form" >
+            <ng-container *ngFor="let customField of customFieldsConfig">
+                <vdr-custom-field-control
+                    [customFieldsFormGroup]="customFieldForm"
+                    [compact]="true"
+                    [readonly]="true"
+                    [customField]="customField"
+                ></vdr-custom-field-control>
+            </ng-container>
+        </div>
+    </div>
+</div>

@@ -10,10 +10,18 @@ describe('Import resolver', () => {
     const server = new TestServer();
 
     beforeAll(async () => {
-        const token = await server.init({
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
-            customerCount: 0,
-        });
+        const token = await server.init(
+            {
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
+                customerCount: 0,
+            },
+            {
+                customFields: {
+                    Product: [{ type: 'string', name: 'pageType' }],
+                    ProductVariant: [{ type: 'int', name: 'weight' }],
+                },
+            },
+        );
         await client.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -39,7 +47,7 @@ describe('Import resolver', () => {
         const result = await client.importProducts(csvFile);
 
         expect(result.importProducts.errors).toEqual([
-            'Invalid Record Length: header length is 14, got 1 on line 8',
+            'Invalid Record Length: header length is 16, got 1 on line 8',
         ]);
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
@@ -78,6 +86,9 @@ describe('Import resolver', () => {
                                     id
                                     name
                                 }
+                            }
+                            customFields {
+                                pageType
                             }
                             variants {
                                 id
@@ -123,6 +134,9 @@ describe('Import resolver', () => {
                                             quantity
                                         }
                                     }
+                                }
+                                customFields {
+                                    weight
                                 }
                             }
                         }

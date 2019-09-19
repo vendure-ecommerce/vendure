@@ -2,12 +2,13 @@
     <div class="chips" *ngIf="0 < options.length">
         <vdr-chip
             *ngFor="let option of options; last as isLast"
-            icon="times"
+            [icon]="option.locked ? 'lock' : 'times'"
             [class.selected]="isLast && lastSelected"
+            [class.locked]="option.locked"
             [colorFrom]="groupName"
             (iconClick)="removeOption(option)"
         >
-            {{ option }}
+            {{ option.name }}
         </vdr-chip>
     </div>
     <textarea

@@ -7,7 +7,6 @@ import { EventBusModule } from '../event-bus/event-bus.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
-import { AssetUpdater } from './helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
@@ -105,7 +104,6 @@ let workerTypeOrmModule: DynamicModule;
         PaymentStateMachine,
         ListQueryBuilder,
         ShippingCalculator,
-        AssetUpdater,
         VerificationTokenGenerator,
         RefundStateMachine,
         ShippingConfiguration,

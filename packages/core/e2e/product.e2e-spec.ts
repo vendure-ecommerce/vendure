@@ -536,6 +536,20 @@ describe('Product resolver', () => {
             expect(result.updateProduct.featuredAsset!.id).toBe(assets[0].id);
         });
 
+        it('updateProduct updates assets', async () => {
+            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: newProduct.id,
+                        featuredAssetId: 'T_1',
+                        assetIds: ['T_1', 'T_2'],
+                    },
+                },
+            );
+            expect(result.updateProduct.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
+        });
+
         it('updateProduct updates FacetValues', async () => {
             const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
                 UPDATE_PRODUCT,
@@ -865,6 +879,29 @@ describe('Product resolver', () => {
                 }
                 expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
                 expect(updatedVariant.featuredAsset!.id).toBe('T_2');
+            });
+
+            it('updateProductVariants updates assets again', async () => {
+                const firstVariant = variants[0];
+                const result = await adminClient.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            assetIds: ['T_4', 'T_3'],
+                            featuredAssetId: 'T_4',
+                        },
+                    ],
+                });
+                const updatedVariant = result.updateProductVariants[0];
+                if (!updatedVariant) {
+                    fail('no updated variant returned.');
+                    return;
+                }
+                expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_4', 'T_3']);
+                expect(updatedVariant.featuredAsset!.id).toBe('T_4');
             });
 
             it('updateProductVariants updates taxCategory and priceBeforeTax', async () => {

@@ -12,7 +12,6 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
@@ -36,13 +35,14 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { WorkerService } from '../../worker/worker.service';
-import { AssetUpdater } from '../helpers/asset-updater/asset-updater';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
+import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 import { JobService } from './job.service';
@@ -57,7 +57,7 @@ export class CollectionService implements OnModuleInit {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
-        private assetUpdater: AssetUpdater,
+        private assetService: AssetService,
         private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
@@ -67,13 +67,6 @@ export class CollectionService implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        /*this.eventBus.subscribe(CatalogModificationEvent, async event => {
-            const collections = await this.connection.getRepository(Collection).find({
-                relations: ['productVariants'],
-            });
-            this.applyCollectionFilters(event.ctx, collections);
-        });*/
-
         this.eventBus
             .ofType(CatalogModificationEvent)
             .pipe(debounceTime(50))
@@ -257,9 +250,10 @@ export class CollectionService implements OnModuleInit {
                 }
                 coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
                 coll.filters = this.getCollectionFiltersFromInput(input);
-                await this.assetUpdater.updateEntityAssets(coll, input);
+                await this.assetService.updateFeaturedAsset(coll, input);
             },
         });
+        await this.assetService.updateEntityAssets(collection, input);
         this.applyCollectionFilters(ctx, [collection]);
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -273,7 +267,8 @@ export class CollectionService implements OnModuleInit {
                 if (input.filters) {
                     coll.filters = this.getCollectionFiltersFromInput(input);
                 }
-                await this.assetUpdater.updateEntityAssets(coll, input);
+                await this.assetService.updateFeaturedAsset(coll, input);
+                await this.assetService.updateEntityAssets(coll, input);
             },
         });
         if (input.filters) {
@@ -305,36 +300,18 @@ export class CollectionService implements OnModuleInit {
             throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
         }
 
-        const siblings = await this.connection
+        let siblings = await this.connection
             .getRepository(Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
-            .orderBy('collection.position', 'ASC')
             .getMany();
         const normalizedIndex = Math.max(Math.min(input.index, siblings.length), 0);
 
-        if (idsAreEqual(target.parent.id, input.parentId)) {
-            const currentIndex = siblings.findIndex(cat => idsAreEqual(cat.id, input.collectionId));
-            if (currentIndex !== normalizedIndex) {
-                siblings.splice(normalizedIndex, 0, siblings.splice(currentIndex, 1)[0]);
-                siblings.forEach((collection, index) => {
-                    collection.position = index;
-                    if (target.id === collection.id) {
-                        target.position = index;
-                    }
-                });
-            }
-        } else {
+        if (!idsAreEqual(target.parent.id, input.parentId)) {
             target.parent = new Collection({ id: input.parentId });
-            siblings.splice(normalizedIndex, 0, target);
-            siblings.forEach((collection, index) => {
-                collection.position = index;
-                if (target.id === collection.id) {
-                    target.position = index;
-                }
-            });
         }
+        siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(Collection).save(siblings);
         await this.applyCollectionFilters(ctx, [target]);

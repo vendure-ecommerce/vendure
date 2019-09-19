@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { AssetType, CreateAssetInput } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
 import sizeOf from 'image-size';
 import mime from 'mime-types';
@@ -11,12 +12,23 @@ import { Connection, Like } from 'typeorm';
 
 import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { getAssetType } from '../../common/utils';
+import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { Asset } from '../../entity/asset/asset.entity';
-import { EntityWithAssets } from '../helpers/asset-updater/asset-updater';
+import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
+import { VendureEntity } from '../../entity/base/base.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+
+export interface EntityWithAssets extends VendureEntity {
+    featuredAsset: Asset | null;
+    assets: OrderableAsset[];
+}
+
+export interface EntityAssetInput {
+    assetIds?: ID[] | null;
+    featuredAssetId?: ID | null;
+}
 
 @Injectable()
 export class AssetService {
@@ -28,10 +40,6 @@ export class AssetService {
 
     findOne(id: ID): Promise<Asset | undefined> {
         return this.connection.getRepository(Asset).findOne(id);
-    }
-
-    findByIds(ids: ID[]): Promise<Asset[]> {
-        return this.connection.getRepository(Asset).findByIds(ids);
     }
 
     /**
@@ -65,17 +73,58 @@ export class AssetService {
             .findOne(entity.id, {
                 relations: ['featuredAsset'],
             });
-        return entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset;
+        return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
 
     async getEntityAssets<T extends EntityWithAssets>(entity: T): Promise<Asset[] | undefined> {
-        const entityType = Object.getPrototypeOf(entity).constructor;
-        const entityWithFeaturedAsset = await this.connection
-            .getRepository<EntityWithAssets>(entityType)
-            .findOne(entity.id, {
-                relations: ['assets'],
-            });
-        return entityWithFeaturedAsset && entityWithFeaturedAsset.assets;
+        let assets = entity.assets;
+        if (!assets) {
+            const entityType = Object.getPrototypeOf(entity).constructor;
+            const entityWithAssets = await this.connection
+                .getRepository<EntityWithAssets>(entityType)
+                .findOne(entity.id, {
+                    relations: ['assets'],
+                });
+            assets = (entityWithAssets && entityWithAssets.assets) || [];
+        }
+        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
+    }
+
+    async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
+        const { assetIds, featuredAssetId } = input;
+        if (featuredAssetId === null || (assetIds && assetIds.length === 0)) {
+            entity.featuredAsset = null;
+            return entity;
+        }
+        if (featuredAssetId === undefined) {
+            return entity;
+        }
+        const featuredAsset = await this.findOne(featuredAssetId);
+        if (featuredAsset) {
+            entity.featuredAsset = featuredAsset;
+        }
+        return entity;
+    }
+
+    /**
+     * Updates the assets / featuredAsset of an entity, ensuring that only valid assetIds are used.
+     */
+    async updateEntityAssets<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
+        if (!entity.id) {
+            throw new InternalServerError('error.entity-must-have-an-id');
+        }
+        const { assetIds, featuredAssetId } = input;
+        if (assetIds && assetIds.length) {
+            const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
+            const sortedAssets = assetIds
+                .map(id => assets.find(a => idsAreEqual(a.id, id)))
+                .filter(notNullOrUndefined);
+            await this.removeExistingOrderableAssets(entity);
+            entity.assets = await this.createOrderableAssets(entity, sortedAssets);
+        } else if (assetIds && assetIds.length === 0) {
+            await this.removeExistingOrderableAssets(entity);
+        }
+        return entity;
     }
 
     /**
@@ -163,6 +212,53 @@ export class AssetService {
         } catch (e) {
             Logger.error(`Could not determine Asset dimensions: ` + e);
             return { width: 0, height: 0 };
+        }
+    }
+
+    private createOrderableAssets(entity: EntityWithAssets, assets: Asset[]): Promise<OrderableAsset[]> {
+        const orderableAssets = assets.map((asset, i) => this.getOrderableAsset(entity, asset, i));
+        return this.connection.getRepository(orderableAssets[0].constructor).save(orderableAssets);
+    }
+
+    private getOrderableAsset(entity: EntityWithAssets, asset: Asset, index: number): OrderableAsset {
+        const entityIdProperty = this.getHostEntityIdProperty(entity);
+        const orderableAssetType = this.getOrderableAssetType(entity);
+        return new orderableAssetType({
+            assetId: asset.id,
+            position: index,
+            [entityIdProperty]: entity.id,
+        });
+    }
+
+    private async removeExistingOrderableAssets(entity: EntityWithAssets) {
+        const propertyName = this.getHostEntityIdProperty(entity);
+        const orderableAssetType = this.getOrderableAssetType(entity);
+        await this.connection.getRepository(orderableAssetType).delete({
+            [propertyName]: entity.id,
+        });
+    }
+
+    private getOrderableAssetType(entity: EntityWithAssets): Type<OrderableAsset> {
+        const assetRelation = this.connection
+            .getRepository(entity.constructor)
+            .metadata.relations.find(r => r.propertyName === 'assets');
+        if (!assetRelation || typeof assetRelation.type === 'string') {
+            throw new InternalServerError('error.could-not-find-matching-orderable-asset');
+        }
+        return assetRelation.type as Type<OrderableAsset>;
+    }
+
+    private getHostEntityIdProperty(entity: EntityWithAssets): string {
+        const entityName = entity.constructor.name;
+        switch (entityName) {
+            case 'Product':
+                return 'productId';
+            case 'ProductVariant':
+                return 'productVariantId';
+            case 'Collection':
+                return 'collectionId';
+            default:
+                throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
     }
 }

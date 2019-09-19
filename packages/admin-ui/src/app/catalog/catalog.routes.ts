@@ -16,9 +16,11 @@ import { FacetDetailComponent } from './components/facet-detail/facet-detail.com
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
+import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
 
 export const catalogRoutes: Route[] = [
     {
@@ -35,6 +37,15 @@ export const catalogRoutes: Route[] = [
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: productBreadcrumb,
+        },
+    },
+    {
+        path: 'products/:id/manage-variants',
+        component: ProductVariantsEditorComponent,
+        resolve: createResolveData(ProductVariantsResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: productVariantEditorBreadcrumb,
         },
     },
     {
@@ -86,6 +97,27 @@ export function productBreadcrumb(data: any, params: any) {
         getName: product => product.name,
         route: 'products',
     });
+}
+
+export function productVariantEditorBreadcrumb(data: any, params: any) {
+    return data.entity.pipe(
+        map((entity: any) => {
+            return [
+                {
+                    label: _('breadcrumb.products'),
+                    link: ['../', 'products'],
+                },
+                {
+                    label: `#${params.id} (${entity.name})`,
+                    link: ['../', 'products', params.id, { tab: 'variants' }],
+                },
+                {
+                    label: _('breadcrumb.manage-variants'),
+                    link: ['manage-variants'],
+                },
+            ];
+        }),
+    );
 }
 
 export function facetBreadcrumb(data: any, params: any) {

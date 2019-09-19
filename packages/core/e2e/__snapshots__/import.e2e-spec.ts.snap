@@ -17,6 +17,9 @@ Array [
         "source": "test-url/test-assets/pps2.jpg",
       },
     ],
+    "customFields": Object {
+      "pageType": "default",
+    },
     "description": "A great device for stretching paper.",
     "facetValues": Array [],
     "featuredAsset": Object {
@@ -38,6 +41,9 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 100,
+        },
         "facetValues": Array [
           Object {
             "code": "kb",
@@ -81,6 +87,9 @@ Array [
       },
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 100,
+        },
         "facetValues": Array [
           Object {
             "code": "kb",
@@ -124,6 +133,9 @@ Array [
       },
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 100,
+        },
         "facetValues": Array [
           Object {
             "code": "kb",
@@ -175,6 +187,9 @@ Array [
   },
   Object {
     "assets": Array [],
+    "customFields": Object {
+      "pageType": "expanded",
+    },
     "description": "Mabef description",
     "facetValues": Array [],
     "featuredAsset": null,
@@ -185,6 +200,9 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 300,
+        },
         "facetValues": Array [
           Object {
             "code": "mabef",
@@ -231,6 +249,9 @@ Array [
   },
   Object {
     "assets": Array [],
+    "customFields": Object {
+      "pageType": "default",
+    },
     "description": "Really mega pencils",
     "facetValues": Array [],
     "featuredAsset": null,
@@ -254,6 +275,9 @@ Array [
             "source": "test-url/test-assets/box-of-8.jpg",
           },
         ],
+        "customFields": Object {
+          "weight": 200,
+        },
         "facetValues": Array [
           Object {
             "code": "xmas-sale",
@@ -300,6 +324,9 @@ Array [
             "source": "test-url/test-assets/box-of-12.jpg",
           },
         ],
+        "customFields": Object {
+          "weight": 200,
+        },
         "facetValues": Array [
           Object {
             "code": "xmas-sale",
@@ -341,6 +368,9 @@ Array [
   },
   Object {
     "assets": Array [],
+    "customFields": Object {
+      "pageType": "default",
+    },
     "description": "Keeps the paint off the clothes",
     "facetValues": Array [
       Object {
@@ -379,6 +409,9 @@ Array [
     "variants": Array [
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 500,
+        },
         "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_7",
@@ -407,6 +440,9 @@ Array [
       },
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 500,
+        },
         "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_8",
@@ -435,6 +471,9 @@ Array [
       },
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 500,
+        },
         "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_9",
@@ -463,6 +502,9 @@ Array [
       },
       Object {
         "assets": Array [],
+        "customFields": Object {
+          "weight": 500,
+        },
         "facetValues": Array [],
         "featuredAsset": null,
         "id": "T_10",

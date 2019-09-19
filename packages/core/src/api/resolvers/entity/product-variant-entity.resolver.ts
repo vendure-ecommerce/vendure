@@ -6,6 +6,7 @@ import { Translated } from '../../../common/types/locale-types';
 import { Asset, FacetValue, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
+import { AssetService } from '../../../service/services/asset.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
 import { ApiType } from '../../common/get-api-type';
@@ -15,28 +16,25 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductVariant')
 export class ProductVariantEntityResolver {
-    constructor(private productVariantService: ProductVariantService) {}
+    constructor(private productVariantService: ProductVariantService, private assetService: AssetService) {}
 
     @ResolveProperty()
     async assets(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
-    ): Promise<Asset[]> {
-        if (productVariant.assets) {
-            return productVariant.assets;
-        }
-        return this.productVariantService.getAssetsForVariant(ctx, productVariant.id);
+    ): Promise<Asset[] | undefined> {
+        return this.assetService.getEntityAssets(productVariant);
     }
 
     @ResolveProperty()
     async featuredAsset(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
-    ): Promise<Asset> {
+    ): Promise<Asset | undefined> {
         if (productVariant.featuredAsset) {
             return productVariant.featuredAsset;
         }
-        return this.productVariantService.getFeaturedAssetForVariant(ctx, productVariant.id);
+        return this.assetService.getFeaturedAsset(productVariant);
     }
 
     @ResolveProperty()
@@ -79,6 +77,10 @@ export class ProductVariantAdminEntityResolver {
         @Parent() productVariant: ProductVariant,
         @Args() args: { options: StockMovementListOptions },
     ): Promise<PaginatedList<StockMovement>> {
-        return this.stockMovementService.getStockMovementsByProductVariantId(ctx, productVariant.id, args.options);
+        return this.stockMovementService.getStockMovementsByProductVariantId(
+            ctx,
+            productVariant.id,
+            args.options,
+        );
     }
 }

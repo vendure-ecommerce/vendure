@@ -2,6 +2,7 @@ import { Address } from './address/address.entity';
 import { Administrator } from './administrator/administrator.entity';
 import { Asset } from './asset/asset.entity';
 import { Channel } from './channel/channel.entity';
+import { CollectionAsset } from './collection/collection-asset.entity';
 import { CollectionTranslation } from './collection/collection-translation.entity';
 import { Collection } from './collection/collection.entity';
 import { CountryTranslation } from './country/country-translation.entity';
@@ -25,9 +26,11 @@ import { ProductOptionGroupTranslation } from './product-option-group/product-op
 import { ProductOptionGroup } from './product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from './product-option/product-option-translation.entity';
 import { ProductOption } from './product-option/product-option.entity';
+import { ProductVariantAsset } from './product-variant/product-variant-asset.entity';
 import { ProductVariantPrice } from './product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from './product-variant/product-variant-translation.entity';
 import { ProductVariant } from './product-variant/product-variant.entity';
+import { ProductAsset } from './product/product-asset.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
 import { Promotion } from './promotion/promotion.entity';
@@ -58,6 +61,7 @@ export const coreEntitiesMap = {
     Cancellation,
     Channel,
     Collection,
+    CollectionAsset,
     CollectionTranslation,
     Country,
     CountryTranslation,
@@ -77,12 +81,14 @@ export const coreEntitiesMap = {
     Payment,
     PaymentMethod,
     Product,
+    ProductAsset,
     ProductOption,
     ProductOptionGroup,
     ProductOptionGroupTranslation,
     ProductOptionTranslation,
     ProductTranslation,
     ProductVariant,
+    ProductVariantAsset,
     ProductVariantPrice,
     ProductVariantTranslation,
     Promotion,

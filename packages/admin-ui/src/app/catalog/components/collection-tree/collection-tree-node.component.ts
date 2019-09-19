@@ -1,4 +1,4 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
 
 import { Collection } from '../../../common/generated-types';
@@ -81,6 +81,7 @@ export class CollectionTreeNodeComponent implements OnInit {
     }
 
     drop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
+        moveItemInArray(this.collectionTree.children, event.previousIndex, event.currentIndex);
         this.root.onDrop(event);
     }
 

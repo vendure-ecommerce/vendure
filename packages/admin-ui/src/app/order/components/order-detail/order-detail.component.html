@@ -49,14 +49,14 @@
         <div class="clr-col-lg-8">
             <table class="order-lines table">
                 <thead>
-                    <tr>
-                        <th></th>
-                        <th>{{ 'order.product-name' | translate }}</th>
-                        <th>{{ 'order.product-sku' | translate }}</th>
-                        <th>{{ 'order.unit-price' | translate }}</th>
-                        <th>{{ 'order.quantity' | translate }}</th>
-                        <th>{{ 'order.total' | translate }}</th>
-                    </tr>
+                <tr>
+                    <th></th>
+                    <th>{{ 'order.product-name' | translate }}</th>
+                    <th>{{ 'order.product-sku' | translate }}</th>
+                    <th>{{ 'order.unit-price' | translate }}</th>
+                    <th>{{ 'order.quantity' | translate }}</th>
+                    <th>{{ 'order.total' | translate }}</th>
+                </tr>
                 </thead>
                 <tr
                     *ngFor="let line of order.lines"
@@ -115,6 +115,8 @@
             ></vdr-order-history>
         </div>
         <div class="clr-col-lg-4 order-cards">
+            <vdr-order-custom-fields-card [customFieldsConfig]="customFields"
+                                          [customFieldValues]="order.customFields"></vdr-order-custom-fields-card>
             <div class="card">
                 <div class="card-header">
                     {{ 'order.customer' | translate }}

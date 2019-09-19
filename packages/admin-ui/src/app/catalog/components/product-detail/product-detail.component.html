@@ -136,6 +136,12 @@
                                 {{ 'catalog.display-variant-table' | translate }}
                             </button>
                         </div>
+                        <div class="flex-spacer"></div>
+                        <a [routerLink]="['./', 'manage-variants']"
+                           class="btn btn-secondary btn-sm edit-variants-btn">
+                            <clr-icon shape="add-text"></clr-icon>
+                            {{ 'catalog.manage-variants' | translate }}
+                        </a>
                     </div>
 
                     <vdr-product-variants-table
@@ -156,7 +162,6 @@
                         (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"
                         (selectFacetValueClick)="selectVariantFacetValue($event)"
-                        (deleteVariant)="deleteVariant($event)"
                     ></vdr-product-variants-list>
                 </section>
             </clr-tab-content>

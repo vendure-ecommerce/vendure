@@ -189,6 +189,26 @@ export const CREATE_PRODUCT_OPTION_GROUP = gql`
     ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
 
+export const GET_PRODUCT_OPTION_GROUP = gql`
+    query GetProductOptionGroup($id: ID!) {
+        productOptionGroup(id: $id) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
+export const ADD_OPTION_TO_GROUP = gql`
+    mutation AddOptionToGroup($input: CreateProductOptionInput!) {
+        createProductOption(input: $input) {
+            id
+            name
+            code
+            groupId
+        }
+    }
+`;
+
 export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
     mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
         addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
@@ -331,6 +351,40 @@ export const DELETE_PRODUCT_VARIANT = gql`
         deleteProductVariant(id: $id) {
             result
             message
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT_OPTIONS = gql`
+    query GetProductVariantOptions($id: ID!) {
+        product(id: $id) {
+            id
+            name
+            optionGroups {
+                id
+                name
+                code
+                options {
+                    id
+                    name
+                    code
+                }
+            }
+            variants {
+                id
+                enabled
+                name
+                sku
+                price
+                stockOnHand
+                enabled
+                options {
+                    id
+                    name
+                    code
+                    groupId
+                }
+            }
         }
     }
 `;

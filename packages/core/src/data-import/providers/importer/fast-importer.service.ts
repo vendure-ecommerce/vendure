@@ -14,9 +14,11 @@ import { ProductOptionGroupTranslation } from '../../../entity/product-option-gr
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductVariantAsset } from '../../../entity/product-variant/product-variant-asset.entity';
 import { ProductVariantPrice } from '../../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { ProductAsset } from '../../../entity/product/product-asset.entity';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
@@ -56,11 +58,19 @@ export class FastImporterService {
                 if (input.featuredAssetId) {
                     p.featuredAsset = { id: input.featuredAssetId } as any;
                 }
-                if (input.assetIds) {
-                    p.assets = input.assetIds.map(id => ({ id } as any));
-                }
             },
         });
+        if (input.assetIds) {
+            const productAssets = input.assetIds.map(
+                (id, i) =>
+                    new ProductAsset({
+                        assetId: id,
+                        productId: product.id,
+                        position: i,
+                    }),
+            );
+            await this.connection.getRepository(ProductAsset).save(productAssets);
+        }
         return product.id;
     }
 
@@ -116,11 +126,19 @@ export class FastImporterService {
                 if (input.featuredAssetId) {
                     variant.featuredAsset = { id: input.featuredAssetId } as any;
                 }
-                if (input.assetIds) {
-                    variant.assets = input.assetIds.map(id => ({ id } as any));
-                }
             },
         });
+        if (input.assetIds) {
+            const variantAssets = input.assetIds.map(
+                (id, i) =>
+                    new ProductVariantAsset({
+                        assetId: id,
+                        productVariantId: createdVariant.id,
+                        position: i,
+                    }),
+            );
+            await this.connection.getRepository(ProductVariantAsset).save(variantAssets);
+        }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
                 createdVariant.id,

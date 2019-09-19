@@ -21,13 +21,13 @@ export const OPTION_VALUE_INPUT_VALUE_ACCESSOR: Provider = {
     selector: 'vdr-option-value-input',
     templateUrl: './option-value-input.component.html',
     styleUrls: ['./option-value-input.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.Default,
     providers: [OPTION_VALUE_INPUT_VALUE_ACCESSOR],
 })
 export class OptionValueInputComponent implements ControlValueAccessor {
     @Input() groupName = '';
     @ViewChild('textArea', { static: true }) textArea: ElementRef<HTMLTextAreaElement>;
-    options: string[];
+    options: Array<{ name: string; locked: boolean }>;
     disabled = false;
     input = '';
     isFocussed = false;
@@ -58,9 +58,11 @@ export class OptionValueInputComponent implements ControlValueAccessor {
         this.textArea.nativeElement.focus();
     }
 
-    removeOption(option: string) {
-        this.options = this.options.filter(o => o !== option);
-        this.onChangeFn(this.options);
+    removeOption(option: { name: string; locked: boolean }) {
+        if (!option.locked) {
+            this.options = this.options.filter(o => o.name !== option.name);
+            this.onChangeFn(this.options);
+        }
     }
 
     handleKey(event: KeyboardEvent) {
@@ -94,14 +96,17 @@ export class OptionValueInputComponent implements ControlValueAccessor {
         this.onChangeFn(this.options);
     }
 
-    private parseInputIntoOptions(input: string): string[] {
+    private parseInputIntoOptions(input: string): Array<{ name: string; locked: boolean }> {
         return input
             .split(/[,\n]/)
             .map(s => s.trim())
-            .filter(s => s !== '');
+            .filter(s => s !== '')
+            .map(s => ({ name: s, locked: false }));
     }
 
     private removeLastOption() {
-        this.options = this.options.slice(0, this.options.length - 1);
+        if (!this.options[this.options.length - 1].locked) {
+            this.options = this.options.slice(0, this.options.length - 1);
+        }
     }
 }

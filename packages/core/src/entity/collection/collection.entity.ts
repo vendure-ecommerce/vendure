@@ -11,7 +11,7 @@ import {
     TreeParent,
 } from 'typeorm';
 
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, Orderable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
@@ -20,6 +20,7 @@ import { Channel } from '../channel/channel.entity';
 import { CustomCollectionFields } from '../custom-entity-fields';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
+import { CollectionAsset } from './collection-asset.entity';
 import { CollectionTranslation } from './collection-translation.entity';
 
 /**
@@ -34,7 +35,8 @@ import { CollectionTranslation } from './collection-translation.entity';
 // Therefore we will just use an adjacency list which will have a perf impact when needing to lookup
 // decendants or ancestors more than 1 level removed.
 // @Tree('closure-table')
-export class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
+export class Collection extends VendureEntity
+    implements Translatable, HasCustomFields, ChannelAware, Orderable {
     constructor(input?: DeepPartial<Collection>) {
         super(input);
     }
@@ -58,9 +60,8 @@ export class Collection extends VendureEntity implements Translatable, HasCustom
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @ManyToMany(type => Asset)
-    @JoinTable()
-    assets: Asset[];
+    @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
+    assets: CollectionAsset[];
 
     @Column('simple-json') filters: ConfigurableOperation[];
 

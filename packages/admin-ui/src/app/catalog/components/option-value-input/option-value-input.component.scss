@@ -34,6 +34,9 @@ vdr-chip {
     ::ng-deep .wrapper {
         margin: 0 3px;
     }
+    &.locked {
+        opacity: 0.8;
+    }
     &.selected {
         ::ng-deep .wrapper {
             border-color: $color-warning-500 !important;

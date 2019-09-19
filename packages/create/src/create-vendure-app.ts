@@ -8,7 +8,7 @@ import os from 'os';
 import path from 'path';
 import { Observable } from 'rxjs';
 
-import { gatherUserResponses } from './gather-user-responses';
+import { gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
 import {
     checkDbConnection,
     checkNodeVersion,
@@ -47,11 +47,17 @@ program
         'silent',
     )
     .option('--use-npm', 'Uses npm rather than Yarn as the default package manager')
+    .option('--ci', 'Runs without prompts for use in CI scenarios')
     .parse(process.argv);
 
-createApp(projectName, program.useNpm, program.logLevel || 'silent');
+createApp(projectName, program.useNpm, program.logLevel || 'silent', program.ci);
 
-async function createApp(name: string | undefined, useNpm: boolean, logLevel: CliLogLevel) {
+async function createApp(
+    name: string | undefined,
+    useNpm: boolean,
+    logLevel: CliLogLevel,
+    isCi: boolean = false,
+) {
     if (!runPreChecks(name, useNpm)) {
         return;
     }
@@ -63,14 +69,9 @@ async function createApp(name: string | undefined, useNpm: boolean, logLevel: Cl
 
     const root = path.resolve(name);
     const appName = path.basename(root);
-    const {
-        dbType,
-        usingTs,
-        configSource,
-        indexSource,
-        indexWorkerSource,
-        populateProducts,
-    } = await gatherUserResponses(root);
+    const { dbType, usingTs, configSource, indexSource, indexWorkerSource, populateProducts } = isCi
+        ? await gatherCiUserResponses(root)
+        : await gatherUserResponses(root);
 
     const useYarn = useNpm ? false : shouldUseYarn();
     const originalDirectory = process.cwd();

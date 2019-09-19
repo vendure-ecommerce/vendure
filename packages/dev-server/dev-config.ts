@@ -9,12 +9,10 @@ import {
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
-import { RestPlugin } from './rest-plugin';
 import { UiPlugin } from './ui-plugin/ui-plugin';
 
 /**
@@ -37,12 +35,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        /*Product: [
-            { type: 'string', name: 'name' },
-            { type: 'datetime', name: 'expires' },
-        ],*/
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -60,7 +53,7 @@ export const devConfig: VendureConfig = {
         // }),
         EmailPlugin.init({
             devMode: true,
-            handlers: defaultEmailHandlers,
+            handlers: defaultEmailHandlers as any,
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
             mailboxPort: 5003,
