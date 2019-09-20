@@ -1,9 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationCreateTaxCategoryArgs,
+    MutationUpdateTaxCategoryArgs,
     Permission,
     QueryTaxCategoryArgs,
-    MutationUpdateTaxCategoryArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
@@ -17,7 +17,7 @@ export class TaxCategoryResolver {
     constructor(private taxCategoryService: TaxCategoryService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
         return this.taxCategoryService.findAll();
     }

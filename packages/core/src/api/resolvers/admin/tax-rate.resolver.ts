@@ -19,13 +19,13 @@ export class TaxRateResolver {
     constructor(private taxRateService: TaxRateService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     taxRates(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRatesArgs): Promise<PaginatedList<TaxRate>> {
         return this.taxRateService.findAll(args.options || undefined);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
         return this.taxRateService.findOne(args.id);
     }
