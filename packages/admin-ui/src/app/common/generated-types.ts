@@ -2136,7 +2136,8 @@ export type MutationRemoveMembersFromZoneArgs = {
 
 export type MutationSetAsLoggedInArgs = {
   username: Scalars['String'],
-  loginTime: Scalars['String']
+  loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>
 };
 
 
@@ -2382,6 +2383,10 @@ export enum Permission {
   ReadOrder = 'ReadOrder',
   UpdateOrder = 'UpdateOrder',
   DeleteOrder = 'DeleteOrder',
+  CreatePromotion = 'CreatePromotion',
+  ReadPromotion = 'ReadPromotion',
+  UpdatePromotion = 'UpdatePromotion',
+  DeletePromotion = 'DeletePromotion',
   CreateSettings = 'CreateSettings',
   ReadSettings = 'ReadSettings',
   UpdateSettings = 'UpdateSettings',
@@ -3448,6 +3453,7 @@ export type UserStatus = {
   username: Scalars['String'],
   isLoggedIn: Scalars['Boolean'],
   loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>,
 };
 
 export type Zone = Node & {
@@ -3559,16 +3565,17 @@ export type RequestCompletedMutation = ({ __typename?: 'Mutation' } & Pick<Mutat
 
 export type SetAsLoggedInMutationVariables = {
   username: Scalars['String'],
-  loginTime: Scalars['String']
+  loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>
 };
 
 
-export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type SetAsLoggedOutMutationVariables = {};
 
 
-export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type SetUiLanguageMutationVariables = {
   languageCode: LanguageCode
@@ -3585,7 +3592,7 @@ export type GetNetworkStatusQuery = ({ __typename?: 'Query' } & { networkStatus:
 export type GetUserStatusQueryVariables = {};
 
 
-export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type GetUiStateQueryVariables = {};
 

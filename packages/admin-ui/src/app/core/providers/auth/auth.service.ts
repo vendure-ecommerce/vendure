@@ -27,10 +27,11 @@ export class AuthService {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
                 this.setChannelToken(response.login.user.channels);
-                return this.serverConfigService.getServerConfig();
+                return this.serverConfigService.getServerConfig().then(() => response.login.user);
             }),
-            switchMap(() => {
-                return this.dataService.client.loginSuccess(username);
+            switchMap(user => {
+                const { permissions } = this.getActiveChannel(user.channels);
+                return this.dataService.client.loginSuccess(username, permissions);
             }),
         );
     }
@@ -80,18 +81,21 @@ export class AuthService {
                     return of(false) as any;
                 }
                 this.setChannelToken(result.me.channels);
-                return this.dataService.client.loginSuccess(result.me.identifier);
+                const { permissions } = this.getActiveChannel(result.me.channels);
+                return this.dataService.client.loginSuccess(result.me.identifier, permissions);
             }),
             mapTo(true),
             catchError(err => of(false)),
         );
     }
 
+    private getActiveChannel(userChannels: CurrentUserFragment['channels']) {
+        const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
+        return defaultChannel || userChannels[0];
+    }
+
     private setChannelToken(userChannels: CurrentUserFragment['channels']) {
         const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
-        this.localStorageService.set(
-            'activeChannelToken',
-            defaultChannel ? defaultChannel.token : userChannels[0].token,
-        );
+        this.localStorageService.set('activeChannelToken', this.getActiveChannel(userChannels).token);
     }
 }

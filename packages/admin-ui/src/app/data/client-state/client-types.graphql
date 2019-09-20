@@ -7,7 +7,7 @@ type Query {
 type Mutation {
     requestStarted: Int!
     requestCompleted: Int!
-    setAsLoggedIn(username: String!, loginTime: String!): UserStatus!
+    setAsLoggedIn(username: String!, loginTime: String!, permissions: [String!]!): UserStatus!
     setAsLoggedOut: UserStatus!
     setUiLanguage(languageCode: LanguageCode): LanguageCode
 }
@@ -20,6 +20,7 @@ type UserStatus {
     username: String!
     isLoggedIn: Boolean!
     loginTime: String!
+    permissions: [String!]!
 }
 
 type UiState {

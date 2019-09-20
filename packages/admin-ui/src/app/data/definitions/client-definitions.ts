@@ -13,11 +13,12 @@ export const REQUEST_COMPLETED = gql`
 `;
 
 export const SET_AS_LOGGED_IN = gql`
-    mutation SetAsLoggedIn($username: String!, $loginTime: String!) {
-        setAsLoggedIn(username: $username, loginTime: $loginTime) @client {
+    mutation SetAsLoggedIn($username: String!, $loginTime: String!, $permissions: [String!]!) {
+        setAsLoggedIn(username: $username, loginTime: $loginTime, permissions: $permissions) @client {
             username
             isLoggedIn
             loginTime
+            permissions
         }
     }
 `;
@@ -28,6 +29,7 @@ export const SET_AS_LOGGED_OUT = gql`
             username
             isLoggedIn
             loginTime
+            permissions
         }
     }
 `;
@@ -52,6 +54,7 @@ export const GET_USER_STATUS = gql`
             username
             isLoggedIn
             loginTime
+            permissions
         }
     }
 `;
