@@ -65,7 +65,7 @@ describe('Authorization & permissions', () => {
             });
         });
 
-        describe('ReadCatalog', () => {
+        describe('ReadCatalog permission', () => {
             beforeAll(async () => {
                 await client.asSuperAdmin();
                 const { identifier, password } = await createAdministratorWithPermissions('ReadCatalog', [
@@ -77,7 +77,10 @@ describe('Authorization & permissions', () => {
             it('me returns correct permissions', async () => {
                 const { me } = await client.query<Me.Query>(ME);
 
-                expect(me!.channels[0].permissions).toEqual(['ReadCatalog']);
+                expect(me!.channels[0].permissions).toEqual([
+                    Permission.Authenticated,
+                    Permission.ReadCatalog,
+                ]);
             });
 
             it('can read', async () => {
@@ -102,7 +105,7 @@ describe('Authorization & permissions', () => {
             });
         });
 
-        describe('CRUD on Customers', () => {
+        describe('CRUD on Customers permissions', () => {
             beforeAll(async () => {
                 await client.asSuperAdmin();
                 const { identifier, password } = await createAdministratorWithPermissions('CRUDCustomer', [
@@ -118,10 +121,11 @@ describe('Authorization & permissions', () => {
                 const { me } = await client.query<Me.Query>(ME);
 
                 expect(me!.channels[0].permissions).toEqual([
-                    'CreateCustomer',
-                    'ReadCustomer',
-                    'UpdateCustomer',
-                    'DeleteCustomer',
+                    Permission.Authenticated,
+                    Permission.CreateCustomer,
+                    Permission.ReadCustomer,
+                    Permission.UpdateCustomer,
+                    Permission.DeleteCustomer,
                 ]);
             });
 
