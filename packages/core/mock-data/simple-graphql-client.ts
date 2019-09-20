@@ -18,7 +18,9 @@ const LOGIN = gql`
             user {
                 id
                 identifier
-                channelTokens
+                channels {
+                    token
+                }
             }
         }
     }

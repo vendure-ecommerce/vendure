@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
-import { SetAsLoggedIn } from '../../../common/generated-types';
+import { CurrentUserChannel, CurrentUserFragment, SetAsLoggedIn } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -25,7 +26,7 @@ export class AuthService {
     logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn.Mutation> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
-                this.setChannelToken(response.login.user.channelTokens[0]);
+                this.setChannelToken(response.login.user.channels);
                 return this.serverConfigService.getServerConfig();
             }),
             switchMap(() => {
@@ -78,7 +79,7 @@ export class AuthService {
                 if (!result.me) {
                     return of(false) as any;
                 }
-                this.setChannelToken(result.me.channelTokens[0]);
+                this.setChannelToken(result.me.channels);
                 return this.dataService.client.loginSuccess(result.me.identifier);
             }),
             mapTo(true),
@@ -86,7 +87,11 @@ export class AuthService {
         );
     }
 
-    private setChannelToken(channelToken: string) {
-        this.localStorageService.set('activeChannelToken', channelToken);
+    private setChannelToken(userChannels: CurrentUserFragment['channels']) {
+        const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
+        this.localStorageService.set(
+            'activeChannelToken',
+            defaultChannel ? defaultChannel.token : userChannels[0].token,
+        );
     }
 }

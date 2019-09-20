@@ -1,20 +1,31 @@
+/* tslint:disable:no-non-null-assertion */
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     CreateAdministrator,
     CreateRole,
+    Me,
     MutationCreateProductArgs,
     MutationLoginArgs,
     MutationUpdateProductArgs,
     Permission,
 } from './graphql/generated-e2e-admin-types';
-import { ATTEMPT_LOGIN, CREATE_ADMINISTRATOR, CREATE_PRODUCT, CREATE_ROLE, GET_PRODUCT_LIST, UPDATE_PRODUCT } from './graphql/shared-definitions';
+import {
+    ATTEMPT_LOGIN,
+    CREATE_ADMINISTRATOR,
+    CREATE_PRODUCT,
+    CREATE_ROLE,
+    GET_PRODUCT_LIST,
+    UPDATE_PRODUCT,
+} from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Authorization & permissions', () => {
     const client = new TestAdminClient();
@@ -38,6 +49,13 @@ describe('Authorization & permissions', () => {
                 await client.asAnonymousUser();
             });
 
+            it(
+                'me is not permitted',
+                assertThrowsWithMessage(async () => {
+                    await client.query<Me.Query>(ME);
+                }, 'You are not currently authorized to perform this action'),
+            );
+
             it('can attempt login', async () => {
                 await assertRequestAllowed<MutationLoginArgs>(ATTEMPT_LOGIN, {
                     username: SUPER_ADMIN_USER_IDENTIFIER,
@@ -54,6 +72,12 @@ describe('Authorization & permissions', () => {
                     Permission.ReadCatalog,
                 ]);
                 await client.asUserWithCredentials(identifier, password);
+            });
+
+            it('me returns correct permissions', async () => {
+                const { me } = await client.query<Me.Query>(ME);
+
+                expect(me!.channels[0].permissions).toEqual(['ReadCatalog']);
             });
 
             it('can read', async () => {
@@ -88,6 +112,17 @@ describe('Authorization & permissions', () => {
                     Permission.DeleteCustomer,
                 ]);
                 await client.asUserWithCredentials(identifier, password);
+            });
+
+            it('me returns correct permissions', async () => {
+                const { me } = await client.query<Me.Query>(ME);
+
+                expect(me!.channels[0].permissions).toEqual([
+                    'CreateCustomer',
+                    'ReadCustomer',
+                    'UpdateCustomer',
+                    'DeleteCustomer',
+                ]);
             });
 
             it('can create', async () => {
@@ -181,3 +216,12 @@ describe('Authorization & permissions', () => {
         };
     }
 });
+
+export const ME = gql`
+    query Me {
+        me {
+            ...CurrentUser
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;

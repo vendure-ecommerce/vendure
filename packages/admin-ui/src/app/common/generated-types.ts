@@ -879,7 +879,14 @@ export type CurrentUser = {
   __typename?: 'CurrentUser',
   id: Scalars['ID'],
   identifier: Scalars['String'],
-  channelTokens: Array<Scalars['String']>,
+  channels: Array<CurrentUserChannel>,
+};
+
+export type CurrentUserChannel = {
+  __typename?: 'CurrentUserChannel',
+  token: Scalars['String'],
+  code: Scalars['String'],
+  permissions: Array<Permission>,
 };
 
 export type Customer = Node & {
@@ -3519,7 +3526,7 @@ export type AssignRoleToAdministratorMutationVariables = {
 
 export type AssignRoleToAdministratorMutation = ({ __typename?: 'Mutation' } & { assignRoleToAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
 
-export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier' | 'channelTokens'>);
+export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>)> });
 
 export type AttemptLoginMutationVariables = {
   username: Scalars['String'],
@@ -4403,6 +4410,7 @@ export namespace AssignRoleToAdministrator {
 
 export namespace CurrentUser {
   export type Fragment = CurrentUserFragment;
+  export type Channels = (NonNullable<CurrentUserFragment['channels'][0]>);
 }
 
 export namespace AttemptLogin {

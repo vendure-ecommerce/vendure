@@ -1,7 +1,13 @@
-import { MutationLoginArgs, LoginResult } from '@vendure/common/lib/generated-types';
+import {
+    CurrentUser,
+    CurrentUserChannel,
+    LoginResult,
+    MutationLoginArgs,
+} from '@vendure/common/lib/generated-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Request, Response } from 'express';
 
-import { InternalServerError } from '../../../common/error/errors';
+import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
 import { AuthService } from '../../../service/services/auth.service';
@@ -51,6 +57,9 @@ export class BaseAuthResolver {
      */
     async me(ctx: RequestContext) {
         const userId = ctx.activeUserId;
+        if (!userId) {
+            throw new ForbiddenError();
+        }
         const user = userId && (await this.userService.getUserById(userId));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
@@ -95,15 +104,33 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    private publiclyAccessibleUser(user: User): any {
+    private publiclyAccessibleUser(user: User): CurrentUser {
         return {
-            id: user.id,
+            id: user.id as string,
             identifier: user.identifier,
-            channelTokens: this.getAvailableChannelTokens(user),
+            channels: this.getCurrentUserChannels(user),
         };
     }
 
-    private getAvailableChannelTokens(user: User): string[] {
-        return user.roles.reduce((tokens, role) => role.channels.map(c => c.token), [] as string[]);
+    private getCurrentUserChannels(user: User): CurrentUserChannel[] {
+        const channelsMap: { [code: string]: CurrentUserChannel } = {};
+
+        for (const role of user.roles) {
+            for (const channel of role.channels) {
+                if (!channelsMap[channel.code]) {
+                    channelsMap[channel.code] = {
+                        token: channel.token,
+                        code: channel.code,
+                        permissions: [],
+                    };
+                }
+                channelsMap[channel.code].permissions = unique([
+                    ...channelsMap[channel.code].permissions,
+                    ...role.permissions,
+                ]);
+            }
+        }
+
+        return Object.values(channelsMap);
     }
 }

@@ -878,7 +878,14 @@ export type CurrentUser = {
   __typename?: 'CurrentUser',
   id: Scalars['ID'],
   identifier: Scalars['String'],
-  channelTokens: Array<Scalars['String']>,
+  channels: Array<CurrentUserChannel>,
+};
+
+export type CurrentUserChannel = {
+  __typename?: 'CurrentUserChannel',
+  token: Scalars['String'],
+  code: Scalars['String'],
+  permissions: Array<Permission>,
 };
 
 export type Customer = Node & {

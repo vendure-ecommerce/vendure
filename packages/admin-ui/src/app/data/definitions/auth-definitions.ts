@@ -4,7 +4,11 @@ export const CURRENT_USER_FRAGMENT = gql`
     fragment CurrentUser on CurrentUser {
         id
         identifier
-        channelTokens
+        channels {
+            code
+            token
+            permissions
+        }
     }
 `;
 
