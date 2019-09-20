@@ -7,29 +7,31 @@
         <ng-container [formGroup]="formArray.at(i)">
             <div class="card-block header-row">
                 <div class="details">
-                    <vdr-title-input class="sku">
+                    <vdr-title-input class="sku" [readonly]="!('UpdateCatalog' | hasPermission)">
                         <clr-input-container>
                             <input
                                 clrInput
                                 type="text"
                                 formControlName="sku"
+                                [readonly]="!('UpdateCatalog' | hasPermission)"
                                 [placeholder]="'catalog.sku' | translate"
                             />
                         </clr-input-container>
                     </vdr-title-input>
-                    <vdr-title-input class="name">
+                    <vdr-title-input class="name" [readonly]="!('UpdateCatalog' | hasPermission)">
                         <clr-input-container>
                             <input
                                 clrInput
                                 type="text"
                                 formControlName="name"
+                                [readonly]="!('UpdateCatalog' | hasPermission)"
                                 [placeholder]="'common.name' | translate"
                             />
                         </clr-input-container>
                     </vdr-title-input>
                 </div>
                 <div class="right-controls">
-                    <clr-toggle-wrapper>
+                    <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
                         <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />
                         <label>{{ 'common.enabled' | translate }}</label>
                     </clr-toggle-wrapper>
@@ -49,7 +51,7 @@
                         <div class="standard-fields">
                             <div class="variant-form-input-row">
                                 <div class="tax-category">
-                                    <clr-select-container>
+                                    <clr-select-container *vdrIfPermissions="'UpdateCatalog'; else taxCategoryLabel">
                                         <label>{{ 'catalog.tax-category' | translate }}</label>
                                         <select clrSelect name="options" formControlName="taxCategoryId">
                                             <option
@@ -60,6 +62,12 @@
                                             </option>
                                         </select>
                                     </clr-select-container>
+                                    <ng-template #taxCategoryLabel>
+                                        <label class="clr-control-label">{{ 'catalog.tax-category' | translate }}</label>
+                                        <div class="tax-category-label">
+                                            {{ getTaxCategoryName(i) }}
+                                        </div>
+                                    </ng-template>
                                 </div>
                                 <div class="price">
                                     <clr-input-container>
@@ -67,6 +75,7 @@
                                         <vdr-currency-input
                                             clrInput
                                             [currencyCode]="variant.currencyCode"
+                                            [readonly]="!('UpdateCatalog' | hasPermission)"
                                             formControlName="price"
                                         ></vdr-currency-input>
                                     </clr-input-container>
@@ -87,6 +96,7 @@
                                         min="0"
                                         step="1"
                                         formControlName="stockOnHand"
+                                        [readonly]="!('UpdateCatalog' | hasPermission)"
                                     />
                                 </clr-input-container>
                                 <clr-checkbox-wrapper class="track-inventory-toggle">
@@ -94,7 +104,9 @@
                                         type="checkbox"
                                         clrCheckbox
                                         name="trackInventory"
+
                                         formControlName="trackInventory"
+                                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
                                     />
                                     <label>{{ 'catalog.track-inventory' | translate }}</label>
                                 </clr-checkbox-wrapper>
@@ -109,6 +121,7 @@
                                             *ngIf="customFieldIsSet(i, customField.name)"
                                             [compact]="true"
                                             [customFieldsFormGroup]="formArray.at(i).get(['customFields'])"
+                                            [readonly]="!('UpdateCatalog' | hasPermission)"
                                             [customField]="customField"
                                         ></vdr-custom-field-control>
                                     </ng-container>
@@ -127,7 +140,7 @@
                                 [colorFrom]="optionGroupName(option.groupId)"
                                 [invert]="true"
                                 (iconClick)="editOption(option)"
-                                icon="pencil"
+                                [icon]="('UpdateCatalog' | hasPermission) && 'pencil'"
                             >
                                 <span class="option-group-name">{{ optionGroupName(option.groupId) }}</span>
                                 {{ option.name }}
@@ -139,14 +152,17 @@
                         <vdr-facet-value-chip
                             *ngFor="let facetValue of existingFacetValues(i)"
                             [facetValue]="facetValue"
+                            [removable]="'UpdateCatalog' | hasPermission"
                             (remove)="removeFacetValue(i, facetValue.id)"
                         ></vdr-facet-value-chip>
                         <vdr-facet-value-chip
                             *ngFor="let facetValue of pendingFacetValues(i)"
                             [facetValue]="facetValue"
+                            [removable]="'UpdateCatalog' | hasPermission"
                             (remove)="removeFacetValue(i, facetValue.id)"
                         ></vdr-facet-value-chip>
                         <button
+                            *vdrIfPermissions="'UpdateCatalog'"
                             class="btn btn-sm btn-secondary"
                             (click)="selectFacetValueClick.emit([variant.id])"
                         >

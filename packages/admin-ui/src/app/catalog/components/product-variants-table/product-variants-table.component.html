@@ -29,6 +29,7 @@
                         clrInput
                         type="text"
                         formControlName="name"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
                         [placeholder]="'common.name' | translate"
                     />
                 </clr-input-container>
@@ -39,6 +40,7 @@
                         clrInput
                         type="text"
                         formControlName="sku"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
                         [placeholder]="'catalog.sku' | translate"
                     />
                 </clr-input-container>
@@ -57,18 +59,32 @@
                     <vdr-currency-input
                         clrInput
                         [currencyCode]="variant.currencyCode"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
                         formControlName="price"
                     ></vdr-currency-input>
                 </clr-input-container>
             </td>
             <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-input-container>
-                    <input clrInput type="number" min="0" step="1" formControlName="stockOnHand" />
+                    <input
+                        clrInput
+                        type="number"
+                        min="0"
+                        step="1"
+                        formControlName="stockOnHand"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                    />
                 </clr-input-container>
             </td>
             <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
                 <clr-toggle-wrapper>
-                    <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />
+                    <input
+                        type="checkbox"
+                        clrToggle
+                        name="enabled"
+                        formControlName="enabled"
+                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                    />
                 </clr-toggle-wrapper>
             </td>
         </ng-container>

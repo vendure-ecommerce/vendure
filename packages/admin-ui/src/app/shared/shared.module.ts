@@ -14,6 +14,7 @@ import {
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
+import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import { AffixedInputComponent } from './shared-declarations';
@@ -112,6 +113,7 @@ const DECLARATIONS = [
     StringToColorPipe,
     ObjectTreeComponent,
     IfPermissionsDirective,
+    HasPermissionPipe,
 ];
 
 @NgModule({

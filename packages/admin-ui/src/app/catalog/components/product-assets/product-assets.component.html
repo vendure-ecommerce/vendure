@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="card-block"><ng-container *ngTemplateOutlet="assetList"></ng-container></div>
-    <div class="card-footer">
+    <div class="card-footer" *vdrIfPermissions="'UpdateCatalog'">
         <button class="btn" (click)="selectAssets()">
             <clr-icon shape="attachment"></clr-icon>
             {{ 'catalog.add-asset' | translate }}
@@ -33,6 +33,7 @@
     </div>
     <ng-container *ngTemplateOutlet="assetList"></ng-container>
     <button
+        *vdrIfPermissions="'UpdateCatalog'"
         class="compact-select btn btn-icon btn-sm btn-block"
         [title]="'catalog.add-asset' | translate"
         (click)="selectAssets()"
@@ -46,12 +47,14 @@
     <div class="all-assets" [class.compact]="compact" cdkDropListGroup>
         <div
             cdkDropList
+            [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
             [cdkDropListEnterPredicate]="dropListEnterPredicate"
             (cdkDropListDropped)="dropListDropped($event)"
         ></div>
         <div
             *ngFor="let asset of assets"
             cdkDropList
+            [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
             [cdkDropListEnterPredicate]="dropListEnterPredicate"
             (cdkDropListDropped)="dropListDropped($event)"
         >
@@ -71,14 +74,20 @@
                     </button>
                     <button
                         type="button"
-                        [disabled]="isFeatured(asset)"
+                        [disabled]="isFeatured(asset) || !('UpdateCatalog' | hasPermission)"
                         vdrDropdownItem
                         (click)="setAsFeatured(asset)"
                     >
                         {{ 'catalog.set-as-featured-asset' | translate }}
                     </button>
                     <div class="dropdown-divider"></div>
-                    <button type="button" class="remove-asset" vdrDropdownItem (click)="removeAsset(asset)">
+                    <button
+                        type="button"
+                        class="remove-asset"
+                        vdrDropdownItem
+                        [disabled]="!('UpdateCatalog' | hasPermission)"
+                        (click)="removeAsset(asset)"
+                    >
                         {{ 'catalog.remove-asset' | translate }}
                     </button>
                 </vdr-dropdown-menu>

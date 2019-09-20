@@ -1,6 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <clr-toggle-wrapper>
+        <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
             <input
                 type="checkbox"
                 clrToggle
@@ -28,6 +28,7 @@
         </button>
         <ng-template #updateButton>
             <button
+                *vdrIfPermissions="'UpdateCatalog'"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="
@@ -55,6 +56,7 @@
                                     id="name"
                                     type="text"
                                     formControlName="name"
+                                    [readonly]="!('UpdateCatalog' | hasPermission)"
                                     (input)="updateSlug($event.target.value)"
                                 />
                             </vdr-form-field>
@@ -63,10 +65,17 @@
                                 for="slug"
                                 [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
                             >
-                                <input id="slug" type="text" formControlName="slug" pattern="[a-z0-9_-]+" />
+                                <input
+                                    id="slug"
+                                    type="text"
+                                    formControlName="slug"
+                                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                                    pattern="[a-z0-9_-]+"
+                                />
                             </vdr-form-field>
                             <vdr-rich-text-editor
                                 formControlName="description"
+                                [readonly]="!('UpdateCatalog' | hasPermission)"
                                 [label]="'common.description' | translate"
                             ></vdr-rich-text-editor>
 
@@ -77,6 +86,7 @@
                                         *ngIf="customFieldIsSet(customField.name)"
                                         [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
                                         [customField]="customField"
+                                        [readonly]="!('UpdateCatalog' | hasPermission)"
                                     ></vdr-custom-field-control>
                                 </ng-container>
                             </section>
@@ -85,9 +95,12 @@
                                 <vdr-facet-value-chip
                                     *ngFor="let facetValue of facetValues$ | async"
                                     [facetValue]="facetValue"
+                                    [removable]="'UpdateCatalog' | hasPermission"
                                     (remove)="removeProductFacetValue(facetValue.id)"
                                 ></vdr-facet-value-chip>
-                                <button class="btn btn-sm btn-secondary" (click)="selectProductFacetValue()">
+                                <button class="btn btn-sm btn-secondary"
+                                        *vdrIfPermissions="'UpdateCatalog'"
+                                        (click)="selectProductFacetValue()">
                                     <clr-icon shape="plus"></clr-icon>
                                     {{ 'catalog.add-facets' | translate }}
                                 </button>
@@ -137,8 +150,11 @@
                             </button>
                         </div>
                         <div class="flex-spacer"></div>
-                        <a [routerLink]="['./', 'manage-variants']"
-                           class="btn btn-secondary btn-sm edit-variants-btn">
+                        <a
+                            *vdrIfPermissions="'UpdateCatalog'"
+                            [routerLink]="['./', 'manage-variants']"
+                            class="btn btn-secondary btn-sm edit-variants-btn"
+                        >
                             <clr-icon shape="add-text"></clr-icon>
                             {{ 'catalog.manage-variants' | translate }}
                         </a>
