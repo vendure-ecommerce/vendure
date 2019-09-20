@@ -1,6 +1,6 @@
 <nav class="sidenav" [clr-nav-level]="2">
     <section class="sidenav-content">
-        <section class="nav-group">
+        <section class="nav-group" *vdrIfPermissions="'ReadCatalog'">
             <input id="catalog" type="checkbox" />
             <label for="catalog">{{ 'nav.catalog' | translate }}</label>
             <ul class="nav-list">
@@ -40,7 +40,7 @@
                 </li>
             </ul>
         </section>
-        <section class="nav-group">
+        <section class="nav-group" *vdrIfPermissions="'ReadOrder'">
             <input id="sales" type="checkbox" />
             <label for="sales">{{ 'nav.sales' | translate }}</label>
             <ul class="nav-list">
@@ -52,7 +52,7 @@
                 </li>
             </ul>
         </section>
-        <section class="nav-group">
+        <section class="nav-group" *vdrIfPermissions="'ReadCustomer'">
             <input id="tabexample2" type="checkbox" />
             <label for="tabexample2">{{ 'nav.customers' | translate }}</label>
             <ul class="nav-list">
@@ -64,7 +64,7 @@
                 </li>
             </ul>
         </section>
-        <section class="nav-group">
+        <section class="nav-group" *vdrIfPermissions="'ReadPromotion'">
             <input id="marketing" type="checkbox" />
             <label for="marketing">{{ 'nav.marketing' | translate }}</label>
             <ul class="nav-list">
@@ -76,7 +76,7 @@
                 </li>
             </ul>
         </section>
-        <section class="nav-group collapsible">
+        <section class="nav-group collapsible"  *vdrIfPermissions="'ReadSettings'">
             <input id="settings" type="checkbox" checked="true" />
             <label for="settings">{{ 'nav.settings' | translate }}</label>
             <ul class="nav-list">
