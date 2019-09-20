@@ -3,7 +3,7 @@
     class="tree-node"
     #dropList
     [cdkDropListData]="collectionTree"
-    [cdkDropListDisabled]="false"
+    [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
     (cdkDropListDropped)="drop($event)"
 >
     <div
@@ -36,15 +36,19 @@
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}
             </a>
-                <div class="drag-handle" cdkDragHandle>
-                    <clr-icon shape="drag-handle" size="24"></clr-icon>
-                </div>
+            <div class="drag-handle" cdkDragHandle *vdrIfPermissions="'UpdateCatalog'">
+                <clr-icon shape="drag-handle" size="24"></clr-icon>
+            </div>
             <vdr-dropdown>
                 <button class="icon-button" vdrDropdownTrigger>
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
-                    <a class="dropdown-item" [routerLink]="['./', 'create', { parentId: collection.id }]">
+                    <a
+                        class="dropdown-item"
+                        [routerLink]="['./', 'create', { parentId: collection.id }]"
+                        *vdrIfPermissions="'CreateCatalog'"
+                    >
                         <clr-icon shape="plus"></clr-icon>
                         {{ 'catalog.create-new-collection' | translate }}
                     </a>
@@ -52,7 +56,7 @@
                     <button
                         type="button"
                         vdrDropdownItem
-                        [disabled]="i === 0"
+                        [disabled]="i === 0 || !('UpdateCatalog' | hasPermission)"
                         (click)="moveUp(collection, i)"
                     >
                         <clr-icon shape="caret up"></clr-icon>
@@ -61,7 +65,9 @@
                     <button
                         type="button"
                         vdrDropdownItem
-                        [disabled]="i === collectionTree.children.length - 1"
+                        [disabled]="
+                            i === collectionTree.children.length - 1 || !('UpdateCatalog' | hasPermission)
+                        "
                         (click)="moveDown(collection, i)"
                     >
                         <clr-icon shape="caret down"></clr-icon>
@@ -73,12 +79,18 @@
                         vdrDropdownItem
                         *ngFor="let item of getMoveListItems(collection)"
                         (click)="move(collection, item.id)"
+                        [disabled]="!('UpdateCatalog' | hasPermission)"
                     >
                         <clr-icon shape="child-arrow"></clr-icon>
                         {{ item.path }}
                     </button>
                     <div class="dropdown-divider"></div>
-                    <button class="button" vdrDropdownItem (click)="delete(collection.id)">
+                    <button
+                        class="button"
+                        vdrDropdownItem
+                        (click)="delete(collection.id)"
+                        [disabled]="!('DeleteCatalog' | hasPermission)"
+                    >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>
                         {{ 'common.delete' | translate }}
                     </button>

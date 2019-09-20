@@ -6,14 +6,14 @@
     multiple="true"
     appendTo="body"
     bindLabel="name"
-    [disabled]="disabled"
+    [disabled]="disabled || readonly"
     [ngModel]="value"
     (change)="onChange($event)"
 >
     <ng-template ng-label-tmp let-item="item" let-clear="clear">
         <vdr-facet-value-chip
             [facetValue]="item.value"
-            [removable]="true"
+            [removable]="!readonly"
             (remove)="clear(item)"
         ></vdr-facet-value-chip>
     </ng-template>

@@ -28,6 +28,7 @@ export type FacetValueSeletorItem = {
 export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor {
     @Output() selectedValuesChange = new EventEmitter<FacetValue.Fragment[]>();
     @Input() facets: FacetWithValues.Fragment[];
+    @Input() readonly = false;
 
     facetValues: FacetValueSeletorItem[] = [];
     onChangeFn: (val: any) => void;
@@ -41,6 +42,9 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
     }
 
     onChange(selected: FacetValueSeletorItem[]) {
+        if (this.readonly) {
+            return;
+        }
         this.selectedValuesChange.emit(selected.map(s => s.value));
         if (this.onChangeFn) {
             this.onChangeFn(JSON.stringify(selected.map(s => s.id)));

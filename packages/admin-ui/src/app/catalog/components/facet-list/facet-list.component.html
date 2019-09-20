@@ -1,6 +1,8 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary"
+           *vdrIfPermissions="'CreateCatalog'"
+           [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'catalog.create-new-facet' | translate }}
         </a>
@@ -68,6 +70,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteFacet(facet.id)"
+                        [disabled]="!('DeleteCatalog' | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>
