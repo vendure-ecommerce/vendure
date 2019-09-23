@@ -17,13 +17,13 @@ export class ChannelResolver {
     constructor(private channelService: ChannelService) {}
 
     @Query()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.ReadSettings)
     channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
         return this.channelService.findAll();
     }
 
     @Query()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.ReadSettings)
     async channel(@Ctx() ctx: RequestContext, @Args() args: QueryChannelArgs): Promise<Channel | undefined> {
         return this.channelService.findOne(args.id);
     }

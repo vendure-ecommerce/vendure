@@ -22,7 +22,7 @@ export class PromotionResolver {
     constructor(private promotionService: PromotionService, private idCodecService: IdCodecService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadPromotion)
     promotions(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPromotionsArgs,
@@ -34,25 +34,25 @@ export class PromotionResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadPromotion)
     promotion(@Ctx() ctx: RequestContext, @Args() args: QueryPromotionArgs): Promise<Promotion | undefined> {
         return this.promotionService.findOne(args.id).then(this.encodeConditionsAndActions);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadPromotion)
     promotionConditions(@Ctx() ctx: RequestContext) {
         return this.promotionService.getPromotionConditions(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadPromotion)
     promotionActions(@Ctx() ctx: RequestContext) {
         return this.promotionService.getPromotionActions(ctx);
     }
 
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreatePromotion)
     createPromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreatePromotionArgs,
@@ -63,7 +63,7 @@ export class PromotionResolver {
     }
 
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdatePromotion)
     updatePromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdatePromotionArgs,
@@ -74,7 +74,7 @@ export class PromotionResolver {
     }
 
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeletePromotion)
     deletePromotion(@Args() args: MutationDeletePromotionArgs): Promise<DeletionResponse> {
         return this.promotionService.softDeletePromotion(args.id);
     }
