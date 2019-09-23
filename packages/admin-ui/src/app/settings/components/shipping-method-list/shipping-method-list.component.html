@@ -1,6 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-shipping-method' | translate }}
         </a>
@@ -40,6 +40,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteShippingMethod(shippingMethod.id)"
+                        [disabled]="!('DeleteSettings' | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

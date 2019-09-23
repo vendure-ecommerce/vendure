@@ -11,7 +11,12 @@
             {{ 'common.create' | translate }}
         </button>
         <ng-template #updateButton>
-            <button class="btn btn-primary" (click)="save()" [disabled]="!saveButtonEnabled()">
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                *vdrIfPermissions="'UpdatePromotion'"
+                [disabled]="!saveButtonEnabled()"
+            >
                 {{ 'common.update' | translate }}
             </button>
         </ng-template>
@@ -20,7 +25,12 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.name' | translate" for="name">
-        <input id="name" type="text" formControlName="name" />
+        <input
+            id="name"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+            type="text"
+            formControlName="name"
+        />
     </vdr-form-field>
 
     <div class="clr-row">
@@ -30,6 +40,7 @@
                 <vdr-configurable-input
                     (remove)="removeCondition($event)"
                     [facets]="facets$ | async"
+                    [readonly]="!('UpdatePromotion' | hasPermission)"
                     [operation]="condition"
                     [operationDefinition]="getConditionDefinition(condition)"
                     [formControlName]="i"
@@ -38,7 +49,7 @@
             </ng-container>
 
             <div>
-                <vdr-dropdown>
+                <vdr-dropdown *vdrIfPermissions="'UpdatePromotion'">
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
                         {{ 'marketing.add-condition' | translate }}
@@ -63,12 +74,13 @@
                 (remove)="removeAction($event)"
                 [facets]="facets$ | async"
                 [operation]="action"
+                [readonly]="!('UpdatePromotion' | hasPermission)"
                 [operationDefinition]="getActionDefinition(action)"
                 [formControlName]="i"
                 [activeChannel]="activeChannel$ | async"
             ></vdr-configurable-input>
             <div>
-                <vdr-dropdown>
+                <vdr-dropdown *vdrIfPermissions="'UpdatePromotion'">
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
                         {{ 'marketing.add-action' | translate }}

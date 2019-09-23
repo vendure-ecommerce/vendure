@@ -3,6 +3,7 @@
         <button
             class="btn btn-primary"
             (click)="save()"
+            *vdrIfPermissions="'UpdateSettings'"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
             {{ 'common.update' | translate }}
@@ -32,7 +33,13 @@
         </ng-select>
     </vdr-form-field>
     <clr-toggle-wrapper>
-        <input type="checkbox" clrToggle name="enabled" formControlName="trackInventory" />
+        <input
+            type="checkbox"
+            clrToggle
+            name="enabled"
+            formControlName="trackInventory"
+            [attr.disabled]="!('UpdateSettings' | hasPermission)"
+        />
         <label>{{ 'settings.track-inventory-default' | translate }}</label>
     </clr-toggle-wrapper>
     <section formGroupName="customFields" *ngIf="customFields.length">

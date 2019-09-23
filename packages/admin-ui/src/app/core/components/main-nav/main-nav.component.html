@@ -86,7 +86,7 @@
                         {{ 'nav.channels' | translate }}
                     </a>
                 </li>
-                <li>
+                <li *vdrIfPermissions="'ReadAdministrator'">
                     <a
                         class="nav-link"
                         [routerLink]="['/settings', 'administrators']"
@@ -96,7 +96,7 @@
                         {{ 'nav.administrators' | translate }}
                     </a>
                 </li>
-                <li>
+                <li *vdrIfPermissions="'ReadAdministrator'">
                     <a class="nav-link" [routerLink]="['/settings', 'roles']" routerLinkActive="active">
                         <clr-icon shape="users" size="20"></clr-icon>
                         {{ 'nav.roles' | translate }}

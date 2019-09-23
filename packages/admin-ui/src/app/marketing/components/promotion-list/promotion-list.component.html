@@ -1,6 +1,8 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary"
+           *vdrIfPermissions="'CreatePromotion'"
+           [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'marketing.create-new-promotion' | translate }}
         </a>

@@ -11,7 +11,12 @@
             {{ 'common.create' | translate }}
         </button>
         <ng-template #updateButton>
-            <button class="btn btn-primary" (click)="save()" [disabled]="!saveButtonEnabled()">
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                *vdrIfPermissions="'SuperAdmin'"
+                [disabled]="!saveButtonEnabled()"
+            >
                 {{ 'common.update' | translate }}
             </button>
         </ng-template>
@@ -20,28 +25,49 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.code' | translate" for="code">
-        <input id="code" type="text" formControlName="code" />
+        <input id="code" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="code" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
-        <input id="token" type="text" formControlName="token" />
+        <input id="token" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="token" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
-        <select clrSelect name="currencyCode" formControlName="currencyCode">
+        <select
+            clrSelect
+            name="currencyCode"
+            formControlName="currencyCode"
+            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+        >
             <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
         <clr-toggle-wrapper>
-            <input type="checkbox" clrToggle id="pricesIncludeTax" formControlName="pricesIncludeTax" />
+            <input
+                type="checkbox"
+                clrToggle
+                id="pricesIncludeTax"
+                formControlName="pricesIncludeTax"
+                [attr.disabled]="!('SuperAdmin' | hasPermission)"
+            />
         </clr-toggle-wrapper>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.default-tax-zone' | translate" for="defaultTaxZoneId">
-        <select clrSelect name="defaultTaxZoneId" formControlName="defaultTaxZoneId">
+        <select
+            clrSelect
+            name="defaultTaxZoneId"
+            formControlName="defaultTaxZoneId"
+            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+        >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.default-shipping-zone' | translate" for="defaultShippingZoneId">
-        <select clrSelect name="defaultShippingZoneId" formControlName="defaultShippingZoneId">
+        <select
+            clrSelect
+            name="defaultShippingZoneId"
+            formControlName="defaultShippingZoneId"
+            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+        >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>

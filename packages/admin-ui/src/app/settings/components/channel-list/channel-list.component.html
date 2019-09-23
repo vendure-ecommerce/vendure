@@ -1,6 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-right>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'SuperAdmin'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-channel' | translate }}
         </a>

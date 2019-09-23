@@ -518,6 +518,7 @@
     "payment-method-config-options": "Payment method configuration",
     "permissions": "Permissions",
     "prices-include-tax": "Prices include tax for the default Zone",
+    "promotion": "Promotion",
     "rate": "Rate",
     "read": "Read",
     "remove-countries-from-zone": "Remove countries from zone...",

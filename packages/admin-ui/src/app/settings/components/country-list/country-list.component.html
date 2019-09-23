@@ -18,7 +18,7 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-country' | translate }}
         </a>
@@ -28,7 +28,7 @@
 <vdr-data-table
     [items]="countriesWithZones$ | async"
     [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="isCountrySelected"
+    [isRowSelectedFn]="('UpdateSettings' | hasPermission) && isCountrySelected"
     (rowSelectChange)="toggleSelectCountry($event)"
     (allSelectChange)="toggleSelectAll()"
 >
@@ -69,6 +69,7 @@
                         class="delete-button"
                         (click)="deleteCountry(country.id)"
                         vdrDropdownItem
+                        [disabled]="!('DeleteSettings' | hasPermission)"
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>
                         {{ 'common.delete' | translate }}

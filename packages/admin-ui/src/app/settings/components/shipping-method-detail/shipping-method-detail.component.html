@@ -14,6 +14,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
+                *vdrIfPermissions="'UpdateSettings'"
                 [disabled]="detailForm.pristine || detailForm.invalid"
             >
                 {{ 'common.update' | translate }}
@@ -28,11 +29,12 @@
             id="description"
             type="text"
             formControlName="description"
+            [readonly]="!('UpdateSettings' | hasPermission)"
             (input)="updateCode(shippingMethod.code, $event.target.value)"
         />
     </vdr-form-field>
-    <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
-        <input id="code" type="text" formControlName="code" />
+    <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="'UpdateSettings' | hasPermission">
+        <input id="code" type="text" formControlName="code" [readonly]="!('UpdateSettings' | hasPermission)" />
     </vdr-form-field>
 
     <div class="clr-row">
@@ -42,6 +44,7 @@
                 *ngIf="selectedChecker"
                 [operation]="selectedChecker"
                 [operationDefinition]="selectedCheckerDefinition"
+                [readonly]="!('UpdateSettings' | hasPermission)"
                 [activeChannel]="activeChannel$ | async"
                 (remove)="selectedChecker = null"
                 formControlName="checker"
@@ -71,6 +74,7 @@
                 *ngIf="selectedCalculator"
                 [operation]="selectedCalculator"
                 [operationDefinition]="selectedCalculatorDefinition"
+                [readonly]="!('UpdateSettings' | hasPermission)"
                 [activeChannel]="activeChannel$ | async"
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"

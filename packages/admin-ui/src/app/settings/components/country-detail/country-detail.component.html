@@ -19,6 +19,7 @@
         <ng-template #updateButton>
             <button
                 class="btn btn-primary"
+                *vdrIfPermissions="'UpdateSettings'"
                 (click)="save()"
                 [disabled]="detailForm.invalid || detailForm.pristine"
             >
@@ -30,14 +31,30 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.code' | translate" for="code">
-        <input id="code" type="text" formControlName="code" />
+        <input
+            id="code"
+            type="text"
+            formControlName="code"
+            [readonly]="!('UpdateSettings' | hasPermission)"
+        />
     </vdr-form-field>
     <vdr-form-field [label]="'common.name' | translate" for="name">
-        <input id="name" type="text" formControlName="name" />
+        <input
+            id="name"
+            type="text"
+            formControlName="name"
+            [readonly]="!('UpdateSettings' | hasPermission)"
+        />
     </vdr-form-field>
     <vdr-form-field [label]="'common.enabled' | translate" for="enabled">
         <clr-toggle-wrapper>
-            <input type="checkbox" clrToggle id="enabled" formControlName="enabled" />
+            <input
+                type="checkbox"
+                clrToggle
+                id="enabled"
+                formControlName="enabled"
+                [attr.disabled]="!('UpdateSettings' | hasPermission)"
+            />
         </clr-toggle-wrapper>
     </vdr-form-field>
 </form>

@@ -13,6 +13,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
+                *vdrIfPermissions="'UpdateAdministrator'"
                 [disabled]="(detailForm.invalid || detailForm.pristine) && !permissionsChanged"
             >
                 {{ 'common.update' | translate }}
@@ -23,24 +24,24 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'settings.email-address' | translate" for="emailAddress">
-        <input id="emailAddress" type="text" formControlName="emailAddress" />
+        <input id="emailAddress" type="text" formControlName="emailAddress" [readonly]="!('UpdateAdministrator' | hasPermission)"/>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
-        <input id="firstName" type="text" formControlName="firstName" />
+        <input id="firstName" type="text" formControlName="firstName" [readonly]="!('UpdateAdministrator' | hasPermission)"/>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
-        <input id="lastName" type="text" formControlName="lastName" />
+        <input id="lastName" type="text" formControlName="lastName" [readonly]="!('UpdateAdministrator' | hasPermission)"/>
     </vdr-form-field>
     <vdr-form-field *ngIf="(isNew$ | async)" [label]="'settings.password' | translate" for="password">
-        <input id="password" type="password" formControlName="password" />
+        <input id="password" type="password" formControlName="password"/>
     </vdr-form-field>
     <vdr-form-field
-        *ngIf="!(isNew$ | async)"
+        *ngIf="!(isNew$ | async) && ('UpdateAdministrator' | hasPermission)"
         [label]="'settings.password' | translate"
         for="password"
         [readOnlyToggle]="true"
     >
-        <input id="password" type="password" formControlName="password" />
+        <input id="password" type="password" formControlName="password"/>
     </vdr-form-field>
     <label class="clr-control-label">{{ 'settings.roles' | translate }}</label>
     <ng-select
