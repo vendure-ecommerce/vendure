@@ -1,5 +1,15 @@
 <vdr-action-bar>
-    <vdr-ab-left></vdr-ab-left>
+    <vdr-ab-left>
+        <clr-toggle-wrapper *vdrIfPermissions="'UpdatePromotion'">
+            <input
+                type="checkbox"
+                clrToggle
+                name="enabled"
+                [formControl]="detailForm.get(['enabled'])"
+            />
+            <label>{{ 'common.enabled' | translate }}</label>
+        </clr-toggle-wrapper>
+    </vdr-ab-left>
 
     <vdr-ab-right>
         <button

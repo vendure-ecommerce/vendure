@@ -4021,6 +4021,13 @@ export type UpdatePromotionMutationVariables = {
 
 export type UpdatePromotionMutation = ({ __typename?: 'Mutation' } & { updatePromotion: ({ __typename?: 'Promotion' } & PromotionFragment) });
 
+export type DeletePromotionMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeletePromotionMutation = ({ __typename?: 'Mutation' } & { deletePromotion: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type CountryFragment = ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'> & { translations: Array<({ __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>)> });
 
 export type GetCountryListQueryVariables = {
@@ -4955,6 +4962,12 @@ export namespace UpdatePromotion {
   export type Variables = UpdatePromotionMutationVariables;
   export type Mutation = UpdatePromotionMutation;
   export type UpdatePromotion = PromotionFragment;
+}
+
+export namespace DeletePromotion {
+  export type Variables = DeletePromotionMutationVariables;
+  export type Mutation = DeletePromotionMutation;
+  export type DeletePromotion = DeletePromotionMutation['deletePromotion'];
 }
 
 export namespace Country {

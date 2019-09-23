@@ -69,3 +69,12 @@ export const UPDATE_PROMOTION = gql`
     }
     ${PROMOTION_FRAGMENT}
 `;
+
+export const DELETE_PROMOTION = gql`
+    mutation DeletePromotion($id: ID!) {
+        deletePromotion(id: $id) {
+            result
+            message
+        }
+    }
+`;

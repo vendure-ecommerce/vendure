@@ -51,6 +51,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         super(route, router, serverConfigService);
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
+            enabled: true,
             conditions: this.formBuilder.array([]),
             actions: this.formBuilder.array([]),
         });
@@ -71,6 +72,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
             .mapStream(data => data.activeChannel);
+
+        // When creating a new Promotion, the initial bindings do not work
+        // unless explicitly re-running the change detector. Don't know why.
+        setTimeout(() => this.changeDetector.markForCheck(), 0);
     }
 
     ngOnDestroy() {
@@ -164,6 +169,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                     const input: UpdatePromotionInput = {
                         id: promotion.id,
                         name: formValue.name,
+                        enabled: formValue.enabled,
                         conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
                         actions: this.mapOperationsToInputs(this.actions, formValue.actions),
                     };
@@ -190,7 +196,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
-        this.detailForm.patchValue({ name: entity.name });
+        this.detailForm.patchValue({ name: entity.name, enabled: entity.enabled });
         entity.conditions.forEach(o => {
             this.addOperation('conditions', o);
         });

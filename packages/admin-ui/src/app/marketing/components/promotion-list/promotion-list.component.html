@@ -22,17 +22,42 @@
     <vdr-dt-column>{{ 'common.created-at' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <ng-template let-promotion="item">
-        <td class="left">{{ promotion.id }}</td>
-        <td class="left">{{ promotion.name }}</td>
-        <td class="left">{{ promotion.createdAt | date: 'longDate' }}</td>
-        <td class="left">{{ promotion.updatedAt | date: 'longDate' }}</td>
-        <td class="right">
+        <td class="left align-middle">{{ promotion.id }}</td>
+        <td class="left align-middle">{{ promotion.name }}</td>
+        <td class="left align-middle">{{ promotion.createdAt | date: 'longDate' }}</td>
+        <td class="left align-middle">{{ promotion.updatedAt | date: 'longDate' }}</td>
+        <td class="align-middle">
+            <vdr-chip *ngIf="!promotion.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
+        </td>
+        <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', promotion.id]"
             ></vdr-table-row-action>
+        </td>
+        <td class="right align-middle">
+            <vdr-dropdown>
+                <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
+                    {{ 'common.actions' | translate }}
+                    <clr-icon shape="caret down"></clr-icon>
+                </button>
+                <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <button
+                        type="button"
+                        class="delete-button"
+                        (click)="deletePromotion(promotion.id)"
+                        [disabled]="!('DeletePromotion' | hasPermission)"
+                        vdrDropdownItem
+                    >
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                        {{ 'common.delete' | translate }}
+                    </button>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </td>
     </ng-template>
 </vdr-data-table>

@@ -38,6 +38,7 @@
     "confirm-delete-facet-value": "Delete facet value?",
     "confirm-delete-product": "Delete product?",
     "confirm-delete-product-variant": "Delete product variant?",
+    "confirm-delete-promotion": "Delete promotion?",
     "confirm-delete-shipping-method": "Delete shipping method?",
     "create-new-collection": "Create new collection",
     "create-new-facet": "Create new facet",
