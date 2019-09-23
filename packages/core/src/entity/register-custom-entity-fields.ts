@@ -1,9 +1,10 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Column, ColumnType, ConnectionOptions } from 'typeorm';
+import { Column, ColumnOptions, ColumnType, ConnectionOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { CustomFields } from '../config/custom-field/custom-field-types';
+import { Logger } from '../config/logger/vendure-logger';
 import { VendureConfig } from '../config/vendure-config';
 
 import {
@@ -30,6 +31,11 @@ import {
 } from './custom-entity-fields';
 
 /**
+ * The maximum length of the "length" argument of a MySQL varchar column.
+ */
+const MAX_STRING_LENGTH = 65535;
+
+/**
  * Dynamically add columns to the custom field entity based on the CustomFields config.
  */
 function registerCustomFieldsForEntity(
@@ -44,14 +50,25 @@ function registerCustomFieldsForEntity(
     if (customFields) {
         for (const customField of customFields) {
             const { name, type, defaultValue, nullable } = customField;
-            const registerColumn = () =>
-                Column({
+            const registerColumn = () => {
+                const options: ColumnOptions = {
                     type: getColumnType(dbEngine, type),
                     default:
                         type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue,
                     name,
                     nullable: nullable === false ? false : true,
-                })(new ctor(), name);
+                };
+                if (customField.type === 'string') {
+                    const length = customField.length || 255;
+                    if (MAX_STRING_LENGTH < length) {
+                        throw new Error(
+                            `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                        );
+                    }
+                    options.length = length;
+                }
+                Column(options)(new ctor(), name);
+            };
 
             if (translation) {
                 if (type === 'localeString') {

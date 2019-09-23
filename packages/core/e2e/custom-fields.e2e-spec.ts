@@ -89,6 +89,10 @@ describe('Custom fields', () => {
                             defaultValue: 'ho!',
                             public: true,
                         },
+                        {
+                            name: 'longString',
+                            type: 'string',
+                        },
                     ],
                     Facet: [
                         {
@@ -145,6 +149,7 @@ describe('Custom fields', () => {
                 { name: 'stringWithOptions', type: 'string' },
                 { name: 'nonPublic', type: 'string' },
                 { name: 'public', type: 'string' },
+                { name: 'longString', type: 'string' },
             ],
         });
     });
@@ -237,6 +242,25 @@ describe('Custom fields', () => {
             `);
         }, 'NOT NULL constraint failed: product.customFieldsNotnullable'),
     );
+
+    it('string length allows long strings', async () => {
+        const longString = Array.from({ length: 5000 }, v => 'hello there!').join(' ');
+        const result = await adminClient.query(
+            gql`
+                mutation($stringValue: String!) {
+                    updateProduct(input: { id: "T_1", customFields: { longString: $stringValue } }) {
+                        id
+                        customFields {
+                            longString
+                        }
+                    }
+                }
+            `,
+            { stringValue: longString },
+        );
+
+        expect(result.updateProduct.customFields.longString).toBe(longString);
+    });
 
     describe('validation', () => {
         it(
