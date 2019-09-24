@@ -1,161 +1,29 @@
 <nav class="sidenav" [clr-nav-level]="2">
     <section class="sidenav-content">
-        <section class="nav-group" *vdrIfPermissions="'ReadCatalog'">
-            <input id="catalog" type="checkbox" />
-            <label for="catalog">{{ 'nav.catalog' | translate }}</label>
-            <ul class="nav-list">
-                <li>
-                    <a class="nav-link" [routerLink]="['/catalog', 'products']" routerLinkActive="active">
-                        <clr-icon shape="library" size="20"></clr-icon>
-                        {{ 'nav.products' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" [routerLink]="['/catalog', 'facets']" routerLinkActive="active">
-                        <clr-icon shape="tag" size="20"></clr-icon>
-                        {{ 'nav.facets' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/catalog', 'collections']"
-                        [queryParams]="{ perPage: 25 }"
-                        [class.active]="isLinkActive('/catalog/collections')"
-                    >
-                        <clr-icon shape="folder-open" size="20"></clr-icon>
-                        {{ 'nav.collections' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/catalog', 'assets']"
-                        [queryParams]="{ perPage: 25 }"
-                        [class.active]="isLinkActive('/catalog/assets')"
-                    >
-                        <clr-icon shape="image-gallery" size="20"></clr-icon>
-                        {{ 'nav.assets' | translate }}
-                    </a>
-                </li>
-            </ul>
-        </section>
-        <section class="nav-group" *vdrIfPermissions="'ReadOrder'">
-            <input id="sales" type="checkbox" />
-            <label for="sales">{{ 'nav.sales' | translate }}</label>
-            <ul class="nav-list">
-                <li>
-                    <a class="nav-link" [routerLink]="['/orders']" routerLinkActive="active">
-                        <clr-icon shape="shopping-cart" size="20"></clr-icon>
-                        {{ 'nav.orders' | translate }}
-                    </a>
-                </li>
-            </ul>
-        </section>
-        <section class="nav-group" *vdrIfPermissions="'ReadCustomer'">
-            <input id="tabexample2" type="checkbox" />
-            <label for="tabexample2">{{ 'nav.customers' | translate }}</label>
-            <ul class="nav-list">
-                <li>
-                    <a class="nav-link" [routerLink]="['/customer', 'customers']" routerLinkActive="active">
-                        <clr-icon shape="user" size="20"></clr-icon>
-                        {{ 'nav.customers' | translate }}
-                    </a>
-                </li>
-            </ul>
-        </section>
-        <section class="nav-group" *vdrIfPermissions="'ReadPromotion'">
-            <input id="marketing" type="checkbox" />
-            <label for="marketing">{{ 'nav.marketing' | translate }}</label>
-            <ul class="nav-list">
-                <li>
-                    <a class="nav-link" [routerLink]="['/marketing', 'promotions']" routerLinkActive="active">
-                        <clr-icon shape="asterisk" size="20"></clr-icon>
-                        {{ 'nav.promotions' | translate }}
-                    </a>
-                </li>
-            </ul>
-        </section>
-        <section class="nav-group collapsible"  *vdrIfPermissions="'ReadSettings'">
-            <input id="settings" type="checkbox" checked="true" />
-            <label for="settings">{{ 'nav.settings' | translate }}</label>
-            <ul class="nav-list">
-                <li>
-                    <a class="nav-link" [routerLink]="['/settings', 'channels']" routerLinkActive="active">
-                        <clr-icon shape="layers" size="20"></clr-icon>
-                        {{ 'nav.channels' | translate }}
-                    </a>
-                </li>
-                <li *vdrIfPermissions="'ReadAdministrator'">
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/settings', 'administrators']"
-                        routerLinkActive="active"
-                    >
-                        <clr-icon shape="administrator" size="20"></clr-icon>
-                        {{ 'nav.administrators' | translate }}
-                    </a>
-                </li>
-                <li *vdrIfPermissions="'ReadAdministrator'">
-                    <a class="nav-link" [routerLink]="['/settings', 'roles']" routerLinkActive="active">
-                        <clr-icon shape="users" size="20"></clr-icon>
-                        {{ 'nav.roles' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/settings', 'shipping-methods']"
-                        routerLinkActive="active"
-                    >
-                        <clr-icon shape="truck" size="20"></clr-icon>
-                        {{ 'nav.shipping-methods' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/settings', 'payment-methods']"
-                        routerLinkActive="active"
-                    >
-                        <clr-icon shape="credit-card" size="20"></clr-icon>
-                        {{ 'nav.payment-methods' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/settings', 'tax-categories']"
-                        routerLinkActive="active"
-                    >
-                        <clr-icon shape="view-list" size="20"></clr-icon>
-                        {{ 'nav.tax-categories' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" [routerLink]="['/settings', 'tax-rates']" routerLinkActive="active">
-                        <clr-icon shape="calculator" size="20"></clr-icon>
-                        {{ 'nav.tax-rates' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" [routerLink]="['/settings', 'countries']" routerLinkActive="active">
-                        <clr-icon shape="world" size="20"></clr-icon>
-                        {{ 'nav.countries' | translate }}
-                    </a>
-                </li>
-                <li>
-                    <a
-                        class="nav-link"
-                        [routerLink]="['/settings', 'global-settings']"
-                        routerLinkActive="active"
-                    >
-                        <clr-icon shape="cog" size="20"></clr-icon>
-                        {{ 'nav.global-settings' | translate }}
-                    </a>
-                </li>
-            </ul>
-        </section>
+        <ng-container *ngFor="let section of menuBuilderService.navMenuConfig$ | async">
+            <section
+                class="nav-group"
+                [attr.data-section-name]="section.name"
+                [class.collapsible]="section.collapsible"
+                *vdrIfPermissions="section.requiresPermission"
+            >
+                <input [id]="section.name" type="checkbox" [checked]="section.collapsedByDefault" />
+                <label [for]="section.name">{{ section.label | translate }}</label>
+                <ul class="nav-list">
+                    <li *ngFor="let item of section.items">
+                        <a
+                            class="nav-link"
+                            [attr.data-item-name]="section.name"
+                            [routerLink]="item.routerLink"
+                            routerLinkActive="active"
+                        >
+                            <clr-icon [attr.shape]="item.icon" size="20"></clr-icon>
+                            {{ item.label | translate }}
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </ng-container>
         <section class="nav-group">
             <vdr-job-list></vdr-job-list>
         </section>

@@ -19,7 +19,7 @@ export class IfPermissionsDirective {
     private _elseTemplateRef: TemplateRef<any> | null = null;
     private _thenViewRef: EmbeddedViewRef<any> | null = null;
     private _elseViewRef: EmbeddedViewRef<any> | null = null;
-    private permissionToCheck = '__initial_value__';
+    private permissionToCheck: string | null = '__initial_value__';
 
     constructor(
         private _viewContainer: ViewContainerRef,
@@ -33,7 +33,7 @@ export class IfPermissionsDirective {
      * The permission to check to determine whether to show the template.
      */
     @Input()
-    set vdrIfPermissions(permission: string) {
+    set vdrIfPermissions(permission: string | null) {
         this.permissionToCheck = permission;
         this._updateView(permission);
     }
@@ -49,26 +49,38 @@ export class IfPermissionsDirective {
         this._updateView(this.permissionToCheck);
     }
 
-    private _updateView(permission: string) {
+    private _updateView(permission: string | null) {
+        if (!permission) {
+            this.showThen();
+            return;
+        }
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
             if (userStatus.permissions.includes(permission)) {
-                if (!this._thenViewRef) {
-                    this._viewContainer.clear();
-                    this._elseViewRef = null;
-                    if (this._thenTemplateRef) {
-                        this._thenViewRef = this._viewContainer.createEmbeddedView(this._thenTemplateRef);
-                    }
-                }
+                this.showThen();
             } else {
-                if (!this._elseViewRef) {
-                    this._viewContainer.clear();
-                    this._thenViewRef = null;
-                    if (this._elseTemplateRef) {
-                        this._elseViewRef = this._viewContainer.createEmbeddedView(this._elseTemplateRef);
-                    }
-                }
+                this.showElse();
             }
         });
+    }
+
+    private showThen() {
+        if (!this._thenViewRef) {
+            this._viewContainer.clear();
+            this._elseViewRef = null;
+            if (this._thenTemplateRef) {
+                this._thenViewRef = this._viewContainer.createEmbeddedView(this._thenTemplateRef);
+            }
+        }
+    }
+
+    private showElse() {
+        if (!this._elseViewRef) {
+            this._viewContainer.clear();
+            this._thenViewRef = null;
+            if (this._elseTemplateRef) {
+                this._elseViewRef = this._viewContainer.createEmbeddedView(this._elseTemplateRef);
+            }
+        }
     }
 }
 
