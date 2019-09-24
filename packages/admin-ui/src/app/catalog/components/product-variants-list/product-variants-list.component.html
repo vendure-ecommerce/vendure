@@ -106,7 +106,7 @@
                                         name="trackInventory"
 
                                         formControlName="trackInventory"
-                                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                                     />
                                     <label>{{ 'catalog.track-inventory' | translate }}</label>
                                 </clr-checkbox-wrapper>

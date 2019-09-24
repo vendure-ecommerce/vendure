@@ -54,7 +54,7 @@
                 clrToggle
                 id="enabled"
                 formControlName="enabled"
-                [attr.disabled]="!('UpdateSettings' | hasPermission)"
+                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>

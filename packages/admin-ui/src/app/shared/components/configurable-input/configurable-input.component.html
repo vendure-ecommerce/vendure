@@ -10,7 +10,7 @@
                         clrCheckbox
                         [formControlName]="arg.name"
                         [id]="arg.name"
-                        [attr.disabled]="readonly"
+                        [vdrDisabled]="readonly"
                     />
                 </clr-checkbox-wrapper>
                 <input
@@ -52,7 +52,7 @@
                     [formControlName]="arg.name"
                     *ngIf="getArgType(arg) === 'facetValueIds' && facets"
                 ></vdr-facet-value-selector>
-                <select clrSelect [formControlName]="arg.name" *ngIf="isStringWithOptions(arg)" [attr.disabled]="readonly">
+                <select clrSelect [formControlName]="arg.name" *ngIf="isStringWithOptions(arg)" [vdrDisabled]="readonly">
                     <option *ngFor="let option of getStringOptions(arg)" [value]="option.value">
                         {{ option.label || option.value }}
                     </option>

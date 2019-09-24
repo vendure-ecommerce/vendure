@@ -83,7 +83,7 @@
                         clrToggle
                         name="enabled"
                         formControlName="enabled"
-                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                     />
                 </clr-toggle-wrapper>
             </td>

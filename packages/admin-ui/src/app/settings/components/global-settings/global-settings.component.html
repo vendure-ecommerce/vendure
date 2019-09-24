@@ -39,7 +39,7 @@
             clrToggle
             name="enabled"
             formControlName="trackInventory"
-            [attr.disabled]="!('UpdateSettings' | hasPermission)"
+            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
         />
         <label>{{ 'settings.track-inventory-default' | translate }}</label>
     </clr-toggle-wrapper>

@@ -38,7 +38,7 @@
                 type="checkbox"
                 clrToggle
                 id="enabled"
-                [attr.disabled]="!('UpdateSettings' | hasPermission)"
+                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
                 formControlName="enabled"
             />
         </clr-toggle-wrapper>
@@ -68,7 +68,7 @@
                     <input
                         type="checkbox"
                         [id]="arg.name"
-                        [attr.disabled]="!('UpdateSettings' | hasPermission)"
+                        [vdrDisabled]="!('UpdateSettings' | hasPermission)"
                         [formControlName]="arg.name"
                         clrCheckbox
                     />

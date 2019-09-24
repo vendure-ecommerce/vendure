@@ -14,11 +14,11 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
+import { DisabledDirective } from './directives/disabled.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
-import { PercentageSuffixInputComponent } from './shared-declarations';
 import { ChipComponent } from './shared-declarations';
 import { ConfigurableInputComponent } from './shared-declarations';
 import { CurrencyInputComponent } from './shared-declarations';
@@ -36,7 +36,7 @@ import { FormFieldControlDirective } from './shared-declarations';
 import { FormFieldComponent } from './shared-declarations';
 import { FormItemComponent } from './shared-declarations';
 import { AffixedInputComponent } from './shared-declarations';
-import { ItemsPerPageControlsComponent } from './shared-declarations';
+import { PercentageSuffixInputComponent } from './shared-declarations';
 import { LabeledDataComponent } from './shared-declarations';
 import { LanguageSelectorComponent } from './shared-declarations';
 import { DialogButtonsDirective } from './shared-declarations';
@@ -57,6 +57,7 @@ import { SentenceCasePipe } from './shared-declarations';
 import { SortPipe } from './shared-declarations';
 import { StringToColorPipe } from './shared-declarations';
 import { FormattedAddressComponent } from './shared-declarations';
+import { ItemsPerPageControlsComponent } from './shared-declarations';
 
 const IMPORTS = [
     ClarityModule,
@@ -116,6 +117,7 @@ const DECLARATIONS = [
     IfPermissionsDirective,
     HasPermissionPipe,
     ActionBarItemsComponent,
+    DisabledDirective,
 ];
 
 @NgModule({

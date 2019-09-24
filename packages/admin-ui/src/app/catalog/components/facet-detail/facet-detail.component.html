@@ -38,7 +38,7 @@
                 <input
                     type="checkbox"
                     clrToggle
-                    [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                    [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                     formControlName="visible"
                     id="visibility"
                 />

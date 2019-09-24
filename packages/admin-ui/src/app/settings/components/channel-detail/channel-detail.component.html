@@ -36,7 +36,7 @@
             clrSelect
             name="currencyCode"
             formControlName="currencyCode"
-            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
             <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
         </select>
@@ -48,7 +48,7 @@
                 clrToggle
                 id="pricesIncludeTax"
                 formControlName="pricesIncludeTax"
-                [attr.disabled]="!('SuperAdmin' | hasPermission)"
+                [vdrDisabled]="!('SuperAdmin' | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
@@ -57,7 +57,7 @@
             clrSelect
             name="defaultTaxZoneId"
             formControlName="defaultTaxZoneId"
-            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
@@ -67,7 +67,7 @@
             clrSelect
             name="defaultShippingZoneId"
             formControlName="defaultShippingZoneId"
-            [attr.disabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>

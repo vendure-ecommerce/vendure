@@ -41,7 +41,7 @@
                         clrToggle
                         formControlName="visible"
                         id="visibility"
-                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                     />
                     <label class="visible-toggle">
                         {{
