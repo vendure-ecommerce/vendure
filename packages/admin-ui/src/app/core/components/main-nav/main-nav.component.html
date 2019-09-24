@@ -1,20 +1,20 @@
 <nav class="sidenav" [clr-nav-level]="2">
     <section class="sidenav-content">
-        <ng-container *ngFor="let section of menuBuilderService.navMenuConfig$ | async">
+        <ng-container *ngFor="let section of navBuilderService.navMenuConfig$ | async">
             <section
                 class="nav-group"
-                [attr.data-section-name]="section.name"
+                [attr.data-section-id]="section.id"
                 [class.collapsible]="section.collapsible"
                 *vdrIfPermissions="section.requiresPermission"
             >
-                <input [id]="section.name" type="checkbox" [checked]="section.collapsedByDefault" />
-                <label [for]="section.name">{{ section.label | translate }}</label>
+                <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
+                <label [for]="section.id">{{ section.label | translate }}</label>
                 <ul class="nav-list">
                     <li *ngFor="let item of section.items">
                         <a
                             class="nav-link"
-                            [attr.data-item-name]="section.name"
-                            [routerLink]="item.routerLink"
+                            [attr.data-item-id]="section.id"
+                            [routerLink]="getRouterLink(item)"
                             routerLinkActive="active"
                         >
                             <clr-icon [attr.shape]="item.icon" size="20"></clr-icon>

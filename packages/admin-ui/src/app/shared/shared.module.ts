@@ -8,6 +8,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 
+import { ActionBarItemsComponent } from './components/action-bar-items/action-bar-items.component';
 import {
     ActionBarComponent,
     ActionBarLeftComponent,
@@ -17,7 +18,6 @@ import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
-import { AffixedInputComponent } from './shared-declarations';
 import { PercentageSuffixInputComponent } from './shared-declarations';
 import { ChipComponent } from './shared-declarations';
 import { ConfigurableInputComponent } from './shared-declarations';
@@ -35,7 +35,7 @@ import { FacetValueSelectorComponent } from './shared-declarations';
 import { FormFieldControlDirective } from './shared-declarations';
 import { FormFieldComponent } from './shared-declarations';
 import { FormItemComponent } from './shared-declarations';
-import { FormattedAddressComponent } from './shared-declarations';
+import { AffixedInputComponent } from './shared-declarations';
 import { ItemsPerPageControlsComponent } from './shared-declarations';
 import { LabeledDataComponent } from './shared-declarations';
 import { LanguageSelectorComponent } from './shared-declarations';
@@ -56,6 +56,7 @@ import { FileSizePipe } from './shared-declarations';
 import { SentenceCasePipe } from './shared-declarations';
 import { SortPipe } from './shared-declarations';
 import { StringToColorPipe } from './shared-declarations';
+import { FormattedAddressComponent } from './shared-declarations';
 
 const IMPORTS = [
     ClarityModule,
@@ -114,6 +115,7 @@ const DECLARATIONS = [
     ObjectTreeComponent,
     IfPermissionsDirective,
     HasPermissionPipe,
+    ActionBarItemsComponent,
 ];
 
 @NgModule({
