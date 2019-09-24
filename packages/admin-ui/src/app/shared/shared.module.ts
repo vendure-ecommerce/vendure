@@ -19,45 +19,47 @@ import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
-import { ChipComponent } from './shared-declarations';
-import { ConfigurableInputComponent } from './shared-declarations';
-import { CurrencyInputComponent } from './shared-declarations';
-import { CustomFieldControlComponent } from './shared-declarations';
-import { CustomerLabelComponent } from './shared-declarations';
-import { DataTableColumnComponent } from './shared-declarations';
-import { DataTableComponent } from './shared-declarations';
-import { DropdownItemDirective } from './shared-declarations';
-import { DropdownMenuComponent } from './shared-declarations';
-import { DropdownTriggerDirective } from './shared-declarations';
-import { DropdownComponent } from './shared-declarations';
-import { FacetValueChipComponent } from './shared-declarations';
-import { FacetValueSelectorComponent } from './shared-declarations';
-import { FormFieldControlDirective } from './shared-declarations';
-import { FormFieldComponent } from './shared-declarations';
-import { FormItemComponent } from './shared-declarations';
-import { AffixedInputComponent } from './shared-declarations';
-import { PercentageSuffixInputComponent } from './shared-declarations';
-import { LabeledDataComponent } from './shared-declarations';
-import { LanguageSelectorComponent } from './shared-declarations';
-import { DialogButtonsDirective } from './shared-declarations';
-import { DialogComponentOutletComponent } from './shared-declarations';
-import { DialogTitleDirective } from './shared-declarations';
-import { ModalDialogComponent } from './shared-declarations';
-import { ObjectTreeComponent } from './shared-declarations';
-import { OrderStateLabelComponent } from './shared-declarations';
-import { PaginationControlsComponent } from './shared-declarations';
-import { RichTextEditorComponent } from './shared-declarations';
-import { SelectToggleComponent } from './shared-declarations';
-import { SimpleDialogComponent } from './shared-declarations';
-import { TableRowActionComponent } from './shared-declarations';
-import { TitleInputComponent } from './shared-declarations';
-import { CurrencyNamePipe } from './shared-declarations';
-import { FileSizePipe } from './shared-declarations';
-import { SentenceCasePipe } from './shared-declarations';
-import { SortPipe } from './shared-declarations';
-import { StringToColorPipe } from './shared-declarations';
-import { FormattedAddressComponent } from './shared-declarations';
-import { ItemsPerPageControlsComponent } from './shared-declarations';
+import {
+    AffixedInputComponent,
+    ChipComponent,
+    ConfigurableInputComponent,
+    CurrencyInputComponent,
+    CurrencyNamePipe,
+    CustomerLabelComponent,
+    CustomFieldControlComponent,
+    DataTableColumnComponent,
+    DataTableComponent,
+    DialogButtonsDirective,
+    DialogComponentOutletComponent,
+    DialogTitleDirective,
+    DropdownComponent,
+    DropdownItemDirective,
+    DropdownMenuComponent,
+    DropdownTriggerDirective,
+    FacetValueChipComponent,
+    FacetValueSelectorComponent,
+    FileSizePipe,
+    FormattedAddressComponent,
+    FormFieldComponent,
+    FormFieldControlDirective,
+    FormItemComponent,
+    ItemsPerPageControlsComponent,
+    LabeledDataComponent,
+    LanguageSelectorComponent,
+    ModalDialogComponent,
+    ObjectTreeComponent,
+    OrderStateLabelComponent,
+    PaginationControlsComponent,
+    PercentageSuffixInputComponent,
+    RichTextEditorComponent,
+    SelectToggleComponent,
+    SentenceCasePipe,
+    SimpleDialogComponent,
+    SortPipe,
+    StringToColorPipe,
+    TableRowActionComponent,
+    TitleInputComponent,
+} from './shared-declarations';
 
 const IMPORTS = [
     ClarityModule,

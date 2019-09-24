@@ -13,6 +13,7 @@ import { CoreModule } from './core/core.module';
 import { CustomHttpTranslationLoader } from './core/providers/i18n/custom-http-loader';
 import { I18nService } from './core/providers/i18n/i18n.service';
 import { DataService } from './data/providers/data.service';
+import { SharedExtensionsModule } from './extensions/shared-extensions.module';
 
 @Injectable()
 export class BaseHrefHolder {
@@ -39,6 +40,7 @@ export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) 
             compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatCompiler },
         }),
         CoreModule,
+        SharedExtensionsModule,
     ],
     providers: [BaseHrefHolder],
     bootstrap: [AppComponent],

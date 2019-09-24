@@ -22,7 +22,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
     ? {
           [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
               ? NonNullable<T[P]>
-              : DeepRequired<NonNullable<T[P]>, U>
+              : DeepRequired<NonNullable<T[P]>, U>;
       }
     : T;
 // tslint:enable:ban-types
@@ -92,6 +92,7 @@ export interface AdminUiConfig {
 
 export interface AdminUiExtension {
     id?: string;
+    type: 'shared' | 'lazy';
     ngModulePath: string;
     ngModuleFileName: string;
     ngModuleName: string;
