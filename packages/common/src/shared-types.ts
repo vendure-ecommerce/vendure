@@ -90,6 +90,14 @@ export interface AdminUiConfig {
     authTokenHeaderKey: string;
 }
 
+/**
+ * @description
+ * Defines extensions to the Admin UI application by specifying additional
+ * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
+ * into the application.
+ *
+ * @docsCategory AdminUiPlugin
+ */
 export interface AdminUiExtension {
     id?: string;
     type: 'shared' | 'lazy';

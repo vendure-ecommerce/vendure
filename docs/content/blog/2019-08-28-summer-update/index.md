@@ -33,7 +33,7 @@ So in summary, Vendure should still be considered to be in "beta", as per the ma
 
 Over the past couple of months, a new version has been released roughly weekly. Each release typically includes a whole host of new features and fixes. Here are some highlights from the recent releases:
 
-* A new [plugin format]({{< ref "docs/plugins" >}}) which allows any [NestJS module](https://docs.nestjs.com/modules) to be plugged directly into Vendure. This major change allows you to harness the full power of NestJS in extending the Vendure server.
+* A new [plugin format]({{< ref "docs/developer-guide/plugins" >}}) which allows any [NestJS module](https://docs.nestjs.com/modules) to be plugged directly into Vendure. This major change allows you to harness the full power of NestJS in extending the Vendure server.
 * Extended [custom fields configuration options]({{< ref "docs/typescript-api/custom-fields" >}}). Now you can extend your models with a rich set of custom data types, as well as specifying contraints, defaults and validation functions.
 * A timeline view of each Order's history, including state transitions, payments, fulfillments and notes.
 * A vastly improved product creation flow in the Admin UI.

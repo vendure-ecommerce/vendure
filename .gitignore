@@ -21,8 +21,6 @@ docs/content/docs/typescript-api/*
 docs/data/build.json
 !docs/content/docs/typescript-api/_index.md
 docs/content/docs/graphql-api/*
-docs/content/docs/plugins/*
-!docs/content/docs/plugins/*.*
 !docs/content/docs/graphql-api/_index.md
 !docs/content/docs/graphql-api/shop/_index.md
 !docs/content/docs/graphql-api/admin/_index.md

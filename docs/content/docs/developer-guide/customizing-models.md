@@ -33,4 +33,4 @@ With the example config above, the following will occur:
 
 1. The database schema will be altered and a column will be added for each custom field. Note: this step requires the [TypeORM synchronize option](https://typeorm.io/#/connection-options/common-connection-options) to be set to `true` as above.
 2. The GraphQL APIs will be modified on bootstrap to add the custom fields to the `Product` and `User` types respectively.
-3. If you are using the [admin-ui-plugin]({{< relref "/docs/plugins/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
+3. If you are using the [admin-ui-plugin]({{< relref "/docs/typescript-api/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
