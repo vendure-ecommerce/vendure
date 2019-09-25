@@ -1,13 +1,24 @@
 /* tslint:disable:no-non-null-assertion */
-import { AccountRegistrationEvent, IdentifierChangeRequestEvent, OrderStateTransitionEvent, PasswordResetEvent } from '@vendure/core';
+import {
+    AccountRegistrationEvent,
+    IdentifierChangeRequestEvent,
+    OrderStateTransitionEvent,
+    PasswordResetEvent,
+} from '@vendure/core';
 
 import { EmailEventListener } from './event-listener';
-import { mockAccountRegistrationEvent, mockEmailAddressChangeEvent, mockOrderStateTransitionEvent, mockPasswordResetEvent } from './mock-events';
+import {
+    mockAccountRegistrationEvent,
+    mockEmailAddressChangeEvent,
+    mockOrderStateTransitionEvent,
+    mockPasswordResetEvent,
+} from './mock-events';
 
 export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
     .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
     .setRecipient(event => event.order.customer!.emailAddress)
+    .setFrom(`{{ fromAddress }}`)
     .setSubject(`Order confirmation for #{{ order.code }}`)
     .setTemplateVars(event => ({ order: event.order }))
     .setMockEvent(mockOrderStateTransitionEvent);
@@ -15,6 +26,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
 export const emailVerificationHandler = new EmailEventListener('email-verification')
     .on(AccountRegistrationEvent)
     .setRecipient(event => event.user.identifier)
+    .setFrom(`{{ fromAddress }}`)
     .setSubject(`Please verify your email address`)
     .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockAccountRegistrationEvent);
@@ -22,6 +34,7 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
 export const passwordResetHandler = new EmailEventListener('password-reset')
     .on(PasswordResetEvent)
     .setRecipient(event => event.user.identifier)
+    .setFrom(`{{ fromAddress }}`)
     .setSubject(`Forgotten password reset`)
     .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockPasswordResetEvent);
@@ -29,6 +42,7 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
 export const emailAddressChangeHandler = new EmailEventListener('email-address-change')
     .on(IdentifierChangeRequestEvent)
     .setRecipient(event => event.user.pendingIdentifier!)
+    .setFrom(`{{ fromAddress }}`)
     .setSubject(`Please verify your change of email address`)
     .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockEmailAddressChangeEvent);
