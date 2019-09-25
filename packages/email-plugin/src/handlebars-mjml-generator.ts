@@ -18,8 +18,8 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
     }
 
     generate(from: string, subject: string, template: string, templateVars: any) {
-        const compiledFrom = Handlebars.compile(from);
-        const compiledSubject = Handlebars.compile(subject);
+        const compiledFrom = Handlebars.compile(from, { noEscape: true });
+        const compiledSubject = Handlebars.compile(subject, { noEscape: true });
         const compiledTemplate = Handlebars.compile(template);
         const fromResult = compiledFrom(templateVars);
         const subjectResult = compiledSubject(templateVars);

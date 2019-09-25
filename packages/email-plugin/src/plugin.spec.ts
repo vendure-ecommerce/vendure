@@ -155,12 +155,12 @@ describe('EmailPlugin', () => {
                 .setSubject('Hello');
 
             const module = await initPluginWithHandlers([handler], {
-                globalTemplateVars: { globalVar: 'baz' },
+                globalTemplateVars: { globalVar: '"baz"' },
             });
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(onSend.mock.calls[0][0].from).toBe('"test from baz" <noreply@test.com>');
+            expect(onSend.mock.calls[0][0].from).toBe('"test from "baz"" <noreply@test.com>');
             await module.close();
         });
 
