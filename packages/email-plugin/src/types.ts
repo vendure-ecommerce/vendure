@@ -206,6 +206,7 @@ export interface NoopTransportOptions {
  * @docsPage Email Plugin Types
  */
 export interface EmailDetails {
+    from: string;
     recipient: string;
     subject: string;
     body: string;
@@ -244,6 +245,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
      * interpolated email text.
      */
     generate(
+        from: string,
         subject: string,
         body: string,
         templateVars: { [key: string]: any },

@@ -66,6 +66,7 @@ export class EmailSender {
 
     private async sendMail(email: EmailDetails, transporter: Mail): Promise<any> {
         return transporter.sendMail({
+            from: email.from,
             to: email.recipient,
             subject: email.subject,
             html: email.body,
@@ -75,6 +76,7 @@ export class EmailSender {
     private async sendFileJson(email: EmailDetails, pathWithoutExt: string) {
         const output = {
             date: new Date().toLocaleString(),
+            from: email.from,
             recipient: email.recipient,
             subject: email.subject,
             body: email.body,
