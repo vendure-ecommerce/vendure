@@ -19,27 +19,15 @@ const sections: DocsSectionConfig[] = [
         sourceDirs: [
             'packages/core/src/',
             'packages/common/src/',
+            'packages/admin-ui-plugin/src/',
+            'packages/asset-server-plugin/src/',
+            'packages/email-plugin/src/',
+            'packages/elasticsearch-plugin/src/',
         ],
         exclude: [
             /generated-shop-types/,
         ],
         outputPath: 'typescript-api',
-    },
-    {
-        sourceDirs: ['packages/asset-server-plugin/src/'],
-        outputPath: 'plugins',
-    },
-    {
-        sourceDirs: ['packages/email-plugin/src/'],
-        outputPath: 'plugins',
-    },
-    {
-        sourceDirs: ['packages/admin-ui-plugin/src/'],
-        outputPath: 'plugins',
-    },
-    {
-        sourceDirs: ['packages/elasticsearch-plugin/src/'],
-        outputPath: 'plugins',
     },
 ];
 

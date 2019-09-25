@@ -5,7 +5,7 @@ import { ModalService, SharedModule } from '@vendure/admin-ui/src';
 @Component({
     selector: 'plugin-test-component',
     template: `
-        <p>Test component works!!</p>
+        <p>Test component works!!!</p>
         <button class="btn btn-primary" (click)="handleClick()">Click me!</button>
     `,
 })

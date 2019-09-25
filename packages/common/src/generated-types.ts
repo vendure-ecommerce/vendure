@@ -3127,6 +3127,7 @@ export type StringCustomFieldConfig = CustomField & {
   __typename?: 'StringCustomFieldConfig',
   name: Scalars['String'],
   type: Scalars['String'],
+  length?: Maybe<Scalars['Int']>,
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
   pattern?: Maybe<Scalars['String']>,

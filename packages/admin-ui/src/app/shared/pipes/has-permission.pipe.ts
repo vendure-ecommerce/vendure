@@ -1,4 +1,4 @@
-import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { Observable, Subscription } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
     private permission: string | null = null;
     private subscription: Subscription;
 
-    constructor(private dataService: DataService) {
+    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {
         this.currentPermissions$ = this.dataService.client
             .userStatus()
             .mapStream(data => data.userStatus.permissions);
@@ -34,6 +34,7 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
             this.dispose();
             this.subscription = this.currentPermissions$.subscribe(permissions => {
                 this.hasPermission = permissions.includes(permission);
+                this.changeDetectorRef.markForCheck();
             });
         }
 

@@ -8,6 +8,7 @@ interface CustomField {
 type StringCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    length: Int
     label: [LocalizedString!]
     description: [LocalizedString!]
     pattern: String

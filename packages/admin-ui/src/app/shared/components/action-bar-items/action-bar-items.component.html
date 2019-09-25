@@ -1,0 +1,10 @@
+<ng-container *ngFor="let item of items$ | async">
+    <button *vdrIfPermissions="item.requiresPermission"
+            [routerLink]="getRouterLink(item)"
+            [disabled]="item.disabled ? (item.disabled | async) : false"
+            (click)="handleClick($event, item)"
+            [ngClass]="getButtonStyles(item)">
+        <clr-icon *ngIf="item.icon" [attr.shape]="item.icon"></clr-icon>
+        {{ item.label | translate }}
+    </button>
+</ng-container>

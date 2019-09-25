@@ -18,6 +18,7 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="product-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
@@ -84,6 +85,7 @@
                                 <ng-container *ngFor="let customField of customFields">
                                     <vdr-custom-field-control
                                         *ngIf="customFieldIsSet(customField.name)"
+                                        entityName="Product"
                                         [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
                                         [customField]="customField"
                                         [readonly]="!('UpdateCatalog' | hasPermission)"

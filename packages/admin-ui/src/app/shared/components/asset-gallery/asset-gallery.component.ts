@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
+import { AssetPreviewComponent } from '../../../catalog/components/asset-preview/asset-preview.component';
 import { Asset } from '../../../common/generated-types';
-import { ModalService } from '../../../shared/providers/modal/modal.service';
-import { AssetPreviewComponent } from '../asset-preview/asset-preview.component';
+import { ModalService } from '../../providers/modal/modal.service';
 
 @Component({
     selector: 'vdr-asset-gallery',

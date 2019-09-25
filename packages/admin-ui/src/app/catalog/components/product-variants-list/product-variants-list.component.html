@@ -106,7 +106,7 @@
                                         name="trackInventory"
 
                                         formControlName="trackInventory"
-                                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                                     />
                                     <label>{{ 'catalog.track-inventory' | translate }}</label>
                                 </clr-checkbox-wrapper>
@@ -119,6 +119,7 @@
                                     <ng-container *ngFor="let customField of customFields">
                                         <vdr-custom-field-control
                                             *ngIf="customFieldIsSet(i, customField.name)"
+                                            entityName="ProductVariant"
                                             [compact]="true"
                                             [customFieldsFormGroup]="formArray.at(i).get(['customFields'])"
                                             [readonly]="!('UpdateCatalog' | hasPermission)"

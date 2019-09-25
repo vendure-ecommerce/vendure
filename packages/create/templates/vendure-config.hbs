@@ -70,6 +70,7 @@ const path = require('path');
             templatePath: path.join(__dirname, 'vendure/email/templates'),
             globalTemplateVars: {
                 // The following variables will change depending on your storefront implementation
+                fromAddress: '"example" <noreply@example.com>',
                 verifyEmailAddressUrl: 'http://localhost:8080/verify',
                 passwordResetUrl: 'http://localhost:8080/password-reset',
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'

@@ -1,5 +1,6 @@
 /* tslint:disable:no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { LanguageCode } from '@vendure/admin-ui/src/app/common/generated-types';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
@@ -35,7 +36,17 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Product: [
+            { name: 'length', type: 'int', min: 0, max: 100 },
+            {
+                name: 'offerImageId',
+                label: [{ languageCode: LanguageCode.en, value: 'Offer image' }],
+                type: 'string',
+            },
+        ],
+        ProductVariant: [{ name: 'length', type: 'int', min: 0, max: 100 }],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

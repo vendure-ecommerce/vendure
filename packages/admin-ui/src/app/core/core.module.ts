@@ -13,10 +13,12 @@ import { OverlayHostComponent } from './components/overlay-host/overlay-host.com
 import { UiLanguageSwitcherComponent } from './components/ui-language-switcher/ui-language-switcher.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { AuthService } from './providers/auth/auth.service';
+import { CustomFieldComponentService } from './providers/custom-field-component/custom-field-component.service';
 import { AuthGuard } from './providers/guard/auth.guard';
 import { I18nService } from './providers/i18n/i18n.service';
 import { JobQueueService } from './providers/job-queue/job-queue.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
+import { NavBuilderService } from './providers/nav-builder/nav-builder.service';
 import { NotificationService } from './providers/notification/notification.service';
 import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 
@@ -31,6 +33,8 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
         OverlayHostService,
         NotificationService,
         JobQueueService,
+        NavBuilderService,
+        CustomFieldComponentService,
     ],
     declarations: [
         AppShellComponent,

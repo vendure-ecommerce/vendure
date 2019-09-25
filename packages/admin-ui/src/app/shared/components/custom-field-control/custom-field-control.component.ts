@@ -1,14 +1,22 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ComponentFactory,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
+import { CustomFieldsFragment, LanguageCode, LocalizedString } from '../../../common/generated-types';
 import {
-    CustomFieldConfig,
-    CustomFieldsFragment,
-    GetServerConfig,
-    LanguageCode,
-    LocalizedString,
-} from '../../../common/generated-types';
+    CustomFieldComponentService,
+    CustomFieldControl,
+    CustomFieldEntityName,
+} from '../../../core/providers/custom-field-component/custom-field-component.service';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -20,16 +28,24 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
 })
-export class CustomFieldControlComponent implements OnInit, OnDestroy {
+export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterViewInit {
+    @Input() entityName: CustomFieldEntityName;
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldsFragment;
     @Input() compact = false;
     @Input() showLabel = true;
     @Input() readonly = false;
+    hasCustomControl = false;
+    @ViewChild('customComponentPlaceholder', { read: ViewContainerRef, static: false })
+    private customComponentPlaceholder: ViewContainerRef;
+    private customComponentFactory: ComponentFactory<CustomFieldControl> | undefined;
     private uiLanguageCode: LanguageCode;
     private sub: Subscription;
 
-    constructor(private dataService: DataService) {}
+    constructor(
+        private dataService: DataService,
+        private customFieldComponentService: CustomFieldComponentService,
+    ) {}
 
     ngOnInit(): void {
         this.sub = this.dataService.client
@@ -38,6 +54,23 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy {
             .subscribe(language => {
                 this.uiLanguageCode = language;
             });
+        this.customComponentFactory = this.customFieldComponentService.getCustomFieldComponent(
+            this.entityName,
+            this.customField.name,
+        );
+        this.hasCustomControl = !!this.customComponentFactory;
+    }
+
+    ngAfterViewInit(): void {
+        if (this.customComponentFactory) {
+            const customComponentRef = this.customComponentPlaceholder.createComponent(
+                this.customComponentFactory,
+            );
+            customComponentRef.instance.customFieldConfig = this.customField;
+            customComponentRef.instance.formControl = this.formGroup.get(
+                this.customField.name,
+            ) as FormControl;
+        }
     }
 
     ngOnDestroy(): void {

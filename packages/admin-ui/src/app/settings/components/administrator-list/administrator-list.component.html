@@ -1,5 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="administrator-list"></vdr-action-bar-items>
         <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateAdministrator'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'admin.create-new-administrator' | translate }}

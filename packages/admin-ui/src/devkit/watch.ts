@@ -6,11 +6,11 @@ import * as path from 'path';
 
 import {
     copyExtensionModules,
-    createExtensionsModule,
+    createExtensionsModules,
     deleteExistingExtensionModules,
     getModuleOutputDir,
     isInVendureMonorepo,
-    restoreExtensionsModule,
+    restoreExtensionsModules,
     restoreOriginalExtensionsModule,
 } from './common';
 
@@ -25,10 +25,10 @@ export type Watcher = {
  */
 export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, port: number): Watcher {
     const cwd = path.join(__dirname, '..');
-    restoreExtensionsModule();
+    restoreExtensionsModules();
     deleteExistingExtensionModules();
     copyExtensionModules(extensions);
-    createExtensionsModule(extensions);
+    createExtensionsModules(extensions);
 
     const config = isInVendureMonorepo() ? 'plugin-dev' : 'plugin';
     const buildProcess = spawn('yarn', ['ng', 'serve', `-c=${config}`, `--port=${port}`], {

@@ -9,6 +9,7 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="collection-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
@@ -40,7 +41,7 @@
                         clrToggle
                         formControlName="visible"
                         id="visibility"
-                        [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                     />
                     <label class="visible-toggle">
                         {{
@@ -70,6 +71,7 @@
                 <ng-container *ngFor="let customField of customFields">
                     <vdr-custom-field-control
                         *ngIf="customFieldIsSet(customField.name)"
+                        entityName="Collection"
                         [customFieldsFormGroup]="detailForm.get(['customFields'])"
                         [customField]="customField"
                     ></vdr-custom-field-control>

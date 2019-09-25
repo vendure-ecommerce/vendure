@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
+import { WatchQueryFetchPolicy } from 'apollo-client';
+import { DocumentNode } from 'graphql';
+import { Observable } from 'rxjs';
+
+import { QueryResult } from '../query-result';
 
 import { AdministratorDataService } from './administrator-data.service';
 import { AuthDataService } from './auth-data.service';
-import { BaseDataService } from './base-data.service';
+import { BaseDataService, TypedMutationUpdateFn } from './base-data.service';
 import { ClientDataService } from './client-data.service';
 import { CollectionDataService } from './collection-data.service';
 import { CustomerDataService } from './customer-data.service';
@@ -27,7 +32,7 @@ export class DataService {
     customer: CustomerDataService;
     shippingMethod: ShippingMethodDataService;
 
-    constructor(baseDataService: BaseDataService) {
+    constructor(private baseDataService: BaseDataService) {
         this.promotion = new PromotionDataService(baseDataService);
         this.administrator = new AdministratorDataService(baseDataService);
         this.auth = new AuthDataService(baseDataService);
@@ -39,5 +44,27 @@ export class DataService {
         this.settings = new SettingsDataService(baseDataService);
         this.customer = new CustomerDataService(baseDataService);
         this.shippingMethod = new ShippingMethodDataService(baseDataService);
+    }
+
+    /**
+     * Perform a GraphQL query.
+     */
+    query<T, V = Record<string, any>>(
+        query: DocumentNode,
+        variables?: V,
+        fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
+    ): QueryResult<T, V> {
+        return this.baseDataService.query(query, variables, fetchPolicy);
+    }
+
+    /**
+     * Perform a GraphQL mutation.
+     */
+    mutate<T, V = Record<string, any>>(
+        mutation: DocumentNode,
+        variables?: V,
+        update?: TypedMutationUpdateFn<T>,
+    ): Observable<T> {
+        return this.baseDataService.mutate(mutation, variables, update);
     }
 }

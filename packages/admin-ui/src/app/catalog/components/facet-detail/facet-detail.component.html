@@ -9,6 +9,7 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="facet-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
@@ -37,7 +38,7 @@
                 <input
                     type="checkbox"
                     clrToggle
-                    [attr.disabled]="!('UpdateCatalog' | hasPermission)"
+                    [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                     formControlName="visible"
                     id="visibility"
                 />
@@ -77,6 +78,7 @@
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control
                     *ngIf="customFieldIsSet(customField.name)"
+                    entityName="Facet"
                     [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
                     [customField]="customField"
                 ></vdr-custom-field-control>
@@ -117,6 +119,7 @@
                         <td>
                             <vdr-custom-field-control
                                 *ngIf="customValueFieldIsSet(i, customField.name)"
+                                entityName="FacetValue"
                                 [showLabel]="false"
                                 [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
                                 [customField]="customField"
