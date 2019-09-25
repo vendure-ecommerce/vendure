@@ -230,7 +230,12 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
             return;
         }
         const bodySource = await this.templateLoader.loadTemplate(type, result.templateFile);
-        const generated = await this.generator.generate(result.subject, bodySource, result.templateVars);
+        const generated = await this.generator.generate(
+            result.from,
+            result.subject,
+            bodySource,
+            result.templateVars,
+        );
         const emailDetails = { ...generated, recipient: result.recipient };
         await this.emailSender.send(emailDetails, this.transport);
     }
