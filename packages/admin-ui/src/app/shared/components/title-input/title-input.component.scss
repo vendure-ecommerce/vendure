@@ -36,4 +36,14 @@
         }
     }
 
+    &.readonly {
+        .edit-icon {
+            display: none;
+        }
+        &:hover {
+            ::ng-deep input:not(:focus) {
+                background-color: $color-grey-200 !important;
+            }
+        }
+    }
 }

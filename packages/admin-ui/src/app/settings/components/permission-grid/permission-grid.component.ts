@@ -30,6 +30,10 @@ export class PermissionGridComponent {
             permissions: ['CreateOrder', 'ReadOrder', 'UpdateOrder', 'DeleteOrder'],
         },
         {
+            label: _('settings.promotion'),
+            permissions: ['CreatePromotion', 'ReadPromotion', 'UpdatePromotion', 'DeletePromotion'],
+        },
+        {
             label: _('settings.administrator'),
             permissions: [
                 'CreateAdministrator',

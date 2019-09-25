@@ -5,7 +5,14 @@ import path from 'path';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { ROLE_FRAGMENT } from './graphql/fragments';
-import { CreateRole, GetRole, GetRoles, Permission, Role, UpdateRole } from './graphql/generated-e2e-admin-types';
+import {
+    CreateRole,
+    GetRole,
+    GetRoles,
+    Permission,
+    Role,
+    UpdateRole,
+} from './graphql/generated-e2e-admin-types';
 import { CREATE_ROLE } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
@@ -37,7 +44,54 @@ describe('Role resolver', () => {
         expect(result.roles.totalItems).toBe(2);
     });
 
-    it('createRole', async () => {
+    it(
+        'createRole with invalid permission',
+        assertThrowsWithMessage(async () => {
+            await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+                input: {
+                    code: 'test',
+                    description: 'test role',
+                    permissions: ['bad permission' as any],
+                },
+            });
+        }, 'Variable "$input" got invalid value "bad permission" at "input.permissions[0]"; Expected type Permission.'),
+    );
+
+    it('createRole with no permissions includes Authenticated', async () => {
+        const { createRole } = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+            input: {
+                code: 'test',
+                description: 'test role',
+                permissions: [],
+            },
+        });
+
+        expect(omit(createRole, ['channels'])).toEqual({
+            code: 'test',
+            description: 'test role',
+            id: 'T_3',
+            permissions: [Permission.Authenticated],
+        });
+    });
+
+    it('createRole deduplicates permissions', async () => {
+        const { createRole } = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+            input: {
+                code: 'test2',
+                description: 'test role2',
+                permissions: [Permission.ReadSettings, Permission.ReadSettings],
+            },
+        });
+
+        expect(omit(createRole, ['channels'])).toEqual({
+            code: 'test2',
+            description: 'test role2',
+            id: 'T_4',
+            permissions: [Permission.Authenticated, Permission.ReadSettings],
+        });
+    });
+
+    it('createRole with permissions', async () => {
         const result = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
             input: {
                 code: 'test',
@@ -47,7 +101,12 @@ describe('Role resolver', () => {
         });
 
         createdRole = result.createRole;
-        expect(omit(createdRole, ['channels'])).toMatchSnapshot();
+        expect(omit(createdRole, ['channels'])).toEqual({
+            code: 'test',
+            description: 'test role',
+            id: 'T_5',
+            permissions: [Permission.Authenticated, Permission.ReadCustomer, Permission.UpdateCustomer],
+        });
     });
 
     it('role', async () => {
@@ -65,7 +124,17 @@ describe('Role resolver', () => {
             },
         });
 
-        expect(omit(result.updateRole, ['channels'])).toMatchSnapshot();
+        expect(omit(result.updateRole, ['channels'])).toEqual({
+            code: 'test-modified',
+            description: 'test role modified',
+            id: 'T_5',
+            permissions: [
+                Permission.Authenticated,
+                Permission.ReadCustomer,
+                Permission.UpdateCustomer,
+                Permission.DeleteCustomer,
+            ],
+        });
     });
 
     it('updateRole works with partial input', async () => {
@@ -79,10 +148,27 @@ describe('Role resolver', () => {
         expect(result.updateRole.code).toBe('test-modified-again');
         expect(result.updateRole.description).toBe('test role modified');
         expect(result.updateRole.permissions).toEqual([
+            Permission.Authenticated,
             Permission.ReadCustomer,
             Permission.UpdateCustomer,
             Permission.DeleteCustomer,
         ]);
+    });
+
+    it('updateRole deduplicates permissions', async () => {
+        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            input: {
+                id: createdRole.id,
+                permissions: [
+                    Permission.Authenticated,
+                    Permission.Authenticated,
+                    Permission.ReadCustomer,
+                    Permission.ReadCustomer,
+                ],
+            },
+        });
+
+        expect(result.updateRole.permissions).toEqual([Permission.Authenticated, Permission.ReadCustomer]);
     });
 
     it(

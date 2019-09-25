@@ -17,17 +17,15 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    generate(
-        subject: string,
-        template: string,
-        templateVars: any,
-    ) {
+    generate(from: string, subject: string, template: string, templateVars: any) {
+        const compiledFrom = Handlebars.compile(from);
         const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
+        const fromResult = compiledFrom(templateVars);
         const subjectResult = compiledSubject(templateVars);
         const mjml = compiledTemplate(templateVars);
         const body = mjml2html(mjml).html;
-        return { subject: subjectResult, body };
+        return { from: fromResult, subject: subjectResult, body };
     }
 
     private registerPartials(partialsPath: string) {

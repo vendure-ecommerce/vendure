@@ -43,6 +43,14 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
 
     ngOnInit(): void {
         this.init();
+        this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
+            if (!userStatus.permissions.includes('UpdateSettings')) {
+                const languagesSelect = this.detailForm.get('availableLanguages');
+                if (languagesSelect) {
+                    languagesSelect.disable();
+                }
+            }
+        });
     }
 
     customFieldIsSet(name: string): boolean {

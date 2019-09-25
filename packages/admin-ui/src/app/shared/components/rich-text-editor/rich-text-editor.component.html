@@ -1,2 +1,2 @@
 <label (click)="trixEditor.focus()" class="clr-control-label">{{ label }}</label>
-<trix-editor #trixEditor></trix-editor>
+<trix-editor #trixEditor [contentEditable]="!_readonly" [class.readonly]="_readonly"></trix-editor>

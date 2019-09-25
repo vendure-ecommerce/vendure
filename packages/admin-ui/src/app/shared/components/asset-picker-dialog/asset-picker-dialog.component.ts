@@ -9,7 +9,7 @@ import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';
-import { Dialog } from '../../../shared/providers/modal/modal.service';
+import { Dialog } from '../../providers/modal/modal.service';
 
 /**
  * A dialog which allows the creation and selection of assets.

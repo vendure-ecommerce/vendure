@@ -10,6 +10,7 @@ export const clientDefaults = {
         username: '',
         isLoggedIn: false,
         loginTime: '',
+        permissions: [],
         __typename: 'UserStatus',
     } as GetUserStatus.UserStatus,
     uiState: {

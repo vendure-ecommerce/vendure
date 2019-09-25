@@ -5,5 +5,11 @@ type LoginResult {
 type CurrentUser {
     id: ID!
     identifier: String!
-    channelTokens: [String!]!
+    channels: [CurrentUserChannel!]!
+}
+
+type CurrentUserChannel {
+    token: String!
+    code: String!
+    permissions: [Permission!]!
 }

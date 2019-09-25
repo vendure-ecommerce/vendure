@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
 
 @Component({
     selector: 'vdr-title-input',
@@ -6,4 +6,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styleUrls: ['./title-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TitleInputComponent {}
+export class TitleInputComponent {
+    @HostBinding('class.readonly')
+    @Input()
+    readonly = false;
+}

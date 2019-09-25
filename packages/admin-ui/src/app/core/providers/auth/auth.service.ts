@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
-import { SetAsLoggedIn } from '../../../common/generated-types';
+import { CurrentUserChannel, CurrentUserFragment, SetAsLoggedIn } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -25,11 +26,12 @@ export class AuthService {
     logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn.Mutation> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
-                this.setChannelToken(response.login.user.channelTokens[0]);
-                return this.serverConfigService.getServerConfig();
+                this.setChannelToken(response.login.user.channels);
+                return this.serverConfigService.getServerConfig().then(() => response.login.user);
             }),
-            switchMap(() => {
-                return this.dataService.client.loginSuccess(username);
+            switchMap(user => {
+                const { permissions } = this.getActiveChannel(user.channels);
+                return this.dataService.client.loginSuccess(username, permissions);
             }),
         );
     }
@@ -78,15 +80,22 @@ export class AuthService {
                 if (!result.me) {
                     return of(false) as any;
                 }
-                this.setChannelToken(result.me.channelTokens[0]);
-                return this.dataService.client.loginSuccess(result.me.identifier);
+                this.setChannelToken(result.me.channels);
+                const { permissions } = this.getActiveChannel(result.me.channels);
+                return this.dataService.client.loginSuccess(result.me.identifier, permissions);
             }),
             mapTo(true),
             catchError(err => of(false)),
         );
     }
 
-    private setChannelToken(channelToken: string) {
-        this.localStorageService.set('activeChannelToken', channelToken);
+    private getActiveChannel(userChannels: CurrentUserFragment['channels']) {
+        const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
+        return defaultChannel || userChannels[0];
+    }
+
+    private setChannelToken(userChannels: CurrentUserFragment['channels']) {
+        const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
+        this.localStorageService.set('activeChannelToken', this.getActiveChannel(userChannels).token);
     }
 }

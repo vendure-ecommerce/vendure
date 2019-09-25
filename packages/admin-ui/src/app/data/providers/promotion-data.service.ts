@@ -1,6 +1,7 @@
 import {
     CreatePromotion,
     CreatePromotionInput,
+    DeletePromotion,
     GetAdjustmentOperations,
     GetPromotion,
     GetPromotionList,
@@ -9,6 +10,7 @@ import {
 } from '../../common/generated-types';
 import {
     CREATE_PROMOTION,
+    DELETE_PROMOTION,
     GET_ADJUSTMENT_OPERATIONS,
     GET_PROMOTION,
     GET_PROMOTION_LIST,
@@ -57,6 +59,13 @@ export class PromotionDataService {
             {
                 input,
             },
+        );
+    }
+
+    deletePromotion(id: string) {
+        return this.baseDataService.mutate<DeletePromotion.Mutation, DeletePromotion.Variables>(
+            DELETE_PROMOTION,
+            { id },
         );
     }
 }

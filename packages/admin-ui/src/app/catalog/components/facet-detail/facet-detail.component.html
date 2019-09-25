@@ -9,9 +9,10 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="facet-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
-            *ngIf="(isNew$ | async); else updateButton"
+            *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
@@ -19,6 +20,7 @@
         </button>
         <ng-template #updateButton>
             <button
+                *vdrIfPermissions="'UpdateCatalog'"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="detailForm.invalid || detailForm.pristine"
@@ -29,11 +31,17 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm" *ngIf="(entity$ | async) as facet">
+<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as facet">
     <section class="form-block" formGroupName="facet">
         <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
             <clr-toggle-wrapper>
-                <input type="checkbox" clrToggle formControlName="visible" id="visibility" />
+                <input
+                    type="checkbox"
+                    clrToggle
+                    [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
+                    formControlName="visible"
+                    id="visibility"
+                />
                 <label class="visible-toggle">
                     {{
                         detailForm.value.facet.visible
@@ -48,11 +56,21 @@
                 id="name"
                 type="text"
                 formControlName="name"
+                [readonly]="!('UpdateCatalog' | hasPermission)"
                 (input)="updateCode(facet.code, $event.target.value)"
             />
         </vdr-form-field>
-        <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
-            <input id="code" type="text" formControlName="code" />
+        <vdr-form-field
+            [label]="'common.code' | translate"
+            for="code"
+            [readOnlyToggle]="'UpdateCatalog' | hasPermission"
+        >
+            <input
+                id="code"
+                type="text"
+                [readonly]="!('UpdateCatalog' | hasPermission)"
+                formControlName="code"
+            />
         </vdr-form-field>
 
         <section formGroupName="customFields" *ngIf="customFields.length">
@@ -60,6 +78,7 @@
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control
                     *ngIf="customFieldIsSet(customField.name)"
+                    entityName="Facet"
                     [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
                     [customField]="customField"
                 ></vdr-custom-field-control>
@@ -91,6 +110,7 @@
                         <input
                             type="text"
                             formControlName="name"
+                            [readonly]="!('UpdateCatalog' | hasPermission)"
                             (input)="updateValueCode(facet.values[i]?.code, $event.target.value, i)"
                         />
                     </td>
@@ -99,6 +119,7 @@
                         <td>
                             <vdr-custom-field-control
                                 *ngIf="customValueFieldIsSet(i, customField.name)"
+                                entityName="FacetValue"
                                 [showLabel]="false"
                                 [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
                                 [customField]="customField"
@@ -116,8 +137,10 @@
                                     type="button"
                                     class="delete-button"
                                     (click)="deleteFacetValue(facet.values[i].id)"
+                                    [disabled]="!('UpdateCatalog' | hasPermission)"
                                     vdrDropdownItem
                                 >
+                                    <clr-icon shape="trash" class="is-danger"></clr-icon>
                                     {{ 'common.delete' | translate }}
                                 </button>
                             </vdr-dropdown-menu>
@@ -128,7 +151,12 @@
         </table>
 
         <div>
-            <button type="button" class="btn btn-secondary" (click)="addFacetValue()">
+            <button
+                type="button"
+                class="btn btn-secondary"
+                *vdrIfPermissions="'CreateCatalog'"
+                (click)="addFacetValue()"
+            >
                 <clr-icon shape="add"></clr-icon>
                 {{ 'catalog.add-facet-value' | translate }}
             </button>

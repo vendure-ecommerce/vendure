@@ -878,7 +878,14 @@ export type CurrentUser = {
     __typename?: 'CurrentUser';
     id: Scalars['ID'];
     identifier: Scalars['String'];
-    channelTokens: Array<Scalars['String']>;
+    channels: Array<CurrentUserChannel>;
+};
+
+export type CurrentUserChannel = {
+    __typename?: 'CurrentUserChannel';
+    token: Scalars['String'];
+    code: Scalars['String'];
+    permissions: Array<Permission>;
 };
 
 export type Customer = Node & {
@@ -2287,6 +2294,10 @@ export enum Permission {
     ReadOrder = 'ReadOrder',
     UpdateOrder = 'UpdateOrder',
     DeleteOrder = 'DeleteOrder',
+    CreatePromotion = 'CreatePromotion',
+    ReadPromotion = 'ReadPromotion',
+    UpdatePromotion = 'UpdatePromotion',
+    DeletePromotion = 'DeletePromotion',
     CreateSettings = 'CreateSettings',
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
@@ -3015,6 +3026,7 @@ export type StringCustomFieldConfig = CustomField & {
     __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     pattern?: Maybe<Scalars['String']>;
@@ -3350,6 +3362,12 @@ export type GetCustomerCountQueryVariables = {};
 
 export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
+};
+
+export type MeQueryVariables = {};
+
+export type MeQuery = { __typename?: 'Query' } & {
+    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -4041,10 +4059,11 @@ export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
         customerGroup: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
     };
 
-export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<
-    CurrentUser,
-    'id' | 'identifier' | 'channelTokens'
->;
+export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & {
+        channels: Array<
+            { __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>
+        >;
+    };
 
 export type VariantWithStockFragment = { __typename?: 'ProductVariant' } & Pick<
     ProductVariant,
@@ -4955,6 +4974,12 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
+export namespace Me {
+    export type Variables = MeQueryVariables;
+    export type Query = MeQuery;
+    export type Me = CurrentUserFragment;
+}
+
 export namespace GetCollectionsWithAssets {
     export type Variables = GetCollectionsWithAssetsQueryVariables;
     export type Query = GetCollectionsWithAssetsQuery;
@@ -5405,6 +5430,7 @@ export namespace TaxRate {
 
 export namespace CurrentUser {
     export type Fragment = CurrentUserFragment;
+    export type Channels = NonNullable<CurrentUserFragment['channels'][0]>;
 }
 
 export namespace VariantWithStock {

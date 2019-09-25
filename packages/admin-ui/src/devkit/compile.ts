@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import {
     copyExtensionModules,
-    createExtensionsModule,
+    createExtensionsModules,
     deleteExistingExtensionModules,
     isInVendureMonorepo,
     restoreOriginalExtensionsModule,
@@ -20,7 +20,7 @@ export function compileAdminUiApp(outputPath: string, extensions: Array<Required
         restoreOriginalExtensionsModule();
         deleteExistingExtensionModules();
         copyExtensionModules(extensions);
-        createExtensionsModule(extensions);
+        createExtensionsModules(extensions);
 
         const config = isInVendureMonorepo() ? 'plugin-dev' : 'plugin';
         const buildProcess = spawn(

@@ -55,6 +55,7 @@ describe('EmailPlugin', () => {
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .setRecipient(() => 'test@test.com')
+                .setFrom('"test from" <noreply@test.com>')
                 .setSubject('test subject');
 
             const module = await initPluginWithHandlers([handler]);
@@ -74,6 +75,7 @@ describe('EmailPlugin', () => {
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .filter(event => !!event.ctx.user)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('test subject');
 
@@ -99,6 +101,7 @@ describe('EmailPlugin', () => {
         it('interpolates subject', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ subjectVar }}')
                 .setTemplateVars(event => ({ subjectVar: 'foo' }));
@@ -114,6 +117,7 @@ describe('EmailPlugin', () => {
         it('interpolates body', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
                 .setTemplateVars(event => ({ testVar: 'this is the test var' }));
@@ -129,6 +133,7 @@ describe('EmailPlugin', () => {
         it('interpolates globalTemplateVars', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ globalVar }}');
 
@@ -142,9 +147,27 @@ describe('EmailPlugin', () => {
             await module.close();
         });
 
+        it('interpolates from', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from {{ globalVar }}" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello');
+
+            const module = await initPluginWithHandlers([handler], {
+                globalTemplateVars: { globalVar: 'baz' },
+            });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].from).toBe('"test from baz" <noreply@test.com>');
+            await module.close();
+        });
+
         it('globalTemplateVars available in setTemplateVars method', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ testVar }}')
                 .setTemplateVars((event, globals) => ({ testVar: globals.globalVar + ' quux' }));
@@ -162,6 +185,7 @@ describe('EmailPlugin', () => {
         it('setTemplateVars overrides globals', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ name }}')
                 .setTemplateVars((event, globals) => ({ name: 'quux' }));
@@ -184,6 +208,7 @@ describe('EmailPlugin', () => {
         it('additional LanguageCode', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ name }}!')
                 .setRecipient(() => 'test@test.com')
                 .setTemplateVars(() => ({ name: 'Test' }))

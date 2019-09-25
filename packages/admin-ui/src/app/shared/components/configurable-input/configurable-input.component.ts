@@ -59,6 +59,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     @Input() operationDefinition?: ConfigurableOperationDefinition;
     @Input() facets: FacetWithValues.Fragment[] = [];
     @Input() activeChannel: GetActiveChannel.ActiveChannel;
+    @Input() readonly = false;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;

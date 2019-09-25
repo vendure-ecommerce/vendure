@@ -117,6 +117,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
+    private from: string;
     private _mockEvent: Omit<Event, 'ctx'> | undefined;
 
     constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
@@ -172,6 +173,16 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     /**
      * @description
+     * Sets the default from field of the email. The from string may use Handlebars variables defined by the
+     * setTemplateVars() method.
+     */
+    setFrom(from: string): EmailEventHandler<T, Event> {
+        this.from = from;
+        return this;
+    }
+
+    /**
+     * @description
      * Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
      * templates for channels or languageCodes other than the default.
      */
@@ -189,7 +200,9 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     handle(
         event: Event,
         globals: { [key: string]: any } = {},
-    ): { recipient: string; templateVars: any; subject: string; templateFile: string } | undefined {
+    ):
+        | { from: string; recipient: string; templateVars: any; subject: string; templateFile: string }
+        | undefined {
         for (const filterFn of this.filterFns) {
             if (!filterFn(event)) {
                 return;
@@ -198,9 +211,13 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         if (!this.setRecipientFn) {
             throw new Error(
                 `No setRecipientFn has been defined. ` +
-                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${
-                        this.type
-                    }`,
+                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
+            );
+        }
+        if (this.from === undefined) {
+            throw new Error(
+                `No from field has been defined. ` +
+                    `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         const { ctx } = event;
@@ -209,6 +226,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
         return {
             recipient,
+            from: this.from,
             templateVars: { ...globals, ...templateVars },
             subject: configuration ? configuration.subject : this.defaultSubject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',

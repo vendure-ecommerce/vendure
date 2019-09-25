@@ -33,7 +33,7 @@
         display: flex;
         ::ng-deep input {
             flex: 1;
-            &[readonly] {
+            &[disabled] {
                 background-color: $color-grey-200;
             }
         }

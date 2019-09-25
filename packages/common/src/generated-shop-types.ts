@@ -623,7 +623,14 @@ export type CurrentUser = {
     __typename?: 'CurrentUser';
     id: Scalars['ID'];
     identifier: Scalars['String'];
-    channelTokens: Array<Scalars['String']>;
+    channels: Array<CurrentUserChannel>;
+};
+
+export type CurrentUserChannel = {
+    __typename?: 'CurrentUserChannel';
+    token: Scalars['String'];
+    code: Scalars['String'];
+    permissions: Array<Permission>;
 };
 
 export type Customer = Node & {
@@ -1638,6 +1645,10 @@ export enum Permission {
     ReadOrder = 'ReadOrder',
     UpdateOrder = 'UpdateOrder',
     DeleteOrder = 'DeleteOrder',
+    CreatePromotion = 'CreatePromotion',
+    ReadPromotion = 'ReadPromotion',
+    UpdatePromotion = 'UpdatePromotion',
+    DeletePromotion = 'DeletePromotion',
     CreateSettings = 'CreateSettings',
     ReadSettings = 'ReadSettings',
     UpdateSettings = 'UpdateSettings',
@@ -2090,6 +2101,7 @@ export type StringCustomFieldConfig = CustomField & {
     __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     pattern?: Maybe<Scalars['String']>;

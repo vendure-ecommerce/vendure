@@ -41,7 +41,7 @@ export const routes: Route[] = [
             },
             {
                 path: 'extensions',
-                loadChildren: `./extensions/extensions.module#ExtensionsModule`,
+                loadChildren: `./extensions/lazy-extensions.module#LazyExtensionsModule`,
             },
         ],
     },

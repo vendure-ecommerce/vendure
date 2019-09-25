@@ -12,6 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface Trix {
     editor: any;
+    toolbarElement: any;
 }
 
 /**
@@ -32,6 +33,15 @@ export interface Trix {
 })
 export class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
     @Input() label: string;
+    @Input() set readonly(value: any) {
+        this._readonly = !!value;
+        if (this._readonly) {
+            this.trix.toolbarElement.classList.add('hidden');
+        } else {
+            this.trix.toolbarElement.classList.remove('hidden');
+        }
+    }
+    _readonly = false;
 
     id = Math.random()
         .toString(36)

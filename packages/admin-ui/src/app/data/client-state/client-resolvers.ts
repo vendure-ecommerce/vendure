@@ -32,13 +32,14 @@ export const clientResolvers: ResolverDefinition = {
             return updateRequestsInFlight(cache, -1);
         },
         setAsLoggedIn: (_, args: SetAsLoggedIn.Variables, { cache }): GetUserStatus.UserStatus => {
-            const { username, loginTime } = args;
+            const { username, loginTime, permissions } = args;
             const data: GetUserStatus.Query = {
                 userStatus: {
                     __typename: 'UserStatus',
                     username,
                     loginTime,
                     isLoggedIn: true,
+                    permissions,
                 },
             };
             cache.writeData({ data });
@@ -51,6 +52,7 @@ export const clientResolvers: ResolverDefinition = {
                     username: '',
                     loginTime: '',
                     isLoggedIn: false,
+                    permissions: [],
                 },
             };
             cache.writeData({ data });

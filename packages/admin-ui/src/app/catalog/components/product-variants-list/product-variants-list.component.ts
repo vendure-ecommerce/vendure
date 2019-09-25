@@ -74,6 +74,15 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         }
     }
 
+    getTaxCategoryName(index: number): string {
+        const control = this.formArray.at(index).get(['taxCategoryId']);
+        if (control && this.taxCategories) {
+            const match = this.taxCategories.find(t => t.id === control.value);
+            return match ? match.name : '';
+        }
+        return '';
+    }
+
     areAllSelected(): boolean {
         return !!this.variants && this.selectedVariantIds.length === this.variants.length;
     }

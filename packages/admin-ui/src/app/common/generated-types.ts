@@ -879,7 +879,14 @@ export type CurrentUser = {
   __typename?: 'CurrentUser',
   id: Scalars['ID'],
   identifier: Scalars['String'],
-  channelTokens: Array<Scalars['String']>,
+  channels: Array<CurrentUserChannel>,
+};
+
+export type CurrentUserChannel = {
+  __typename?: 'CurrentUserChannel',
+  token: Scalars['String'],
+  code: Scalars['String'],
+  permissions: Array<Permission>,
 };
 
 export type Customer = Node & {
@@ -2129,7 +2136,8 @@ export type MutationRemoveMembersFromZoneArgs = {
 
 export type MutationSetAsLoggedInArgs = {
   username: Scalars['String'],
-  loginTime: Scalars['String']
+  loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>
 };
 
 
@@ -2375,6 +2383,10 @@ export enum Permission {
   ReadOrder = 'ReadOrder',
   UpdateOrder = 'UpdateOrder',
   DeleteOrder = 'DeleteOrder',
+  CreatePromotion = 'CreatePromotion',
+  ReadPromotion = 'ReadPromotion',
+  UpdatePromotion = 'UpdatePromotion',
+  DeletePromotion = 'DeletePromotion',
   CreateSettings = 'CreateSettings',
   ReadSettings = 'ReadSettings',
   UpdateSettings = 'UpdateSettings',
@@ -3141,6 +3153,7 @@ export type StringCustomFieldConfig = CustomField & {
   __typename?: 'StringCustomFieldConfig',
   name: Scalars['String'],
   type: Scalars['String'],
+  length?: Maybe<Scalars['Int']>,
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
   pattern?: Maybe<Scalars['String']>,
@@ -3441,6 +3454,7 @@ export type UserStatus = {
   username: Scalars['String'],
   isLoggedIn: Scalars['Boolean'],
   loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>,
 };
 
 export type Zone = Node & {
@@ -3519,7 +3533,7 @@ export type AssignRoleToAdministratorMutationVariables = {
 
 export type AssignRoleToAdministratorMutation = ({ __typename?: 'Mutation' } & { assignRoleToAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
 
-export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier' | 'channelTokens'>);
+export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>)> });
 
 export type AttemptLoginMutationVariables = {
   username: Scalars['String'],
@@ -3552,16 +3566,17 @@ export type RequestCompletedMutation = ({ __typename?: 'Mutation' } & Pick<Mutat
 
 export type SetAsLoggedInMutationVariables = {
   username: Scalars['String'],
-  loginTime: Scalars['String']
+  loginTime: Scalars['String'],
+  permissions: Array<Scalars['String']>
 };
 
 
-export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type SetAsLoggedOutMutationVariables = {};
 
 
-export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type SetUiLanguageMutationVariables = {
   languageCode: LanguageCode
@@ -3578,7 +3593,7 @@ export type GetNetworkStatusQuery = ({ __typename?: 'Query' } & { networkStatus:
 export type GetUserStatusQueryVariables = {};
 
 
-export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime'>) });
+export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
 
 export type GetUiStateQueryVariables = {};
 
@@ -4007,6 +4022,13 @@ export type UpdatePromotionMutationVariables = {
 
 export type UpdatePromotionMutation = ({ __typename?: 'Mutation' } & { updatePromotion: ({ __typename?: 'Promotion' } & PromotionFragment) });
 
+export type DeletePromotionMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeletePromotionMutation = ({ __typename?: 'Mutation' } & { deletePromotion: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type CountryFragment = ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'> & { translations: Array<({ __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>)> });
 
 export type GetCountryListQueryVariables = {
@@ -4403,6 +4425,7 @@ export namespace AssignRoleToAdministrator {
 
 export namespace CurrentUser {
   export type Fragment = CurrentUserFragment;
+  export type Channels = (NonNullable<CurrentUserFragment['channels'][0]>);
 }
 
 export namespace AttemptLogin {
@@ -4940,6 +4963,12 @@ export namespace UpdatePromotion {
   export type Variables = UpdatePromotionMutationVariables;
   export type Mutation = UpdatePromotionMutation;
   export type UpdatePromotion = PromotionFragment;
+}
+
+export namespace DeletePromotion {
+  export type Variables = DeletePromotionMutationVariables;
+  export type Mutation = DeletePromotionMutation;
+  export type DeletePromotion = DeletePromotionMutation['deletePromotion'];
 }
 
 export namespace Country {

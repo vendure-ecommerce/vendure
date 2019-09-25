@@ -1,21 +1,21 @@
 // tslint:disable:no-console
 import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
 import path from 'path';
-import ts from 'typescript';
 
 import { assertNever } from '../../packages/common/src/shared-utils';
 
-import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
+import { generateFrontMatter } from './docgen-utils';
 import {
     ClassInfo,
-    DeclarationInfo, DocsPage,
+    DeclarationInfo,
+    DocsPage,
     EnumInfo,
     FunctionInfo,
-    InterfaceInfo, MethodParameterInfo,
-    ParsedDeclaration,
+    InterfaceInfo,
+    MethodParameterInfo,
     TypeAliasInfo,
-    TypeMap, VariableInfo,
+    TypeMap,
+    VariableInfo,
 } from './typescript-docgen-types';
 
 export class TypescriptDocsRenderer {

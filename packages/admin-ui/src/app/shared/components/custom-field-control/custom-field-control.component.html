@@ -2,12 +2,22 @@
     <label for="basic" class="clr-control-label">{{ label }}</label>
     <div class="clr-control-container">
         <div class="clr-input-wrapper">
-            <ng-container *ngTemplateOutlet="inputs"></ng-container>
+            <ng-container *ngIf="hasCustomControl; else standardControls">
+                <div #customComponentPlaceholder></div>
+            </ng-container>
+            <ng-template #standardControls>
+                <ng-container *ngTemplateOutlet="inputs"></ng-container>
+            </ng-template>
         </div>
     </div>
 </div>
 <vdr-form-field [label]="label" [for]="customField.name" *ngIf="!compact">
-    <ng-container *ngTemplateOutlet="inputs"></ng-container>
+    <ng-container *ngIf="hasCustomControl; else standardControls">
+        <div #customComponentPlaceholder></div>
+    </ng-container>
+    <ng-template #standardControls>
+        <ng-container *ngTemplateOutlet="inputs"></ng-container>
+    </ng-template>
 </vdr-form-field>
 <ng-template #inputs>
     <input

@@ -9,6 +9,7 @@
     </vdr-ab-left>
 
     <vdr-ab-right>
+        <vdr-action-bar-items locationId="collection-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
@@ -19,6 +20,7 @@
         </button>
         <ng-template #updateButton>
             <button
+                *vdrIfPermissions="'UpdateCatalog'"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="(detailForm.invalid || detailForm.pristine) && !assetsChanged()"
@@ -34,7 +36,13 @@
         <div class="clr-col">
             <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
                 <clr-toggle-wrapper>
-                    <input type="checkbox" clrToggle formControlName="visible" id="visibility" />
+                    <input
+                        type="checkbox"
+                        clrToggle
+                        formControlName="visible"
+                        id="visibility"
+                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
+                    />
                     <label class="visible-toggle">
                         {{
                             detailForm.value.visible
@@ -45,10 +53,16 @@
                 </clr-toggle-wrapper>
             </vdr-form-field>
             <vdr-form-field [label]="'common.name' | translate" for="name">
-                <input id="name" type="text" formControlName="name" />
+                <input
+                    id="name"
+                    type="text"
+                    formControlName="name"
+                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                />
             </vdr-form-field>
             <vdr-rich-text-editor
                 formControlName="description"
+                [readonly]="!('UpdateCatalog' | hasPermission)"
                 [label]="'common.description' | translate"
             ></vdr-rich-text-editor>
 
@@ -57,6 +71,7 @@
                 <ng-container *ngFor="let customField of customFields">
                     <vdr-custom-field-control
                         *ngIf="customFieldIsSet(customField.name)"
+                        entityName="Collection"
                         [customFieldsFormGroup]="detailForm.get(['customFields'])"
                         [customField]="customField"
                     ></vdr-custom-field-control>
@@ -81,11 +96,12 @@
                     [operation]="filter"
                     [operationDefinition]="getFilterDefinition(filter)"
                     [formControlName]="i"
+                    [readonly]="!('UpdateCatalog' | hasPermission)"
                     [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>
             </ng-container>
 
-            <div>
+            <div *vdrIfPermissions="'UpdateCatalog'">
                 <vdr-dropdown>
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
