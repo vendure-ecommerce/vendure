@@ -21,8 +21,8 @@ import {
 import { unique } from 'shared/unique';
 
 import { Asset } from '../../../common/generated-types';
+import { AssetPickerDialogComponent } from '../../../shared/components/asset-picker-dialog/asset-picker-dialog.component';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
-import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewComponent } from '../asset-preview/asset-preview.component';
 
 export interface AssetChange {

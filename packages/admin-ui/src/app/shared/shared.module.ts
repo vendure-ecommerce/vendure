@@ -21,6 +21,9 @@ import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import {
     AffixedInputComponent,
+    AssetFileInputComponent,
+    AssetGalleryComponent,
+    AssetPickerDialogComponent,
     ChipComponent,
     ConfigurableInputComponent,
     CurrencyInputComponent,
@@ -120,6 +123,9 @@ const DECLARATIONS = [
     HasPermissionPipe,
     ActionBarItemsComponent,
     DisabledDirective,
+    AssetFileInputComponent,
+    AssetGalleryComponent,
+    AssetPickerDialogComponent,
 ];
 
 @NgModule({
@@ -134,7 +140,7 @@ const DECLARATIONS = [
         ModalService,
         CanDeactivateDetailGuard,
     ],
-    entryComponents: [ModalDialogComponent, SimpleDialogComponent],
+    entryComponents: [ModalDialogComponent, SimpleDialogComponent, AssetPickerDialogComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

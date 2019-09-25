@@ -4,6 +4,9 @@ export {
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
 export { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
+export { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
+export { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
+export { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 export { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 export { ChipComponent } from './components/chip/chip.component';
 export { ConfigurableInputComponent } from './components/configurable-input/configurable-input.component';

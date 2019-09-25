@@ -6,10 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
-import { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
-import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
-import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
@@ -47,10 +44,7 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         ProductVariantsListComponent,
         ApplyFacetDialogComponent,
         AssetListComponent,
-        AssetGalleryComponent,
         ProductAssetsComponent,
-        AssetPickerDialogComponent,
-        AssetFileInputComponent,
         VariantPriceDetailComponent,
         CollectionListComponent,
         CollectionDetailComponent,
@@ -64,12 +58,7 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         UpdateProductOptionDialogComponent,
         ProductVariantsEditorComponent,
     ],
-    entryComponents: [
-        AssetPickerDialogComponent,
-        ApplyFacetDialogComponent,
-        AssetPreviewComponent,
-        UpdateProductOptionDialogComponent,
-    ],
+    entryComponents: [ApplyFacetDialogComponent, AssetPreviewComponent, UpdateProductOptionDialogComponent],
     providers: [
         ProductResolver,
         FacetResolver,
