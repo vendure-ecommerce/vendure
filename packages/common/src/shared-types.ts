@@ -96,12 +96,43 @@ export interface AdminUiConfig {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
+ * See [Extending the Admin UI](/docs/developer-guide/plugins/extending-the-admin-ui/) for
+ * detailed instructions.
+ *
  * @docsCategory AdminUiPlugin
  */
 export interface AdminUiExtension {
+    /**
+     * @description
+     * An optional ID for the extension module. Only used internally for generating
+     * import paths to your module.
+     */
     id?: string;
+    /**
+     * @description
+     * Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
+     * modules which define new views for the Admin UI.
+     *
+     * Shared modules are directly imported into the main AppModule of the Admin UI
+     * and should be used to declare custom form components and define custom
+     * navigation items.
+     */
     type: 'shared' | 'lazy';
+    /**
+     * @description
+     * The path to the directory containing the extension module. Each extension module
+     * should be located in its own directory. The entire contents of this directory
+     * will be copied into the Admin UI app.
+     */
     ngModulePath: string;
+    /**
+     * @description
+     * The name of the file containing the extension module class.
+     */
     ngModuleFileName: string;
+    /**
+     * @description
+     * The name of the extension module class.
+     */
     ngModuleName: string;
 }
