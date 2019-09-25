@@ -121,14 +121,25 @@ export class RoleService {
         });
     }
 
+    /**
+     * Ensure that the SuperAdmin role exists and that it has all possible Permissions.
+     */
     private async ensureSuperAdminRoleExists() {
+        const allPermissions = Object.values(Permission).filter(p => p !== Permission.Owner);
         try {
-            await this.getSuperAdminRole();
+            const superAdminRole = await this.getSuperAdminRole();
+            const hasAllPermissions = allPermissions.every(permission =>
+                superAdminRole.permissions.includes(permission),
+            );
+            if (!hasAllPermissions) {
+                superAdminRole.permissions = allPermissions;
+                await this.connection.getRepository(Role).save(superAdminRole);
+            }
         } catch (err) {
             await this.create({
                 code: SUPER_ADMIN_ROLE_CODE,
                 description: SUPER_ADMIN_ROLE_DESCRIPTION,
-                permissions: Object.values(Permission).filter(p => p !== Permission.Owner),
+                permissions: allPermissions,
             });
         }
     }
