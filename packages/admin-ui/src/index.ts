@@ -11,4 +11,5 @@ export { ModalService } from './app/shared/providers/modal/modal.service';
 export { SharedModule } from './app/shared/shared.module';
 export { NavBuilderService } from './app/core/providers/nav-builder/nav-builder.service';
 export * from './app/core/providers/nav-builder/nav-builder-types';
+export * from './app/core/providers/custom-field-component/custom-field-component.service';
 export * from './app/shared/shared-declarations';

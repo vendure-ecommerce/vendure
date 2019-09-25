@@ -78,6 +78,7 @@
             <ng-container *ngFor="let customField of customFields">
                 <vdr-custom-field-control
                     *ngIf="customFieldIsSet(customField.name)"
+                    entityName="Facet"
                     [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
                     [customField]="customField"
                 ></vdr-custom-field-control>
@@ -118,6 +119,7 @@
                         <td>
                             <vdr-custom-field-control
                                 *ngIf="customValueFieldIsSet(i, customField.name)"
+                                entityName="FacetValue"
                                 [showLabel]="false"
                                 [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
                                 [customField]="customField"

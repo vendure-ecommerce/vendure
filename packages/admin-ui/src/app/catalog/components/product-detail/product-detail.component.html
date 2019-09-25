@@ -85,6 +85,7 @@
                                 <ng-container *ngFor="let customField of customFields">
                                     <vdr-custom-field-control
                                         *ngIf="customFieldIsSet(customField.name)"
+                                        entityName="Product"
                                         [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
                                         [customField]="customField"
                                         [readonly]="!('UpdateCatalog' | hasPermission)"

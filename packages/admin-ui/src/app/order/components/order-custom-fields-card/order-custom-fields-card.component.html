@@ -6,6 +6,7 @@
         <div class="card-text custom-field-form" >
             <ng-container *ngFor="let customField of customFieldsConfig">
                 <vdr-custom-field-control
+                    entityName="Order"
                     [customFieldsFormGroup]="customFieldForm"
                     [compact]="true"
                     [readonly]="true"
