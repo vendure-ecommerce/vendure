@@ -1,3 +1,33 @@
+## <small>0.3.1 (2019-09-25)</small>
+
+
+#### Features
+
+* **admin-ui** Add controls for disabling & deleting a Promotion ([7568e20](https://github.com/vendure-ecommerce/vendure/commit/7568e20)), closes [#159](https://github.com/vendure-ecommerce/vendure/issues/159)
+* **admin-ui** Add permissions checks for Product list/detail views ([75dc385](https://github.com/vendure-ecommerce/vendure/commit/75dc385)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **admin-ui** Add permissions checks to main nav items ([78201fb](https://github.com/vendure-ecommerce/vendure/commit/78201fb)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **admin-ui** Add permissions checks to Promotions & Settings views ([2552191](https://github.com/vendure-ecommerce/vendure/commit/2552191)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **admin-ui** Allow extensions to define CustomField controls ([83d9090](https://github.com/vendure-ecommerce/vendure/commit/83d9090)), closes [#55](https://github.com/vendure-ecommerce/vendure/issues/55)
+* **admin-ui** Allow shared & lazy UI plugins to be specified ([5daf756](https://github.com/vendure-ecommerce/vendure/commit/5daf756)), closes [#55](https://github.com/vendure-ecommerce/vendure/issues/55)
+* **admin-ui** Can add custom buttons to list/detail views ([ef47c62](https://github.com/vendure-ecommerce/vendure/commit/ef47c62)), closes [#55](https://github.com/vendure-ecommerce/vendure/issues/55)
+* **admin-ui** Expose `query` & `mutation` method on DataService ([09250a8](https://github.com/vendure-ecommerce/vendure/commit/09250a8))
+* **admin-ui** Implement readonly state for RichTextEditor ([5f2987c](https://github.com/vendure-ecommerce/vendure/commit/5f2987c))
+* **admin-ui** Permissions checks for Facet & Collection views ([7f8163a](https://github.com/vendure-ecommerce/vendure/commit/7f8163a)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **admin-ui** Set up infrastructure for permission-based UI display ([6bd5181](https://github.com/vendure-ecommerce/vendure/commit/6bd5181)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **core** Add Promotion-specific CRUD permissions ([7ddd893](https://github.com/vendure-ecommerce/vendure/commit/7ddd893))
+* **core** Allow length of custom field strings to be specified ([fe360f5](https://github.com/vendure-ecommerce/vendure/commit/fe360f5)), closes [#166](https://github.com/vendure-ecommerce/vendure/issues/166)
+* **core** Ensure SuperAdmin role has all permissions ([ab866c1](https://github.com/vendure-ecommerce/vendure/commit/ab866c1))
+* **core** Expose active user permissions in Admin API ([b7cd6e5](https://github.com/vendure-ecommerce/vendure/commit/b7cd6e5)), closes [#94](https://github.com/vendure-ecommerce/vendure/issues/94)
+* **create** Add example fromAddress global template variable ([b727327](https://github.com/vendure-ecommerce/vendure/commit/b727327))
+* **email-plugin** Added `from` field to the email config (#168) ([09eb34e](https://github.com/vendure-ecommerce/vendure/commit/09eb34e)), closes [#168](https://github.com/vendure-ecommerce/vendure/issues/168)
+
+#### Fixes
+
+* **admin-ui** Correctly disable selects/toggles based on permissions ([1e41b92](https://github.com/vendure-ecommerce/vendure/commit/1e41b92))
+* **core** Correct permissions for tax-related resolvers ([d2b52ce](https://github.com/vendure-ecommerce/vendure/commit/d2b52ce))
+* **core** Correct some permissions in Channel & Promotion resolvers ([e2a64fa](https://github.com/vendure-ecommerce/vendure/commit/e2a64fa))
+* **core** Ensure all Roles always include the Authenticated permission ([c2de3de](https://github.com/vendure-ecommerce/vendure/commit/c2de3de))
+
 ## 0.3.0 (2019-09-18)
 
 
