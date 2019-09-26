@@ -1,5 +1,8 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
+import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 
 import { Collection } from '../../../common/generated-types';
 
@@ -17,10 +20,13 @@ export class CollectionTreeNodeComponent implements OnInit {
     parentName: string;
     @Input() collectionTree: TreeNode<Collection.Fragment>;
     @Input() activeCollectionId: string;
+    hasUpdatePermission$: Observable<boolean>;
+    hasDeletePermission$: Observable<boolean>;
 
     constructor(
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
         private root: CollectionTreeComponent,
+        private dataService: DataService,
     ) {
         if (parent) {
             this.depth = parent.depth + 1;
@@ -29,6 +35,16 @@ export class CollectionTreeNodeComponent implements OnInit {
 
     ngOnInit() {
         this.parentName = this.collectionTree.name || '<root>';
+        const permissions$ = this.dataService.client
+            .userStatus()
+            .mapStream(data => data.userStatus.permissions)
+            .pipe(shareReplay(1));
+        this.hasUpdatePermission$ = permissions$.pipe(map(perms => perms.includes('UpdateCatalog')));
+        this.hasDeletePermission$ = permissions$.pipe(map(perms => perms.includes('DeleteCatalog')));
+    }
+
+    trackByFn(index: number, item: Collection.Fragment) {
+        return item.id;
     }
 
     getMoveListItems(collection: Collection.Fragment): Array<{ path: string; id: string }> {
