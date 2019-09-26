@@ -1,3 +1,12 @@
+## <small>0.3.2 (2019-09-26)</small>
+
+**Note** only the `@vendure/admin-ui`, `@vendure/admin-ui-plugin` & `@vendure/email-plugin` packages were updated in this release.
+
+#### Fixes
+
+* **admin-ui** Fix infinite loop hang on CollectionList page ([230703f](https://github.com/vendure-ecommerce/vendure/commit/230703f)), closes [#170](https://github.com/vendure-ecommerce/vendure/issues/170)
+* **email-plugin** Fix smtp auth ([98bc90a](https://github.com/vendure-ecommerce/vendure/commit/98bc90a))
+
 ## <small>0.3.1 (2019-09-25)</small>
 
 

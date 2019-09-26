@@ -1,6 +1,6 @@
 {
   "name": "@vendure/admin-ui-plugin",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -25,7 +25,7 @@
     "typescript": "~3.5.3"
   },
   "dependencies": {
-    "@vendure/admin-ui": "^0.3.1",
+    "@vendure/admin-ui": "^0.3.2",
     "fs-extra": "^8.0.1"
   }
 }
