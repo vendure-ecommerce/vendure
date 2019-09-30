@@ -386,6 +386,28 @@
     "conditions": "Conditions",
     "create-new-promotion": "Create new promotion"
   },
+  "nav": {
+    "administrators": "Administrators",
+    "assets": "Assets",
+    "catalog": "Catalog",
+    "channels": "Channels",
+    "collections": "Collections",
+    "countries": "Countries",
+    "customers": "Customers",
+    "facets": "Facets",
+    "global-settings": "Global settings",
+    "marketing": "Marketing",
+    "orders": "Orders",
+    "payment-methods": "Payment methods",
+    "products": "Products",
+    "promotions": "Promotions",
+    "roles": "Roles",
+    "sales": "Sales",
+    "settings": "Settings",
+    "shipping-methods": "Shipping methods",
+    "tax-categories": "Tax categories",
+    "tax-rates": "Tax Rates"
+  },
   "order": {
     "add-note": "Add note",
     "add-note-success": "Note successfully added",
