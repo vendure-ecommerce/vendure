@@ -16,6 +16,7 @@ import {
     Promotion,
     UpdatePromotionInput,
 } from '../../../common/generated-types';
+import { getDefaultConfigArgValue } from '../../../common/utilities/get-default-config-arg-value';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -233,7 +234,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             const argsHash = operation.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value,
+                    [arg.name]: getDefaultConfigArgValue(arg),
                 }),
                 {},
             );

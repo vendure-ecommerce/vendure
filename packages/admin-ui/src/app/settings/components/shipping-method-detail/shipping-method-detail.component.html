@@ -7,7 +7,7 @@
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
             (click)="create()"
-            [disabled]="detailForm.pristine || detailForm.invalid"
+            [disabled]="detailForm.pristine || detailForm.invalid || !selectedChecker || !selectedCalculator"
         >
             {{ 'common.create' | translate }}
         </button>
@@ -16,7 +16,7 @@
                 class="btn btn-primary"
                 (click)="save()"
                 *vdrIfPermissions="'UpdateSettings'"
-                [disabled]="detailForm.pristine || detailForm.invalid"
+                [disabled]="detailForm.pristine || detailForm.invalid || !selectedChecker || !selectedCalculator"
             >
                 {{ 'common.update' | translate }}
             </button>

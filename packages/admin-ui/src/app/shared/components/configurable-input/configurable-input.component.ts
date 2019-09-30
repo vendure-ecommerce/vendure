@@ -23,6 +23,7 @@ import {
 import { Subscription } from 'rxjs';
 import { StringFieldOption } from 'shared/generated-types';
 import { ConfigArgType } from 'shared/shared-types';
+import { assertNever } from 'shared/shared-utils';
 
 import {
     ConfigArg,
@@ -31,6 +32,7 @@ import {
     FacetWithValues,
     GetActiveChannel,
 } from '../../../common/generated-types';
+import { getDefaultConfigArgValue } from '../../../common/utilities/get-default-config-arg-value';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**
@@ -178,8 +180,12 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         if (this.operation.args) {
             for (const arg of this.operation.args) {
                 let value: any = arg.value;
-                if (arg.type === 'boolean') {
-                    value = arg.value === 'true';
+                if (value === undefined) {
+                    value = getDefaultConfigArgValue(arg);
+                } else {
+                    if (arg.type === 'boolean') {
+                        value = arg.value === 'true';
+                    }
                 }
                 this.form.addControl(arg.name, new FormControl(value, Validators.required));
             }
