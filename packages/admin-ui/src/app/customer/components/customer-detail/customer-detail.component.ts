@@ -152,6 +152,14 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Customer',
                 });
+                if (!formValue.password) {
+                    this.notificationService.notify({
+                        message: _('customer.email-verification-sent'),
+                        translationVars: { emailAddress: formValue.emailAddress },
+                        type: 'info',
+                        duration: 10000,
+                    });
+                }
                 this.detailForm.markAsPristine();
                 this.addressDefaultsUpdated = false;
                 this.changeDetector.markForCheck();
