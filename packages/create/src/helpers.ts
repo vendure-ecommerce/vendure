@@ -220,12 +220,13 @@ export function installPackages(
 export function getDependencies(
     usingTs: boolean,
     dbType: DbType,
+    vendurePkgVersion = '',
 ): { dependencies: string[]; devDependencies: string[] } {
     const dependencies = [
-        '@vendure/core',
-        '@vendure/email-plugin',
-        '@vendure/asset-server-plugin',
-        '@vendure/admin-ui-plugin',
+        `@vendure/core${vendurePkgVersion}`,
+        `@vendure/email-plugin${vendurePkgVersion}`,
+        `@vendure/asset-server-plugin${vendurePkgVersion}`,
+        `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         dbDriverPackage(dbType),
     ];
     const devDependencies = ['concurrently'];

@@ -106,7 +106,11 @@ async function createApp(
                         path.join(root, 'package.json'),
                         JSON.stringify(packageJsonContents, null, 2) + os.EOL,
                     );
-                    const { dependencies, devDependencies } = getDependencies(usingTs, dbType);
+                    const { dependencies, devDependencies } = getDependencies(
+                        usingTs,
+                        dbType,
+                        isCi ? `@${packageJson.version}` : '',
+                    );
 
                     subscriber.next(`Installing ${dependencies.join(', ')}`);
                     installPackages(root, useYarn, dependencies, false, logLevel, isCi)
