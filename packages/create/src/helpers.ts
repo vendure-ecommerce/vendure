@@ -180,6 +180,9 @@ export function installPackages(
                 // In CI, publish to Verdaccio
                 // See https://github.com/yarnpkg/yarn/issues/6029
                 args.push('--registry http://localhost:4873/');
+                // Increase network timeout
+                // See https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
+                args.push('--network-timeout 300000');
             }
             args = args.concat(dependencies);
 
