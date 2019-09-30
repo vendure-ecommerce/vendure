@@ -80,7 +80,7 @@ export class CustomerService {
             });
     }
 
-    async create(input: CreateCustomerInput, password?: string): Promise<Customer> {
+    async create(ctx: RequestContext, input: CreateCustomerInput, password?: string): Promise<Customer> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
@@ -93,9 +93,17 @@ export class CustomerService {
         if (existing) {
             throw new InternalServerError(`error.email-address-must-be-unique`);
         }
+        customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
 
-        if (password) {
-            customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
+        if (password && password !== '') {
+            if (customer.user.verificationToken) {
+                customer.user = await this.userService.verifyUserByToken(
+                    customer.user.verificationToken,
+                    password,
+                );
+            }
+        } else {
+            this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
         return this.connection.getRepository(Customer).save(customer);
     }
@@ -168,7 +176,11 @@ export class CustomerService {
         }
     }
 
-    async requestUpdateEmailAddress(ctx: RequestContext, userId: ID, newEmailAddress: string): Promise<boolean> {
+    async requestUpdateEmailAddress(
+        ctx: RequestContext,
+        userId: ID,
+        newEmailAddress: string,
+    ): Promise<boolean> {
         const userWithConflictingIdentifier = await this.userService.getUserByEmailAddress(newEmailAddress);
         if (userWithConflictingIdentifier) {
             throw new UserInputError('error.email-address-not-available');

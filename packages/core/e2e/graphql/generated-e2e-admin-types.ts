@@ -3350,11 +3350,11 @@ export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
     updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
 };
 
-export type CreateCustomerMutationVariables = {
+export type CanCreateCustomerMutationVariables = {
     input: CreateCustomerInput;
 };
 
-export type CreateCustomerMutation = { __typename?: 'Mutation' } & {
+export type CanCreateCustomerMutation = { __typename?: 'Mutation' } & {
     createCustomer: { __typename?: 'Customer' } & Pick<Customer, 'id'>;
 };
 
@@ -3593,6 +3593,15 @@ export type GetCustomerOrdersQuery = { __typename?: 'Query' } & {
                 };
         }
     >;
+};
+
+export type CreateCustomerMutationVariables = {
+    input: CreateCustomerInput;
+    password?: Maybe<Scalars['String']>;
+};
+
+export type CreateCustomerMutation = { __typename?: 'Mutation' } & {
+    createCustomer: { __typename?: 'Customer' } & CustomerFragment;
 };
 
 export type UpdateCustomerMutationVariables = {
@@ -4962,10 +4971,10 @@ export namespace UpdateAdministrator {
     export type UpdateAdministrator = AdministratorFragment;
 }
 
-export namespace CreateCustomer {
-    export type Variables = CreateCustomerMutationVariables;
-    export type Mutation = CreateCustomerMutation;
-    export type CreateCustomer = CreateCustomerMutation['createCustomer'];
+export namespace CanCreateCustomer {
+    export type Variables = CanCreateCustomerMutationVariables;
+    export type Mutation = CanCreateCustomerMutation;
+    export type CreateCustomer = CanCreateCustomerMutation['createCustomer'];
 }
 
 export namespace GetCustomerCount {
@@ -5134,6 +5143,12 @@ export namespace GetCustomerOrders {
     export type Customer = NonNullable<GetCustomerOrdersQuery['customer']>;
     export type Orders = (NonNullable<GetCustomerOrdersQuery['customer']>)['orders'];
     export type Items = NonNullable<(NonNullable<GetCustomerOrdersQuery['customer']>)['orders']['items'][0]>;
+}
+
+export namespace CreateCustomer {
+    export type Variables = CreateCustomerMutationVariables;
+    export type Mutation = CreateCustomerMutation;
+    export type CreateCustomer = CustomerFragment;
 }
 
 export namespace UpdateCustomer {
