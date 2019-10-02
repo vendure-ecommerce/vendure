@@ -46,4 +46,4 @@ jobs:
         mkdir -p $HOME/install
         cd $HOME/install
         npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --log-level verbose
+        npx @vendure/create@ci test-app --ci --use-npm --log-level verbose
