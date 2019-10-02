@@ -21,14 +21,17 @@ try {
  */
 export async function populate(
     bootstrapFn: () => Promise<INestApplication | undefined>,
-    initialDataPath: string,
+    initialDataPathOrObject: string | object,
     productsCsvPath?: string,
 ): Promise<INestApplication> {
     const app = await bootstrapFn();
     if (!app) {
         throw new Error('Could not bootstrap the Vendure app');
     }
-    const initialData = require(initialDataPath);
+    const initialData =
+        typeof initialDataPathOrObject === 'string'
+            ? require(initialDataPathOrObject)
+            : initialDataPathOrObject;
     await populateInitialData(app, initialData);
     if (productsCsvPath) {
         await importProductsFromFile(app, productsCsvPath, initialData.defaultLanguage);
@@ -113,10 +116,13 @@ export async function populateInitialData(app: INestApplication, initialData: ob
     }
 }
 
-export async function populateCollections(app: INestApplication, initialData: object) {
+export async function populateCollections(app: INestApplication, initialData: { collections: any[] }) {
     const populator = app.get(Populator);
     try {
-        await populator.populateCollections(initialData);
+        if (initialData.collections.length) {
+            logColored(`Populating ${initialData.collections.length} Collections...`);
+            await populator.populateCollections(initialData);
+        }
     } catch (err) {
         console.error(err.message);
     }

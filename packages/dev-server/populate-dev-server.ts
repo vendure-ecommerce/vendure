@@ -5,6 +5,7 @@ import { populate } from '@vendure/core/cli/populate';
 import path from 'path';
 
 import { clearAllTables } from '../core/mock-data/clear-all-tables';
+import { initialData } from '../core/mock-data/data-sources/initial-data';
 import { populateCustomers } from '../core/mock-data/populate-customers';
 
 import { devConfig } from './dev-config';
@@ -17,7 +18,7 @@ import { devConfig } from './dev-config';
 if (require.main === module) {
     // Running from command line
     const populateConfig: VendureConfig = {
-        ...devConfig as any,
+        ...(devConfig as any),
         authOptions: {
             tokenMethod: 'bearer',
             requireVerification: false,
@@ -31,10 +32,13 @@ if (require.main === module) {
         customFields: {},
     };
     clearAllTables(populateConfig, true)
-        .then(() => populate(() => bootstrap(populateConfig),
-            path.join(__dirname, '../create/assets/initial-data.json'),
-            path.join(__dirname, '../create/assets/products.csv'),
-        ))
+        .then(() =>
+            populate(
+                () => bootstrap(populateConfig),
+                initialData,
+                path.join(__dirname, '../create/assets/products.csv'),
+            ),
+        )
         .then(async app => {
             console.log('populating customers...');
             await populateCustomers(10, populateConfig as any, true);

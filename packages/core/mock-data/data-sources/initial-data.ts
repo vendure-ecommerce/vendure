@@ -14,54 +14,81 @@ export const initialData: InitialData = {
     collections: [
         {
             name: 'Electronics',
-            facetNames: ['Electronics'],
-            featuredAssetFilename: 'jakob-owens-274337-unsplash.jpg',
+            filters: [
+                {
+                    code: 'facet-value-filter',
+                    args: { facetValueNames: ['Electronics'], containsAny: false },
+                },
+            ],
+            assetPaths: ['jakob-owens-274337-unsplash.jpg'],
         },
         {
             name: 'Computers',
-            facetNames: ['Computers'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Computers'], containsAny: false } },
+            ],
             parentName: 'Electronics',
-            featuredAssetFilename: 'alexandru-acea-686569-unsplash.jpg',
+            assetPaths: ['alexandru-acea-686569-unsplash.jpg'],
         },
         {
             name: 'Camera & Photo',
-            facetNames: ['Photo'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Photo'], containsAny: false } },
+            ],
             parentName: 'Electronics',
-            featuredAssetFilename: 'eniko-kis-663725-unsplash.jpg',
+            assetPaths: ['eniko-kis-663725-unsplash.jpg'],
         },
         {
             name: 'Home & Garden',
-            facetNames: ['Home & Garden'],
-            featuredAssetFilename: 'paul-weaver-1120584-unsplash.jpg',
+            filters: [
+                {
+                    code: 'facet-value-filter',
+                    args: { facetValueNames: ['Home & Garden'], containsAny: false },
+                },
+            ],
+            assetPaths: ['paul-weaver-1120584-unsplash.jpg'],
         },
         {
             name: 'Furniture',
-            facetNames: ['Furniture'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Furniture'], containsAny: false } },
+            ],
             parentName: 'Home & Garden',
-            featuredAssetFilename: 'nathan-fertig-249917-unsplash.jpg',
+            assetPaths: ['nathan-fertig-249917-unsplash.jpg'],
         },
         {
             name: 'Plants',
-            facetNames: ['Plants'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Plants'], containsAny: false } },
+            ],
             parentName: 'Home & Garden',
-            featuredAssetFilename: 'alex-rodriguez-santibanez-200278-unsplash.jpg',
+            assetPaths: ['alex-rodriguez-santibanez-200278-unsplash.jpg'],
         },
         {
             name: 'Sports & Outdoor',
-            facetNames: ['Sports & Outdoor'],
-            featuredAssetFilename: 'michael-guite-571169-unsplash.jpg',
+            filters: [
+                {
+                    code: 'facet-value-filter',
+                    args: { facetValueNames: ['Sports & Outdoor'], containsAny: false },
+                },
+            ],
+            assetPaths: ['michael-guite-571169-unsplash.jpg'],
         },
         {
             name: 'Equipment',
-            facetNames: ['Equipment'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Equipment'], containsAny: false } },
+            ],
             parentName: 'Sports & Outdoor',
-            featuredAssetFilename: 'neonbrand-428982-unsplash.jpg',
+            assetPaths: ['neonbrand-428982-unsplash.jpg'],
         },
         {
             name: 'Footwear',
-            facetNames: ['Footwear'],
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['Footwear'], containsAny: false } },
+            ],
             parentName: 'Sports & Outdoor',
-            featuredAssetFilename: 'thomas-serer-420833-unsplash.jpg',
+            assetPaths: ['thomas-serer-420833-unsplash.jpg'],
         },
     ],
     countries: [
