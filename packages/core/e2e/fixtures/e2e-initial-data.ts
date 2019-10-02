@@ -20,5 +20,12 @@ export const initialData: InitialData = {
         { name: 'United Kingdom', code: 'GB', zone: 'Europe' },
         { name: 'United States of America', code: 'US', zone: 'Americas' },
     ],
-    collections: [{ name: 'Plants', facetNames: ['plants'] }],
+    collections: [
+        {
+            name: 'Plants',
+            filters: [
+                { code: 'facet-value-filter', args: { facetValueNames: ['plants'], containsAny: false } },
+            ],
+        },
+    ],
 };

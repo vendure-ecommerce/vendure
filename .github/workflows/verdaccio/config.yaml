@@ -27,8 +27,8 @@ auth:
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
-    timeout: 5m
-    max_fails: 10
+    timeout: 10m
+    max_fails: 20
     cache: false
 
 packages:
