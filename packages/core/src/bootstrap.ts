@@ -102,7 +102,8 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
         throw new Error(errorMessage);
     } else {
         try {
-            return await bootstrapWorkerInternal(userConfig);
+            const vendureConfig = await preBootstrapConfig(userConfig);
+            return await bootstrapWorkerInternal(vendureConfig);
         } catch (e) {
             Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
             throw e;
@@ -110,8 +111,10 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     }
 }
 
-async function bootstrapWorkerInternal(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
-    const config = disableSynchronize(await preBootstrapConfig(userConfig));
+async function bootstrapWorkerInternal(
+    vendureConfig: ReadOnlyRequired<VendureConfig>,
+): Promise<INestMicroservice> {
+    const config = disableSynchronize(vendureConfig);
     if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
         (config.logger as any).setDefaultContext('Vendure Worker');
     }
