@@ -16,7 +16,13 @@ jobs:
     - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 12.4.x
+    - name: Update Yarn
+      run: |
+        curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+        sudo apt-get update && sudo apt-get install yarn
+        yarn --version
     - name: Install & bootstrap
       run: |
         yarn install
@@ -34,10 +40,10 @@ jobs:
         npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
         npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
         npm set registry=http://localhost:4873/
-        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --yes --dist-tag ci --registry http://localhost:4873/
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873/
     - name: Install via @vendure/create
       run: |
         mkdir -p $HOME/install
         cd $HOME/install
         npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci
+        npx @vendure/create@ci test-app --ci --use-npm --log-level verbose

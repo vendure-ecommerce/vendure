@@ -27,6 +27,9 @@ auth:
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
+    timeout: 5m
+    max_fails: 10
+    cache: false
 
 packages:
   '@*/*':
@@ -54,15 +57,15 @@ packages:
 # A value of 0 makes the http server behave similarly to Node.js versions prior to 8.0.0, which did not have a keep-alive timeout.
 # WORKAROUND: Through given configuration you can workaround following issue https://github.com/verdaccio/verdaccio/issues/301. Set to 0 in case 60 is not enought.
 server:
-  keepAliveTimeout: 60
+  keepAliveTimeout: 0
 
 # To use `npm audit` uncomment the following section
-middlewares:
-  audit:
-    enabled: true
+# middlewares:
+#   audit:
+#     enabled: true
 
 # log settings
 logs:
-  - {type: stdout, format: pretty, level: debug}
+  - {type: stdout, format: pretty, level: info}
   #- {type: file, path: verdaccio.log, level: info}
 
