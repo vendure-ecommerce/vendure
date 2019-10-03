@@ -1,3 +1,19 @@
+## <small>0.3.3 (2019-10-03)</small>
+
+
+#### Features
+
+* **admin-ui** Allow creation of verified Customers ([f451115](https://github.com/vendure-ecommerce/vendure/commit/f451115)), closes [#171](https://github.com/vendure-ecommerce/vendure/issues/171)
+* **admin-ui** Allow selection of payment to be refunded ([8009220](https://github.com/vendure-ecommerce/vendure/commit/8009220))
+* **core** Improved Collection import ([c654d6f](https://github.com/vendure-ecommerce/vendure/commit/c654d6f)), closes [#173](https://github.com/vendure-ecommerce/vendure/issues/173)
+* **core** Verify admin-created Customers if password supplied ([9931e25](https://github.com/vendure-ecommerce/vendure/commit/9931e25)), closes [#171](https://github.com/vendure-ecommerce/vendure/issues/171)
+
+#### Fixes
+
+* **admin-ui** Correctly handle defaults for configurable operations ([9bd6a79](https://github.com/vendure-ecommerce/vendure/commit/9bd6a79))
+* **admin-ui** Fix DisabledDirective making form dirty ([70e857d](https://github.com/vendure-ecommerce/vendure/commit/70e857d))
+* **core** Do not duplicate plugins when running work in main process ([c040c0b](https://github.com/vendure-ecommerce/vendure/commit/c040c0b))
+
 ## <small>0.3.2 (2019-09-26)</small>
 
 **Note** only the `@vendure/admin-ui`, `@vendure/admin-ui-plugin` & `@vendure/email-plugin` packages were updated in this release.
