@@ -1842,6 +1842,9 @@ export type Promotion = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;

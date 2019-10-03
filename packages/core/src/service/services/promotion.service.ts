@@ -85,6 +85,9 @@ export class PromotionService {
         const adjustmentSource = new Promotion({
             name: input.name,
             enabled: input.enabled,
+            couponCode: input.couponCode,
+            startsAt: input.startsAt,
+            endsAt: input.endsAt,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
             priorityScore: this.calculatePriorityScore(input),

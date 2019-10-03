@@ -62,6 +62,15 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @Column({ type: Date, nullable: true, default: null })
     deletedAt: Date | null;
 
+    @Column({ type: Date, nullable: true, default: null })
+    startsAt: Date | null;
+
+    @Column({ type: Date, nullable: true, default: null })
+    endsAt: Date | null;
+
+    @Column({ nullable: true, default: null })
+    couponCode: string;
+
     @Column() name: string;
 
     @Column() enabled: boolean;

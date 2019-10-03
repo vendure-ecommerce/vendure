@@ -33,9 +33,15 @@ describe('Promotion resolver', () => {
 
     const promoAction = generateTestAction('promo_action');
 
-    const snapshotProps = ['name', 'actions', 'conditions', 'enabled'] as Array<
-        'name' | 'actions' | 'conditions' | 'enabled'
-    >;
+    const snapshotProps: Array<keyof Promotion.Fragment> = [
+        'name',
+        'actions',
+        'conditions',
+        'enabled',
+        'couponCode',
+        'startsAt',
+        'endsAt',
+    ];
     let promotion: Promotion.Fragment;
 
     beforeAll(async () => {
@@ -65,6 +71,9 @@ describe('Promotion resolver', () => {
                 input: {
                     name: 'test promotion',
                     enabled: true,
+                    couponCode: 'TEST123',
+                    startsAt: new Date(2019, 9, 30),
+                    endsAt: new Date(2019, 11, 1),
                     conditions: [
                         {
                             code: promoCondition.code,
@@ -96,6 +105,9 @@ describe('Promotion resolver', () => {
             {
                 input: {
                     id: promotion.id,
+                    couponCode: 'TEST1235',
+                    startsAt: new Date(2019, 4, 30),
+                    endsAt: new Date(2019, 5, 1),
                     conditions: [
                         {
                             code: promoCondition.code,

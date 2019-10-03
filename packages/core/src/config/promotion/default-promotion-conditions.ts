@@ -21,19 +21,6 @@ export const minimumOrderAmount = new PromotionCondition({
     priorityValue: 10,
 });
 
-export const dateRange = new PromotionCondition({
-    code: 'date_range',
-    description: [{ languageCode: LanguageCode.en, value: 'If Order placed between { start } and { end }' }],
-    args: {
-        start: { type: 'datetime' },
-        end: { type: 'datetime' },
-    },
-    check(order: Order, args) {
-        const now = new Date();
-        return args.start < now && now < args.end;
-    },
-});
-
 export const atLeastNOfProduct = new PromotionCondition({
     code: 'at_least_n_of_product',
     description: [{ languageCode: LanguageCode.en, value: 'Buy at least { minimum } of any product' }],
@@ -68,9 +55,4 @@ export const atLeastNWithFacets = new PromotionCondition({
     },
 });
 
-export const defaultPromotionConditions = [
-    minimumOrderAmount,
-    dateRange,
-    atLeastNOfProduct,
-    atLeastNWithFacets,
-];
+export const defaultPromotionConditions = [minimumOrderAmount, atLeastNOfProduct, atLeastNWithFacets];

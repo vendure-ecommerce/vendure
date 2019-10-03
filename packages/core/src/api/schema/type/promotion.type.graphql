@@ -2,6 +2,9 @@ type Promotion implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    startsAt: DateTime
+    endsAt: DateTime
+    couponCode: String
     name: String!
     enabled: Boolean!
     conditions: [ConfigurableOperation!]!

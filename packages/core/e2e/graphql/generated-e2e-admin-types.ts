@@ -523,6 +523,9 @@ export type CreateProductVariantOptionInput = {
 export type CreatePromotionInput = {
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
     conditions: Array<ConfigurableOperationInput>;
     actions: Array<ConfigurableOperationInput>;
 };
@@ -2539,6 +2542,9 @@ export type Promotion = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
@@ -2548,6 +2554,9 @@ export type Promotion = Node & {
 export type PromotionFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    startsAt?: Maybe<DateOperators>;
+    endsAt?: Maybe<DateOperators>;
+    couponCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     enabled?: Maybe<BooleanOperators>;
 };
@@ -2569,6 +2578,9 @@ export type PromotionSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+    startsAt?: Maybe<SortOrder>;
+    endsAt?: Maybe<SortOrder>;
+    couponCode?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
 };
 
@@ -3271,6 +3283,9 @@ export type UpdatePromotionInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
     conditions?: Maybe<Array<ConfigurableOperationInput>>;
     actions?: Maybe<Array<ConfigurableOperationInput>>;
 };
@@ -4055,7 +4070,7 @@ export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
 
 export type PromotionFragment = { __typename?: 'Promotion' } & Pick<
     Promotion,
-    'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'
+    'id' | 'createdAt' | 'updatedAt' | 'couponCode' | 'startsAt' | 'endsAt' | 'name' | 'enabled'
 > & {
         conditions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
         actions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;

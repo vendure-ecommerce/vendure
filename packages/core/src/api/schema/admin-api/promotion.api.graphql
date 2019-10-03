@@ -17,6 +17,9 @@ input PromotionListOptions
 input CreatePromotionInput {
     name: String!
     enabled: Boolean!
+    startsAt: DateTime
+    endsAt: DateTime
+    couponCode: String
     conditions: [ConfigurableOperationInput!]!
     actions: [ConfigurableOperationInput!]!
 }
@@ -25,6 +28,9 @@ input UpdatePromotionInput {
     id: ID!
     name: String
     enabled: Boolean
+    startsAt: DateTime
+    endsAt: DateTime
+    couponCode: String
     conditions: [ConfigurableOperationInput!]
     actions: [ConfigurableOperationInput!]
 }
