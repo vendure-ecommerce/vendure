@@ -331,6 +331,8 @@ export type ConfigurableOperationInput = {
 export type Country = Node & {
     __typename?: 'Country';
     id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     code: Scalars['String'];
     name: Scalars['String'];
@@ -339,6 +341,8 @@ export type Country = Node & {
 };
 
 export type CountryFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     code?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
@@ -360,6 +364,8 @@ export type CountryListOptions = {
 
 export type CountrySortParameter = {
     id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
 };

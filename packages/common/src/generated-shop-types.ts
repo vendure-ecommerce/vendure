@@ -251,6 +251,8 @@ export type ConfigurableOperationInput = {
 export type Country = Node & {
     __typename?: 'Country';
     id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     code: Scalars['String'];
     name: Scalars['String'];
