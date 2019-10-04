@@ -11,6 +11,8 @@ export class ProductVariantsResolver extends BaseEntityResolver<GetProductVarian
             {
                 __typename: 'Product' as 'Product',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 name: '',
                 optionGroups: [],
                 variants: [],

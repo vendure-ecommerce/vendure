@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
         id
+        createdAt
+        updatedAt
         code
         name
         enabled
@@ -150,6 +152,8 @@ export const REMOVE_MEMBERS_FROM_ZONE = gql`
 export const TAX_CATEGORY_FRAGMENT = gql`
     fragment TaxCategory on TaxCategory {
         id
+        createdAt
+        updatedAt
         name
     }
 `;
@@ -193,6 +197,8 @@ export const UPDATE_TAX_CATEGORY = gql`
 export const TAX_RATE_FRAGMENT = gql`
     fragment TaxRate on TaxRate {
         id
+        createdAt
+        updatedAt
         name
         enabled
         value
@@ -253,6 +259,8 @@ export const UPDATE_TAX_RATE = gql`
 export const CHANNEL_FRAGMENT = gql`
     fragment Channel on Channel {
         id
+        createdAt
+        updatedAt
         code
         token
         pricesIncludeTax
@@ -317,6 +325,8 @@ export const UPDATE_CHANNEL = gql`
 export const PAYMENT_METHOD_FRAGMENT = gql`
     fragment PaymentMethod on PaymentMethod {
         id
+        createdAt
+        updatedAt
         code
         enabled
         configArgs {

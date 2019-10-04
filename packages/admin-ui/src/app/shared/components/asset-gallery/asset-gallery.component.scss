@@ -25,6 +25,7 @@
 
 .card {
     margin-top: 0;
+    position: relative;
 }
 
 .selected-checkbox {
@@ -54,6 +55,9 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    vdr-entity-info {
+        height: 16px;
+    }
 }
 
 .info-bar {

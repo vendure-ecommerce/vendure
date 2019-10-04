@@ -11,6 +11,8 @@ export class RoleResolver extends BaseEntityResolver<Role.Fragment> {
             {
                 __typename: 'Role' as 'Role',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 code: '',
                 description: '',
                 permissions: [],

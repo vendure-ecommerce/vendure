@@ -12,11 +12,12 @@ export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> 
             {
                 __typename: 'Facet' as 'Facet',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 isPrivate: false,
                 languageCode: getDefaultLanguage(),
                 name: '',
                 code: '',
-                updatedAt: '',
                 translations: [],
                 values: [],
             },

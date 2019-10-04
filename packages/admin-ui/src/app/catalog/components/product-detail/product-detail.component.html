@@ -1,14 +1,17 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
-            <input
-                type="checkbox"
-                clrToggle
-                name="enabled"
-                [formControl]="detailForm.get(['product', 'enabled'])"
-            />
-            <label>{{ 'common.enabled' | translate }}</label>
-        </clr-toggle-wrapper>
+        <div class="flex clr-flex-row">
+            <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+            <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
+                <input
+                    type="checkbox"
+                    clrToggle
+                    name="enabled"
+                    [formControl]="detailForm.get(['product', 'enabled'])"
+                />
+                <label>{{ 'common.enabled' | translate }}</label>
+            </clr-toggle-wrapper>
+        </div>
         <vdr-language-selector
             [disabled]="isNew$ | async"
             [availableLanguageCodes]="availableLanguages$ | async"

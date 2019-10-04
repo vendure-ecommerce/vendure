@@ -59,4 +59,9 @@ export class AssetGalleryComponent {
             })
             .subscribe();
     }
+
+    entityInfoClick(event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 }

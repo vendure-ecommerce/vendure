@@ -1,5 +1,7 @@
 <vdr-action-bar>
-    <vdr-ab-left></vdr-ab-left>
+    <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+    </vdr-ab-left>
 
     <vdr-ab-right>
         <vdr-action-bar-items locationId="tax-rate-detail"></vdr-action-bar-items>

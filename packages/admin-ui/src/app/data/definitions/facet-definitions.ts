@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 export const FACET_VALUE_FRAGMENT = gql`
     fragment FacetValue on FacetValue {
         id
+        createdAt
+        updatedAt
         languageCode
         code
         name
@@ -13,6 +15,8 @@ export const FACET_VALUE_FRAGMENT = gql`
         }
         facet {
             id
+            createdAt
+            updatedAt
             name
         }
     }
@@ -21,6 +25,7 @@ export const FACET_VALUE_FRAGMENT = gql`
 export const FACET_WITH_VALUES_FRAGMENT = gql`
     fragment FacetWithValues on Facet {
         id
+        createdAt
         updatedAt
         languageCode
         isPrivate

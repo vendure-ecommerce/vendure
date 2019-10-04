@@ -39,6 +39,7 @@ import {
     DropdownItemDirective,
     DropdownMenuComponent,
     DropdownTriggerDirective,
+    EntityInfoComponent,
     FacetValueChipComponent,
     FacetValueSelectorComponent,
     FileSizePipe,
@@ -126,6 +127,7 @@ const DECLARATIONS = [
     AssetFileInputComponent,
     AssetGalleryComponent,
     AssetPickerDialogComponent,
+    EntityInfoComponent,
 ];
 
 @NgModule({

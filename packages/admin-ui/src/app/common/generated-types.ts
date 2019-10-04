@@ -332,6 +332,8 @@ export type ConfigurableOperationInput = {
 export type Country = Node & {
   __typename?: 'Country',
   id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  updatedAt: Scalars['DateTime'],
   languageCode: LanguageCode,
   code: Scalars['String'],
   name: Scalars['String'],
@@ -340,6 +342,8 @@ export type Country = Node & {
 };
 
 export type CountryFilterParameter = {
+  createdAt?: Maybe<DateOperators>,
+  updatedAt?: Maybe<DateOperators>,
   languageCode?: Maybe<StringOperators>,
   code?: Maybe<StringOperators>,
   name?: Maybe<StringOperators>,
@@ -361,6 +365,8 @@ export type CountryListOptions = {
 
 export type CountrySortParameter = {
   id?: Maybe<SortOrder>,
+  createdAt?: Maybe<SortOrder>,
+  updatedAt?: Maybe<SortOrder>,
   code?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
 };
@@ -3465,9 +3471,9 @@ export type Zone = Node & {
   name: Scalars['String'],
   members: Array<Country>,
 };
-export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'>)> }) });
+export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'>)> }) });
 
-export type RoleFragment = ({ __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>)> });
+export type RoleFragment = ({ __typename?: 'Role' } & Pick<Role, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description' | 'permissions'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>)> });
 
 export type GetAdministratorsQueryVariables = {
   options?: Maybe<AdministratorListOptions>
@@ -3605,7 +3611,7 @@ export type GetCollectionFiltersQueryVariables = {};
 
 export type GetCollectionFiltersQuery = ({ __typename?: 'Query' } & { collectionFilters: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
 
-export type CollectionFragment = ({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate' | 'languageCode'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, filters: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, translations: Array<({ __typename?: 'CollectionTranslation' } & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>)>, parent: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>, children: Maybe<Array<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>> });
+export type CollectionFragment = ({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'description' | 'isPrivate' | 'languageCode'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, filters: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, translations: Array<({ __typename?: 'CollectionTranslation' } & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>)>, parent: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>, children: Maybe<Array<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>> });
 
 export type GetCollectionListQueryVariables = {
   options?: Maybe<CollectionListOptions>
@@ -3657,9 +3663,9 @@ export type GetCollectionContentsQueryVariables = {
 
 export type GetCollectionContentsQuery = ({ __typename?: 'Query' } & { collection: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'> & { productVariants: ({ __typename?: 'ProductVariantList' } & Pick<ProductVariantList, 'totalItems'> & { items: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'productId' | 'name'>)> }) })> });
 
-export type AddressFragment = ({ __typename?: 'Address' } & Pick<Address, 'id' | 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'phoneNumber' | 'defaultShippingAddress' | 'defaultBillingAddress'> & { country: ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name'>) });
+export type AddressFragment = ({ __typename?: 'Address' } & Pick<Address, 'id' | 'createdAt' | 'updatedAt' | 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'phoneNumber' | 'defaultShippingAddress' | 'defaultBillingAddress'> & { country: ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name'>) });
 
-export type CustomerFragment = ({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'> & { user: Maybe<({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>)>, addresses: Maybe<Array<({ __typename?: 'Address' } & AddressFragment)>> });
+export type CustomerFragment = ({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'> & { user: Maybe<({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>)>, addresses: Maybe<Array<({ __typename?: 'Address' } & AddressFragment)>> });
 
 export type GetCustomerListQueryVariables = {
   options?: Maybe<CustomerListOptions>
@@ -3706,9 +3712,9 @@ export type UpdateCustomerAddressMutationVariables = {
 
 export type UpdateCustomerAddressMutation = ({ __typename?: 'Mutation' } & { updateCustomerAddress: ({ __typename?: 'Address' } & AddressFragment) });
 
-export type FacetValueFragment = ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetValueTranslation' } & Pick<FacetValueTranslation, 'id' | 'languageCode' | 'name'>)>, facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) });
+export type FacetValueFragment = ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetValueTranslation' } & Pick<FacetValueTranslation, 'id' | 'languageCode' | 'name'>)>, facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) });
 
-export type FacetWithValuesFragment = ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'updatedAt' | 'languageCode' | 'isPrivate' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetTranslation' } & Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>)>, values: Array<({ __typename?: 'FacetValue' } & FacetValueFragment)> });
+export type FacetWithValuesFragment = ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'isPrivate' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetTranslation' } & Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>)>, values: Array<({ __typename?: 'FacetValue' } & FacetValueFragment)> });
 
 export type CreateFacetMutationVariables = {
   input: CreateFacetInput
@@ -3844,13 +3850,13 @@ export type AddNoteToOrderMutationVariables = {
 
 export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id'>) });
 
-export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
+export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
 
-export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
+export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
-export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })> });
+export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })> });
 
-export type ProductOptionGroupFragment = ({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'ProductOptionGroupTranslation' } & Pick<ProductOptionGroupTranslation, 'name'>)>, options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'name'>)> })> });
+export type ProductOptionGroupFragment = ({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'ProductOptionGroupTranslation' } & Pick<ProductOptionGroupTranslation, 'id' | 'name'>)>, options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'name'>)> })> });
 
 export type UpdateProductMutationVariables = {
   input: UpdateProductInput
@@ -3906,7 +3912,7 @@ export type AddOptionToGroupMutationVariables = {
 };
 
 
-export type AddOptionToGroupMutation = ({ __typename?: 'Mutation' } & { createProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code' | 'groupId'>) });
+export type AddOptionToGroupMutation = ({ __typename?: 'Mutation' } & { createProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>) });
 
 export type AddOptionGroupToProductMutationVariables = {
   productId: Scalars['ID'],
@@ -3914,7 +3920,7 @@ export type AddOptionGroupToProductMutationVariables = {
 };
 
 
-export type AddOptionGroupToProductMutation = ({ __typename?: 'Mutation' } & { addOptionGroupToProduct: ({ __typename?: 'Product' } & Pick<Product, 'id'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>)> })> }) });
+export type AddOptionGroupToProductMutation = ({ __typename?: 'Mutation' } & { addOptionGroupToProduct: ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>)> })> }) });
 
 export type RemoveOptionGroupFromProductMutationVariables = {
   productId: Scalars['ID'],
@@ -3922,7 +3928,7 @@ export type RemoveOptionGroupFromProductMutationVariables = {
 };
 
 
-export type RemoveOptionGroupFromProductMutation = ({ __typename?: 'Mutation' } & { removeOptionGroupFromProduct: ({ __typename?: 'Product' } & Pick<Product, 'id'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>)> })> }) });
+export type RemoveOptionGroupFromProductMutation = ({ __typename?: 'Mutation' } & { removeOptionGroupFromProduct: ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>)> })> }) });
 
 export type GetProductWithVariantsQueryVariables = {
   id: Scalars['ID']
@@ -3936,14 +3942,14 @@ export type GetProductListQueryVariables = {
 };
 
 
-export type GetProductListQuery = ({ __typename?: 'Query' } & { products: ({ __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & { items: Array<({ __typename?: 'Product' } & Pick<Product, 'id' | 'enabled' | 'languageCode' | 'name' | 'slug'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>)> })> }) });
+export type GetProductListQuery = ({ __typename?: 'Query' } & { products: ({ __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & { items: Array<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'preview'>)> })> }) });
 
 export type GetProductOptionGroupsQueryVariables = {
   filterTerm?: Maybe<Scalars['String']>
 };
 
 
-export type GetProductOptionGroupsQuery = ({ __typename?: 'Query' } & { productOptionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'code' | 'name'>)> })> });
+export type GetProductOptionGroupsQuery = ({ __typename?: 'Query' } & { productOptionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>)> })> });
 
 export type GetAssetListQueryVariables = {
   options?: Maybe<AssetListOptions>
@@ -3964,14 +3970,14 @@ export type SearchProductsQueryVariables = {
 };
 
 
-export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) }) })> }) });
+export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
 
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput
 };
 
 
-export type UpdateProductOptionMutation = ({ __typename?: 'Mutation' } & { updateProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'name'>) });
+export type UpdateProductOptionMutation = ({ __typename?: 'Mutation' } & { updateProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name'>) });
 
 export type DeleteProductVariantMutationVariables = {
   id: Scalars['ID']
@@ -3985,7 +3991,7 @@ export type GetProductVariantOptionsQueryVariables = {
 };
 
 
-export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name' | 'code' | 'groupId'>)> })> })> });
+export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>)> })> })> });
 
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
@@ -4029,7 +4035,7 @@ export type DeletePromotionMutationVariables = {
 
 export type DeletePromotionMutation = ({ __typename?: 'Mutation' } & { deletePromotion: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
 
-export type CountryFragment = ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'> & { translations: Array<({ __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>)> });
+export type CountryFragment = ({ __typename?: 'Country' } & Pick<Country, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'enabled'> & { translations: Array<({ __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>)> });
 
 export type GetCountryListQueryVariables = {
   options?: Maybe<CountryListOptions>
@@ -4115,7 +4121,7 @@ export type RemoveMembersFromZoneMutationVariables = {
 
 export type RemoveMembersFromZoneMutation = ({ __typename?: 'Mutation' } & { removeMembersFromZone: ({ __typename?: 'Zone' } & ZoneFragment) });
 
-export type TaxCategoryFragment = ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>);
+export type TaxCategoryFragment = ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>);
 
 export type GetTaxCategoriesQueryVariables = {};
 
@@ -4143,7 +4149,7 @@ export type UpdateTaxCategoryMutationVariables = {
 
 export type UpdateTaxCategoryMutation = ({ __typename?: 'Mutation' } & { updateTaxCategory: ({ __typename?: 'TaxCategory' } & TaxCategoryFragment) });
 
-export type TaxRateFragment = ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'enabled' | 'value'> & { category: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), zone: ({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>), customerGroup: Maybe<({ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>)> });
+export type TaxRateFragment = ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'> & { category: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), zone: ({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>), customerGroup: Maybe<({ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>)> });
 
 export type GetTaxRateListQueryVariables = {
   options?: Maybe<TaxRateListOptions>
@@ -4173,7 +4179,7 @@ export type UpdateTaxRateMutationVariables = {
 
 export type UpdateTaxRateMutation = ({ __typename?: 'Mutation' } & { updateTaxRate: ({ __typename?: 'TaxRate' } & TaxRateFragment) });
 
-export type ChannelFragment = ({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'> & { defaultShippingZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)>, defaultTaxZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)> });
+export type ChannelFragment = ({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'> & { defaultShippingZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)>, defaultTaxZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)> });
 
 export type GetChannelsQueryVariables = {};
 
@@ -4206,7 +4212,7 @@ export type UpdateChannelMutationVariables = {
 
 export type UpdateChannelMutation = ({ __typename?: 'Mutation' } & { updateChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
 
-export type PaymentMethodFragment = ({ __typename?: 'PaymentMethod' } & Pick<PaymentMethod, 'id' | 'code' | 'enabled'> & { configArgs: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
+export type PaymentMethodFragment = ({ __typename?: 'PaymentMethod' } & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'> & { configArgs: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
 export type GetPaymentMethodListQueryVariables = {
   options: PaymentMethodListOptions

@@ -14,6 +14,8 @@ export class PaymentMethodResolver extends BaseEntityResolver<PaymentMethod.Frag
             {
                 __typename: 'PaymentMethod',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 code: '',
                 enabled: true,
                 configArgs: [],

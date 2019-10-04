@@ -12,6 +12,8 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Frag
             {
                 __typename: 'Product' as 'Product',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 enabled: true,
                 languageCode: getDefaultLanguage(),
                 name: '',

@@ -1,11 +1,8 @@
 <vdr-action-bar *ngIf="entity$ | async as order">
     <vdr-ab-left>
-        <div class="clr-row clr-flex-column">
+        <div class="flex clr-align-items-center">
+            <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
-            <div class="date-detail">
-                {{ 'common.updated' | translate }}:
-                <strong>{{ order.updatedAt | date: 'medium' }}</strong>
-            </div>
         </div>
     </vdr-ab-left>
 
