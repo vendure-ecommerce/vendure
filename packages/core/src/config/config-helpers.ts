@@ -1,7 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 
-import { ReadOnlyRequired } from '../common/types/common-types';
-
 import { defaultConfig } from './default-config';
 import { mergeConfig } from './merge-config';
 import { RuntimeVendureConfig, VendureConfig } from './vendure-config';
@@ -23,19 +21,4 @@ export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
  */
 export function getConfig(): Readonly<RuntimeVendureConfig> {
     return activeConfig;
-}
-
-/**
- * Returns the type argument to be passed to the PrimaryGeneratedColumn() decorator
- * of the base VendureEntity.
- */
-export function primaryKeyType(): any {
-    return activeConfig.entityIdStrategy.primaryKeyType;
-}
-
-/**
- * Returns the DB data type of ID columns based on the configured primaryKeyType
- */
-export function idType(): 'int' | 'varchar' {
-    return activeConfig.entityIdStrategy.primaryKeyType === 'increment' ? 'int' : 'varchar';
 }

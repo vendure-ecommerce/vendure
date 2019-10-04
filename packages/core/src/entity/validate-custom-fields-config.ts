@@ -2,7 +2,8 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { getMetadataArgsStorage } from 'typeorm';
 
 import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
-import { VendureEntity } from '../entity/base/base.entity';
+
+import { VendureEntity } from './base/base.entity';
 
 function validateCustomFieldsForEntity(
     entity: Type<VendureEntity>,
@@ -82,9 +83,7 @@ function assetNonNullablesHaveDefaults(entityName: string, customFields: CustomF
     for (const field of customFields) {
         if (field.nullable === false && field.defaultValue === undefined) {
             errors.push(
-                `${entityName} entity custom field "${
-                    field.name
-                }" is non-nullable and must have a defaultValue`,
+                `${entityName} entity custom field "${field.name}" is non-nullable and must have a defaultValue`,
             );
         }
     }

@@ -1,9 +1,7 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-import { primaryKeyType } from '../../config/config-helpers';
-
-const keyType = primaryKeyType();
+import { PrimaryGeneratedId } from '../entity-id.decorator';
 
 /**
  * @description
@@ -21,7 +19,8 @@ export abstract class VendureEntity {
         }
     }
 
-    @PrimaryGeneratedColumn(keyType) id: ID;
+    @PrimaryGeneratedId()
+    id: ID;
 
     @CreateDateColumn() createdAt: Date;
 

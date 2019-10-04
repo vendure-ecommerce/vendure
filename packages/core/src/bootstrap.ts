@@ -10,26 +10,14 @@ import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
 import { RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
+import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
+import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { logProxyMiddlewares } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
-
-/**
- * https://github.com/vendure-ecommerce/vendure/issues/152
- * fix race condition when modifying DB
- * @param {VendureConfig} userConfig
- */
-const disableSynchronize = (userConfig: ReadOnlyRequired<VendureConfig>): ReadOnlyRequired<VendureConfig> => {
-    const config = { ...userConfig };
-    config.dbConnectionOptions = {
-        ...userConfig.dbConnectionOptions,
-        synchronize: false,
-    } as ConnectionOptions;
-    return config;
-};
 
 /**
  * @description
@@ -156,10 +144,6 @@ export async function preBootstrapConfig(
         setConfig(userConfig);
     }
 
-    // Entities *must* be loaded after the user config is set in order for the
-    // base VendureEntity to be correctly configured with the primary key type
-    // specified in the EntityIdStrategy.
-    const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
     const entities = await getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers');
     setConfig({
@@ -170,6 +154,7 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    setEntityIdStrategy(config.entityIdStrategy, entities);
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
         process.exitCode = 1;
@@ -197,8 +182,7 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
 /**
  * Returns an array of core entities and any additional entities defined in plugins.
  */
-async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
-    const { coreEntitiesMap } = await import('./entity/entities');
+export async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
     const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
     const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
 
@@ -283,4 +267,17 @@ function logWelcomeMessage(config: VendureConfig) {
     Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
     logProxyMiddlewares(config);
     Logger.info(`=================================================`);
+}
+
+/**
+ * Fix race condition when modifying DB
+ * See: https://github.com/vendure-ecommerce/vendure/issues/152
+ */
+function disableSynchronize(userConfig: ReadOnlyRequired<VendureConfig>): ReadOnlyRequired<VendureConfig> {
+    const config = { ...userConfig };
+    config.dbConnectionOptions = {
+        ...userConfig.dbConnectionOptions,
+        synchronize: false,
+    } as ConnectionOptions;
+    return config;
 }
