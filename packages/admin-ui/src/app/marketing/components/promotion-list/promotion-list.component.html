@@ -18,7 +18,6 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.created-at' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
@@ -26,7 +25,6 @@
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-promotion="item">
-        <td class="left align-middle">{{ promotion.id }}</td>
         <td class="left align-middle">{{ promotion.name }}</td>
         <td class="left align-middle">{{ promotion.createdAt | date: 'longDate' }}</td>
         <td class="left align-middle">{{ promotion.updatedAt | date: 'longDate' }}</td>

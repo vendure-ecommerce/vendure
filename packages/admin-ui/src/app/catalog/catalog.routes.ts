@@ -108,7 +108,7 @@ export function productVariantEditorBreadcrumb(data: any, params: any) {
                     link: ['../', 'products'],
                 },
                 {
-                    label: `#${params.id} (${entity.name})`,
+                    label: `${entity.name}`,
                     link: ['../', 'products', params.id, { tab: 'variants' }],
                 },
                 {

@@ -75,7 +75,7 @@
                     *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition"
                 >
                     <div class="title">
-                        {{ 'order.history-payment-settled' | translate: { id: entry.data.paymentId } }}
+                        {{ 'order.history-payment-settled' | translate }}
                     </div>
                     {{ 'order.transaction-id' | translate }}: {{ getPayment(entry)?.transactionId }}
                     <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">

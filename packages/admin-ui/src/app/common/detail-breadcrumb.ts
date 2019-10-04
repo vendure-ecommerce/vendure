@@ -20,7 +20,7 @@ export function detailBreadcrumb<T>(options: {
             if (options.id === 'create') {
                 label = 'common.create';
             } else {
-                label = `#${options.id} (${options.getName(entity)})`;
+                label = `${options.getName(entity)}`;
             }
             return [
                 {

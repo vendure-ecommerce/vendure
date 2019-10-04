@@ -433,7 +433,7 @@
     "history-order-cancelled": "Order cancelled",
     "history-order-fulfilled": "Order fulfilled",
     "history-order-transition": "Order transitioned from {from} to {to}",
-    "history-payment-settled": "Payment #{id} settled",
+    "history-payment-settled": "Payment settled",
     "history-payment-transition": "Payment #{id} transitioned from {from} to {to}",
     "history-refund-transition": "Refund #{id} transitioned from {from} to {to}",
     "item-count": "{count} {count, plural, one {item} other {items}}",

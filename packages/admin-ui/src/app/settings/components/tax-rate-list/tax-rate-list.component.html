@@ -16,14 +16,12 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.tax-category' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.zone' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.tax-rate' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxRate="item">
-        <td class="left align-middle">{{ taxRate.id }}</td>
         <td class="left align-middle">{{ taxRate.name }}</td>
         <td class="left align-middle">{{ taxRate.category.name }}</td>
         <td class="left align-middle">{{ taxRate.zone.name }}</td>

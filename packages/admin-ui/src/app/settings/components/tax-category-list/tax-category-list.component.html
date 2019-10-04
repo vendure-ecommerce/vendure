@@ -9,11 +9,9 @@
 </vdr-action-bar>
 
 <vdr-data-table [items]="taxCategories$ | async">
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxCategory="item">
-        <td class="left align-middle">{{ taxCategory.id }}</td>
         <td class="left align-middle">{{ taxCategory.name }}</td>
         <td class="right align-middle">
             <vdr-table-row-action

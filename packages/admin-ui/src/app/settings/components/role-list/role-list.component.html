@@ -16,13 +16,11 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.ID' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.permissions' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-role="item">
-        <td class="left align-middle">{{ role.id }}</td>
         <td class="left align-middle">{{ role.code }}</td>
         <td class="left align-middle">{{ role.description }}</td>
         <td class="left align-middle">
