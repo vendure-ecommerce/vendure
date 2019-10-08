@@ -15,7 +15,7 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { UserInputError } from '../../common/error/errors';
+import { CouponCodeExpiredError, CouponCodeInvalidError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -82,7 +82,7 @@ export class PromotionService {
     }
 
     async createPromotion(ctx: RequestContext, input: CreatePromotionInput): Promise<Promotion> {
-        const adjustmentSource = new Promotion({
+        const promotion = new Promotion({
             name: input.name,
             enabled: input.enabled,
             couponCode: input.couponCode,
@@ -92,27 +92,27 @@ export class PromotionService {
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
             priorityScore: this.calculatePriorityScore(input),
         });
-        this.channelService.assignToChannels(adjustmentSource, ctx);
-        const newAdjustmentSource = await this.connection.manager.save(adjustmentSource);
+        this.validatePromotionConditions(promotion);
+        this.channelService.assignToChannels(promotion, ctx);
+        const newPromotion = await this.connection.manager.save(promotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(newAdjustmentSource.id));
+        return assertFound(this.findOne(newPromotion.id));
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
-        const adjustmentSource = await getEntityOrThrow(this.connection, Promotion, input.id);
-        const updatedAdjustmentSource = patchEntity(adjustmentSource, omit(input, ['conditions', 'actions']));
+        const promotion = await getEntityOrThrow(this.connection, Promotion, input.id);
+        const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
-            updatedAdjustmentSource.conditions = input.conditions.map(c =>
-                this.parseOperationArgs('condition', c),
-            );
+            updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
         }
         if (input.actions) {
-            updatedAdjustmentSource.actions = input.actions.map(a => this.parseOperationArgs('action', a));
+            updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
-        (adjustmentSource.priorityScore = this.calculatePriorityScore(input)),
-            await this.connection.manager.save(updatedAdjustmentSource);
+        this.validatePromotionConditions(updatedPromotion);
+        (promotion.priorityScore = this.calculatePriorityScore(input)),
+            await this.connection.manager.save(updatedPromotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(updatedAdjustmentSource.id));
+        return assertFound(this.findOne(updatedPromotion.id));
     }
 
     async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {
@@ -168,5 +168,14 @@ export class PromotionService {
         this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
+    }
+
+    /**
+     * Ensure the Promotion has at least one condition or a couponCode specified.
+     */
+    private validatePromotionConditions(promotion: Promotion) {
+        if (promotion.conditions.length === 0 && !promotion.couponCode) {
+            throw new UserInputError('error.promotion-must-have-conditions-or-coupon-code');
+        }
     }
 }
