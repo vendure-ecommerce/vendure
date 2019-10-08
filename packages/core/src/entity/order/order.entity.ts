@@ -47,6 +47,9 @@ export class Order extends VendureEntity implements HasCustomFields {
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
 
+    @Column('simple-array')
+    couponCodes: string[];
+
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
     @Column('simple-json') shippingAddress: OrderAddress;

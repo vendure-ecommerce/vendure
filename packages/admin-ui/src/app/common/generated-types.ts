@@ -2191,6 +2191,7 @@ export type Order = Node & {
   billingAddress?: Maybe<OrderAddress>,
   lines: Array<OrderLine>,
   adjustments: Array<Adjustment>,
+  couponCodes: Array<Scalars['String']>,
   payments?: Maybe<Array<Payment>>,
   fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],

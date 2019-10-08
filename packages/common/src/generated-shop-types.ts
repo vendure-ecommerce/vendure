@@ -1301,6 +1301,10 @@ export type Mutation = {
      * third argument 'customFields' will be available.
      */
     adjustOrderLine?: Maybe<Order>;
+    /** Applies the given coupon code to the active Order */
+    applyCouponCode?: Maybe<Order>;
+    /** Removes the given coupon code from the active Order */
+    removeCouponCode?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
     setOrderShippingAddress?: Maybe<Order>;
     setOrderShippingMethod?: Maybe<Order>;
@@ -1356,6 +1360,14 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
     orderLineId: Scalars['ID'];
     quantity?: Maybe<Scalars['Int']>;
+};
+
+export type MutationApplyCouponCodeArgs = {
+    couponCode: Scalars['String'];
+};
+
+export type MutationRemoveCouponCodeArgs = {
+    couponCode: Scalars['String'];
 };
 
 export type MutationTransitionOrderToStateArgs = {
@@ -1468,6 +1480,7 @@ export type Order = Node & {
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
+    couponCodes: Array<Scalars['String']>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];

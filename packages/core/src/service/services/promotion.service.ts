@@ -123,6 +123,23 @@ export class PromotionService {
         };
     }
 
+    async validateCouponCode(couponCode: string): Promise<boolean> {
+        const promotion = await this.connection.getRepository(Promotion).findOne({
+            where: {
+                couponCode,
+                enabled: true,
+                deletedAt: null,
+            },
+        });
+        if (!promotion) {
+            throw new CouponCodeInvalidError(couponCode);
+        }
+        if (promotion.endsAt && +promotion.endsAt < +new Date()) {
+            throw new CouponCodeExpiredError(couponCode);
+        }
+        return true;
+    }
+
     /**
      * Converts the input values of the "create" and "update" mutations into the format expected by the AdjustmentSource entity.
      */

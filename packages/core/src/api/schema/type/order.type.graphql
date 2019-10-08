@@ -10,6 +10,7 @@ type Order implements Node {
     billingAddress: OrderAddress
     lines: [OrderLine!]!
     adjustments: [Adjustment!]!
+    couponCodes: [String!]!
     payments: [Payment!]
     fulfillments: [Fulfillment!]
     subTotalBeforeTax: Int!
