@@ -64,6 +64,11 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     @Column() subTotalBeforeTax: number;
 
+    /**
+     * @description
+     * The subTotal is the total of the OrderLines, before order-level promotions
+     * and shipping has been applied.
+     */
     @Column() subTotal: number;
 
     @EntityId({ nullable: true })

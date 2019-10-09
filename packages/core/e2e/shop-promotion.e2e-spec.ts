@@ -331,8 +331,6 @@ describe('Shop orders', () => {
                 couponCode,
             });
 
-            // expect(applyCouponCode!.adjustments.length).toBe(1);
-            //  expect(applyCouponCode!.adjustments[0].description).toBe('50% off sale items');
             expect(applyCouponCode!.total).toBe(1920);
 
             await deletePromotion(promotion.id);
