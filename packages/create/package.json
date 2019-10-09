@@ -1,6 +1,6 @@
 {
   "name": "@vendure/create",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "license": "MIT",
   "bin": {
     "create": "./index.js"
@@ -24,8 +24,8 @@
     "@types/handlebars": "^4.1.0",
     "@types/listr": "^0.14.0",
     "@types/semver": "^6.0.0",
-    "@vendure/common": "^0.3.1",
-    "@vendure/core": "^0.3.3",
+    "@vendure/common": "^0.3.4",
+    "@vendure/core": "^0.3.4",
     "rimraf": "^2.6.3",
     "ts-node": "^8.0.3",
     "typescript": "~3.5.3"

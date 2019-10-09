@@ -1,3 +1,16 @@
+## <small>0.3.4 (2019-10-09)</small>
+
+
+#### Features
+
+* **admin-ui** Add entity info to detail views ([cf604aa](https://github.com/vendure-ecommerce/vendure/commit/cf604aa)), closes [#179](https://github.com/vendure-ecommerce/vendure/issues/179)
+
+#### Fixes
+
+* **admin-ui** Do not expose internal entity IDs ([2ca9cc1](https://github.com/vendure-ecommerce/vendure/commit/2ca9cc1)), closes [#178](https://github.com/vendure-ecommerce/vendure/issues/178)
+* **core** Add date fields to graphql Country type ([818be24](https://github.com/vendure-ecommerce/vendure/commit/818be24))
+* **core** Fix uuid strategy, rework setting of ID data types in DB ([d50d488](https://github.com/vendure-ecommerce/vendure/commit/d50d488)), closes [#176](https://github.com/vendure-ecommerce/vendure/issues/176)
+
 ## <small>0.3.3 (2019-10-03)</small>
 
 
