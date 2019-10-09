@@ -156,11 +156,29 @@ describe('OrderCalculator', () => {
         });
 
         const fixedPriceOrderAction = new PromotionOrderAction({
-            code: 'fixed_price_item_action',
+            code: 'fixed_price_order_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(order) {
                 return -order.total + 42;
+            },
+        });
+
+        const percentageItemAction = new PromotionItemAction({
+            code: 'percentage_item_action',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
+            args: { discount: { type: 'int' } },
+            async execute(orderItem, orderLine, args, { hasFacetValues }) {
+                return -orderLine.unitPrice * (args.discount / 100);
+            },
+        });
+
+        const percentageOrderAction = new PromotionOrderAction({
+            code: 'percentage_order_action',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
+            args: { discount: { type: 'int' } },
+            execute(order, args) {
+                return -order.subTotal * (args.discount / 100);
             },
         });
 
@@ -218,6 +236,112 @@ describe('OrderCalculator', () => {
             // Now the fixedPriceOrderAction should be in effect
             expect(order.adjustments.length).toBe(1);
             expect(order.total).toBe(42);
+        });
+
+        it('percentage order discount (price includes tax)', async () => {
+            const promotion = new Promotion({
+                id: 1,
+                name: '50% off order',
+                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+                promotionConditions: [alwaysTrueCondition],
+                actions: [
+                    {
+                        code: percentageOrderAction.code,
+                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+                promotionActions: [percentageOrderAction],
+            });
+
+            const ctx = createRequestContext(true);
+            const order = createOrder({
+                lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
+            });
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+            expect(order.subTotal).toBe(100);
+            expect(order.adjustments.length).toBe(1);
+            expect(order.adjustments[0].description).toBe('50% off order');
+            expect(order.total).toBe(50);
+        });
+
+        it('percentage order discount (price excludes tax)', async () => {
+            const promotion = new Promotion({
+                id: 1,
+                name: '50% off order',
+                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+                promotionConditions: [alwaysTrueCondition],
+                actions: [
+                    {
+                        code: percentageOrderAction.code,
+                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+                promotionActions: [percentageOrderAction],
+            });
+
+            const ctx = createRequestContext(false);
+            const order = createOrder({
+                lines: [{ unitPrice: 83, taxCategory: taxCategoryStandard, quantity: 1 }],
+            });
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+            expect(order.subTotal).toBe(100);
+            expect(order.adjustments.length).toBe(1);
+            expect(order.adjustments[0].description).toBe('50% off order');
+            expect(order.total).toBe(50);
+        });
+
+        it('percentage items discount (price includes tax)', async () => {
+            const promotion = new Promotion({
+                id: 1,
+                name: '50% off each item',
+                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+                promotionConditions: [alwaysTrueCondition],
+                actions: [
+                    {
+                        code: percentageItemAction.code,
+                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+                promotionActions: [percentageItemAction],
+            });
+
+            const ctx = createRequestContext(true);
+            const order = createOrder({
+                lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
+            });
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+            expect(order.subTotal).toBe(50);
+            expect(order.lines[0].adjustments.length).toBe(1);
+            expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
+            expect(order.total).toBe(50);
+        });
+
+        it('percentage items discount (price excludes tax)', async () => {
+            const promotion = new Promotion({
+                id: 1,
+                name: '50% off each item',
+                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+                promotionConditions: [alwaysTrueCondition],
+                actions: [
+                    {
+                        code: percentageItemAction.code,
+                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+                promotionActions: [percentageItemAction],
+            });
+
+            const ctx = createRequestContext(false);
+            const order = createOrder({
+                lines: [{ unitPrice: 83, taxCategory: taxCategoryStandard, quantity: 1 }],
+            });
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+            expect(order.subTotal).toBe(50);
+            expect(order.total).toBe(50);
         });
 
         it('interaction between promotions', async () => {
