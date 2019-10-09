@@ -9,6 +9,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
 import { HistoryService } from '../../services/history.service';
+import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
@@ -22,6 +23,7 @@ export class OrderStateMachine {
         private configService: ConfigService,
         private stockMovementService: StockMovementService,
         private historyService: HistoryService,
+        private promotionService: PromotionService,
         private eventBus: EventBus,
     ) {
         this.config = this.initConfig();
@@ -68,6 +70,7 @@ export class OrderStateMachine {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
             await this.stockMovementService.createSalesForOrder(data.order);
+            await this.promotionService.addPromotionsToOrder(data.order);
         }
         if (toState === 'Cancelled') {
             data.order.active = false;

@@ -1472,18 +1472,22 @@ export type Order = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    /** A unique code for the Order */
     code: Scalars['String'];
     state: Scalars['String'];
+    /** An order is active as long as the payment process has not been completed */
     active: Scalars['Boolean'];
     customer?: Maybe<Customer>;
     shippingAddress?: Maybe<OrderAddress>;
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
+    /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
     couponCodes: Array<Scalars['String']>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
+    /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;
     shipping: Scalars['Int'];
@@ -1858,6 +1862,7 @@ export type Promotion = Node & {
     startsAt?: Maybe<Scalars['DateTime']>;
     endsAt?: Maybe<Scalars['DateTime']>;
     couponCode?: Maybe<Scalars['String']>;
+    perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
@@ -2210,7 +2215,7 @@ export type Zone = Node & {
 };
 export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'total' | 'shipping'
+    'id' | 'code' | 'state' | 'active' | 'total' | 'couponCodes' | 'shipping'
 > & {
         adjustments: Array<
             { __typename?: 'Adjustment' } & Pick<

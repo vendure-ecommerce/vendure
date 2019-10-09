@@ -295,8 +295,11 @@ export class OrderService {
     }
 
     async applyCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
-        await this.promotionService.validateCouponCode(couponCode);
         const order = await this.getOrderOrThrow(ctx, orderId);
+        if (order.couponCodes.includes(couponCode)) {
+            return order;
+        }
+        await this.promotionService.validateCouponCode(couponCode, order.customer && order.customer.id);
         order.couponCodes.push(couponCode);
         return this.applyPriceAdjustments(ctx, order);
     }
@@ -616,7 +619,24 @@ export class OrderService {
             throw new IllegalOperationError(`error.order-already-has-customer`);
         }
         order.customer = customer;
-        return this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order);
+        // Check that any applied couponCodes are still valid now that
+        // we know the Customer.
+        if (order.couponCodes) {
+            let codesRemoved = false;
+            for (const couponCode of order.couponCodes.slice()) {
+                try {
+                    await this.promotionService.validateCouponCode(couponCode, customer.id);
+                } catch (err) {
+                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
+                    codesRemoved = true;
+                }
+            }
+            if (codesRemoved) {
+                return this.applyPriceAdjustments(ctx, order);
+            }
+        }
+        return order;
     }
 
     async addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput): Promise<Order> {

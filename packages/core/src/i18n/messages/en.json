@@ -15,6 +15,7 @@
     "channel-not-found":  "No channel with the token \"{ token }\" exists",
     "country-code-not-valid":  "The countryCode \"{ countryCode }\" was not recognized",
     "coupon-code-expired":  "Coupon code \"{ couponCode }\" has expired",
+    "coupon-code-limit-has-been-reached":  "Coupon code cannot be used more than {limit, plural, one {once} other {# times}} per customer",
     "coupon-code-not-valid":  "Coupon code \"{ couponCode }\" is not valid",
     "create-fulfillment-items-already-fulfilled": "One or more OrderItems have already been fulfilled",
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",

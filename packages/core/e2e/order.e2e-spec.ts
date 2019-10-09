@@ -5,7 +5,6 @@ import path from 'path';
 
 import { HistoryEntryType, StockMovementType } from '../../common/lib/generated-types';
 import { pick } from '../../common/lib/pick';
-import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -29,32 +28,18 @@ import {
     SettleRefund,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import {
-    AddItemToOrder,
-    AddPaymentToOrder,
-    AddPaymentToOrderMutation,
-    GetShippingMethods,
-    SetShippingAddress,
-    SetShippingMethod,
-    TransitionToState,
-} from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
-} from './graphql/shop-definitions';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const adminClient = new TestAdminClient();
@@ -1216,33 +1201,6 @@ const failsToSettlePaymentMethod = new PaymentMethodHandler({
     },
 });
 
-async function proceedToArrangingPayment(shopClient: TestShopClient): Promise<ID> {
-    await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(SET_SHIPPING_ADDRESS, {
-        input: {
-            fullName: 'name',
-            streetLine1: '12 the street',
-            city: 'foo',
-            postalCode: '123456',
-            countryCode: 'US',
-        },
-    });
-
-    const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
-        GET_ELIGIBLE_SHIPPING_METHODS,
-    );
-
-    await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
-        id: eligibleShippingMethods[1].id,
-    });
-
-    const { transitionOrderToState } = await shopClient.query<
-        TransitionToState.Mutation,
-        TransitionToState.Variables
-    >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-
-    return transitionOrderToState!.id;
-}
-
 async function createTestOrder(
     adminClient: TestAdminClient,
     shopClient: TestShopClient,
@@ -1286,25 +1244,6 @@ async function createTestOrder(
     );
     const orderId = addItemToOrder!.id;
     return { product, productVariantId, orderId };
-}
-
-async function addPaymentToOrder(
-    shopClient: TestShopClient,
-    handler: PaymentMethodHandler,
-): Promise<NonNullable<AddPaymentToOrder.Mutation['addPaymentToOrder']>> {
-    const result = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(
-        ADD_PAYMENT,
-        {
-            input: {
-                method: handler.code,
-                metadata: {
-                    baz: 'quux',
-                },
-            },
-        },
-    );
-    const order = result.addPaymentToOrder!;
-    return order as any;
 }
 
 export const GET_ORDERS_LIST = gql`

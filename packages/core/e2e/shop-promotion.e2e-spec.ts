@@ -1,7 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import gql from 'graphql-tag';
 import path from 'path';
-import { expand } from 'rxjs/operators';
 
 import {
     discountOnItemWithFacets,
@@ -20,18 +19,27 @@ import {
     AddItemToOrder,
     AdjustItemQuantity,
     ApplyCouponCode,
+    GetActiveOrder,
     RemoveCouponCode,
+    SetCustomerForOrder,
 } from './graphql/generated-e2e-shop-types';
 import { CREATE_PROMOTION, GET_FACET_LIST } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADJUST_ITEM_QUANTITY,
     APPLY_COUPON_CODE,
+    GET_ACTIVE_ORDER,
     REMOVE_COUPON_CODE,
+    SET_CUSTOMER,
 } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import {
+    addPaymentToOrder,
+    proceedToArrangingPayment,
+    testSuccessfulPaymentMethod,
+} from './utils/test-order-utils';
 
 describe('Shop orders', () => {
     const adminClient = new TestAdminClient();
@@ -53,10 +61,17 @@ describe('Shop orders', () => {
     let products: GetPromoProducts.Items[];
 
     beforeAll(async () => {
-        const token = await server.init({
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
-            customerCount: 2,
-        });
+        const token = await server.init(
+            {
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
+                customerCount: 2,
+            },
+            {
+                paymentOptions: {
+                    paymentMethodHandlers: [testSuccessfulPaymentMethod],
+                },
+            },
+        );
         await shopClient.init();
         await adminClient.init();
 
@@ -139,9 +154,21 @@ describe('Shop orders', () => {
                 couponCode: TEST_COUPON_CODE,
             });
 
+            expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
             expect(applyCouponCode!.adjustments.length).toBe(1);
             expect(applyCouponCode!.adjustments[0].description).toBe('Free with test coupon');
             expect(applyCouponCode!.total).toBe(0);
+        });
+
+        it('de-duplicates existing codes', async () => {
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: TEST_COUPON_CODE,
+            });
+
+            expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
         });
 
         it('removes a coupon code', async () => {
@@ -334,6 +361,168 @@ describe('Shop orders', () => {
             expect(applyCouponCode!.total).toBe(1920);
 
             await deletePromotion(promotion.id);
+        });
+    });
+
+    describe('per-customer usage limit', () => {
+        const TEST_COUPON_CODE = 'TESTCOUPON';
+        let promoWithUsageLimit: CreatePromotion.CreatePromotion;
+
+        beforeAll(async () => {
+            promoWithUsageLimit = await createPromotion({
+                enabled: true,
+                name: 'Free with test coupon',
+                couponCode: TEST_COUPON_CODE,
+                perCustomerUsageLimit: 1,
+                conditions: [],
+                actions: [freeOrderAction],
+            });
+        });
+
+        afterAll(async () => {
+            await deletePromotion(promoWithUsageLimit.id);
+        });
+
+        async function createNewActiveOrder() {
+            const item60 = getVariantBySlug('item-60');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item60.id,
+                quantity: 1,
+            });
+            return addItemToOrder;
+        }
+
+        describe('guest customer', () => {
+            const GUEST_EMAIL_ADDRESS = 'guest@test.com';
+
+            function addGuestCustomerToOrder() {
+                return shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
+                    SET_CUSTOMER,
+                    {
+                        input: {
+                            emailAddress: GUEST_EMAIL_ADDRESS,
+                            firstName: 'Guest',
+                            lastName: 'Customer',
+                        },
+                    },
+                );
+            }
+
+            it('allows initial usage', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+
+                expect(applyCouponCode!.total).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+            });
+
+            it('throws when usage exceeds limit', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                try {
+                    await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
+                        APPLY_COUPON_CODE,
+                        { couponCode: TEST_COUPON_CODE },
+                    );
+                    fail('should have thrown');
+                } catch (err) {
+                    expect(err.message).toEqual(
+                        expect.stringContaining('Coupon code cannot be used more than once per customer'),
+                    );
+                }
+            });
+
+            it('removes couponCode from order when adding customer after code applied', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+
+                expect(applyCouponCode!.total).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await addGuestCustomerToOrder();
+
+                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                expect(activeOrder!.couponCodes).toEqual([]);
+                expect(activeOrder!.total).toBe(6000);
+            });
+        });
+
+        describe('signed-in customer', () => {
+            function logInAsRegisteredCustomer() {
+                return shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            }
+
+            it('allows initial usage', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+
+                expect(applyCouponCode!.total).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+            });
+
+            it('throws when usage exceeds limit', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                try {
+                    await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
+                        APPLY_COUPON_CODE,
+                        { couponCode: TEST_COUPON_CODE },
+                    );
+                    fail('should have thrown');
+                } catch (err) {
+                    expect(err.message).toEqual(
+                        expect.stringContaining('Coupon code cannot be used more than once per customer'),
+                    );
+                }
+            });
+
+            it('removes couponCode from order when logging in after code applied', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode!.total).toBe(0);
+
+                await logInAsRegisteredCustomer();
+
+                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                expect(activeOrder!.total).toBe(6000);
+                expect(activeOrder!.couponCodes).toEqual([]);
+            });
         });
     });
 

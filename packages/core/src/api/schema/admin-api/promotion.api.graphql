@@ -20,6 +20,7 @@ input CreatePromotionInput {
     startsAt: DateTime
     endsAt: DateTime
     couponCode: String
+    perCustomerUsageLimit: Int
     conditions: [ConfigurableOperationInput!]!
     actions: [ConfigurableOperationInput!]!
 }
@@ -31,6 +32,7 @@ input UpdatePromotionInput {
     startsAt: DateTime
     endsAt: DateTime
     couponCode: String
+    perCustomerUsageLimit: Int
     conditions: [ConfigurableOperationInput!]
     actions: [ConfigurableOperationInput!]
 }

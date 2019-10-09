@@ -5,6 +5,7 @@ type Promotion implements Node {
     startsAt: DateTime
     endsAt: DateTime
     couponCode: String
+    perCustomerUsageLimit: Int
     name: String!
     enabled: Boolean!
     conditions: [ConfigurableOperation!]!

@@ -7,6 +7,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         state
         active
         total
+        couponCodes
         adjustments {
             adjustmentSource
             amount

@@ -71,6 +71,9 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @Column({ nullable: true, default: null })
     couponCode: string;
 
+    @Column({ nullable: true, default: null })
+    perCustomerUsageLimit: number;
+
     @Column() name: string;
 
     @Column() enabled: boolean;

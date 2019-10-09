@@ -234,3 +234,16 @@ export class CouponCodeExpiredError extends I18nError {
         super('error.coupon-code-expired', { couponCode }, 'COUPON_CODE_EXPIRED');
     }
 }
+
+/**
+ * @description
+ * This error is thrown when the coupon code is associated with a Promotion that has expired.
+ *
+ * @docsCategory errors
+ * @docsPage Error Types
+ */
+export class CouponCodeLimitError extends I18nError {
+    constructor(limit: number) {
+        super('error.coupon-code-limit-has-been-reached', { limit }, 'COUPON_CODE_LIMIT_REACHED');
+    }
+}

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
+    Adjustment,
+    AdjustmentType,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
@@ -11,16 +13,24 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { CouponCodeExpiredError, CouponCodeInvalidError, UserInputError } from '../../common/error/errors';
+import {
+    CouponCodeExpiredError,
+    CouponCodeInvalidError,
+    CouponCodeLimitError,
+    UserInputError,
+} from '../../common/error/errors';
+import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
+import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -86,6 +96,7 @@ export class PromotionService {
             name: input.name,
             enabled: input.enabled,
             couponCode: input.couponCode,
+            perCustomerUsageLimit: input.perCustomerUsageLimit,
             startsAt: input.startsAt,
             endsAt: input.endsAt,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
@@ -123,7 +134,7 @@ export class PromotionService {
         };
     }
 
-    async validateCouponCode(couponCode: string): Promise<boolean> {
+    async validateCouponCode(couponCode: string, customerId?: ID): Promise<boolean> {
         const promotion = await this.connection.getRepository(Promotion).findOne({
             where: {
                 couponCode,
@@ -137,9 +148,40 @@ export class PromotionService {
         if (promotion.endsAt && +promotion.endsAt < +new Date()) {
             throw new CouponCodeExpiredError(couponCode);
         }
+        if (customerId && promotion.perCustomerUsageLimit != null) {
+            const usageCount = await this.countPromotionUsagesForCustomer(promotion.id, customerId);
+            if (promotion.perCustomerUsageLimit <= usageCount) {
+                throw new CouponCodeLimitError(promotion.perCustomerUsageLimit);
+            }
+        }
         return true;
     }
 
+    async addPromotionsToOrder(order: Order): Promise<Order> {
+        const allAdjustments: Adjustment[] = [];
+        for (const line of order.lines) {
+            allAdjustments.push(...line.adjustments);
+        }
+        allAdjustments.push(...order.adjustments);
+        const allPromotionIds = allAdjustments
+            .filter(a => a.type === AdjustmentType.PROMOTION)
+            .map(a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
+        const promotionIds = unique(allPromotionIds);
+        const promotions = await this.connection.getRepository(Promotion).findByIds(promotionIds);
+        order.promotions = promotions;
+        return this.connection.getRepository(Order).save(order);
+    }
+
+    private async countPromotionUsagesForCustomer(promotionId: ID, customerId: ID): Promise<number> {
+        const qb = this.connection
+            .getRepository(Order)
+            .createQueryBuilder('order')
+            .leftJoin('order.promotions', 'promotion')
+            .where('promotion.id = :promotionId', { promotionId })
+            .andWhere('order.customer = :customerId', { customerId });
+
+        return qb.getCount();
+    }
     /**
      * Converts the input values of the "create" and "update" mutations into the format expected by the AdjustmentSource entity.
      */
