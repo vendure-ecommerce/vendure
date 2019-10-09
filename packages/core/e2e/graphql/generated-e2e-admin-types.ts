@@ -2103,6 +2103,7 @@ export type Order = Node & {
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
+    couponCodes: Array<Scalars['String']>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
@@ -4338,6 +4339,14 @@ export type GetRunningJobsQuery = { __typename?: 'Query' } & {
     jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
 };
 
+export type CreatePromotionMutationVariables = {
+    input: CreatePromotionInput;
+};
+
+export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
+    createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -4627,14 +4636,6 @@ export type GetPromotionQuery = { __typename?: 'Query' } & {
     promotion: Maybe<{ __typename?: 'Promotion' } & PromotionFragment>;
 };
 
-export type CreatePromotionMutationVariables = {
-    input: CreatePromotionInput;
-};
-
-export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
-    createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
-};
-
 export type UpdatePromotionMutationVariables = {
     input: UpdatePromotionInput;
 };
@@ -4905,6 +4906,33 @@ export type GetCustomerIdsQueryVariables = {};
 export type GetCustomerIdsQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & {
         items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+    };
+};
+
+export type DeletePromotionAdHoc1MutationVariables = {};
+
+export type DeletePromotionAdHoc1Mutation = { __typename?: 'Mutation' } & {
+    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type GetPromoProductsQueryVariables = {};
+
+export type GetPromoProductsQuery = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<
+            { __typename?: 'Product' } & Pick<Product, 'id' | 'slug'> & {
+                    variants: Array<
+                        { __typename?: 'ProductVariant' } & Pick<
+                            ProductVariant,
+                            'id' | 'price' | 'priceWithTax' | 'sku'
+                        > & {
+                                facetValues: Array<
+                                    { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code'>
+                                >;
+                            }
+                    >;
+                }
+        >;
     };
 };
 
@@ -5636,6 +5664,12 @@ export namespace GetRunningJobs {
     export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
 }
 
+export namespace CreatePromotion {
+    export type Variables = CreatePromotionMutationVariables;
+    export type Mutation = CreatePromotionMutation;
+    export type CreatePromotion = PromotionFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -5833,12 +5867,6 @@ export namespace GetPromotion {
     export type Promotion = PromotionFragment;
 }
 
-export namespace CreatePromotion {
-    export type Variables = CreatePromotionMutationVariables;
-    export type Mutation = CreatePromotionMutation;
-    export type CreatePromotion = PromotionFragment;
-}
-
 export namespace UpdatePromotion {
     export type Variables = UpdatePromotionMutationVariables;
     export type Mutation = UpdatePromotionMutation;
@@ -6028,6 +6056,27 @@ export namespace GetCustomerIds {
     export type Query = GetCustomerIdsQuery;
     export type Customers = GetCustomerIdsQuery['customers'];
     export type Items = NonNullable<GetCustomerIdsQuery['customers']['items'][0]>;
+}
+
+export namespace DeletePromotionAdHoc1 {
+    export type Variables = DeletePromotionAdHoc1MutationVariables;
+    export type Mutation = DeletePromotionAdHoc1Mutation;
+    export type DeletePromotion = DeletePromotionAdHoc1Mutation['deletePromotion'];
+}
+
+export namespace GetPromoProducts {
+    export type Variables = GetPromoProductsQueryVariables;
+    export type Query = GetPromoProductsQuery;
+    export type Products = GetPromoProductsQuery['products'];
+    export type Items = NonNullable<GetPromoProductsQuery['products']['items'][0]>;
+    export type Variants = NonNullable<
+        (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+    >;
+    export type FacetValues = NonNullable<
+        (NonNullable<
+            (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+        >)['facetValues'][0]
+    >;
 }
 
 export namespace UpdateStock {

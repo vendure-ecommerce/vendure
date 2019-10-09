@@ -128,6 +128,15 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     }
 
     async test(order: Order, utils: PromotionUtils): Promise<boolean> {
+        if (this.endsAt && this.endsAt < new Date()) {
+            return false;
+        }
+        if (this.startsAt && this.startsAt > new Date()) {
+            return false;
+        }
+        if (this.couponCode && !order.couponCodes.includes(this.couponCode)) {
+            return false;
+        }
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
             if (!promotionCondition || !(await promotionCondition.check(order, condition.args, utils))) {

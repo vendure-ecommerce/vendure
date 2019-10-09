@@ -18,6 +18,7 @@ import {
     Promotion,
     UpdatePromotion,
 } from './graphql/generated-e2e-admin-types';
+import { CREATE_PROMOTION } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -99,6 +100,31 @@ describe('Promotion resolver', () => {
         expect(pick(promotion, snapshotProps)).toMatchSnapshot();
     });
 
+    it(
+        'createPromotion throws with empty conditions and no couponCode',
+        assertThrowsWithMessage(async () => {
+            await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+                input: {
+                    name: 'bad promotion',
+                    enabled: true,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: promoAction.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: '["T_1"]',
+                                    type: 'facetValueIds',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+        }, 'A Promotion must have either at least one condition or a coupon code set'),
+    );
+
     it('updatePromotion', async () => {
         const result = await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
             UPDATE_PROMOTION,
@@ -123,6 +149,19 @@ describe('Promotion resolver', () => {
         );
         expect(pick(result.updatePromotion, snapshotProps)).toMatchSnapshot();
     });
+
+    it(
+        'updatePromotion throws with empty conditions and no couponCode',
+        assertThrowsWithMessage(async () => {
+            await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+                input: {
+                    id: promotion.id,
+                    couponCode: '',
+                    conditions: [],
+                },
+            });
+        }, 'A Promotion must have either at least one condition or a coupon code set'),
+    );
 
     it('promotion', async () => {
         const result = await client.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
@@ -244,15 +283,6 @@ export const GET_PROMOTION_LIST = gql`
 export const GET_PROMOTION = gql`
     query GetPromotion($id: ID!) {
         promotion(id: $id) {
-            ...Promotion
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
-export const CREATE_PROMOTION = gql`
-    mutation CreatePromotion($input: CreatePromotionInput!) {
-        createPromotion(input: $input) {
             ...Promotion
         }
     }

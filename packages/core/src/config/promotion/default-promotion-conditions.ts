@@ -21,20 +21,6 @@ export const minimumOrderAmount = new PromotionCondition({
     priorityValue: 10,
 });
 
-export const atLeastNOfProduct = new PromotionCondition({
-    code: 'at_least_n_of_product',
-    description: [{ languageCode: LanguageCode.en, value: 'Buy at least { minimum } of any product' }],
-    args: { minimum: { type: 'int' } },
-    check(order: Order, args) {
-        return order.lines.reduce(
-            (result, item) => {
-                return result || item.quantity >= args.minimum;
-            },
-            false as boolean,
-        );
-    },
-});
-
 export const atLeastNWithFacets = new PromotionCondition({
     code: 'at_least_n_with_facets',
     description: [
@@ -55,4 +41,4 @@ export const atLeastNWithFacets = new PromotionCondition({
     },
 });
 
-export const defaultPromotionConditions = [minimumOrderAmount, atLeastNOfProduct, atLeastNWithFacets];
+export const defaultPromotionConditions = [minimumOrderAmount, atLeastNWithFacets];

@@ -1301,6 +1301,10 @@ export type Mutation = {
      * third argument 'customFields' will be available.
      */
     adjustOrderLine?: Maybe<Order>;
+    /** Applies the given coupon code to the active Order */
+    applyCouponCode?: Maybe<Order>;
+    /** Removes the given coupon code from the active Order */
+    removeCouponCode?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
     setOrderShippingAddress?: Maybe<Order>;
     setOrderShippingMethod?: Maybe<Order>;
@@ -1356,6 +1360,14 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
     orderLineId: Scalars['ID'];
     quantity?: Maybe<Scalars['Int']>;
+};
+
+export type MutationApplyCouponCodeArgs = {
+    couponCode: Scalars['String'];
+};
+
+export type MutationRemoveCouponCodeArgs = {
+    couponCode: Scalars['String'];
 };
 
 export type MutationTransitionOrderToStateArgs = {
@@ -1468,6 +1480,7 @@ export type Order = Node & {
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
     adjustments: Array<Adjustment>;
+    couponCodes: Array<Scalars['String']>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
@@ -2197,8 +2210,14 @@ export type Zone = Node & {
 };
 export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'shipping'
+    'id' | 'code' | 'state' | 'active' | 'total' | 'shipping'
 > & {
+        adjustments: Array<
+            { __typename?: 'Adjustment' } & Pick<
+                Adjustment,
+                'adjustmentSource' | 'amount' | 'description' | 'type'
+            >
+        >;
         lines: Array<
             { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                     productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
@@ -2217,11 +2236,17 @@ export type AddItemToOrderMutationVariables = {
 
 export type AddItemToOrderMutation = { __typename?: 'Mutation' } & {
     addItemToOrder: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'active'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'active' | 'total'> & {
                 lines: Array<
                     { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                             productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
                         }
+                >;
+                adjustments: Array<
+                    { __typename?: 'Adjustment' } & Pick<
+                        Adjustment,
+                        'adjustmentSource' | 'amount' | 'description' | 'type'
+                    >
                 >;
             }
     >;
@@ -2529,8 +2554,25 @@ export type GetCustomerAddressesQuery = { __typename?: 'Query' } & {
         }
     >;
 };
+
+export type ApplyCouponCodeMutationVariables = {
+    couponCode: Scalars['String'];
+};
+
+export type ApplyCouponCodeMutation = { __typename?: 'Mutation' } & {
+    applyCouponCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type RemoveCouponCodeMutationVariables = {
+    couponCode: Scalars['String'];
+};
+
+export type RemoveCouponCodeMutation = { __typename?: 'Mutation' } & {
+    removeCouponCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
 export namespace TestOrderFragment {
     export type Fragment = TestOrderFragmentFragment;
+    export type Adjustments = NonNullable<TestOrderFragmentFragment['adjustments'][0]>;
     export type Lines = NonNullable<TestOrderFragmentFragment['lines'][0]>;
     export type ProductVariant = (NonNullable<TestOrderFragmentFragment['lines'][0]>)['productVariant'];
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
@@ -2545,6 +2587,9 @@ export namespace AddItemToOrder {
     export type ProductVariant = (NonNullable<
         (NonNullable<AddItemToOrderMutation['addItemToOrder']>)['lines'][0]
     >)['productVariant'];
+    export type Adjustments = NonNullable<
+        (NonNullable<AddItemToOrderMutation['addItemToOrder']>)['adjustments'][0]
+    >;
 }
 
 export namespace SearchProductsShop {
@@ -2731,4 +2776,16 @@ export namespace GetCustomerAddresses {
             (NonNullable<(NonNullable<GetCustomerAddressesQuery['activeOrder']>)['customer']>)['addresses']
         >)[0]
     >;
+}
+
+export namespace ApplyCouponCode {
+    export type Variables = ApplyCouponCodeMutationVariables;
+    export type Mutation = ApplyCouponCodeMutation;
+    export type ApplyCouponCode = TestOrderFragmentFragment;
+}
+
+export namespace RemoveCouponCode {
+    export type Variables = RemoveCouponCodeMutationVariables;
+    export type Mutation = RemoveCouponCodeMutation;
+    export type RemoveCouponCode = TestOrderFragmentFragment;
 }
