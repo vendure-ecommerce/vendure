@@ -1484,6 +1484,7 @@ export type Order = Node & {
     /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
     couponCodes: Array<Scalars['String']>;
+    promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];

@@ -1484,6 +1484,7 @@ export type Order = Node & {
     /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
     couponCodes: Array<Scalars['String']>;
+    promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
@@ -2461,6 +2462,18 @@ export type GetOrderByCodeQuery = { __typename?: 'Query' } & {
     orderByCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
+export type GetOrderPromotionsByCodeQueryVariables = {
+    code: Scalars['String'];
+};
+
+export type GetOrderPromotionsByCodeQuery = { __typename?: 'Query' } & {
+    orderByCode: Maybe<
+        { __typename?: 'Order' } & {
+            promotions: Array<{ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'name'>>;
+        } & TestOrderFragmentFragment
+    >;
+};
+
 export type GetAvailableCountriesQueryVariables = {};
 
 export type GetAvailableCountriesQuery = { __typename?: 'Query' } & {
@@ -2725,6 +2738,15 @@ export namespace GetOrderByCode {
     export type Variables = GetOrderByCodeQueryVariables;
     export type Query = GetOrderByCodeQuery;
     export type OrderByCode = TestOrderFragmentFragment;
+}
+
+export namespace GetOrderPromotionsByCode {
+    export type Variables = GetOrderPromotionsByCodeQueryVariables;
+    export type Query = GetOrderPromotionsByCodeQuery;
+    export type OrderByCode = TestOrderFragmentFragment;
+    export type Promotions = NonNullable<
+        (NonNullable<GetOrderPromotionsByCodeQuery['orderByCode']>)['promotions'][0]
+    >;
 }
 
 export namespace GetAvailableCountries {

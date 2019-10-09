@@ -2,6 +2,7 @@
 import gql from 'graphql-tag';
 import path from 'path';
 
+import { pick } from '../../common/src/pick';
 import {
     discountOnItemWithFacets,
     orderPercentageDiscount,
@@ -20,6 +21,7 @@ import {
     AdjustItemQuantity,
     ApplyCouponCode,
     GetActiveOrder,
+    GetOrderPromotionsByCode,
     RemoveCouponCode,
     SetCustomerForOrder,
 } from './graphql/generated-e2e-shop-types';
@@ -29,6 +31,7 @@ import {
     ADJUST_ITEM_QUANTITY,
     APPLY_COUPON_CODE,
     GET_ACTIVE_ORDER,
+    GET_ORDER_PROMOTIONS_BY_CODE,
     REMOVE_COUPON_CODE,
     SET_CUSTOMER,
 } from './graphql/shop-definitions';
@@ -41,7 +44,7 @@ import {
     testSuccessfulPaymentMethod,
 } from './utils/test-order-utils';
 
-describe('Shop orders', () => {
+describe('Promotions applied to Orders', () => {
     const adminClient = new TestAdminClient();
     const shopClient = new TestShopClient();
     const server = new TestServer();
@@ -397,6 +400,7 @@ describe('Shop orders', () => {
 
         describe('guest customer', () => {
             const GUEST_EMAIL_ADDRESS = 'guest@test.com';
+            let orderCode: string;
 
             function addGuestCustomerToOrder() {
                 return shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
@@ -428,6 +432,19 @@ describe('Shop orders', () => {
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
+                orderCode = order.code;
+            });
+
+            it('adds Promotions to Order once payment arranged', async () => {
+                const { orderByCode } = await shopClient.query<
+                    GetOrderPromotionsByCode.Query,
+                    GetOrderPromotionsByCode.Variables
+                >(GET_ORDER_PROMOTIONS_BY_CODE, {
+                    code: orderCode,
+                });
+                expect(orderByCode!.promotions.map(pick(['id', 'name']))).toEqual([
+                    { id: 'T_9', name: 'Free with test coupon' },
+                ]);
             });
 
             it('throws when usage exceeds limit', async () => {

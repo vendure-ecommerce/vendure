@@ -8,9 +8,11 @@ import { ShippingMethodService } from '../../../service/services/shipping-method
 
 @Resolver('Order')
 export class OrderEntityResolver {
-    constructor(private orderService: OrderService,
-                private shippingMethodService: ShippingMethodService,
-                private historyService: HistoryService) {}
+    constructor(
+        private orderService: OrderService,
+        private shippingMethodService: ShippingMethodService,
+        private historyService: HistoryService,
+    ) {}
 
     @ResolveProperty()
     async payments(@Parent() order: Order) {
@@ -40,5 +42,13 @@ export class OrderEntityResolver {
     @ResolveProperty()
     async history(@Parent() order: Order, @Args() args: OrderHistoryArgs) {
         return this.historyService.getHistoryForOrder(order.id, args.options || undefined);
+    }
+
+    @ResolveProperty()
+    async promotions(@Parent() order: Order) {
+        if (order.promotions) {
+            return order.promotions;
+        }
+        return this.orderService.getOrderPromotions(order.id);
     }
 }

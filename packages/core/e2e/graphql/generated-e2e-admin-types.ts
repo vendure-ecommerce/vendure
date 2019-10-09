@@ -2108,6 +2108,7 @@ export type Order = Node & {
     /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
     couponCodes: Array<Scalars['String']>;
+    promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
@@ -4364,6 +4365,33 @@ export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
     updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
 };
 
+export type DeletePromotionAdHoc1MutationVariables = {};
+
+export type DeletePromotionAdHoc1Mutation = { __typename?: 'Mutation' } & {
+    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type GetPromoProductsQueryVariables = {};
+
+export type GetPromoProductsQuery = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<
+            { __typename?: 'Product' } & Pick<Product, 'id' | 'slug'> & {
+                    variants: Array<
+                        { __typename?: 'ProductVariant' } & Pick<
+                            ProductVariant,
+                            'id' | 'price' | 'priceWithTax' | 'sku'
+                        > & {
+                                facetValues: Array<
+                                    { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code'>
+                                >;
+                            }
+                    >;
+                }
+        >;
+    };
+};
+
 export type GetOrderListQueryVariables = {
     options?: Maybe<OrderListOptions>;
 };
@@ -4915,33 +4943,6 @@ export type GetCustomerIdsQueryVariables = {};
 export type GetCustomerIdsQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & {
         items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-    };
-};
-
-export type DeletePromotionAdHoc1MutationVariables = {};
-
-export type DeletePromotionAdHoc1Mutation = { __typename?: 'Mutation' } & {
-    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
-
-export type GetPromoProductsQueryVariables = {};
-
-export type GetPromoProductsQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<
-            { __typename?: 'Product' } & Pick<Product, 'id' | 'slug'> & {
-                    variants: Array<
-                        { __typename?: 'ProductVariant' } & Pick<
-                            ProductVariant,
-                            'id' | 'price' | 'priceWithTax' | 'sku'
-                        > & {
-                                facetValues: Array<
-                                    { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code'>
-                                >;
-                            }
-                    >;
-                }
-        >;
     };
 };
 
@@ -5685,6 +5686,27 @@ export namespace UpdateOptionGroup {
     export type UpdateProductOptionGroup = UpdateOptionGroupMutation['updateProductOptionGroup'];
 }
 
+export namespace DeletePromotionAdHoc1 {
+    export type Variables = DeletePromotionAdHoc1MutationVariables;
+    export type Mutation = DeletePromotionAdHoc1Mutation;
+    export type DeletePromotion = DeletePromotionAdHoc1Mutation['deletePromotion'];
+}
+
+export namespace GetPromoProducts {
+    export type Variables = GetPromoProductsQueryVariables;
+    export type Query = GetPromoProductsQuery;
+    export type Products = GetPromoProductsQuery['products'];
+    export type Items = NonNullable<GetPromoProductsQuery['products']['items'][0]>;
+    export type Variants = NonNullable<
+        (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+    >;
+    export type FacetValues = NonNullable<
+        (NonNullable<
+            (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+        >)['facetValues'][0]
+    >;
+}
+
 export namespace GetOrderList {
     export type Variables = GetOrderListQueryVariables;
     export type Query = GetOrderListQuery;
@@ -6065,27 +6087,6 @@ export namespace GetCustomerIds {
     export type Query = GetCustomerIdsQuery;
     export type Customers = GetCustomerIdsQuery['customers'];
     export type Items = NonNullable<GetCustomerIdsQuery['customers']['items'][0]>;
-}
-
-export namespace DeletePromotionAdHoc1 {
-    export type Variables = DeletePromotionAdHoc1MutationVariables;
-    export type Mutation = DeletePromotionAdHoc1Mutation;
-    export type DeletePromotion = DeletePromotionAdHoc1Mutation['deletePromotion'];
-}
-
-export namespace GetPromoProducts {
-    export type Variables = GetPromoProductsQueryVariables;
-    export type Query = GetPromoProductsQuery;
-    export type Products = GetPromoProductsQuery['products'];
-    export type Items = NonNullable<GetPromoProductsQuery['products']['items'][0]>;
-    export type Variants = NonNullable<
-        (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
-    >;
-    export type FacetValues = NonNullable<
-        (NonNullable<
-            (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
-        >)['facetValues'][0]
-    >;
 }
 
 export namespace UpdateStock {

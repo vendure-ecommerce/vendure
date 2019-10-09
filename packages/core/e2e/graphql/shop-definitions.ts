@@ -243,6 +243,19 @@ export const GET_ORDER_BY_CODE = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const GET_ORDER_PROMOTIONS_BY_CODE = gql`
+    query GetOrderPromotionsByCode($code: String!) {
+        orderByCode(code: $code) {
+            ...TestOrderFragment
+            promotions {
+                id
+                name
+            }
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
 export const GET_AVAILABLE_COUNTRIES = gql`
     query GetAvailableCountries {
         availableCountries {

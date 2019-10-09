@@ -310,6 +310,13 @@ export class OrderService {
         return this.applyPriceAdjustments(ctx, order);
     }
 
+    async getOrderPromotions(orderId: ID): Promise<Promotion[]> {
+        const order = await getEntityOrThrow(this.connection, Order, orderId, {
+            relations: ['promotions'],
+        });
+        return order.promotions || [];
+    }
+
     getNextOrderStates(order: Order): OrderState[] {
         return this.orderStateMachine.getNextStates(order);
     }
