@@ -19,15 +19,21 @@
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.created-at' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'marketing.coupon-code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'marketing.starts-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'marketing.ends-at' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-promotion="item">
         <td class="left align-middle">{{ promotion.name }}</td>
-        <td class="left align-middle">{{ promotion.createdAt | date: 'longDate' }}</td>
-        <td class="left align-middle">{{ promotion.updatedAt | date: 'longDate' }}</td>
+        <td class="left align-middle">
+            <vdr-chip *ngIf="promotion.couponCode">
+                {{ promotion.couponCode }}
+            </vdr-chip>
+        </td>
+        <td class="left align-middle">{{ promotion.startsAt | date: 'longDate' }}</td>
+        <td class="left align-middle">{{ promotion.endsAt | date: 'longDate' }}</td>
         <td class="align-middle">
             <vdr-chip *ngIf="!promotion.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
         </td>
