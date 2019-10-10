@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { LogLevel } from '../../config/logger/vendure-logger';
 import { coreEntitiesMap } from '../../entity/entities';
 import { I18nError } from '../../i18n/i18n-error';
 
@@ -12,7 +13,7 @@ import { I18nError } from '../../i18n/i18n-error';
  */
 export class InternalServerError extends I18nError {
     constructor(message: string, variables: { [key: string]: string | number } = {}) {
-        super(message, variables, 'INTERNAL_SERVER_ERROR');
+        super(message, variables, 'INTERNAL_SERVER_ERROR', LogLevel.Error);
     }
 }
 
@@ -25,7 +26,7 @@ export class InternalServerError extends I18nError {
  */
 export class UserInputError extends I18nError {
     constructor(message: string, variables: { [key: string]: string | number } = {}) {
-        super(message, variables, 'USER_INPUT_ERROR');
+        super(message, variables, 'USER_INPUT_ERROR', LogLevel.Warn);
     }
 }
 
@@ -38,7 +39,7 @@ export class UserInputError extends I18nError {
  */
 export class IllegalOperationError extends I18nError {
     constructor(message: string, variables: { [key: string]: string | number } = {}) {
-        super(message, variables, 'ILLEGAL_OPERATION');
+        super(message, variables, 'ILLEGAL_OPERATION', LogLevel.Warn);
     }
 }
 
@@ -51,7 +52,7 @@ export class IllegalOperationError extends I18nError {
  */
 export class UnauthorizedError extends I18nError {
     constructor() {
-        super('error.unauthorized', {}, 'UNAUTHORIZED');
+        super('error.unauthorized', {}, 'UNAUTHORIZED', LogLevel.Info);
     }
 }
 
@@ -65,7 +66,7 @@ export class UnauthorizedError extends I18nError {
  */
 export class ForbiddenError extends I18nError {
     constructor() {
-        super('error.forbidden', {}, 'FORBIDDEN');
+        super('error.forbidden', {}, 'FORBIDDEN', LogLevel.Warn);
     }
 }
 
@@ -79,7 +80,7 @@ export class ForbiddenError extends I18nError {
  */
 export class ChannelNotFoundError extends I18nError {
     constructor(token: string) {
-        super('error.channel-not-found', { token }, 'CHANNEL_NOT_FOUND');
+        super('error.channel-not-found', { token }, 'CHANNEL_NOT_FOUND', LogLevel.Info);
     }
 }
 
@@ -93,7 +94,7 @@ export class ChannelNotFoundError extends I18nError {
  */
 export class EntityNotFoundError extends I18nError {
     constructor(entityName: keyof typeof coreEntitiesMap, id: ID) {
-        super('error.entity-with-id-not-found', { entityName, id }, 'ENTITY_NOT_FOUND');
+        super('error.entity-with-id-not-found', { entityName, id }, 'ENTITY_NOT_FOUND', LogLevel.Warn);
     }
 }
 
@@ -107,7 +108,7 @@ export class EntityNotFoundError extends I18nError {
  */
 export class VerificationTokenError extends I18nError {
     constructor() {
-        super('error.verification-token-not-recognized', {}, 'BAD_VERIFICATION_TOKEN');
+        super('error.verification-token-not-recognized', {}, 'BAD_VERIFICATION_TOKEN', LogLevel.Warn);
     }
 }
 
@@ -122,7 +123,7 @@ export class VerificationTokenError extends I18nError {
  */
 export class VerificationTokenExpiredError extends I18nError {
     constructor() {
-        super('error.verification-token-has-expired', {}, 'EXPIRED_VERIFICATION_TOKEN');
+        super('error.verification-token-has-expired', {}, 'EXPIRED_VERIFICATION_TOKEN', LogLevel.Warn);
     }
 }
 
@@ -135,7 +136,7 @@ export class VerificationTokenExpiredError extends I18nError {
  */
 export class PasswordResetTokenError extends I18nError {
     constructor() {
-        super('error.password-reset-token-not-recognized', {}, 'BAD_PASSWORD_RESET_TOKEN');
+        super('error.password-reset-token-not-recognized', {}, 'BAD_PASSWORD_RESET_TOKEN', LogLevel.Warn);
     }
 }
 
@@ -149,7 +150,7 @@ export class PasswordResetTokenError extends I18nError {
  */
 export class PasswordResetTokenExpiredError extends I18nError {
     constructor() {
-        super('error.password-reset-token-has-expired', {}, 'EXPIRED_PASSWORD_RESET_TOKEN');
+        super('error.password-reset-token-has-expired', {}, 'EXPIRED_PASSWORD_RESET_TOKEN', LogLevel.Warn);
     }
 }
 
@@ -163,7 +164,12 @@ export class PasswordResetTokenExpiredError extends I18nError {
  */
 export class IdentifierChangeTokenError extends I18nError {
     constructor() {
-        super('error.identifier-change-token-not-recognized', {}, 'EXPIRED_IDENTIFIER_CHANGE_TOKEN');
+        super(
+            'error.identifier-change-token-not-recognized',
+            {},
+            'EXPIRED_IDENTIFIER_CHANGE_TOKEN',
+            LogLevel.Warn,
+        );
     }
 }
 
@@ -177,7 +183,12 @@ export class IdentifierChangeTokenError extends I18nError {
  */
 export class IdentifierChangeTokenExpiredError extends I18nError {
     constructor() {
-        super('error.identifier-change-token-has-expired', {}, 'EXPIRED_IDENTIFIER_CHANGE_TOKEN');
+        super(
+            'error.identifier-change-token-has-expired',
+            {},
+            'EXPIRED_IDENTIFIER_CHANGE_TOKEN',
+            LogLevel.Warn,
+        );
     }
 }
 
@@ -191,7 +202,7 @@ export class IdentifierChangeTokenExpiredError extends I18nError {
  */
 export class NotVerifiedError extends I18nError {
     constructor() {
-        super('error.email-address-not-verified', {}, 'NOT_VERIFIED');
+        super('error.email-address-not-verified', {}, 'NOT_VERIFIED', LogLevel.Warn);
     }
 }
 
@@ -205,7 +216,7 @@ export class NotVerifiedError extends I18nError {
  */
 export class OrderItemsLimitError extends I18nError {
     constructor(maxItems: number) {
-        super('error.order-items-limit-exceeded', { maxItems }, 'ORDER_ITEMS_LIMIT_EXCEEDED');
+        super('error.order-items-limit-exceeded', { maxItems }, 'ORDER_ITEMS_LIMIT_EXCEEDED', LogLevel.Warn);
     }
 }
 
@@ -218,7 +229,7 @@ export class OrderItemsLimitError extends I18nError {
  */
 export class CouponCodeInvalidError extends I18nError {
     constructor(couponCode: string) {
-        super('error.coupon-code-not-valid', { couponCode }, 'COUPON_CODE_INVALID');
+        super('error.coupon-code-not-valid', { couponCode }, 'COUPON_CODE_INVALID', LogLevel.Verbose);
     }
 }
 
@@ -231,7 +242,7 @@ export class CouponCodeInvalidError extends I18nError {
  */
 export class CouponCodeExpiredError extends I18nError {
     constructor(couponCode: string) {
-        super('error.coupon-code-expired', { couponCode }, 'COUPON_CODE_EXPIRED');
+        super('error.coupon-code-expired', { couponCode }, 'COUPON_CODE_EXPIRED', LogLevel.Verbose);
     }
 }
 
@@ -244,6 +255,11 @@ export class CouponCodeExpiredError extends I18nError {
  */
 export class CouponCodeLimitError extends I18nError {
     constructor(limit: number) {
-        super('error.coupon-code-limit-has-been-reached', { limit }, 'COUPON_CODE_LIMIT_REACHED');
+        super(
+            'error.coupon-code-limit-has-been-reached',
+            { limit },
+            'COUPON_CODE_LIMIT_REACHED',
+            LogLevel.Verbose,
+        );
     }
 }

@@ -36,8 +36,8 @@ export class DefaultLogger implements VendureLogger {
     };
     private static originalLogLevel: LogLevel;
 
-    constructor(options?: { level?: LogLevel; timestamp?: boolean; }) {
-        this.level = options && options.level || LogLevel.Info;
+    constructor(options?: { level?: LogLevel; timestamp?: boolean }) {
+        this.level = (options && options.level) || LogLevel.Info;
         this.timestamp = options && options.timestamp !== undefined ? options.timestamp : true;
     }
 
@@ -81,58 +81,34 @@ export class DefaultLogger implements VendureLogger {
 
     error(message: string, context?: string, trace?: string | undefined): void {
         if (this.level >= LogLevel.Error) {
-            this.logMessage(
-                chalk.red(`error`),
-                chalk.red(message + (trace ? ` trace: \n${trace}` : '')),
-                context,
-            );
+            this.logMessage(chalk.red(`error`), chalk.red(message + (trace ? `\n${trace}` : '')), context);
         }
     }
     warn(message: string, context?: string): void {
         if (this.level >= LogLevel.Warn) {
-            this.logMessage(
-                chalk.yellow(`warn`),
-                chalk.yellow(message),
-                context,
-            );
+            this.logMessage(chalk.yellow(`warn`), chalk.yellow(message), context);
         }
     }
     info(message: string, context?: string): void {
         if (this.level >= LogLevel.Info) {
-            this.logMessage(
-                chalk.blue(`info`),
-                message,
-                context,
-            );
+            this.logMessage(chalk.blue(`info`), message, context);
         }
     }
     verbose(message: string, context?: string): void {
         if (this.level >= LogLevel.Verbose) {
-            this.logMessage(
-                chalk.magenta(`verbose`),
-                message,
-                context,
-            );
+            this.logMessage(chalk.magenta(`verbose`), message, context);
         }
     }
     debug(message: string, context?: string): void {
         if (this.level >= LogLevel.Debug) {
-            this.logMessage(
-                chalk.magenta(`debug`),
-                message,
-                context,
-            );
+            this.logMessage(chalk.magenta(`debug`), message, context);
         }
     }
 
     private logMessage(prefix: string, message: string, context?: string) {
-        process.stdout.write([
-            prefix,
-            this.logTimestamp(),
-            this.logContext(context),
-            message,
-            '\n',
-        ].join(' '));
+        process.stdout.write(
+            [prefix, this.logTimestamp(), this.logContext(context), message, '\n'].join(' '),
+        );
     }
 
     private logContext(context?: string) {
@@ -141,10 +117,7 @@ export class DefaultLogger implements VendureLogger {
 
     private logTimestamp() {
         if (this.timestamp) {
-            const timestamp = new Date(Date.now()).toLocaleString(
-                undefined,
-                this.localeStringOptions,
-            );
+            const timestamp = new Date(Date.now()).toLocaleString(undefined, this.localeStringOptions);
             return chalk.gray(timestamp + ' -');
         } else {
             return '';
