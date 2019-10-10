@@ -3,8 +3,7 @@ import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-consta
 import path from 'path';
 
 import { DefaultAssetNamingStrategy } from '../../src/config/asset-naming-strategy/default-asset-naming-strategy';
-import { DefaultLogger } from '../../src/config/logger/default-logger';
-import { LogLevel } from '../../src/config/logger/vendure-logger';
+import { NoopLogger } from '../../src/config/logger/noop-logger';
 import { VendureConfig } from '../../src/config/vendure-config';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
@@ -55,7 +54,7 @@ export const testConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    logger: new DefaultLogger({ level: LogLevel.Error }),
+    logger: new NoopLogger(),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, '..', 'fixtures/assets'),
     },
