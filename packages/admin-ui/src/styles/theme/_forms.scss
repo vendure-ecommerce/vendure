@@ -50,6 +50,19 @@ input, select {
     max-height: none !important;
 }
 
+.clr-input-wrapper {
+    max-height: none !important;
+}
+
+.clr-input-group {
+    height: initial !important;
+    border-bottom: none;
+    &:focus, &.clr-focus {
+        background: none;
+        border-bottom: none;
+    }
+}
+
 .tooltip.tooltip-validation::before {
     top: 10px !important;
 }

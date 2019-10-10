@@ -122,6 +122,9 @@ const result: IntrospectionResultData = {
                         name: 'Address',
                     },
                     {
+                        name: 'Promotion',
+                    },
+                    {
                         name: 'Payment',
                     },
                     {
@@ -165,9 +168,6 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'Product',
-                    },
-                    {
-                        name: 'Promotion',
                     },
                 ],
             },

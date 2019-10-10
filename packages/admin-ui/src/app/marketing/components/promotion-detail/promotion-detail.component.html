@@ -3,12 +3,7 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <clr-toggle-wrapper *vdrIfPermissions="'UpdatePromotion'">
-                <input
-                    type="checkbox"
-                    clrToggle
-                    name="enabled"
-                    [formControl]="detailForm.get(['enabled'])"
-                />
+                <input type="checkbox" clrToggle name="enabled" [formControl]="detailForm.get(['enabled'])" />
                 <label>{{ 'common.enabled' | translate }}</label>
             </clr-toggle-wrapper>
         </div>
@@ -44,6 +39,42 @@
             [readonly]="!('UpdatePromotion' | hasPermission)"
             type="text"
             formControlName="name"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.starts-at' | translate" for="startsAt">
+        <input
+            type="datetime-local"
+            name="startsAt"
+            [value]="detailForm.get('startsAt')?.value | date: 'yyyy-MM-ddTHH:mm:ss'"
+            (change)="updateDateTime(detailForm.get('startsAt')!, $event)"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.ends-at' | translate" for="endsAt">
+        <input
+            type="datetime-local"
+            name="endsAt"
+            [value]="detailForm.get('endsAt')?.value | date: 'yyyy-MM-ddTHH:mm:ss'"
+            (change)="updateDateTime(detailForm.get('endsAt')!, $event)"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.coupon-code' | translate" for="couponCode">
+        <input
+            id="couponCode"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+            type="text"
+            formControlName="couponCode"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.per-customer-limit' | translate" for="perCustomerUsageLimit">
+        <input
+            id="perCustomerUsageLimit"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+            type="number"
+            min="1"
+            max="999"
+            formControlName="perCustomerUsageLimit"
         />
     </vdr-form-field>
 

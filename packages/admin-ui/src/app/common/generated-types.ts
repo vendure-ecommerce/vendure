@@ -527,6 +527,7 @@ export type CreatePromotionInput = {
   startsAt?: Maybe<Scalars['DateTime']>,
   endsAt?: Maybe<Scalars['DateTime']>,
   couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   conditions: Array<ConfigurableOperationInput>,
   actions: Array<ConfigurableOperationInput>,
 };
@@ -2183,18 +2184,23 @@ export type Order = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  /** A unique code for the Order */
   code: Scalars['String'],
   state: Scalars['String'],
+  /** An order is active as long as the payment process has not been completed */
   active: Scalars['Boolean'],
   customer?: Maybe<Customer>,
   shippingAddress?: Maybe<OrderAddress>,
   billingAddress?: Maybe<OrderAddress>,
   lines: Array<OrderLine>,
+  /** Order-level adjustments to the order total, such as discounts from promotions */
   adjustments: Array<Adjustment>,
   couponCodes: Array<Scalars['String']>,
+  promotions: Array<Promotion>,
   payments?: Maybe<Array<Payment>>,
   fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
+  /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
   subTotal: Scalars['Int'],
   currencyCode: CurrencyCode,
   shipping: Scalars['Int'],
@@ -2636,6 +2642,7 @@ export type Promotion = Node & {
   startsAt?: Maybe<Scalars['DateTime']>,
   endsAt?: Maybe<Scalars['DateTime']>,
   couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
   conditions: Array<ConfigurableOperation>,
@@ -2648,6 +2655,7 @@ export type PromotionFilterParameter = {
   startsAt?: Maybe<DateOperators>,
   endsAt?: Maybe<DateOperators>,
   couponCode?: Maybe<StringOperators>,
+  perCustomerUsageLimit?: Maybe<NumberOperators>,
   name?: Maybe<StringOperators>,
   enabled?: Maybe<BooleanOperators>,
 };
@@ -2672,6 +2680,7 @@ export type PromotionSortParameter = {
   startsAt?: Maybe<SortOrder>,
   endsAt?: Maybe<SortOrder>,
   couponCode?: Maybe<SortOrder>,
+  perCustomerUsageLimit?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
 };
 
@@ -3419,6 +3428,7 @@ export type UpdatePromotionInput = {
   startsAt?: Maybe<Scalars['DateTime']>,
   endsAt?: Maybe<Scalars['DateTime']>,
   couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   conditions?: Maybe<Array<ConfigurableOperationInput>>,
   actions?: Maybe<Array<ConfigurableOperationInput>>,
 };
@@ -4009,7 +4019,7 @@ export type GetProductVariantOptionsQueryVariables = {
 
 export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>)> })> })> });
 
-export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
+export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
 export type GetPromotionListQueryVariables = {
   options?: Maybe<PromotionListOptions>

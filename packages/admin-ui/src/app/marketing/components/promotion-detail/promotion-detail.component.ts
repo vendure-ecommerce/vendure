@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
@@ -53,6 +53,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             enabled: true,
+            couponCode: null,
+            perCustomerUsageLimit: null,
+            startsAt: null,
+            endsAt: null,
             conditions: this.formBuilder.array([]),
             actions: this.formBuilder.array([]),
         });
@@ -103,7 +107,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         return (
             this.detailForm.dirty &&
             this.detailForm.valid &&
-            this.conditions.length !== 0 &&
+            (this.conditions.length !== 0 || this.detailForm.value.couponCode) &&
             this.actions.length !== 0
         );
     }
@@ -132,6 +136,14 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         return this.detailForm.get(key) as FormArray;
     }
 
+    // TODO: Remove this once a dedicated cross-browser datetime picker
+    // exists. See https://github.com/vendure-ecommerce/vendure/issues/181
+    updateDateTime(formControl: AbstractControl, event: Event) {
+        const value = (event.target as HTMLInputElement).value;
+        formControl.setValue(value ? new Date(value).toISOString() : null, { emitEvent: true });
+        formControl.parent.markAsDirty();
+    }
+
     create() {
         if (!this.detailForm.dirty) {
             return;
@@ -140,6 +152,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         const input: CreatePromotionInput = {
             name: formValue.name,
             enabled: true,
+            couponCode: formValue.couponCode,
+            perCustomerUsageLimit: formValue.perCustomerUsageLimit,
+            startsAt: formValue.startsAt,
+            endsAt: formValue.endsAt,
             conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
             actions: this.mapOperationsToInputs(this.actions, formValue.actions),
         };
@@ -171,6 +187,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                         id: promotion.id,
                         name: formValue.name,
                         enabled: formValue.enabled,
+                        couponCode: formValue.couponCode,
+                        perCustomerUsageLimit: formValue.perCustomerUsageLimit,
+                        startsAt: formValue.startsAt,
+                        endsAt: formValue.endsAt,
                         conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
                         actions: this.mapOperationsToInputs(this.actions, formValue.actions),
                     };
@@ -197,7 +217,14 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
-        this.detailForm.patchValue({ name: entity.name, enabled: entity.enabled });
+        this.detailForm.patchValue({
+            name: entity.name,
+            enabled: entity.enabled,
+            couponCode: entity.couponCode,
+            perCustomerUsageLimit: entity.perCustomerUsageLimit,
+            startsAt: entity.startsAt,
+            endsAt: entity.endsAt,
+        });
         entity.conditions.forEach(o => {
             this.addOperation('conditions', o);
         });

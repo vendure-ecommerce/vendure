@@ -9,6 +9,10 @@ export const PROMOTION_FRAGMENT = gql`
         updatedAt
         name
         enabled
+        couponCode
+        perCustomerUsageLimit
+        startsAt
+        endsAt
         conditions {
             ...ConfigurableOperation
         }

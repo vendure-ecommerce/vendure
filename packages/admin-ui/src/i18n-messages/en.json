@@ -149,7 +149,6 @@
     "select": "Select...",
     "there-are-unsaved-changes": "There are unsaved changes. Navigating away will cause these changes to be lost.",
     "update": "Update",
-    "updated": "Updated",
     "updated-at": "Updated at",
     "username": "Username"
   },
@@ -384,7 +383,11 @@
     "add-action": "Add action",
     "add-condition": "Add condition",
     "conditions": "Conditions",
-    "create-new-promotion": "Create new promotion"
+    "coupon-code": "Coupon code",
+    "create-new-promotion": "Create new promotion",
+    "ends-at": "Ends at",
+    "per-customer-limit": "Per-customer limit",
+    "starts-at": "Starts at"
   },
   "nav": {
     "administrators": "Administrators",
