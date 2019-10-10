@@ -523,6 +523,10 @@ export type CreateProductVariantOptionInput = {
 export type CreatePromotionInput = {
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
+    perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     conditions: Array<ConfigurableOperationInput>;
     actions: Array<ConfigurableOperationInput>;
 };
@@ -2092,17 +2096,23 @@ export type Order = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    /** A unique code for the Order */
     code: Scalars['String'];
     state: Scalars['String'];
+    /** An order is active as long as the payment process has not been completed */
     active: Scalars['Boolean'];
     customer?: Maybe<Customer>;
     shippingAddress?: Maybe<OrderAddress>;
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
+    /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
+    couponCodes: Array<Scalars['String']>;
+    promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
+    /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;
     shipping: Scalars['Int'];
@@ -2539,6 +2549,10 @@ export type Promotion = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
+    perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
@@ -2548,6 +2562,10 @@ export type Promotion = Node & {
 export type PromotionFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    startsAt?: Maybe<DateOperators>;
+    endsAt?: Maybe<DateOperators>;
+    couponCode?: Maybe<StringOperators>;
+    perCustomerUsageLimit?: Maybe<NumberOperators>;
     name?: Maybe<StringOperators>;
     enabled?: Maybe<BooleanOperators>;
 };
@@ -2569,6 +2587,10 @@ export type PromotionSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+    startsAt?: Maybe<SortOrder>;
+    endsAt?: Maybe<SortOrder>;
+    couponCode?: Maybe<SortOrder>;
+    perCustomerUsageLimit?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
 };
 
@@ -3271,6 +3293,10 @@ export type UpdatePromotionInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
+    perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     conditions?: Maybe<Array<ConfigurableOperationInput>>;
     actions?: Maybe<Array<ConfigurableOperationInput>>;
 };
@@ -4055,7 +4081,7 @@ export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
 
 export type PromotionFragment = { __typename?: 'Promotion' } & Pick<
     Promotion,
-    'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled'
+    'id' | 'createdAt' | 'updatedAt' | 'couponCode' | 'startsAt' | 'endsAt' | 'name' | 'enabled'
 > & {
         conditions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
         actions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
@@ -4323,12 +4349,47 @@ export type GetRunningJobsQuery = { __typename?: 'Query' } & {
     jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
 };
 
+export type CreatePromotionMutationVariables = {
+    input: CreatePromotionInput;
+};
+
+export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
+    createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
 
 export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
     updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
+};
+
+export type DeletePromotionAdHoc1MutationVariables = {};
+
+export type DeletePromotionAdHoc1Mutation = { __typename?: 'Mutation' } & {
+    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type GetPromoProductsQueryVariables = {};
+
+export type GetPromoProductsQuery = { __typename?: 'Query' } & {
+    products: { __typename?: 'ProductList' } & {
+        items: Array<
+            { __typename?: 'Product' } & Pick<Product, 'id' | 'slug'> & {
+                    variants: Array<
+                        { __typename?: 'ProductVariant' } & Pick<
+                            ProductVariant,
+                            'id' | 'price' | 'priceWithTax' | 'sku'
+                        > & {
+                                facetValues: Array<
+                                    { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code'>
+                                >;
+                            }
+                    >;
+                }
+        >;
+    };
 };
 
 export type GetOrderListQueryVariables = {
@@ -4610,14 +4671,6 @@ export type GetPromotionQueryVariables = {
 
 export type GetPromotionQuery = { __typename?: 'Query' } & {
     promotion: Maybe<{ __typename?: 'Promotion' } & PromotionFragment>;
-};
-
-export type CreatePromotionMutationVariables = {
-    input: CreatePromotionInput;
-};
-
-export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
-    createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
 };
 
 export type UpdatePromotionMutationVariables = {
@@ -5621,10 +5674,37 @@ export namespace GetRunningJobs {
     export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
 }
 
+export namespace CreatePromotion {
+    export type Variables = CreatePromotionMutationVariables;
+    export type Mutation = CreatePromotionMutation;
+    export type CreatePromotion = PromotionFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
     export type UpdateProductOptionGroup = UpdateOptionGroupMutation['updateProductOptionGroup'];
+}
+
+export namespace DeletePromotionAdHoc1 {
+    export type Variables = DeletePromotionAdHoc1MutationVariables;
+    export type Mutation = DeletePromotionAdHoc1Mutation;
+    export type DeletePromotion = DeletePromotionAdHoc1Mutation['deletePromotion'];
+}
+
+export namespace GetPromoProducts {
+    export type Variables = GetPromoProductsQueryVariables;
+    export type Query = GetPromoProductsQuery;
+    export type Products = GetPromoProductsQuery['products'];
+    export type Items = NonNullable<GetPromoProductsQuery['products']['items'][0]>;
+    export type Variants = NonNullable<
+        (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+    >;
+    export type FacetValues = NonNullable<
+        (NonNullable<
+            (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+        >)['facetValues'][0]
+    >;
 }
 
 export namespace GetOrderList {
@@ -5816,12 +5896,6 @@ export namespace GetPromotion {
     export type Variables = GetPromotionQueryVariables;
     export type Query = GetPromotionQuery;
     export type Promotion = PromotionFragment;
-}
-
-export namespace CreatePromotion {
-    export type Variables = CreatePromotionMutationVariables;
-    export type Mutation = CreatePromotionMutation;
-    export type CreatePromotion = PromotionFragment;
 }
 
 export namespace UpdatePromotion {

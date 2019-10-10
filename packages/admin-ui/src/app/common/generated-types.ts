@@ -524,6 +524,9 @@ export type CreateProductVariantOptionInput = {
 export type CreatePromotionInput = {
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
   conditions: Array<ConfigurableOperationInput>,
   actions: Array<ConfigurableOperationInput>,
 };
@@ -2188,6 +2191,7 @@ export type Order = Node & {
   billingAddress?: Maybe<OrderAddress>,
   lines: Array<OrderLine>,
   adjustments: Array<Adjustment>,
+  couponCodes: Array<Scalars['String']>,
   payments?: Maybe<Array<Payment>>,
   fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
@@ -2629,6 +2633,9 @@ export type Promotion = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
   conditions: Array<ConfigurableOperation>,
@@ -2638,6 +2645,9 @@ export type Promotion = Node & {
 export type PromotionFilterParameter = {
   createdAt?: Maybe<DateOperators>,
   updatedAt?: Maybe<DateOperators>,
+  startsAt?: Maybe<DateOperators>,
+  endsAt?: Maybe<DateOperators>,
+  couponCode?: Maybe<StringOperators>,
   name?: Maybe<StringOperators>,
   enabled?: Maybe<BooleanOperators>,
 };
@@ -2659,6 +2669,9 @@ export type PromotionSortParameter = {
   id?: Maybe<SortOrder>,
   createdAt?: Maybe<SortOrder>,
   updatedAt?: Maybe<SortOrder>,
+  startsAt?: Maybe<SortOrder>,
+  endsAt?: Maybe<SortOrder>,
+  couponCode?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
 };
 
@@ -3403,6 +3416,9 @@ export type UpdatePromotionInput = {
   id: Scalars['ID'],
   name?: Maybe<Scalars['String']>,
   enabled?: Maybe<Scalars['Boolean']>,
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
   conditions?: Maybe<Array<ConfigurableOperationInput>>,
   actions?: Maybe<Array<ConfigurableOperationInput>>,
 };

@@ -1,6 +1,6 @@
 import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -12,6 +12,7 @@ import { EntityId } from '../entity-id.decorator';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
+import { Promotion } from '../promotion/promotion.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
 /**
@@ -47,6 +48,13 @@ export class Order extends VendureEntity implements HasCustomFields {
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
 
+    @Column('simple-array')
+    couponCodes: string[];
+
+    @ManyToMany(type => Promotion)
+    @JoinTable()
+    promotions: Promotion[];
+
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
     @Column('simple-json') shippingAddress: OrderAddress;
@@ -61,6 +69,11 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     @Column() subTotalBeforeTax: number;
 
+    /**
+     * @description
+     * The subTotal is the total of the OrderLines, before order-level promotions
+     * and shipping has been applied.
+     */
     @Column() subTotal: number;
 
     @EntityId({ nullable: true })

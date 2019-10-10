@@ -1,4 +1,5 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 
@@ -7,6 +8,14 @@ export abstract class AdjustmentSource extends VendureEntity {
 
     getSourceId(): string {
         return `${this.type}:${this.id}`;
+    }
+
+    static decodeSourceId(sourceId: string): { type: AdjustmentType; id: ID } {
+        const [type, id] = sourceId.split(':');
+        return {
+            type: type as AdjustmentType,
+            id: Number.isNaN(+id) ? id : +id,
+        };
     }
 
     abstract test(...args: any[]): boolean | Promise<boolean>;

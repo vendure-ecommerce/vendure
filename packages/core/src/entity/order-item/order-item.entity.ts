@@ -65,6 +65,9 @@ export class OrderItem extends VendureEntity {
         }
     }
 
+    /**
+     * Adjustments with promotion values adjusted to include tax.
+     */
     @Calculated()
     get adjustments(): Adjustment[] {
         if (this.unitPriceIncludesTax) {
@@ -108,7 +111,7 @@ export class OrderItem extends VendureEntity {
     }
 
     get promotionAdjustmentsTotal(): number {
-        return this.adjustments
+        return this.pendingAdjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
     }

@@ -55,6 +55,7 @@ import {
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { testSuccessfulPaymentMethod } from './utils/test-order-utils';
 
 describe('Shop orders', () => {
     const adminClient = new TestAdminClient();
@@ -70,7 +71,7 @@ describe('Shop orders', () => {
             {
                 paymentOptions: {
                     paymentMethodHandlers: [
-                        testPaymentMethod,
+                        testSuccessfulPaymentMethod,
                         testFailingPaymentMethod,
                         testErrorPaymentMethod,
                     ],
@@ -399,7 +400,7 @@ describe('Shop orders', () => {
                 AddPaymentToOrder.Variables
             >(ADD_PAYMENT, {
                 input: {
-                    method: testPaymentMethod.code,
+                    method: testSuccessfulPaymentMethod.code,
                     metadata: {},
                 },
             });
@@ -408,7 +409,7 @@ describe('Shop orders', () => {
             expect(addPaymentToOrder!.state).toBe('PaymentSettled');
             expect(addPaymentToOrder!.active).toBe(false);
             expect(addPaymentToOrder!.payments!.length).toBe(1);
-            expect(payment.method).toBe(testPaymentMethod.code);
+            expect(payment.method).toBe(testSuccessfulPaymentMethod.code);
             expect(payment.state).toBe('Settled');
         });
 
@@ -660,7 +661,7 @@ describe('Shop orders', () => {
                             ADD_PAYMENT,
                             {
                                 input: {
-                                    method: testPaymentMethod.code,
+                                    method: testSuccessfulPaymentMethod.code,
                                     metadata: {},
                                 },
                             },
@@ -796,7 +797,7 @@ describe('Shop orders', () => {
                     AddPaymentToOrder.Variables
                 >(ADD_PAYMENT, {
                     input: {
-                        method: testPaymentMethod.code,
+                        method: testSuccessfulPaymentMethod.code,
                         metadata: {
                             baz: 'quux',
                         },
@@ -807,7 +808,7 @@ describe('Shop orders', () => {
                 expect(addPaymentToOrder!.state).toBe('PaymentSettled');
                 expect(addPaymentToOrder!.active).toBe(false);
                 expect(addPaymentToOrder!.payments!.length).toBe(3);
-                expect(payment.method).toBe(testPaymentMethod.code);
+                expect(payment.method).toBe(testSuccessfulPaymentMethod.code);
                 expect(payment.state).toBe('Settled');
                 expect(payment.transactionId).toBe('12345');
                 expect(payment.metadata).toEqual({
@@ -865,23 +866,6 @@ describe('Shop orders', () => {
             });
         });
     });
-});
-
-const testPaymentMethod = new PaymentMethodHandler({
-    code: 'test-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Settled',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: order => ({
-        success: true,
-    }),
 });
 
 const testFailingPaymentMethod = new PaymentMethodHandler({

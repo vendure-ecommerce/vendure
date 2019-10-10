@@ -523,6 +523,10 @@ export type CreateProductVariantOptionInput = {
 export type CreatePromotionInput = {
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   conditions: Array<ConfigurableOperationInput>,
   actions: Array<ConfigurableOperationInput>,
 };
@@ -2157,17 +2161,23 @@ export type Order = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  /** A unique code for the Order */
   code: Scalars['String'],
   state: Scalars['String'],
+  /** An order is active as long as the payment process has not been completed */
   active: Scalars['Boolean'],
   customer?: Maybe<Customer>,
   shippingAddress?: Maybe<OrderAddress>,
   billingAddress?: Maybe<OrderAddress>,
   lines: Array<OrderLine>,
+  /** Order-level adjustments to the order total, such as discounts from promotions */
   adjustments: Array<Adjustment>,
+  couponCodes: Array<Scalars['String']>,
+  promotions: Array<Promotion>,
   payments?: Maybe<Array<Payment>>,
   fulfillments?: Maybe<Array<Fulfillment>>,
   subTotalBeforeTax: Scalars['Int'],
+  /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
   subTotal: Scalars['Int'],
   currencyCode: CurrencyCode,
   shipping: Scalars['Int'],
@@ -2606,6 +2616,10 @@ export type Promotion = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
   conditions: Array<ConfigurableOperation>,
@@ -2615,6 +2629,10 @@ export type Promotion = Node & {
 export type PromotionFilterParameter = {
   createdAt?: Maybe<DateOperators>,
   updatedAt?: Maybe<DateOperators>,
+  startsAt?: Maybe<DateOperators>,
+  endsAt?: Maybe<DateOperators>,
+  couponCode?: Maybe<StringOperators>,
+  perCustomerUsageLimit?: Maybe<NumberOperators>,
   name?: Maybe<StringOperators>,
   enabled?: Maybe<BooleanOperators>,
 };
@@ -2636,6 +2654,10 @@ export type PromotionSortParameter = {
   id?: Maybe<SortOrder>,
   createdAt?: Maybe<SortOrder>,
   updatedAt?: Maybe<SortOrder>,
+  startsAt?: Maybe<SortOrder>,
+  endsAt?: Maybe<SortOrder>,
+  couponCode?: Maybe<SortOrder>,
+  perCustomerUsageLimit?: Maybe<SortOrder>,
   name?: Maybe<SortOrder>,
 };
 
@@ -3372,6 +3394,10 @@ export type UpdatePromotionInput = {
   id: Scalars['ID'],
   name?: Maybe<Scalars['String']>,
   enabled?: Maybe<Scalars['Boolean']>,
+  startsAt?: Maybe<Scalars['DateTime']>,
+  endsAt?: Maybe<Scalars['DateTime']>,
+  couponCode?: Maybe<Scalars['String']>,
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
   conditions?: Maybe<Array<ConfigurableOperationInput>>,
   actions?: Maybe<Array<ConfigurableOperationInput>>,
 };

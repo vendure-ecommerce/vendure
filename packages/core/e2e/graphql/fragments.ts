@@ -401,6 +401,9 @@ export const PROMOTION_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        couponCode
+        startsAt
+        endsAt
         name
         enabled
         conditions {

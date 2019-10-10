@@ -6,6 +6,14 @@ export const TEST_ORDER_FRAGMENT = gql`
         code
         state
         active
+        total
+        couponCodes
+        adjustments {
+            adjustmentSource
+            amount
+            description
+            type
+        }
         lines {
             id
             quantity
@@ -32,12 +40,19 @@ export const ADD_ITEM_TO_ORDER = gql`
             code
             state
             active
+            total
             lines {
                 id
                 quantity
                 productVariant {
                     id
                 }
+            }
+            adjustments {
+                adjustmentSource
+                amount
+                description
+                type
             }
         }
     }
@@ -228,6 +243,19 @@ export const GET_ORDER_BY_CODE = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const GET_ORDER_PROMOTIONS_BY_CODE = gql`
+    query GetOrderPromotionsByCode($code: String!) {
+        orderByCode(code: $code) {
+            ...TestOrderFragment
+            promotions {
+                id
+                name
+            }
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
 export const GET_AVAILABLE_COUNTRIES = gql`
     query GetAvailableCountries {
         availableCountries {
@@ -314,4 +342,22 @@ export const GET_ACTIVE_ORDER_ADDRESSES = gql`
             }
         }
     }
+`;
+
+export const APPLY_COUPON_CODE = gql`
+    mutation ApplyCouponCode($couponCode: String!) {
+        applyCouponCode(couponCode: $couponCode) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+export const REMOVE_COUPON_CODE = gql`
+    mutation RemoveCouponCode($couponCode: String!) {
+        removeCouponCode(couponCode: $couponCode) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
 `;

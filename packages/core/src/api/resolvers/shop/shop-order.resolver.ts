@@ -3,6 +3,7 @@ import {
     MutationAddItemToOrderArgs,
     MutationAddPaymentToOrderArgs,
     MutationAdjustOrderLineArgs,
+    MutationApplyCouponCodeArgs,
     MutationRemoveOrderLineArgs,
     MutationSetCustomerForOrderArgs,
     MutationSetOrderShippingAddressArgs,
@@ -223,6 +224,26 @@ export class ShopOrderResolver {
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async applyCouponCode(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationApplyCouponCodeArgs,
+    ): Promise<Order> {
+        const order = await this.getOrderFromContext(ctx, true);
+        return this.orderService.applyCouponCode(ctx, order.id, args.couponCode);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async removeCouponCode(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationApplyCouponCodeArgs,
+    ): Promise<Order> {
+        const order = await this.getOrderFromContext(ctx, true);
+        return this.orderService.removeCouponCode(ctx, order.id, args.couponCode);
     }
 
     @Mutation()

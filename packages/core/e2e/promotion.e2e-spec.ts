@@ -18,6 +18,7 @@ import {
     Promotion,
     UpdatePromotion,
 } from './graphql/generated-e2e-admin-types';
+import { CREATE_PROMOTION } from './graphql/shared-definitions';
 import { TestAdminClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -33,9 +34,15 @@ describe('Promotion resolver', () => {
 
     const promoAction = generateTestAction('promo_action');
 
-    const snapshotProps = ['name', 'actions', 'conditions', 'enabled'] as Array<
-        'name' | 'actions' | 'conditions' | 'enabled'
-    >;
+    const snapshotProps: Array<keyof Promotion.Fragment> = [
+        'name',
+        'actions',
+        'conditions',
+        'enabled',
+        'couponCode',
+        'startsAt',
+        'endsAt',
+    ];
     let promotion: Promotion.Fragment;
 
     beforeAll(async () => {
@@ -65,6 +72,9 @@ describe('Promotion resolver', () => {
                 input: {
                     name: 'test promotion',
                     enabled: true,
+                    couponCode: 'TEST123',
+                    startsAt: new Date(2019, 9, 30),
+                    endsAt: new Date(2019, 11, 1),
                     conditions: [
                         {
                             code: promoCondition.code,
@@ -90,12 +100,40 @@ describe('Promotion resolver', () => {
         expect(pick(promotion, snapshotProps)).toMatchSnapshot();
     });
 
+    it(
+        'createPromotion throws with empty conditions and no couponCode',
+        assertThrowsWithMessage(async () => {
+            await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+                input: {
+                    name: 'bad promotion',
+                    enabled: true,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: promoAction.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: '["T_1"]',
+                                    type: 'facetValueIds',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+        }, 'A Promotion must have either at least one condition or a coupon code set'),
+    );
+
     it('updatePromotion', async () => {
         const result = await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
             UPDATE_PROMOTION,
             {
                 input: {
                     id: promotion.id,
+                    couponCode: 'TEST1235',
+                    startsAt: new Date(2019, 4, 30),
+                    endsAt: new Date(2019, 5, 1),
                     conditions: [
                         {
                             code: promoCondition.code,
@@ -111,6 +149,19 @@ describe('Promotion resolver', () => {
         );
         expect(pick(result.updatePromotion, snapshotProps)).toMatchSnapshot();
     });
+
+    it(
+        'updatePromotion throws with empty conditions and no couponCode',
+        assertThrowsWithMessage(async () => {
+            await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+                input: {
+                    id: promotion.id,
+                    couponCode: '',
+                    conditions: [],
+                },
+            });
+        }, 'A Promotion must have either at least one condition or a coupon code set'),
+    );
 
     it('promotion', async () => {
         const result = await client.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
@@ -232,15 +283,6 @@ export const GET_PROMOTION_LIST = gql`
 export const GET_PROMOTION = gql`
     query GetPromotion($id: ID!) {
         promotion(id: $id) {
-            ...Promotion
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
-export const CREATE_PROMOTION = gql`
-    mutation CreatePromotion($input: CreatePromotionInput!) {
-        createPromotion(input: $input) {
             ...Promotion
         }
     }

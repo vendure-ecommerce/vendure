@@ -55,6 +55,7 @@ import { CustomerService } from './customer.service';
 import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
+import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
 
 export class OrderService {
@@ -74,6 +75,7 @@ export class OrderService {
         private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
         private historyService: HistoryService,
+        private promotionService: PromotionService,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -191,6 +193,7 @@ export class OrderService {
             code: generatePublicId(),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
+            couponCodes: [],
             shippingAddress: {},
             billingAddress: {},
             pendingAdjustments: [],
@@ -289,6 +292,29 @@ export class OrderService {
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
         return updatedOrder;
+    }
+
+    async applyCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        if (order.couponCodes.includes(couponCode)) {
+            return order;
+        }
+        await this.promotionService.validateCouponCode(couponCode, order.customer && order.customer.id);
+        order.couponCodes.push(couponCode);
+        return this.applyPriceAdjustments(ctx, order);
+    }
+
+    async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
+        return this.applyPriceAdjustments(ctx, order);
+    }
+
+    async getOrderPromotions(orderId: ID): Promise<Promotion[]> {
+        const order = await getEntityOrThrow(this.connection, Order, orderId, {
+            relations: ['promotions'],
+        });
+        return order.promotions || [];
     }
 
     getNextOrderStates(order: Order): OrderState[] {
@@ -600,7 +626,24 @@ export class OrderService {
             throw new IllegalOperationError(`error.order-already-has-customer`);
         }
         order.customer = customer;
-        return this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order);
+        // Check that any applied couponCodes are still valid now that
+        // we know the Customer.
+        if (order.couponCodes) {
+            let codesRemoved = false;
+            for (const couponCode of order.couponCodes.slice()) {
+                try {
+                    await this.promotionService.validateCouponCode(couponCode, customer.id);
+                } catch (err) {
+                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
+                    codesRemoved = true;
+                }
+            }
+            if (codesRemoved) {
+                return this.applyPriceAdjustments(ctx, order);
+            }
+        }
+        return order;
     }
 
     async addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput): Promise<Order> {
@@ -719,7 +762,7 @@ export class OrderService {
      */
     private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
-            where: { enabled: true },
+            where: { enabled: true, deletedAt: null },
             order: { priorityScore: 'ASC' },
         });
         order = await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);

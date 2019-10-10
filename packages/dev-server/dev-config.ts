@@ -36,17 +36,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        Product: [
-            { name: 'length', type: 'int', min: 0, max: 100 },
-            {
-                name: 'offerImageId',
-                label: [{ languageCode: LanguageCode.en, value: 'Offer image' }],
-                type: 'string',
-            },
-        ],
-        ProductVariant: [{ name: 'length', type: 'int', min: 0, max: 100 }],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

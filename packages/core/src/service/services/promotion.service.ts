@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
+    Adjustment,
+    AdjustmentType,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
@@ -11,16 +13,24 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { UserInputError } from '../../common/error/errors';
+import {
+    CouponCodeExpiredError,
+    CouponCodeInvalidError,
+    CouponCodeLimitError,
+    UserInputError,
+} from '../../common/error/errors';
+import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
+import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -82,34 +92,38 @@ export class PromotionService {
     }
 
     async createPromotion(ctx: RequestContext, input: CreatePromotionInput): Promise<Promotion> {
-        const adjustmentSource = new Promotion({
+        const promotion = new Promotion({
             name: input.name,
             enabled: input.enabled,
+            couponCode: input.couponCode,
+            perCustomerUsageLimit: input.perCustomerUsageLimit,
+            startsAt: input.startsAt,
+            endsAt: input.endsAt,
             conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
             priorityScore: this.calculatePriorityScore(input),
         });
-        this.channelService.assignToChannels(adjustmentSource, ctx);
-        const newAdjustmentSource = await this.connection.manager.save(adjustmentSource);
+        this.validatePromotionConditions(promotion);
+        this.channelService.assignToChannels(promotion, ctx);
+        const newPromotion = await this.connection.manager.save(promotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(newAdjustmentSource.id));
+        return assertFound(this.findOne(newPromotion.id));
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
-        const adjustmentSource = await getEntityOrThrow(this.connection, Promotion, input.id);
-        const updatedAdjustmentSource = patchEntity(adjustmentSource, omit(input, ['conditions', 'actions']));
+        const promotion = await getEntityOrThrow(this.connection, Promotion, input.id);
+        const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
-            updatedAdjustmentSource.conditions = input.conditions.map(c =>
-                this.parseOperationArgs('condition', c),
-            );
+            updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
         }
         if (input.actions) {
-            updatedAdjustmentSource.actions = input.actions.map(a => this.parseOperationArgs('action', a));
+            updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
-        (adjustmentSource.priorityScore = this.calculatePriorityScore(input)),
-            await this.connection.manager.save(updatedAdjustmentSource);
+        this.validatePromotionConditions(updatedPromotion);
+        (promotion.priorityScore = this.calculatePriorityScore(input)),
+            await this.connection.manager.save(updatedPromotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(updatedAdjustmentSource.id));
+        return assertFound(this.findOne(updatedPromotion.id));
     }
 
     async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {
@@ -120,6 +134,54 @@ export class PromotionService {
         };
     }
 
+    async validateCouponCode(couponCode: string, customerId?: ID): Promise<boolean> {
+        const promotion = await this.connection.getRepository(Promotion).findOne({
+            where: {
+                couponCode,
+                enabled: true,
+                deletedAt: null,
+            },
+        });
+        if (!promotion) {
+            throw new CouponCodeInvalidError(couponCode);
+        }
+        if (promotion.endsAt && +promotion.endsAt < +new Date()) {
+            throw new CouponCodeExpiredError(couponCode);
+        }
+        if (customerId && promotion.perCustomerUsageLimit != null) {
+            const usageCount = await this.countPromotionUsagesForCustomer(promotion.id, customerId);
+            if (promotion.perCustomerUsageLimit <= usageCount) {
+                throw new CouponCodeLimitError(promotion.perCustomerUsageLimit);
+            }
+        }
+        return true;
+    }
+
+    async addPromotionsToOrder(order: Order): Promise<Order> {
+        const allAdjustments: Adjustment[] = [];
+        for (const line of order.lines) {
+            allAdjustments.push(...line.adjustments);
+        }
+        allAdjustments.push(...order.adjustments);
+        const allPromotionIds = allAdjustments
+            .filter(a => a.type === AdjustmentType.PROMOTION)
+            .map(a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
+        const promotionIds = unique(allPromotionIds);
+        const promotions = await this.connection.getRepository(Promotion).findByIds(promotionIds);
+        order.promotions = promotions;
+        return this.connection.getRepository(Order).save(order);
+    }
+
+    private async countPromotionUsagesForCustomer(promotionId: ID, customerId: ID): Promise<number> {
+        const qb = this.connection
+            .getRepository(Order)
+            .createQueryBuilder('order')
+            .leftJoin('order.promotions', 'promotion')
+            .where('promotion.id = :promotionId', { promotionId })
+            .andWhere('order.customer = :customerId', { customerId });
+
+        return qb.getCount();
+    }
     /**
      * Converts the input values of the "create" and "update" mutations into the format expected by the AdjustmentSource entity.
      */
@@ -165,5 +227,14 @@ export class PromotionService {
         this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
+    }
+
+    /**
+     * Ensure the Promotion has at least one condition or a couponCode specified.
+     */
+    private validatePromotionConditions(promotion: Promotion) {
+        if (promotion.conditions.length === 0 && !promotion.couponCode) {
+            throw new UserInputError('error.promotion-must-have-conditions-or-coupon-code');
+        }
     }
 }
