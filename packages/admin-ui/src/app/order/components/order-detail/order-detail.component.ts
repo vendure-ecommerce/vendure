@@ -8,6 +8,7 @@ import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
+    AdjustmentType,
     CustomFieldConfig,
     GetOrderHistory,
     Order,
@@ -66,6 +67,15 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    getLinePromotions(line: OrderDetail.Lines) {
+        return line.adjustments.filter(a => a.type === AdjustmentType.PROMOTION);
+    }
+
+    getPromotionLink(promotion: OrderDetail.Adjustments): any[] {
+        const id = promotion.adjustmentSource.split(':')[1];
+        return ['/marketing', 'promotions', id];
     }
 
     getShippingAddressLines(shippingAddress?: { [key: string]: string }): string[] {

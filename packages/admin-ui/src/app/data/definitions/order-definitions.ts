@@ -85,6 +85,9 @@ export const ORDER_DETAIL_FRAGMENT = gql`
                 name
                 sku
             }
+            adjustments {
+                ...Adjustment
+            }
             unitPrice
             unitPriceWithTax
             quantity
@@ -110,6 +113,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         totalBeforeTax
         currencyCode
         shipping
+        shippingWithTax
         shippingMethod {
             id
             code

@@ -68,6 +68,7 @@
                     <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                     <td class="align-middle unit-price">
                         {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ line.unitPrice / 100 | currency: order.currencyCode }}</div>
                     </td>
                     <td class="align-middle quantity">
                         {{ line.quantity }}
@@ -76,33 +77,58 @@
                     </td>
                     <td class="align-middle total">
                         {{ line.totalPrice / 100 | currency: order.currencyCode }}
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ line.unitPrice / 100 | currency: order.currencyCode }}</div>
+
+                        <ng-container *ngIf="getLinePromotions(line) as promotions">
+                            <vdr-dropdown *ngIf="promotions.length">
+                                <div class="promotions-label" vdrDropdownTrigger>{{ 'order.promotions-applied' | translate }}</div>
+                                <vdr-dropdown-menu>
+                                    <div class="line-promotion" *ngFor="let promotion of getLinePromotions(line)">
+                                        <a class="promotion-name" [routerLink]="getPromotionLink(promotion)">{{ promotion.description }}</a>
+                                        <div class="promotion-amount">{{ promotion.amount / 100 | currency: order.currencyCode }}</div>
+                                    </div>
+                                </vdr-dropdown-menu>
+                            </vdr-dropdown>
+                        </ng-container>
+
                     </td>
                 </tr>
                 <tr class="sub-total">
-                    <td class="left">{{ 'order.sub-total' | translate }}</td>
+                    <td class="left clr-align-middle">{{ 'order.sub-total' | translate }}</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>{{ order.subTotal / 100 | currency: order.currencyCode }}</td>
+                    <td>
+                        {{ order.subTotal / 100 | currency: order.currencyCode }}
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ order.subTotalBeforeTax / 100 | currency: order.currencyCode }}</div>
+                    </td>
                 </tr>
                 <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
-                    <td colspan="5" class="left">{{ adjustment.description }}</td>
+                    <td colspan="5" class="left clr-align-middle">
+                        <a [routerLink]="getPromotionLink(adjustment)">{{ adjustment.description }}</a>
+                    </td>
                     <td>{{ adjustment.amount / 100 | currency: order.currencyCode }}</td>
                 </tr>
                 <tr class="shipping">
-                    <td class="left">{{ 'order.shipping' | translate }}</td>
-                    <td>{{ order.shippingMethod?.description }}</td>
+                    <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
+                    <td class="clr-align-middle">{{ order.shippingMethod?.description }}</td>
                     <td colspan="3"></td>
-                    <td>{{ order.shipping / 100 | currency: order.currencyCode }}</td>
+                    <td>
+                        {{ order.shippingWithTax / 100 | currency: order.currencyCode }}
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ order.shipping / 100 | currency: order.currencyCode }}</div>
+                    </td>
                 </tr>
                 <tr class="total">
-                    <td class="left">{{ 'order.total' | translate }}</td>
+                    <td class="left clr-align-middle">{{ 'order.total' | translate }}</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>{{ order.total / 100 | currency: order.currencyCode }}</td>
+                    <td>
+                        {{ order.total / 100 | currency: order.currencyCode }}
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ order.totalBeforeTax / 100 | currency: order.currencyCode }}</div>
+                    </td>
                 </tr>
             </table>
 

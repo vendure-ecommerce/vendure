@@ -23,6 +23,27 @@
     }
 }
 
+.net-price {
+    font-size: 11px;
+    color: $color-grey-400;
+}
+.promotions-label {
+    text-decoration: underline dotted $color-grey-300;
+    font-size: 11px;
+    margin-top: 6px;
+    cursor: pointer;
+    text-transform: lowercase;
+}
+
+.line-promotion {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
+    .promotion-amount {
+        margin-left: 12px;
+    }
+}
+
 .order-cards {
     h6 {
         margin-top: 6px;
