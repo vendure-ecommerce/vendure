@@ -124,7 +124,9 @@ export class OrderItem extends VendureEntity {
         if (!type) {
             this.pendingAdjustments = [];
         } else {
-            this.pendingAdjustments = this.pendingAdjustments.filter(a => a.type !== type);
+            this.pendingAdjustments = this.pendingAdjustments
+                ? this.pendingAdjustments.filter(a => a.type !== type)
+                : [];
         }
     }
 }

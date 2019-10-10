@@ -88,6 +88,11 @@ export class OrderCalculator {
      */
     private async applyPromotions(order: Order, promotions: Promotion[]) {
         const utils = this.createPromotionUtils();
+        await this.applyOrderItemPromotions(order, promotions, utils);
+        await this.applyOrderPromotions(order, promotions, utils);
+    }
+
+    private async applyOrderItemPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
@@ -113,7 +118,10 @@ export class OrderCalculator {
                 this.calculateOrderTotals(order);
             }
         }
+    }
 
+    private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+        order.clearAdjustments(AdjustmentType.PROMOTION);
         const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {

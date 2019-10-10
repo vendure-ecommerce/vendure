@@ -113,7 +113,7 @@ export class Order extends VendureEntity implements HasCustomFields {
     }
 
     /**
-     * Clears Adjustments from all OrderItems of the given type. If no type
+     * Clears Adjustments of the given type. If no type
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
@@ -122,7 +122,6 @@ export class Order extends VendureEntity implements HasCustomFields {
         } else {
             this.pendingAdjustments = this.pendingAdjustments.filter(a => a.type !== type);
         }
-        this.lines.forEach(line => line.clearAdjustments(type));
     }
 
     getOrderItems(): OrderItem[] {
