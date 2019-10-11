@@ -134,7 +134,7 @@ export class PromotionService {
         };
     }
 
-    async validateCouponCode(couponCode: string, customerId?: ID): Promise<boolean> {
+    async validateCouponCode(couponCode: string, customerId?: ID): Promise<Promotion> {
         const promotion = await this.connection.getRepository(Promotion).findOne({
             where: {
                 couponCode,
@@ -154,7 +154,7 @@ export class PromotionService {
                 throw new CouponCodeLimitError(promotion.perCustomerUsageLimit);
             }
         }
-        return true;
+        return promotion;
     }
 
     async addPromotionsToOrder(order: Order): Promise<Order> {

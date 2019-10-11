@@ -299,15 +299,34 @@ export class OrderService {
         if (order.couponCodes.includes(couponCode)) {
             return order;
         }
-        await this.promotionService.validateCouponCode(couponCode, order.customer && order.customer.id);
+        const promotion = await this.promotionService.validateCouponCode(
+            couponCode,
+            order.customer && order.customer.id,
+        );
         order.couponCodes.push(couponCode);
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: order.id,
+            type: HistoryEntryType.ORDER_COUPON_APPLIED,
+            data: { couponCode, promotionId: promotion.id },
+        });
         return this.applyPriceAdjustments(ctx, order);
     }
 
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
-        return this.applyPriceAdjustments(ctx, order);
+        if (order.couponCodes.includes(couponCode)) {
+            order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
+            await this.historyService.createHistoryEntryForOrder({
+                ctx,
+                orderId: order.id,
+                type: HistoryEntryType.ORDER_COUPON_REMOVED,
+                data: { couponCode },
+            });
+            return this.applyPriceAdjustments(ctx, order);
+        } else {
+            return order;
+        }
     }
 
     async getOrderPromotions(orderId: ID): Promise<Promotion[]> {

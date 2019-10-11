@@ -15,6 +15,7 @@ import {
     CreatePromotionInput,
     GetFacetList,
     GetPromoProducts,
+    HistoryEntryType,
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
@@ -163,6 +164,21 @@ describe('Promotions applied to Orders', () => {
             expect(applyCouponCode!.total).toBe(0);
         });
 
+        it('order history records application', async () => {
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.history.items).toEqual([
+                {
+                    id: 'T_1',
+                    type: HistoryEntryType.ORDER_COUPON_APPLIED,
+                    data: {
+                        couponCode: TEST_COUPON_CODE,
+                        promotionId: 'T_3',
+                    },
+                },
+            ]);
+        });
+
         it('de-duplicates existing codes', async () => {
             const { applyCouponCode } = await shopClient.query<
                 ApplyCouponCode.Mutation,
@@ -184,6 +200,55 @@ describe('Promotions applied to Orders', () => {
 
             expect(removeCouponCode!.adjustments.length).toBe(0);
             expect(removeCouponCode!.total).toBe(6000);
+        });
+
+        it('order history records removal', async () => {
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.history.items).toEqual([
+                {
+                    id: 'T_1',
+                    type: HistoryEntryType.ORDER_COUPON_APPLIED,
+                    data: {
+                        couponCode: TEST_COUPON_CODE,
+                        promotionId: 'T_3',
+                    },
+                },
+                {
+                    id: 'T_2',
+                    type: HistoryEntryType.ORDER_COUPON_REMOVED,
+                    data: {
+                        couponCode: TEST_COUPON_CODE,
+                    },
+                },
+            ]);
+        });
+
+        it('does not record removal of coupon code that was not added', async () => {
+            const { removeCouponCode } = await shopClient.query<
+                RemoveCouponCode.Mutation,
+                RemoveCouponCode.Variables
+            >(REMOVE_COUPON_CODE, {
+                couponCode: 'NOT_THERE',
+            });
+
+            expect(removeCouponCode!.history.items).toEqual([
+                {
+                    id: 'T_1',
+                    type: HistoryEntryType.ORDER_COUPON_APPLIED,
+                    data: {
+                        couponCode: TEST_COUPON_CODE,
+                        promotionId: 'T_3',
+                    },
+                },
+                {
+                    id: 'T_2',
+                    type: HistoryEntryType.ORDER_COUPON_REMOVED,
+                    data: {
+                        couponCode: TEST_COUPON_CODE,
+                    },
+                },
+            ]);
         });
     });
 

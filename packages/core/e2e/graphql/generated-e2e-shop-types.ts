@@ -874,6 +874,8 @@ export enum HistoryEntryType {
     ORDER_CANCELLATION = 'ORDER_CANCELLATION',
     ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
     ORDER_NOTE = 'ORDER_NOTE',
+    ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
+    ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
 }
 
 export type ImportInfo = {
@@ -2233,6 +2235,9 @@ export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
             { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
         >;
         customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+        history: { __typename?: 'HistoryEntryList' } & {
+            items: Array<{ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'>>;
+        };
     };
 
 export type AddItemToOrderMutationVariables = {
@@ -2595,6 +2600,8 @@ export namespace TestOrderFragment {
     export type ProductVariant = (NonNullable<TestOrderFragmentFragment['lines'][0]>)['productVariant'];
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
+    export type History = TestOrderFragmentFragment['history'];
+    export type Items = NonNullable<TestOrderFragmentFragment['history']['items'][0]>;
 }
 
 export namespace AddItemToOrder {

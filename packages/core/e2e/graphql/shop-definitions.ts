@@ -30,6 +30,13 @@ export const TEST_ORDER_FRAGMENT = gql`
         customer {
             id
         }
+        history {
+            items {
+                id
+                type
+                data
+            }
+        }
     }
 `;
 
