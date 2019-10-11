@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import path from 'path';
 
 import { DataImportModule } from '../data-import/data-import.module';
@@ -9,6 +9,7 @@ import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-m
 import { RequestContextService } from './common/request-context.service';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AuthGuard } from './middleware/auth-guard';
+import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
 import { IdInterceptor } from './middleware/id-interceptor';
 import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
 
@@ -54,6 +55,10 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         {
             provide: APP_INTERCEPTOR,
             useClass: ValidateCustomFieldsInterceptor,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: ExceptionLoggerFilter,
         },
     ],
 })
