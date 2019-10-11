@@ -16,8 +16,9 @@ import {
 export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
     @Input() history: GetOrderHistory.Items[];
-    @Output() addNote = new EventEmitter<string>();
+    @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
     note = '';
+    noteIsPrivate = true;
     readonly type = HistoryEntryType;
 
     getClassForEntry(entry: GetOrderHistory.Items): 'success' | 'error' | 'warning' | undefined {
@@ -102,7 +103,8 @@ export class OrderHistoryComponent {
     }
 
     addNoteToOrder() {
-        this.addNote.emit(this.note);
+        this.addNote.emit({ note: this.note, isPublic: !this.noteIsPrivate });
         this.note = '';
+        this.noteIsPrivate = true;
     }
 }

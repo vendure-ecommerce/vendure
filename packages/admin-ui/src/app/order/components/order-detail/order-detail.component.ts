@@ -178,11 +178,13 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
             });
     }
 
-    addNote(note: string) {
+    addNote(event: { note: string; isPublic: boolean }) {
+        const { note, isPublic } = event;
         this.dataService.order
             .addNoteToOrder({
                 id: this.id,
                 note,
+                isPublic,
             })
             .pipe(switchMap(result => this.refetchOrder(result)))
             .subscribe(result => {

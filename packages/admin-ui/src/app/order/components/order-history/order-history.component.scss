@@ -132,9 +132,24 @@
 
 .note-entry {
     display: flex;
+    align-items: center;
+    .note {
+        flex: 1;
+    }
 
     button {
         margin: 0;
+    }
+}
+.visibility-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    .public {
+        color: $color-warning-500;
+    }
+    .private {
+        color: $color-success-500;
     }
 }
 textarea.note {
@@ -145,4 +160,13 @@ textarea.note {
 }
 .cancelled-coupon-code {
     text-decoration: line-through;
+}
+.note-visibility {
+    text-transform: lowercase;
+    &.public {
+        color: $color-warning-500;
+    }
+    &.private {
+        color: $color-success-500;
+    }
 }

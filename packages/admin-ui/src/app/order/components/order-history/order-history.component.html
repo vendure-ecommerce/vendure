@@ -6,11 +6,25 @@
                 <clr-icon shape="note" size="24" class="compose-note"></clr-icon>
             </div>
         </div>
-        <div class="entry-body note-entry">
-            <textarea [(ngModel)]="note" name="note" class="note"></textarea>
-            <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
-                {{ 'order.add-note' | translate }}
-            </button>
+        <div class="entry-body">
+            <div class="note-entry">
+                <textarea [(ngModel)]="note" name="note" class="note"></textarea>
+                <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
+                    {{ 'order.add-note' | translate }}
+                </button>
+            </div>
+            <div class="visibility-select">
+                <clr-checkbox-wrapper>
+                    <input type="checkbox" clrCheckbox [(ngModel)]="noteIsPrivate" />
+                    <label>{{ 'order.note-is-private' | translate }}</label>
+                </clr-checkbox-wrapper>
+                <span *ngIf="noteIsPrivate" class="private">
+                    {{ 'order.note-only-visible-to-administrators' | translate }}
+                </span>
+                <span *ngIf="!noteIsPrivate" class="public">
+                    {{ 'order.note-visible-to-customer' | translate }}
+                </span>
+            </div>
         </div>
     </div>
     <div
@@ -64,8 +78,8 @@
                 </div>
                 <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Fulfilled'">
                     {{
-                        'order.history-order-transition'
-                            | translate: { from: entry.data.from, to: entry.data.to }
+                    'order.history-order-transition'
+                        | translate: { from: entry.data.from, to: entry.data.to }
                     }}
                 </ng-template>
             </ng-container>
@@ -87,16 +101,16 @@
                 </div>
                 <ng-template #regularPaymentTransition>
                     {{
-                        'order.history-payment-transition'
-                            | translate
-                                : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
+                    'order.history-payment-transition'
+                        | translate
+                        : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
                     }}
                 </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_REFUND_TRANSITION">
                 {{
-                    'order.history-refund-transition'
-                        | translate: { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
+                'order.history-refund-transition'
+                    | translate: { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
                 }}
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
@@ -126,7 +140,11 @@
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_NOTE">
                 <div class="featured-entry">
-                    <div class="note-text">{{ entry.data.note }}</div>
+                    <div class="note-text">
+                        <span *ngIf="entry.isPublic" class="note-visibility public">{{ 'common.public' | translate }}</span>
+                        <span *ngIf="!entry.isPublic" class="note-visibility private">{{ 'common.private' | translate }}</span>
+                        {{ entry.data.note }}
+                    </div>
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_COUPON_APPLIED">
@@ -134,13 +152,13 @@
                 <vdr-chip>
                     <a [routerLink]="['/marketing', 'promotions', entry.data.promotionId]">{{
                         entry.data.couponCode
-                    }}</a>
+                        }}</a>
                 </vdr-chip>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_COUPON_REMOVED">
                 {{ 'order.history-coupon-code-removed' | translate }}:
                 <vdr-chip
-                    ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
+                ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
                 >
             </ng-container>
         </div>

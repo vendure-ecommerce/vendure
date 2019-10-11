@@ -241,6 +241,7 @@ export const GET_ORDER_HISTORY = gql`
                     id
                     type
                     createdAt
+                    isPublic
                     administrator {
                         id
                         firstName
