@@ -197,7 +197,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
             allEntities.push(pluginEntity);
         }
     }
-    return [...coreEntities, ...pluginEntities];
+    return allEntities;
 }
 
 /**

@@ -15,9 +15,7 @@ import { setEntityIdStrategy } from '../src/entity/set-entity-id-strategy';
  * Clears all tables in the detabase sepcified by the connectionOptions
  */
 export async function clearAllTables(config: VendureConfig, logging = true) {
-    await preBootstrapConfig(config);
-    const entities = await getAllEntities(config);
-    (config.dbConnectionOptions as any).entities = entities;
+    config = await preBootstrapConfig(config);
     const entityIdStrategy = config.entityIdStrategy || defaultConfig.entityIdStrategy;
     const name = isTestEnvironment() ? undefined : 'clearAllTables';
     const connection = await createConnection({ ...config.dbConnectionOptions, name });
