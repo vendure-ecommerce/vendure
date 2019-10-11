@@ -31,7 +31,7 @@ if (require.main === module) {
         },
         customFields: {},
     };
-    clearAllTables(populateConfig, true)
+    clearAllTables(populateConfig as any, true)
         .then(() =>
             populate(
                 () => bootstrap(populateConfig),
