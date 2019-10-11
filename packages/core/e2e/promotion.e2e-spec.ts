@@ -73,8 +73,8 @@ describe('Promotion resolver', () => {
                     name: 'test promotion',
                     enabled: true,
                     couponCode: 'TEST123',
-                    startsAt: new Date(2019, 9, 30),
-                    endsAt: new Date(2019, 11, 1),
+                    startsAt: new Date('2019-10-30T00:00:00.000Z'),
+                    endsAt: new Date('2019-12-01T00:00:00.000Z'),
                     conditions: [
                         {
                             code: promoCondition.code,
@@ -132,8 +132,8 @@ describe('Promotion resolver', () => {
                 input: {
                     id: promotion.id,
                     couponCode: 'TEST1235',
-                    startsAt: new Date(2019, 4, 30),
-                    endsAt: new Date(2019, 5, 1),
+                    startsAt: new Date('2019-05-30T22:00:00.000Z'),
+                    endsAt: new Date('2019-06-01T22:00:00.000Z'),
                     conditions: [
                         {
                             code: promoCondition.code,

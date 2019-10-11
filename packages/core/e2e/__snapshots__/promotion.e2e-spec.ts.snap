@@ -71,9 +71,9 @@ Object {
   ],
   "couponCode": "TEST123",
   "enabled": true,
-  "endsAt": "2019-11-30T23:00:00.000Z",
+  "endsAt": "2019-12-01T00:00:00.000Z",
   "name": "test promotion",
-  "startsAt": "2019-10-29T23:00:00.000Z",
+  "startsAt": "2019-10-30T00:00:00.000Z",
 }
 `;
 
@@ -115,8 +115,8 @@ Object {
   ],
   "couponCode": "TEST1235",
   "enabled": true,
-  "endsAt": "2019-05-31T22:00:00.000Z",
+  "endsAt": "2019-06-01T22:00:00.000Z",
   "name": "test promotion",
-  "startsAt": "2019-05-29T22:00:00.000Z",
+  "startsAt": "2019-05-30T22:00:00.000Z",
 }
 `;
