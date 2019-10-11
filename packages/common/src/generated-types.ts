@@ -21,6 +21,7 @@ export type Scalars = {
 export type AddNoteToOrderInput = {
   id: Scalars['ID'],
   note: Scalars['String'],
+  isPublic: Scalars['Boolean'],
 };
 
 export type Address = Node & {
@@ -1169,6 +1170,7 @@ export type HistoryEntry = Node & {
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
+  isPublic: Scalars['Boolean'],
   type: HistoryEntryType,
   administrator?: Maybe<Administrator>,
   data: Scalars['JSON'],
@@ -1177,6 +1179,7 @@ export type HistoryEntry = Node & {
 export type HistoryEntryFilterParameter = {
   createdAt?: Maybe<DateOperators>,
   updatedAt?: Maybe<DateOperators>,
+  isPublic?: Maybe<BooleanOperators>,
   type?: Maybe<StringOperators>,
 };
 

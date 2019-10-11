@@ -5,6 +5,8 @@ import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
+import { ApiType } from '../../common/get-api-type';
+import { Api } from '../../decorators/api.decorator';
 
 @Resolver('Order')
 export class OrderEntityResolver {
@@ -40,8 +42,9 @@ export class OrderEntityResolver {
     }
 
     @ResolveProperty()
-    async history(@Parent() order: Order, @Args() args: OrderHistoryArgs) {
-        return this.historyService.getHistoryForOrder(order.id, args.options || undefined);
+    async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: OrderHistoryArgs) {
+        const publicOnly = apiType === 'shop';
+        return this.historyService.getHistoryForOrder(order.id, publicOnly, args.options || undefined);
     }
 
     @ResolveProperty()

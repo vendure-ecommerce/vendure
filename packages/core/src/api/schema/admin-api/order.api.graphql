@@ -50,5 +50,5 @@ input SettleRefundInput {
 input AddNoteToOrderInput {
     id: ID!
     note: String!
+    isPublic: Boolean!
 }
-

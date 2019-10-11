@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryListOptions, HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
+import { Connection, FindConditions } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -69,12 +69,14 @@ export class HistoryService {
 
     async getHistoryForOrder(
         orderId: ID,
+        publicOnly: boolean,
         options?: HistoryEntryListOptions,
     ): Promise<PaginatedList<OrderHistoryEntry>> {
         return this.listQueryBuilder
             .build((HistoryEntry as any) as Type<OrderHistoryEntry>, options, {
                 where: {
                     order: { id: orderId } as any,
+                    ...(publicOnly ? { isPublic: true } : {}),
                 },
                 relations: ['administrator'],
             })
@@ -87,6 +89,7 @@ export class HistoryService {
 
     async createHistoryEntryForOrder<T extends keyof OrderHistoryEntryData>(
         args: CreateOrderHistoryEntryArgs<T>,
+        isPublic = true,
     ): Promise<OrderHistoryEntry> {
         const { ctx, data, orderId, type } = args;
         const administrator = ctx.activeUserId
@@ -94,8 +97,7 @@ export class HistoryService {
             : undefined;
         const entry = new OrderHistoryEntry({
             type,
-            // TODO: figure out which should be public and not
-            isPublic: true,
+            isPublic,
             data: data as any,
             order: { id: orderId },
             administrator,

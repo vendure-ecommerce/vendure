@@ -22,6 +22,7 @@ export type Scalars = {
 export type AddNoteToOrderInput = {
   id: Scalars['ID'],
   note: Scalars['String'],
+  isPublic: Scalars['Boolean'],
 };
 
 export type Address = Node & {

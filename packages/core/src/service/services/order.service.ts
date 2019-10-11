@@ -667,14 +667,17 @@ export class OrderService {
 
     async addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, input.id);
-        await this.historyService.createHistoryEntryForOrder({
-            ctx,
-            orderId: order.id,
-            type: HistoryEntryType.ORDER_NOTE,
-            data: {
-                note: input.note,
+        await this.historyService.createHistoryEntryForOrder(
+            {
+                ctx,
+                orderId: order.id,
+                type: HistoryEntryType.ORDER_NOTE,
+                data: {
+                    note: input.note,
+                },
             },
-        });
+            input.isPublic,
+        );
         return order;
     }
 
