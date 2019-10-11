@@ -37,7 +37,7 @@ export class DefaultLogger implements VendureLogger {
     private static originalLogLevel: LogLevel;
 
     constructor(options?: { level?: LogLevel; timestamp?: boolean }) {
-        this.level = (options && options.level) || LogLevel.Info;
+        this.level = options && options.level != null ? options.level : LogLevel.Info;
         this.timestamp = options && options.timestamp !== undefined ? options.timestamp : true;
     }
 
