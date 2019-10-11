@@ -431,6 +431,8 @@
     "fulfill-order": "Fulfill order",
     "fulfillment": "Fulfillment",
     "fulfillment-method": "Fulfillment method",
+    "history-coupon-code-applied": "Coupon code applied",
+    "history-coupon-code-removed": "Coupon code removed",
     "history-fulfillment-created": "Fulfillment created",
     "history-items-cancelled": "{count} {count, plural, one {item} other {items}} cancelled",
     "history-order-cancelled": "Order cancelled",

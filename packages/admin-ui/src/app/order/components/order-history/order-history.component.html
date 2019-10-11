@@ -129,6 +129,20 @@
                     <div class="note-text">{{ entry.data.note }}</div>
                 </div>
             </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_COUPON_APPLIED">
+                {{ 'order.history-coupon-code-applied' | translate }}:
+                <vdr-chip>
+                    <a [routerLink]="['/marketing', 'promotions', entry.data.promotionId]">{{
+                        entry.data.couponCode
+                    }}</a>
+                </vdr-chip>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_COUPON_REMOVED">
+                {{ 'order.history-coupon-code-removed' | translate }}:
+                <vdr-chip
+                    ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
+                >
+            </ng-container>
         </div>
     </div>
 </div>

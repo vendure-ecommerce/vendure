@@ -99,7 +99,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
+                    <td class="clr-align-middle">
                         {{ order.subTotal / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">{{ order.subTotalBeforeTax / 100 | currency: order.currencyCode }}</div>
                     </td>
@@ -107,14 +107,15 @@
                 <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
                     <td colspan="5" class="left clr-align-middle">
                         <a [routerLink]="getPromotionLink(adjustment)">{{ adjustment.description }}</a>
+                        <vdr-chip *ngIf="getCouponCodeForAdjustment(order, adjustment) as couponCode">{{ couponCode }}</vdr-chip>
                     </td>
-                    <td>{{ adjustment.amount / 100 | currency: order.currencyCode }}</td>
+                    <td class="clr-align-middle">{{ adjustment.amount / 100 | currency: order.currencyCode }}</td>
                 </tr>
                 <tr class="shipping">
                     <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
                     <td class="clr-align-middle">{{ order.shippingMethod?.description }}</td>
                     <td colspan="3"></td>
-                    <td>
+                    <td class="clr-align-middle">
                         {{ order.shippingWithTax / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">{{ order.shipping / 100 | currency: order.currencyCode }}</div>
                     </td>
@@ -125,7 +126,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
+                    <td class="clr-align-middle">
                         {{ order.total / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">{{ order.totalBeforeTax / 100 | currency: order.currencyCode }}</div>
                     </td>

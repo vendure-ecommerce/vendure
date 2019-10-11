@@ -1206,7 +1206,9 @@ export enum HistoryEntryType {
   ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
   ORDER_CANCELLATION = 'ORDER_CANCELLATION',
   ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
-  ORDER_NOTE = 'ORDER_NOTE'
+  ORDER_NOTE = 'ORDER_NOTE',
+  ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
+  ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED'
 }
 
 export type ImportInfo = {
@@ -3810,7 +3812,7 @@ export type OrderFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'crea
 
 export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>);
 
-export type OrderDetailFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
+export type OrderDetailFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> })>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, promotions: Array<({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'couponCode'>)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
 
 export type GetOrderListQueryVariables = {
   options?: Maybe<OrderListOptions>
@@ -4729,6 +4731,7 @@ export namespace OrderDetail {
   export type Items = (NonNullable<(NonNullable<OrderDetailFragment['lines'][0]>)['items'][0]>);
   export type Fulfillment = FulfillmentFragment;
   export type _Adjustments = AdjustmentFragment;
+  export type Promotions = (NonNullable<OrderDetailFragment['promotions'][0]>);
   export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
   export type ShippingAddress = ShippingAddressFragment;
   export type Payments = (NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>);

@@ -78,6 +78,17 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         return ['/marketing', 'promotions', id];
     }
 
+    getCouponCodeForAdjustment(
+        order: OrderDetail.Fragment,
+        promotionAdjustment: OrderDetail.Adjustments,
+    ): string | undefined {
+        const id = promotionAdjustment.adjustmentSource.split(':')[1];
+        const promotion = order.promotions.find(p => p.id === id);
+        if (promotion) {
+            return promotion.couponCode || undefined;
+        }
+    }
+
     getShippingAddressLines(shippingAddress?: { [key: string]: string }): string[] {
         if (!shippingAddress) {
             return [];
