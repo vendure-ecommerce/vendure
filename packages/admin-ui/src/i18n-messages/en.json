@@ -149,10 +149,13 @@
     "remove": "Remove",
     "results-count": "{ count } {count, plural, one {result} other {results}}",
     "select": "Select...",
+    "select-today": "Select today",
     "there-are-unsaved-changes": "There are unsaved changes. Navigating away will cause these changes to be lost.",
     "update": "Update",
     "updated-at": "Updated at",
-    "username": "Username"
+    "username": "Username",
+    "view-next-month": "View next month",
+    "view-previous-month": "View previous month"
   },
   "customer": {
     "addresses": "Addresses",
@@ -184,6 +187,28 @@
     "street-line-2": "Street line 2",
     "title": "Title",
     "verified": "Verified"
+  },
+  "datetime": {
+    "month-apr": "April",
+    "month-aug": "August",
+    "month-dec": "December",
+    "month-feb": "February",
+    "month-jan": "January",
+    "month-jul": "July",
+    "month-jun": "June",
+    "month-mar": "March",
+    "month-may": "May",
+    "month-nov": "November",
+    "month-oct": "October",
+    "month-sep": "September",
+    "time": "Time",
+    "weekday-fr": "Fr",
+    "weekday-mo": "Mo",
+    "weekday-sa": "Sa",
+    "weekday-su": "Su",
+    "weekday-th": "Th",
+    "weekday-tu": "Tu",
+    "weekday-we": "We"
   },
   "error": {
     "403-forbidden": "Your session has expired. Please log in",

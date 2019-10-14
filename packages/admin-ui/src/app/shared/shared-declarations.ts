@@ -47,6 +47,7 @@ export { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.
 export { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 export { TitleInputComponent } from './components/title-input/title-input.component';
 export { EntityInfoComponent } from './components/entity-info/entity-info.component';
+export { DatetimePickerComponent } from './components/datetime-picker/datetime-picker.component';
 export { CurrencyNamePipe } from './pipes/currency-name.pipe';
 export { FileSizePipe } from './pipes/file-size.pipe';
 export { SentenceCasePipe } from './pipes/sentence-case.pipe';

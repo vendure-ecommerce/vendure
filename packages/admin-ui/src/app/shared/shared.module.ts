@@ -32,6 +32,7 @@ import {
     CustomFieldControlComponent,
     DataTableColumnComponent,
     DataTableComponent,
+    DatetimePickerComponent,
     DialogButtonsDirective,
     DialogComponentOutletComponent,
     DialogTitleDirective,
@@ -128,6 +129,7 @@ const DECLARATIONS = [
     AssetGalleryComponent,
     AssetPickerDialogComponent,
     EntityInfoComponent,
+    DatetimePickerComponent,
 ];
 
 @NgModule({

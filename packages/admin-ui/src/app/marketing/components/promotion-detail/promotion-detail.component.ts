@@ -136,14 +136,6 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         return this.detailForm.get(key) as FormArray;
     }
 
-    // TODO: Remove this once a dedicated cross-browser datetime picker
-    // exists. See https://github.com/vendure-ecommerce/vendure/issues/181
-    updateDateTime(formControl: AbstractControl, event: Event) {
-        const value = (event.target as HTMLInputElement).value;
-        formControl.setValue(value ? new Date(value).toISOString() : null, { emitEvent: true });
-        formControl.parent.markAsDirty();
-    }
-
     create() {
         if (!this.detailForm.dirty) {
             return;
