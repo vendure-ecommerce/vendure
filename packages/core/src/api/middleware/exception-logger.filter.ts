@@ -10,7 +10,7 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
     catch(exception: Error, host: ArgumentsHost) {
         if (exception instanceof I18nError) {
             const { code, message, logLevel } = exception;
-            const logMessage = `BOBBY ${code || 'Error'}: ${message}`;
+            const logMessage = `${code || 'Error'}: ${message}`;
             switch (logLevel) {
                 case LogLevel.Error:
                     Logger.error(logMessage, undefined, exception.stack);
