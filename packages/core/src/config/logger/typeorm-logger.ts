@@ -11,13 +11,13 @@ export class TypeOrmLogger implements TypeOrmLoggerInterface {
     log(level: 'log' | 'info' | 'warn', message: any, queryRunner?: QueryRunner): any {
         switch (level) {
             case 'info':
-                Logger.info(message, context);;
+                Logger.info(message, context);
                 break;
             case 'log':
-                Logger.verbose(message, context);;
+                Logger.verbose(message, context);
                 break;
             case 'warn':
-                Logger.warn(message, context);;
+                Logger.warn(message, context);
                 break;
         }
     }

@@ -1,4 +1,5 @@
 export { bootstrap, bootstrapWorker } from './bootstrap';
+export { generateMigration, revertLastMigration, runMigrations } from './migrate';
 export * from './api/index';
 export * from './common/index';
 export * from './config/index';

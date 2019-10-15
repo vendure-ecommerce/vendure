@@ -50,6 +50,7 @@ const path = require('path');
         username: '{{ dbUserName }}',
         password: '{{ dbPassword }}',
         {{/if}}
+        migrations: [path.join(__dirname, 'migrations/*.ts')],
     },
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
