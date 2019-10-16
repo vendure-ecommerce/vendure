@@ -69,9 +69,15 @@ async function createApp(
 
     const root = path.resolve(name);
     const appName = path.basename(root);
-    const { dbType, usingTs, configSource, indexSource, indexWorkerSource, populateProducts } = isCi
-        ? await gatherCiUserResponses(root)
-        : await gatherUserResponses(root);
+    const {
+        dbType,
+        usingTs,
+        configSource,
+        indexSource,
+        indexWorkerSource,
+        migrationSource,
+        populateProducts,
+    } = isCi ? await gatherCiUserResponses(root) : await gatherUserResponses(root);
 
     const useYarn = useNpm ? false : shouldUseYarn();
     const originalDirectory = process.cwd();
@@ -85,9 +91,13 @@ async function createApp(
         version: '0.1.0',
         private: true,
         scripts: {
-            'run:server': usingTs ? 'ts-node index.ts' : 'node index.js',
-            'run:worker': usingTs ? 'ts-node index-worker.ts' : 'node index-worker.js',
+            'run:server': usingTs ? 'ts-node ./src/index.ts' : 'node ./src/index.js',
+            'run:worker': usingTs ? 'ts-node ./src/index-worker.ts' : 'node ./src/index-worker.js',
             start: useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
+            ...(usingTs ? { build: 'tsc' } : undefined),
+            'migration:generate': usingTs ? 'ts-node migration generate' : 'node migration generate',
+            'migration:run': usingTs ? 'ts-node migration run' : 'node migration run',
+            'migration:revert': usingTs ? 'ts-node migration revert' : 'node migration revert',
         },
     };
 
@@ -129,22 +139,29 @@ async function createApp(
             title: 'Generating app scaffold',
             task: ctx => {
                 return new Observable(subscriber => {
+                    fs.ensureDirSync(path.join(root, 'src'));
                     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
+                    const srcPathScript = (fileName: string): string =>
+                        path.join(root, 'src', `${fileName}.${usingTs ? 'ts' : 'js'}`);
                     const rootPathScript = (fileName: string): string =>
                         path.join(root, `${fileName}.${usingTs ? 'ts' : 'js'}`);
-                    ctx.configFile = rootPathScript('vendure-config');
+                    ctx.configFile = srcPathScript('vendure-config');
 
                     fs.writeFile(ctx.configFile, configSource)
                         .then(() => {
-                            subscriber.next(`Created config`);
-                            return fs.writeFile(rootPathScript('index'), indexSource);
+                            subscriber.next(`Created config file`);
+                            return fs.writeFile(srcPathScript('index'), indexSource);
                         })
                         .then(() => {
-                            subscriber.next(`Created index`);
-                            return fs.writeFile(rootPathScript('index-worker'), indexWorkerSource);
+                            subscriber.next(`Created index file`);
+                            return fs.writeFile(srcPathScript('index-worker'), indexWorkerSource);
                         })
                         .then(() => {
-                            subscriber.next(`Created worker`);
+                            subscriber.next(`Created worker file`);
+                            return fs.writeFile(rootPathScript('migration'), migrationSource);
+                        })
+                        .then(() => {
+                            subscriber.next(`Created migration file`);
                             if (usingTs) {
                                 return fs.copyFile(
                                     assetPath('tsconfig.template.json'),
@@ -274,9 +291,9 @@ function runPreChecks(name: string | undefined, useNpm: boolean): name is string
  * Generate the default directory structure for a new Vendure project
  */
 async function createDirectoryStructure(root: string) {
-    await fs.ensureDir(path.join(root, 'vendure', 'email', 'test-emails'));
-    await fs.ensureDir(path.join(root, 'vendure', 'import-assets'));
-    await fs.ensureDir(path.join(root, 'vendure', 'assets'));
+    await fs.ensureDir(path.join(root, 'static', 'email', 'test-emails'));
+    await fs.ensureDir(path.join(root, 'static', 'import-assets'));
+    await fs.ensureDir(path.join(root, 'static', 'assets'));
 }
 
 /**
@@ -285,7 +302,7 @@ async function createDirectoryStructure(root: string) {
 async function copyEmailTemplates(root: string) {
     const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
     try {
-        await fs.copy(templateDir, path.join(root, 'vendure', 'email', 'templates'));
+        await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err) {
         console.error(chalk.red(`Failed to copy email templates.`));
     }

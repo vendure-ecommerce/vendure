@@ -94,11 +94,15 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
         process.exit(0);
     }
 
-    const { indexSource, indexWorkerSource, configSource } = await generateSources(root, answers);
+    const { indexSource, indexWorkerSource, configSource, migrationSource } = await generateSources(
+        root,
+        answers,
+    );
     return {
         indexSource,
         indexWorkerSource,
         configSource,
+        migrationSource,
         usingTs: answers.language === 'ts',
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
@@ -119,11 +123,15 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         language: 'ts',
         populateProducts: true,
     };
-    const { indexSource, indexWorkerSource, configSource } = await generateSources(root, ciAnswers);
+    const { indexSource, indexWorkerSource, configSource, migrationSource } = await generateSources(
+        root,
+        ciAnswers,
+    );
     return {
         indexSource,
         indexWorkerSource,
         configSource,
+        migrationSource,
         usingTs: ciAnswers.language === 'ts',
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
@@ -136,7 +144,12 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
 async function generateSources(
     root: string,
     answers: any,
-): Promise<{ indexSource: string; indexWorkerSource: string; configSource: string }> {
+): Promise<{
+    indexSource: string;
+    indexWorkerSource: string;
+    configSource: string;
+    migrationSource: string;
+}> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     const templateContext = {
@@ -155,7 +168,9 @@ async function generateSources(
     const indexSource = Handlebars.compile(indexTemplate)(templateContext);
     const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');
     const indexWorkerSource = Handlebars.compile(indexWorkerTemplate)(templateContext);
-    return { indexSource, indexWorkerSource, configSource };
+    const migrationTemplate = await fs.readFile(assetPath('migration.hbs'), 'utf-8');
+    const migrationSource = Handlebars.compile(migrationTemplate)(templateContext);
+    return { indexSource, indexWorkerSource, configSource, migrationSource };
 }
 
 function defaultDBPort(dbType: DbType): number {
