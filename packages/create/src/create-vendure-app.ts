@@ -76,6 +76,7 @@ async function createApp(
         indexSource,
         indexWorkerSource,
         migrationSource,
+        readmeSource,
         populateProducts,
     } = isCi ? await gatherCiUserResponses(root) : await gatherUserResponses(root);
 
@@ -148,20 +149,12 @@ async function createApp(
                     ctx.configFile = srcPathScript('vendure-config');
 
                     fs.writeFile(ctx.configFile, configSource)
+                        .then(() => fs.writeFile(srcPathScript('index'), indexSource))
+                        .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
+                        .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
+                        .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
                         .then(() => {
-                            subscriber.next(`Created config file`);
-                            return fs.writeFile(srcPathScript('index'), indexSource);
-                        })
-                        .then(() => {
-                            subscriber.next(`Created index file`);
-                            return fs.writeFile(srcPathScript('index-worker'), indexWorkerSource);
-                        })
-                        .then(() => {
-                            subscriber.next(`Created worker file`);
-                            return fs.writeFile(rootPathScript('migration'), migrationSource);
-                        })
-                        .then(() => {
-                            subscriber.next(`Created migration file`);
+                            subscriber.next(`Created files`);
                             if (usingTs) {
                                 return fs.copyFile(
                                     assetPath('tsconfig.template.json'),
@@ -292,7 +285,6 @@ function runPreChecks(name: string | undefined, useNpm: boolean): name is string
  */
 async function createDirectoryStructure(root: string) {
     await fs.ensureDir(path.join(root, 'static', 'email', 'test-emails'));
-    await fs.ensureDir(path.join(root, 'static', 'import-assets'));
     await fs.ensureDir(path.join(root, 'static', 'assets'));
 }
 

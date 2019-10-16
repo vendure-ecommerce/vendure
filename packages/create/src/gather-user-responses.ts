@@ -94,15 +94,19 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
         process.exit(0);
     }
 
-    const { indexSource, indexWorkerSource, configSource, migrationSource } = await generateSources(
-        root,
-        answers,
-    );
+    const {
+        indexSource,
+        indexWorkerSource,
+        configSource,
+        migrationSource,
+        readmeSource,
+    } = await generateSources(root, answers);
     return {
         indexSource,
         indexWorkerSource,
         configSource,
         migrationSource,
+        readmeSource,
         usingTs: answers.language === 'ts',
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
@@ -123,15 +127,19 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         language: 'ts',
         populateProducts: true,
     };
-    const { indexSource, indexWorkerSource, configSource, migrationSource } = await generateSources(
-        root,
-        ciAnswers,
-    );
+    const {
+        indexSource,
+        indexWorkerSource,
+        configSource,
+        migrationSource,
+        readmeSource,
+    } = await generateSources(root, ciAnswers);
     return {
         indexSource,
         indexWorkerSource,
         configSource,
         migrationSource,
+        readmeSource,
         usingTs: ciAnswers.language === 'ts',
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
@@ -149,11 +157,13 @@ async function generateSources(
     indexWorkerSource: string;
     configSource: string;
     migrationSource: string;
+    readmeSource: string;
 }> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     const templateContext = {
         ...answers,
+        name: path.basename(root),
         isTs: answers.language === 'ts',
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
@@ -170,7 +180,9 @@ async function generateSources(
     const indexWorkerSource = Handlebars.compile(indexWorkerTemplate)(templateContext);
     const migrationTemplate = await fs.readFile(assetPath('migration.hbs'), 'utf-8');
     const migrationSource = Handlebars.compile(migrationTemplate)(templateContext);
-    return { indexSource, indexWorkerSource, configSource, migrationSource };
+    const readmeTemplate = await fs.readFile(assetPath('readme.hbs'), 'utf-8');
+    const readmeSource = Handlebars.compile(readmeTemplate)(templateContext);
+    return { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource };
 }
 
 function defaultDBPort(dbType: DbType): number {
