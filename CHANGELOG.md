@@ -1,3 +1,44 @@
+## 0.4.0 (2019-10-16)
+
+
+#### Features
+
+* **admin-ui** Add coupon & date rage data to PromotionList ([4827aa4](https://github.com/vendure-ecommerce/vendure/commit/4827aa4))
+* **admin-ui** Add date range & coupon code controls to PromotionDetail ([48def65](https://github.com/vendure-ecommerce/vendure/commit/48def65)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **admin-ui** Add detailed promotion & tax info to OrderDetail view ([cd823fe](https://github.com/vendure-ecommerce/vendure/commit/cd823fe))
+* **admin-ui** Add visibility to Order notes ([760d519](https://github.com/vendure-ecommerce/vendure/commit/760d519)), closes [#180](https://github.com/vendure-ecommerce/vendure/issues/180)
+* **admin-ui** Create cross-browser datetime picker component ([78a713c](https://github.com/vendure-ecommerce/vendure/commit/78a713c)), closes [#181](https://github.com/vendure-ecommerce/vendure/issues/181)
+* **admin-ui** Display coupon code entries in order history ([9f269fe](https://github.com/vendure-ecommerce/vendure/commit/9f269fe))
+* **core** Add couponCodes to Order & mutations to add/remove codes ([fdacb4b](https://github.com/vendure-ecommerce/vendure/commit/fdacb4b)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **core** Add date range and couponCode to Promotion entity ([e615d2f](https://github.com/vendure-ecommerce/vendure/commit/e615d2f)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **core** Add history entry to Order when vouchers applied/removed ([887cc6c](https://github.com/vendure-ecommerce/vendure/commit/887cc6c))
+* **core** Add isPublic flag to AddNoteToOrderInput ([f97c3ac](https://github.com/vendure-ecommerce/vendure/commit/f97c3ac)), closes [#180](https://github.com/vendure-ecommerce/vendure/issues/180)
+* **core** Add validation to Promotion conditions ([74e7444](https://github.com/vendure-ecommerce/vendure/commit/74e7444))
+* **core** Export database migration helpers ([d509805](https://github.com/vendure-ecommerce/vendure/commit/d509805))
+* **core** Expose Order.promotions via GraphQL APIs ([02ebd9c](https://github.com/vendure-ecommerce/vendure/commit/02ebd9c)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **core** Implement per-customer usage limits for Promotions ([9d45069](https://github.com/vendure-ecommerce/vendure/commit/9d45069)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **core** Implement Promotion date range & coupon code checks ([f6eb343](https://github.com/vendure-ecommerce/vendure/commit/f6eb343)), closes [#174](https://github.com/vendure-ecommerce/vendure/issues/174)
+* **core** Log thrown errors ([ed7f5fb](https://github.com/vendure-ecommerce/vendure/commit/ed7f5fb))
+* **core** Move error logging to the API Filter layer ([e8fd15d](https://github.com/vendure-ecommerce/vendure/commit/e8fd15d))
+* **create** Generate README file with new projects ([4e2784f](https://github.com/vendure-ecommerce/vendure/commit/4e2784f))
+* **create** Rework folder structure, add build & migration scripts ([746abff](https://github.com/vendure-ecommerce/vendure/commit/746abff)), closes [#175](https://github.com/vendure-ecommerce/vendure/issues/175)
+
+#### Fixes
+
+* **admin-ui** Fix creating new Channels ([b8e4c6c](https://github.com/vendure-ecommerce/vendure/commit/b8e4c6c)), closes [#182](https://github.com/vendure-ecommerce/vendure/issues/182)
+* **admin-ui** Fix customField product error: handle undef. case ([8265359](https://github.com/vendure-ecommerce/vendure/commit/8265359))
+* **core** Allow nullable fields to be unset via GraphQL API ([d9f5c41](https://github.com/vendure-ecommerce/vendure/commit/d9f5c41))
+* **core** Fix DefaultLogger logLevel Error ([d5405a0](https://github.com/vendure-ecommerce/vendure/commit/d5405a0))
+* **core** Fix duplicate plugin entities being registered on bootstrap ([ce00406](https://github.com/vendure-ecommerce/vendure/commit/ce00406))
+* **core** Fix order totals calculation with order % discount ([a4fea59](https://github.com/vendure-ecommerce/vendure/commit/a4fea59))
+* **core** Fix OrderItem totals calculation logic ([3c66cf8](https://github.com/vendure-ecommerce/vendure/commit/3c66cf8))
+
+
+### BREAKING CHANGE
+
+* A new `couponCodes` column is added to the Order table, which will require a DB migration.
+* A new `promotions` relation has been added to the order table, and a `perCustomerUsageLimit` column to the promotion table. This will require a DB migration.
+* Removes `atLeastNOfProduct` from defaultPromotionConditions and `itemPercentageDiscount` & `buy1Get1Free` from defaultPromotionActions. They are either not useful or need to be re-implemented in a way that works correctly.
 ## <small>0.3.4 (2019-10-09)</small>
 
 

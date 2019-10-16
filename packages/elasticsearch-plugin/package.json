@@ -1,6 +1,6 @@
 {
   "name": "@vendure/elasticsearch-plugin",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,8 +19,8 @@
     "deepmerge": "^4.0.0"
   },
   "devDependencies": {
-    "@vendure/common": "^0.3.4",
-    "@vendure/core": "^0.3.4",
+    "@vendure/common": "^0.4.0",
+    "@vendure/core": "^0.4.0",
     "rimraf": "^2.6.3",
     "typescript": "~3.5.3"
   }
