@@ -9,13 +9,32 @@ import { camelCase } from 'typeorm/util/StringUtils';
 import { preBootstrapConfig } from './bootstrap';
 import { VendureConfig } from './config/vendure-config';
 
+/**
+ * @description
+ * Configuration for generating a new migration script via {@link generateMigration}.
+ *
+ * @docsCategory migration
+ */
 export interface MigrationOptions {
+    /**
+     * @description
+     * The name of the migration. The resulting migration script will be named
+     * `{TIMESTAMP}-{name}.ts`.
+     */
     name: string;
+    /**
+     * @description
+     * The output directory of the generated migration scripts.
+     */
     outputDir?: string;
 }
 
 /**
- * Runs any pending database migrations.
+ * @description
+ * Runs any pending database migrations. See [TypeORM migration docs](https://typeorm.io/#/migrations)
+ * for more information about the underlying migration mechanism.
+ *
+ * @docsCategory migration
  */
 export async function runMigrations(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
@@ -33,7 +52,11 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
 }
 
 /**
- * Reverts the last applied database migration.
+ * @description
+ * Reverts the last applied database migration. See [TypeORM migration docs](https://typeorm.io/#/migrations)
+ * for more information about the underlying migration mechanism.
+ *
+ * @docsCategory migration
  */
 export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
@@ -51,7 +74,12 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
 }
 
 /**
+ * @description
  * Generates a new migration file based on any schema changes (e.g. adding or removing CustomFields).
+ * See [TypeORM migration docs](https://typeorm.io/#/migrations) for more information about the
+ * underlying migration mechanism.
+ *
+ * @docsCategory migration
  */
 export async function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions) {
     const config = await preBootstrapConfig(userConfig);
