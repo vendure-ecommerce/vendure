@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
@@ -16,6 +16,7 @@ import {
     Promotion,
     UpdatePromotionInput,
 } from '../../../common/generated-types';
+import { getDefaultConfigArgValue } from '../../../common/utilities/get-default-config-arg-value';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -52,6 +53,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             enabled: true,
+            couponCode: null,
+            perCustomerUsageLimit: null,
+            startsAt: null,
+            endsAt: null,
             conditions: this.formBuilder.array([]),
             actions: this.formBuilder.array([]),
         });
@@ -102,7 +107,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         return (
             this.detailForm.dirty &&
             this.detailForm.valid &&
-            this.conditions.length !== 0 &&
+            (this.conditions.length !== 0 || this.detailForm.value.couponCode) &&
             this.actions.length !== 0
         );
     }
@@ -139,6 +144,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         const input: CreatePromotionInput = {
             name: formValue.name,
             enabled: true,
+            couponCode: formValue.couponCode,
+            perCustomerUsageLimit: formValue.perCustomerUsageLimit,
+            startsAt: formValue.startsAt,
+            endsAt: formValue.endsAt,
             conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
             actions: this.mapOperationsToInputs(this.actions, formValue.actions),
         };
@@ -170,6 +179,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                         id: promotion.id,
                         name: formValue.name,
                         enabled: formValue.enabled,
+                        couponCode: formValue.couponCode,
+                        perCustomerUsageLimit: formValue.perCustomerUsageLimit,
+                        startsAt: formValue.startsAt,
+                        endsAt: formValue.endsAt,
                         conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
                         actions: this.mapOperationsToInputs(this.actions, formValue.actions),
                     };
@@ -196,7 +209,14 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
      * Update the form values when the entity changes.
      */
     protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
-        this.detailForm.patchValue({ name: entity.name, enabled: entity.enabled });
+        this.detailForm.patchValue({
+            name: entity.name,
+            enabled: entity.enabled,
+            couponCode: entity.couponCode,
+            perCustomerUsageLimit: entity.perCustomerUsageLimit,
+            startsAt: entity.startsAt,
+            endsAt: entity.endsAt,
+        });
         entity.conditions.forEach(o => {
             this.addOperation('conditions', o);
         });
@@ -233,7 +253,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             const argsHash = operation.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value,
+                    [arg.name]: getDefaultConfigArgValue(arg),
                 }),
                 {},
             );

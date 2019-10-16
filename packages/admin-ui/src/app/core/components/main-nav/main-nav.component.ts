@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { _ } from '../../providers/i18n/mark-for-extraction';
 import { NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../providers/nav-builder/nav-builder.service';
 
@@ -21,29 +22,29 @@ export class MainNavComponent implements OnInit {
             {
                 requiresPermission: 'ReadCatalog',
                 id: 'catalog',
-                label: 'nav.catalog',
+                label: _('nav.catalog'),
                 items: [
                     {
                         id: 'products',
-                        label: 'nav.products',
+                        label: _('nav.products'),
                         icon: 'library',
                         routerLink: ['/catalog', 'products'],
                     },
                     {
                         id: 'facets',
-                        label: 'nav.facets',
+                        label: _('nav.facets'),
                         icon: 'tag',
                         routerLink: ['/catalog', 'facets'],
                     },
                     {
                         id: 'collections',
-                        label: 'nav.collections',
+                        label: _('nav.collections'),
                         icon: 'folder-open',
                         routerLink: ['/catalog', 'collections'],
                     },
                     {
                         id: 'assets',
-                        label: 'nav.assets',
+                        label: _('nav.assets'),
                         icon: 'image-gallery',
                         routerLink: ['/catalog', 'assets'],
                     },
@@ -51,12 +52,12 @@ export class MainNavComponent implements OnInit {
             },
             {
                 id: 'sales',
-                label: 'nav.sales',
+                label: _('nav.sales'),
                 requiresPermission: 'ReadOrder',
                 items: [
                     {
                         id: 'orders',
-                        label: 'nav.orders',
+                        label: _('nav.orders'),
                         routerLink: ['/orders'],
                         icon: 'shopping-cart',
                     },
@@ -64,12 +65,12 @@ export class MainNavComponent implements OnInit {
             },
             {
                 id: 'customers',
-                label: 'nav.customers',
+                label: _('nav.customers'),
                 requiresPermission: 'ReadCustomer',
                 items: [
                     {
                         id: 'customers',
-                        label: 'nav.customers',
+                        label: _('nav.customers'),
                         routerLink: ['/customer', 'customers'],
                         icon: 'user',
                     },
@@ -77,12 +78,12 @@ export class MainNavComponent implements OnInit {
             },
             {
                 id: 'marketing',
-                label: 'nav.marketing',
+                label: _('nav.marketing'),
                 requiresPermission: 'ReadPromotion',
                 items: [
                     {
                         id: 'promotions',
-                        label: 'nav.promotions',
+                        label: _('nav.promotions'),
                         routerLink: ['/marketing', 'promotions'],
                         icon: 'asterisk',
                     },
@@ -90,64 +91,64 @@ export class MainNavComponent implements OnInit {
             },
             {
                 id: 'settings',
-                label: 'nav.settings',
+                label: _('nav.settings'),
                 requiresPermission: 'ReadSettings',
                 collapsible: true,
                 collapsedByDefault: true,
                 items: [
                     {
                         id: 'channels',
-                        label: 'nav.channels',
+                        label: _('nav.channels'),
                         routerLink: ['/settings', 'channels'],
                         icon: 'layers',
                     },
                     {
                         id: 'administrators',
-                        label: 'nav.administrators',
+                        label: _('nav.administrators'),
                         requiresPermission: 'ReadAdministrator',
                         routerLink: ['/settings', 'administrators'],
                         icon: 'administrator',
                     },
                     {
                         id: 'roles',
-                        label: 'nav.roles',
+                        label: _('nav.roles'),
                         requiresPermission: 'ReadAdministrator',
                         routerLink: ['/settings', 'roles'],
                         icon: 'users',
                     },
                     {
                         id: 'shipping-methods',
-                        label: 'nav.shipping-methods',
+                        label: _('nav.shipping-methods'),
                         routerLink: ['/settings', 'shipping-methods'],
                         icon: 'truck',
                     },
                     {
                         id: 'payment-methods',
-                        label: 'nav.payment-methods',
+                        label: _('nav.payment-methods'),
                         routerLink: ['/settings', 'payment-methods'],
                         icon: 'credit-card',
                     },
                     {
                         id: 'tax-categories',
-                        label: 'nav.tax-categories',
+                        label: _('nav.tax-categories'),
                         routerLink: ['/settings', 'tax-categories'],
                         icon: 'view-list',
                     },
                     {
                         id: 'tax-rates',
-                        label: 'nav.tax-rates',
+                        label: _('nav.tax-rates'),
                         routerLink: ['/settings', 'tax-rates'],
                         icon: 'calculator',
                     },
                     {
                         id: 'countries',
-                        label: 'nav.countries',
+                        label: _('nav.countries'),
                         routerLink: ['/settings', 'countries'],
                         icon: 'world',
                     },
                     {
                         id: 'global-settings',
-                        label: 'nav.global-settings',
+                        label: _('nav.global-settings'),
                         routerLink: ['/settings', 'global-settings'],
                         icon: 'cog',
                     },

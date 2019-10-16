@@ -2,17 +2,23 @@ type Order implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    "A unique code for the Order"
     code: String!
     state: String!
+    "An order is active as long as the payment process has not been completed"
     active: Boolean!
     customer: Customer
     shippingAddress: OrderAddress
     billingAddress: OrderAddress
     lines: [OrderLine!]!
+    "Order-level adjustments to the order total, such as discounts from promotions"
     adjustments: [Adjustment!]!
+    couponCodes: [String!]!
+    promotions: [Promotion!]!
     payments: [Payment!]
     fulfillments: [Fulfillment!]
     subTotalBeforeTax: Int!
+    "The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied."
     subTotal: Int!
     currencyCode: CurrencyCode!
     shipping: Int!

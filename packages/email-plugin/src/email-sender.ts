@@ -52,7 +52,7 @@ export class EmailSender {
                     host: options.host,
                     port: options.port,
                     secure: options.secure,
-                    auth: options.auth.user,
+                    auth: options.auth,
                 } as SMTPTransport.Options);
                 await this.sendMail(email, transporter);
                 break;

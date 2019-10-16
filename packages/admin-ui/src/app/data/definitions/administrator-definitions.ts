@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 export const ADMINISTRATOR_FRAGMENT = gql`
     fragment Administrator on Administrator {
         id
+        createdAt
+        updatedAt
         firstName
         lastName
         emailAddress
@@ -23,6 +25,8 @@ export const ADMINISTRATOR_FRAGMENT = gql`
 export const ROLE_FRAGMENT = gql`
     fragment Role on Role {
         id
+        createdAt
+        updatedAt
         code
         description
         permissions

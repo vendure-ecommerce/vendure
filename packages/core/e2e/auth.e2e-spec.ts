@@ -132,7 +132,7 @@ describe('Authorization & permissions', () => {
             it('can create', async () => {
                 await assertRequestAllowed(
                     gql`
-                        mutation CreateCustomer($input: CreateCustomerInput!) {
+                        mutation CanCreateCustomer($input: CreateCustomerInput!) {
                             createCustomer(input: $input) {
                                 id
                             }

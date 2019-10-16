@@ -57,15 +57,14 @@
             [readonly]="readonly"
         />
     </clr-toggle-wrapper>
-    <input
+    <vdr-datetime-picker
         *ngIf="customField.type === 'datetime'"
-        type="datetime-local"
+        [id]="customField.name"
+        [formControl]="formGroup.get(customField.name)"
         [min]="min"
         [max]="max"
-        [step]="step"
-        [id]="customField.name"
-        [value]="formGroup.get(customField.name).value | date: 'yyyy-MM-ddTHH:mm:ss'"
-        (change)="updateDateTime(formGroup.get(customField.name), $event)"
         [readonly]="readonly"
-    />
+    >
+
+    </vdr-datetime-picker>
 </ng-template>

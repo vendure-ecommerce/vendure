@@ -39,9 +39,12 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
-    async createCustomer(@Args() args: MutationCreateCustomerArgs): Promise<Customer> {
+    async createCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateCustomerArgs,
+    ): Promise<Customer> {
         const { input, password } = args;
-        return this.customerService.create(input, password || undefined);
+        return this.customerService.create(ctx, input, password || undefined);
     }
 
     @Mutation()

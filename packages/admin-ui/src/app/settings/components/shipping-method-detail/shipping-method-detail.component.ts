@@ -7,7 +7,6 @@ import { normalizeString } from 'shared/normalize-string';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
-    ConfigArg,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
@@ -18,6 +17,7 @@ import {
     TestShippingMethodResult,
     UpdateShippingMethodInput,
 } from '../../../common/generated-types';
+import { getDefaultConfigArgValue } from '../../../common/utilities/get-default-config-arg-value';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -133,11 +133,21 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     selectChecker(checker: ConfigurableOperationDefinition) {
         this.selectedCheckerDefinition = checker;
         this.selectedChecker = this.configurableDefinitionToInstance(checker);
+        const formControl = this.detailForm.get('checker');
+        if (formControl) {
+            formControl.patchValue(this.selectedChecker);
+        }
+        this.detailForm.markAsDirty();
     }
 
     selectCalculator(calculator: ConfigurableOperationDefinition) {
         this.selectedCalculatorDefinition = calculator;
         this.selectedCalculator = this.configurableDefinitionToInstance(calculator);
+        const formControl = this.detailForm.get('calculator');
+        if (formControl) {
+            formControl.patchValue(this.selectedCalculator);
+        }
+        this.detailForm.markAsDirty();
     }
 
     private configurableDefinitionToInstance(def: ConfigurableOperationDefinition): ConfigurableOperation {
@@ -146,7 +156,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             args: def.args.map(arg => {
                 return {
                     ...arg,
-                    value: '',
+                    value: getDefaultConfigArgValue(arg),
                 };
             }),
         } as ConfigurableOperation;

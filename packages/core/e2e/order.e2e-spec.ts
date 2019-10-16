@@ -5,7 +5,6 @@ import path from 'path';
 
 import { HistoryEntryType, StockMovementType } from '../../common/lib/generated-types';
 import { pick } from '../../common/lib/pick';
-import { ID } from '../../common/lib/shared-types';
 import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
@@ -29,32 +28,18 @@ import {
     SettleRefund,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import {
-    AddItemToOrder,
-    AddPaymentToOrder,
-    AddPaymentToOrderMutation,
-    GetShippingMethods,
-    SetShippingAddress,
-    SetShippingMethod,
-    TransitionToState,
-} from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
-} from './graphql/shop-definitions';
+import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { TestAdminClient, TestShopClient } from './test-client';
 import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const adminClient = new TestAdminClient();
@@ -67,7 +52,7 @@ describe('Orders resolver', () => {
         const token = await server.init(
             {
                 productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 2,
+                customerCount: 3,
             },
             {
                 paymentOptions: {
@@ -86,7 +71,7 @@ describe('Orders resolver', () => {
             GET_CUSTOMER_LIST,
             {
                 options: {
-                    take: 2,
+                    take: 3,
                 },
             },
         );
@@ -1107,37 +1092,102 @@ describe('Orders resolver', () => {
         });
     });
 
-    it('addNoteToOrder', async () => {
-        const { addNoteToOrder } = await adminClient.query<AddNoteToOrder.Mutation, AddNoteToOrder.Variables>(
-            ADD_NOTE_TO_ORDER,
-            {
+    describe('order notes', () => {
+        let orderId: string;
+
+        beforeAll(async () => {
+            const result = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[2].emailAddress,
+                password,
+            );
+
+            orderId = result.orderId;
+        });
+
+        it('private note', async () => {
+            const { addNoteToOrder } = await adminClient.query<
+                AddNoteToOrder.Mutation,
+                AddNoteToOrder.Variables
+            >(ADD_NOTE_TO_ORDER, {
                 input: {
-                    id: 'T_4',
-                    note: 'A test note',
+                    id: orderId,
+                    note: 'A private note',
+                    isPublic: false,
                 },
-            },
-        );
+            });
 
-        expect(addNoteToOrder.id).toBe('T_4');
+            expect(addNoteToOrder.id).toBe(orderId);
 
-        const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
-            GET_ORDER_HISTORY,
-            {
-                id: 'T_4',
-                options: {
-                    skip: 2,
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
+                GET_ORDER_HISTORY,
+                {
+                    id: orderId,
+                    options: {
+                        skip: 0,
+                    },
                 },
-            },
-        );
+            );
 
-        expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
-            {
-                type: HistoryEntryType.ORDER_NOTE,
-                data: {
-                    note: 'A test note',
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_NOTE,
+                    data: {
+                        note: 'A private note',
+                    },
                 },
-            },
-        ]);
+            ]);
+
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.history.items.map(pick(['type', 'data']))).toEqual([]);
+        });
+
+        it('public note', async () => {
+            const { addNoteToOrder } = await adminClient.query<
+                AddNoteToOrder.Mutation,
+                AddNoteToOrder.Variables
+            >(ADD_NOTE_TO_ORDER, {
+                input: {
+                    id: orderId,
+                    note: 'A public note',
+                    isPublic: true,
+                },
+            });
+
+            expect(addNoteToOrder.id).toBe(orderId);
+
+            const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
+                GET_ORDER_HISTORY,
+                {
+                    id: orderId,
+                    options: {
+                        skip: 1,
+                    },
+                },
+            );
+
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_NOTE,
+                    data: {
+                        note: 'A public note',
+                    },
+                },
+            ]);
+
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_NOTE,
+                    data: {
+                        note: 'A public note',
+                    },
+                },
+            ]);
+        });
     });
 });
 
@@ -1216,33 +1266,6 @@ const failsToSettlePaymentMethod = new PaymentMethodHandler({
     },
 });
 
-async function proceedToArrangingPayment(shopClient: TestShopClient): Promise<ID> {
-    await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(SET_SHIPPING_ADDRESS, {
-        input: {
-            fullName: 'name',
-            streetLine1: '12 the street',
-            city: 'foo',
-            postalCode: '123456',
-            countryCode: 'US',
-        },
-    });
-
-    const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
-        GET_ELIGIBLE_SHIPPING_METHODS,
-    );
-
-    await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
-        id: eligibleShippingMethods[1].id,
-    });
-
-    const { transitionOrderToState } = await shopClient.query<
-        TransitionToState.Mutation,
-        TransitionToState.Variables
-    >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-
-    return transitionOrderToState!.id;
-}
-
 async function createTestOrder(
     adminClient: TestAdminClient,
     shopClient: TestShopClient,
@@ -1286,25 +1309,6 @@ async function createTestOrder(
     );
     const orderId = addItemToOrder!.id;
     return { product, productVariantId, orderId };
-}
-
-async function addPaymentToOrder(
-    shopClient: TestShopClient,
-    handler: PaymentMethodHandler,
-): Promise<NonNullable<AddPaymentToOrder.Mutation['addPaymentToOrder']>> {
-    const result = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(
-        ADD_PAYMENT,
-        {
-            input: {
-                method: handler.code,
-                metadata: {
-                    baz: 'quux',
-                },
-            },
-        },
-    );
-    const order = result.addPaymentToOrder!;
-    return order as any;
 }
 
 export const GET_ORDERS_LIST = gql`

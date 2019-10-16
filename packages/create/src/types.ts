@@ -7,6 +7,8 @@ export interface UserResponses {
     indexSource: string;
     indexWorkerSource: string;
     configSource: string;
+    migrationSource: string;
+    readmeSource: string;
 }
 
 export type CliLogLevel = 'silent' | 'info' | 'verbose';

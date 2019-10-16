@@ -1,23 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ImportInfo, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import fs from 'fs-extra';
-import path from 'path';
 import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
-import { Asset } from '../../../entity/asset/asset.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
-import { AssetService } from '../../../service/services/asset.service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { FacetService } from '../../../service/services/facet.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
+import { AssetImporter } from '../asset-importer/asset-importer';
 import {
     ImportParser,
     ParsedProductVariant,
@@ -36,7 +33,6 @@ export class Importer {
     private taxCategoryMatches: { [name: string]: string } = {};
     // These Maps are used to cache newly-created entities and prevent duplicates
     // from being created.
-    private assetMap = new Map<string, Asset>();
     private facetMap = new Map<string, Facet>();
     private facetValueMap = new Map<string, FacetValue>();
 
@@ -46,8 +42,8 @@ export class Importer {
         private channelService: ChannelService,
         private facetService: FacetService,
         private facetValueService: FacetValueService,
-        private assetService: AssetService,
         private taxCategoryService: TaxCategoryService,
+        private assetImporter: AssetImporter,
         private fastImporter: FastImporterService,
     ) {}
 
@@ -146,7 +142,7 @@ export class Importer {
         const taxCategories = await this.taxCategoryService.findAll();
         await this.fastImporter.initialize();
         for (const { product, variants } of rows) {
-            const createProductAssets = await this.getAssets(product.assetPaths);
+            const createProductAssets = await this.assetImporter.getAssets(product.assetPaths);
             const productAssets = createProductAssets.assets;
             if (createProductAssets.errors.length) {
                 errors = errors.concat(createProductAssets.errors);
@@ -196,7 +192,7 @@ export class Importer {
             }
 
             for (const variant of variants) {
-                const createVariantAssets = await this.getAssets(variant.assetPaths);
+                const createVariantAssets = await this.assetImporter.getAssets(variant.assetPaths);
                 const variantAssets = createVariantAssets.assets;
                 if (createVariantAssets.errors.length) {
                     errors = errors.concat(createVariantAssets.errors);
@@ -234,42 +230,6 @@ export class Importer {
             });
         }
         return errors;
-    }
-
-    /**
-     * Creates Asset entities for the given paths, using the assetMap cache to prevent the
-     * creation of duplicates.
-     */
-    private async getAssets(assetPaths: string[]): Promise<{ assets: Asset[]; errors: string[] }> {
-        const assets: Asset[] = [];
-        const errors: string[] = [];
-        const { importAssetsDir } = this.configService.importExportOptions;
-        const uniqueAssetPaths = new Set(assetPaths);
-        for (const assetPath of uniqueAssetPaths.values()) {
-            const cachedAsset = this.assetMap.get(assetPath);
-            if (cachedAsset) {
-                assets.push(cachedAsset);
-            } else {
-                const filename = path.join(importAssetsDir, assetPath);
-
-                if (fs.existsSync(filename)) {
-                    const fileStat = fs.statSync(filename);
-                    if (fileStat.isFile()) {
-                        try {
-                            const stream = fs.createReadStream(filename);
-                            const asset = await this.assetService.createFromFileStream(stream);
-                            this.assetMap.set(assetPath, asset);
-                            assets.push(asset);
-                        } catch (err) {
-                            errors.push(err.toString());
-                        }
-                    }
-                } else {
-                    errors.push(`File "${filename}" does not exist`);
-                }
-            }
-        }
-        return { assets, errors };
     }
 
     private async getFacetValueIds(

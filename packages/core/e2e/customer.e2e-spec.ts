@@ -1,11 +1,18 @@
+import { OnModuleInit } from '@nestjs/common';
 import { omit } from '@vendure/common/lib/omit';
 import gql from 'graphql-tag';
 import path from 'path';
+
+import { EventBus } from '../src/event-bus/event-bus';
+import { EventBusModule } from '../src/event-bus/event-bus.module';
+import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
+import { VendurePlugin } from '../src/plugin/vendure-plugin';
 
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddress,
+    CreateCustomer,
     DeleteCustomer,
     DeleteCustomerAddress,
     DeletionResult,
@@ -23,6 +30,7 @@ import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
+let sendEmailFn: jest.Mock;
 
 describe('Customer resolver', () => {
     const adminClient = new TestAdminClient();
@@ -33,10 +41,15 @@ describe('Customer resolver', () => {
     let thirdCustomer: GetCustomerList.Items;
 
     beforeAll(async () => {
-        const token = await server.init({
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-            customerCount: 5,
-        });
+        const token = await server.init(
+            {
+                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+                customerCount: 5,
+            },
+            {
+                plugins: [TestEmailPlugin],
+            },
+        );
         await adminClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -303,9 +316,51 @@ describe('Customer resolver', () => {
         });
     });
 
+    describe('creation', () => {
+        it('triggers verification event if no password supplied', async () => {
+            sendEmailFn = jest.fn();
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: 'test1@test.com',
+                    firstName: 'New',
+                    lastName: 'Customer',
+                },
+            });
+
+            expect(createCustomer.user!.verified).toBe(false);
+            expect(sendEmailFn).toHaveBeenCalledTimes(1);
+            expect(sendEmailFn.mock.calls[0][0] instanceof AccountRegistrationEvent).toBe(true);
+            expect(sendEmailFn.mock.calls[0][0].user.identifier).toBe('test1@test.com');
+        });
+
+        it('creates a verified Customer', async () => {
+            sendEmailFn = jest.fn();
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: 'test2@test.com',
+                    firstName: 'New',
+                    lastName: 'Customer',
+                },
+                password: 'test',
+            });
+
+            expect(createCustomer.user!.verified).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalledTimes(0);
+        });
+    });
+
     describe('deletion', () => {
         it('deletes a customer', async () => {
-            const result = await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(DELETE_CUSTOMER, { id: thirdCustomer.id });
+            const result = await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(
+                DELETE_CUSTOMER,
+                { id: thirdCustomer.id },
+            );
 
             expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
@@ -406,6 +461,15 @@ const GET_CUSTOMER_ORDERS = gql`
     }
 `;
 
+export const CREATE_CUSTOMER = gql`
+    mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
+        createCustomer(input: $input, password: $password) {
+            ...Customer
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
+`;
+
 export const UPDATE_CUSTOMER = gql`
     mutation UpdateCustomer($input: UpdateCustomerInput!) {
         updateCustomer(input: $input) {
@@ -422,3 +486,19 @@ const DELETE_CUSTOMER = gql`
         }
     }
 `;
+
+/**
+ * This mock plugin simulates an EmailPlugin which would send emails
+ * on the registration & password reset events.
+ */
+@VendurePlugin({
+    imports: [EventBusModule],
+})
+class TestEmailPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+    onModuleInit() {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+    }
+}

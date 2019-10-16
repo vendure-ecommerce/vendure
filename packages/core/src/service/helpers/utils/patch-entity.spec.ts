@@ -1,17 +1,32 @@
 import { patchEntity } from './patch-entity';
 
 describe('patchEntity()', () => {
-    it('updates non-null values', () => {
+    it('updates non-undefined values', () => {
         const entity: any = {
             foo: 'foo',
             bar: 'bar',
             baz: 'baz',
         };
 
-        const result = patchEntity(entity, { bar: 'bar2', baz: null });
+        const result = patchEntity(entity, { bar: 'bar2', baz: undefined });
         expect(result).toEqual({
             foo: 'foo',
             bar: 'bar2',
+            baz: 'baz',
+        });
+    });
+
+    it('updates null values', () => {
+        const entity: any = {
+            foo: 'foo',
+            bar: 'bar',
+            baz: 'baz',
+        };
+
+        const result = patchEntity(entity, { bar: null });
+        expect(result).toEqual({
+            foo: 'foo',
+            bar: null,
             baz: 'baz',
         });
     });

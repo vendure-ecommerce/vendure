@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationCreateRoleArgs,
+    MutationUpdateRoleArgs,
     Permission,
     QueryRoleArgs,
     QueryRolesArgs,
-    MutationUpdateRoleArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 

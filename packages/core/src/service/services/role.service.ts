@@ -97,7 +97,9 @@ export class RoleService {
         const updatedRole = patchEntity(role, {
             code: input.code,
             description: input.description,
-            permissions: input.permissions ? unique([Permission.Authenticated, ...input.permissions]) : null,
+            permissions: input.permissions
+                ? unique([Permission.Authenticated, ...input.permissions])
+                : undefined,
         });
         await this.connection.manager.save(updatedRole);
         return assertFound(this.findOne(role.id));

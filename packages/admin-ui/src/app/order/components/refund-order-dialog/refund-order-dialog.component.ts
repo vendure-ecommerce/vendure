@@ -21,6 +21,8 @@ export class RefundOrderDialogComponent
     order: OrderDetailFragment;
     resolveWith: (result?: RefundOrderInput & { cancel: OrderLineInput[] }) => void;
     reason: string;
+    settledPayments: OrderDetail.Payments[];
+    selectedPayment: OrderDetail.Payments;
     lineQuantities: { [lineId: string]: { quantity: number; cancel: boolean } } = {};
     refundShipping = false;
     adjustment = 0;
@@ -51,10 +53,14 @@ export class RefundOrderDialogComponent
                 },
             };
         }, {});
+        this.settledPayments = (this.order.payments || []).filter(p => p.state === 'Settled');
+        if (this.settledPayments.length) {
+            this.selectedPayment = this.settledPayments[0];
+        }
     }
 
     select() {
-        const payment = this.order.payments && this.order.payments[0];
+        const payment = this.selectedPayment;
         if (payment) {
             const lines = Object.entries(this.lineQuantities)
                 .map(([orderLineId, data]) => ({

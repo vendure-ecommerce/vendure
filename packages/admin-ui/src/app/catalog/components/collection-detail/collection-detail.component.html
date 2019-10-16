@@ -1,5 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
         <vdr-language-selector
             [disabled]="isNew$ | async"
             [availableLanguageCodes]="availableLanguages$ | async"

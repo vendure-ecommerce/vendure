@@ -10,6 +10,7 @@ import {
     FACET_WITH_VALUES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
+    PROMOTION_FRAGMENT,
     ROLE_FRAGMENT,
     TAX_RATE_FRAGMENT,
     VARIANT_WITH_STOCK_FRAGMENT,
@@ -273,4 +274,12 @@ export const GET_RUNNING_JOBS = gql`
             state
         }
     }
+`;
+export const CREATE_PROMOTION = gql`
+    mutation CreatePromotion($input: CreatePromotionInput!) {
+        createPromotion(input: $input) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
 `;

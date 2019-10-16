@@ -1,17 +1,19 @@
 import { createConnection } from 'typeorm';
 
 import { isTestEnvironment } from '../e2e/utils/test-environment';
-import { registerCustomEntityFields } from '../src/entity/register-custom-entity-fields';
+import { preBootstrapConfig } from '../src/bootstrap';
+import { defaultConfig } from '../src/config/default-config';
+import { VendureConfig } from '../src/config/vendure-config';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
 /**
  * Clears all tables in the detabase sepcified by the connectionOptions
  */
-export async function clearAllTables(config: any, logging = true) {
-    (config.dbConnectionOptions as any).entities = [__dirname + '/../src/**/*.entity.ts'];
+export async function clearAllTables(config: VendureConfig, logging = true) {
+    config = await preBootstrapConfig(config);
+    const entityIdStrategy = config.entityIdStrategy || defaultConfig.entityIdStrategy;
     const name = isTestEnvironment() ? undefined : 'clearAllTables';
-    registerCustomEntityFields(config);
     const connection = await createConnection({ ...config.dbConnectionOptions, name });
     if (logging) {
         console.log('Clearing all tables...');

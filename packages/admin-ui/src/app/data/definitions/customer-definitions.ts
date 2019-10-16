@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 export const ADDRESS_FRAGMENT = gql`
     fragment Address on Address {
         id
+        createdAt
+        updatedAt
         fullName
         company
         streetLine1
@@ -24,6 +26,8 @@ export const ADDRESS_FRAGMENT = gql`
 export const CUSTOMER_FRAGMENT = gql`
     fragment Customer on Customer {
         id
+        createdAt
+        updatedAt
         title
         firstName
         lastName

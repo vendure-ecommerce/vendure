@@ -11,6 +11,8 @@ export class CustomerResolver extends BaseEntityResolver<Customer.Fragment> {
             {
                 __typename: 'Customer',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 title: '',
                 firstName: '',
                 lastName: '',

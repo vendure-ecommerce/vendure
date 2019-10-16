@@ -9,7 +9,14 @@
             <div class="selected-checkbox"><clr-icon shape="check-circle" size="32"></clr-icon></div>
             <img [src]="asset.preview + '?preset=thumb'" />
         </div>
-        <div class="detail">{{ asset.name }}</div>
+        <div class="detail">
+            <vdr-entity-info
+                [entity]="asset"
+                [small]="true"
+                (click)="entityInfoClick($event)"
+            ></vdr-entity-info>
+            <span [title]="asset.name">{{ asset.name }}</span>
+        </div>
     </div>
 </div>
 <div class="info-bar">

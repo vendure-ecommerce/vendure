@@ -62,6 +62,18 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @Column({ type: Date, nullable: true, default: null })
     deletedAt: Date | null;
 
+    @Column({ type: Date, nullable: true, default: null })
+    startsAt: Date | null;
+
+    @Column({ type: Date, nullable: true, default: null })
+    endsAt: Date | null;
+
+    @Column({ nullable: true, default: null })
+    couponCode: string;
+
+    @Column({ nullable: true, default: null })
+    perCustomerUsageLimit: number;
+
     @Column() name: string;
 
     @Column() enabled: boolean;
@@ -119,6 +131,15 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     }
 
     async test(order: Order, utils: PromotionUtils): Promise<boolean> {
+        if (this.endsAt && this.endsAt < new Date()) {
+            return false;
+        }
+        if (this.startsAt && this.startsAt > new Date()) {
+            return false;
+        }
+        if (this.couponCode && !order.couponCodes.includes(this.couponCode)) {
+            return false;
+        }
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
             if (!promotionCondition || !(await promotionCondition.check(order, condition.args, utils))) {

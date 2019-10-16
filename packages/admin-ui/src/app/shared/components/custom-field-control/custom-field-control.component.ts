@@ -140,12 +140,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
         }
     }
 
-    updateDateTime(formControl: FormControl, event: Event) {
-        const value = (event.target as HTMLInputElement).value;
-        formControl.setValue(value ? new Date(value).toISOString() : null, { emitEvent: true });
-        formControl.parent.markAsDirty();
-    }
-
     getLabel(defaultLabel: string, label?: LocalizedString[] | null): string {
         if (label) {
             const match = label.find(l => l.languageCode === this.uiLanguageCode);

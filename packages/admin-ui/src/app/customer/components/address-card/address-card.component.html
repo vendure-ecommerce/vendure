@@ -59,6 +59,7 @@
         </div>
     </div>
     <div class="card-footer">
+        <vdr-entity-info [entity]="address"></vdr-entity-info>
         <button class="btn btn-sm btn-link" *ngIf="editing" (click)="editing = false">
             {{ 'common.done' | translate }}
         </button>

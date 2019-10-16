@@ -2,10 +2,10 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
-import { idType } from '../../config/config-helpers';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 
 import { ProductOptionTranslation } from './product-option-translation.entity';
@@ -32,7 +32,7 @@ export class ProductOption extends VendureEntity implements Translatable, HasCus
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
 
-    @Column({ type: idType() })
+    @EntityId()
     groupId: ID;
 
     @Column(type => CustomProductOptionFields)

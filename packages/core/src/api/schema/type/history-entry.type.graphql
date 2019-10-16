@@ -2,6 +2,7 @@ type HistoryEntry implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    isPublic: Boolean!
     type: HistoryEntryType!
     administrator: Administrator
     data: JSON!
@@ -14,6 +15,8 @@ enum HistoryEntryType {
     ORDER_CANCELLATION
     ORDER_REFUND_TRANSITION
     ORDER_NOTE
+    ORDER_COUPON_APPLIED
+    ORDER_COUPON_REMOVED
 }
 
 type HistoryEntryList implements PaginatedList {

@@ -15,6 +15,8 @@ export const GET_COLLECTION_FILTERS = gql`
 export const COLLECTION_FRAGMENT = gql`
     fragment Collection on Collection {
         id
+        createdAt
+        updatedAt
         name
         description
         isPrivate

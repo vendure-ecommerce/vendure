@@ -31,22 +31,13 @@ export const devConfig: VendureConfig = {
     dbConnectionOptions: {
         synchronize: false,
         logging: false,
+        migrations: [path.join(__dirname, 'migrations/*.ts')],
         ...getDbConfig(),
     },
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        Product: [
-            { name: 'length', type: 'int', min: 0, max: 100 },
-            {
-                name: 'offerImageId',
-                label: [{ languageCode: LanguageCode.en, value: 'Offer image' }],
-                type: 'string',
-            },
-        ],
-        ProductVariant: [{ name: 'length', type: 'int', min: 0, max: 100 }],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -77,8 +68,8 @@ export const devConfig: VendureConfig = {
         UiPlugin,
         AdminUiPlugin.init({
             port: 5001,
-            extensions: UiPlugin.uiExtensions,
-            watch: true,
+            // extensions: UiPlugin.uiExtensions,
+            // watch: true,
         }),
     ],
 };
@@ -89,7 +80,7 @@ function getDbConfig(): ConnectionOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'postgres',
                 host: '127.0.0.1',
                 port: 5432,
@@ -100,6 +91,7 @@ function getDbConfig(): ConnectionOptions {
         case 'sqlite':
             console.log('Using sqlite connection');
             return {
+                synchronize: false,
                 type: 'sqlite',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
@@ -115,7 +107,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mysql',
                 host: '192.168.99.100',
                 port: 3306,

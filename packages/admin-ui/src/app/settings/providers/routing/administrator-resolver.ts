@@ -11,6 +11,8 @@ export class AdministratorResolver extends BaseEntityResolver<Administrator.Frag
             {
                 __typename: 'Administrator' as 'Administrator',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 emailAddress: '',
                 firstName: '',
                 lastName: '',

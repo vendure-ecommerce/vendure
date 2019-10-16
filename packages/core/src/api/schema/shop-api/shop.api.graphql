@@ -22,6 +22,10 @@ type Mutation {
     removeOrderLine(orderLineId: ID!): Order
     "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     adjustOrderLine(orderLineId: ID!, quantity: Int): Order
+    "Applies the given coupon code to the active Order"
+    applyCouponCode(couponCode: String!): Order
+    "Removes the given coupon code from the active Order"
+    removeCouponCode(couponCode: String!): Order
     transitionOrderToState(state: String!): Order
     setOrderShippingAddress(input: CreateAddressInput!): Order
     setOrderShippingMethod(shippingMethodId: ID!): Order

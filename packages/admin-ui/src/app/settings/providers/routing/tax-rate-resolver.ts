@@ -14,6 +14,8 @@ export class TaxRateResolver extends BaseEntityResolver<TaxRate.Fragment> {
             {
                 __typename: 'TaxRate',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 name: '',
                 value: 0,
                 enabled: true,

@@ -15,6 +15,8 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
             {
                 __typename: 'Channel',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 code: '',
                 token: '',
                 pricesIncludeTax: false,

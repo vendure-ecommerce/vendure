@@ -1,45 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { ID } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
-import { facetValueCollectionFilter } from '../../../config/collection/default-collection-filters';
-import { Channel, Collection, TaxCategory } from '../../../entity';
-import { Zone } from '../../../entity/zone/zone.entity';
-import { AssetService, CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
+import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
+import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { SearchService } from '../../../service/services/search.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { ZoneService } from '../../../service/services/zone.service';
-
-type ZoneMap = Map<string, { entity: Zone; members: string[] }>;
-
-export interface CountryData {
-    code: string;
-    name: string;
-    zone: string;
-}
-
-export interface CollectionData {
-    name: string;
-    facetNames: string[];
-    parentName?: string;
-    featuredAssetFilename?: string;
-}
-
-export interface InitialData {
-    defaultLanguage: LanguageCode;
-    defaultZone: string;
-    countries: CountryData[];
-    taxRates: Array<{ name: string; percentage: number }>;
-    shippingMethods: Array<{ name: string; price: number }>;
-    collections: CollectionData[];
-}
+import { CollectionFilterDefinition, CountryDefinition, InitialData, ZoneMap } from '../../types';
+import { AssetImporter } from '../asset-importer/asset-importer';
 
 /**
  * Responsible for populating the database with initial data.
@@ -47,7 +22,6 @@ export interface InitialData {
 @Injectable()
 export class Populator {
     constructor(
-        private assetService: AssetService,
         private countryService: CountryService,
         private zoneService: ZoneService,
         private channelService: ChannelService,
@@ -57,6 +31,7 @@ export class Populator {
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private searchService: SearchService,
+        private assetImporter: AssetImporter,
     ) {}
 
     /**
@@ -82,52 +57,25 @@ export class Populator {
         const allFacetValues = await this.facetValueService.findAll(ctx.languageCode);
         const collectionMap = new Map<string, Collection>();
         for (const collectionDef of data.collections) {
-            const facetValueIds = collectionDef.facetNames
-                .map(name => allFacetValues.find(fv => fv.name === name))
-                .filter(notNullOrUndefined)
-                .map(fv => fv.id);
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
             const parentId = parent ? parent.id.toString() : undefined;
-
-            let featuredAssetId: string | null = null;
-            if (collectionDef.featuredAssetFilename) {
-                const asset = await this.assetService.findByFileName(
-                    collectionDef.featuredAssetFilename,
-                    false,
-                );
-                if (asset) {
-                    featuredAssetId = asset.id as string;
-                }
-            }
+            const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || []);
 
             const collection = await this.collectionService.create(ctx, {
                 translations: [
                     {
                         languageCode: ctx.languageCode,
                         name: collectionDef.name,
-                        description: '',
+                        description: collectionDef.description || '',
                     },
                 ],
+                isPrivate: collectionDef.private || false,
                 parentId,
-                assetIds: [featuredAssetId].filter(notNullOrUndefined),
-                featuredAssetId,
-                filters: [
-                    {
-                        code: facetValueCollectionFilter.code,
-                        arguments: [
-                            {
-                                name: 'facetValueIds',
-                                type: 'facetValueIds',
-                                value: JSON.stringify(facetValueIds),
-                            },
-                            {
-                                name: 'containsAny',
-                                value: `false`,
-                                type: 'boolean',
-                            },
-                        ],
-                    },
-                ],
+                assetIds: assets.map(a => a.id.toString()),
+                featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
+                filters: (collectionDef.filters || []).map(filter =>
+                    this.processFilterDefinition(filter, allFacetValues),
+                ),
             });
             collectionMap.set(collectionDef.name, collection);
         }
@@ -135,6 +83,36 @@ export class Populator {
         // the reindex of the search index.
         await new Promise(resolve => setTimeout(resolve, 50));
         await this.searchService.reindex(ctx);
+    }
+
+    private processFilterDefinition(
+        filter: CollectionFilterDefinition,
+        allFacetValues: FacetValue[],
+    ): ConfigurableOperationInput {
+        switch (filter.code) {
+            case 'facet-value-filter':
+                const facetValueIds = filter.args.facetValueNames
+                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .filter(notNullOrUndefined)
+                    .map(fv => fv.id);
+                return {
+                    code: filter.code,
+                    arguments: [
+                        {
+                            name: 'facetValueIds',
+                            type: 'facetValueIds',
+                            value: JSON.stringify(facetValueIds),
+                        },
+                        {
+                            name: 'containsAny',
+                            value: filter.args.containsAny.toString(),
+                            type: 'boolean',
+                        },
+                    ],
+                };
+            default:
+                throw new Error(`Filter with code "${filter.code}" is not recognized.`);
+        }
     }
 
     private async createRequestContext(data: InitialData) {
@@ -164,7 +142,7 @@ export class Populator {
         });
     }
 
-    private async populateCountries(ctx: RequestContext, countries: CountryData[]): Promise<ZoneMap> {
+    private async populateCountries(ctx: RequestContext, countries: CountryDefinition[]): Promise<ZoneMap> {
         const zones: ZoneMap = new Map();
         for (const { name, code, zone } of countries) {
             const countryEntity = await this.countryService.create(ctx, {

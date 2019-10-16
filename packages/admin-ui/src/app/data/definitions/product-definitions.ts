@@ -4,6 +4,7 @@ export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
         id
         createdAt
+        updatedAt
         name
         fileSize
         mimeType
@@ -16,6 +17,8 @@ export const ASSET_FRAGMENT = gql`
 export const PRODUCT_VARIANT_FRAGMENT = gql`
     fragment ProductVariant on ProductVariant {
         id
+        createdAt
+        updatedAt
         enabled
         languageCode
         name
@@ -74,6 +77,8 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
 export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
     fragment ProductWithVariants on Product {
         id
+        createdAt
+        updatedAt
         enabled
         languageCode
         name
@@ -86,6 +91,7 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             ...Asset
         }
         translations {
+            id
             languageCode
             name
             slug
@@ -117,10 +123,13 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
     fragment ProductOptionGroup on ProductOptionGroup {
         id
+        createdAt
+        updatedAt
         languageCode
         code
         name
         translations {
+            id
             name
         }
         options {
@@ -202,6 +211,8 @@ export const ADD_OPTION_TO_GROUP = gql`
     mutation AddOptionToGroup($input: CreateProductOptionInput!) {
         createProductOption(input: $input) {
             id
+            createdAt
+            updatedAt
             name
             code
             groupId
@@ -213,11 +224,17 @@ export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
     mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
         addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
             id
+            createdAt
+            updatedAt
             optionGroups {
                 id
+                createdAt
+                updatedAt
                 code
                 options {
                     id
+                    createdAt
+                    updatedAt
                     code
                 }
             }
@@ -229,11 +246,17 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
         removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
             id
+            createdAt
+            updatedAt
             optionGroups {
                 id
+                createdAt
+                updatedAt
                 code
                 options {
                     id
+                    createdAt
+                    updatedAt
                     code
                 }
             }
@@ -255,12 +278,16 @@ export const GET_PRODUCT_LIST = gql`
         products(options: $options) {
             items {
                 id
+                createdAt
+                updatedAt
                 enabled
                 languageCode
                 name
                 slug
                 featuredAsset {
                     id
+                    createdAt
+                    updatedAt
                     preview
                 }
             }
@@ -273,11 +300,15 @@ export const GET_PRODUCT_OPTION_GROUPS = gql`
     query GetProductOptionGroups($filterTerm: String) {
         productOptionGroups(filterTerm: $filterTerm) {
             id
+            createdAt
+            updatedAt
             languageCode
             code
             name
             options {
                 id
+                createdAt
+                updatedAt
                 languageCode
                 code
                 name
@@ -325,9 +356,13 @@ export const SEARCH_PRODUCTS = gql`
                 count
                 facetValue {
                     id
+                    createdAt
+                    updatedAt
                     name
                     facet {
                         id
+                        createdAt
+                        updatedAt
                         name
                     }
                 }
@@ -340,6 +375,8 @@ export const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {
             id
+            createdAt
+            updatedAt
             code
             name
         }
@@ -359,6 +396,8 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
     query GetProductVariantOptions($id: ID!) {
         product(id: $id) {
             id
+            createdAt
+            updatedAt
             name
             optionGroups {
                 id
@@ -366,12 +405,16 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
                 code
                 options {
                     id
+                    createdAt
+                    updatedAt
                     name
                     code
                 }
             }
             variants {
                 id
+                createdAt
+                updatedAt
                 enabled
                 name
                 sku
@@ -380,6 +423,8 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
                 enabled
                 options {
                     id
+                    createdAt
+                    updatedAt
                     name
                     code
                     groupId

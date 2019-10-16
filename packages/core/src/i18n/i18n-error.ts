@@ -1,5 +1,7 @@
 import { ApolloError } from 'apollo-server-core';
 
+import { LogLevel } from '../config/logger/vendure-logger';
+
 /**
  * @description
  * All errors thrown in the Vendure server must use or extend this error class. This allows the
@@ -17,7 +19,8 @@ export abstract class I18nError extends ApolloError {
     protected constructor(
         public message: string,
         public variables: { [key: string]: string | number } = {},
-        code?: string,
+        public code?: string,
+        public logLevel: LogLevel = LogLevel.Warn,
     ) {
         super(message, code);
     }

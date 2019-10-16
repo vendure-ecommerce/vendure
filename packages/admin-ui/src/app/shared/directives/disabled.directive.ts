@@ -14,9 +14,9 @@ export class DisabledDirective {
             return;
         }
         if (val === false) {
-            this.formControlName.control.enable();
+            this.formControlName.control.enable({ emitEvent: false });
         } else {
-            this.formControlName.control.disable();
+            this.formControlName.control.disable({ emitEvent: false });
         }
     }
 

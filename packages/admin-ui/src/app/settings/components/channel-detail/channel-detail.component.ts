@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getDefaultLanguage } from '@vendure/admin-ui/src/app/common/utilities/get-default-language';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
@@ -69,13 +70,15 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             return;
         }
         const formValue = this.detailForm.value;
-        const input = {
+        const input: CreateChannelInput = {
             code: formValue.code,
+            token: formValue.token,
+            defaultLanguageCode: getDefaultLanguage(),
             pricesIncludeTax: formValue.pricesIncludeTax,
             currencyCode: formValue.currencyCode,
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
-        } as CreateChannelInput;
+        };
         this.dataService.settings.createChannel(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {

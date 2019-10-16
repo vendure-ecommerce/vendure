@@ -251,6 +251,8 @@ export type ConfigurableOperationInput = {
 export type Country = Node & {
     __typename?: 'Country';
     id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     code: Scalars['String'];
     name: Scalars['String'];
@@ -835,6 +837,7 @@ export type HistoryEntry = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    isPublic: Scalars['Boolean'];
     type: HistoryEntryType;
     administrator?: Maybe<Administrator>;
     data: Scalars['JSON'];
@@ -843,6 +846,7 @@ export type HistoryEntry = Node & {
 export type HistoryEntryFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    isPublic?: Maybe<BooleanOperators>;
     type?: Maybe<StringOperators>;
 };
 
@@ -872,6 +876,8 @@ export enum HistoryEntryType {
     ORDER_CANCELLATION = 'ORDER_CANCELLATION',
     ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
     ORDER_NOTE = 'ORDER_NOTE',
+    ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
+    ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
 }
 
 export type ImportInfo = {
@@ -1299,6 +1305,10 @@ export type Mutation = {
      * third argument 'customFields' will be available.
      */
     adjustOrderLine?: Maybe<Order>;
+    /** Applies the given coupon code to the active Order */
+    applyCouponCode?: Maybe<Order>;
+    /** Removes the given coupon code from the active Order */
+    removeCouponCode?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
     setOrderShippingAddress?: Maybe<Order>;
     setOrderShippingMethod?: Maybe<Order>;
@@ -1354,6 +1364,14 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
     orderLineId: Scalars['ID'];
     quantity?: Maybe<Scalars['Int']>;
+};
+
+export type MutationApplyCouponCodeArgs = {
+    couponCode: Scalars['String'];
+};
+
+export type MutationRemoveCouponCodeArgs = {
+    couponCode: Scalars['String'];
 };
 
 export type MutationTransitionOrderToStateArgs = {
@@ -1458,17 +1476,23 @@ export type Order = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    /** A unique code for the Order */
     code: Scalars['String'];
     state: Scalars['String'];
+    /** An order is active as long as the payment process has not been completed */
     active: Scalars['Boolean'];
     customer?: Maybe<Customer>;
     shippingAddress?: Maybe<OrderAddress>;
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
+    /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
+    couponCodes: Array<Scalars['String']>;
+    promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     subTotalBeforeTax: Scalars['Int'];
+    /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
     subTotal: Scalars['Int'];
     currencyCode: CurrencyCode;
     shipping: Scalars['Int'];
@@ -1840,6 +1864,10 @@ export type Promotion = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    startsAt?: Maybe<Scalars['DateTime']>;
+    endsAt?: Maybe<Scalars['DateTime']>;
+    couponCode?: Maybe<Scalars['String']>;
+    perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
@@ -2192,8 +2220,14 @@ export type Zone = Node & {
 };
 export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'shipping'
+    'id' | 'code' | 'state' | 'active' | 'total' | 'couponCodes' | 'shipping'
 > & {
+        adjustments: Array<
+            { __typename?: 'Adjustment' } & Pick<
+                Adjustment,
+                'adjustmentSource' | 'amount' | 'description' | 'type'
+            >
+        >;
         lines: Array<
             { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                     productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
@@ -2203,6 +2237,9 @@ export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
             { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
         >;
         customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+        history: { __typename?: 'HistoryEntryList' } & {
+            items: Array<{ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'>>;
+        };
     };
 
 export type AddItemToOrderMutationVariables = {
@@ -2212,11 +2249,17 @@ export type AddItemToOrderMutationVariables = {
 
 export type AddItemToOrderMutation = { __typename?: 'Mutation' } & {
     addItemToOrder: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'active'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'active' | 'total'> & {
                 lines: Array<
                     { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                             productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
                         }
+                >;
+                adjustments: Array<
+                    { __typename?: 'Adjustment' } & Pick<
+                        Adjustment,
+                        'adjustmentSource' | 'amount' | 'description' | 'type'
+                    >
                 >;
             }
     >;
@@ -2426,6 +2469,18 @@ export type GetOrderByCodeQuery = { __typename?: 'Query' } & {
     orderByCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
+export type GetOrderPromotionsByCodeQueryVariables = {
+    code: Scalars['String'];
+};
+
+export type GetOrderPromotionsByCodeQuery = { __typename?: 'Query' } & {
+    orderByCode: Maybe<
+        { __typename?: 'Order' } & {
+            promotions: Array<{ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'name'>>;
+        } & TestOrderFragmentFragment
+    >;
+};
+
 export type GetAvailableCountriesQueryVariables = {};
 
 export type GetAvailableCountriesQuery = { __typename?: 'Query' } & {
@@ -2524,12 +2579,31 @@ export type GetCustomerAddressesQuery = { __typename?: 'Query' } & {
         }
     >;
 };
+
+export type ApplyCouponCodeMutationVariables = {
+    couponCode: Scalars['String'];
+};
+
+export type ApplyCouponCodeMutation = { __typename?: 'Mutation' } & {
+    applyCouponCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
+export type RemoveCouponCodeMutationVariables = {
+    couponCode: Scalars['String'];
+};
+
+export type RemoveCouponCodeMutation = { __typename?: 'Mutation' } & {
+    removeCouponCode: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
 export namespace TestOrderFragment {
     export type Fragment = TestOrderFragmentFragment;
+    export type Adjustments = NonNullable<TestOrderFragmentFragment['adjustments'][0]>;
     export type Lines = NonNullable<TestOrderFragmentFragment['lines'][0]>;
     export type ProductVariant = (NonNullable<TestOrderFragmentFragment['lines'][0]>)['productVariant'];
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
+    export type History = TestOrderFragmentFragment['history'];
+    export type Items = NonNullable<TestOrderFragmentFragment['history']['items'][0]>;
 }
 
 export namespace AddItemToOrder {
@@ -2540,6 +2614,9 @@ export namespace AddItemToOrder {
     export type ProductVariant = (NonNullable<
         (NonNullable<AddItemToOrderMutation['addItemToOrder']>)['lines'][0]
     >)['productVariant'];
+    export type Adjustments = NonNullable<
+        (NonNullable<AddItemToOrderMutation['addItemToOrder']>)['adjustments'][0]
+    >;
 }
 
 export namespace SearchProductsShop {
@@ -2672,6 +2749,15 @@ export namespace GetOrderByCode {
     export type OrderByCode = TestOrderFragmentFragment;
 }
 
+export namespace GetOrderPromotionsByCode {
+    export type Variables = GetOrderPromotionsByCodeQueryVariables;
+    export type Query = GetOrderPromotionsByCodeQuery;
+    export type OrderByCode = TestOrderFragmentFragment;
+    export type Promotions = NonNullable<
+        (NonNullable<GetOrderPromotionsByCodeQuery['orderByCode']>)['promotions'][0]
+    >;
+}
+
 export namespace GetAvailableCountries {
     export type Variables = GetAvailableCountriesQueryVariables;
     export type Query = GetAvailableCountriesQuery;
@@ -2726,4 +2812,16 @@ export namespace GetCustomerAddresses {
             (NonNullable<(NonNullable<GetCustomerAddressesQuery['activeOrder']>)['customer']>)['addresses']
         >)[0]
     >;
+}
+
+export namespace ApplyCouponCode {
+    export type Variables = ApplyCouponCodeMutationVariables;
+    export type Mutation = ApplyCouponCodeMutation;
+    export type ApplyCouponCode = TestOrderFragmentFragment;
+}
+
+export namespace RemoveCouponCode {
+    export type Variables = RemoveCouponCodeMutationVariables;
+    export type Mutation = RemoveCouponCodeMutation;
+    export type RemoveCouponCode = TestOrderFragmentFragment;
 }

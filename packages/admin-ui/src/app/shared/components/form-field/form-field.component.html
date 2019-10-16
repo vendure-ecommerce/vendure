@@ -1,7 +1,7 @@
 <div
     class="form-group"
     [class.no-label]="!label"
-    [class.clr-error]="formFieldControl?.formControlName.invalid"
+    [class.clr-error]="formFieldControl?.formControlName?.invalid"
 >
     <label *ngIf="label" [for]="for" class="clr-control-label">
         {{ label }}

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryListOptions, HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
+import { Connection, FindConditions } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -40,6 +40,13 @@ export type OrderHistoryEntryData = {
     [HistoryEntryType.ORDER_NOTE]: {
         note: string;
     };
+    [HistoryEntryType.ORDER_COUPON_APPLIED]: {
+        couponCode: string;
+        promotionId: ID;
+    };
+    [HistoryEntryType.ORDER_COUPON_REMOVED]: {
+        couponCode: string;
+    };
 };
 
 export interface CreateOrderHistoryEntryArgs<T extends keyof OrderHistoryEntryData> {
@@ -54,30 +61,43 @@ export interface CreateOrderHistoryEntryArgs<T extends keyof OrderHistoryEntryDa
  */
 @Injectable()
 export class HistoryService {
-    constructor(@InjectConnection() private connection: Connection,
-                private administratorService: AdministratorService,
-                private listQueryBuilder: ListQueryBuilder) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private administratorService: AdministratorService,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
-    async getHistoryForOrder(orderId: ID, options?: HistoryEntryListOptions): Promise<PaginatedList<OrderHistoryEntry>> {
-        return this.listQueryBuilder.build(HistoryEntry as any as Type<OrderHistoryEntry>, options, {
-            where: {
-                order: { id: orderId } as any,
-            },
-            relations: ['administrator'],
-        }).getManyAndCount()
+    async getHistoryForOrder(
+        orderId: ID,
+        publicOnly: boolean,
+        options?: HistoryEntryListOptions,
+    ): Promise<PaginatedList<OrderHistoryEntry>> {
+        return this.listQueryBuilder
+            .build((HistoryEntry as any) as Type<OrderHistoryEntry>, options, {
+                where: {
+                    order: { id: orderId } as any,
+                    ...(publicOnly ? { isPublic: true } : {}),
+                },
+                relations: ['administrator'],
+            })
+            .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
                 totalItems,
             }));
     }
 
-    async createHistoryEntryForOrder<T extends keyof OrderHistoryEntryData>(args: CreateOrderHistoryEntryArgs<T>): Promise<OrderHistoryEntry> {
-        const {ctx, data, orderId, type} = args;
-        const administrator = ctx.activeUserId ? await this.administratorService.findOneByUserId(ctx.activeUserId) : undefined;
+    async createHistoryEntryForOrder<T extends keyof OrderHistoryEntryData>(
+        args: CreateOrderHistoryEntryArgs<T>,
+        isPublic = true,
+    ): Promise<OrderHistoryEntry> {
+        const { ctx, data, orderId, type } = args;
+        const administrator = ctx.activeUserId
+            ? await this.administratorService.findOneByUserId(ctx.activeUserId)
+            : undefined;
         const entry = new OrderHistoryEntry({
             type,
-            // TODO: figure out which should be public and not
-            isPublic: true,
+            isPublic,
             data: data as any,
             order: { id: orderId },
             administrator,

@@ -14,6 +14,8 @@ export class CountryResolver extends BaseEntityResolver<Country.Fragment> {
             {
                 __typename: 'Country',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 code: '',
                 name: '',
                 enabled: false,

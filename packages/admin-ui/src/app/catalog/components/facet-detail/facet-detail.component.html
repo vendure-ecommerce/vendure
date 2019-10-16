@@ -1,5 +1,6 @@
 <vdr-action-bar>
     <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
         <vdr-language-selector
             [disabled]="isNew$ | async"
             [availableLanguageCodes]="availableLanguages$ | async"
@@ -92,6 +93,7 @@
         <table class="facet-values-list table" formArrayName="values" *ngIf="0 < getValuesFormArray().length">
             <thead>
                 <tr>
+                    <th></th>
                     <th>{{ 'common.name' | translate }}</th>
                     <th>{{ 'common.code' | translate }}</th>
                     <ng-container *ngFor="let customField of customValueFields">
@@ -103,10 +105,13 @@
             <tbody>
                 <tr
                     class="facet-value"
-                    *ngFor="let value of getValuesFormArray().controls; let i = index"
+                    *ngFor="let value of values$ | async; let i = index"
                     [formGroupName]="i"
                 >
-                    <td>
+                    <td class="align-middle">
+                        <vdr-entity-info [entity]="value"></vdr-entity-info>
+                    </td>
+                    <td class="align-middle">
                         <input
                             type="text"
                             formControlName="name"
@@ -114,9 +119,9 @@
                             (input)="updateValueCode(facet.values[i]?.code, $event.target.value, i)"
                         />
                     </td>
-                    <td><input type="text" formControlName="code" readonly /></td>
+                    <td class="align-middle"><input type="text" formControlName="code" readonly /></td>
                     <ng-container *ngFor="let customField of customValueFields">
-                        <td>
+                        <td class="align-middle">
                             <vdr-custom-field-control
                                 *ngIf="customValueFieldIsSet(i, customField.name)"
                                 entityName="FacetValue"
@@ -126,7 +131,7 @@
                             ></vdr-custom-field-control>
                         </td>
                     </ng-container>
-                    <td>
+                    <td class="align-middle">
                         <vdr-dropdown>
                             <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
                                 {{ 'common.actions' | translate }}

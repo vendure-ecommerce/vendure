@@ -1,14 +1,12 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <clr-toggle-wrapper *vdrIfPermissions="'UpdatePromotion'">
-            <input
-                type="checkbox"
-                clrToggle
-                name="enabled"
-                [formControl]="detailForm.get(['enabled'])"
-            />
-            <label>{{ 'common.enabled' | translate }}</label>
-        </clr-toggle-wrapper>
+        <div class="flex clr-align-items-center">
+            <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+            <clr-toggle-wrapper *vdrIfPermissions="'UpdatePromotion'">
+                <input type="checkbox" clrToggle name="enabled" [formControl]="detailForm.get(['enabled'])" />
+                <label>{{ 'common.enabled' | translate }}</label>
+            </clr-toggle-wrapper>
+        </div>
     </vdr-ab-left>
 
     <vdr-ab-right>
@@ -41,6 +39,30 @@
             [readonly]="!('UpdatePromotion' | hasPermission)"
             type="text"
             formControlName="name"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.starts-at' | translate" for="startsAt">
+        <vdr-datetime-picker formControlName="startsAt"></vdr-datetime-picker>
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.ends-at' | translate" for="endsAt">
+        <vdr-datetime-picker formControlName="endsAt"></vdr-datetime-picker>
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.coupon-code' | translate" for="couponCode">
+        <input
+            id="couponCode"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+            type="text"
+            formControlName="couponCode"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'marketing.per-customer-limit' | translate" for="perCustomerUsageLimit">
+        <input
+            id="perCustomerUsageLimit"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+            type="number"
+            min="1"
+            max="999"
+            formControlName="perCustomerUsageLimit"
         />
     </vdr-form-field>
 

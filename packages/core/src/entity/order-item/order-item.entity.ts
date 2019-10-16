@@ -3,8 +3,8 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToOne, RelationId } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
-import { idType } from '../../config/config-helpers';
 import { VendureEntity } from '../base/base.entity';
+import { EntityId } from '../entity-id.decorator';
 import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Refund } from '../refund/refund.entity';
@@ -36,13 +36,13 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => Fulfillment)
     fulfillment: Fulfillment;
 
-    @Column({ type: idType(), nullable: true })
+    @EntityId({ nullable: true })
     fulfillmentId: ID | null;
 
     @ManyToOne(type => Refund)
     refund: Refund;
 
-    @Column({ type: idType(), nullable: true })
+    @EntityId({ nullable: true })
     refundId: ID | null;
 
     @OneToOne(type => Cancellation, cancellation => cancellation.orderItem)
@@ -65,6 +65,9 @@ export class OrderItem extends VendureEntity {
         }
     }
 
+    /**
+     * Adjustments with promotion values adjusted to include tax.
+     */
     @Calculated()
     get adjustments(): Adjustment[] {
         if (this.unitPriceIncludesTax) {
@@ -108,7 +111,7 @@ export class OrderItem extends VendureEntity {
     }
 
     get promotionAdjustmentsTotal(): number {
-        return this.adjustments
+        return this.pendingAdjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
     }
@@ -121,7 +124,9 @@ export class OrderItem extends VendureEntity {
         if (!type) {
             this.pendingAdjustments = [];
         } else {
-            this.pendingAdjustments = this.pendingAdjustments.filter(a => a.type !== type);
+            this.pendingAdjustments = this.pendingAdjustments
+                ? this.pendingAdjustments.filter(a => a.type !== type)
+                : [];
         }
     }
 }

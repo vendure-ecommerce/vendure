@@ -56,10 +56,25 @@
             [items]="reasons"
             bindLabel="name"
             autofocus
+            [placeholder]="'order.refund-reason-required' | translate"
             bindValue="id"
             [addTag]="true"
             [(ngModel)]="reason"
         ></ng-select>
+
+        <clr-select-container>
+            <label>{{ 'order.payment-to-refund' | translate }}</label>
+            <select clrSelect name="options" [(ngModel)]="selectedPayment">
+                <option
+                    *ngFor="let payment of settledPayments"
+                    [ngValue]="payment"
+                    [disabled]="payment.state !== 'Settled'"
+                >
+                    #{{ payment.id }} {{ payment.method }}:
+                    {{ payment.amount / 100 | currency: order.currencyCode }}
+                </option>
+            </select>
+        </clr-select-container>
 
         <clr-checkbox-wrapper>
             <input type="checkbox" clrCheckbox [(ngModel)]="refundShipping" />
@@ -79,18 +94,19 @@
         </clr-input-container>
         <div class="totals">
             <div class="order-total">
-                {{ 'order.order-total' | translate }}: {{ order.total / 100 | currency: order.currencyCode }}
+                {{ 'order.payment-amount' | translate }}:
+                {{ selectedPayment.amount / 100 | currency: order.currencyCode }}
             </div>
             <div class="refund-total">
                 {{ 'order.refund-total' | translate }}: {{ refundTotal / 100 | currency: order.currencyCode }}
             </div>
-            <div class="refund-total-error" *ngIf="refundTotal < 0 || order.total < refundTotal">
+            <div class="refund-total-error" *ngIf="refundTotal < 0 || selectedPayment.amount < refundTotal">
                 {{
                     'order.refund-total-error'
                         | translate
                             : {
                                   min: 0 | currency: order.currencyCode,
-                                  max: order.total / 100 | currency: order.currencyCode
+                                  max: selectedPayment.amount / 100 | currency: order.currencyCode
                               }
                 }}
             </div>
@@ -103,7 +119,7 @@
     <button
         type="submit"
         (click)="select()"
-        [disabled]="!reason || refundTotal === 0 || refundTotal > order.total"
+        [disabled]="!selectedPayment || !reason || refundTotal === 0 || refundTotal > selectedPayment.amount"
         class="btn btn-primary"
     >
         {{

@@ -2,7 +2,7 @@ import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types'
 import { ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-import { idType } from '../../config/config-helpers';
+import { EntityId } from '../../entity/entity-id.decorator';
 
 @Entity()
 export class SearchIndexItem {
@@ -14,13 +14,13 @@ export class SearchIndexItem {
         }
     }
 
-    @PrimaryColumn({ type: idType() })
+    @EntityId({ primary: true })
     productVariantId: ID;
 
     @PrimaryColumn('varchar')
     languageCode: LanguageCode;
 
-    @Column({ type: idType() })
+    @EntityId()
     productId: ID;
 
     @Column()

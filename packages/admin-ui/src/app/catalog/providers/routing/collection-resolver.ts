@@ -12,6 +12,8 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
             {
                 __typename: 'Collection' as 'Collection',
                 id: '',
+                createdAt: '',
+                updatedAt: '',
                 languageCode: getDefaultLanguage(),
                 name: '',
                 isPrivate: false,

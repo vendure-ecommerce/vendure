@@ -1,9 +1,9 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 
-import { idType } from '../../config/config-helpers';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 import { VendureEntity } from '../base/base.entity';
+import { EntityId } from '../entity-id.decorator';
 import { OrderItem } from '../order-item/order-item.entity';
 import { Payment, PaymentMetadata } from '../payment/payment.entity';
 
@@ -37,7 +37,7 @@ export class Refund extends VendureEntity {
     @JoinColumn()
     payment: Payment;
 
-    @Column({ type: idType() })
+    @EntityId()
     paymentId: ID;
 
     @Column('simple-json') metadata: PaymentMetadata;

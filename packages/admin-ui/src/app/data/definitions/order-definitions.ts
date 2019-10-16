@@ -85,6 +85,9 @@ export const ORDER_DETAIL_FRAGMENT = gql`
                 name
                 sku
             }
+            adjustments {
+                ...Adjustment
+            }
             unitPrice
             unitPriceWithTax
             quantity
@@ -105,11 +108,16 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         adjustments {
             ...Adjustment
         }
+        promotions {
+            id
+            couponCode
+        }
         subTotal
         subTotalBeforeTax
         totalBeforeTax
         currencyCode
         shipping
+        shippingWithTax
         shippingMethod {
             id
             code
@@ -233,6 +241,7 @@ export const GET_ORDER_HISTORY = gql`
                     id
                     type
                     createdAt
+                    isPublic
                     administrator {
                         id
                         firstName
