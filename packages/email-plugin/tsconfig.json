@@ -5,7 +5,6 @@
     "removeComments": true,
     "noLib": false,
     "skipLibCheck": true,
-    "sourceMap": true,
-    "newLine": "LF"
+    "sourceMap": true
   }
 }
