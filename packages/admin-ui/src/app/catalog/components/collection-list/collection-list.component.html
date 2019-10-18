@@ -1,4 +1,10 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <clr-checkbox-wrapper class="expand-all-toggle">
+            <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
+            <label>{{ 'catalog.expand-all-collections' | translate }}</label>
+        </clr-checkbox-wrapper>
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="collection-list"></vdr-action-bar-items>
         <a class="btn btn-primary" *vdrIfPermissions="'CreateCatalog'" [routerLink]="['./create']">
@@ -11,6 +17,7 @@
     <vdr-collection-tree
         [collections]="items$ | async"
         [activeCollectionId]="activeCollectionId$ | async"
+        [expandAll]="expandAll"
         (rearrange)="onRearrange($event)"
         (deleteCollection)="deleteCollection($event)"
     ></vdr-collection-tree>

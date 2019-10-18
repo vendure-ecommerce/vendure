@@ -25,6 +25,7 @@ export type CollectionPartial = Pick<Collection.Fragment, 'id' | 'parent' | 'nam
 export class CollectionTreeComponent implements OnChanges {
     @Input() collections: CollectionPartial[];
     @Input() activeCollectionId: string;
+    @Input() expandAll = false;
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     @Output() deleteCollection = new EventEmitter<string>();
     collectionTree: RootNode<CollectionPartial>;

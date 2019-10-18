@@ -18,6 +18,7 @@ export class CollectionTreeNodeComponent implements OnInit {
     parentName: string;
     @Input() collectionTree: TreeNode<CollectionPartial>;
     @Input() activeCollectionId: string;
+    @Input() expandAll = false;
     hasUpdatePermission$: Observable<boolean>;
     hasDeletePermission$: Observable<boolean>;
 

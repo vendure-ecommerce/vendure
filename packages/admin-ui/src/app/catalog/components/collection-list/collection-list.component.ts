@@ -21,6 +21,7 @@ export class CollectionListComponent implements OnInit {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<GetCollectionList.Items[]>;
+    expandAll = false;
     private queryResult: QueryResult<any>;
 
     constructor(
