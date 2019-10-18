@@ -183,7 +183,6 @@ export class ServiceModule {
                     } else {
                         return {
                             ...dbConnectionOptions,
-                            name: 'worker',
                         };
                     }
                 },
