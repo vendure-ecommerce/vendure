@@ -1,4 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
+import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request, Response } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
@@ -8,10 +8,10 @@ import { GraphQLResolveInfo } from 'graphql';
  * GraphQL & REST requests.
  */
 export function parseContext(
-    context: ExecutionContext,
+    context: ExecutionContext | ArgumentsHost,
 ): { req: Request; res: Response; isGraphQL: boolean; info?: GraphQLResolveInfo } {
-    const graphQlContext = GqlExecutionContext.create(context);
-    const restContext = GqlExecutionContext.create(context);
+    const graphQlContext = GqlExecutionContext.create(context as ExecutionContext);
+    const restContext = GqlExecutionContext.create(context as ExecutionContext);
     const info = graphQlContext.getInfo();
     let req: Request;
     let res: Response;

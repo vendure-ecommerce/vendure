@@ -81,27 +81,31 @@ export class DefaultLogger implements VendureLogger {
 
     error(message: string, context?: string, trace?: string | undefined): void {
         if (this.level >= LogLevel.Error) {
-            this.logMessage(chalk.red(`error`), chalk.red(message + (trace ? `\n${trace}` : '')), context);
+            this.logMessage(
+                chalk.red(`error`),
+                chalk.red(this.ensureString(message) + (trace ? `\n${trace}` : '')),
+                context,
+            );
         }
     }
     warn(message: string, context?: string): void {
         if (this.level >= LogLevel.Warn) {
-            this.logMessage(chalk.yellow(`warn`), chalk.yellow(message), context);
+            this.logMessage(chalk.yellow(`warn`), chalk.yellow(this.ensureString(message)), context);
         }
     }
     info(message: string, context?: string): void {
         if (this.level >= LogLevel.Info) {
-            this.logMessage(chalk.blue(`info`), message, context);
+            this.logMessage(chalk.blue(`info`), this.ensureString(message), context);
         }
     }
     verbose(message: string, context?: string): void {
         if (this.level >= LogLevel.Verbose) {
-            this.logMessage(chalk.magenta(`verbose`), message, context);
+            this.logMessage(chalk.magenta(`verbose`), this.ensureString(message), context);
         }
     }
     debug(message: string, context?: string): void {
         if (this.level >= LogLevel.Debug) {
-            this.logMessage(chalk.magenta(`debug`), message, context);
+            this.logMessage(chalk.magenta(`debug`), this.ensureString(message), context);
         }
     }
 
@@ -122,5 +126,9 @@ export class DefaultLogger implements VendureLogger {
         } else {
             return '';
         }
+    }
+
+    private ensureString(message: string | object | any[]): string {
+        return typeof message === 'string' ? message : JSON.stringify(message, null, 2);
     }
 }
