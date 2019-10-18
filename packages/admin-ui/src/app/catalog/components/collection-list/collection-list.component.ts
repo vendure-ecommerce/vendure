@@ -89,13 +89,13 @@ export class CollectionListComponent
             .subscribe(
                 () => {
                     this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'ProductVariant',
+                        entity: 'Collection',
                     });
                     this.refresh();
                 },
                 err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'ProductVariant',
+                        entity: 'Collection',
                     });
                 },
             );
