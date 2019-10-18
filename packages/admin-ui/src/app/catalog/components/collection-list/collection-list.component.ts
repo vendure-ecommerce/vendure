@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
-import { BaseListComponent } from '../../../common/base-list.component';
-import { GetCollectionList } from '../../../common/generated-types';
+import { Collection, GetCollectionList } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { QueryResult } from '../../../data/query-result';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
@@ -18,34 +17,23 @@ import { RearrangeEvent } from '../collection-tree/collection-tree.component';
     styleUrls: ['./collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionListComponent
-    extends BaseListComponent<GetCollectionList.Query, GetCollectionList.Items>
-    implements OnInit {
+export class CollectionListComponent implements OnInit {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
-    paginationConfig$: Observable<PaginationInstance>;
+    items$: Observable<GetCollectionList.Items[]>;
+    private queryResult: QueryResult<any>;
 
     constructor(
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.collection.getCollections(...args),
-            data => data.collections,
-        );
-    }
+        private router: Router,
+        private route: ActivatedRoute,
+    ) {}
 
     ngOnInit() {
-        super.ngOnInit();
-
-        this.paginationConfig$ = combineLatest(this.itemsPerPage$, this.currentPage$, this.totalItems$).pipe(
-            map(([itemsPerPage, currentPage, totalItems]) => ({ itemsPerPage, currentPage, totalItems })),
-        );
-
+        this.queryResult = this.dataService.collection.getCollections(99999, 0);
+        this.items$ = this.queryResult.mapStream(data => data.collections.items);
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
@@ -105,5 +93,9 @@ export class CollectionListComponent
         const params = { ...this.route.snapshot.params };
         delete params.contents;
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    }
+
+    private refresh() {
+        this.queryResult.ref.refetch();
     }
 }

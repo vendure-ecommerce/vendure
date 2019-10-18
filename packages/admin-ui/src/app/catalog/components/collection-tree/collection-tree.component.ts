@@ -14,6 +14,7 @@ import { Collection } from '../../../common/generated-types';
 import { arrayToTree, HasParent, RootNode } from './array-to-tree';
 
 export type RearrangeEvent = { collectionId: string; parentId: string; index: number };
+export type CollectionPartial = Pick<Collection.Fragment, 'id' | 'parent' | 'name'>;
 
 @Component({
     selector: 'vdr-collection-tree',
@@ -22,11 +23,11 @@ export type RearrangeEvent = { collectionId: string; parentId: string; index: nu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionTreeComponent implements OnChanges {
-    @Input() collections: Collection.Fragment[];
+    @Input() collections: CollectionPartial[];
     @Input() activeCollectionId: string;
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     @Output() deleteCollection = new EventEmitter<string>();
-    collectionTree: RootNode<Collection.Fragment>;
+    collectionTree: RootNode<CollectionPartial>;
 
     ngOnChanges(changes: SimpleChanges) {
         if ('collections' in changes && this.collections) {
@@ -34,8 +35,8 @@ export class CollectionTreeComponent implements OnChanges {
         }
     }
 
-    onDrop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
-        const item = event.item.data as Collection.Fragment;
+    onDrop(event: CdkDragDrop<CollectionPartial | RootNode<CollectionPartial>>) {
+        const item = event.item.data as CollectionPartial;
         const newParent = event.container.data;
         const newParentId = newParent.id;
         if (newParentId == null) {
