@@ -33,6 +33,7 @@
     "confirm-adding-options-delete-default-body": "Adding options to this product will cause the existing default variant to be deleted. Do you wish to proceed?",
     "confirm-adding-options-delete-default-title": "Delete default variant?",
     "confirm-delete-collection": "Delete collection?",
+    "confirm-delete-collection-and-children-body": "Deleting this collection will also delete all child collections",
     "confirm-delete-country": "Delete country?",
     "confirm-delete-facet": "Delete facet?",
     "confirm-delete-facet-value": "Delete facet value?",

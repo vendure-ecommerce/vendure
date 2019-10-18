@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap, take } from 'rxjs/operators';
 
 import { Collection, GetCollectionList } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -63,15 +63,22 @@ export class CollectionListComponent implements OnInit {
     }
 
     deleteCollection(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-collection'),
-                buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
+        this.items$
             .pipe(
+                take(1),
+                map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
+                switchMap(hasChildren => {
+                    return this.modalService.dialog({
+                        title: _('catalog.confirm-delete-collection'),
+                        body: hasChildren
+                            ? _('catalog.confirm-delete-collection-and-children-body')
+                            : undefined,
+                        buttons: [
+                            { type: 'seconday', label: _('common.cancel') },
+                            { type: 'danger', label: _('common.delete'), returnValue: true },
+                        ],
+                    });
+                }),
                 switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
             )
             .subscribe(
