@@ -48,7 +48,7 @@ import { FacetValueService } from './facet-value.service';
 import { JobService } from './job.service';
 
 export class CollectionService implements OnModuleInit {
-    private rootCategories: { [channelCode: string]: Collection } = {};
+    private rootCollections: { [channelCode: string]: Collection } = {};
     private availableFilters: Array<CollectionFilter<any>> = [
         facetValueCollectionFilter,
         variantNameCollectionFilter,
@@ -279,9 +279,12 @@ export class CollectionService implements OnModuleInit {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const collection = await getEntityOrThrow(this.connection, Collection, id);
-        const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
-        await this.connection.getRepository(Collection).remove(collection);
-        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+        const descendants = await this.getDescendants(ctx, collection.id);
+        for (const coll of [...descendants.reverse(), collection]) {
+            const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
+            await this.connection.getRepository(Collection).remove(coll);
+            this.eventBus.publish(new CollectionModificationEvent(ctx, coll, affectedVariantIds));
+        }
         return {
             result: DeletionResult.DELETED,
         };
@@ -428,7 +431,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     private async getRootCollection(ctx: RequestContext): Promise<Collection> {
-        const cachedRoot = this.rootCategories[ctx.channel.code];
+        const cachedRoot = this.rootCollections[ctx.channel.code];
 
         if (cachedRoot) {
             return cachedRoot;
@@ -444,8 +447,8 @@ export class CollectionService implements OnModuleInit {
             .getOne();
 
         if (existingRoot) {
-            this.rootCategories[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
-            return this.rootCategories[ctx.channel.code];
+            this.rootCollections[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
+            return this.rootCollections[ctx.channel.code];
         }
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
@@ -465,7 +468,7 @@ export class CollectionService implements OnModuleInit {
         });
 
         await this.connection.getRepository(Collection).save(newRoot);
-        this.rootCategories[ctx.channel.code] = newRoot;
+        this.rootCollections[ctx.channel.code] = newRoot;
         return newRoot;
     }
 

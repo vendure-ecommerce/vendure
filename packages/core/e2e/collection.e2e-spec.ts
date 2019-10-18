@@ -447,36 +447,53 @@ describe('Collection resolver', () => {
     });
 
     describe('deleteCollection', () => {
-        let collectionToDelete: CreateCollection.CreateCollection;
+        let collectionToDeleteParent: CreateCollection.CreateCollection;
+        let collectionToDeleteChild: CreateCollection.CreateCollection;
         let laptopProductId: string;
 
         beforeAll(async () => {
-            const { createCollection } = await client.query<
-                CreateCollection.Mutation,
-                CreateCollection.Variables
-            >(CREATE_COLLECTION, {
-                input: {
-                    filters: [
-                        {
-                            code: variantNameCollectionFilter.code,
-                            arguments: [
-                                {
-                                    name: 'operator',
-                                    value: 'contains',
-                                    type: 'string',
-                                },
-                                {
-                                    name: 'term',
-                                    value: 'laptop',
-                                    type: 'string',
-                                },
-                            ],
-                        },
-                    ],
-                    translations: [{ languageCode: LanguageCode.en, name: 'Delete Me', description: '' }],
+            const result1 = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'contains',
+                                        type: 'string',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'laptop',
+                                        type: 'string',
+                                    },
+                                ],
+                            },
+                        ],
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Delete Me Parent', description: '' },
+                        ],
+                    },
                 },
-            });
-            collectionToDelete = createCollection;
+            );
+            collectionToDeleteParent = result1.createCollection;
+
+            const result2 = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        filters: [],
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Delete Me Child', description: '' },
+                        ],
+                        parentId: collectionToDeleteParent.id,
+                    },
+                },
+            );
+            collectionToDeleteChild = result2.createCollection;
         });
 
         it(
@@ -493,7 +510,7 @@ describe('Collection resolver', () => {
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables
             >(GET_COLLECTION_PRODUCT_VARIANTS, {
-                id: collectionToDelete.id,
+                id: collectionToDeleteParent.id,
             });
             expect(collection!.productVariants.items.map(pick(['name']))).toEqual([
                 { name: 'Laptop 13 inch 8GB' },
@@ -515,7 +532,8 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_6', name: 'Delete Me' },
+                { id: 'T_6', name: 'Delete Me Parent' },
+                { id: 'T_7', name: 'Delete Me Child' },
             ]);
         });
 
@@ -524,17 +542,27 @@ describe('Collection resolver', () => {
                 DeleteCollection.Mutation,
                 DeleteCollection.Variables
             >(DELETE_COLLECTION, {
-                id: collectionToDelete.id,
+                id: collectionToDeleteParent.id,
             });
 
             expect(deleteCollection.result).toBe(DeletionResult.DELETED);
         });
 
-        it('deleted collection is null', async () => {
+        it('deleted parent collection is null', async () => {
             const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
                 GET_COLLECTION,
                 {
-                    id: collectionToDelete.id,
+                    id: collectionToDeleteParent.id,
+                },
+            );
+            expect(collection).toBeNull();
+        });
+
+        it('deleted child collection is null', async () => {
+            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: collectionToDeleteChild.id,
                 },
             );
             expect(collection).toBeNull();
@@ -1059,11 +1087,11 @@ describe('Collection resolver', () => {
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_8', name: 'Photo AND Pear' },
-                { id: 'T_9', name: 'Photo OR Pear' },
-                { id: 'T_11', name: 'contains camera' },
-                { id: 'T_13', name: 'endsWith camera' },
-                { id: 'T_15', name: 'pear electronics' },
+                { id: 'T_9', name: 'Photo AND Pear' },
+                { id: 'T_10', name: 'Photo OR Pear' },
+                { id: 'T_12', name: 'contains camera' },
+                { id: 'T_14', name: 'endsWith camera' },
+                { id: 'T_16', name: 'pear electronics' },
             ]);
         });
     });
