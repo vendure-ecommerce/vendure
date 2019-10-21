@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
@@ -38,15 +38,7 @@ export interface MigrationOptions {
  */
 export async function runMigrations(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    Object.assign(config.dbConnectionOptions, {
-        subscribers: [],
-        synchronize: false,
-        migrationsRun: false,
-        dropSchema: false,
-        logger: 'advanced-console',
-        logging: ['query', 'error', 'schema'],
-    });
-    const connection = await createConnection(config.dbConnectionOptions);
+    const connection = await createConnection(createConnectionOptions(userConfig));
     await disableForeignKeysForSqLite(connection, () => connection.runMigrations({ transaction: true }));
     await connection.close();
 }
@@ -60,15 +52,7 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
  */
 export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    Object.assign(config.dbConnectionOptions, {
-        subscribers: [],
-        synchronize: false,
-        migrationsRun: false,
-        dropSchema: false,
-        logger: 'advanced-console',
-        logging: ['query', 'error', 'schema'],
-    });
-    const connection = await createConnection(config.dbConnectionOptions);
+    const connection = await createConnection(createConnectionOptions(userConfig));
     await disableForeignKeysForSqLite(connection, () => connection.undoLastMigration({ transaction: true }));
     await connection.close();
 }
@@ -83,13 +67,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
  */
 export async function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions) {
     const config = await preBootstrapConfig(userConfig);
-    Object.assign(config.dbConnectionOptions, {
-        synchronize: false,
-        migrationsRun: false,
-        dropSchema: false,
-        logging: false,
-    });
-    const connection = await createConnection(config.dbConnectionOptions);
+    const connection = await createConnection(createConnectionOptions(userConfig));
 
     // TODO: This can hopefully be simplified if/when TypeORM exposes this CLI command directly.
     // See https://github.com/typeorm/typeorm/issues/4494
@@ -159,6 +137,16 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
         );
     }
     await connection.close();
+}
+
+function createConnectionOptions(userConfig: Partial<VendureConfig>): ConnectionOptions {
+    return Object.assign({ logging: ['query', 'error', 'schema'] }, userConfig.dbConnectionOptions, {
+        subscribers: [],
+        synchronize: false,
+        migrationsRun: false,
+        dropSchema: false,
+        logger: 'advanced-console',
+    });
 }
 
 /**
