@@ -49,7 +49,7 @@ import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
 import { ZoneService } from './services/zone.service';
 
-const exportedProviders = [
+const services = [
     AdministratorService,
     AssetService,
     AuthService,
@@ -79,7 +79,21 @@ const exportedProviders = [
     TaxRateService,
     UserService,
     ZoneService,
+];
+
+const helpers = [
     TranslatableSaver,
+    PasswordCiper,
+    TaxCalculator,
+    OrderCalculator,
+    OrderStateMachine,
+    OrderMerger,
+    PaymentStateMachine,
+    ListQueryBuilder,
+    ShippingCalculator,
+    VerificationTokenGenerator,
+    RefundStateMachine,
+    ShippingConfiguration,
 ];
 
 const workerControllers = [CollectionController];
@@ -94,21 +108,8 @@ let workerTypeOrmModule: DynamicModule;
  */
 @Module({
     imports: [ConfigModule, EventBusModule, WorkerServiceModule],
-    providers: [
-        ...exportedProviders,
-        PasswordCiper,
-        TaxCalculator,
-        OrderCalculator,
-        OrderStateMachine,
-        OrderMerger,
-        PaymentStateMachine,
-        ListQueryBuilder,
-        ShippingCalculator,
-        VerificationTokenGenerator,
-        RefundStateMachine,
-        ShippingConfiguration,
-    ],
-    exports: exportedProviders,
+    providers: [...services, ...helpers],
+    exports: [...services, ...helpers],
 })
 export class ServiceCoreModule implements OnModuleInit {
     constructor(
