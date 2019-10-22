@@ -21,7 +21,7 @@ Here is a very simple example to illustrate how a UI extension works:
 Below is an Angular module with a single component `GreeterComponent` which displays a greeting. A route is defined to load `GreeterComponent` at the route `/greet`.
 
 ```TypeScript
-// project/ui-extensions/greeter/greeter-extension.module.ts
+// project/ui-extensions/greeter-extension.module.ts
 
 import { Component, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -66,10 +66,12 @@ export const config: VendureConfig = {
             port: 5001,
             extensions: [
                 {
-                    type: 'lazy',
-                    ngModulePath: path.join(__dirname, 'ui-extensions/greeter'),
-                    ngModuleFileName: 'greeter-extension.module.ts',
-                    ngModuleName: 'GreeterModule',
+                    extensionPath: path.join(__dirname, 'ui-extensions'),
+                    ngModules: [{
+                        type: 'lazy',
+                        ngModuleFileName: 'greeter-extension.module.ts',
+                        ngModuleName: 'GreeterModule',
+                    }],
                 }
             ],
         })
@@ -107,7 +109,7 @@ Shared modules get imported into the main Admin UI `AppModule` and therefore are
 Once you have defined some custom views in a lazy extension module, you need some way for the administrator to access these views. For this you will use the `NavBuilderService` to define new navigation items. Let's add a new section to the Admin UI main nav bar containing a link to the lazy module from the simple example above:
 
 ```TypeScript
-// project/ui-extensions/shared/shared-extension.module.ts
+// project/ui-extensions/shared-extension.module.ts
 
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { SharedModule, NavBuilderService } from '@vendure/admin-ui/src';
@@ -156,16 +158,16 @@ Next we must add this shared module to the AdminUiOptions:
             port: 3002,
             extensions: [
                 {
-                    type: 'lazy',
-                    ngModulePath: path.join(__dirname, 'ui-extensions/greeter'),
-                    ngModuleFileName: 'greeter-extension.module.ts',
-                    ngModuleName: 'GreeterModule',
-                },
-                {
-                    type: 'shared',
-                    ngModulePath: path.join(__dirname, 'ui-extensions/shared'),
-                    ngModuleFileName: 'shared-extension.module.ts',
-                    ngModuleName: 'SharedExtensionModule',
+                    extensionPath: path.join(__dirname, 'ui-extensions'),
+                    ngModules: [{
+                        type: 'lazy',
+                        ngModuleFileName: 'greeter-extension.module.ts',
+                        ngModuleName: 'GreeterModule',
+                    }, {
+                        type: 'shared',
+                        ngModuleFileName: 'shared-extension.module.ts',
+                        ngModuleName: 'SharedExtensionModule',
+                    }],
                 },
             ],
         }),
@@ -326,11 +328,13 @@ When you are developing your Admin UI extension, you can set the `watch` option 
             port: 3002,
             extensions: [
                 {
-                    type: 'lazy',
-                    ngModulePath: path.join(__dirname, 'ui-extensions/greeter'),
-                    ngModuleFileName: 'greeter-extension.module.ts',
-                    ngModuleName: 'GreeterModule',
-                },
+                    extensionPath: path.join(__dirname, 'ui-extensions'),
+                    ngModules: [{
+                        type: 'lazy',
+                        ngModuleFileName: 'greeter-extension.module.ts',
+                        ngModuleName: 'GreeterModule',
+                    }],
+                }
             ],
             watch: true,
         }),
