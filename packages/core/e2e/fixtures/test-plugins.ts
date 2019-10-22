@@ -47,6 +47,14 @@ export class TestAdminPluginResolver {
     foo() {
         return ['bar'];
     }
+
+    @Query()
+    barList() {
+        return {
+            items: [{ id: 1, name: 'Test' }],
+            totalItems: 1,
+        };
+    }
 }
 
 @Resolver()
@@ -71,6 +79,17 @@ export class TestShopPluginResolver {
         schema: gql`
             extend type Query {
                 foo: [String]!
+                barList(options: BarListOptions): BarList!
+            }
+
+            input BarListOptions
+            type Bar implements Node {
+                id: ID!
+                name: String!
+            }
+            type BarList implements PaginatedList {
+                items: [Bar!]!
+                totalItems: Int!
             }
         `,
     },

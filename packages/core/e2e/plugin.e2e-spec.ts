@@ -85,6 +85,24 @@ describe('Plugins', () => {
         expect(result.baz).toEqual(['quux']);
     });
 
+    it('generates ListQueryOptions for api extensions', async () => {
+        const result = await adminClient.query(gql`
+            query {
+                barList(options: { skip: 0, take: 1 }) {
+                    items {
+                        id
+                        name
+                    }
+                    totalItems
+                }
+            }
+        `);
+        expect(result.barList).toEqual({
+            items: [{ id: 'T_1', name: 'Test' }],
+            totalItems: 1,
+        });
+    });
+
     it('DI works with defined providers', async () => {
         const result = await shopClient.query(gql`
             query {

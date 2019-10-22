@@ -1,6 +1,5 @@
 import {
     buildSchema,
-    extendSchema,
     GraphQLEnumType,
     GraphQLField,
     GraphQLInputFieldConfig,
@@ -59,14 +58,11 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                     ...(existingListOptions ? existingListOptions.getFields() : {}),
                 },
             });
-            let listOptionsInput: GraphQLInputObjectType;
-
-            listOptionsInput = generatedListOptions;
 
             if (!query.args.find(a => a.type.toString() === `${targetTypeName}ListOptions`)) {
                 query.args.push({
                     name: 'options',
-                    type: listOptionsInput,
+                    type: generatedListOptions,
                     description: null,
                     defaultValue: null,
                     extensions: null,
@@ -76,7 +72,7 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
 
             generatedTypes.push(filterParameter);
             generatedTypes.push(sortParameter);
-            generatedTypes.push(listOptionsInput);
+            generatedTypes.push(generatedListOptions);
         }
     }
     return mergeSchemas({ schemas: [schema, generatedTypes] });

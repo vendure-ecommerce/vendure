@@ -3,7 +3,7 @@ import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/gra
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { GraphQLUpload } from 'apollo-server-core';
-import { extendSchema, printSchema } from 'graphql';
+import { buildSchema, extendSchema, printSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
 import path from 'path';
@@ -161,17 +161,17 @@ async function createGraphQLOptions(
         // See https://github.com/nestjs/graphql/issues/336
         const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
         const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
-        let schema = generateListOptions(typeDefs);
+        let schema = buildSchema(typeDefs);
+
+        getPluginAPIExtensions(configService.plugins, apiType)
+            .map(e => e.schema)
+            .filter(notNullOrUndefined)
+            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+        schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
-        const pluginSchemaExtensions = getPluginAPIExtensions(configService.plugins, apiType)
-            .map(e => e.schema)
-            .filter(notNullOrUndefined);
 
-        for (const documentNode of pluginSchemaExtensions) {
-            schema = extendSchema(schema, documentNode);
-        }
         return printSchema(schema);
     }
 }
