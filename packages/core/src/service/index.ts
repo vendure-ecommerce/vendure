@@ -1,5 +1,6 @@
 export * from './helpers/job-manager/job';
 export * from './helpers/utils/translate-entity';
+export * from './helpers/list-query-builder/list-query-builder';
 export * from './helpers/order-state-machine/order-state';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './services/administrator.service';
