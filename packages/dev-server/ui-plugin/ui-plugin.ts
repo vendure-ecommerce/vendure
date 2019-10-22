@@ -6,16 +6,19 @@ import path from 'path';
 export class UiPlugin {
     static uiExtensions: AdminUiExtension[] = [
         {
-            type: 'lazy',
-            ngModulePath: path.join(__dirname, 'lazy-module'),
-            ngModuleFileName: 'ui-plugin.module.ts',
-            ngModuleName: 'TestModule',
-        },
-        {
-            type: 'shared',
-            ngModulePath: path.join(__dirname, 'shared-module'),
-            ngModuleFileName: 'ui-shared-plugin.module.ts',
-            ngModuleName: 'TestSharedModule',
+            extensionPath: path.join(__dirname, 'extensions'),
+            ngModules: [
+                {
+                    type: 'lazy',
+                    ngModuleFileName: 'ui-plugin.module.ts',
+                    ngModuleName: 'TestModule',
+                },
+                {
+                    type: 'shared',
+                    ngModuleFileName: 'ui-shared-plugin.module.ts',
+                    ngModuleName: 'TestSharedModule',
+                },
+            ],
         },
     ];
 }
