@@ -5,11 +5,11 @@
  * Source: https://stackoverflow.com/a/49936686/772859
  */
 export type DeepPartial<T> = {
-  [P in keyof T]?: null | (T[P] extends Array<infer U>
+    [P in keyof T]?: null | (T[P] extends Array<infer U>
     ? Array<DeepPartial<U>>
     : T[P] extends ReadonlyArray<infer U>
-      ? ReadonlyArray<DeepPartial<U>>
-      : DeepPartial<T[P]>)
+        ? ReadonlyArray<DeepPartial<U>>
+        : DeepPartial<T[P]>)
 };
 // tslint:enable:no-shadowed-variable
 
@@ -22,7 +22,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
     ? {
           [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
               ? NonNullable<T[P]>
-              : DeepRequired<NonNullable<T[P]>, U>;
+              : DeepRequired<NonNullable<T[P]>, U>
       }
     : T;
 // tslint:enable:ban-types
@@ -105,9 +105,31 @@ export interface AdminUiExtension {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
-     * import paths to your module.
+     * import paths to your module. If not specified, a unique hash will be used as the id.
      */
     id?: string;
+
+    /**
+     * @description
+     * The path to the directory containing the extension module(s). The entire contents of this directory
+     * will be copied into the Admin UI app, including all TypeScript source files, html templates,
+     * scss style sheets etc.
+     */
+    extensionPath: string;
+    /**
+     * @description
+     * One or more Angular modules which extend the default Admin UI.
+     */
+    ngModules: AdminUiExtensionModule[];
+}
+
+/**
+ * @description
+ * Configuration defining a single NgModule with which to extend the Admin UI.
+ *
+ * @docsCategory AdminUiPlugin
+ */
+export interface AdminUiExtensionModule {
     /**
      * @description
      * Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
@@ -118,13 +140,6 @@ export interface AdminUiExtension {
      * navigation items.
      */
     type: 'shared' | 'lazy';
-    /**
-     * @description
-     * The path to the directory containing the extension module. Each extension module
-     * should be located in its own directory. The entire contents of this directory
-     * will be copied into the Admin UI app.
-     */
-    ngModulePath: string;
     /**
      * @description
      * The name of the file containing the extension module class.

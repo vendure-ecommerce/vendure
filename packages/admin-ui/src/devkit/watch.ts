@@ -40,21 +40,21 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
     let watcher: FSWatcher | undefined;
     for (const extension of extensions) {
         if (!watcher) {
-            watcher = watch(extension.ngModulePath, {
+            watcher = watch(extension.extensionPath, {
                 depth: 4,
                 ignored: '**/node_modules/',
             });
         } else {
-            watcher.add(extension.ngModulePath);
+            watcher.add(extension.extensionPath);
         }
     }
 
     if (watcher) {
         watcher.on('change', filePath => {
-            const extension = extensions.find(e => filePath.includes(e.ngModulePath));
+            const extension = extensions.find(e => filePath.includes(e.extensionPath));
             if (extension) {
                 const outputDir = getModuleOutputDir(extension);
-                const filePart = path.relative(extension.ngModulePath, filePath);
+                const filePart = path.relative(extension.extensionPath, filePath);
                 const dest = path.join(outputDir, filePart);
                 fs.copyFile(filePath, dest);
             }

@@ -76,7 +76,7 @@ export class UiAppCompiler {
     private getExtensionModulesHash(extensions: Array<Required<AdminUiExtension>>): string {
         let modifiedDates: string[] = [];
         for (const extension of extensions) {
-            modifiedDates = [...modifiedDates, ...this.getAllModifiedDates(extension.ngModulePath)];
+            modifiedDates = [...modifiedDates, ...this.getAllModifiedDates(extension.extensionPath)];
         }
         const hash = crypto.createHash('sha256');
         hash.update(modifiedDates.join('') + JSON.stringify(extensions));
