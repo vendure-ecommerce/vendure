@@ -1,4 +1,4 @@
-import { AdminUiExtension } from '@vendure/common/lib/shared-types';
+import { AdminUiExtension, AdminUiExtensionModule } from '@vendure/common/lib/shared-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -23,14 +23,14 @@ export function deleteExistingExtensionModules() {
 }
 
 /**
- * Copies all files from the ngModulePaths of the configured extensions into the
+ * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
 export function copyExtensionModules(extensions: Array<Required<AdminUiExtension>>) {
     for (const extension of extensions) {
-        const dirName = path.basename(path.dirname(extension.ngModulePath));
+        const dirName = path.basename(path.dirname(extension.extensionPath));
         const dest = getModuleOutputDir(extension);
-        fs.copySync(extension.ngModulePath, dest);
+        fs.copySync(extension.extensionPath, dest);
     }
 }
 
@@ -40,16 +40,21 @@ export function getModuleOutputDir(extension: Required<AdminUiExtension>): strin
 
 export function createExtensionsModules(extensions: Array<Required<AdminUiExtension>>) {
     const removeTsExtension = (filename: string): string => filename.replace(/\.ts$/, '');
-    const importPath = (e: Required<AdminUiExtension>): string =>
-        `./${EXTENSIONS_MODULES_DIR}/${e.id}/${removeTsExtension(e.ngModuleFileName)}`;
+    const importPath = (id: string, fileName: string): string =>
+        `./${EXTENSIONS_MODULES_DIR}/${id}/${removeTsExtension(fileName)}`;
 
     for (const type of ['lazy', 'shared'] as const) {
-        const source = generateExtensionModuleTsSource(
-            type,
-            extensions
-                .filter(e => e.type === type)
-                .map(e => ({ className: e.ngModuleName, path: importPath(e) })),
-        );
+        const modulesOfType = extensions
+            .reduce(
+                (modules, e) => [...modules, ...e.ngModules.map(m => ({ id: e.id, module: m }))],
+                [] as Array<{ id: string; module: AdminUiExtensionModule }>,
+            )
+            .filter(m => m.module.type === type)
+            .map(e => ({
+                className: e.module.ngModuleName,
+                path: importPath(e.id, e.module.ngModuleFileName),
+            }));
+        const source = generateExtensionModuleTsSource(type, modulesOfType);
         const filePath = type === 'lazy' ? lazyExtensionsModuleFile : sharedExtensionsModuleFile;
         fs.writeFileSync(filePath, source, 'utf-8');
     }

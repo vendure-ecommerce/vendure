@@ -1,4 +1,10 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <clr-checkbox-wrapper class="expand-all-toggle">
+            <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
+            <label>{{ 'catalog.expand-all-collections' | translate }}</label>
+        </clr-checkbox-wrapper>
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="collection-list"></vdr-action-bar-items>
         <a class="btn btn-primary" *vdrIfPermissions="'CreateCatalog'" [routerLink]="['./create']">
@@ -9,8 +15,9 @@
 </vdr-action-bar>
 <div class="collection-wrapper">
     <vdr-collection-tree
-        [collections]="items$ | async | paginate: (paginationConfig$ | async) || {}"
+        [collections]="items$ | async"
         [activeCollectionId]="activeCollectionId$ | async"
+        [expandAll]="expandAll"
         (rearrange)="onRearrange($event)"
         (deleteCollection)="deleteCollection($event)"
     ></vdr-collection-tree>
@@ -29,17 +36,4 @@
             </ng-template>
         </vdr-collection-contents>
     </div>
-</div>
-<div class="paging-controls">
-    <vdr-items-per-page-controls
-        [itemsPerPage]="itemsPerPage$ | async"
-        (itemsPerPageChange)="setItemsPerPage($event)"
-    ></vdr-items-per-page-controls>
-    <vdr-pagination-controls
-        *ngIf="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        (pageChange)="setPageNumber($event)"
-    ></vdr-pagination-controls>
 </div>

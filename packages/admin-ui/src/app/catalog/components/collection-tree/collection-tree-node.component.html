@@ -19,7 +19,18 @@
             [class.active]="collection.id === activeCollectionId"
         >
             <div class="name">
-                <clr-icon shape="folder"></clr-icon>
+                <button
+                    class="icon-button folder-button"
+                    [disabled]="expandAll"
+                    *ngIf="collection.children?.length; else folderSpacer"
+                    (click)="collection.expanded = !collection.expanded"
+                >
+                    <clr-icon shape="folder" *ngIf="!collection.expanded && !expandAll"></clr-icon>
+                    <clr-icon shape="folder-open" *ngIf="collection.expanded || expandAll"></clr-icon>
+                </button>
+                <ng-template #folderSpacer>
+                    <div class="folder-button-spacer"></div>
+                </ng-template>
                 {{ collection.name }}
             </div>
             <div class="flex-spacer"></div>
@@ -98,6 +109,8 @@
             </vdr-dropdown>
         </div>
         <vdr-collection-tree-node
+            *ngIf="collection.expanded || expandAll"
+            [expandAll]="expandAll"
             [collectionTree]="collection"
             [activeCollectionId]="activeCollectionId"
         ></vdr-collection-tree-node>

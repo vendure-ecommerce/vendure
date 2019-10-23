@@ -4,10 +4,8 @@ import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.servi
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
-import { Collection } from '../../../common/generated-types';
-
 import { RootNode, TreeNode } from './array-to-tree';
-import { CollectionTreeComponent } from './collection-tree.component';
+import { CollectionPartial, CollectionTreeComponent } from './collection-tree.component';
 
 @Component({
     selector: 'vdr-collection-tree-node',
@@ -18,8 +16,9 @@ import { CollectionTreeComponent } from './collection-tree.component';
 export class CollectionTreeNodeComponent implements OnInit {
     depth = 0;
     parentName: string;
-    @Input() collectionTree: TreeNode<Collection.Fragment>;
+    @Input() collectionTree: TreeNode<CollectionPartial>;
     @Input() activeCollectionId: string;
+    @Input() expandAll = false;
     hasUpdatePermission$: Observable<boolean>;
     hasDeletePermission$: Observable<boolean>;
 
@@ -43,11 +42,11 @@ export class CollectionTreeNodeComponent implements OnInit {
         this.hasDeletePermission$ = permissions$.pipe(map(perms => perms.includes('DeleteCatalog')));
     }
 
-    trackByFn(index: number, item: Collection.Fragment) {
+    trackByFn(index: number, item: CollectionPartial) {
         return item.id;
     }
 
-    getMoveListItems(collection: Collection.Fragment): Array<{ path: string; id: string }> {
+    getMoveListItems(collection: CollectionPartial): Array<{ path: string; id: string }> {
         const visit = (
             node: TreeNode<any>,
             parentPath: string[],
@@ -66,7 +65,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         return visit(this.root.collectionTree, [], []);
     }
 
-    move(collection: Collection.Fragment, parentId: string) {
+    move(collection: CollectionPartial, parentId: string) {
         this.root.onMove({
             index: 0,
             parentId,
@@ -74,7 +73,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         });
     }
 
-    moveUp(collection: Collection.Fragment, currentIndex: number) {
+    moveUp(collection: CollectionPartial, currentIndex: number) {
         if (!collection.parent) {
             return;
         }
@@ -85,7 +84,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         });
     }
 
-    moveDown(collection: Collection.Fragment, currentIndex: number) {
+    moveDown(collection: CollectionPartial, currentIndex: number) {
         if (!collection.parent) {
             return;
         }
@@ -96,7 +95,7 @@ export class CollectionTreeNodeComponent implements OnInit {
         });
     }
 
-    drop(event: CdkDragDrop<Collection.Fragment | RootNode<Collection.Fragment>>) {
+    drop(event: CdkDragDrop<CollectionPartial | RootNode<CollectionPartial>>) {
         moveItemInArray(this.collectionTree.children, event.previousIndex, event.currentIndex);
         this.root.onDrop(event);
     }

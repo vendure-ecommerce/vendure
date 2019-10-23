@@ -26,20 +26,23 @@ describe('arrayToTree()', () => {
                 {
                     id: '12',
                     parent: { id: '1' },
+                    expanded: false,
                     children: [
                         {
                             id: '121',
                             parent: { id: '12' },
-                            children: [{ id: '1211', parent: { id: '121' }, children: [] }],
+                            expanded: false,
+                            children: [{ id: '1211', expanded: false, parent: { id: '121' }, children: [] }],
                         },
                     ],
                 },
                 {
                     id: '13',
                     parent: { id: '1' },
+                    expanded: false,
                     children: [
-                        { id: '132', parent: { id: '13' }, children: [] },
-                        { id: '131', parent: { id: '13' }, children: [] },
+                        { id: '132', expanded: false, parent: { id: '13' }, children: [] },
+                        { id: '131', expanded: false, parent: { id: '13' }, children: [] },
                     ],
                 },
             ],

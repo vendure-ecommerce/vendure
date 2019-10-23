@@ -1,5 +1,5 @@
 export type HasParent = { id: string; parent?: { id: string } | null };
-export type TreeNode<T extends HasParent> = T & { children: Array<TreeNode<T>> };
+export type TreeNode<T extends HasParent> = T & { children: Array<TreeNode<T>>; expanded: boolean };
 export type RootNode<T extends HasParent> = { id?: string; children: Array<TreeNode<T>> };
 
 /**
@@ -18,6 +18,7 @@ export function arrayToTree<T extends HasParent>(nodes: T[]): RootNode<T> {
     for (const id of nodes.map(n => n.id)) {
         if (mappedArr.hasOwnProperty(id)) {
             const mappedElem = mappedArr[id];
+            mappedElem.expanded = false;
             const parent = mappedElem.parent;
             if (!parent) {
                 continue;

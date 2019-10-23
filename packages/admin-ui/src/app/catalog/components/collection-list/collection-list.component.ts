@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, switchMap, take } from 'rxjs/operators';
 
-import { BaseListComponent } from '../../../common/base-list.component';
-import { GetCollectionList } from '../../../common/generated-types';
+import { Collection, GetCollectionList } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { QueryResult } from '../../../data/query-result';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
@@ -18,34 +17,24 @@ import { RearrangeEvent } from '../collection-tree/collection-tree.component';
     styleUrls: ['./collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionListComponent
-    extends BaseListComponent<GetCollectionList.Query, GetCollectionList.Items>
-    implements OnInit {
+export class CollectionListComponent implements OnInit {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
-    paginationConfig$: Observable<PaginationInstance>;
+    items$: Observable<GetCollectionList.Items[]>;
+    expandAll = false;
+    private queryResult: QueryResult<any>;
 
     constructor(
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.collection.getCollections(...args),
-            data => data.collections,
-        );
-    }
+        private router: Router,
+        private route: ActivatedRoute,
+    ) {}
 
     ngOnInit() {
-        super.ngOnInit();
-
-        this.paginationConfig$ = combineLatest(this.itemsPerPage$, this.currentPage$, this.totalItems$).pipe(
-            map(([itemsPerPage, currentPage, totalItems]) => ({ itemsPerPage, currentPage, totalItems })),
-        );
-
+        this.queryResult = this.dataService.collection.getCollections(99999, 0);
+        this.items$ = this.queryResult.mapStream(data => data.collections.items);
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
@@ -75,27 +64,34 @@ export class CollectionListComponent
     }
 
     deleteCollection(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-collection'),
-                buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
+        this.items$
             .pipe(
+                take(1),
+                map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
+                switchMap(hasChildren => {
+                    return this.modalService.dialog({
+                        title: _('catalog.confirm-delete-collection'),
+                        body: hasChildren
+                            ? _('catalog.confirm-delete-collection-and-children-body')
+                            : undefined,
+                        buttons: [
+                            { type: 'seconday', label: _('common.cancel') },
+                            { type: 'danger', label: _('common.delete'), returnValue: true },
+                        ],
+                    });
+                }),
                 switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
             )
             .subscribe(
                 () => {
                     this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'ProductVariant',
+                        entity: 'Collection',
                     });
                     this.refresh();
                 },
                 err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'ProductVariant',
+                        entity: 'Collection',
                     });
                 },
             );
@@ -105,5 +101,9 @@ export class CollectionListComponent
         const params = { ...this.route.snapshot.params };
         delete params.contents;
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    }
+
+    private refresh() {
+        this.queryResult.ref.refetch();
     }
 }

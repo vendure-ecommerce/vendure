@@ -11,6 +11,7 @@
     "target": "es2017",
     "strict": true,
     "strictPropertyInitialization": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "newLine": "LF"
   }
 }

@@ -30,6 +30,11 @@
         &.depth-2 { padding-left: 12px + 48px; }
         &.depth-3 { padding-left: 12px + 72px; }
         &.depth-4 { padding-left: 12px + 96px; }
+
+        .folder-button-spacer {
+            display: inline-block;
+            width: 28px;
+        }
     }
 }
 
