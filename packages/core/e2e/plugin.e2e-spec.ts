@@ -7,6 +7,7 @@ import { ConfigService } from '../src/config/config.service';
 import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
 import {
     TestAPIExtensionPlugin,
+    TestLazyExtensionPlugin,
     TestPluginWithAllLifecycleHooks,
     TestPluginWithConfigAndBootstrap,
     TestPluginWithProvider,
@@ -41,6 +42,7 @@ describe('Plugins', () => {
                     TestPluginWithConfigAndBootstrap.setup(bootstrapMockFn),
                     TestAPIExtensionPlugin,
                     TestPluginWithProvider,
+                    TestLazyExtensionPlugin,
                 ],
             },
         );
@@ -83,6 +85,15 @@ describe('Plugins', () => {
             }
         `);
         expect(result.baz).toEqual(['quux']);
+    });
+
+    it('allows lazy evaluation of API extension', async () => {
+        const result = await shopClient.query(gql`
+            query {
+                lazy
+            }
+        `);
+        expect(result.lazy).toEqual('sleeping');
     });
 
     it('generates ListQueryOptions for api extensions', async () => {

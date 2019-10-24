@@ -70,13 +70,13 @@ export interface APIExtensionDefinition {
      * }`;
      * ```
      */
-    schema?: DocumentNode;
+    schema?: DocumentNode | (() => DocumentNode);
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
      * classes, i.e. using the Nest `\@Resolver()` decorator etc.
      */
-    resolvers: Array<Type<any>>;
+    resolvers: Array<Type<any>> | (() => Array<Type<any>>);
 }
 
 /**

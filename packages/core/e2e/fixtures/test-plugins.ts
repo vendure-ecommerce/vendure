@@ -96,6 +96,26 @@ export class TestShopPluginResolver {
 })
 export class TestAPIExtensionPlugin {}
 
+@Resolver()
+export class TestLazyResolver {
+    @Query()
+    lazy() {
+        return 'sleeping';
+    }
+}
+
+@VendurePlugin({
+    shopApiExtensions: {
+        resolvers: () => [TestLazyResolver],
+        schema: () => gql`
+            extend type Query {
+                lazy: String!
+            }
+        `,
+    },
+})
+export class TestLazyExtensionPlugin {}
+
 @Injectable()
 export class NameService {
     getNames(): string[] {
