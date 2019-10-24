@@ -1,5 +1,7 @@
-import { DeepRequired } from '@vendure/core';
+import { DeepRequired, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
+
+import { CustomMapping } from './types';
 
 /**
  * @description
@@ -40,6 +42,80 @@ export interface ElasticsearchOptions {
      * Configuration of the internal Elasticseach query.
      */
     searchConfig?: SearchConfig;
+    /**
+     * @description
+     * Custom mappings may be defined which will add the defined data to the
+     * Elasticsearch index and expose that data via the SearchResult GraphQL type,
+     * adding a new `customMappings` field.
+     *
+     * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean` and
+     * can be appended with a `!` to indicate non-nullable fields.
+     *
+     * This config option defines custom mappings which are accessible when the "groupByProduct"
+     * input options is set to `true`.
+     *
+     * @example
+     * ```TypeScript
+     * customProductMappings: {
+     *    variantCount: {
+     *        graphQlType: 'Int!',
+     *        valueFn: (product, variants) => variants.length,
+     *    },
+     *    reviewRating: {
+     *        graphQlType: 'Float',
+     *        valueFn: product => (product.customFields as any).reviewRating,
+     *    },
+     * }
+     * ```
+     *
+     * @example
+     * ```SDL
+     * query SearchProducts($input: SearchInput!) {
+     *     search(input: $input) {
+     *         totalItems
+     *         items {
+     *             productId
+     *             productName
+     *             customMappings {
+     *                 ...on CustomProductMappings {
+     *                     variantCount
+     *                     reviewRating
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    customProductMappings?: {
+        [fieldName: string]: CustomMapping<[Product, ProductVariant[]]>;
+    };
+    /**
+     * @description
+     * This config option defines custom mappings which are accessible when the "groupByProduct"
+     * input options is set to `false`.
+     *
+     * @example
+     * ```SDL
+     * query SearchProducts($input: SearchInput!) {
+     *     search(input: $input) {
+     *         totalItems
+     *         items {
+     *             productId
+     *             productName
+     *             customMappings {
+     *                 ...on CustomProductVariantMappings {
+     *                     weight
+     *                 }
+     *             }
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    customProductVariantMappings?: {
+        [fieldName: string]: CustomMapping<[ProductVariant]>;
+    };
 }
 
 /**
@@ -171,6 +247,8 @@ export const defaultOptions: DeepRequired<ElasticsearchOptions> = {
         },
         priceRangeBucketInterval: 1000,
     },
+    customProductMappings: {},
+    customProductVariantMappings: {},
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): DeepRequired<ElasticsearchOptions> {

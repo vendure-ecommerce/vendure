@@ -387,7 +387,7 @@ export class ElasticsearchIndexerController {
     }
 
     private createVariantIndexItem(v: ProductVariant): VariantIndexItem {
-        return {
+        const item: VariantIndexItem = {
             sku: v.sku,
             slug: v.product.slug,
             productId: v.product.id as string,
@@ -405,13 +405,18 @@ export class ElasticsearchIndexerController {
             collectionIds: v.collections.map(c => c.id.toString()),
             enabled: v.enabled && v.product.enabled,
         };
+        const customMappings = Object.entries(this.options.customProductVariantMappings);
+        for (const [name, def] of customMappings) {
+            item[name] = def.valueFn(v);
+        }
+        return item;
     }
 
     private createProductIndexItem(variants: ProductVariant[]): ProductIndexItem {
         const first = variants[0];
         const prices = variants.map(v => v.price);
         const pricesWithTax = variants.map(v => v.priceWithTax);
-        return {
+        const item: ProductIndexItem = {
             sku: variants.map(v => v.sku),
             slug: variants.map(v => v.product.slug),
             productId: first.product.id,
@@ -431,6 +436,12 @@ export class ElasticsearchIndexerController {
             collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
             enabled: first.product.enabled,
         };
+
+        const customMappings = Object.entries(this.options.customProductMappings);
+        for (const [name, def] of customMappings) {
+            item[name] = def.valueFn(variants[0].product, variants);
+        }
+        return item;
     }
 
     private getFacetIds(variants: ProductVariant[]): string[] {

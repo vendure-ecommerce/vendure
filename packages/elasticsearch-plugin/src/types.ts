@@ -32,6 +32,7 @@ export type PriceRangeBucket = {
 export type VariantIndexItem = Omit<SearchResult, 'score' | 'price' | 'priceWithTax'> & {
     price: number;
     priceWithTax: number;
+    [customMapping: string]: any;
 };
 export type ProductIndexItem = {
     sku: string[];
@@ -52,6 +53,7 @@ export type ProductIndexItem = {
     priceMax: number;
     priceWithTaxMin: number;
     priceWithTaxMax: number;
+    [customMapping: string]: any;
 };
 
 export type SearchHit<T> = {
@@ -153,3 +155,32 @@ export class UpdateVariantsByIdMessage extends WorkerMessage<
 > {
     static readonly pattern = 'UpdateVariantsById';
 }
+
+type Maybe<T> = T | null | undefined;
+type CustomMappingDefinition<Args extends any[], T extends string, R> = {
+    graphQlType: T;
+    valueFn: (...args: Args) => R;
+};
+
+type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
+type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;
+type CustomIntMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Int!', number>;
+type CustomIntMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Int', Maybe<number>>;
+type CustomFloatMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Float!', number>;
+type CustomFloatMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Float', Maybe<number>>;
+type CustomBooleanMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Boolean!', boolean>;
+type CustomBooleanMappingNullable<Args extends any[]> = CustomMappingDefinition<
+    Args,
+    'Boolean',
+    Maybe<boolean>
+>;
+
+export type CustomMapping<Args extends any[]> =
+    | CustomStringMapping<Args>
+    | CustomStringMappingNullable<Args>
+    | CustomIntMapping<Args>
+    | CustomIntMappingNullable<Args>
+    | CustomFloatMapping<Args>
+    | CustomFloatMappingNullable<Args>
+    | CustomBooleanMapping<Args>
+    | CustomBooleanMappingNullable<Args>;
