@@ -4,7 +4,6 @@ import { AssetType, CreateAssetInput } from '@vendure/common/lib/generated-types
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
-import sizeOf from 'image-size';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
@@ -19,6 +18,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+// tslint:disable-next-line:no-var-requires
+const sizeOf = require('image-size');
 
 export interface EntityWithAssets extends VendureEntity {
     featuredAsset: Asset | null;
