@@ -72,7 +72,7 @@
     "karma-mocha-reporter": "^2.2.5",
     "protractor": "~5.4.2",
     "puppeteer": "^1.19.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^3.0.0",
     "tslint": "^5.12.1"
   }
 }

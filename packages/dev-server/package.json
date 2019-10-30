@@ -23,8 +23,8 @@
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
-    "@types/csv-stringify": "^1.4.3",
-    "concurrently": "^4.1.0",
-    "csv-stringify": "^5.3.0"
+    "@types/csv-stringify": "^3.1.0",
+    "concurrently": "^5.0.0",
+    "csv-stringify": "^5.3.3"
   }
 }

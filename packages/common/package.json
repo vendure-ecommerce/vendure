@@ -14,8 +14,8 @@
     "lib/**/*"
   ],
   "devDependencies": {
-    "@types/jest": "^24.0.11",
-    "rimraf": "^2.6.3",
+    "@types/jest": "^24.0.21",
+    "rimraf": "^3.0.0",
     "typescript": "~3.5.3"
   }
 }
