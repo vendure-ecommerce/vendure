@@ -45,7 +45,7 @@
     "core-js": "^3.1.3",
     "dayjs": "^1.8.16",
     "fs-extra": "^8.1.0",
-    "graphql": "^14.3.1",
+    "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "messageformat": "2.2.0",
     "ngx-pagination": "^4.1.0",
