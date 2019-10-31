@@ -1,7 +1,8 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../core/typings.d.ts" />
-import { bootstrap, VendureConfig } from '@vendure/core';
+import { bootstrap, mergeConfig, VendureConfig } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
+import { defaultConfig } from '@vendure/core/dist/config/default-config';
 import { clearAllTables, populateCustomers } from '@vendure/testing';
 import path from 'path';
 
@@ -16,21 +17,23 @@ import { devConfig } from './dev-config';
  */
 if (require.main === module) {
     // Running from command line
-    const populateConfig: VendureConfig = {
-        ...(devConfig as any),
-        authOptions: {
-            tokenMethod: 'bearer',
-            requireVerification: false,
-        },
-        importExportOptions: {
-            importAssetsDir: path.join(__dirname, '../core/mock-data/assets'),
-        },
-        workerOptions: {
-            runInMainProcess: true,
-        },
-        customFields: {},
-    };
-    clearAllTables(populateConfig as any, true)
+    const populateConfig = mergeConfig(
+        defaultConfig,
+        mergeConfig(devConfig, {
+            authOptions: {
+                tokenMethod: 'bearer',
+                requireVerification: false,
+            },
+            importExportOptions: {
+                importAssetsDir: path.join(__dirname, '../core/mock-data/assets'),
+            },
+            workerOptions: {
+                runInMainProcess: true,
+            },
+            customFields: {},
+        }),
+    );
+    clearAllTables(populateConfig, true)
         .then(() =>
             populate(
                 () => bootstrap(populateConfig),
@@ -40,7 +43,7 @@ if (require.main === module) {
         )
         .then(async app => {
             console.log('populating customers...');
-            await populateCustomers(10, populateConfig as any, true);
+            await populateCustomers(10, populateConfig, true);
             return app.close();
         })
         .then(

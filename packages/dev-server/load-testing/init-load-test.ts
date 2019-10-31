@@ -45,7 +45,7 @@ if (require.main === module) {
                     )
                     .then(async app => {
                         console.log('populating customers...');
-                        await populateCustomers(10, config as any, true);
+                        await populateCustomers(10, config, true);
                         return app.close();
                     });
             } else {
@@ -174,7 +174,12 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
 }
 
 function getCategoryNames() {
-    const allNames = initialData.collections.reduce((all, c) => [...all, ...c.facetNames], [] as string[]);
+    const allNames = new Set<string>();
+    for (const collection of initialData.collections) {
+        for (const filter of collection.filters || []) {
+            filter.args.facetValueNames.forEach(name => allNames.add(name));
+        }
+    }
     return Array.from(new Set(allNames));
 }
 
