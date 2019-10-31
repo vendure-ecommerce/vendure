@@ -1,6 +1,6 @@
 {
   "admin-ui/**/*.ts": [
-    "yarn lint:admin-ui",
+    "yarn lint",
     "yarn format",
     "git add"
   ],
@@ -9,7 +9,7 @@
     "git add"
   ],
   "packages/**/*.ts": [
-    "yarn lint:packages",
+    "yarn lint",
     "yarn format",
     "git add"
   ]

@@ -96,6 +96,12 @@ $block-border-radius: 4px;
         color: $color-code-text;
         border-radius: $block-border-radius;
         border: 1px solid $color-code-border;
+
+
+    }
+
+    a > code:not([data-lang]) {
+        color: $color-link;
     }
 
     pre:not(.chroma) {

@@ -1,7 +1,9 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { COUNTRY_FRAGMENT } from './graphql/fragments';
 import {
     CreateCountry,
@@ -13,24 +15,23 @@ import {
     UpdateCountry,
 } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
     let countries: GetCountryList.Items[];
     let GB: GetCountryList.Items;
     let AT: GetCountryList.Items;
 
     beforeAll(async () => {
         await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -38,7 +39,7 @@ describe('Facet resolver', () => {
     });
 
     it('countries', async () => {
-        const result = await client.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
+        const result = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
 
         expect(result.countries.totalItems).toBe(7);
         countries = result.countries.items;
@@ -47,7 +48,7 @@ describe('Facet resolver', () => {
     });
 
     it('country', async () => {
-        const result = await client.query<GetCountry.Query, GetCountry.Variables>(GET_COUNTRY, {
+        const result = await adminClient.query<GetCountry.Query, GetCountry.Variables>(GET_COUNTRY, {
             id: GB.id,
         });
 
@@ -55,50 +56,62 @@ describe('Facet resolver', () => {
     });
 
     it('updateCountry', async () => {
-        const result = await client.query<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
-            input: {
-                id: AT.id,
-                enabled: false,
+        const result = await adminClient.query<UpdateCountry.Mutation, UpdateCountry.Variables>(
+            UPDATE_COUNTRY,
+            {
+                input: {
+                    id: AT.id,
+                    enabled: false,
+                },
             },
-        });
+        );
 
         expect(result.updateCountry.enabled).toBe(false);
     });
 
     it('createCountry', async () => {
-        const result = await client.query<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
-            input: {
-                code: 'GL',
-                enabled: true,
-                translations: [{ languageCode: LanguageCode.en, name: 'Gondwanaland' }],
+        const result = await adminClient.query<CreateCountry.Mutation, CreateCountry.Variables>(
+            CREATE_COUNTRY,
+            {
+                input: {
+                    code: 'GL',
+                    enabled: true,
+                    translations: [{ languageCode: LanguageCode.en, name: 'Gondwanaland' }],
+                },
             },
-        });
+        );
 
         expect(result.createCountry.name).toBe('Gondwanaland');
     });
 
     describe('deletion', () => {
         it('deletes Country not used in any address', async () => {
-            const result1 = await client.query<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, { id: AT.id });
+            const result1 = await adminClient.query<DeleteCountry.Mutation, DeleteCountry.Variables>(
+                DELETE_COUNTRY,
+                { id: AT.id },
+            );
 
             expect(result1.deleteCountry).toEqual({
                 result: DeletionResult.DELETED,
                 message: '',
             });
 
-            const result2 = await client.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
+            const result2 = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
             expect(result2.countries.items.find(c => c.id === AT.id)).toBeUndefined();
         });
 
         it('does not delete Country that is used in one or more addresses', async () => {
-            const result1 = await client.query<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, { id: GB.id });
+            const result1 = await adminClient.query<DeleteCountry.Mutation, DeleteCountry.Variables>(
+                DELETE_COUNTRY,
+                { id: GB.id },
+            );
 
             expect(result1.deleteCountry).toEqual({
                 result: DeletionResult.NOT_DELETED,
                 message: 'The selected Country cannot be deleted as it is used in 1 Address',
             });
 
-            const result2 = await client.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
+            const result2 = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
             expect(result2.countries.items.find(c => c.id === GB.id)).not.toBeUndefined();
         });
     });

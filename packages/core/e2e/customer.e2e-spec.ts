@@ -1,14 +1,18 @@
 import { OnModuleInit } from '@nestjs/common';
 import { omit } from '@vendure/common/lib/omit';
+import {
+    AccountRegistrationEvent,
+    EventBus,
+    EventBusModule,
+    mergeConfig,
+    VendurePlugin,
+} from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { EventBus } from '../src/event-bus/event-bus';
-import { EventBusModule } from '../src/event-bus/event-bus.module';
-import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
-import { VendurePlugin } from '../src/plugin/vendure-plugin';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddress,
@@ -25,32 +29,44 @@ import {
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
 import { GET_CUSTOMER, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 let sendEmailFn: jest.Mock;
 
+/**
+ * This mock plugin simulates an EmailPlugin which would send emails
+ * on the registration & password reset events.
+ */
+@VendurePlugin({
+    imports: [EventBusModule],
+})
+class TestEmailPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+    onModuleInit() {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+    }
+}
+
 describe('Customer resolver', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, { plugins: [TestEmailPlugin] }),
+    );
+
     let firstCustomer: GetCustomerList.Items;
     let secondCustomer: GetCustomerList.Items;
     let thirdCustomer: GetCustomerList.Items;
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 5,
-            },
-            {
-                plugins: [TestEmailPlugin],
-            },
-        );
-        await adminClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 5,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -486,19 +502,3 @@ const DELETE_CUSTOMER = gql`
         }
     }
 `;
-
-/**
- * This mock plugin simulates an EmailPlugin which would send emails
- * on the registration & password reset events.
- */
-@VendurePlugin({
-    imports: [EventBusModule],
-})
-class TestEmailPlugin implements OnModuleInit {
-    constructor(private eventBus: EventBus) {}
-    onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
-            sendEmailFn(event);
-        });
-    }
-}

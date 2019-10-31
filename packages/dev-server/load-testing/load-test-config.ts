@@ -1,12 +1,19 @@
 /* tslint:disable:no-console */
-import { VendureConfig } from '@vendure/core';
+import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+import {
+    DefaultLogger,
+    DefaultSearchPlugin,
+    examplePaymentHandler,
+    LogLevel,
+    mergeConfig,
+    VendureConfig,
+} from '@vendure/core';
+import { defaultConfig } from '@vendure/core/dist/config/default-config';
 import path from 'path';
-
-import { devConfig } from '../dev-config';
 
 export function getMysqlConnectionOptions(count: number) {
     return {
-        type: 'mysql',
+        type: 'mysql' as const,
         host: '192.168.99.100',
         port: 3306,
         username: 'root',
@@ -15,10 +22,13 @@ export function getMysqlConnectionOptions(count: number) {
     };
 }
 
-export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): VendureConfig {
+export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<VendureConfig> {
     const count = getProductCount();
-    return {
-        ...devConfig as any,
+    return mergeConfig(defaultConfig, {
+        paymentOptions: {
+            paymentMethodHandlers: [examplePaymentHandler],
+        },
+        logger: new DefaultLogger({ level: LogLevel.Info }),
         dbConnectionOptions: getMysqlConnectionOptions(count),
         authOptions: {
             tokenMethod,
@@ -27,8 +37,19 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): VendureConf
         importExportOptions: {
             importAssetsDir: path.join(__dirname, './data-sources'),
         },
+        workerOptions: {
+            runInMainProcess: true,
+        },
         customFields: {},
-    };
+        plugins: [
+            AssetServerPlugin.init({
+                assetUploadDir: path.join(__dirname, 'static/assets'),
+                route: 'assets',
+                port: 5002,
+            }),
+            DefaultSearchPlugin,
+        ],
+    });
 }
 
 export function getProductCsvFilePath() {

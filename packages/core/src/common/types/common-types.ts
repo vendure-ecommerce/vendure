@@ -31,11 +31,6 @@ export interface Orderable {
 export type ReadOnlyRequired<T> = { +readonly [K in keyof T]-?: T[K] };
 
 /**
- * Creates a mutable version of a type with readonly properties.
- */
-export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
-
-/**
  * Given an array type e.g. Array<string>, return the inner type e.g. string.
  */
 export type UnwrappedArray<T extends any[]> = T[number];

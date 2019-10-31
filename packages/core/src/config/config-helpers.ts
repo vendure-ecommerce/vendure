@@ -1,8 +1,6 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-
 import { defaultConfig } from './default-config';
 import { mergeConfig } from './merge-config';
-import { RuntimeVendureConfig, VendureConfig } from './vendure-config';
+import { PartialVendureConfig, RuntimeVendureConfig } from './vendure-config';
 
 let activeConfig = defaultConfig;
 
@@ -10,7 +8,7 @@ let activeConfig = defaultConfig;
  * Override the default config by merging in the supplied values. Should only be used prior to
  * bootstrapping the app.
  */
-export function setConfig(userConfig: DeepPartial<VendureConfig>): void {
+export function setConfig(userConfig: PartialVendureConfig): void {
     activeConfig = mergeConfig(activeConfig, userConfig);
 }
 

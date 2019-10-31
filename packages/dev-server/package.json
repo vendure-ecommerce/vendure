@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/csv-stringify": "^3.1.0",
+    "@vendure/testing": "0.5.0",
     "concurrently": "^5.0.0",
     "csv-stringify": "^5.3.3"
   }

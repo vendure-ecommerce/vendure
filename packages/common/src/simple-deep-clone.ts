@@ -1,3 +1,5 @@
+import { isClassInstance } from './shared-utils';
+
 /**
  * An extremely fast function for deep-cloning an object which only contains simple
  * values, i.e. primitives, arrays and nested simple objects.
@@ -18,10 +20,13 @@ export function simpleDeepClone<T extends string | number | any[] | object>(inpu
         }
         return output;
     }
+    if (isClassInstance(input)) {
+        return input;
+    }
     // handle case: object
     output = {};
     for (i in input) {
-        if ((input).hasOwnProperty(i)) {
+        if (input.hasOwnProperty(i)) {
             output[i] = simpleDeepClone((input as any)[i]);
         }
     }

@@ -1,0 +1,47 @@
+{
+  "name": "@vendure/testing",
+  "version": "0.5.0",
+  "description": "End-to-end testing tools for Vendure projects",
+  "keywords": [
+    "vendure",
+    "testing",
+    "e2e"
+  ],
+  "author": "Michael Bromley <michael@michaelbromley.co.uk>",
+  "homepage": "https://github.com/vendure-ecommerce/vendure#readme",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vendure-ecommerce/vendure.git"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "watch": "tsc -p ./tsconfig.build.json -w",
+    "lint": "tslint --fix --project ./"
+  },
+  "bugs": {
+    "url": "https://github.com/vendure-ecommerce/vendure/issues"
+  },
+  "dependencies": {
+    "@vendure/common": "^0.5.0",
+    "faker": "^4.1.0",
+    "graphql": "^14.5.8",
+    "graphql-tag": "^2.10.1",
+    "node-fetch": "^2.6.0",
+    "node-libcurl": "^2.0.2",
+    "sql.js": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vendure/core": "^0.5.0",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.6.4"
+  }
+}

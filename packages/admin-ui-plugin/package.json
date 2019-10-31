@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rimraf lib && node -r ts-node/register build.ts && yarn compile",
     "watch": "tsc -p ./tsconfig.build.json --watch",
+    "lint": "tslint --fix --project ./",
     "compile": "tsc -p ./tsconfig.build.json"
   },
   "publishConfig": {

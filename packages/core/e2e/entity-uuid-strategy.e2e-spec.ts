@@ -1,7 +1,8 @@
 /* tslint:disable:no-non-null-assertion */
+import { UuidIdStrategy } from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
-import { UuidIdStrategy } from '../src/config/entity-id-strategy/uuid-id-strategy';
 // This import is here to simulate the behaviour of
 // the package end-user importing symbols from the
 // @vendure/core barrel file. Doing so will then cause the
@@ -10,27 +11,25 @@ import { UuidIdStrategy } from '../src/config/entity-id-strategy/uuid-id-strateg
 // order of file evaluation.
 import '../src/index';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { GetProductList } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 
 describe('UuidIdStrategy', () => {
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment({
+        ...testConfig,
+        entityIdStrategy: new UuidIdStrategy(),
+    });
 
     beforeAll(async () => {
-        await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 1,
-            },
-            {
-                entityIdStrategy: new UuidIdStrategy(),
-            },
-        );
-        await adminClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

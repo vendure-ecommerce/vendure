@@ -1,110 +1,111 @@
 // Force the timezone to avoid tests failing in other locales
 process.env.TZ = 'UTC';
 
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { CustomFields } from '@vendure/core/dist/config/custom-field/custom-field-types';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { LanguageCode } from '../../common/lib/generated-types';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 
+const customConfig = {
+    ...testConfig,
+    ...{
+        customFields: {
+            Product: [
+                { name: 'nullable', type: 'string' },
+                { name: 'notNullable', type: 'string', nullable: false, defaultValue: '' },
+                { name: 'stringWithDefault', type: 'string', defaultValue: 'hello' },
+                { name: 'localeStringWithDefault', type: 'localeString', defaultValue: 'hola' },
+                { name: 'intWithDefault', type: 'int', defaultValue: 5 },
+                { name: 'floatWithDefault', type: 'float', defaultValue: 5.5 },
+                { name: 'booleanWithDefault', type: 'boolean', defaultValue: true },
+                {
+                    name: 'dateTimeWithDefault',
+                    type: 'datetime',
+                    defaultValue: new Date('2019-04-30T12:59:16.4158386Z'),
+                },
+                { name: 'validateString', type: 'string', pattern: '^[0-9][a-z]+$' },
+                { name: 'validateLocaleString', type: 'localeString', pattern: '^[0-9][a-z]+$' },
+                { name: 'validateInt', type: 'int', min: 0, max: 10 },
+                { name: 'validateFloat', type: 'float', min: 0.5, max: 10.5 },
+                {
+                    name: 'validateDateTime',
+                    type: 'datetime',
+                    min: '2019-01-01T08:30',
+                    max: '2019-06-01T08:30',
+                },
+                {
+                    name: 'validateFn1',
+                    type: 'string',
+                    validate: value => {
+                        if (value !== 'valid') {
+                            return `The value ['${value}'] is not valid`;
+                        }
+                    },
+                },
+                {
+                    name: 'validateFn2',
+                    type: 'string',
+                    validate: value => {
+                        if (value !== 'valid') {
+                            return [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    value: `The value ['${value}'] is not valid`,
+                                },
+                            ];
+                        }
+                    },
+                },
+                {
+                    name: 'stringWithOptions',
+                    type: 'string',
+                    options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
+                },
+                {
+                    name: 'nonPublic',
+                    type: 'string',
+                    defaultValue: 'hi!',
+                    public: false,
+                },
+                {
+                    name: 'public',
+                    type: 'string',
+                    defaultValue: 'ho!',
+                    public: true,
+                },
+                {
+                    name: 'longString',
+                    type: 'string',
+                },
+            ],
+            Facet: [
+                {
+                    name: 'translated',
+                    type: 'localeString',
+                },
+            ],
+        } as CustomFields,
+    },
+};
+
 describe('Custom fields', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(customConfig);
 
     beforeAll(async () => {
-        await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
-            },
-            {
-                customFields: {
-                    Product: [
-                        { name: 'nullable', type: 'string' },
-                        { name: 'notNullable', type: 'string', nullable: false, defaultValue: '' },
-                        { name: 'stringWithDefault', type: 'string', defaultValue: 'hello' },
-                        { name: 'localeStringWithDefault', type: 'localeString', defaultValue: 'hola' },
-                        { name: 'intWithDefault', type: 'int', defaultValue: 5 },
-                        { name: 'floatWithDefault', type: 'float', defaultValue: 5.5 },
-                        { name: 'booleanWithDefault', type: 'boolean', defaultValue: true },
-                        {
-                            name: 'dateTimeWithDefault',
-                            type: 'datetime',
-                            defaultValue: new Date('2019-04-30T12:59:16.4158386Z'),
-                        },
-                        { name: 'validateString', type: 'string', pattern: '^[0-9][a-z]+$' },
-                        { name: 'validateLocaleString', type: 'localeString', pattern: '^[0-9][a-z]+$' },
-                        { name: 'validateInt', type: 'int', min: 0, max: 10 },
-                        { name: 'validateFloat', type: 'float', min: 0.5, max: 10.5 },
-                        {
-                            name: 'validateDateTime',
-                            type: 'datetime',
-                            min: '2019-01-01T08:30',
-                            max: '2019-06-01T08:30',
-                        },
-                        {
-                            name: 'validateFn1',
-                            type: 'string',
-                            validate: value => {
-                                if (value !== 'valid') {
-                                    return `The value ['${value}'] is not valid`;
-                                }
-                            },
-                        },
-                        {
-                            name: 'validateFn2',
-                            type: 'string',
-                            validate: value => {
-                                if (value !== 'valid') {
-                                    return [
-                                        {
-                                            languageCode: LanguageCode.en,
-                                            value: `The value ['${value}'] is not valid`,
-                                        },
-                                    ];
-                                }
-                            },
-                        },
-                        {
-                            name: 'stringWithOptions',
-                            type: 'string',
-                            options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
-                        },
-                        {
-                            name: 'nonPublic',
-                            type: 'string',
-                            defaultValue: 'hi!',
-                            public: false,
-                        },
-                        {
-                            name: 'public',
-                            type: 'string',
-                            defaultValue: 'ho!',
-                            public: true,
-                        },
-                        {
-                            name: 'longString',
-                            type: 'string',
-                        },
-                    ],
-                    Facet: [
-                        {
-                            name: 'translated',
-                            type: 'localeString',
-                        },
-                    ],
-                },
-            },
-        );
-        await adminClient.init();
-        await shopClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

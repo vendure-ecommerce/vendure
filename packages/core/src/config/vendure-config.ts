@@ -373,7 +373,6 @@ export interface WorkerOptions {
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
  * @docsCategory configuration
- * @docsPage Configuration
  * */
 export interface VendureConfig {
     /**
@@ -531,7 +530,6 @@ export interface VendureConfig {
  * config values have been merged with the {@link defaultConfig} values.
  *
  * @docsCategory configuration
- * @docsPage Configuration
  */
 export interface RuntimeVendureConfig extends Required<VendureConfig> {
     assetOptions: Required<AssetOptions>;
@@ -541,3 +539,17 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     orderOptions: Required<OrderOptions>;
     workerOptions: Required<WorkerOptions>;
 }
+
+type DeepPartialSimple<T> = {
+    [P in keyof T]?:
+        | null
+        | (T[P] extends Array<infer U>
+              ? Array<DeepPartialSimple<U>>
+              : T[P] extends ReadonlyArray<infer X>
+              ? ReadonlyArray<DeepPartialSimple<X>>
+              : T[P] extends Type<any>
+              ? T[P]
+              : DeepPartialSimple<T[P]>);
+};
+
+export type PartialVendureConfig = DeepPartialSimple<VendureConfig>;

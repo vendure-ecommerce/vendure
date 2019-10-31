@@ -12,7 +12,9 @@
   ],
   "scripts": {
     "copy-assets": "rimraf assets && ts-node ./build.ts",
-    "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json"
+    "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json",
+    "watch": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
+    "lint": "tslint --fix --project ./"
   },
   "publishConfig": {
     "access": "public"

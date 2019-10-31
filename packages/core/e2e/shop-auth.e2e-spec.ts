@@ -2,19 +2,23 @@
 import { OnModuleInit } from '@nestjs/common';
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
+import {
+    AccountRegistrationEvent,
+    EventBus,
+    EventBusModule,
+    IdentifierChangeEvent,
+    IdentifierChangeRequestEvent,
+    mergeConfig,
+    PasswordResetEvent,
+    VendurePlugin,
+} from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { EventBus } from '../src/event-bus/event-bus';
-import { EventBusModule } from '../src/event-bus/event-bus.module';
-import { AccountRegistrationEvent } from '../src/event-bus/events/account-registration-event';
-import { IdentifierChangeEvent } from '../src/event-bus/events/identifier-change-event';
-import { IdentifierChangeRequestEvent } from '../src/event-bus/events/identifier-change-request-event';
-import { PasswordResetEvent } from '../src/event-bus/events/password-reset-event';
-import { VendurePlugin } from '../src/plugin/vendure-plugin';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateAdministrator,
     CreateRole,
@@ -42,29 +46,50 @@ import {
     UPDATE_EMAIL_ADDRESS,
     VERIFY_EMAIL,
 } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 let sendEmailFn: jest.Mock;
 
+/**
+ * This mock plugin simulates an EmailPlugin which would send emails
+ * on the registration & password reset events.
+ */
+@VendurePlugin({
+    imports: [EventBusModule],
+})
+class TestEmailPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+    onModuleInit() {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+        this.eventBus.ofType(PasswordResetEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+        this.eventBus.ofType(IdentifierChangeEvent).subscribe(event => {
+            sendEmailFn(event);
+        });
+    }
+}
+
 describe('Shop auth & accounts', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            plugins: [TestEmailPlugin as any],
+        }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 2,
-            },
-            {
-                plugins: [TestEmailPlugin],
-            },
-        );
-        await shopClient.init();
-        await adminClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 2,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -508,25 +533,23 @@ describe('Shop auth & accounts', () => {
 });
 
 describe('Expiring tokens', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            plugins: [TestEmailPlugin as any],
+            authOptions: {
+                verificationTokenDuration: '1ms',
+            },
+        }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [TestEmailPlugin],
-                authOptions: {
-                    verificationTokenDuration: '1ms',
-                },
-            },
-        );
-        await shopClient.init();
-        await adminClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
@@ -598,24 +621,23 @@ describe('Expiring tokens', () => {
 });
 
 describe('Registration without email verification', () => {
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            plugins: [TestEmailPlugin as any],
+            authOptions: {
+                requireVerification: false,
+            },
+        }),
+    );
     const userEmailAddress = 'glen.beardsley@test.com';
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [TestEmailPlugin],
-                authOptions: {
-                    requireVerification: false,
-                },
-            },
-        );
-        await shopClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
@@ -672,35 +694,30 @@ describe('Registration without email verification', () => {
 });
 
 describe('Updating email address without email verification', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            plugins: [TestEmailPlugin as any],
+            authOptions: {
+                requireVerification: false,
+            },
+        }),
+    );
     let customer: GetCustomer.Customer;
     const NEW_EMAIL_ADDRESS = 'new@address.com';
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [TestEmailPlugin],
-                authOptions: {
-                    requireVerification: false,
-                },
-            },
-        );
-        await shopClient.init();
-        await adminClient.init();
-    }, TEST_SETUP_TIMEOUT_MS);
-
-    beforeAll(async () => {
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
         const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
             id: 'T_1',
         });
         customer = result.customer!;
-    });
+    }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
         sendEmailFn = jest.fn();
@@ -728,31 +745,6 @@ describe('Updating email address without email verification', () => {
         expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
     });
 });
-
-/**
- * This mock plugin simulates an EmailPlugin which would send emails
- * on the registration & password reset events.
- */
-@VendurePlugin({
-    imports: [EventBusModule],
-})
-class TestEmailPlugin implements OnModuleInit {
-    constructor(private eventBus: EventBus) {}
-    onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
-            sendEmailFn(event);
-        });
-        this.eventBus.ofType(PasswordResetEvent).subscribe(event => {
-            sendEmailFn(event);
-        });
-        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe(event => {
-            sendEmailFn(event);
-        });
-        this.eventBus.ofType(IdentifierChangeEvent).subscribe(event => {
-            sendEmailFn(event);
-        });
-    }
-}
 
 function getVerificationTokenPromise(): Promise<string> {
     return new Promise<any>(resolve => {
