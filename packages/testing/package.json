@@ -24,7 +24,8 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "watch": "tsc -p ./tsconfig.build.json -w"
+    "watch": "tsc -p ./tsconfig.build.json -w",
+    "lint": "tslint --fix --project ./"
   },
   "bugs": {
     "url": "https://github.com/vendure-ecommerce/vendure/issues"
@@ -35,12 +36,10 @@
     "graphql-tag": "^2.10.1"
   },
   "devDependencies": {
+    "@vendure/core": "^0.5.0",
     "node-fetch": "^2.6.0",
     "node-libcurl": "^2.0.2",
     "rimraf": "^3.0.0",
     "typescript": "^3.6.4"
-  },
-  "peerDependencies": {
-    "@vendure/core": "^0.5.0"
   }
 }

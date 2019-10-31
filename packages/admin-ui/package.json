@@ -5,8 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "yarn reset-extensions && ng build --prod && yarn build:devkit",
+    "watch": "ng build --watch=true",
     "build:devkit": "tsc -p tsconfig.devkit.json",
-    "test": "ng test",
+    "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "lint": "tslint --fix",
     "reset-extensions": "rimraf ./src/app/extensions/modules && rimraf ./src/app/extensions/*.generated && rimraf ./src/app/extensions/*.temp",
     "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _"

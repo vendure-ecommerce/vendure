@@ -6,7 +6,9 @@
     "node": ">= 10.12.0 < 11 || >= 12.00"
   },
   "scripts": {
-    "core:watch": "concurrently -n tsc,gulp,common \"cd packages/core && yarn tsc:watch\" \"cd packages/core && yarn gulp:watch\" \"cd packages/common && yarn watch\"",
+    "watch": "lerna run watch --parallel",
+    "lint": "yarn tslint --fix",
+    "format": "prettier --write --html-whitespace-sensitivity ignore",
     "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently --restart-tries 5 -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",
@@ -14,19 +16,10 @@
     "codegen": "ts-node scripts/codegen/generate-graphql-types.ts",
     "generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",
     "generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
-    "format": "prettier --write --html-whitespace-sensitivity ignore",
-    "lint:packages": "yarn tslint --fix",
-    "lint:admin-ui": "cd packages/admin-ui && yarn lint --fix",
     "version": "yarn check-imports && yarn build && yarn generate-changelog && git add CHANGELOG.md",
     "dev-server:start": "cd packages/dev-server && yarn start",
-    "dev-server:populate": "cd packages/dev-server && yarn populate",
-    "test:all": "yarn test:admin-ui && yarn test:common && yarn test:core && yarn test:email-plugin && yarn test:elasticsearch-plugin && yarn test:e2e",
-    "test:common": "jest --config packages/common/jest.config.js",
-    "test:core": "jest --config packages/core/jest.config.js",
-    "test:email-plugin": "jest --config packages/email-plugin/jest.config.js --maxWorkers=1",
-    "test:elasticsearch-plugin": "jest --config packages/elasticsearch-plugin/jest.config.js",
-    "test:e2e": "jest --config packages/core/e2e/config/jest-e2e.json --runInBand",
-    "test:admin-ui": "cd packages/admin-ui && yarn test --watch=false --browsers=ChromeHeadlessCI --progress=false",
+    "test": "lerna run test --stream --no-bail",
+    "e2e": "lerna run e2e --stream --no-bail",
     "build": "lerna run build",
     "check-imports": "ts-node scripts/check-imports.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
@@ -89,7 +82,7 @@
       "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
       "post-commit": "git update-index --again",
       "pre-commit": "lint-staged",
-      "pre-push": "yarn test:all && cd packages/admin-ui && yarn build"
+      "pre-push": "yarn build && yarn test && yarn e2e"
     }
   }
 }

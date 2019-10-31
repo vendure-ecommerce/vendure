@@ -9,7 +9,8 @@
   "license": "MIT",
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json"
+    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+    "lint": "tslint --fix --project ./"
   },
   "publishConfig": {
     "access": "public"
