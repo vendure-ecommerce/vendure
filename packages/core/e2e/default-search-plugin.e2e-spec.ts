@@ -2,7 +2,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { DefaultSearchPlugin } from '@vendure/core';
 import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
-import { createTestEnvironment, TestClient } from '@vendure/testing';
+import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -51,7 +51,7 @@ describe('Default search plugin', () => {
         await server.destroy();
     });
 
-    async function testGroupByProduct(client: TestClient) {
+    async function testGroupByProduct(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -63,7 +63,7 @@ describe('Default search plugin', () => {
         expect(result.search.totalItems).toBe(20);
     }
 
-    async function testNoGrouping(client: TestClient) {
+    async function testNoGrouping(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -75,7 +75,7 @@ describe('Default search plugin', () => {
         expect(result.search.totalItems).toBe(34);
     }
 
-    async function testMatchSearchTerm(client: TestClient) {
+    async function testMatchSearchTerm(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -92,7 +92,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetIds(client: TestClient) {
+    async function testMatchFacetIds(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -112,7 +112,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionId(client: TestClient) {
+    async function testMatchCollectionId(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -129,7 +129,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testSinglePrices(client: TestClient) {
+    async function testSinglePrices(client: SimpleGraphQLClient) {
         const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
             SEARCH_GET_PRICES,
             {
@@ -155,7 +155,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testPriceRanges(client: TestClient) {
+    async function testPriceRanges(client: SimpleGraphQLClient) {
         const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
             SEARCH_GET_PRICES,
             {

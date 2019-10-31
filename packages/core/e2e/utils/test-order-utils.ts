@@ -1,7 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { ID } from '@vendure/common/lib/shared-types';
 import { PaymentMethodHandler } from '@vendure/core';
-import { TestClient } from '@vendure/testing';
+import { SimpleGraphQLClient } from '@vendure/testing';
 
 import {
     AddPaymentToOrder,
@@ -18,7 +18,7 @@ import {
     TRANSITION_TO_STATE,
 } from '../graphql/shop-definitions';
 
-export async function proceedToArrangingPayment(shopClient: TestClient): Promise<ID> {
+export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
     await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(SET_SHIPPING_ADDRESS, {
         input: {
             fullName: 'name',
@@ -46,7 +46,7 @@ export async function proceedToArrangingPayment(shopClient: TestClient): Promise
 }
 
 export async function addPaymentToOrder(
-    shopClient: TestClient,
+    shopClient: SimpleGraphQLClient,
     handler: PaymentMethodHandler,
 ): Promise<NonNullable<AddPaymentToOrder.Mutation['addPaymentToOrder']>> {
     const result = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(

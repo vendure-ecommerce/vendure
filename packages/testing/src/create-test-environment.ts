@@ -1,18 +1,32 @@
 import { VendureConfig } from '@vendure/core';
 
-import { TestClient } from './test-client';
+import { SimpleGraphQLClient } from './simple-graphql-client';
 import { TestServer } from './test-server';
 
 export interface TestEnvironment {
     server: TestServer;
-    adminClient: TestClient;
-    shopClient: TestClient;
+    /**
+     * @description
+     * A GraphQL client configured for the Admin API.
+     */
+    adminClient: SimpleGraphQLClient;
+    /**
+     * @description
+     * A GraphQL client configured for the Shop API.
+     */
+    shopClient: SimpleGraphQLClient;
 }
 
 export function createTestEnvironment(config: Required<VendureConfig>): TestEnvironment {
     const server = new TestServer(config);
-    const adminClient = new TestClient(config, config.adminApiPath);
-    const shopClient = new TestClient(config, config.shopApiPath);
+    const adminClient = new SimpleGraphQLClient(
+        config,
+        `http://localhost:${config.port}/${config.adminApiPath}`,
+    );
+    const shopClient = new SimpleGraphQLClient(
+        config,
+        `http://localhost:${config.port}/${config.shopApiPath}`,
+    );
     return {
         server,
         adminClient,

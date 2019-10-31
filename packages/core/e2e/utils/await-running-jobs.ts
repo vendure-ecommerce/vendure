@@ -1,4 +1,4 @@
-import { TestClient } from '@vendure/testing';
+import { SimpleGraphQLClient } from '@vendure/testing';
 
 import { GetRunningJobs, JobState } from '../graphql/generated-e2e-admin-types';
 import { GET_RUNNING_JOBS } from '../graphql/shared-definitions';
@@ -7,7 +7,7 @@ import { GET_RUNNING_JOBS } from '../graphql/shared-definitions';
  * For mutation which trigger background jobs, this can be used to "pause" the execution of
  * the test until those jobs have completed;
  */
-export async function awaitRunningJobs(adminClient: TestClient, timeout: number = 5000) {
+export async function awaitRunningJobs(adminClient: SimpleGraphQLClient, timeout: number = 5000) {
     let runningJobs = 0;
     const startTime = +new Date();
     let timedOut = false;

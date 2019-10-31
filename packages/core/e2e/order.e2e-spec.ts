@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { createTestEnvironment, TestClient } from '@vendure/testing';
+import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -1193,8 +1193,8 @@ describe('Orders resolver', () => {
 });
 
 async function createTestOrder(
-    adminClient: TestClient,
-    shopClient: TestClient,
+    adminClient: SimpleGraphQLClient,
+    shopClient: SimpleGraphQLClient,
     emailAddress: string,
     password: string,
 ): Promise<{
