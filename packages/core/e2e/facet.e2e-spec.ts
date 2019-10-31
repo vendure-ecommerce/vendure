@@ -46,7 +46,6 @@ describe('Facet resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 

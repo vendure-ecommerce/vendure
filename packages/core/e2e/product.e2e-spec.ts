@@ -51,9 +51,7 @@ describe('Product resolver', () => {
             customerCount: 1,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
-        await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

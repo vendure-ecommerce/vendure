@@ -66,7 +66,6 @@ describe('Collection resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-collections.csv'),
             customerCount: 1,
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
         const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
             GET_ASSET_LIST,

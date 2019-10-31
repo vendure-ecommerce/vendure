@@ -27,8 +27,6 @@ describe('EntityIdStrategy', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 

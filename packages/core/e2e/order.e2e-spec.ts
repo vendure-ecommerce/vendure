@@ -65,9 +65,7 @@ describe('Orders resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
-        await shopClient.init();
 
         // Create a couple of orders to be queried
         const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(

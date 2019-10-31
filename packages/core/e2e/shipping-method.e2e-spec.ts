@@ -58,9 +58,7 @@ describe('ShippingMethod resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
-        await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

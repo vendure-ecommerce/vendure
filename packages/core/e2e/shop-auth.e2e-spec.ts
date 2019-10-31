@@ -89,8 +89,6 @@ describe('Shop auth & accounts', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 2,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -551,8 +549,6 @@ describe('Expiring tokens', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -642,7 +638,6 @@ describe('Registration without email verification', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
@@ -717,8 +712,6 @@ describe('Updating email address without email verification', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
         const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
             id: 'T_1',

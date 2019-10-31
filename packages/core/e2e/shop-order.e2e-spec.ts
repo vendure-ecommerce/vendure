@@ -83,8 +83,6 @@ describe('Shop orders', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 2,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 

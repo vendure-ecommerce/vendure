@@ -24,7 +24,6 @@ describe('Role resolver', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await adminClient.init();
         await adminClient.asSuperAdmin();
 
         const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(

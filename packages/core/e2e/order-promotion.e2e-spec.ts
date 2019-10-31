@@ -71,8 +71,6 @@ describe('Promotions applied to Orders', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
             customerCount: 2,
         });
-        await shopClient.init();
-        await adminClient.init();
         await adminClient.asSuperAdmin();
 
         await getProducts();
