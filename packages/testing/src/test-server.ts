@@ -1,20 +1,13 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Omit } from '@vendure/common/lib/omit';
+import { DefaultLogger, Logger, VendureConfig } from '@vendure/core';
+import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 import fs from 'fs';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
-import { populateForTesting, PopulateOptions } from '../mock-data/populate-for-testing';
-import { preBootstrapConfig } from '../src/bootstrap';
-import { Mutable } from '../src/common/types/common-types';
-import { DefaultLogger } from '../src/config/logger/default-logger';
-import { Logger } from '../src/config/logger/vendure-logger';
-import { VendureConfig } from '../src/config/vendure-config';
-
-import { testConfig } from './config/test-config';
-import { setTestEnvironment } from './utils/test-environment';
+import { populateForTesting } from './data-population/populate-for-testing';
+import { Mutable, TestServerOptions } from './types';
 
 // tslint:disable:no-console
 /**
@@ -24,6 +17,8 @@ export class TestServer {
     app: INestApplication;
     worker?: INestMicroservice;
 
+    constructor(private vendureConfig: Required<VendureConfig>) {}
+
     /**
      * Bootstraps an instance of Vendure server and populates the database according to the options
      * passed in. Should be called immediately after creating the client in the `beforeAll` function.
@@ -31,24 +26,19 @@ export class TestServer {
      * The populated data is saved into an .sqlite file for each test file. On subsequent runs, this file
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
-    async init(
-        options: Omit<PopulateOptions, 'initialDataPath'>,
-        customConfig: Partial<VendureConfig> = {},
-    ): Promise<void> {
-        setTestEnvironment();
-        const testingConfig = { ...testConfig, ...customConfig };
-        const dbFilePath = this.getDbFilePath();
-        (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
+    async init(options: TestServerOptions): Promise<void> {
+        const dbFilePath = this.getDbFilePath(options.dataDir);
+        (this.vendureConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
         if (!fs.existsSync(dbFilePath)) {
             if (options.logging) {
                 console.log(`Test data not found. Populating database and caching...`);
             }
-            await this.populateInitialData(testingConfig, options);
+            await this.populateInitialData(this.vendureConfig, options);
         }
         if (options.logging) {
             console.log(`Loading test data from "${dbFilePath}"`);
         }
-        const [app, worker] = await this.bootstrapForTesting(testingConfig);
+        const [app, worker] = await this.bootstrapForTesting(this.vendureConfig);
         if (app) {
             this.app = app;
         } else {
@@ -72,30 +62,49 @@ export class TestServer {
         }
     }
 
-    private getDbFilePath() {
-        const dbDataDir = '__data__';
+    private getDbFilePath(dataDir: string) {
         // tslint:disable-next-line:no-non-null-assertion
-        const testFilePath = module!.parent!.filename;
+        const testFilePath = this.getCallerFilename(2);
         const dbFileName = path.basename(testFilePath) + '.sqlite';
-        const dbFilePath = path.join(path.dirname(testFilePath), dbDataDir, dbFileName);
+        const dbFilePath = path.join(dataDir, dbFileName);
         return dbFilePath;
+    }
+
+    private getCallerFilename(depth: number) {
+        let pst: ErrorConstructor['prepareStackTrace'];
+        let stack: any;
+        let file: any;
+        let frame: any;
+
+        pst = Error.prepareStackTrace;
+        Error.prepareStackTrace = (_, _stack) => {
+            Error.prepareStackTrace = pst;
+            return _stack;
+        };
+
+        stack = new Error().stack;
+        stack = stack.slice(depth + 1);
+
+        do {
+            frame = stack.shift();
+            file = frame && frame.getFileName();
+        } while (stack.length && file === 'module.js');
+
+        return file;
     }
 
     /**
      * Populates an .sqlite database file based on the PopulateOptions.
      */
     private async populateInitialData(
-        testingConfig: VendureConfig,
-        options: Omit<PopulateOptions, 'initialDataPath'>,
+        testingConfig: Required<VendureConfig>,
+        options: TestServerOptions,
     ): Promise<void> {
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
 
         const [app, worker] = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
-            ...{
-                ...options,
-                initialDataPath: path.join(__dirname, 'fixtures/e2e-initial-data.ts'),
-            },
+            ...options,
         });
         await app.close();
         if (worker) {
@@ -113,14 +122,14 @@ export class TestServer {
     ): Promise<[INestApplication, INestMicroservice | undefined]> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
-        const appModule = await import('../src/app.module');
+        const appModule = await import('@vendure/core/dist/app.module');
         try {
             DefaultLogger.hideNestBoostrapLogs();
             const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
             let worker: INestMicroservice | undefined;
             await app.listen(config.port);
             if (config.workerOptions.runInMainProcess) {
-                const workerModule = await import('../src/worker/worker.module');
+                const workerModule = await import('@vendure/core/dist/worker/worker.module');
                 worker = await NestFactory.createMicroservice(workerModule.WorkerModule, {
                     transport: config.workerOptions.transport,
                     logger: new Logger(),

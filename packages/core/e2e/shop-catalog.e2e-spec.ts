@@ -1,10 +1,11 @@
 /* tslint:disable:no-non-null-assertion */
+import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateCollection,
     CreateFacet,
@@ -36,22 +37,21 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop catalog', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
         await shopClient.init();
         await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

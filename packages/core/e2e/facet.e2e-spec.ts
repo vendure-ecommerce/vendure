@@ -1,7 +1,9 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/fragments';
 import {
     CreateFacet,
@@ -28,23 +30,24 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
+
     let brandFacet: FacetWithValues.Fragment;
     let speakerTypeFacet: FacetWithValues.Fragment;
 
     beforeAll(async () => {
         await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -52,7 +55,7 @@ describe('Facet resolver', () => {
     });
 
     it('createFacet', async () => {
-        const result = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+        const result = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
             input: {
                 isPrivate: false,
                 code: 'speaker-type',
@@ -71,7 +74,7 @@ describe('Facet resolver', () => {
     });
 
     it('updateFacet', async () => {
-        const result = await client.query<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, {
+        const result = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, {
             input: {
                 id: speakerTypeFacet.id,
                 translations: [{ languageCode: LanguageCode.en, name: 'Speaker Category' }],
@@ -82,7 +85,7 @@ describe('Facet resolver', () => {
     });
 
     it('createFacetValues', async () => {
-        const result = await client.query<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
+        const result = await adminClient.query<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
             CREATE_FACET_VALUES,
             {
                 input: [
@@ -104,7 +107,7 @@ describe('Facet resolver', () => {
     });
 
     it('updateFacetValues', async () => {
-        const result = await client.query<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
+        const result = await adminClient.query<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
             UPDATE_FACET_VALUES,
             {
                 input: [
@@ -120,7 +123,7 @@ describe('Facet resolver', () => {
     });
 
     it('facets', async () => {
-        const result = await client.query<GetFacetList.Query>(GET_FACET_LIST);
+        const result = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
 
         const { items } = result.facets;
         expect(items.length).toBe(2);
@@ -132,7 +135,7 @@ describe('Facet resolver', () => {
     });
 
     it('facet', async () => {
-        const result = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+        const result = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
             GET_FACET_WITH_VALUES,
             {
                 id: speakerTypeFacet.id,
@@ -147,19 +150,19 @@ describe('Facet resolver', () => {
 
         beforeAll(async () => {
             // add the FacetValues to products and variants
-            const result1 = await client.query<GetProductListWithVariants.Query>(
+            const result1 = await adminClient.query<GetProductListWithVariants.Query>(
                 GET_PRODUCTS_LIST_WITH_VARIANTS,
             );
             products = result1.products.items;
 
-            await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                 input: {
                     id: products[0].id,
                     facetValueIds: [speakerTypeFacet.values[0].id],
                 },
             });
 
-            await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                 UPDATE_PRODUCT_VARIANTS,
                 {
                     input: [
@@ -171,7 +174,7 @@ describe('Facet resolver', () => {
                 },
             );
 
-            await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                 input: {
                     id: products[1].id,
                     facetValueIds: [speakerTypeFacet.values[1].id],
@@ -181,14 +184,14 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues deletes unused facetValue', async () => {
             const facetValueToDelete = speakerTypeFacet.values[2];
-            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
                 DELETE_FACET_VALUES,
                 {
                     ids: [facetValueToDelete.id],
                     force: false,
                 },
             );
-            const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
                     id: speakerTypeFacet.id,
@@ -207,14 +210,14 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use returns NOT_DELETED', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
                 DELETE_FACET_VALUES,
                 {
                     ids: [facetValueToDelete.id],
                     force: false,
                 },
             );
-            const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
                     id: speakerTypeFacet.id,
@@ -233,7 +236,7 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use can be force deleted', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await client.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
+            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
                 DELETE_FACET_VALUES,
                 {
                     ids: [facetValueToDelete.id],
@@ -249,7 +252,7 @@ describe('Facet resolver', () => {
             ]);
 
             // FacetValue no longer in the Facet.values array
-            const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
                     id: speakerTypeFacet.id,
@@ -258,7 +261,7 @@ describe('Facet resolver', () => {
             expect(result2.facet!.values[0]).not.toEqual(facetValueToDelete);
 
             // FacetValue no longer in the Product.facetValues array
-            const result3 = await client.query<
+            const result3 = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
             >(GET_PRODUCT_WITH_VARIANTS, {
@@ -268,11 +271,14 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use returns NOT_DELETED', async () => {
-            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
-                id: speakerTypeFacet.id,
-                force: false,
-            });
-            const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+            const result1 = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
+                DELETE_FACET,
+                {
+                    id: speakerTypeFacet.id,
+                    force: false,
+                },
+            );
+            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
                     id: speakerTypeFacet.id,
@@ -288,10 +294,13 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use can be force deleted', async () => {
-            const result1 = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
-                id: speakerTypeFacet.id,
-                force: true,
-            });
+            const result1 = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
+                DELETE_FACET,
+                {
+                    id: speakerTypeFacet.id,
+                    force: true,
+                },
+            );
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.DELETED,
@@ -299,7 +308,7 @@ describe('Facet resolver', () => {
             });
 
             // FacetValue no longer in the Facet.values array
-            const result2 = await client.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
+            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
                 GET_FACET_WITH_VALUES,
                 {
                     id: speakerTypeFacet.id,
@@ -308,7 +317,7 @@ describe('Facet resolver', () => {
             expect(result2.facet).toBe(null);
 
             // FacetValue no longer in the Product.facetValues array
-            const result3 = await client.query<
+            const result3 = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
             >(GET_PRODUCT_WITH_VARIANTS, {
@@ -318,7 +327,7 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet with no FacetValues works', async () => {
-            const { createFacet } = await client.query<CreateFacet.Mutation, CreateFacet.Variables>(
+            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
                 CREATE_FACET,
                 {
                     input: {
@@ -328,10 +337,13 @@ describe('Facet resolver', () => {
                     },
                 },
             );
-            const result = await client.query<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
-                id: createFacet.id,
-                force: false,
-            });
+            const result = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
+                DELETE_FACET,
+                {
+                    id: createFacet.id,
+                    force: false,
+                },
+            );
             expect(result.deleteFacet.result).toBe(DeletionResult.DELETED);
         });
     });

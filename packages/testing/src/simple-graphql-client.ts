@@ -1,5 +1,5 @@
-/// <reference types="../typings" />
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+import { VendureConfig } from '@vendure/core';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
@@ -7,10 +7,7 @@ import fetch, { Response } from 'node-fetch';
 import { Curl } from 'node-libcurl';
 import { stringify } from 'querystring';
 
-import { ImportInfo } from '../e2e/graphql/generated-e2e-admin-types';
-import { getConfig } from '../src/config/config-helpers';
-
-import { createUploadPostData } from './create-upload-post-data';
+import { createUploadPostData } from './utils/create-upload-post-data';
 
 const LOGIN = gql`
     mutation($username: String!, $password: String!) {
@@ -37,7 +34,7 @@ export class SimpleGraphQLClient {
     private channelToken: string;
     private headers: { [key: string]: any } = {};
 
-    constructor(private apiUrl: string = '') {}
+    constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
 
     setAuthToken(token: string) {
         this.authToken = token;
@@ -49,7 +46,7 @@ export class SimpleGraphQLClient {
     }
 
     setChannelToken(token: string) {
-        this.headers[getConfig().channelTokenKey] = token;
+        this.headers[this.vendureConfig.channelTokenKey] = token;
     }
 
     /**
@@ -77,22 +74,6 @@ export class SimpleGraphQLClient {
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
         const response = await this.request(query, variables);
         return response.status;
-    }
-
-    importProducts(csvFilePath: string): Promise<{ importProducts: ImportInfo }> {
-        return this.fileUploadMutation({
-            mutation: gql`
-                mutation ImportProducts($csvFile: Upload!) {
-                    importProducts(csvFile: $csvFile) {
-                        imported
-                        processed
-                        errors
-                    }
-                }
-            `,
-            filePaths: [csvFilePath],
-            mapVariables: () => ({ csvFile: null }),
-        });
     }
 
     async asUserWithCredentials(username: string, password: string) {
@@ -142,7 +123,7 @@ export class SimpleGraphQLClient {
             headers: { 'Content-Type': 'application/json', ...this.headers },
             body,
         });
-        const authToken = response.headers.get(getConfig().authOptions.authTokenHeaderKey || '');
+        const authToken = response.headers.get(this.vendureConfig.authOptions.authTokenHeaderKey || '');
         if (authToken != null) {
             this.setAuthToken(authToken);
         }
@@ -165,7 +146,7 @@ export class SimpleGraphQLClient {
      * Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
      * Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
      */
-    private fileUploadMutation(options: {
+    fileUploadMutation(options: {
         mutation: DocumentNode;
         filePaths: string[];
         mapVariables: (filePaths: string[]) => any;
@@ -197,7 +178,7 @@ export class SimpleGraphQLClient {
             curl.setOpt(Curl.option.HTTPPOST, processedPostData);
             curl.setOpt(Curl.option.HTTPHEADER, [
                 `Authorization: Bearer ${this.authToken}`,
-                `${getConfig().channelTokenKey}: ${this.channelToken}`,
+                `${this.vendureConfig.channelTokenKey}: ${this.channelToken}`,
             ]);
             curl.perform();
             curl.on('end', (statusCode: any, body: any) => {

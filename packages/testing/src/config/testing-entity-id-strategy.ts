@@ -1,4 +1,4 @@
-import { IntegerIdStrategy } from '../../src/config/entity-id-strategy/entity-id-strategy';
+import { IntegerIdStrategy } from '@vendure/core';
 
 /**
  * A testing entity id strategy which prefixes all IDs with a constant string. This is used in the

@@ -1,7 +1,8 @@
 /* tslint:disable:no-non-null-assertion */
-import { ID } from '../../../common/lib/shared-types';
-import { PaymentMethodHandler } from '../../src/config/payment-method/payment-method-handler';
-import { LanguageCode } from '../graphql/generated-e2e-admin-types';
+import { ID } from '@vendure/common/lib/shared-types';
+import { PaymentMethodHandler } from '@vendure/core';
+import { TestClient } from '@vendure/testing';
+
 import {
     AddPaymentToOrder,
     GetShippingMethods,
@@ -16,9 +17,8 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from '../graphql/shop-definitions';
-import { TestShopClient } from '../test-client';
 
-export async function proceedToArrangingPayment(shopClient: TestShopClient): Promise<ID> {
+export async function proceedToArrangingPayment(shopClient: TestClient): Promise<ID> {
     await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(SET_SHIPPING_ADDRESS, {
         input: {
             fullName: 'name',
@@ -46,7 +46,7 @@ export async function proceedToArrangingPayment(shopClient: TestShopClient): Pro
 }
 
 export async function addPaymentToOrder(
-    shopClient: TestShopClient,
+    shopClient: TestClient,
     handler: PaymentMethodHandler,
 ): Promise<NonNullable<AddPaymentToOrder.Mutation['addPaymentToOrder']>> {
     const result = await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(
@@ -63,20 +63,3 @@ export async function addPaymentToOrder(
     const order = result.addPaymentToOrder!;
     return order as any;
 }
-
-export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
-    code: 'test-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Settled',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: order => ({
-        success: true,
-    }),
-});

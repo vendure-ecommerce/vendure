@@ -1,4 +1,4 @@
-import { AssetPreviewStrategy } from '../../src/config/asset-preview-strategy/asset-preview-strategy';
+import { AssetPreviewStrategy } from '@vendure/core';
 
 const TEST_IMAGE_BASE_64 =
     // tslint:disable-next-line:max-line-length

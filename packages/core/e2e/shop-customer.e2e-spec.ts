@@ -1,8 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { AttemptLogin, GetCustomer, GetCustomerIds } from './graphql/generated-e2e-admin-types';
 import {
     CreateAddressInput,
@@ -22,23 +24,22 @@ import {
     UPDATE_CUSTOMER,
     UPDATE_PASSWORD,
 } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop customers', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
     let customer: GetCustomer.Customer;
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 2,
         });
         await shopClient.init();
         await adminClient.init();
+        await adminClient.asSuperAdmin();
 
         // Fetch the first Customer and store it as the `customer` variable.
         const { customers } = await adminClient.query<GetCustomerIds.Query>(gql`

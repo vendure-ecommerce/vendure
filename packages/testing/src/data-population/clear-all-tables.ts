@@ -1,9 +1,6 @@
+import { VendureConfig } from '@vendure/core';
+import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 import { createConnection } from 'typeorm';
-
-import { isTestEnvironment } from '../e2e/utils/test-environment';
-import { preBootstrapConfig } from '../src/bootstrap';
-import { defaultConfig } from '../src/config/default-config';
-import { VendureConfig } from '../src/config/vendure-config';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises
@@ -12,9 +9,8 @@ import { VendureConfig } from '../src/config/vendure-config';
  */
 export async function clearAllTables(config: VendureConfig, logging = true) {
     config = await preBootstrapConfig(config);
-    const entityIdStrategy = config.entityIdStrategy || defaultConfig.entityIdStrategy;
-    const name = isTestEnvironment() ? undefined : 'clearAllTables';
-    const connection = await createConnection({ ...config.dbConnectionOptions, name });
+    const entityIdStrategy = config.entityIdStrategy;
+    const connection = await createConnection({ ...config.dbConnectionOptions });
     if (logging) {
         console.log('Clearing all tables...');
     }

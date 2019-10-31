@@ -1,12 +1,11 @@
 import { pick } from '@vendure/common/lib/pick';
+import { PromotionAction, PromotionCondition, PromotionOrderAction } from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { LanguageCode } from '../../common/lib/generated-types';
-import { PromotionAction, PromotionOrderAction } from '../src/config/promotion/promotion-action';
-import { PromotionCondition } from '../src/config/promotion/promotion-condition';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
     CreatePromotion,
@@ -15,24 +14,27 @@ import {
     GetAdjustmentOperations,
     GetPromotion,
     GetPromotionList,
+    LanguageCode,
     Promotion,
     UpdatePromotion,
 } from './graphql/generated-e2e-admin-types';
 import { CREATE_PROMOTION } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Promotion resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
-
     const promoCondition = generateTestCondition('promo_condition');
     const promoCondition2 = generateTestCondition('promo_condition2');
-
     const promoAction = generateTestAction('promo_action');
+
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        promotionOptions: {
+            promotionConditions: [promoCondition, promoCondition2],
+            promotionActions: [promoAction],
+        },
+    });
 
     const snapshotProps: Array<keyof Promotion.Fragment> = [
         'name',
@@ -46,19 +48,14 @@ describe('Promotion resolver', () => {
     let promotion: Promotion.Fragment;
 
     beforeAll(async () => {
-        await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-                customerCount: 1,
-            },
-            {
-                promotionOptions: {
-                    promotionConditions: [promoCondition, promoCondition2],
-                    promotionActions: [promoAction],
-                },
-            },
-        );
-        await client.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -66,7 +63,7 @@ describe('Promotion resolver', () => {
     });
 
     it('createPromotion', async () => {
-        const result = await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
+        const result = await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
             CREATE_PROMOTION,
             {
                 input: {
@@ -103,7 +100,7 @@ describe('Promotion resolver', () => {
     it(
         'createPromotion throws with empty conditions and no couponCode',
         assertThrowsWithMessage(async () => {
-            await client.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+            await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
                 input: {
                     name: 'bad promotion',
                     enabled: true,
@@ -126,7 +123,7 @@ describe('Promotion resolver', () => {
     );
 
     it('updatePromotion', async () => {
-        const result = await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
+        const result = await adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
             UPDATE_PROMOTION,
             {
                 input: {
@@ -153,7 +150,7 @@ describe('Promotion resolver', () => {
     it(
         'updatePromotion throws with empty conditions and no couponCode',
         assertThrowsWithMessage(async () => {
-            await client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+            await adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
                 input: {
                     id: promotion.id,
                     couponCode: '',
@@ -164,7 +161,7 @@ describe('Promotion resolver', () => {
     );
 
     it('promotion', async () => {
-        const result = await client.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
+        const result = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
             id: promotion.id,
         });
 
@@ -172,7 +169,7 @@ describe('Promotion resolver', () => {
     });
 
     it('promotions', async () => {
-        const result = await client.query<GetPromotionList.Query, GetPromotionList.Variables>(
+        const result = await adminClient.query<GetPromotionList.Query, GetPromotionList.Variables>(
             GET_PROMOTION_LIST,
             {},
         );
@@ -182,9 +179,10 @@ describe('Promotion resolver', () => {
     });
 
     it('adjustmentOperations', async () => {
-        const result = await client.query<GetAdjustmentOperations.Query, GetAdjustmentOperations.Variables>(
-            GET_ADJUSTMENT_OPERATIONS,
-        );
+        const result = await adminClient.query<
+            GetAdjustmentOperations.Query,
+            GetAdjustmentOperations.Variables
+        >(GET_ADJUSTMENT_OPERATIONS);
 
         expect(result.promotionActions).toMatchSnapshot();
         expect(result.promotionConditions).toMatchSnapshot();
@@ -195,13 +193,13 @@ describe('Promotion resolver', () => {
         let promotionToDelete: GetPromotionList.Items;
 
         beforeAll(async () => {
-            const result = await client.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const result = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
             allPromotions = result.promotions.items;
         });
 
         it('deletes a promotion', async () => {
             promotionToDelete = allPromotions[0];
-            const result = await client.query<DeletePromotion.Mutation, DeletePromotion.Variables>(
+            const result = await adminClient.query<DeletePromotion.Mutation, DeletePromotion.Variables>(
                 DELETE_PROMOTION,
                 { id: promotionToDelete.id },
             );
@@ -210,15 +208,18 @@ describe('Promotion resolver', () => {
         });
 
         it('cannot get a deleted promotion', async () => {
-            const result = await client.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
-                id: promotionToDelete.id,
-            });
+            const result = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
+                GET_PROMOTION,
+                {
+                    id: promotionToDelete.id,
+                },
+            );
 
             expect(result.promotion).toBe(null);
         });
 
         it('deleted promotion omitted from list', async () => {
-            const result = await client.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const result = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
 
             expect(result.promotions.items.length).toBe(allPromotions.length - 1);
             expect(result.promotions.items.map(c => c.id).includes(promotionToDelete.id)).toBe(false);
@@ -228,7 +229,7 @@ describe('Promotion resolver', () => {
             'updatePromotion throws for deleted promotion',
             assertThrowsWithMessage(
                 () =>
-                    client.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+                    adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
                         input: {
                             id: promotionToDelete.id,
                             enabled: false,

@@ -1,10 +1,12 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
@@ -35,23 +37,22 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             customerCount: 1,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
         });
         await adminClient.init();
+        await adminClient.asSuperAdmin();
         await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 

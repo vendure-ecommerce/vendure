@@ -1,16 +1,16 @@
 /* tslint:disable:no-non-null-assertion */
+import { mergeConfig, OrderState } from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
-import { OrderState } from '../src/service/helpers/order-state-machine/order-state';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
+import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddressInput,
     GetStockMovement,
-    LanguageCode,
     StockMovementType,
     UpdateProductVariantInput,
     UpdateStock,
@@ -30,29 +30,27 @@ import {
     SET_SHIPPING_ADDRESS,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Stock control', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            paymentOptions: {
+                paymentMethodHandlers: [testSuccessfulPaymentMethod],
+            },
+        }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-stock-control.csv'),
-                customerCount: 2,
-            },
-            {
-                paymentOptions: {
-                    paymentMethodHandlers: [testPaymentMethod],
-                },
-            },
-        );
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-stock-control.csv'),
+            customerCount: 2,
+        });
         await shopClient.init();
         await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -202,7 +200,7 @@ describe('Stock control', () => {
                 AddPaymentToOrder.Variables
             >(ADD_PAYMENT, {
                 input: {
-                    method: testPaymentMethod.code,
+                    method: testSuccessfulPaymentMethod.code,
                     metadata: {},
                 } as PaymentInput,
             });
@@ -234,23 +232,6 @@ describe('Stock control', () => {
             expect(variant2.stockOnHand).toBe(2); // tracked inventory
         });
     });
-});
-
-const testPaymentMethod = new PaymentMethodHandler({
-    code: 'test-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Settled',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: order => ({
-        success: true,
-    }),
 });
 
 const UPDATE_STOCK_ON_HAND = gql`

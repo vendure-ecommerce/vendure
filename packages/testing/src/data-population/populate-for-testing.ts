@@ -1,51 +1,42 @@
 /* tslint:disable:no-console */
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { InitialData, VendureConfig } from '@vendure/core';
 import fs from 'fs-extra';
 
-import { setConfig } from '../src/config/config-helpers';
-import { VendureConfig } from '../src/config/vendure-config';
+import { TestServerOptions } from '../types';
 
 import { clearAllTables } from './clear-all-tables';
 import { populateCustomers } from './populate-customers';
-
-export interface PopulateOptions {
-    logging?: boolean;
-    customerCount: number;
-    productsCsvPath: string;
-    initialDataPath: string;
-}
 
 // tslint:disable:no-floating-promises
 /**
  * Clears all tables from the database and populates with (deterministic) random data.
  */
 export async function populateForTesting(
-    config: VendureConfig,
+    config: Required<VendureConfig>,
     bootstrapFn: (config: VendureConfig) => Promise<[INestApplication, INestMicroservice | undefined]>,
-    options: PopulateOptions,
+    options: TestServerOptions,
 ): Promise<[INestApplication, INestMicroservice | undefined]> {
     (config.dbConnectionOptions as any).logging = false;
     const logging = options.logging === undefined ? true : options.logging;
     const originalRequireVerification = config.authOptions.requireVerification;
     config.authOptions.requireVerification = false;
 
-    setConfig(config);
     await clearAllTables(config, logging);
     const [app, worker] = await bootstrapFn(config);
 
-    await populateInitialData(app, options.initialDataPath, logging);
+    await populateInitialData(app, options.initialData, logging);
     await populateProducts(app, options.productsCsvPath, logging);
-    await populateCollections(app, options.initialDataPath, logging);
-    await populateCustomers(options.customerCount, config, logging);
+    await populateCollections(app, options.initialData, logging);
+    await populateCustomers(options.customerCount || 10, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
     return [app, worker];
 }
 
-async function populateInitialData(app: INestApplication, initialDataPath: string, logging: boolean) {
-    const { Populator } = await import('../src/data-import/providers/populator/populator');
-    const { initialData } = await import(initialDataPath);
+async function populateInitialData(app: INestApplication, initialData: InitialData, logging: boolean) {
+    const { Populator } = await import('@vendure/core');
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData);
@@ -57,9 +48,8 @@ async function populateInitialData(app: INestApplication, initialDataPath: strin
     }
 }
 
-async function populateCollections(app: INestApplication, initialDataPath: string, logging: boolean) {
-    const { Populator } = await import('../src/data-import/providers/populator/populator');
-    const { initialData } = await import(initialDataPath);
+async function populateCollections(app: INestApplication, initialData: InitialData, logging: boolean) {
+    const { Populator } = await import('@vendure/core');
     if (!initialData.collections.length) {
         return;
     }
@@ -75,7 +65,7 @@ async function populateCollections(app: INestApplication, initialDataPath: strin
 }
 
 async function populateProducts(app: INestApplication, productsCsvPath: string, logging: boolean) {
-    const { Importer } = await import('../src/data-import/providers/importer/importer');
+    const { Importer } = await import('@vendure/core');
     const importer = app.get(Importer);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');
 

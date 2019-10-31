@@ -1,9 +1,11 @@
 import { omit } from '@vendure/common/lib/omit';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { ROLE_FRAGMENT } from './graphql/fragments';
 import {
     CreateRole,
@@ -14,22 +16,22 @@ import {
     UpdateRole,
 } from './graphql/generated-e2e-admin-types';
 import { CREATE_ROLE } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Role resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
     let createdRole: Role.Fragment;
     let defaultRoles: Role.Fragment[];
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -37,7 +39,7 @@ describe('Role resolver', () => {
     });
 
     it('roles', async () => {
-        const result = await client.query<GetRoles.Query, GetRoles.Variables>(GET_ROLES);
+        const result = await adminClient.query<GetRoles.Query, GetRoles.Variables>(GET_ROLES);
 
         defaultRoles = result.roles.items;
         expect(result.roles.items.length).toBe(2);
@@ -47,7 +49,7 @@ describe('Role resolver', () => {
     it(
         'createRole with invalid permission',
         assertThrowsWithMessage(async () => {
-            await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+            await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
                 input: {
                     code: 'test',
                     description: 'test role',
@@ -58,13 +60,16 @@ describe('Role resolver', () => {
     );
 
     it('createRole with no permissions includes Authenticated', async () => {
-        const { createRole } = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
-            input: {
-                code: 'test',
-                description: 'test role',
-                permissions: [],
+        const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(
+            CREATE_ROLE,
+            {
+                input: {
+                    code: 'test',
+                    description: 'test role',
+                    permissions: [],
+                },
             },
-        });
+        );
 
         expect(omit(createRole, ['channels'])).toEqual({
             code: 'test',
@@ -75,13 +80,16 @@ describe('Role resolver', () => {
     });
 
     it('createRole deduplicates permissions', async () => {
-        const { createRole } = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
-            input: {
-                code: 'test2',
-                description: 'test role2',
-                permissions: [Permission.ReadSettings, Permission.ReadSettings],
+        const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(
+            CREATE_ROLE,
+            {
+                input: {
+                    code: 'test2',
+                    description: 'test role2',
+                    permissions: [Permission.ReadSettings, Permission.ReadSettings],
+                },
             },
-        });
+        );
 
         expect(omit(createRole, ['channels'])).toEqual({
             code: 'test2',
@@ -92,7 +100,7 @@ describe('Role resolver', () => {
     });
 
     it('createRole with permissions', async () => {
-        const result = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+        const result = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
             input: {
                 code: 'test',
                 description: 'test role',
@@ -110,12 +118,14 @@ describe('Role resolver', () => {
     });
 
     it('role', async () => {
-        const result = await client.query<GetRole.Query, GetRole.Variables>(GET_ROLE, { id: createdRole.id });
+        const result = await adminClient.query<GetRole.Query, GetRole.Variables>(GET_ROLE, {
+            id: createdRole.id,
+        });
         expect(result.role).toEqual(createdRole);
     });
 
     it('updateRole', async () => {
-        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,
                 code: 'test-modified',
@@ -138,7 +148,7 @@ describe('Role resolver', () => {
     });
 
     it('updateRole works with partial input', async () => {
-        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,
                 code: 'test-modified-again',
@@ -156,7 +166,7 @@ describe('Role resolver', () => {
     });
 
     it('updateRole deduplicates permissions', async () => {
-        const result = await client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
             input: {
                 id: createdRole.id,
                 permissions: [
@@ -179,7 +189,7 @@ describe('Role resolver', () => {
                 fail(`Could not find SuperAdmin role`);
                 return;
             }
-            return client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: superAdminRole.id,
                     code: 'superadmin-modified',
@@ -198,7 +208,7 @@ describe('Role resolver', () => {
                 fail(`Could not find Customer role`);
                 return;
             }
-            return client.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
                     id: customerRole.id,
                     code: 'customer-modified',

@@ -1,15 +1,21 @@
 /* tslint:disable:no-non-null-assertion */
+import { mergeConfig } from '@vendure/core';
 import path from 'path';
 
-import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
+import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
+import {
+    testErrorPaymentMethod,
+    testFailingPaymentMethod,
+    testSuccessfulPaymentMethod,
+} from './fixtures/test-payment-methods';
 import {
     CreateAddressInput,
     GetCountryList,
     GetCustomer,
     GetCustomerList,
-    LanguageCode,
     UpdateCountry,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -52,37 +58,34 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { testSuccessfulPaymentMethod } from './utils/test-order-utils';
 
 describe('Shop orders', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            paymentOptions: {
+                paymentMethodHandlers: [
+                    testSuccessfulPaymentMethod,
+                    testFailingPaymentMethod,
+                    testErrorPaymentMethod,
+                ],
+            },
+            orderOptions: {
+                orderItemsLimit: 99,
+            },
+        }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 2,
-            },
-            {
-                paymentOptions: {
-                    paymentMethodHandlers: [
-                        testSuccessfulPaymentMethod,
-                        testFailingPaymentMethod,
-                        testErrorPaymentMethod,
-                    ],
-                },
-                orderOptions: {
-                    orderItemsLimit: 99,
-                },
-            },
-        );
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 2,
+        });
         await shopClient.init();
         await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -866,37 +869,4 @@ describe('Shop orders', () => {
             });
         });
     });
-});
-
-const testFailingPaymentMethod = new PaymentMethodHandler({
-    code: 'test-failing-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Failing Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Declined',
-            metadata,
-        };
-    },
-    settlePayment: order => ({
-        success: true,
-    }),
-});
-
-const testErrorPaymentMethod = new PaymentMethodHandler({
-    code: 'test-error-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Error Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Error',
-            errorMessage: 'Something went horribly wrong',
-            metadata,
-        };
-    },
-    settlePayment: order => ({
-        success: true,
-    }),
 });

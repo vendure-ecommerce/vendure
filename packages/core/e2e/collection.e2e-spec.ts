@@ -1,15 +1,17 @@
 /* tslint:disable:no-non-null-assertion */
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
+import {
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+} from '@vendure/core/dist/config/collection/default-collection-filters';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { pick } from '../../common/lib/pick';
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '../src/config/collection/default-collection-filters';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
     Collection,
@@ -45,14 +47,12 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Collection resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
+
     let assets: GetAssetList.Items[];
     let facetValues: FacetValueFragment[];
     let electronicsCollection: Collection.Fragment;
@@ -61,19 +61,25 @@ describe('Collection resolver', () => {
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-collections.csv'),
             customerCount: 1,
         });
-        await client.init();
-        const assetsResult = await client.query<GetAssetList.Query, GetAssetList.Variables>(GET_ASSET_LIST, {
-            options: {
-                sort: {
-                    name: SortOrder.ASC,
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
+        const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
+            GET_ASSET_LIST,
+            {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
                 },
             },
-        });
+        );
         assets = assetsResult.assets.items;
-        const facetValuesResult = await client.query<GetFacetValues.Query>(GET_FACET_VALUES);
+        const facetValuesResult = await adminClient.query<GetFacetValues.Query>(GET_FACET_VALUES);
         facetValues = facetValuesResult.facets.items.reduce(
             (values, facet) => [...values, ...facet.values],
             [] as FacetValueFragment[],
@@ -88,7 +94,7 @@ describe('Collection resolver', () => {
      * Test case for https://github.com/vendure-ecommerce/vendure/issues/97
      */
     it('collection breadcrumbs works after bootstrap', async () => {
-        const result = await client.query<GetCollectionBreadcrumbs.Query>(GET_COLLECTION_BREADCRUMBS, {
+        const result = await adminClient.query<GetCollectionBreadcrumbs.Query>(GET_COLLECTION_BREADCRUMBS, {
             id: 'T_1',
         });
         expect(result.collection!.breadcrumbs[0].name).toBe(ROOT_COLLECTION_NAME);
@@ -96,7 +102,7 @@ describe('Collection resolver', () => {
 
     describe('createCollection', () => {
         it('creates a root collection', async () => {
-            const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
                     input: {
@@ -132,7 +138,7 @@ describe('Collection resolver', () => {
         });
 
         it('creates a nested collection', async () => {
-            const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
                     input: {
@@ -163,7 +169,7 @@ describe('Collection resolver', () => {
         });
 
         it('creates a 2nd level nested collection', async () => {
-            const result = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
                     input: {
@@ -196,7 +202,7 @@ describe('Collection resolver', () => {
 
     describe('updateCollection', () => {
         it('updates with assets', async () => {
-            const { updateCollection } = await client.query<
+            const { updateCollection } = await adminClient.query<
                 UpdateCollection.Mutation,
                 UpdateCollection.Variables
             >(UPDATE_COLLECTION, {
@@ -212,7 +218,7 @@ describe('Collection resolver', () => {
         });
 
         it('updating existing assets', async () => {
-            const { updateCollection } = await client.query<
+            const { updateCollection } = await adminClient.query<
                 UpdateCollection.Mutation,
                 UpdateCollection.Variables
             >(UPDATE_COLLECTION, {
@@ -227,7 +233,7 @@ describe('Collection resolver', () => {
         });
 
         it('removes all assets', async () => {
-            const { updateCollection } = await client.query<
+            const { updateCollection } = await adminClient.query<
                 UpdateCollection.Mutation,
                 UpdateCollection.Variables
             >(UPDATE_COLLECTION, {
@@ -243,7 +249,7 @@ describe('Collection resolver', () => {
     });
 
     it('collection query', async () => {
-        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
         });
         if (!result.collection) {
@@ -254,7 +260,7 @@ describe('Collection resolver', () => {
     });
 
     it('parent field', async () => {
-        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
         });
         if (!result.collection) {
@@ -265,7 +271,7 @@ describe('Collection resolver', () => {
     });
 
     it('children field', async () => {
-        const result = await client.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: electronicsCollection.id,
         });
         if (!result.collection) {
@@ -277,12 +283,12 @@ describe('Collection resolver', () => {
     });
 
     it('breadcrumbs', async () => {
-        const result = await client.query<GetCollectionBreadcrumbs.Query, GetCollectionBreadcrumbs.Variables>(
-            GET_COLLECTION_BREADCRUMBS,
-            {
-                id: pearCollection.id,
-            },
-        );
+        const result = await adminClient.query<
+            GetCollectionBreadcrumbs.Query,
+            GetCollectionBreadcrumbs.Variables
+        >(GET_COLLECTION_BREADCRUMBS, {
+            id: pearCollection.id,
+        });
         if (!result.collection) {
             fail(`did not return the collection`);
             return;
@@ -296,12 +302,12 @@ describe('Collection resolver', () => {
     });
 
     it('breadcrumbs for root collection', async () => {
-        const result = await client.query<GetCollectionBreadcrumbs.Query, GetCollectionBreadcrumbs.Variables>(
-            GET_COLLECTION_BREADCRUMBS,
-            {
-                id: 'T_1',
-            },
-        );
+        const result = await adminClient.query<
+            GetCollectionBreadcrumbs.Query,
+            GetCollectionBreadcrumbs.Variables
+        >(GET_COLLECTION_BREADCRUMBS, {
+            id: 'T_1',
+        });
         if (!result.collection) {
             fail(`did not return the collection`);
             return;
@@ -310,7 +316,7 @@ describe('Collection resolver', () => {
     });
 
     it('collections.assets', async () => {
-        const { collections } = await client.query<GetCollectionsWithAssets.Query>(gql`
+        const { collections } = await adminClient.query<GetCollectionsWithAssets.Query>(gql`
             query GetCollectionsWithAssets {
                 collections {
                     items {
@@ -327,7 +333,7 @@ describe('Collection resolver', () => {
 
     describe('moveCollection', () => {
         it('moves a collection to a new parent', async () => {
-            const result = await client.query<MoveCollection.Mutation, MoveCollection.Variables>(
+            const result = await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(
                 MOVE_COLLECTION,
                 {
                     input: {
@@ -345,10 +351,10 @@ describe('Collection resolver', () => {
         });
 
         it('re-evaluates Collection contents on move', async () => {
-            const result = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(
-                GET_COLLECTION_PRODUCT_VARIANTS,
-                { id: pearCollection.id },
-            );
+            const result = await adminClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
             expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
@@ -359,7 +365,7 @@ describe('Collection resolver', () => {
         });
 
         it('alters the position in the current parent 1', async () => {
-            await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
                     collectionId: computersCollection.id,
                     parentId: electronicsCollection.id,
@@ -372,7 +378,7 @@ describe('Collection resolver', () => {
         });
 
         it('alters the position in the current parent 2', async () => {
-            await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
                     collectionId: pearCollection.id,
                     parentId: electronicsCollection.id,
@@ -385,7 +391,7 @@ describe('Collection resolver', () => {
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
-            await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
                     collectionId: pearCollection.id,
                     parentId: electronicsCollection.id,
@@ -398,7 +404,7 @@ describe('Collection resolver', () => {
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
-            await client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
                     collectionId: pearCollection.id,
                     parentId: electronicsCollection.id,
@@ -414,7 +420,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into self',
             assertThrowsWithMessage(
                 () =>
-                    client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+                    adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -429,7 +435,7 @@ describe('Collection resolver', () => {
             'throws if attempting to move into a decendant of self',
             assertThrowsWithMessage(
                 () =>
-                    client.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+                    adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                         input: {
                             collectionId: pearCollection.id,
                             parentId: pearCollection.id,
@@ -441,7 +447,7 @@ describe('Collection resolver', () => {
         );
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
-            const result = await client.query<GetCollections.Query>(GET_COLLECTIONS);
+            const result = await adminClient.query<GetCollections.Query>(GET_COLLECTIONS);
             return result.collections.items.filter(i => i.parent!.id === parentId);
         }
     });
@@ -452,7 +458,7 @@ describe('Collection resolver', () => {
         let laptopProductId: string;
 
         beforeAll(async () => {
-            const result1 = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+            const result1 = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
                     input: {
@@ -481,7 +487,7 @@ describe('Collection resolver', () => {
             );
             collectionToDeleteParent = result1.createCollection;
 
-            const result2 = await client.query<CreateCollection.Mutation, CreateCollection.Variables>(
+            const result2 = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
                 CREATE_COLLECTION,
                 {
                     input: {
@@ -499,14 +505,17 @@ describe('Collection resolver', () => {
         it(
             'throws for invalid collection id',
             assertThrowsWithMessage(async () => {
-                await client.query<DeleteCollection.Mutation, DeleteCollection.Variables>(DELETE_COLLECTION, {
-                    id: 'T_999',
-                });
+                await adminClient.query<DeleteCollection.Mutation, DeleteCollection.Variables>(
+                    DELETE_COLLECTION,
+                    {
+                        id: 'T_999',
+                    },
+                );
             }, "No Collection with the id '999' could be found"),
         );
 
         it('collection and product related prior to deletion', async () => {
-            const { collection } = await client.query<
+            const { collection } = await adminClient.query<
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables
             >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -521,7 +530,7 @@ describe('Collection resolver', () => {
 
             laptopProductId = collection!.productVariants.items[0].productId;
 
-            const { product } = await client.query<
+            const { product } = await adminClient.query<
                 GetProductCollections.Query,
                 GetProductCollections.Variables
             >(GET_PRODUCT_COLLECTIONS, {
@@ -538,7 +547,7 @@ describe('Collection resolver', () => {
         });
 
         it('deleteCollection works', async () => {
-            const { deleteCollection } = await client.query<
+            const { deleteCollection } = await adminClient.query<
                 DeleteCollection.Mutation,
                 DeleteCollection.Variables
             >(DELETE_COLLECTION, {
@@ -549,7 +558,7 @@ describe('Collection resolver', () => {
         });
 
         it('deleted parent collection is null', async () => {
-            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+            const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                 GET_COLLECTION,
                 {
                     id: collectionToDeleteParent.id,
@@ -559,7 +568,7 @@ describe('Collection resolver', () => {
         });
 
         it('deleted child collection is null', async () => {
-            const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+            const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                 GET_COLLECTION,
                 {
                     id: collectionToDeleteChild.id,
@@ -569,7 +578,7 @@ describe('Collection resolver', () => {
         });
 
         it('product no longer lists collection', async () => {
-            const { product } = await client.query<
+            const { product } = await adminClient.query<
                 GetProductCollections.Query,
                 GetProductCollections.Variables
             >(GET_PRODUCT_COLLECTIONS, {
@@ -586,7 +595,7 @@ describe('Collection resolver', () => {
 
     describe('filters', () => {
         it('Collection with no filters has no productVariants', async () => {
-            const result = await client.query<
+            const result = await adminClient.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
             >(CREATE_COLLECTION_SELECT_VARIANTS, {
@@ -600,7 +609,7 @@ describe('Collection resolver', () => {
 
         describe('facetValue filter', () => {
             it('electronics', async () => {
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -632,7 +641,7 @@ describe('Collection resolver', () => {
             });
 
             it('computers', async () => {
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -660,7 +669,7 @@ describe('Collection resolver', () => {
             });
 
             it('photo AND pear', async () => {
-                const result = await client.query<
+                const result = await adminClient.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
@@ -690,8 +699,8 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(client);
-                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                await awaitRunningJobs(adminClient);
+                const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
                         id: result.createCollection.id,
@@ -702,7 +711,7 @@ describe('Collection resolver', () => {
             });
 
             it('photo OR pear', async () => {
-                const result = await client.query<
+                const result = await adminClient.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
@@ -732,8 +741,8 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(client);
-                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                await awaitRunningJobs(adminClient);
+                const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
                         id: result.createCollection.id,
@@ -754,7 +763,7 @@ describe('Collection resolver', () => {
             });
 
             it('bell OR pear in computers', async () => {
-                const result = await client.query<
+                const result = await adminClient.query<
                     CreateCollectionSelectVariants.Mutation,
                     CreateCollectionSelectVariants.Variables
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
@@ -787,8 +796,8 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(client);
-                const { collection } = await client.query<GetCollection.Query, GetCollection.Variables>(
+                await awaitRunningJobs(adminClient);
+                const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
                         id: result.createCollection.id,
@@ -811,7 +820,7 @@ describe('Collection resolver', () => {
                 operator: string,
                 term: string,
             ): Promise<Collection.Fragment> {
-                const { createCollection } = await client.query<
+                const { createCollection } = await adminClient.query<
                     CreateCollection.Mutation,
                     CreateCollection.Variables
                 >(CREATE_COLLECTION, {
@@ -844,7 +853,7 @@ describe('Collection resolver', () => {
             it('contains operator', async () => {
                 const collection = await createVariantNameFilteredCollection('contains', 'camera');
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -860,7 +869,7 @@ describe('Collection resolver', () => {
             it('startsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('startsWith', 'camera');
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -872,7 +881,7 @@ describe('Collection resolver', () => {
             it('endsWith operator', async () => {
                 const collection = await createVariantNameFilteredCollection('endsWith', 'camera');
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -887,7 +896,7 @@ describe('Collection resolver', () => {
             it('doesNotContain operator', async () => {
                 const collection = await createVariantNameFilteredCollection('doesNotContain', 'camera');
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
@@ -921,7 +930,7 @@ describe('Collection resolver', () => {
             let products: GetProductsWithVariantIds.Items[];
 
             beforeAll(async () => {
-                const result = await client.query<GetProductsWithVariantIds.Query>(gql`
+                const result = await adminClient.query<GetProductsWithVariantIds.Query>(gql`
                     query GetProductsWithVariantIds {
                         products {
                             items {
@@ -938,7 +947,7 @@ describe('Collection resolver', () => {
             });
 
             it('updates contents when Product is updated', async () => {
-                await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                     input: {
                         id: products[1].id,
                         facetValueIds: [
@@ -949,9 +958,9 @@ describe('Collection resolver', () => {
                     },
                 });
 
-                await awaitRunningJobs(client);
+                await awaitRunningJobs(adminClient);
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
@@ -968,7 +977,7 @@ describe('Collection resolver', () => {
 
             it('updates contents when ProductVariant is updated', async () => {
                 const gamingPcFirstVariant = products.find(p => p.name === 'Gaming PC')!.variants[0];
-                await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: [
@@ -980,9 +989,9 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                await awaitRunningJobs(client);
+                await awaitRunningJobs(adminClient);
 
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
@@ -1000,7 +1009,7 @@ describe('Collection resolver', () => {
 
             it('correctly filters when ProductVariant and Product both have matching FacetValue', async () => {
                 const gamingPcFirstVariant = products.find(p => p.name === 'Gaming PC')!.variants[0];
-                await client.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: [
@@ -1011,7 +1020,7 @@ describe('Collection resolver', () => {
                         ],
                     },
                 );
-                const result = await client.query<
+                const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
@@ -1029,7 +1038,7 @@ describe('Collection resolver', () => {
         });
 
         it('filter inheritance of nested collections (issue #158)', async () => {
-            const { createCollection: pearElectronics } = await client.query<
+            const { createCollection: pearElectronics } = await adminClient.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
             >(CREATE_COLLECTION_SELECT_VARIANTS, {
@@ -1058,12 +1067,12 @@ describe('Collection resolver', () => {
                 } as CreateCollectionInput,
             });
 
-            await awaitRunningJobs(client);
+            await awaitRunningJobs(adminClient);
 
-            const result = await client.query<GetCollectionProducts.Query, GetCollectionProducts.Variables>(
-                GET_COLLECTION_PRODUCT_VARIANTS,
-                { id: pearElectronics.id },
-            );
+            const result = await adminClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
             expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
@@ -1080,7 +1089,7 @@ describe('Collection resolver', () => {
 
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
-            const result = await client.query<
+            const result = await adminClient.query<
                 GetCollectionsForProducts.Query,
                 GetCollectionsForProducts.Variables
             >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
@@ -1097,10 +1106,10 @@ describe('Collection resolver', () => {
     });
 
     it('collection does not list deleted products', async () => {
-        await client.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+        await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
             id: 'T_2', // curvy monitor
         });
-        const { collection } = await client.query<
+        const { collection } = await adminClient.query<
             GetCollectionProducts.Query,
             GetCollectionProducts.Variables
         >(GET_COLLECTION_PRODUCT_VARIANTS, {

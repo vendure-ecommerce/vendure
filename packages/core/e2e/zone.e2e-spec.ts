@@ -1,26 +1,27 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import {
     AddMembersToZone,
-    CreateZone, DeleteZone,
+    CreateZone,
+    DeleteZone,
     DeletionResult,
     GetCountryList,
-    GetZone, GetZones,
+    GetZone,
+    GetZones,
     RemoveMembersFromZone,
     UpdateZone,
 } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
     let countries: GetCountryList.Items[];
     let zones: Array<{ id: string; name: string }>;
     let oceania: { id: string; name: string };
@@ -28,12 +29,15 @@ describe('Facet resolver', () => {
 
     beforeAll(async () => {
         await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
 
-        const result = await client.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
+        const result = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
         countries = result.countries.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -42,14 +46,14 @@ describe('Facet resolver', () => {
     });
 
     it('zones', async () => {
-        const result = await client.query<GetZones.Query>(GET_ZONE_LIST);
+        const result = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);
         expect(result.zones.length).toBe(5);
         zones = result.zones;
         oceania = zones[0];
     });
 
     it('zone', async () => {
-        const result = await client.query<GetZone.Query, GetZone.Variables>(GET_ZONE, {
+        const result = await adminClient.query<GetZone.Query, GetZone.Variables>(GET_ZONE, {
             id: oceania.id,
         });
 
@@ -57,7 +61,7 @@ describe('Facet resolver', () => {
     });
 
     it('updateZone', async () => {
-        const result = await client.query<UpdateZone.Mutation, UpdateZone.Variables>(UPDATE_ZONE, {
+        const result = await adminClient.query<UpdateZone.Mutation, UpdateZone.Variables>(UPDATE_ZONE, {
             input: {
                 id: oceania.id,
                 name: 'oceania2',
@@ -68,7 +72,7 @@ describe('Facet resolver', () => {
     });
 
     it('createZone', async () => {
-        const result = await client.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
+        const result = await adminClient.query<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
             input: {
                 name: 'Pangaea',
                 memberIds: [countries[0].id, countries[1].id],
@@ -81,7 +85,7 @@ describe('Facet resolver', () => {
     });
 
     it('addMembersToZone', async () => {
-        const result = await client.query<AddMembersToZone.Mutation, AddMembersToZone.Variables>(
+        const result = await adminClient.query<AddMembersToZone.Mutation, AddMembersToZone.Variables>(
             ADD_MEMBERS_TO_ZONE,
             {
                 zoneId: oceania.id,
@@ -94,13 +98,13 @@ describe('Facet resolver', () => {
     });
 
     it('removeMembersFromZone', async () => {
-        const result = await client.query<RemoveMembersFromZone.Mutation, RemoveMembersFromZone.Variables>(
-            REMOVE_MEMBERS_FROM_ZONE,
-            {
-                zoneId: oceania.id,
-                memberIds: [countries[0].id, countries[2].id],
-            },
-        );
+        const result = await adminClient.query<
+            RemoveMembersFromZone.Mutation,
+            RemoveMembersFromZone.Variables
+        >(REMOVE_MEMBERS_FROM_ZONE, {
+            zoneId: oceania.id,
+            memberIds: [countries[0].id, countries[2].id],
+        });
 
         expect(!!result.removeMembersFromZone.members.find(m => m.name === countries[0].name)).toBe(false);
         expect(!!result.removeMembersFromZone.members.find(m => m.name === countries[2].name)).toBe(false);
@@ -109,19 +113,23 @@ describe('Facet resolver', () => {
 
     describe('deletion', () => {
         it('deletes Zone not used in any TaxRate', async () => {
-            const result1 = await client.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, { id: pangaea.id });
+            const result1 = await adminClient.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
+                id: pangaea.id,
+            });
 
             expect(result1.deleteZone).toEqual({
                 result: DeletionResult.DELETED,
                 message: '',
             });
 
-            const result2 = await client.query<GetZones.Query>(GET_ZONE_LIST);
+            const result2 = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);
             expect(result2.zones.find(c => c.id === pangaea.id)).toBeUndefined();
         });
 
         it('does not delete Zone that is used in one or more TaxRates', async () => {
-            const result1 = await client.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, { id: oceania.id });
+            const result1 = await adminClient.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
+                id: oceania.id,
+            });
 
             expect(result1.deleteZone).toEqual({
                 result: DeletionResult.NOT_DELETED,
@@ -130,7 +138,7 @@ describe('Facet resolver', () => {
                     'TaxRates: Standard Tax Oceania, Reduced Tax Oceania, Zero Tax Oceania',
             });
 
-            const result2 = await client.query<GetZones.Query>(GET_ZONE_LIST);
+            const result2 = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);
             expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
     });

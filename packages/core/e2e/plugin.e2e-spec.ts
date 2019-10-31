@@ -1,10 +1,11 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { ConfigService } from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { ConfigService } from '../src/config/config.service';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     TestAPIExtensionPlugin,
     TestLazyExtensionPlugin,
@@ -12,41 +13,39 @@ import {
     TestPluginWithConfigAndBootstrap,
     TestPluginWithProvider,
 } from './fixtures/test-plugins';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 
 describe('Plugins', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
     const bootstrapMockFn = jest.fn();
     const onBootstrapFn = jest.fn();
     const onWorkerBootstrapFn = jest.fn();
     const onCloseFn = jest.fn();
     const onWorkerCloseFn = jest.fn();
 
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        plugins: [
+            TestPluginWithAllLifecycleHooks.init(
+                onBootstrapFn,
+                onWorkerBootstrapFn,
+                onCloseFn,
+                onWorkerCloseFn,
+            ),
+            TestPluginWithConfigAndBootstrap.setup(bootstrapMockFn),
+            TestAPIExtensionPlugin,
+            TestPluginWithProvider,
+            TestLazyExtensionPlugin,
+        ],
+    });
+
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [
-                    TestPluginWithAllLifecycleHooks.init(
-                        onBootstrapFn,
-                        onWorkerBootstrapFn,
-                        onCloseFn,
-                        onWorkerCloseFn,
-                    ),
-                    TestPluginWithConfigAndBootstrap.setup(bootstrapMockFn),
-                    TestAPIExtensionPlugin,
-                    TestPluginWithProvider,
-                    TestLazyExtensionPlugin,
-                ],
-            },
-        );
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
         await adminClient.init();
+        await adminClient.asSuperAdmin();
         await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 

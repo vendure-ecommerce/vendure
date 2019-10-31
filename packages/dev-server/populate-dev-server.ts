@@ -2,11 +2,10 @@
 /// <reference path="../core/typings.d.ts" />
 import { bootstrap, VendureConfig } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
+import { clearAllTables, populateCustomers } from '@vendure/testing';
 import path from 'path';
 
-import { clearAllTables } from '../core/mock-data/clear-all-tables';
 import { initialData } from '../core/mock-data/data-sources/initial-data';
-import { populateCustomers } from '../core/mock-data/populate-customers';
 
 import { devConfig } from './dev-config';
 

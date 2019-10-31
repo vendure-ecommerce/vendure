@@ -1,9 +1,11 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { omit } from '../../common/lib/omit';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateProductOption,
     CreateProductOptionGroup,
@@ -12,24 +14,24 @@ import {
     UpdateProductOption,
     UpdateProductOptionGroup,
 } from './graphql/generated-e2e-admin-types';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
 
 describe('ProductOption resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
     let sizeGroup: ProductOptionGroupFragment;
     let mediumOption: CreateProductOption.CreateProductOption;
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             customerCount: 1,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
         });
-        await client.init();
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -37,7 +39,7 @@ describe('ProductOption resolver', () => {
     });
 
     it('createProductOptionGroup', async () => {
-        const { createProductOptionGroup } = await client.query<
+        const { createProductOptionGroup } = await adminClient.query<
             CreateProductOptionGroup.Mutation,
             CreateProductOptionGroup.Variables
         >(CREATE_PRODUCT_OPTION_GROUP, {
@@ -75,7 +77,7 @@ describe('ProductOption resolver', () => {
     });
 
     it('updateProductOptionGroup', async () => {
-        const { updateProductOptionGroup } = await client.query<
+        const { updateProductOptionGroup } = await adminClient.query<
             UpdateProductOptionGroup.Mutation,
             UpdateProductOptionGroup.Variables
         >(UPDATE_PRODUCT_OPTION_GROUP, {
@@ -93,7 +95,7 @@ describe('ProductOption resolver', () => {
     it(
         'createProductOption throws with invalid productOptionGroupId',
         assertThrowsWithMessage(async () => {
-            const { createProductOption } = await client.query<
+            const { createProductOption } = await adminClient.query<
                 CreateProductOption.Mutation,
                 CreateProductOption.Variables
             >(CREATE_PRODUCT_OPTION, {
@@ -106,11 +108,11 @@ describe('ProductOption resolver', () => {
                     ],
                 },
             });
-        }, 'No ProductOptionGroup with the id \'999\' could be found'),
+        }, "No ProductOptionGroup with the id '999' could be found"),
     );
 
     it('createProductOption', async () => {
-        const { createProductOption } = await client.query<
+        const { createProductOption } = await adminClient.query<
             CreateProductOption.Mutation,
             CreateProductOption.Variables
         >(CREATE_PRODUCT_OPTION, {
@@ -134,7 +136,10 @@ describe('ProductOption resolver', () => {
     });
 
     it('updateProductOption', async () => {
-        const { updateProductOption } = await client.query<UpdateProductOption.Mutation, UpdateProductOption.Variables>(UPDATE_PRODUCT_OPTION, {
+        const { updateProductOption } = await adminClient.query<
+            UpdateProductOption.Mutation,
+            UpdateProductOption.Variables
+        >(UPDATE_PRODUCT_OPTION, {
             input: {
                 id: 'T_7',
                 translations: [

@@ -1,28 +1,28 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 
 describe('Import resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment({
+        ...testConfig,
+        customFields: {
+            Product: [{ type: 'string', name: 'pageType' }],
+            ProductVariant: [{ type: 'int', name: 'weight' }],
+        },
+    });
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
-                customerCount: 0,
-            },
-            {
-                customFields: {
-                    Product: [{ type: 'string', name: 'pageType' }],
-                    ProductVariant: [{ type: 'int', name: 'weight' }],
-                },
-            },
-        );
-        await client.init();
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
+            customerCount: 0,
+        });
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -44,7 +44,19 @@ describe('Import resolver', () => {
         });
 
         const csvFile = path.join(__dirname, 'fixtures', 'product-import.csv');
-        const result = await client.importProducts(csvFile);
+        const result = await adminClient.fileUploadMutation({
+            mutation: gql`
+                mutation ImportProducts($csvFile: Upload!) {
+                    importProducts(csvFile: $csvFile) {
+                        imported
+                        processed
+                        errors
+                    }
+                }
+            `,
+            filePaths: [csvFile],
+            mapVariables: () => ({ csvFile: null }),
+        });
 
         expect(result.importProducts.errors).toEqual([
             'Invalid Record Length: header length is 16, got 1 on line 8',
@@ -52,7 +64,7 @@ describe('Import resolver', () => {
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
 
-        const productResult = await client.query(
+        const productResult = await adminClient.query(
             gql`
                 query GetProducts($options: ProductListOptions) {
                     products(options: $options) {

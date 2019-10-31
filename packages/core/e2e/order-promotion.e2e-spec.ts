@@ -1,15 +1,18 @@
 /* tslint:disable:no-non-null-assertion */
+import { pick } from '@vendure/common/lib/pick';
+import {
+    atLeastNWithFacets,
+    discountOnItemWithFacets,
+    minimumOrderAmount,
+    orderPercentageDiscount,
+} from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { pick } from '../../common/src/pick';
-import {
-    discountOnItemWithFacets,
-    orderPercentageDiscount,
-} from '../src/config/promotion/default-promotion-actions';
-import { atLeastNWithFacets, minimumOrderAmount } from '../src/config/promotion/default-promotion-conditions';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
+import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
     CreatePromotion,
     CreatePromotionInput,
@@ -36,19 +39,16 @@ import {
     REMOVE_COUPON_CODE,
     SET_CUSTOMER,
 } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import {
-    addPaymentToOrder,
-    proceedToArrangingPayment,
-    testSuccessfulPaymentMethod,
-} from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Promotions applied to Orders', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        paymentOptions: {
+            paymentMethodHandlers: [testSuccessfulPaymentMethod],
+        },
+    });
 
     const freeOrderAction = {
         code: orderPercentageDiscount.code,
@@ -65,19 +65,15 @@ describe('Promotions applied to Orders', () => {
     let products: GetPromoProducts.Items[];
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
-                customerCount: 2,
-            },
-            {
-                paymentOptions: {
-                    paymentMethodHandlers: [testSuccessfulPaymentMethod],
-                },
-            },
-        );
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
+            customerCount: 2,
+        });
         await shopClient.init();
         await adminClient.init();
+        await adminClient.asSuperAdmin();
 
         await getProducts();
         await createGlobalPromotions();

@@ -1,10 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+import { createTestEnvironment } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     CreateAdministrator,
@@ -23,20 +25,20 @@ import {
     GET_PRODUCT_LIST,
     UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Authorization & permissions', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         const token = await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -46,13 +48,13 @@ describe('Authorization & permissions', () => {
     describe('admin permissions', () => {
         describe('Anonymous user', () => {
             beforeAll(async () => {
-                await client.asAnonymousUser();
+                await adminClient.asAnonymousUser();
             });
 
             it(
                 'me is not permitted',
                 assertThrowsWithMessage(async () => {
-                    await client.query<Me.Query>(ME);
+                    await adminClient.query<Me.Query>(ME);
                 }, 'You are not currently authorized to perform this action'),
             );
 
@@ -67,15 +69,15 @@ describe('Authorization & permissions', () => {
 
         describe('ReadCatalog permission', () => {
             beforeAll(async () => {
-                await client.asSuperAdmin();
+                await adminClient.asSuperAdmin();
                 const { identifier, password } = await createAdministratorWithPermissions('ReadCatalog', [
                     Permission.ReadCatalog,
                 ]);
-                await client.asUserWithCredentials(identifier, password);
+                await adminClient.asUserWithCredentials(identifier, password);
             });
 
             it('me returns correct permissions', async () => {
-                const { me } = await client.query<Me.Query>(ME);
+                const { me } = await adminClient.query<Me.Query>(ME);
 
                 expect(me!.channels[0].permissions).toEqual([
                     Permission.Authenticated,
@@ -107,18 +109,18 @@ describe('Authorization & permissions', () => {
 
         describe('CRUD on Customers permissions', () => {
             beforeAll(async () => {
-                await client.asSuperAdmin();
+                await adminClient.asSuperAdmin();
                 const { identifier, password } = await createAdministratorWithPermissions('CRUDCustomer', [
                     Permission.CreateCustomer,
                     Permission.ReadCustomer,
                     Permission.UpdateCustomer,
                     Permission.DeleteCustomer,
                 ]);
-                await client.asUserWithCredentials(identifier, password);
+                await adminClient.asUserWithCredentials(identifier, password);
             });
 
             it('me returns correct permissions', async () => {
-                const { me } = await client.query<Me.Query>(ME);
+                const { me } = await adminClient.query<Me.Query>(ME);
 
                 expect(me!.channels[0].permissions).toEqual([
                     Permission.Authenticated,
@@ -156,7 +158,7 @@ describe('Authorization & permissions', () => {
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
         try {
-            const status = await client.queryStatus(operation, variables);
+            const status = await adminClient.queryStatus(operation, variables);
             expect(status).toBe(200);
         } catch (e) {
             const errorCode = getErrorCode(e);
@@ -170,7 +172,7 @@ describe('Authorization & permissions', () => {
 
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
-            const status = await client.query(operation, variables);
+            const status = await adminClient.query(operation, variables);
             fail(`Should have thrown`);
         } catch (e) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
@@ -185,7 +187,7 @@ describe('Authorization & permissions', () => {
         code: string,
         permissions: Permission[],
     ): Promise<{ identifier: string; password: string }> {
-        const roleResult = await client.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+        const roleResult = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
             input: {
                 code,
                 description: '',
@@ -200,18 +202,18 @@ describe('Authorization & permissions', () => {
             .substr(2, 8)}`;
         const password = `test`;
 
-        const adminResult = await client.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
-            CREATE_ADMINISTRATOR,
-            {
-                input: {
-                    emailAddress: identifier,
-                    firstName: code,
-                    lastName: 'Admin',
-                    password,
-                    roleIds: [role.id],
-                },
+        const adminResult = await adminClient.query<
+            CreateAdministrator.Mutation,
+            CreateAdministrator.Variables
+        >(CREATE_ADMINISTRATOR, {
+            input: {
+                emailAddress: identifier,
+                firstName: code,
+                lastName: 'Admin',
+                password,
+                roleIds: [role.id],
             },
-        );
+        });
         const admin = adminResult.createAdministrator;
 
         return {

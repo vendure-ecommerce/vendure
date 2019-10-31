@@ -1,9 +1,7 @@
 import faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 
-import { CreateAddressInput, CreateCustomerInput } from '../e2e/graphql/generated-e2e-admin-types';
-
-import { SimpleGraphQLClient } from './simple-graphql-client';
+import { SimpleGraphQLClient } from '../simple-graphql-client';
 
 // tslint:disable:no-console
 /**
@@ -37,7 +35,7 @@ export class MockDataService {
                     lastName,
                     emailAddress: faker.internet.email(firstName, lastName),
                     phoneNumber: faker.phone.phoneNumber(),
-                } as CreateCustomerInput,
+                },
                 password: 'test',
             };
 
@@ -63,7 +61,7 @@ export class MockDataService {
                         province: faker.address.county(),
                         postalCode: faker.address.zipCode(),
                         countryCode: 'GB',
-                    } as CreateAddressInput,
+                    },
                     customerId: customer.id,
                 };
 

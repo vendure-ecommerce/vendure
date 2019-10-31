@@ -1,4 +1,4 @@
-import { generateAllCombinations } from './shared-utils';
+import { generateAllCombinations, isClassInstance } from './shared-utils';
 
 describe('generateAllCombinations()', () => {
     it('works with an empty input array', () => {
@@ -27,4 +27,23 @@ describe('generateAllCombinations()', () => {
         const result = generateAllCombinations([['red', 'green', 'blue'], []]);
         expect(result).toEqual([['red'], ['green'], ['blue']]);
     });
+});
+
+describe('isClassInstance()', () => {
+    it('returns true for class instances', () => {
+        expect(isClassInstance(new Date())).toBe(true);
+        expect(isClassInstance(new Foo())).toBe(true);
+        // tslint:disable-next-line:no-construct
+        expect(isClassInstance(new Number(1))).toBe(true);
+    });
+
+    it('returns false for not class instances', () => {
+        expect(isClassInstance(Date)).toBe(false);
+        expect(isClassInstance(1)).toBe(false);
+        expect(isClassInstance(Number)).toBe(false);
+        expect(isClassInstance({ a: 1 })).toBe(false);
+        expect(isClassInstance([1, 2, 3])).toBe(false);
+    });
+
+    class Foo {}
 });

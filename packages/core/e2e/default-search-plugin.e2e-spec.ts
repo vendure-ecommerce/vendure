@@ -1,12 +1,13 @@
 import { pick } from '@vendure/common/lib/pick';
+import { mergeConfig } from '@vendure/core';
+import { DefaultSearchPlugin } from '@vendure/core';
+import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
+import { createTestEnvironment, TestClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
-import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
-import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateCollection,
     CreateFacet,
@@ -29,26 +30,22 @@ import {
     UPDATE_TAX_RATE,
 } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Default search plugin', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin] }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [DefaultSearchPlugin],
-            },
-        );
+        const token = await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
         await adminClient.init();
+        await adminClient.asSuperAdmin();
         await shopClient.init();
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -56,7 +53,7 @@ describe('Default search plugin', () => {
         await server.destroy();
     });
 
-    async function testGroupByProduct(client: SimpleGraphQLClient) {
+    async function testGroupByProduct(client: TestClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -68,7 +65,7 @@ describe('Default search plugin', () => {
         expect(result.search.totalItems).toBe(20);
     }
 
-    async function testNoGrouping(client: SimpleGraphQLClient) {
+    async function testNoGrouping(client: TestClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -80,7 +77,7 @@ describe('Default search plugin', () => {
         expect(result.search.totalItems).toBe(34);
     }
 
-    async function testMatchSearchTerm(client: SimpleGraphQLClient) {
+    async function testMatchSearchTerm(client: TestClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -97,7 +94,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetIds(client: SimpleGraphQLClient) {
+    async function testMatchFacetIds(client: TestClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -117,7 +114,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionId(client: SimpleGraphQLClient) {
+    async function testMatchCollectionId(client: TestClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -134,7 +131,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testSinglePrices(client: SimpleGraphQLClient) {
+    async function testSinglePrices(client: TestClient) {
         const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
             SEARCH_GET_PRICES,
             {
@@ -160,7 +157,7 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testPriceRanges(client: SimpleGraphQLClient) {
+    async function testPriceRanges(client: TestClient) {
         const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
             SEARCH_GET_PRICES,
             {
