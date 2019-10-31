@@ -31,7 +31,7 @@ describe('Shop customers', () => {
     let customer: GetCustomer.Customer;
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),

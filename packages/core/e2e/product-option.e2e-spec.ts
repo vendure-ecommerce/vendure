@@ -24,7 +24,7 @@ describe('ProductOption resolver', () => {
     let mediumOption: CreateProductOption.CreateProductOption;
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             customerCount: 1,

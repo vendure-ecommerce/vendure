@@ -31,7 +31,7 @@ describe('Authorization & permissions', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),

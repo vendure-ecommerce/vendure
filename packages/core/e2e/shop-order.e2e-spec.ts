@@ -1,8 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
-
-import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
@@ -77,7 +76,7 @@ describe('Shop orders', () => {
     );
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),

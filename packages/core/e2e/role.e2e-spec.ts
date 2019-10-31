@@ -24,7 +24,7 @@ describe('Role resolver', () => {
     let defaultRoles: Role.Fragment[];
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),

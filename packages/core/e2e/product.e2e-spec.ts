@@ -45,7 +45,7 @@ describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
             dataDir,
             initialData,
             customerCount: 1,
