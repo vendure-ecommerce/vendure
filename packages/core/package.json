@@ -91,7 +91,6 @@
     "@types/node-fetch": "^2.5.2",
     "@types/progress": "^2.0.3",
     "@types/prompts": "^2.0.2",
-    "faker": "^4.1.0",
     "gulp": "^4.0.0",
     "mysql": "^2.16.0",
     "node-fetch": "^2.6.0",
