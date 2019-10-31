@@ -373,7 +373,6 @@ export interface WorkerOptions {
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
  * @docsCategory configuration
- * @docsPage Configuration
  * */
 export interface VendureConfig {
     /**
@@ -531,7 +530,6 @@ export interface VendureConfig {
  * config values have been merged with the {@link defaultConfig} values.
  *
  * @docsCategory configuration
- * @docsPage Configuration
  */
 export interface RuntimeVendureConfig extends Required<VendureConfig> {
     assetOptions: Required<AssetOptions>;

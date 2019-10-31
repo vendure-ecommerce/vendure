@@ -5,10 +5,41 @@ import { InitialData } from '@vendure/core';
  */
 export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
+/**
+ * @description
+ * Configuration options used to initialize an instance of the {@link TestServer}.
+ *
+ * @docsCategory testing
+ */
 export interface TestServerOptions {
+    /**
+     * @description
+     * The directory in which the populated SQLite database files will be
+     * saved. These files are a cache to speed up subsequent runs of e2e tests.
+     */
     dataDir: string;
+    /**
+     * @description
+     * The path to a CSV file containing product data to import.
+     */
     productsCsvPath: string;
+    /**
+     * @description
+     * An object containing non-product data which is used to populate the database.
+     */
     initialData: InitialData;
+    /**
+     * @description
+     * The number of fake Customers to populate into the database.
+     *
+     * @default 10
+     */
     customerCount?: number;
+    /**
+     * @description
+     * Set this to `true` to log some information about the database population process.
+     *
+     * @default false
+     */
     logging?: boolean;
 }

@@ -4,9 +4,21 @@ import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { PartialVendureConfig, VendureConfig } from './vendure-config';
 
 /**
- * Deep merge config objects. Based on the solution from https://stackoverflow.com/a/34749873/772859
- * but modified so that it does not overwrite fields of class instances, rather it overwrites
- * the entire instance.
+ * @description
+ * Performs a deep merge of two VendureConfig objects. Unlike `Object.assign()` the `target` object is
+ * not mutated, instead the function returns a new object which is the result of deeply merging the
+ * values of `source` into `target`.
+ *
+ * @example
+ * ```TypeScript
+ * const result = mergeConfig(defaultConfig, {
+ *   assetOptions: {
+ *     uploadMaxFileSize: 5000,
+ *   },
+ * };
+ * ```
+ *
+ * @docsCategory configuration
  */
 export function mergeConfig<T extends VendureConfig>(target: T, source: PartialVendureConfig, depth = 0): T {
     if (!source) {

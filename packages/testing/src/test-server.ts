@@ -11,17 +11,21 @@ import { Mutable, TestServerOptions } from './types';
 
 // tslint:disable:no-console
 /**
- * A server against which the e2e tests should be run.
+ * @description
+ * A real Vendure server against which the e2e tests should be run.
+ *
+ * @docsCategory testing
  */
 export class TestServer {
-    app: INestApplication;
-    worker?: INestMicroservice;
+    private app: INestApplication;
+    private worker?: INestMicroservice;
 
     constructor(private vendureConfig: Required<VendureConfig>) {}
 
     /**
+     * @description
      * Bootstraps an instance of Vendure server and populates the database according to the options
-     * passed in. Should be called immediately after creating the client in the `beforeAll` function.
+     * passed in. Should be called in the `beforeAll` function.
      *
      * The populated data is saved into an .sqlite file for each test file. On subsequent runs, this file
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
@@ -51,7 +55,9 @@ export class TestServer {
     }
 
     /**
-     * Destroy the Vendure instance. Should be called in the `afterAll` function.
+     * @description
+     * Destroy the Vendure server instance and clean up all resources.
+     * Should be called after all tests have run, e.g. in an `afterAll` function.
      */
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete

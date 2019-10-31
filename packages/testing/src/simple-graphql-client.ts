@@ -27,7 +27,10 @@ export type QueryParams = { [key: string]: string | number };
 
 // tslint:disable:no-console
 /**
+ * @description
  * A minimalistic GraphQL client for populating and querying test data.
+ *
+ * @docsCategory testing
  */
 export class SimpleGraphQLClient {
     private authToken: string;
@@ -36,20 +39,30 @@ export class SimpleGraphQLClient {
 
     constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
 
+    /**
+     * @description
+     * Sets the authToken to be used in each GraphQL request.
+     */
     setAuthToken(token: string) {
         this.authToken = token;
         this.headers.Authorization = `Bearer ${this.authToken}`;
     }
 
+    /**
+     * @description
+     * Returns the authToken currently being used.
+     */
     getAuthToken(): string {
         return this.authToken;
     }
 
+    /** @internal */
     setChannelToken(token: string) {
         this.headers[this.vendureConfig.channelTokenKey] = token;
     }
 
     /**
+     * @description
      * Performs both query and mutation operations.
      */
     async query<T = any, V = Record<string, any>>(
@@ -71,11 +84,19 @@ export class SimpleGraphQLClient {
         }
     }
 
+    /**
+     * @description
+     * Performs a query or mutation and returns the resulting status code.
+     */
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
         const response = await this.request(query, variables);
         return response.status;
     }
 
+    /**
+     * @description
+     * Attemps to log in with the specified credentials.
+     */
     async asUserWithCredentials(username: string, password: string) {
         // first log out as the current user
         if (this.authToken) {
@@ -91,10 +112,18 @@ export class SimpleGraphQLClient {
         return result.login;
     }
 
+    /**
+     * @description
+     * Logs in as the SuperAdmin user.
+     */
     async asSuperAdmin() {
         await this.asUserWithCredentials(SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD);
     }
 
+    /**
+     * @description
+     * Logs out so that the client is then treated as an anonymous user.
+     */
     async asAnonymousUser() {
         await this.query(
             gql`
@@ -140,6 +169,7 @@ export class SimpleGraphQLClient {
     }
 
     /**
+     * @description
      * Uses curl to post a multipart/form-data request to the server. Due to differences between the Node and browser
      * environments, we cannot just use an existing library like apollo-upload-client.
      *
