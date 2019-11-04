@@ -1,11 +1,16 @@
 name: Publish & Install
+# Temporarily disabled this workflow because the last step (installing from Verdaccio) is flaky and
+# randomly failing despite numerous attempts to stabilize. Therefore this is not useful at
+# the moment.
+# on:
+#   push:
+#     branches:
+#     - master
+#   pull_request:
+#     branches:
+#     - master
 on:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
+  deployment
 jobs:
   publish_install:
     runs-on: ${{ matrix.os }}
