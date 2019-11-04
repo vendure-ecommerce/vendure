@@ -11,7 +11,9 @@
 * **core** Allow lazy evaluation of APIExtensionDefinitions ([69dad0b](https://github.com/vendure-ecommerce/vendure/commit/69dad0b))
 * **core** Export some entity utils from service helpers ([ddceb64](https://github.com/vendure-ecommerce/vendure/commit/ddceb64))
 * **core** Export the Api decorator & ApiType type ([c7857d3](https://github.com/vendure-ecommerce/vendure/commit/c7857d3))
+* **core** Update Nestjs to v6.8.5, TypeORM to v0.2.20
 * **elasticsearch-plugin** Allow definition of custom mappings ([2c8b7df](https://github.com/vendure-ecommerce/vendure/commit/2c8b7df))
+* **testing** Extract e2e testing tools into `@vendute/testing` package, closes [#198](https://github.com/vendure-ecommerce/vendure/issues/198)
 
 ## 0.5.0 (2019-10-23)
 
