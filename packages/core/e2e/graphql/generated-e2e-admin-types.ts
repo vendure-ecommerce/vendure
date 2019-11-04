@@ -533,6 +533,7 @@ export type CreatePromotionInput = {
 };
 
 export type CreateRoleInput = {
+    channelId?: Maybe<Scalars['ID']>;
     code: Scalars['String'];
     description: Scalars['String'];
     permissions: Array<Permission>;
@@ -2007,11 +2008,6 @@ export type MutationDeleteProductVariantArgs = {
     id: Scalars['ID'];
 };
 
-export type MutationAssignProductToChannelArgs = {
-    productId: Scalars['ID'];
-    channelId: Scalars['ID'];
-};
-
 export type MutationCreatePromotionArgs = {
     input: CreatePromotionInput;
 };
@@ -3406,12 +3402,6 @@ export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
 };
 
-export type MeQueryVariables = {};
-
-export type MeQuery = { __typename?: 'Query' } & {
-    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
-};
-
 export type CreateChannelMutationVariables = {
     input: CreateChannelInput;
 };
@@ -4381,6 +4371,12 @@ export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
     createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
 };
 
+export type MeQueryVariables = {};
+
+export type MeQuery = { __typename?: 'Query' } & {
+    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5066,12 +5062,6 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
-export namespace Me {
-    export type Variables = MeQueryVariables;
-    export type Query = MeQuery;
-    export type Me = CurrentUserFragment;
-}
-
 export namespace CreateChannel {
     export type Variables = CreateChannelMutationVariables;
     export type Mutation = CreateChannelMutation;
@@ -5712,6 +5702,12 @@ export namespace CreatePromotion {
     export type Variables = CreatePromotionMutationVariables;
     export type Mutation = CreatePromotionMutation;
     export type CreatePromotion = PromotionFragment;
+}
+
+export namespace Me {
+    export type Variables = MeQueryVariables;
+    export type Query = MeQuery;
+    export type Me = CurrentUserFragment;
 }
 
 export namespace UpdateOptionGroup {

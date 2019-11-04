@@ -34,7 +34,7 @@ export type QueryParams = { [key: string]: string | number };
  */
 export class SimpleGraphQLClient {
     private authToken: string;
-    private channelToken: string;
+    private channelToken: string | null = null;
     private headers: { [key: string]: any } = {};
 
     constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
@@ -50,15 +50,19 @@ export class SimpleGraphQLClient {
 
     /**
      * @description
+     * Sets the authToken to be used in each GraphQL request.
+     */
+    setChannelToken(token: string | null) {
+        this.channelToken = token;
+        this.headers[this.vendureConfig.channelTokenKey] = this.channelToken;
+    }
+
+    /**
+     * @description
      * Returns the authToken currently being used.
      */
     getAuthToken(): string {
         return this.authToken;
-    }
-
-    /** @internal */
-    setChannelToken(token: string) {
-        this.headers[this.vendureConfig.channelTokenKey] = token;
     }
 
     /**
@@ -109,6 +113,9 @@ export class SimpleGraphQLClient {
             );
         }
         const result = await this.query(LOGIN, { username, password });
+        if (result.login.user.channels.length === 1) {
+            this.setChannelToken(result.login.user.channels[0].token);
+        }
         return result.login;
     }
 

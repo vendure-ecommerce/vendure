@@ -10,7 +10,9 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Role } from '../../../entity/role/role.entity';
 import { RoleService } from '../../../service/services/role.service';
+import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Roles')
 export class RoleResolver {
@@ -30,9 +32,9 @@ export class RoleResolver {
 
     @Mutation()
     @Allow(Permission.CreateAdministrator)
-    createRole(@Args() args: MutationCreateRoleArgs): Promise<Role> {
+    createRole(@Ctx() ctx: RequestContext, @Args() args: MutationCreateRoleArgs): Promise<Role> {
         const { input } = args;
-        return this.roleService.create(input);
+        return this.roleService.create(ctx, input);
     }
 
     @Mutation()

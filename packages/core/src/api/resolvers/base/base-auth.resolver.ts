@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
+import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
 import { extractAuthToken } from '../../common/extract-auth-token';
@@ -108,29 +109,7 @@ export class BaseAuthResolver {
         return {
             id: user.id as string,
             identifier: user.identifier,
-            channels: this.getCurrentUserChannels(user),
+            channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
         };
-    }
-
-    private getCurrentUserChannels(user: User): CurrentUserChannel[] {
-        const channelsMap: { [code: string]: CurrentUserChannel } = {};
-
-        for (const role of user.roles) {
-            for (const channel of role.channels) {
-                if (!channelsMap[channel.code]) {
-                    channelsMap[channel.code] = {
-                        token: channel.token,
-                        code: channel.code,
-                        permissions: [],
-                    };
-                }
-                channelsMap[channel.code].permissions = unique([
-                    ...channelsMap[channel.code].permissions,
-                    ...role.permissions,
-                ]);
-            }
-        }
-
-        return Object.values(channelsMap);
     }
 }
