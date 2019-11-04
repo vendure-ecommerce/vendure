@@ -1,26 +1,24 @@
 name: Publish & Install
-# Temporarily disabled this workflow because the last step (installing from Verdaccio) is consistently
-# failing and despite numerous attempts to stabilize, it still fails. Therefore this is not useful at
-# the moment.
-# on:
-#   push:
-#     branches:
-#     - master
-#   pull_request:
-#     branches:
-#     - master
 on:
-  deployment
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 jobs:
   publish_install:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        node-version: [10.x, 12.x]
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js 12.x
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: 12.4.x
+        node-version: ${{ matrix.node-version }}
     - name: Install & bootstrap
       run: |
         yarn install
@@ -44,4 +42,4 @@ jobs:
         mkdir -p $HOME/install
         cd $HOME/install
         npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --use-npm --log-level verbose
+        npx @vendure/create@ci test-app --ci --use-npm
