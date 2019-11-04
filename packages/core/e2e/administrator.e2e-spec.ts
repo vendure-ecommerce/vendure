@@ -1,25 +1,32 @@
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
-import { Administrator, CreateAdministrator, GetAdministrator, GetAdministrators, UpdateAdministrator } from './graphql/generated-e2e-admin-types';
+import {
+    Administrator,
+    CreateAdministrator,
+    GetAdministrator,
+    GetAdministrators,
+    UpdateAdministrator,
+} from './graphql/generated-e2e-admin-types';
 import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
     let createdAdmin: Administrator.Fragment;
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -27,7 +34,7 @@ describe('Administrator resolver', () => {
     });
 
     it('administrators', async () => {
-        const result = await client.query<GetAdministrators.Query, GetAdministrators.Variables>(
+        const result = await adminClient.query<GetAdministrators.Query, GetAdministrators.Variables>(
             GET_ADMINISTRATORS,
         );
         expect(result.administrators.items.length).toBe(1);
@@ -35,7 +42,7 @@ describe('Administrator resolver', () => {
     });
 
     it('createAdministrator', async () => {
-        const result = await client.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
+        const result = await adminClient.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
             CREATE_ADMINISTRATOR,
             {
                 input: {
@@ -53,7 +60,7 @@ describe('Administrator resolver', () => {
     });
 
     it('administrator', async () => {
-        const result = await client.query<GetAdministrator.Query, GetAdministrator.Variables>(
+        const result = await adminClient.query<GetAdministrator.Query, GetAdministrator.Variables>(
             GET_ADMINISTRATOR,
             {
                 id: createdAdmin.id,
@@ -63,7 +70,7 @@ describe('Administrator resolver', () => {
     });
 
     it('updateAdministrator', async () => {
-        const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
+        const result = await adminClient.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
             UPDATE_ADMINISTRATOR,
             {
                 input: {
@@ -80,7 +87,7 @@ describe('Administrator resolver', () => {
     });
 
     it('updateAdministrator works with partial input', async () => {
-        const result = await client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
+        const result = await adminClient.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
             UPDATE_ADMINISTRATOR,
             {
                 input: {
@@ -98,7 +105,7 @@ describe('Administrator resolver', () => {
         'updateAdministrator throws with invalid roleId',
         assertThrowsWithMessage(
             () =>
-                client.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
+                adminClient.query<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
                     UPDATE_ADMINISTRATOR,
                     {
                         input: {

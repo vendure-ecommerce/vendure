@@ -16,43 +16,16 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
-import { gql } from 'apollo-server-core';
 import { buffer, debounceTime, filter, map } from 'rxjs/operators';
 
 import { ELASTIC_SEARCH_CLIENT, ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
+import { CustomMappingsResolver } from './custom-mappings.resolver';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elasticsearch-resolver';
 import { ElasticsearchService } from './elasticsearch.service';
+import { generateSchemaExtensions } from './graphql-schema-extensions';
 import { ElasticsearchIndexerController } from './indexer.controller';
 import { ElasticsearchOptions, mergeWithDefaults } from './options';
-
-const schemaExtension = gql`
-    extend type SearchResponse {
-        prices: SearchResponsePriceData!
-    }
-
-    type SearchResponsePriceData {
-        range: PriceRange!
-        rangeWithTax: PriceRange!
-        buckets: [PriceRangeBucket!]!
-        bucketsWithTax: [PriceRangeBucket!]!
-    }
-
-    type PriceRangeBucket {
-        to: Int!
-        count: Int!
-    }
-
-    extend input SearchInput {
-        priceRange: PriceRangeInput
-        priceRangeWithTax: PriceRangeInput
-    }
-
-    input PriceRangeInput {
-        min: Int!
-        max: Int!
-    }
-`;
 
 /**
  * @description
@@ -222,7 +195,18 @@ const schemaExtension = gql`
         { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => ElasticsearchPlugin.client },
     ],
     adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
-    shopApiExtensions: { resolvers: [ShopElasticSearchResolver], schema: schemaExtension },
+    shopApiExtensions: {
+        resolvers: () => {
+            const { options } = ElasticsearchPlugin;
+            const requiresUnionResolver =
+                0 < Object.keys(options.customProductMappings || {}).length &&
+                0 < Object.keys(options.customProductVariantMappings || {}).length;
+            return requiresUnionResolver
+                ? [ShopElasticSearchResolver, CustomMappingsResolver]
+                : [ShopElasticSearchResolver];
+        },
+        schema: () => generateSchemaExtensions(ElasticsearchPlugin.options),
+    },
     workers: [ElasticsearchIndexerController],
 })
 export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {

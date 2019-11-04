@@ -1,13 +1,16 @@
 /* tslint:disable:no-non-null-assertion */
-import { LanguageCode } from '@vendure/common/lib/generated-shop-types';
+import { pick } from '@vendure/common/lib/pick';
+import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { HistoryEntryType, StockMovementType } from '../../common/lib/generated-types';
-import { pick } from '../../common/lib/pick';
-import { PaymentMethodHandler } from '../src/config/payment-method/payment-method-handler';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
+import {
+    failsToSettlePaymentMethod,
+    singleStageRefundablePaymentMethod,
+    twoStagePaymentMethod,
+} from './fixtures/test-payment-methods';
 import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
@@ -22,10 +25,12 @@ import {
     GetOrderListFulfillments,
     GetProductWithVariants,
     GetStockMovement,
+    HistoryEntryType,
     OrderItemFragment,
     RefundOrder,
     SettlePayment,
     SettleRefund,
+    StockMovementType,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
@@ -36,35 +41,31 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        paymentOptions: {
+            paymentMethodHandlers: [
+                twoStagePaymentMethod,
+                failsToSettlePaymentMethod,
+                singleStageRefundablePaymentMethod,
+            ],
+        },
+    });
     let customers: GetCustomerList.Items[];
     const password = 'test';
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 3,
-            },
-            {
-                paymentOptions: {
-                    paymentMethodHandlers: [
-                        twoStagePaymentMethod,
-                        failsToSettlePaymentMethod,
-                        singleStageRefundablePaymentMethod,
-                    ],
-                },
-            },
-        );
-        await adminClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 3,
+        });
+        await adminClient.asSuperAdmin();
 
         // Create a couple of orders to be queried
         const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
@@ -1191,84 +1192,9 @@ describe('Orders resolver', () => {
     });
 });
 
-/**
- * A two-stage (authorize, capture) payment method, with no createRefund method.
- */
-const twoStagePaymentMethod = new PaymentMethodHandler({
-    code: 'authorize-only-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Authorized',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: () => {
-        return {
-            success: true,
-            metadata: {
-                moreData: 42,
-            },
-        };
-    },
-});
-
-/**
- * A payment method which includes a createRefund method.
- */
-const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
-    code: 'single-stage-refundable-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Settled',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: () => {
-        return { success: true };
-    },
-    createRefund: (input, total, order, payment, args) => {
-        return {
-            amount: total,
-            state: 'Settled',
-            transactionId: 'abc123',
-        };
-    },
-});
-
-/**
- * A payment method where calling `settlePayment` always fails.
- */
-const failsToSettlePaymentMethod = new PaymentMethodHandler({
-    code: 'fails-to-settle-payment-method',
-    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
-    args: {},
-    createPayment: (order, args, metadata) => {
-        return {
-            amount: order.total,
-            state: 'Authorized',
-            transactionId: '12345',
-            metadata,
-        };
-    },
-    settlePayment: () => {
-        return {
-            success: false,
-            errorMessage: 'Something went horribly wrong',
-        };
-    },
-});
-
 async function createTestOrder(
-    adminClient: TestAdminClient,
-    shopClient: TestShopClient,
+    adminClient: SimpleGraphQLClient,
+    shopClient: SimpleGraphQLClient,
     emailAddress: string,
     password: string,
 ): Promise<{

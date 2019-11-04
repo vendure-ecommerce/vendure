@@ -1,7 +1,6 @@
+import { AssetStorageStrategy } from '@vendure/core';
 import { Request } from 'express';
 import { Readable, Stream, Writable } from 'stream';
-
-import { AssetStorageStrategy } from '../../src/config/asset-storage-strategy/asset-storage-strategy';
 
 import { getTestImageBuffer } from './testing-asset-preview-strategy';
 

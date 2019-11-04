@@ -77,7 +77,7 @@
                     </td>
                     <td class="align-middle total">
                         {{ line.totalPrice / 100 | currency: order.currencyCode }}
-                        <div class="net-price" [title]="'order.net-price' | translate">{{ line.unitPrice / 100 | currency: order.currencyCode }}</div>
+                        <div class="net-price" [title]="'order.net-price' | translate">{{ (line.unitPrice * line.quantity) / 100 | currency: order.currencyCode }}</div>
 
                         <ng-container *ngIf="getLinePromotions(line) as promotions">
                             <vdr-dropdown *ngIf="promotions.length">

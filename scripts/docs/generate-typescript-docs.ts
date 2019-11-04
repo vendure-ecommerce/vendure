@@ -23,6 +23,7 @@ const sections: DocsSectionConfig[] = [
             'packages/asset-server-plugin/src/',
             'packages/email-plugin/src/',
             'packages/elasticsearch-plugin/src/',
+            'packages/testing/src/',
         ],
         exclude: [
             /generated-shop-types/,

@@ -15,3 +15,4 @@ export { BaseDetailComponent } from './app/common/base-detail.component';
 export * from './app/core/providers/nav-builder/nav-builder-types';
 export * from './app/core/providers/custom-field-component/custom-field-component.service';
 export * from './app/shared/shared-declarations';
+export * from './app/shared/providers/routing/can-deactivate-detail-guard';

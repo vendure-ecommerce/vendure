@@ -23,7 +23,6 @@ import { RuntimeVendureConfig } from './vendure-config';
  * The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
  *
  * @docsCategory configuration
- * @docsPage Configuration
  */
 export const defaultConfig: RuntimeVendureConfig = {
     channelTokenKey: 'vendure-token',

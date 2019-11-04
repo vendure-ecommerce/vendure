@@ -24,6 +24,7 @@ import {
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { ElasticsearchOptions } from './options';
 import {
+    CustomMapping,
     ElasticSearchInput,
     ElasticSearchResponse,
     ProductIndexItem,
@@ -86,7 +87,7 @@ export class ElasticsearchService {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map(this.mapProductToSearchResult),
+                items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         } else {
@@ -96,7 +97,7 @@ export class ElasticsearchService {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map(this.mapVariantToSearchResult),
+                items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         }
@@ -258,7 +259,7 @@ export class ElasticsearchService {
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
         const source = hit._source;
-        return {
+        const result = {
             ...source,
             price: {
                 value: source.price,
@@ -268,11 +269,14 @@ export class ElasticsearchService {
             },
             score: hit._score,
         };
+
+        this.addCustomMappings(result, source, this.options.customProductVariantMappings);
+        return result;
     }
 
     private mapProductToSearchResult(hit: SearchHit<ProductIndexItem>): SearchResult {
         const source = hit._source;
-        return {
+        const result = {
             ...source,
             productId: source.productId.toString(),
             productName: source.productName[0],
@@ -294,5 +298,23 @@ export class ElasticsearchService {
             },
             score: hit._score,
         };
+        this.addCustomMappings(result, source, this.options.customProductMappings);
+        return result;
+    }
+
+    private addCustomMappings(
+        result: any,
+        source: any,
+        mappings: { [fieldName: string]: CustomMapping<any> },
+    ): any {
+        const customMappings = Object.keys(mappings);
+        if (customMappings.length) {
+            const customMappingsResult: any = {};
+            for (const name of customMappings) {
+                customMappingsResult[name] = (source as any)[name];
+            }
+            (result as any).customMappings = customMappingsResult;
+        }
+        return result;
     }
 }

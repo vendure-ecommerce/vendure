@@ -1,8 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     IdTest1,
     IdTest2,
@@ -14,21 +16,18 @@ import {
     IdTest8,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 
 describe('EntityIdStrategy', () => {
-    const shopClient = new TestShopClient();
-    const adminClient = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
-        await shopClient.init();
-        await adminClient.init();
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

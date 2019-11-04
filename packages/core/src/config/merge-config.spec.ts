@@ -1,14 +1,28 @@
 import { mergeConfig } from './merge-config';
 
 describe('mergeConfig()', () => {
+    it('creates a new object reference', () => {
+        const nestedObject = { b: 2 };
+        const input: any = {
+            a: nestedObject,
+        };
+
+        const result = mergeConfig(input, { c: 5 } as any);
+        expect(result).toEqual({
+            a: nestedObject,
+            c: 5,
+        });
+        expect(input).not.toBe(result);
+        expect(input.a).not.toBe(result.a);
+    });
     it('merges top-level properties', () => {
         const input: any = {
             a: 1,
             b: 2,
         };
 
-        mergeConfig(input, { b: 3, c: 5 } as any);
-        expect(input).toEqual({
+        const result = mergeConfig(input, { b: 3, c: 5 } as any);
+        expect(result).toEqual({
             a: 1,
             b: 3,
             c: 5,
@@ -21,8 +35,8 @@ describe('mergeConfig()', () => {
             b: { c: 2 },
         };
 
-        mergeConfig(input, { b: { c: 5 } } as any);
-        expect(input).toEqual({
+        const result = mergeConfig(input, { b: { c: 5 } } as any);
+        expect(result).toEqual({
             a: 1,
             b: { c: 5 },
         });
@@ -40,9 +54,9 @@ describe('mergeConfig()', () => {
             class: new Foo(),
         };
 
-        mergeConfig(input, { class: new Bar() } as any);
+        const result = mergeConfig(input, { class: new Bar() } as any);
 
-        expect(input.class instanceof Bar).toBe(true);
-        expect(input.class.name).toBe('bar');
+        expect(result.class instanceof Bar).toBe(true);
+        expect(result.class.name).toBe('bar');
     });
 });

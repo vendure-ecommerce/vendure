@@ -1,9 +1,10 @@
+import { pick } from '@vendure/common/lib/pick';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { pick } from '../../common/lib/pick';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     GetProductWithVariants,
     LanguageCode,
@@ -11,22 +12,21 @@ import {
     UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-definitions';
-import { TestAdminClient } from './test-client';
-import { TestServer } from './test-server';
 
 /* tslint:disable:no-non-null-assertion */
 describe('Role resolver', () => {
-    const client = new TestAdminClient();
-    const server = new TestServer();
+    const { server, adminClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
-        const token = await server.init({
+        await server.init({
+            dataDir,
+            initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await client.init();
+        await adminClient.asSuperAdmin();
 
-        const { updateProduct } = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+        const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
             UPDATE_PRODUCT,
             {
                 input: {
@@ -55,16 +55,19 @@ describe('Role resolver', () => {
             },
         );
 
-        await client.query<UpdateOptionGroup.Mutation, UpdateOptionGroup.Variables>(UPDATE_OPTION_GROUP, {
-            input: {
-                id: 'T_1',
-                translations: [
-                    { languageCode: LanguageCode.en, name: 'en name' },
-                    { languageCode: LanguageCode.de, name: 'de name' },
-                    { languageCode: LanguageCode.zh, name: 'zh name' },
-                ],
+        await adminClient.query<UpdateOptionGroup.Mutation, UpdateOptionGroup.Variables>(
+            UPDATE_OPTION_GROUP,
+            {
+                input: {
+                    id: 'T_1',
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'en name' },
+                        { languageCode: LanguageCode.de, name: 'de name' },
+                        { languageCode: LanguageCode.zh, name: 'zh name' },
+                    ],
+                },
             },
-        });
+        );
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -72,7 +75,7 @@ describe('Role resolver', () => {
     });
 
     it('returns default language when none specified', async () => {
-        const { product } = await client.query<
+        const { product } = await adminClient.query<
             GetProductWithVariants.Query,
             GetProductWithVariants.Variables
         >(GET_PRODUCT_WITH_VARIANTS, {
@@ -86,7 +89,7 @@ describe('Role resolver', () => {
     });
 
     it('returns specified language', async () => {
-        const { product } = await client.query<
+        const { product } = await adminClient.query<
             GetProductWithVariants.Query,
             GetProductWithVariants.Variables
         >(
@@ -104,7 +107,7 @@ describe('Role resolver', () => {
     });
 
     it('falls back to default language code', async () => {
-        const { product } = await client.query<
+        const { product } = await adminClient.query<
             GetProductWithVariants.Query,
             GetProductWithVariants.Variables
         >(
@@ -122,7 +125,7 @@ describe('Role resolver', () => {
     });
 
     it('nested entites are translated', async () => {
-        const { product } = await client.query<
+        const { product } = await adminClient.query<
             GetProductWithVariants.Query,
             GetProductWithVariants.Variables
         >(
@@ -138,7 +141,7 @@ describe('Role resolver', () => {
     });
 
     it('translates results of mutation', async () => {
-        const { updateProduct } = await client.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+        const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
             UPDATE_PRODUCT,
             {
                 input: {

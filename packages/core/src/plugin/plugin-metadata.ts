@@ -69,12 +69,16 @@ export function graphQLResolversFor(
     plugin: Type<any> | DynamicModule,
     apiType: 'shop' | 'admin',
 ): Array<Type<any>> {
-    const apiExtensions =
+    const apiExtensions: APIExtensionDefinition =
         apiType === 'shop'
             ? reflectMetadata(plugin, PLUGIN_METADATA.SHOP_API_EXTENSIONS)
             : reflectMetadata(plugin, PLUGIN_METADATA.ADMIN_API_EXTENSIONS);
 
-    return apiExtensions ? apiExtensions.resolvers : [];
+    return apiExtensions
+        ? typeof apiExtensions.resolvers === 'function'
+            ? apiExtensions.resolvers()
+            : apiExtensions.resolvers
+        : [];
 }
 
 function reflectMetadata(metatype: Type<any> | DynamicModule, metadataKey: string) {

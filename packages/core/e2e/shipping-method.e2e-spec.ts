@@ -1,13 +1,15 @@
 /* tslint:disable:no-non-null-assertion */
+import {
+    defaultShippingCalculator,
+    defaultShippingEligibilityChecker,
+    ShippingCalculator,
+} from '@vendure/core';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { LanguageCode } from '../../common/lib/generated-types';
-import { defaultShippingCalculator } from '../src/config/shipping-method/default-shipping-calculator';
-import { defaultShippingEligibilityChecker } from '../src/config/shipping-method/default-shipping-eligibility-checker';
-import { ShippingCalculator } from '../src/config/shipping-method/shipping-calculator';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateShippingMethod,
     DeleteShippingMethod,
@@ -16,33 +18,47 @@ import {
     GetEligibilityCheckers,
     GetShippingMethod,
     GetShippingMethodList,
+    LanguageCode,
     TestEligibleMethods,
     TestShippingMethod,
     UpdateShippingMethod,
 } from './graphql/generated-e2e-admin-types';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
+
+const TEST_METADATA = {
+    foo: 'bar',
+    baz: [1, 2, 3],
+};
+
+const calculatorWithMetadata = new ShippingCalculator({
+    code: 'calculator-with-metadata',
+    description: [{ languageCode: LanguageCode.en, value: 'Has metadata' }],
+    args: {},
+    calculate: order => {
+        return {
+            price: 100,
+            priceWithTax: 100,
+            metadata: TEST_METADATA,
+        };
+    },
+});
 
 describe('ShippingMethod resolver', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        shippingOptions: {
+            shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
+            shippingCalculators: [defaultShippingCalculator, calculatorWithMetadata],
+        },
+    });
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 1,
-            },
-            {
-                shippingOptions: {
-                    shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
-                    shippingCalculators: [defaultShippingCalculator, calculatorWithMetadata],
-                },
-            },
-        );
-        await adminClient.init();
-        await shopClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -277,24 +293,6 @@ describe('ShippingMethod resolver', () => {
         const listResult2 = await adminClient.query<GetShippingMethodList.Query>(GET_SHIPPING_METHOD_LIST);
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2']);
     });
-});
-
-const TEST_METADATA = {
-    foo: 'bar',
-    baz: [1, 2, 3],
-};
-
-const calculatorWithMetadata = new ShippingCalculator({
-    code: 'calculator-with-metadata',
-    description: [{ languageCode: LanguageCode.en, value: 'Has metadata' }],
-    args: {},
-    calculate: order => {
-        return {
-            price: 100,
-            priceWithTax: 100,
-            metadata: TEST_METADATA,
-        };
-    },
 });
 
 const SHIPPING_METHOD_FRAGMENT = gql`

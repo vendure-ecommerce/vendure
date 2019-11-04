@@ -1,7 +1,6 @@
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { Channel } from '@vendure/core';
 import { ConnectionOptions, getConnection } from 'typeorm';
-
-import { Channel } from '../src/entity/channel/channel.entity';
 
 // tslint:disable:no-console
 // tslint:disable:no-floating-promises

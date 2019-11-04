@@ -1,11 +1,13 @@
 {
   "name": "@vendure/common",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json -w",
-    "build": "rimraf dist && tsc -p ./tsconfig.build.json"
+    "build": "rimraf dist && tsc -p ./tsconfig.build.json",
+    "lint": "tslint --fix --project ./",
+    "test": "jest --config ./jest.config.js"
   },
   "publishConfig": {
     "access": "public"
@@ -14,8 +16,8 @@
     "lib/**/*"
   ],
   "devDependencies": {
-    "@types/jest": "^24.0.11",
-    "rimraf": "^2.6.3",
+    "@types/jest": "^24.0.21",
+    "rimraf": "^3.0.0",
     "typescript": "~3.5.3"
   }
 }

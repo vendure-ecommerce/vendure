@@ -1682,7 +1682,7 @@ export type Mutation = {
     createCollection: Collection;
     /** Update an existing Collection */
     updateCollection: Collection;
-    /** Delete a Collection */
+    /** Delete a Collection and all of its descendants */
     deleteCollection: DeletionResponse;
     /** Move a Collection to a different parent or index */
     moveCollection: Collection;

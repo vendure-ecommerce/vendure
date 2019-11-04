@@ -3,15 +3,19 @@
 import { bootstrap } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import { BaseProductRecord } from '@vendure/core/dist/data-import/providers/import-parser/import-parser';
+import { clearAllTables, populateCustomers } from '@vendure/testing';
 import stringify from 'csv-stringify';
 import fs from 'fs';
 import path from 'path';
 
-import { clearAllTables } from '../../core/mock-data/clear-all-tables';
 import { initialData } from '../../core/mock-data/data-sources/initial-data';
-import { populateCustomers } from '../../core/mock-data/populate-customers';
 
-import { getLoadTestConfig, getMysqlConnectionOptions, getProductCount, getProductCsvFilePath } from './load-test-config';
+import {
+    getLoadTestConfig,
+    getMysqlConnectionOptions,
+    getProductCount,
+    getProductCsvFilePath,
+} from './load-test-config';
 
 // tslint:disable:no-console
 
@@ -41,7 +45,7 @@ if (require.main === module) {
                     )
                     .then(async app => {
                         console.log('populating customers...');
-                        await populateCustomers(10, config as any, true);
+                        await populateCustomers(10, config, true);
                         return app.close();
                     });
             } else {
@@ -170,7 +174,12 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
 }
 
 function getCategoryNames() {
-    const allNames = initialData.collections.reduce((all, c) => [...all, ...c.facetNames], [] as string[]);
+    const allNames = new Set<string>();
+    for (const collection of initialData.collections) {
+        for (const filter of collection.filters || []) {
+            filter.args.facetValueNames.forEach(name => allNames.add(name));
+        }
+    }
     return Array.from(new Set(allNames));
 }
 

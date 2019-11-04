@@ -24,6 +24,7 @@ const VALID_SCOPES: string[] = [
     'elasticsearch-plugin',
     'email-plugin',
     'email',
+    'testing',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');

@@ -1680,7 +1680,7 @@ export type Mutation = {
   createCollection: Collection,
   /** Update an existing Collection */
   updateCollection: Collection,
-  /** Delete a Collection */
+  /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse,
   /** Move a Collection to a different parent or index */
   moveCollection: Collection,
@@ -3872,7 +3872,7 @@ export type GetOrderHistoryQueryVariables = {
 };
 
 
-export type GetOrderHistoryQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & Pick<Order, 'id'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & { items: Array<({ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'data'> & { administrator: Maybe<({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'firstName' | 'lastName'>)> })> }) })> });
+export type GetOrderHistoryQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & Pick<Order, 'id'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & { items: Array<({ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'isPublic' | 'data'> & { administrator: Maybe<({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'firstName' | 'lastName'>)> })> }) })> });
 
 export type AddNoteToOrderMutationVariables = {
   input: AddNoteToOrderInput

@@ -1,6 +1,6 @@
 {
   "name": "@vendure/create",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "license": "MIT",
   "bin": {
     "create": "./index.js"
@@ -12,7 +12,9 @@
   ],
   "scripts": {
     "copy-assets": "rimraf assets && ts-node ./build.ts",
-    "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json"
+    "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json",
+    "watch": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
+    "lint": "tslint --fix --project ./"
   },
   "publishConfig": {
     "access": "public"
@@ -20,14 +22,14 @@
   "devDependencies": {
     "@types/cross-spawn": "^6.0.0",
     "@types/detect-port": "^1.1.0",
-    "@types/fs-extra": "^7.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/handlebars": "^4.1.0",
     "@types/listr": "^0.14.0",
     "@types/semver": "^6.0.0",
-    "@vendure/common": "^0.5.0",
-    "@vendure/core": "^0.5.0",
-    "rimraf": "^2.6.3",
-    "ts-node": "^8.0.3",
+    "@vendure/common": "^0.5.1",
+    "@vendure/core": "^0.5.1",
+    "rimraf": "^3.0.0",
+    "ts-node": "^8.4.1",
     "typescript": "~3.5.3"
   },
   "dependencies": {

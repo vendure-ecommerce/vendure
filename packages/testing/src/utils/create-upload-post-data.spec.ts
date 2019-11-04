@@ -4,18 +4,20 @@ import { createUploadPostData } from './create-upload-post-data';
 
 describe('createUploadPostData()', () => {
     it('creates correct output for createAssets mutation', () => {
-        const result = createUploadPostData(gql`
+        const result = createUploadPostData(
+            gql`
                 mutation CreateAssets($input: [CreateAssetInput!]!) {
                     createAssets(input: $input) {
                         id
                         name
                     }
-                }`
-            ,
+                }
+            `,
             ['a.jpg', 'b.jpg'],
             filePaths => ({
                 input: filePaths.map(() => ({ file: null })),
-            }));
+            }),
+        );
 
         expect(result.operations.operationName).toBe('CreateAssets');
         expect(result.operations.variables).toEqual({

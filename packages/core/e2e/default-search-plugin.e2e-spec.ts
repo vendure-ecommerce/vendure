@@ -1,12 +1,13 @@
 import { pick } from '@vendure/common/lib/pick';
+import { mergeConfig } from '@vendure/core';
+import { DefaultSearchPlugin } from '@vendure/core';
+import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
+import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { SimpleGraphQLClient } from '../mock-data/simple-graphql-client';
-import { facetValueCollectionFilter } from '../src/config/collection/default-collection-filters';
-import { DefaultSearchPlugin } from '../src/plugin/default-search-plugin/default-search-plugin';
-
-import { TEST_SETUP_TIMEOUT_MS } from './config/test-config';
+import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
+import { initialData } from './fixtures/e2e-initial-data';
 import {
     CreateCollection,
     CreateFacet,
@@ -29,27 +30,21 @@ import {
     UPDATE_TAX_RATE,
 } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
-import { TestAdminClient, TestShopClient } from './test-client';
-import { TestServer } from './test-server';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Default search plugin', () => {
-    const adminClient = new TestAdminClient();
-    const shopClient = new TestShopClient();
-    const server = new TestServer();
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin] }),
+    );
 
     beforeAll(async () => {
-        const token = await server.init(
-            {
-                productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-                customerCount: 1,
-            },
-            {
-                plugins: [DefaultSearchPlugin],
-            },
-        );
-        await adminClient.init();
-        await shopClient.init();
+        await server.init({
+            dataDir,
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

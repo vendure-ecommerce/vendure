@@ -164,7 +164,7 @@ async function createGraphQLOptions(
         let schema = buildSchema(typeDefs);
 
         getPluginAPIExtensions(configService.plugins, apiType)
-            .map(e => e.schema)
+            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
             .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
         schema = generateListOptions(schema);
