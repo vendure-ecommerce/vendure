@@ -283,3 +283,11 @@ export const CREATE_PROMOTION = gql`
     }
     ${PROMOTION_FRAGMENT}
 `;
+export const ME = gql`
+    query Me {
+        me {
+            ...CurrentUser
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;

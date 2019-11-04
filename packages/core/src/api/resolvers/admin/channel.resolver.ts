@@ -8,13 +8,14 @@ import {
 
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ChannelService } from '../../../service/services/channel.service';
+import { RoleService } from '../../../service/services/role.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Channel')
 export class ChannelResolver {
-    constructor(private channelService: ChannelService) {}
+    constructor(private channelService: ChannelService, private roleService: RoleService) {}
 
     @Query()
     @Allow(Permission.ReadSettings)
@@ -37,7 +38,10 @@ export class ChannelResolver {
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async createChannel(@Args() args: MutationCreateChannelArgs): Promise<Channel> {
-        return this.channelService.create(args.input);
+        const channel = await this.channelService.create(args.input);
+        const superAdminRole = await this.roleService.getSuperAdminRole();
+        await this.roleService.assignRoleToChannel(superAdminRole.id, channel.id);
+        return channel;
     }
 
     @Mutation()

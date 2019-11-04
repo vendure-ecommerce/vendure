@@ -104,7 +104,7 @@ export class ProductService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
-                this.channelService.assignToChannels(p, ctx);
+                this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
@@ -143,6 +143,11 @@ export class ProductService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    async assignToChannel(ctx: RequestContext, productId: ID, channelId: ID): Promise<Translated<Product>> {
+        const product = await this.channelService.assignToChannel(Product, productId, channelId);
+        return assertFound(this.findOne(ctx, product.id));
     }
 
     async addOptionGroupToProduct(

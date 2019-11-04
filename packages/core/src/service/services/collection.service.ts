@@ -243,7 +243,7 @@ export class CollectionService implements OnModuleInit {
             entityType: Collection,
             translationType: CollectionTranslation,
             beforeSave: async coll => {
-                await this.channelService.assignToChannels(coll, ctx);
+                await this.channelService.assignToCurrentChannel(coll, ctx);
                 const parent = await this.getParentCollection(ctx, input.parentId);
                 if (parent) {
                     coll.parent = parent;

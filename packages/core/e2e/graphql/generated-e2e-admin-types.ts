@@ -2007,6 +2007,11 @@ export type MutationDeleteProductVariantArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationAssignProductToChannelArgs = {
+    productId: Scalars['ID'];
+    channelId: Scalars['ID'];
+};
+
 export type MutationCreatePromotionArgs = {
     input: CreatePromotionInput;
 };
@@ -3405,6 +3410,20 @@ export type MeQueryVariables = {};
 
 export type MeQuery = { __typename?: 'Query' } & {
     me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
+};
+
+export type CreateChannelMutationVariables = {
+    input: CreateChannelInput;
+};
+
+export type CreateChannelMutation = { __typename?: 'Mutation' } & {
+    createChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
+    > & {
+            defaultShippingZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+            defaultTaxZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+        };
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -5051,6 +5070,16 @@ export namespace Me {
     export type Variables = MeQueryVariables;
     export type Query = MeQuery;
     export type Me = CurrentUserFragment;
+}
+
+export namespace CreateChannel {
+    export type Variables = CreateChannelMutationVariables;
+    export type Mutation = CreateChannelMutation;
+    export type CreateChannel = CreateChannelMutation['createChannel'];
+    export type DefaultShippingZone = NonNullable<
+        CreateChannelMutation['createChannel']['defaultShippingZone']
+    >;
+    export type DefaultTaxZone = NonNullable<CreateChannelMutation['createChannel']['defaultTaxZone']>;
 }
 
 export namespace GetCollectionsWithAssets {

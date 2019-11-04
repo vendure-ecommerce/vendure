@@ -104,7 +104,7 @@ export class PromotionService {
             priorityScore: this.calculatePriorityScore(input),
         });
         this.validatePromotionConditions(promotion);
-        this.channelService.assignToChannels(promotion, ctx);
+        this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.manager.save(promotion);
         await this.updatePromotions();
         return assertFound(this.findOne(newPromotion.id));

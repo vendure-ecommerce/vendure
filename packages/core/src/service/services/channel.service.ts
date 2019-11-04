@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { CreateChannelInput, CurrencyCode, UpdateChannelInput } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
@@ -12,6 +12,7 @@ import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -36,9 +37,26 @@ export class ChannelService {
      * Assigns a ChannelAware entity to the default Channel as well as any channel
      * specified in the RequestContext.
      */
-    assignToChannels<T extends ChannelAware>(entity: T, ctx: RequestContext): T {
+    assignToCurrentChannel<T extends ChannelAware>(entity: T, ctx: RequestContext): T {
         const channelIds = unique([ctx.channelId, this.getDefaultChannel().id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
+        return entity;
+    }
+
+    /**
+     * Assigns the entity to the given Channel and saves.
+     */
+    async assignToChannel<T extends ChannelAware & VendureEntity>(
+        entityType: Type<T>,
+        entityId: ID,
+        channelId: ID,
+    ): Promise<T> {
+        const entity = await getEntityOrThrow(this.connection, entityType, entityId, {
+            relations: ['channels'],
+        });
+        const channel = await getEntityOrThrow(this.connection, Channel, channelId);
+        entity.channels.push(channel);
+        await this.connection.getRepository(entityType).save(entity as any);
         return entity;
     }
 

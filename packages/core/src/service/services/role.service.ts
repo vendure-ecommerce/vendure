@@ -105,6 +105,10 @@ export class RoleService {
         return assertFound(this.findOne(role.id));
     }
 
+    async assignRoleToChannel(roleId: ID, channelId: ID) {
+        await this.channelService.assignToChannel(Role, roleId, channelId);
+    }
+
     private checkPermissionsAreValid(permissions?: string[] | null) {
         if (!permissions) {
             return;
