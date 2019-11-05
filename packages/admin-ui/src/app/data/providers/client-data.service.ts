@@ -1,4 +1,5 @@
 import {
+    CurrentUserChannel,
     GetNetworkStatus,
     GetUiState,
     GetUserStatus,
@@ -40,13 +41,16 @@ export class ClientDataService {
         return this.baseDataService.query<GetNetworkStatus.Query>(GET_NEWTORK_STATUS, {}, 'cache-first');
     }
 
-    loginSuccess(username: string, permissions: string[]) {
+    loginSuccess(username: string, activeChannelId: string, channels: CurrentUserChannel[]) {
         return this.baseDataService.mutate<SetAsLoggedIn.Mutation, SetAsLoggedIn.Variables>(
             SET_AS_LOGGED_IN,
             {
-                username,
-                loginTime: Date.now().toString(),
-                permissions,
+                input: {
+                    username,
+                    loginTime: Date.now().toString(),
+                    activeChannelId,
+                    channels,
+                },
             },
         );
     }

@@ -8,6 +8,7 @@ import {
     LanguageCode,
     SetAsLoggedIn,
     SetUiLanguage,
+    UserStatus,
 } from '../../common/generated-types';
 import { GET_NEWTORK_STATUS } from '../definitions/client-definitions';
 
@@ -32,14 +33,20 @@ export const clientResolvers: ResolverDefinition = {
             return updateRequestsInFlight(cache, -1);
         },
         setAsLoggedIn: (_, args: SetAsLoggedIn.Variables, { cache }): GetUserStatus.UserStatus => {
-            const { username, loginTime, permissions } = args;
-            const data: GetUserStatus.Query = {
+            const {
+                input: { username, loginTime, channels, activeChannelId },
+            } = args;
+            // tslint:disable-next-line:no-non-null-assertion
+            const permissions = channels.find(c => c.id === activeChannelId)!.permissions;
+            const data: { userStatus: UserStatus } = {
                 userStatus: {
                     __typename: 'UserStatus',
                     username,
                     loginTime,
                     isLoggedIn: true,
                     permissions,
+                    channels,
+                    activeChannelId,
                 },
             };
             cache.writeData({ data });
@@ -53,6 +60,8 @@ export const clientResolvers: ResolverDefinition = {
                     loginTime: '',
                     isLoggedIn: false,
                     permissions: [],
+                    channels: [],
+                    activeChannelId: null,
                 },
             };
             cache.writeData({ data });

@@ -5,6 +5,7 @@ export const CURRENT_USER_FRAGMENT = gql`
         id
         identifier
         channels {
+            id
             code
             token
             permissions

@@ -534,6 +534,7 @@ export type CreatePromotionInput = {
 };
 
 export type CreateRoleInput = {
+  channelIds?: Maybe<Array<Scalars['ID']>>,
   code: Scalars['String'],
   description: Scalars['String'],
   permissions: Array<Permission>,
@@ -895,6 +896,14 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
   __typename?: 'CurrentUserChannel',
+  id: Scalars['ID'],
+  token: Scalars['String'],
+  code: Scalars['String'],
+  permissions: Array<Permission>,
+};
+
+export type CurrentUserChannelInput = {
+  id: Scalars['ID'],
   token: Scalars['String'],
   code: Scalars['String'],
   permissions: Array<Permission>,
@@ -2150,9 +2159,7 @@ export type MutationRemoveMembersFromZoneArgs = {
 
 
 export type MutationSetAsLoggedInArgs = {
-  username: Scalars['String'],
-  loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>
+  input: UserStatusInput
 };
 
 
@@ -3491,7 +3498,16 @@ export type UserStatus = {
   username: Scalars['String'],
   isLoggedIn: Scalars['Boolean'],
   loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>,
+  permissions: Array<Permission>,
+  activeChannelId?: Maybe<Scalars['ID']>,
+  channels: Array<CurrentUserChannel>,
+};
+
+export type UserStatusInput = {
+  username: Scalars['String'],
+  loginTime: Scalars['String'],
+  activeChannelId: Scalars['ID'],
+  channels: Array<CurrentUserChannelInput>,
 };
 
 export type Zone = Node & {
@@ -3570,7 +3586,7 @@ export type AssignRoleToAdministratorMutationVariables = {
 
 export type AssignRoleToAdministratorMutation = ({ __typename?: 'Mutation' } & { assignRoleToAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
 
-export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>)> });
+export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
 
 export type AttemptLoginMutationVariables = {
   username: Scalars['String'],
@@ -3601,19 +3617,19 @@ export type RequestCompletedMutationVariables = {};
 
 export type RequestCompletedMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'requestCompleted'>);
 
+export type UserStatusFragment = ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'activeChannelId' | 'permissions'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
+
 export type SetAsLoggedInMutationVariables = {
-  username: Scalars['String'],
-  loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>
+  input: UserStatusInput
 };
 
 
-export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type SetAsLoggedOutMutationVariables = {};
 
 
-export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type SetUiLanguageMutationVariables = {
   languageCode: LanguageCode
@@ -3630,7 +3646,7 @@ export type GetNetworkStatusQuery = ({ __typename?: 'Query' } & { networkStatus:
 export type GetUserStatusQueryVariables = {};
 
 
-export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type GetUiStateQueryVariables = {};
 
@@ -4493,16 +4509,21 @@ export namespace RequestCompleted {
   export type Mutation = RequestCompletedMutation;
 }
 
+export namespace UserStatus {
+  export type Fragment = UserStatusFragment;
+  export type Channels = (NonNullable<UserStatusFragment['channels'][0]>);
+}
+
 export namespace SetAsLoggedIn {
   export type Variables = SetAsLoggedInMutationVariables;
   export type Mutation = SetAsLoggedInMutation;
-  export type SetAsLoggedIn = SetAsLoggedInMutation['setAsLoggedIn'];
+  export type SetAsLoggedIn = UserStatusFragment;
 }
 
 export namespace SetAsLoggedOut {
   export type Variables = SetAsLoggedOutMutationVariables;
   export type Mutation = SetAsLoggedOutMutation;
-  export type SetAsLoggedOut = SetAsLoggedOutMutation['setAsLoggedOut'];
+  export type SetAsLoggedOut = UserStatusFragment;
 }
 
 export namespace SetUiLanguage {
@@ -4519,7 +4540,7 @@ export namespace GetNetworkStatus {
 export namespace GetUserStatus {
   export type Variables = GetUserStatusQueryVariables;
   export type Query = GetUserStatusQuery;
-  export type UserStatus = GetUserStatusQuery['userStatus'];
+  export type UserStatus = UserStatusFragment;
 }
 
 export namespace GetUiState {

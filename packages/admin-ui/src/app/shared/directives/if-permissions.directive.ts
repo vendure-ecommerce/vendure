@@ -1,6 +1,8 @@
 import { Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 
+import { Permission } from '../../common/generated-types';
+
 /**
  * Conditionally shows/hides templates based on the current active user having the specified permission.
  * Based on the ngIf source. Also support "else" templates:
@@ -35,7 +37,7 @@ export class IfPermissionsDirective {
     @Input()
     set vdrIfPermissions(permission: string | null) {
         this.permissionToCheck = permission;
-        this._updateView(permission);
+        this._updateView(permission as Permission);
     }
 
     /**
@@ -46,10 +48,10 @@ export class IfPermissionsDirective {
         assertTemplate('vdrIfPermissionsElse', templateRef);
         this._elseTemplateRef = templateRef;
         this._elseViewRef = null; // clear previous view if any.
-        this._updateView(this.permissionToCheck);
+        this._updateView(this.permissionToCheck as Permission);
     }
 
-    private _updateView(permission: string | null) {
+    private _updateView(permission: Permission | null) {
         if (!permission) {
             this.showThen();
             return;

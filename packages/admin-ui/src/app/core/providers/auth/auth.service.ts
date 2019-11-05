@@ -30,8 +30,8 @@ export class AuthService {
                 return this.serverConfigService.getServerConfig().then(() => response.login.user);
             }),
             switchMap(user => {
-                const { permissions } = this.getActiveChannel(user.channels);
-                return this.dataService.client.loginSuccess(username, permissions);
+                const { id } = this.getActiveChannel(user.channels);
+                return this.dataService.client.loginSuccess(username, id, user.channels);
             }),
         );
     }
@@ -75,14 +75,14 @@ export class AuthService {
      * that token against the API.
      */
     validateAuthToken(): Observable<boolean> {
-        return this.dataService.auth.checkLoggedIn().single$.pipe(
+        return this.dataService.auth.currentUser().single$.pipe(
             mergeMap(result => {
                 if (!result.me) {
                     return of(false) as any;
                 }
                 this.setChannelToken(result.me.channels);
-                const { permissions } = this.getActiveChannel(result.me.channels);
-                return this.dataService.client.loginSuccess(result.me.identifier, permissions);
+                const { id } = this.getActiveChannel(result.me.channels);
+                return this.dataService.client.loginSuccess(result.me.identifier, id, result.me.channels);
             }),
             mapTo(true),
             catchError(err => of(false)),
@@ -95,7 +95,6 @@ export class AuthService {
     }
 
     private setChannelToken(userChannels: CurrentUserFragment['channels']) {
-        const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
         this.localStorageService.set('activeChannelToken', this.getActiveChannel(userChannels).token);
     }
 }

@@ -12,26 +12,38 @@ export const REQUEST_COMPLETED = gql`
     }
 `;
 
-export const SET_AS_LOGGED_IN = gql`
-    mutation SetAsLoggedIn($username: String!, $loginTime: String!, $permissions: [String!]!) {
-        setAsLoggedIn(username: $username, loginTime: $loginTime, permissions: $permissions) @client {
-            username
-            isLoggedIn
-            loginTime
+export const USER_STATUS_FRAGMENT = gql`
+    fragment UserStatus on UserStatus {
+        username
+        isLoggedIn
+        loginTime
+        activeChannelId
+        permissions
+        channels {
+            id
+            code
+            token
             permissions
         }
     }
 `;
 
+export const SET_AS_LOGGED_IN = gql`
+    mutation SetAsLoggedIn($input: UserStatusInput!) {
+        setAsLoggedIn(input: $input) @client {
+            ...UserStatus
+        }
+    }
+    ${USER_STATUS_FRAGMENT}
+`;
+
 export const SET_AS_LOGGED_OUT = gql`
     mutation SetAsLoggedOut {
         setAsLoggedOut @client {
-            username
-            isLoggedIn
-            loginTime
-            permissions
+            ...UserStatus
         }
     }
+    ${USER_STATUS_FRAGMENT}
 `;
 
 export const SET_UI_LANGUAGE = gql`
@@ -51,12 +63,10 @@ export const GET_NEWTORK_STATUS = gql`
 export const GET_USER_STATUS = gql`
     query GetUserStatus {
         userStatus @client {
-            username
-            isLoggedIn
-            loginTime
-            permissions
+            ...UserStatus
         }
     }
+    ${USER_STATUS_FRAGMENT}
 `;
 
 export const GET_UI_STATE = gql`
