@@ -40,7 +40,9 @@ export class ChannelResolver {
     async createChannel(@Args() args: MutationCreateChannelArgs): Promise<Channel> {
         const channel = await this.channelService.create(args.input);
         const superAdminRole = await this.roleService.getSuperAdminRole();
+        const customerRole = await this.roleService.getCustomerRole();
         await this.roleService.assignRoleToChannel(superAdminRole.id, channel.id);
+        await this.roleService.assignRoleToChannel(customerRole.id, channel.id);
         return channel;
     }
 
