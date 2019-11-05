@@ -1,6 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
@@ -14,7 +13,7 @@ import {
     Me,
     Permission,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, ME } from './graphql/shared-definitions';
+import { CREATE_ADMINISTRATOR, CREATE_CHANNEL, CREATE_ROLE, ME } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Channels', () => {
@@ -183,22 +182,3 @@ describe('Channels', () => {
         ]);
     });
 });
-
-const CREATE_CHANNEL = gql`
-    mutation CreateChannel($input: CreateChannelInput!) {
-        createChannel(input: $input) {
-            id
-            code
-            token
-            currencyCode
-            defaultLanguageCode
-            defaultShippingZone {
-                id
-            }
-            defaultTaxZone {
-                id
-            }
-            pricesIncludeTax
-        }
-    }
-`;

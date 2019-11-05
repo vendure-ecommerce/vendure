@@ -291,3 +291,22 @@ export const ME = gql`
     }
     ${CURRENT_USER_FRAGMENT}
 `;
+
+export const CREATE_CHANNEL = gql`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            id
+            code
+            token
+            currencyCode
+            defaultLanguageCode
+            defaultShippingZone {
+                id
+            }
+            defaultTaxZone {
+                id
+            }
+            pricesIncludeTax
+        }
+    }
+`;

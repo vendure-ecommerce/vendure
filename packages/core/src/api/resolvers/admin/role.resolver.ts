@@ -39,8 +39,8 @@ export class RoleResolver {
 
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
-    updateRole(@Args() args: MutationUpdateRoleArgs): Promise<Role> {
+    updateRole(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateRoleArgs): Promise<Role> {
         const { input } = args;
-        return this.roleService.update(input);
+        return this.roleService.update(ctx, input);
     }
 }

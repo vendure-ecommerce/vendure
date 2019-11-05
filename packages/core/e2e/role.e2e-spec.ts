@@ -1,5 +1,9 @@
 import { omit } from '@vendure/common/lib/omit';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import {
+    CUSTOMER_ROLE_CODE,
+    DEFAULT_CHANNEL_CODE,
+    SUPER_ADMIN_ROLE_CODE,
+} from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -8,14 +12,17 @@ import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config
 import { initialData } from './fixtures/e2e-initial-data';
 import { ROLE_FRAGMENT } from './graphql/fragments';
 import {
+    CreateChannel,
     CreateRole,
+    CurrencyCode,
     GetRole,
     GetRoles,
+    LanguageCode,
     Permission,
     Role,
     UpdateRole,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ROLE } from './graphql/shared-definitions';
+import { CREATE_CHANNEL, CREATE_ROLE } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Role resolver', () => {
@@ -108,11 +115,18 @@ describe('Role resolver', () => {
         });
 
         createdRole = result.createRole;
-        expect(omit(createdRole, ['channels'])).toEqual({
+        expect(createdRole).toEqual({
             code: 'test',
             description: 'test role',
             id: 'T_5',
             permissions: [Permission.Authenticated, Permission.ReadCustomer, Permission.UpdateCustomer],
+            channels: [
+                {
+                    code: DEFAULT_CHANNEL_CODE,
+                    id: 'T_1',
+                    token: 'e2e-default-channel',
+                },
+            ],
         });
     });
 
@@ -217,6 +231,81 @@ describe('Role resolver', () => {
             });
         }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
     );
+
+    describe('multi-channel', () => {
+        let secondChannel: CreateChannel.CreateChannel;
+        let multiChannelRole: CreateRole.CreateRole;
+
+        beforeAll(async () => {
+            const { createChannel } = await adminClient.query<
+                CreateChannel.Mutation,
+                CreateChannel.Variables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'second-channel',
+                    token: 'second-channel-token',
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+
+            secondChannel = createChannel;
+        });
+
+        it('createRole with specified channel', async () => {
+            const result = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+                input: {
+                    code: 'multi-test',
+                    description: 'multi channel test role',
+                    permissions: [Permission.ReadCustomer],
+                    channelIds: [secondChannel.id],
+                },
+            });
+
+            multiChannelRole = result.createRole;
+            expect(multiChannelRole).toEqual({
+                code: 'multi-test',
+                description: 'multi channel test role',
+                id: 'T_6',
+                permissions: [Permission.Authenticated, Permission.ReadCustomer],
+                channels: [
+                    {
+                        code: 'second-channel',
+                        id: 'T_2',
+                        token: 'second-channel-token',
+                    },
+                ],
+            });
+        });
+
+        it('updateRole with specified channel', async () => {
+            const { updateRole } = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(
+                UPDATE_ROLE,
+                {
+                    input: {
+                        id: multiChannelRole.id,
+                        channelIds: ['T_1', 'T_2'],
+                    },
+                },
+            );
+
+            expect(updateRole.channels).toEqual([
+                {
+                    code: DEFAULT_CHANNEL_CODE,
+                    id: 'T_1',
+                    token: 'e2e-default-channel',
+                },
+                {
+                    code: 'second-channel',
+                    id: 'T_2',
+                    token: 'second-channel-token',
+                },
+            ]);
+        });
+    });
 });
 
 export const GET_ROLES = gql`

@@ -533,10 +533,10 @@ export type CreatePromotionInput = {
 };
 
 export type CreateRoleInput = {
-    channelIds?: Maybe<Array<Scalars['ID']>>;
     code: Scalars['String'];
     description: Scalars['String'];
     permissions: Array<Permission>;
+    channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type CreateShippingMethodInput = {
@@ -3313,6 +3313,7 @@ export type UpdateRoleInput = {
     code?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     permissions?: Maybe<Array<Permission>>;
+    channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type UpdateShippingMethodInput = {
@@ -3401,20 +3402,6 @@ export type GetCustomerCountQueryVariables = {};
 
 export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
-};
-
-export type CreateChannelMutationVariables = {
-    input: CreateChannelInput;
-};
-
-export type CreateChannelMutation = { __typename?: 'Mutation' } & {
-    createChannel: { __typename?: 'Channel' } & Pick<
-        Channel,
-        'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
-    > & {
-            defaultShippingZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
-            defaultTaxZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
-        };
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -4378,6 +4365,20 @@ export type MeQuery = { __typename?: 'Query' } & {
     me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
 };
 
+export type CreateChannelMutationVariables = {
+    input: CreateChannelInput;
+};
+
+export type CreateChannelMutation = { __typename?: 'Mutation' } & {
+    createChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
+    > & {
+            defaultShippingZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+            defaultTaxZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+        };
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5063,16 +5064,6 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
-export namespace CreateChannel {
-    export type Variables = CreateChannelMutationVariables;
-    export type Mutation = CreateChannelMutation;
-    export type CreateChannel = CreateChannelMutation['createChannel'];
-    export type DefaultShippingZone = NonNullable<
-        CreateChannelMutation['createChannel']['defaultShippingZone']
-    >;
-    export type DefaultTaxZone = NonNullable<CreateChannelMutation['createChannel']['defaultTaxZone']>;
-}
-
 export namespace GetCollectionsWithAssets {
     export type Variables = GetCollectionsWithAssetsQueryVariables;
     export type Query = GetCollectionsWithAssetsQuery;
@@ -5709,6 +5700,16 @@ export namespace Me {
     export type Variables = MeQueryVariables;
     export type Query = MeQuery;
     export type Me = CurrentUserFragment;
+}
+
+export namespace CreateChannel {
+    export type Variables = CreateChannelMutationVariables;
+    export type Mutation = CreateChannelMutation;
+    export type CreateChannel = CreateChannelMutation['createChannel'];
+    export type DefaultShippingZone = NonNullable<
+        CreateChannelMutation['createChannel']['defaultShippingZone']
+    >;
+    export type DefaultTaxZone = NonNullable<CreateChannelMutation['createChannel']['defaultTaxZone']>;
 }
 
 export namespace UpdateOptionGroup {

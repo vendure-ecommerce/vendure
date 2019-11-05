@@ -107,25 +107,14 @@ export class RoleService {
 
         let targetChannels: Channel[] = [];
         if (input.channelIds) {
-            for (const channelId of input.channelIds) {
-                const channel = await getEntityOrThrow(this.connection, Channel, channelId);
-                const hasPermission = await this.userHasPermissionOnChannel(
-                    ctx.activeUserId,
-                    channelId,
-                    Permission.CreateAdministrator,
-                );
-                if (!hasPermission) {
-                    throw new ForbiddenError();
-                }
-                targetChannels = [...targetChannels, channel];
-            }
+            targetChannels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
         } else {
             targetChannels = [ctx.channel];
         }
         return this.createRoleForChannels(input, targetChannels);
     }
 
-    async update(input: UpdateRoleInput): Promise<Role> {
+    async update(ctx: RequestContext, input: UpdateRoleInput): Promise<Role> {
         this.checkPermissionsAreValid(input.permissions);
         const role = await this.findOne(input.id);
         if (!role) {
@@ -141,12 +130,32 @@ export class RoleService {
                 ? unique([Permission.Authenticated, ...input.permissions])
                 : undefined,
         });
+        if (input.channelIds && ctx.activeUserId) {
+            updatedRole.channels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
+        }
         await this.connection.manager.save(updatedRole);
         return assertFound(this.findOne(role.id));
     }
 
     async assignRoleToChannel(roleId: ID, channelId: ID) {
         await this.channelService.assignToChannel(Role, roleId, channelId);
+    }
+
+    private async getPermittedChannels(channelIds: ID[], activeUserId: ID): Promise<Channel[]> {
+        let permittedChannels: Channel[] = [];
+        for (const channelId of channelIds) {
+            const channel = await getEntityOrThrow(this.connection, Channel, channelId);
+            const hasPermission = await this.userHasPermissionOnChannel(
+                activeUserId,
+                channelId,
+                Permission.CreateAdministrator,
+            );
+            if (!hasPermission) {
+                throw new ForbiddenError();
+            }
+            permittedChannels = [...permittedChannels, channel];
+        }
+        return permittedChannels;
     }
 
     private checkPermissionsAreValid(permissions?: string[] | null) {
