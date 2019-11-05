@@ -24,6 +24,7 @@ import {
     AssetFileInputComponent,
     AssetGalleryComponent,
     AssetPickerDialogComponent,
+    ChannelBadgeComponent,
     ChipComponent,
     ConfigurableInputComponent,
     CurrencyInputComponent,
@@ -130,6 +131,7 @@ const DECLARATIONS = [
     AssetPickerDialogComponent,
     EntityInfoComponent,
     DatetimePickerComponent,
+    ChannelBadgeComponent,
 ];
 
 @NgModule({

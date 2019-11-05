@@ -1,0 +1,17 @@
+@import "variables";
+
+:host {
+    display: inline-block;
+
+    button & {
+        margin-bottom: -1px;
+    }
+}
+
+.channel-badge {
+    width: 8px;
+    height: 12px;
+    border-radius: 1px;
+    margin: 0 6px;
+    border: 1px solid transparentize($color-grey-700, 0.8);
+}

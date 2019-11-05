@@ -1,7 +1,8 @@
 <ng-container *ngIf="channels$ | async as channels">
     <vdr-dropdown *ngIf="1 < channels.length">
         <button class="btn btn-link active-channel" vdrDropdownTrigger>
-            <span class="active-channel">{{ (activeChannel$ | async)?.code }}</span>
+            <vdr-channel-badge [channelCode]="activeChannelCode$ | async"></vdr-channel-badge>
+            <span class="active-channel">{{ activeChannelLabel$ | async | translate }}</span>
             <span class="trigger"><clr-icon shape="caret down"></clr-icon></span>
         </button>
         <vdr-dropdown-menu vdrPosition="bottom-right">
@@ -11,7 +12,8 @@
                 vdrDropdownItem
                 (click)="setActiveChannel(channel.id)"
             >
-                {{ channel.code }}
+                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                {{ getChannelLabel(channel.code) | translate }}
             </button>
         </vdr-dropdown-menu>
     </vdr-dropdown>

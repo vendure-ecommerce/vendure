@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
+import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { CurrentUserChannel } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
+import { _ } from '../../providers/i18n/mark-for-extraction';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
-import set = Reflect.set;
 
 @Component({
     selector: 'vdr-channel-switcher',
@@ -14,16 +17,30 @@ import set = Reflect.set;
 })
 export class ChannelSwitcherComponent implements OnInit {
     channels$: Observable<CurrentUserChannel[]>;
-    activeChannel$: Observable<CurrentUserChannel | null>;
+    activeChannelLabel$: Observable<string>;
+    activeChannelCode$: Observable<string>;
     constructor(private dataService: DataService, private localStorageService: LocalStorageService) {}
 
     ngOnInit() {
         this.channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
-        this.activeChannel$ = this.dataService.client
+        const activeChannel$ = this.dataService.client
             .userStatus()
-            .mapStream(
-                data => data.userStatus.channels.find(c => c.id === data.userStatus.activeChannelId) || null,
-            );
+            .mapStream(data => data.userStatus.channels.find(c => c.id === data.userStatus.activeChannelId))
+            .pipe(filter(notNullOrUndefined));
+        this.activeChannelLabel$ = activeChannel$.pipe(map(channel => this.getChannelLabel(channel.code)));
+        this.activeChannelCode$ = activeChannel$.pipe(map(channel => channel.code));
+    }
+
+    getChannelLabel(channelCode: string): string {
+        if (this.isDefaultChannel(channelCode)) {
+            return _('common.default-channel');
+        } else {
+            return channelCode;
+        }
+    }
+
+    isDefaultChannel(channelCode: string): boolean {
+        return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
     setActiveChannel(channelId: string) {

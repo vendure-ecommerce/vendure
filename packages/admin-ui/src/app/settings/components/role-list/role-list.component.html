@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="role-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateAdministrator'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-role' | translate }}
         </a>
@@ -16,21 +16,33 @@
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
-    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'settings.channel' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.permissions' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-role="item">
-        <td class="left align-middle">{{ role.code }}</td>
         <td class="left align-middle">{{ role.description }}</td>
+        <td class="left align-middle"><span *ngIf="!isDefaultRole(role)">{{ role.code }}</span></td>
         <td class="left align-middle">
             <ng-container *ngIf="!isDefaultRole(role)">
+                <vdr-chip *ngFor="let channel of role.channels">
+                    <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                    {{ channel.code }}
+                </vdr-chip>
+            </ng-container>
+        </td>
+        <td class="left align-middle">
+            <ng-container *ngIf="!isDefaultRole(role); else defaultRole">
                 <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
             </ng-container>
+            <ng-template #defaultRole>
+                <span class="default-role-label">{{ 'settings.default-role-label' | translate }}</span>
+            </ng-template>
         </td>
         <td class="right align-middle">
             <vdr-table-row-action
-                [disabled]="isDefaultRole(role)"
+                *ngIf="!isDefaultRole(role)"
                 iconShape="edit"
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', role.id]"
