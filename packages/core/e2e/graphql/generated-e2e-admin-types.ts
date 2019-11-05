@@ -533,7 +533,7 @@ export type CreatePromotionInput = {
 };
 
 export type CreateRoleInput = {
-    channelId?: Maybe<Scalars['ID']>;
+    channelIds?: Maybe<Array<Scalars['ID']>>;
     code: Scalars['String'];
     description: Scalars['String'];
     permissions: Array<Permission>;
@@ -895,6 +895,7 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
     __typename?: 'CurrentUserChannel';
+    id: Scalars['ID'];
     token: Scalars['String'];
     code: Scalars['String'];
     permissions: Array<Permission>;

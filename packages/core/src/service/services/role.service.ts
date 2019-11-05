@@ -100,23 +100,29 @@ export class RoleService {
     }
 
     async create(ctx: RequestContext, input: CreateRoleInput): Promise<Role> {
-        this.checkPermissionsAreValid(input.permissions);
-        const targetChannel = input.channelId
-            ? await getEntityOrThrow(this.connection, Channel, input.channelId)
-            : ctx.channel;
-
         if (!ctx.activeUserId) {
             throw new ForbiddenError();
         }
-        const hasPermission = await this.userHasPermissionOnChannel(
-            ctx.activeUserId,
-            targetChannel.id,
-            Permission.CreateAdministrator,
-        );
-        if (!hasPermission) {
-            throw new ForbiddenError();
+        this.checkPermissionsAreValid(input.permissions);
+
+        let targetChannels: Channel[] = [];
+        if (input.channelIds) {
+            for (const channelId of input.channelIds) {
+                const channel = await getEntityOrThrow(this.connection, Channel, channelId);
+                const hasPermission = await this.userHasPermissionOnChannel(
+                    ctx.activeUserId,
+                    channelId,
+                    Permission.CreateAdministrator,
+                );
+                if (!hasPermission) {
+                    throw new ForbiddenError();
+                }
+                targetChannels = [...targetChannels, channel];
+            }
+        } else {
+            targetChannels = [ctx.channel];
         }
-        return this.createRoleForChannel(input, targetChannel);
+        return this.createRoleForChannels(input, targetChannels);
     }
 
     async update(input: UpdateRoleInput): Promise<Role> {
@@ -176,13 +182,13 @@ export class RoleService {
                 await this.connection.getRepository(Role).save(superAdminRole);
             }
         } catch (err) {
-            await this.createRoleForChannel(
+            await this.createRoleForChannels(
                 {
                     code: SUPER_ADMIN_ROLE_CODE,
                     description: SUPER_ADMIN_ROLE_DESCRIPTION,
                     permissions: allPermissions,
                 },
-                this.channelService.getDefaultChannel(),
+                [this.channelService.getDefaultChannel()],
             );
         }
     }
@@ -191,24 +197,24 @@ export class RoleService {
         try {
             await this.getCustomerRole();
         } catch (err) {
-            await this.createRoleForChannel(
+            await this.createRoleForChannels(
                 {
                     code: CUSTOMER_ROLE_CODE,
                     description: CUSTOMER_ROLE_DESCRIPTION,
                     permissions: [Permission.Authenticated],
                 },
-                this.channelService.getDefaultChannel(),
+                [this.channelService.getDefaultChannel()],
             );
         }
     }
 
-    private createRoleForChannel(input: CreateRoleInput, channel: Channel) {
+    private createRoleForChannels(input: CreateRoleInput, channels: Channel[]) {
         const role = new Role({
             code: input.code,
             description: input.description,
             permissions: unique([Permission.Authenticated, ...input.permissions]),
         });
-        role.channels = [channel];
+        role.channels = channels;
         return this.connection.manager.save(role);
     }
 }

@@ -85,7 +85,7 @@ describe('Channels', () => {
                 input: {
                     description: 'second channel admin',
                     code: 'second-channel-admin',
-                    channelId: 'T_2',
+                    channelIds: ['T_2'],
                     permissions: [
                         Permission.ReadCatalog,
                         Permission.ReadSettings,
@@ -133,7 +133,7 @@ describe('Channels', () => {
                 input: {
                     description: 'read default channel catalog',
                     code: 'read default channel catalog',
-                    channelId: 'T_1',
+                    channelIds: ['T_1'],
                     permissions: [Permission.ReadCatalog],
                 },
             });
@@ -147,7 +147,7 @@ describe('Channels', () => {
                 input: {
                     description: 'read second channel catalog',
                     code: 'read-second-channel-catalog',
-                    channelId: 'T_2',
+                    channelIds: ['T_2'],
                     permissions: [Permission.ReadCatalog],
                 },
             },
