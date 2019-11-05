@@ -1,0 +1,11 @@
+@import "variables";
+
+::ng-deep .ng-value, ::ng-deep .ng-option {
+    > vdr-channel-badge {
+        margin-bottom: -1px;
+    }
+}
+
+.channel-label {
+    margin-right: 6px;
+}

@@ -2,7 +2,7 @@
     <vdr-dropdown *ngIf="1 < channels.length">
         <button class="btn btn-link active-channel" vdrDropdownTrigger>
             <vdr-channel-badge [channelCode]="activeChannelCode$ | async"></vdr-channel-badge>
-            <span class="active-channel">{{ activeChannelLabel$ | async | translate }}</span>
+            <span class="active-channel">{{ activeChannelCode$ | async | channelCodeToLabel | translate }}</span>
             <span class="trigger"><clr-icon shape="caret down"></clr-icon></span>
         </button>
         <vdr-dropdown-menu vdrPosition="bottom-right">
@@ -13,7 +13,7 @@
                 (click)="setActiveChannel(channel.id)"
             >
                 <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
-                {{ getChannelLabel(channel.code) | translate }}
+                {{ channel.code | channelCodeToLabel | translate }}
             </button>
         </vdr-dropdown-menu>
     </vdr-dropdown>

@@ -17,7 +17,6 @@ import { LocalStorageService } from '../../providers/local-storage/local-storage
 })
 export class ChannelSwitcherComponent implements OnInit {
     channels$: Observable<CurrentUserChannel[]>;
-    activeChannelLabel$: Observable<string>;
     activeChannelCode$: Observable<string>;
     constructor(private dataService: DataService, private localStorageService: LocalStorageService) {}
 
@@ -27,20 +26,7 @@ export class ChannelSwitcherComponent implements OnInit {
             .userStatus()
             .mapStream(data => data.userStatus.channels.find(c => c.id === data.userStatus.activeChannelId))
             .pipe(filter(notNullOrUndefined));
-        this.activeChannelLabel$ = activeChannel$.pipe(map(channel => this.getChannelLabel(channel.code)));
         this.activeChannelCode$ = activeChannel$.pipe(map(channel => channel.code));
-    }
-
-    getChannelLabel(channelCode: string): string {
-        if (this.isDefaultChannel(channelCode)) {
-            return _('common.default-channel');
-        } else {
-            return channelCode;
-        }
-    }
-
-    isDefaultChannel(channelCode: string): boolean {
-        return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
     setActiveChannel(channelId: string) {

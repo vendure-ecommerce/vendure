@@ -12,7 +12,10 @@
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-channel="item">
-        <td class="left align-middle">{{ channel.code }}</td>
+        <td class="left align-middle">
+            <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+            {{ channel.code | channelCodeToLabel | translate }}
+        </td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"

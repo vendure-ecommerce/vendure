@@ -1,0 +1,24 @@
+<ng-select
+    [items]="channels$ | async"
+    bindLabel="code"
+    bindValue="id"
+    appendTo="body"
+    [addTag]="false"
+    [multiple]="true"
+    [ngModel]="value"
+    [clearable]="false"
+    [disabled]="disabled"
+    (focus)="focussed()"
+    (change)="valueChanged($event)"
+>
+    <ng-template ng-label-tmp let-item="item" let-clear="clear">
+        <span aria-hidden="true" class="ng-value-icon left" (click)="clear(item)"> × </span>
+        <vdr-channel-badge [channelCode]="item.code"></vdr-channel-badge>
+        <span class="channel-label">{{ item.code | channelCodeToLabel | translate }}</span>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+        <vdr-channel-badge [channelCode]="item.code"></vdr-channel-badge>
+        {{ item.code | channelCodeToLabel | translate }}
+    </ng-template>
+</ng-select>
+

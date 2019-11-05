@@ -2,13 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, mergeMap, take, tap } from 'rxjs/operators';
+import { mergeMap, take } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateRoleInput,
-    CurrentUserChannel,
     LanguageCode,
     Permission,
     Role,
@@ -27,7 +26,6 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
-    channels$: Observable<CurrentUserChannel[]>;
     detailForm: FormGroup;
     permissions: { [K in Permission]: boolean };
     permissionsChanged = false;
@@ -55,15 +53,6 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     ngOnInit() {
         this.init();
         this.role$ = this.entity$;
-        this.channels$ = this.dataService.client.userStatus().single$.pipe(
-            map(data => (data.userStatus ? data.userStatus.channels : [])),
-            tap(channels => {
-                const channelIdControl = this.detailForm.get('channelId');
-                if (channelIdControl) {
-                    channelIdControl.patchValue(channels[0].id);
-                }
-            }),
-        );
     }
 
     ngOnDestroy(): void {
