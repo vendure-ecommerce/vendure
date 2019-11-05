@@ -534,10 +534,10 @@ export type CreatePromotionInput = {
 };
 
 export type CreateRoleInput = {
-  channelIds?: Maybe<Array<Scalars['ID']>>,
   code: Scalars['String'],
   description: Scalars['String'],
   permissions: Array<Permission>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type CreateShippingMethodInput = {
@@ -3456,6 +3456,7 @@ export type UpdateRoleInput = {
   code?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   permissions?: Maybe<Array<Permission>>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type UpdateShippingMethodInput = {

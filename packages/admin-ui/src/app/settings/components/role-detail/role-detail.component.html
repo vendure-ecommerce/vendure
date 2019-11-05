@@ -16,6 +16,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
+                *vdrIfPermissions="'UpdateAdministrator'"
                 [disabled]="(detailForm.invalid || detailForm.pristine) && !permissionsChanged"
             >
                 {{ 'common.update' | translate }}
@@ -30,15 +31,28 @@
             id="description"
             type="text"
             formControlName="description"
+            [readonly]="!('UpdateAdministrator' | hasPermission)"
             (input)="updateCode($event.target.value)"
         />
     </vdr-form-field>
-    <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="true">
-        <input id="code" type="text" formControlName="code" />
+    <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="'UpdateAdministrator' | hasPermission">
+        <input id="code" type="text" formControlName="code" [readonly]="!('UpdateAdministrator' | hasPermission)" />
+    </vdr-form-field>
+    <vdr-form-field [label]="'settings.channel' | translate">
+        <ng-select
+            [items]="channels$ | async"
+            bindLabel="code"
+            bindValue="id"
+            appendTo="body"
+            [addTag]="false"
+            [multiple]="true"
+            formControlName="channelIds"
+        ></ng-select>
     </vdr-form-field>
     <label>{{ 'settings.permissions' | translate }}</label>
     <vdr-permission-grid
         [permissions]="permissions"
         (permissionChange)="setPermission($event)"
+        [readonly]="!('UpdateAdministrator' | hasPermission)"
     ></vdr-permission-grid>
 </form>

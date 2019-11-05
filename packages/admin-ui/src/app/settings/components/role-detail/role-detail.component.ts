@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     CreateRoleInput,
+    CurrentUserChannel,
     LanguageCode,
     Permission,
     Role,
@@ -26,6 +27,7 @@ import { ServerConfigService } from '../../../data/server-config';
 })
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
+    channels$: Observable<CurrentUserChannel[]>;
     detailForm: FormGroup;
     permissions: { [K in Permission]: boolean };
     permissionsChanged = false;
@@ -46,12 +48,22 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],
+            channelIds: [],
         });
     }
 
     ngOnInit() {
         this.init();
         this.role$ = this.entity$;
+        this.channels$ = this.dataService.client.userStatus().single$.pipe(
+            map(data => (data.userStatus ? data.userStatus.channels : [])),
+            tap(channels => {
+                const channelIdControl = this.detailForm.get('channelId');
+                if (channelIdControl) {
+                    channelIdControl.patchValue(channels[0].id);
+                }
+            }),
+        );
     }
 
     ngOnDestroy(): void {
@@ -76,6 +88,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             code: formValue.code,
             description: formValue.description,
             permissions: this.getSelectedPermissions(),
+            channelIds: [formValue.channelId],
         };
         this.dataService.administrator.createRole(role).subscribe(
             data => {
@@ -104,6 +117,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
                         code: formValue.code,
                         description: formValue.description,
                         permissions: this.getSelectedPermissions(),
+                        channelIds: formValue.channelIds,
                     };
                     return this.dataService.administrator.updateRole(role);
                 }),
@@ -127,6 +141,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.detailForm.patchValue({
             description: role.description,
             code: role.code,
+            channelIds: role.channels.map(c => c.id),
         });
         for (const permission of Object.keys(this.permissions)) {
             this.permissions[permission] = role.permissions.includes(permission as Permission);

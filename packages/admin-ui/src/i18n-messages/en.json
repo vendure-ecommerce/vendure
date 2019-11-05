@@ -537,6 +537,7 @@
     "add-products-to-test-order": "Add products to the test order",
     "administrator": "Administrator",
     "catalog": "Catalog",
+    "channel": "Channel",
     "channel-token": "Channel token",
     "create": "Create",
     "create-new-channel": "Create new channel",
