@@ -76,3 +76,12 @@ export const GET_UI_STATE = gql`
         }
     }
 `;
+
+export const SET_ACTIVE_CHANNEL = gql`
+    mutation SetActiveChannel($channelId: ID!) {
+        setActiveChannel(channelId: $channelId) @client {
+            ...UserStatus
+        }
+    }
+    ${USER_STATUS_FRAGMENT}
+`;

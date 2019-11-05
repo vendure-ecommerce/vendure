@@ -1802,6 +1802,7 @@ export type Mutation = {
   setAsLoggedIn: UserStatus,
   setAsLoggedOut: UserStatus,
   setUiLanguage?: Maybe<LanguageCode>,
+  setActiveChannel: UserStatus,
 };
 
 
@@ -2165,6 +2166,11 @@ export type MutationSetAsLoggedInArgs = {
 
 export type MutationSetUiLanguageArgs = {
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type MutationSetActiveChannelArgs = {
+  channelId: Scalars['ID']
 };
 
 export type NetworkStatus = {
@@ -3653,6 +3659,13 @@ export type GetUiStateQueryVariables = {};
 
 export type GetUiStateQuery = ({ __typename?: 'Query' } & { uiState: ({ __typename?: 'UiState' } & Pick<UiState, 'language'>) });
 
+export type SetActiveChannelMutationVariables = {
+  channelId: Scalars['ID']
+};
+
+
+export type SetActiveChannelMutation = ({ __typename?: 'Mutation' } & { setActiveChannel: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+
 export type GetCollectionFiltersQueryVariables = {};
 
 
@@ -4547,6 +4560,12 @@ export namespace GetUiState {
   export type Variables = GetUiStateQueryVariables;
   export type Query = GetUiStateQuery;
   export type UiState = GetUiStateQuery['uiState'];
+}
+
+export namespace SetActiveChannel {
+  export type Variables = SetActiveChannelMutationVariables;
+  export type Mutation = SetActiveChannelMutation;
+  export type SetActiveChannel = UserStatusFragment;
 }
 
 export namespace GetCollectionFilters {

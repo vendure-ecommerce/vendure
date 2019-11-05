@@ -90,6 +90,13 @@ export class AuthService {
     }
 
     private getActiveChannel(userChannels: CurrentUserFragment['channels']) {
+        const lastActiveChannelToken = this.localStorageService.get('activeChannelToken');
+        if (lastActiveChannelToken) {
+            const lastActiveChannel = userChannels.find(c => c.token === lastActiveChannelToken);
+            if (lastActiveChannel) {
+                return lastActiveChannel;
+            }
+        }
         const defaultChannel = userChannels.find(c => c.code === DEFAULT_CHANNEL_CODE);
         return defaultChannel || userChannels[0];
     }

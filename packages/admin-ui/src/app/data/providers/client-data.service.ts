@@ -6,6 +6,7 @@ import {
     LanguageCode,
     RequestCompleted,
     RequestStarted,
+    SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
 } from '../../common/generated-types';
@@ -15,6 +16,7 @@ import {
     GET_USER_STATUS,
     REQUEST_COMPLETED,
     REQUEST_STARTED,
+    SET_ACTIVE_CHANNEL,
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
@@ -71,5 +73,14 @@ export class ClientDataService {
         return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(SET_UI_LANGUAGE, {
             languageCode,
         });
+    }
+
+    setActiveChannel(channelId: string) {
+        return this.baseDataService.mutate<SetActiveChannel.Mutation, SetActiveChannel.Variables>(
+            SET_ACTIVE_CHANNEL,
+            {
+                channelId,
+            },
+        );
     }
 }

@@ -10,6 +10,7 @@ type Mutation {
     setAsLoggedIn(input: UserStatusInput!): UserStatus!
     setAsLoggedOut: UserStatus!
     setUiLanguage(languageCode: LanguageCode): LanguageCode
+    setActiveChannel(channelId: ID!): UserStatus!
 }
 
 type NetworkStatus {

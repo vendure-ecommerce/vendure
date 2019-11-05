@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { ChannelSwitcherComponent } from './components/channel-switcher/channel-switcher.component';
 import { JobListComponent } from './components/job-list/job-list.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { NotificationComponent } from './components/notification/notification.component';
@@ -45,6 +46,7 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
         NotificationComponent,
         UiLanguageSwitcherComponent,
         JobListComponent,
+        ChannelSwitcherComponent,
     ],
     entryComponents: [NotificationComponent],
 })

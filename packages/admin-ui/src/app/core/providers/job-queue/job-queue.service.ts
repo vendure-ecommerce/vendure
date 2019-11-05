@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { interval, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { EMPTY, interval, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { JobInfoFragment, JobState } from '../../../common/generated-types';
@@ -58,7 +58,14 @@ export class JobQueueService implements OnDestroy {
      */
     checkForJobs(delay: number = 1000) {
         timer(delay)
-            .pipe(switchMap(() => this.dataService.settings.getRunningJobs().single$))
+            .pipe(
+                switchMap(() =>
+                    this.dataService.client.userStatus().mapSingle(data => data.userStatus.isLoggedIn),
+                ),
+                switchMap(isLoggedIn =>
+                    isLoggedIn ? this.dataService.settings.getRunningJobs().single$ : EMPTY,
+                ),
+            )
             .subscribe(data => data.jobs.forEach(job => this.updateJob$.next(job)));
     }
 

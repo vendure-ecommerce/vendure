@@ -5,12 +5,13 @@ import { DataProxy } from 'apollo-cache';
 import { WatchQueryFetchPolicy } from 'apollo-client';
 import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { merge, Observable } from 'rxjs';
+import { delay, distinctUntilChanged, filter, map, skip, takeUntil } from 'rxjs/operators';
 
-import { CustomFields } from '../../common/generated-types';
+import { CustomFields, GetUserStatus } from '../../common/generated-types';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
 import { addCustomFields } from '../add-custom-fields';
+import { GET_USER_STATUS } from '../definitions/client-definitions';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 
@@ -50,7 +51,9 @@ export class BaseDataService {
             variables,
             fetchPolicy,
         });
-        return new QueryResult<T, any>(queryRef);
+        const queryResult = new QueryResult<T, any>(queryRef);
+        this.refetchOnChannelChange(queryResult);
+        return queryResult;
     }
 
     /**
@@ -69,5 +72,33 @@ export class BaseDataService {
                 update: update as any,
             })
             .pipe(map(result => result.data as T));
+    }
+
+    /**
+     * Causes all active queries to be refetched whenever the activeChannelId changes.
+     */
+    private refetchOnChannelChange(queryResult: QueryResult<any>) {
+        const userStatus$ = this.apollo.watchQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })
+            .valueChanges;
+        const activeChannelId$ = userStatus$.pipe(
+            map(data => data.data.userStatus.activeChannelId),
+            distinctUntilChanged(),
+            skip(1),
+        );
+        const loggedOut$ = userStatus$.pipe(
+            map(data => data.data.userStatus.isLoggedIn),
+            distinctUntilChanged(),
+            skip(1),
+            filter(isLoggedIn => !isLoggedIn),
+        );
+
+        activeChannelId$
+            .pipe(
+                delay(50),
+                takeUntil(merge(queryResult.completed$, loggedOut$)),
+            )
+            .subscribe(() => {
+                queryResult.ref.refetch();
+            });
     }
 }

@@ -1,7 +1,7 @@
 import { QueryRef } from 'apollo-angular';
 import { NetworkStatus } from 'apollo-client';
-import { Observable } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { filter, finalize, map, take } from 'rxjs/operators';
 
 /**
  * This class wraps the Apollo Angular QueryRef object and exposes some getters
@@ -9,6 +9,8 @@ import { filter, map, take } from 'rxjs/operators';
  */
 export class QueryResult<T, V = Record<string, any>> {
     constructor(private queryRef: QueryRef<T, V>) {}
+
+    completed$ = new Subject();
 
     /**
      * Returns an Observable which emits a single result and then completes.
@@ -18,6 +20,10 @@ export class QueryResult<T, V = Record<string, any>> {
             filter(result => result.networkStatus === NetworkStatus.ready),
             take(1),
             map(result => result.data),
+            finalize(() => {
+                this.completed$.next();
+                this.completed$.complete();
+            }),
         );
     }
 
@@ -28,6 +34,10 @@ export class QueryResult<T, V = Record<string, any>> {
         return this.queryRef.valueChanges.pipe(
             filter(result => result.networkStatus === NetworkStatus.ready),
             map(result => result.data),
+            finalize(() => {
+                this.completed$.next();
+                this.completed$.complete();
+            }),
         );
     }
 

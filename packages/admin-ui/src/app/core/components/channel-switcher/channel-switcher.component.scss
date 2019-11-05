@@ -7,15 +7,10 @@
     height: 2.5rem;
 }
 
-.user-name {
+.active-channel {
     color: $color-grey-200;
-    margin-right: 12px;
-}
 
-.trigger clr-icon {
-    color: white;
+    clr-icon {
+        color: white;
+    }
 }
-.btn.btn-outline:hover {
-    background-color: #e1f1f62e;
-}
-
