@@ -74,7 +74,7 @@ export class DefaultInterceptor implements HttpInterceptor {
                     url: `${apiHost}:${apiPort}`,
                 });
             } else {
-                this.displayErrorNotification(response.toString());
+                this.displayErrorNotification(this.extractErrorFromHttpResponse(response));
             }
         } else {
             // GraphQL errors still return 200 OK responses, but have the actual error message
@@ -102,6 +102,15 @@ export class DefaultInterceptor implements HttpInterceptor {
                     this.displayErrorNotification(message);
                 }
             }
+        }
+    }
+
+    private extractErrorFromHttpResponse(response: HttpErrorResponse): string {
+        const errors = response.error.errors;
+        if (Array.isArray(errors)) {
+            return errors.map(e => e.message).join('\n');
+        } else {
+            return response.message;
         }
     }
 

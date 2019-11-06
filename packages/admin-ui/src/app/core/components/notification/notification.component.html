@@ -11,5 +11,5 @@
     }"
 >
     <clr-icon [attr.shape]="getIcon()" size="24"></clr-icon>
-    {{ message | translate: translationVars }}
+    {{ stringifyMessage(message) | translate: translationVars }}
 </div>
