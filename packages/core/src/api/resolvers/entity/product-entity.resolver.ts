@@ -1,7 +1,9 @@
 import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { Asset } from '../../../entity/asset/asset.entity';
+import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -10,6 +12,7 @@ import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ProductService } from '../../../service/services/product.service';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
@@ -62,5 +65,19 @@ export class ProductEntityResolver {
     @ResolveProperty()
     async assets(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset[] | undefined> {
         return this.assetService.getEntityAssets(product);
+    }
+}
+
+@Resolver('Product')
+export class ProductAdminEntityResolver {
+    constructor(private productService: ProductService) {}
+
+    @ResolveProperty()
+    async channels(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Channel[]> {
+        if (product.channels) {
+            return product.channels;
+        } else {
+            return this.productService.getProductChannels(product.id);
+        }
     }
 }

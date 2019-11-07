@@ -87,7 +87,14 @@ export class RoleService {
     /**
      * Returns true if the User has the specified permission on that Channel
      */
-    async userHasPermissionOnChannel(userId: ID, channelId: ID, permission: Permission): Promise<boolean> {
+    async userHasPermissionOnChannel(
+        userId: ID | null | undefined,
+        channelId: ID,
+        permission: Permission,
+    ): Promise<boolean> {
+        if (userId == null) {
+            return false;
+        }
         const user = await getEntityOrThrow(this.connection, User, userId, {
             relations: ['roles', 'roles.channels'],
         });
@@ -138,7 +145,7 @@ export class RoleService {
     }
 
     async assignRoleToChannel(roleId: ID, channelId: ID) {
-        await this.channelService.assignToChannel(Role, roleId, channelId);
+        await this.channelService.assignToChannels(Role, roleId, [channelId]);
     }
 
     private async getPermittedChannels(channelIds: ID[], activeUserId: ID): Promise<Channel[]> {

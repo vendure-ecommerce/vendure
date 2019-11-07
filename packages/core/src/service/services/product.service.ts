@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
+    AssignProductsToChannelInput,
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
+    Permission,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -11,10 +13,11 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { Channel } from '../../entity/channel/channel.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -30,6 +33,7 @@ import { ChannelService } from './channel.service';
 import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
 import { ProductVariantService } from './product-variant.service';
+import { RoleService } from './role.service';
 import { TaxRateService } from './tax-rate.service';
 
 @Injectable()
@@ -39,6 +43,7 @@ export class ProductService {
     constructor(
         @InjectConnection() private connection: Connection,
         private channelService: ChannelService,
+        private roleService: RoleService,
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
@@ -82,6 +87,13 @@ export class ProductService {
             return;
         }
         return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
+    }
+
+    async getProductChannels(productId: ID): Promise<Channel[]> {
+        const product = await getEntityOrThrow(this.connection, Product, productId, {
+            relations: ['channels'],
+        });
+        return product.channels;
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
@@ -145,9 +157,43 @@ export class ProductService {
         };
     }
 
-    async assignToChannel(ctx: RequestContext, productId: ID, channelId: ID): Promise<Translated<Product>> {
-        const product = await this.channelService.assignToChannel(Product, productId, channelId);
-        return assertFound(this.findOne(ctx, product.id));
+    async assignProductsToChannel(
+        ctx: RequestContext,
+        input: AssignProductsToChannelInput,
+    ): Promise<Array<Translated<Product>>> {
+        const hasPermission = await this.roleService.userHasPermissionOnChannel(
+            ctx.activeUserId,
+            input.channelId,
+            Permission.UpdateCatalog,
+        );
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const productsWithVariants = await this.connection
+            .getRepository(Product)
+            .findByIds(input.productIds, {
+                relations: ['variants'],
+            });
+        const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
+        for (const product of productsWithVariants) {
+            await this.channelService.assignToChannels(Product, product.id, [input.channelId]);
+            for (const variant of product.variants) {
+                await this.productVariantService.createProductVariantPrice(
+                    variant.id,
+                    variant.price * priceFactor,
+                    input.channelId,
+                );
+            }
+        }
+
+        return this.connection
+            .getRepository(Product)
+            .findByIds(productsWithVariants.map(p => p.id), { relations: this.relations })
+            .then(products =>
+                products.map(product =>
+                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                ),
+            );
     }
 
     async addOptionGroupToProduct(

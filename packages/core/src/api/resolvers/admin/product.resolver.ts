@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
     MutationAddOptionGroupToProductArgs,
+    MutationAssignProductsToChannelArgs,
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
@@ -138,5 +139,14 @@ export class ProductResolver {
         @Args() args: MutationDeleteProductVariantArgs,
     ): Promise<DeletionResponse> {
         return this.productVariantService.softDelete(ctx, args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async assignProductsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignProductsToChannelArgs,
+    ): Promise<Array<Translated<Product>>> {
+        return this.productService.assignProductsToChannel(ctx, args.input);
     }
 }

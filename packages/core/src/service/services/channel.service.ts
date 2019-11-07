@@ -44,18 +44,20 @@ export class ChannelService {
     }
 
     /**
-     * Assigns the entity to the given Channel and saves.
+     * Assigns the entity to the given Channels and saves.
      */
-    async assignToChannel<T extends ChannelAware & VendureEntity>(
+    async assignToChannels<T extends ChannelAware & VendureEntity>(
         entityType: Type<T>,
         entityId: ID,
-        channelId: ID,
+        channelIds: ID[],
     ): Promise<T> {
         const entity = await getEntityOrThrow(this.connection, entityType, entityId, {
             relations: ['channels'],
         });
-        const channel = await getEntityOrThrow(this.connection, Channel, channelId);
-        entity.channels.push(channel);
+        for (const id of channelIds) {
+            const channel = await getEntityOrThrow(this.connection, Channel, id);
+            entity.channels.push(channel);
+        }
         await this.connection.getRepository(entityType).save(entity as any);
         return entity;
     }

@@ -191,12 +191,8 @@ export class ProductVariantService {
                 input.stockOnHand,
             );
         }
-        const variantPrice = new ProductVariantPrice({
-            price: createdVariant.price,
-            channelId: ctx.channelId,
-        });
-        variantPrice.variant = createdVariant;
-        await this.connection.getRepository(ProductVariantPrice).save(variantPrice);
+
+        await this.createProductVariantPrice(createdVariant.id, createdVariant.price, ctx.channelId);
         this.eventBus.publish(new CatalogModificationEvent(ctx, createdVariant));
         return await assertFound(this.findOne(ctx, createdVariant.id));
     }
@@ -267,6 +263,22 @@ export class ProductVariantService {
             'facetValues',
             ['facetValues', 'facet'],
         ]);
+    }
+
+    /**
+     * Creates a ProductVariantPrice for the given ProductVariant/Channel combination.
+     */
+    async createProductVariantPrice(
+        productVariantId: ID,
+        price: number,
+        channelId: ID,
+    ): Promise<ProductVariantPrice> {
+        const variantPrice = new ProductVariantPrice({
+            price,
+            channelId,
+        });
+        variantPrice.variant = new ProductVariant({ id: productVariantId });
+        return this.connection.getRepository(ProductVariantPrice).save(variantPrice);
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {

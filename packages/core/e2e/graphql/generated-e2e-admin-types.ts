@@ -162,6 +162,12 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export type AssignProductsToChannelInput = {
+    productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+    priceFactor?: Maybe<Scalars['Float']>;
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -1761,6 +1767,8 @@ export type Mutation = {
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
+    /** Assigns Products to the specified Channel */
+    assignProductsToChannel: Array<Product>;
     createPromotion: Promotion;
     updatePromotion: Promotion;
     deletePromotion: DeletionResponse;
@@ -2007,6 +2015,10 @@ export type MutationUpdateProductVariantsArgs = {
 
 export type MutationDeleteProductVariantArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationAssignProductsToChannelArgs = {
+    input: AssignProductsToChannelInput;
 };
 
 export type MutationCreatePromotionArgs = {
@@ -2337,6 +2349,7 @@ export type PriceRange = {
 export type Product = Node & {
     __typename?: 'Product';
     enabled: Scalars['Boolean'];
+    channels: Array<Channel>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3404,6 +3417,14 @@ export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
 };
 
+export type AssignProductsToChannelMutationVariables = {
+    input: AssignProductsToChannelInput;
+};
+
+export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
+    assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
 export type GetCollectionsWithAssetsQueryVariables = {};
 
 export type GetCollectionsWithAssetsQuery = { __typename?: 'Query' } & {
@@ -3925,6 +3946,7 @@ export type ProductWithVariantsFragment = { __typename?: 'Product' } & Pick<
                     facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
                 }
         >;
+        channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>>;
     };
 
 export type RoleFragment = { __typename?: 'Role' } & Pick<
@@ -5064,6 +5086,12 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
+export namespace AssignProductsToChannel {
+    export type Variables = AssignProductsToChannelMutationVariables;
+    export type Mutation = AssignProductsToChannelMutation;
+    export type AssignProductsToChannel = ProductWithVariantsFragment;
+}
+
 export namespace GetCollectionsWithAssets {
     export type Variables = GetCollectionsWithAssetsQueryVariables;
     export type Query = GetCollectionsWithAssetsQuery;
@@ -5417,6 +5445,7 @@ export namespace ProductWithVariants {
     export type Variants = ProductVariantFragment;
     export type FacetValues = NonNullable<ProductWithVariantsFragment['facetValues'][0]>;
     export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
+    export type Channels = NonNullable<ProductWithVariantsFragment['channels'][0]>;
 }
 
 export namespace Role {

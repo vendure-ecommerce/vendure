@@ -35,7 +35,10 @@ import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity
 import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
 import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
-import { ProductEntityResolver } from './resolvers/entity/product-entity.resolver';
+import {
+    ProductAdminEntityResolver,
+    ProductEntityResolver,
+} from './resolvers/entity/product-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
 import {
     ProductVariantAdminEntityResolver,
@@ -95,7 +98,7 @@ export const entityResolvers = [
     RefundEntityResolver,
 ];
 
-export const adminEntityResolvers = [ProductVariantAdminEntityResolver];
+export const adminEntityResolvers = [ProductVariantAdminEntityResolver, ProductAdminEntityResolver];
 
 /**
  * The internal module containing some shared providers used by more than
